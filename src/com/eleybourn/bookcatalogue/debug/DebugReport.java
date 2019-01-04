@@ -10,31 +10,35 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
-import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DebugReport {
+import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
+
+public final class DebugReport {
 
     /** files with these prefixes will be bundled in the report */
     private static final String[] FILE_PREFIXES = new String[]{
             "DbUpgrade", "DbExport", "error.log", "export.csv"};
+
+    private DebugReport() {
+    }
 
     /**
      * Return the MD5 hash of the public key that signed this app, or a useful
@@ -42,12 +46,13 @@ public class DebugReport {
      *
      * No longer caching as only needed at a crash anyhow
      */
-    public static String signedBy(final @NonNull Context context) {
+    public static String signedBy(@NonNull final Context context) {
         StringBuilder signedBy = new StringBuilder();
 
         try {
             // Get app info
             PackageManager manager = context.getPackageManager();
+            // deprecated... but replacing it fails entirely in API 21. I presume doc-error.
             @SuppressLint("PackageManagerGetSignatures")
             PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
 
@@ -62,13 +67,13 @@ public class DebugReport {
                     boolean first = true;
                     for (byte aPublicKey : publicKey) {
                         if (!first) {
-                            hexString.append(":");
+                            hexString.append(':');
                         } else {
                             first = false;
                         }
                         String byteString = Integer.toHexString(0xFF & aPublicKey);
                         if (byteString.length() == 1) {
-                            hexString.append("0");
+                            hexString.append('0');
                         }
                         hexString.append(byteString);
                     }
@@ -78,19 +83,13 @@ public class DebugReport {
                     if (signedBy.length() == 0) {
                         signedBy.append(fingerprint);
                     } else {
-                        signedBy.append("/").append(fingerprint);
+                        signedBy.append('/').append(fingerprint);
                     }
                 }
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            // Default if package not found...kind of unlikely
-            return "NO_PACKAGE";
-
-        } catch (Exception e) {
-            // Default if we die
+        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException | RuntimeException e) {
             return e.getLocalizedMessage();
         }
-
         return signedBy.toString();
     }
 
@@ -99,7 +98,7 @@ public class DebugReport {
      *
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
      */
-    public static void sendDebugInfo(final @NonNull Activity activity) {
+    public static void sendDebugInfo(@NonNull final Activity activity) {
         // Create a temp file, set to auto-delete at app close
         File tmpDbFile = StorageUtils.getFile("DbExport-tmp.db");
         tmpDbFile.deleteOnExit();
@@ -109,7 +108,7 @@ public class DebugReport {
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         emailIntent.setType("plain/text");
         emailIntent.putExtra(Intent.EXTRA_EMAIL, activity.getString(R.string.email_debug).split(";"));
-        String subject = "[" + activity.getString(R.string.app_name) + "] " + activity.getString(R.string.debug_subject);
+        String subject = '[' + activity.getString(R.string.app_name) + "] " + activity.getString(R.string.debug_subject);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         StringBuilder message = new StringBuilder();
 
@@ -117,27 +116,31 @@ public class DebugReport {
             // Get app info
             PackageManager manager = activity.getPackageManager();
             PackageInfo appInfo = manager.getPackageInfo(activity.getPackageName(), 0);
-            message.append("App: ").append(appInfo.packageName).append("\n")
-                    .append("Version: ").append(appInfo.versionName).append(" (").append(appInfo.versionCode).append(")\n");
-        } catch (Exception ignore) {
+            message.append("App: ")
+                    .append(appInfo.packageName).append('\n')
+                    .append("Version: ")
+                    .append(appInfo.versionName)
+                    // versionCode deprecated and new method in API 28, till then ignore...
+                    .append(" (").append(appInfo.versionCode).append(")\n");
+        } catch (PackageManager.NameNotFoundException ignore) {
             // Not much we can do inside error logger...
         }
 
 
         message.append("SDK: ").append(Build.VERSION.RELEASE)
-                .append(" (").append(Build.VERSION.SDK_INT).append(" ").append(Build.TAGS).append(")\n")
-                .append("Phone Model: ").append(Build.MODEL).append("\n")
-                .append("Phone Manufacturer: ").append(Build.MANUFACTURER).append("\n")
-                .append("Phone Device: ").append(Build.DEVICE).append("\n")
-                .append("Phone Product: ").append(Build.PRODUCT).append("\n")
-                .append("Phone Brand: ").append(Build.BRAND).append("\n")
-                .append("Phone ID: ").append(Build.ID).append("\n")
-                .append("Signed-By: ").append(signedBy(activity)).append("\n")
-                .append("\nHistory:\n").append(Tracker.getEventsInfo()).append("\n");
+                .append(" (").append(Build.VERSION.SDK_INT).append(' ').append(Build.TAGS).append(")\n")
+                .append("Phone Model: ").append(Build.MODEL).append('\n')
+                .append("Phone Manufacturer: ").append(Build.MANUFACTURER).append('\n')
+                .append("Phone Device: ").append(Build.DEVICE).append('\n')
+                .append("Phone Product: ").append(Build.PRODUCT).append('\n')
+                .append("Phone Brand: ").append(Build.BRAND).append('\n')
+                .append("Phone ID: ").append(Build.ID).append('\n')
+                .append("Signed-By: ").append(signedBy(activity)).append('\n')
+                .append("\nHistory:\n").append(Tracker.getEventsInfo()).append('\n');
 
         // Scanners installed
         try {
-            message.append("Pref. Scanner: ").append(BookCatalogueApp.getIntPreference(ScannerManager.PREF_PREFERRED_SCANNER, -1)).append("\n");
+            message.append("Pref. Scanner: ").append(Prefs.getInt(R.string.pk_scanning_preferred_scanner, -1)).append('\n');
             String[] scanners = new String[]{ZxingScanner.ACTION, Pic2ShopScanner.Free.ACTION, Pic2ShopScanner.Pro.ACTION};
             for (String scanner : scanners) {
                 message.append("Scanner [").append(scanner).append("]:\n");
@@ -160,17 +163,17 @@ public class DebugReport {
                     message.append("    No packages found\n");
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             // Don't lose the other debug info if scanner data dies for some reason
-            message.append("Scanner failure: ").append(e.getLocalizedMessage()).append("\n");
+            message.append("Scanner failure: ").append(e.getLocalizedMessage()).append('\n');
         }
-        message.append("\n");
+        message.append('\n');
 
         //  urls
 
         message.append("Customizable Search sites URL:\n");
-        message.append(AmazonManager.getBaseURL()).append("\n");
-        message.append(GoogleBooksManager.getBaseURL()).append("\n");
+        message.append(AmazonManager.getBaseURL()).append('\n');
+        message.append(GoogleBooksManager.getBaseURL()).append('\n');
 
         message.append("Details:\n\n").append(activity.getString(R.string.debug_body).toUpperCase()).append("\n\n");
 
@@ -204,7 +207,7 @@ public class DebugReport {
         }
     }
 
-    private static List<String> collectFiles(final @NonNull File... dirs) {
+    private static List<String> collectFiles(@NonNull final File... dirs) {
         List<String> files = new ArrayList<>();
         for (File dir : dirs) {
             for (String name : dir.list()) {

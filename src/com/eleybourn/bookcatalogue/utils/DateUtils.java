@@ -37,7 +37,7 @@ import java.util.TimeZone;
  * All date handling here is for UTC/sql only, hence no Locale used
  */
 @SuppressLint("SimpleDateFormat")
-public class DateUtils {
+public final class DateUtils {
     /**
      * Used for formatting *non-user* dates for SQL
      */
@@ -125,7 +125,7 @@ public class DateUtils {
      * @param format      date format to add
      * @param needEnglish if set, also add the localized english version
      */
-    private static void addParseDateFormat(final @NonNull String format, final boolean needEnglish) {
+    private static void addParseDateFormat(@NonNull final String format, final boolean needEnglish) {
         mParseDateFormats.add(new SimpleDateFormat(format));
         if (needEnglish) {
             mParseDateFormats.add(new SimpleDateFormat(format, Locale.ENGLISH));
@@ -153,7 +153,7 @@ public class DateUtils {
      *
      * @throws NumberFormatException on failure to parse
      */
-    public static String toPrettyDate(final @NonNull String partialDate) throws NumberFormatException {
+    public static String toPrettyDate(@NonNull final String partialDate) throws NumberFormatException {
         switch (partialDate.length()) {
             // YYYY-MM-DD
             case 10: {
@@ -167,7 +167,7 @@ public class DateUtils {
             case 7: {
                 int month = Integer.parseInt(partialDate.substring(5));
                 // MMM YYYY
-                return getMonthName(month, true) + " " + partialDate.substring(0,4);
+                return getMonthName(month, true) + ' ' + partialDate.substring(0,4);
             }
         }
         // YYYY (or whatever came in)
@@ -178,7 +178,7 @@ public class DateUtils {
      * Pretty format a date; local timezone
      */
     @NonNull
-    public static String toPrettyDate(final @NonNull Date d) {
+    public static String toPrettyDate(@NonNull final Date d) {
         return PRETTY_DATE_FORMATTER.format(d);
     }
 
@@ -186,7 +186,7 @@ public class DateUtils {
      * Pretty format a datetime; local timezone
      */
     @NonNull
-    public static String toPrettyDateTime(final @NonNull Date d) {
+    public static String toPrettyDateTime(@NonNull final Date d) {
         return PRETTY_DATETIME_FORMATTER.format(d);
     }
 
@@ -196,7 +196,7 @@ public class DateUtils {
      * Convert a Date to a UTC based SQL date-string
      */
     @NonNull
-    public static String utcSqlDate(final @NonNull Date d) {
+    public static String utcSqlDate(@NonNull final Date d) {
         return UTC_SQL_DATE.format(d);
     }
 
@@ -204,7 +204,7 @@ public class DateUtils {
      * Convert a Date to a UTC based SQL datetime-string
      */
     @NonNull
-    public static String utcSqlDateTime(final @NonNull Date d) {
+    public static String utcSqlDateTime(@NonNull final Date d) {
         return UTC_SQL_DATE_HH_MM_SS.format(d);
     }
 
@@ -226,7 +226,7 @@ public class DateUtils {
      * @return Resulting date if parsed, otherwise null
      */
     @Nullable
-    public static Date parseDate(final @Nullable String dateString) {
+    public static Date parseDate(@Nullable final String dateString) {
         if (dateString == null) {
             return null;
         }
@@ -249,7 +249,7 @@ public class DateUtils {
      * @return Resulting date if successfully parsed, otherwise null
      */
     @Nullable
-    private static Date parseDate(final @Nullable String dateString, final boolean lenient) {
+    private static Date parseDate(@Nullable final String dateString, final boolean lenient) {
         if (dateString == null) {
             return null;
         }
@@ -309,9 +309,9 @@ public class DateUtils {
      */
     @SuppressLint("DefaultLocale")
     @NonNull
-    public static String buildPartialDate(final @Nullable Integer year,
-                                          final @Nullable Integer month,
-                                          final @Nullable Integer day) {
+    public static String buildPartialDate(@Nullable final Integer year,
+                                          @Nullable final Integer month,
+                                          @Nullable final Integer day) {
         if (year == null) {
             return "";
         } else {
@@ -319,17 +319,17 @@ public class DateUtils {
             if (month != null && month > 0) {
                 String mm = month.toString();
                 if (mm.length() == 1) {
-                    mm = "0" + mm;
+                    mm = '0' + mm;
                 }
 
-                value += "-" + mm;
+                value += '-' + mm;
 
                 if (day != null && day > 0) {
                     String dd = day.toString();
                     if (dd.length() == 1) {
-                        dd = "0" + dd;
+                        dd = '0' + dd;
                     }
-                    value += "-" + dd;
+                    value += '-' + dd;
                 }
             }
             return value;

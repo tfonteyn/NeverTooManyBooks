@@ -19,76 +19,98 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
-import android.content.SharedPreferences;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
- * Public interface for any backup archive reader.
+ * Public interface for any backup archive writer.
  *
  * @author pjw
  */
 public interface BackupWriter extends Closeable {
 
     /**
-     * Perform a restore of the database; a convenience method to loop through
-     * all entities in the backup and restore them based on the entity type.
+     * Perform a backup of the database.
      *
      * See BackupWriterAbstract for a default implementation.
+     *
+     * @throws IOException on failure
      */
-    void backup(final @NonNull ExportSettings settings, final @NonNull BackupWriterListener listener) throws IOException;
+    void backup(@NonNull final ExportSettings settings,
+                @NonNull final BackupReader.BackupReaderListener listener)
+            throws IOException;
 
     /**
-     * Get the containing archive
+     * Get the containing archive.
      */
     @NonNull
     BackupContainer getContainer();
 
     /**
-     * Write an info block to the archive
+     * Write the info block to the archive.
+     *
+     * @throws IOException on failure
      */
-    void putInfo(final @NonNull BackupInfo info) throws IOException;
+    void putInfo(@NonNull final byte[] bytes)
+            throws IOException;
 
     /**
-     * Write a generic file to the archive
+     * Write a books csv file to the archive.
+     *
+     * @throws IOException on failure
+     */
+    void putBooks(@NonNull final File file)
+            throws IOException;
+
+    /**
+     * Write a xml file with the exported tables to the archive.
+     *
+     * @throws IOException on failure
+     */
+    void putXmlData(@NonNull final File file)
+            throws IOException;
+
+    /**
+     * Write a generic file to the archive.
      *
      * @param name of the entry in the archive
      * @param file actual file to store in the archive
+     *
+     * @throws IOException on failure
      */
-    void putGenericFile(final @NonNull String name, final @NonNull File file) throws IOException;
+    void putFile(@NonNull final String name, @NonNull final File file)
+            throws IOException;
 
     /**
-     * Write an export file to the archive
+     * Write a collection of Booklist Styles.
+     *
+     * @throws IOException on failure
      */
-    void putBooks(final @NonNull File file) throws IOException;
+    void putBooklistStyles(@NonNull final byte[] bytes)
+            throws IOException;
 
     /**
-     * Write a cover file to the archive
+     * Store a SharedPreferences.
+     *
+     * @throws IOException on failure
      */
-    void putCoverFile(final @NonNull File file) throws IOException;
+    void putPreferences(@NonNull final byte[] bytes)
+            throws IOException;
 
     /**
-     * Store a Booklist Style
-     */
-    void putBooklistStyle(final @NonNull BooklistStyle style) throws IOException;
-
-    /**
-     * Store a SharedPreferences
-     */
-    void putPreferences(final @NonNull SharedPreferences prefs) throws IOException;
-
-    /**
-     * Close the writer
+     * Close the writer.
+     *
+     * @throws IOException on failure
      */
     @Override
-    void close() throws IOException;
+    void close()
+            throws IOException;
 
     /**
      * Interface for processes doing a backup operation; allows for progress indications
@@ -97,6 +119,7 @@ public interface BackupWriter extends Closeable {
      * @author pjw
      */
     interface BackupWriterListener {
+
         /**
          * Set the end point for the progress
          */
@@ -105,21 +128,11 @@ public interface BackupWriter extends Closeable {
         /**
          * Advance progress by 'delta'
          */
-        void step(final @Nullable String message, final int delta);
+        void onProgress(@Nullable final String message, final int delta);
 
         /**
          * Check if operation is cancelled
          */
         boolean isCancelled();
-
-        /**
-         * Retrieve the total books
-         */
-        int getTotalBooks();
-
-        /**
-         * Save the total books exported
-         */
-        void setTotalBooks(final int books);
     }
 }

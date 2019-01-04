@@ -20,52 +20,17 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
-public class EditBookActivity extends BaseActivity {
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOK;
-
-    /**
-     * Load with the provided book id. Also open to the provided tab.
-     *
-     * @param activity the caller
-     * @param id       The id of the book to edit
-     * @param tab      Which tab to open first
-     */
-    public static void startActivityForResult(final @NonNull Activity activity,
-                                              final long id,
-                                              final int tab) {
-        Intent intent = new Intent(activity, EditBookActivity.class);
-        intent.putExtra(UniqueId.KEY_ID, id);
-        intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, tab);
-        activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE);
-    }
-    /**
-     * Load with the provided book id. Also open to the provided tab.
-     *
-     * @param fragment the caller
-     * @param id       The id of the book to edit
-     * @param tab      Which tab to open first
-     */
-    public static void startActivityForResult(final @NonNull Fragment fragment,
-                                              final long id,
-                                              final int tab) {
-        Intent intent = new Intent(fragment.getContext(), EditBookActivity.class);
-        intent.putExtra(UniqueId.KEY_ID, id);
-        intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, tab);
-        fragment.startActivityForResult(intent, EditBookActivity.REQUEST_CODE);
-    }
+public class EditBookActivity
+    extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
@@ -74,7 +39,7 @@ public class EditBookActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -83,9 +48,9 @@ public class EditBookActivity extends BaseActivity {
         frag.setArguments(extras);
 
         getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
-                .commit();
+            .beginTransaction()
+            .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
+            .commit();
         Tracker.exitOnCreate(this);
     }
 

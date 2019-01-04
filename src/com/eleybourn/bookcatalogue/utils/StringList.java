@@ -50,7 +50,7 @@ public class StringList<T> {
     public StringList() {
     }
 
-    private StringList(final @NonNull Factory<T> factory) {
+    private StringList(@NonNull final Factory<T> factory) {
         mFactory = factory;
     }
 
@@ -60,8 +60,8 @@ public class StringList<T> {
             mBookshelfUtils = new StringList<>(new Factory<Bookshelf>() {
                 @Override
                 @NonNull
-                public Bookshelf get(final @NonNull String stringEncodedList) {
-                    return new Bookshelf(stringEncodedList);
+                public Bookshelf get(@NonNull final String stringList) {
+                    return new Bookshelf(stringList);
                 }
             });
         }
@@ -74,8 +74,8 @@ public class StringList<T> {
             mAuthorUtils = new StringList<>(new Factory<Author>() {
                 @Override
                 @NonNull
-                public Author get(final @NonNull String stringEncodedList) {
-                    return new Author(stringEncodedList);
+                public Author get(@NonNull final String stringList) {
+                    return new Author(stringList);
                 }
             });
         }
@@ -88,8 +88,8 @@ public class StringList<T> {
             mSeriesUtils = new StringList<>(new Factory<Series>() {
                 @Override
                 @NonNull
-                public Series get(final @NonNull String stringEncodedList) {
-                    return new Series(stringEncodedList);
+                public Series get(@NonNull final String stringList) {
+                    return new Series(stringList);
                 }
             });
         }
@@ -102,8 +102,8 @@ public class StringList<T> {
             mTOCUtils = new StringList<>(new Factory<TOCEntry>() {
                 @Override
                 @NonNull
-                public TOCEntry get(final @NonNull String stringEncodedList) {
-                    return new TOCEntry(stringEncodedList);
+                public TOCEntry get(@NonNull final String stringList) {
+                    return new TOCEntry(stringList);
                 }
             });
         }
@@ -123,7 +123,7 @@ public class StringList<T> {
      * @return Array of strings resulting from list
      */
     @NonNull
-    public static ArrayList<String> decode(final @NonNull String stringList) {
+    public static ArrayList<String> decode(@NonNull final String stringList) {
         return decode(MULTI_STRING_SEPARATOR, stringList);
     }
 
@@ -139,7 +139,7 @@ public class StringList<T> {
      * @return Array of strings(trimmed) resulting from list
      */
     @NonNull
-    public static ArrayList<String> decode(final char delim, final @Nullable String stringList) {
+    public static ArrayList<String> decode(final char delim, @Nullable final String stringList) {
         StringBuilder ns = new StringBuilder();
         ArrayList<String> list = new ArrayList<>();
         if (stringList == null) {
@@ -200,7 +200,7 @@ public class StringList<T> {
      * @return Array of strings resulting from list
      */
     @NonNull
-    public ArrayList<T> decode(final @Nullable String stringList, final boolean allowBlank) {
+    public ArrayList<T> decode(@Nullable final String stringList, final boolean allowBlank) {
         return decode(MULTI_STRING_SEPARATOR, stringList, allowBlank);
     }
 
@@ -213,7 +213,7 @@ public class StringList<T> {
      */
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    public ArrayList<T> decode(final char delim, final @Nullable String stringList, final boolean allowBlank) {
+    public ArrayList<T> decode(final char delim, @Nullable final String stringList, final boolean allowBlank) {
         StringBuilder ns = new StringBuilder();
         ArrayList<T> list = new ArrayList<>();
         if (stringList == null) {
@@ -281,7 +281,7 @@ public class StringList<T> {
      * @return Converted string
      */
     @NonNull
-    public String encode(final @NonNull List<T> list) {
+    public String encode(@NonNull final List<T> list) {
         return encode(MULTI_STRING_SEPARATOR, list);
     }
 
@@ -297,7 +297,7 @@ public class StringList<T> {
      */
     @SuppressWarnings({"SameParameterValue", "WeakerAccess"})
     @NonNull
-    public String encode(final char delim, final @NonNull List<T> list) {
+    public String encode(final char delim, @NonNull final List<T> list) {
         StringBuilder ns = new StringBuilder();
         Iterator<T> si = list.iterator();
         if (si.hasNext()) {
@@ -314,7 +314,7 @@ public class StringList<T> {
      * @see #encodeListItem(char, String)
      */
     @NonNull
-    public static String encodeListItem(final @NonNull String s) {
+    public static String encodeListItem(@NonNull final String s) {
         return encodeListItem(MULTI_STRING_SEPARATOR, s);
     }
 
@@ -330,7 +330,7 @@ public class StringList<T> {
      * @return Converted string(trimmed)
      */
     @NonNull
-    public static String encodeListItem(final char delim, final @NonNull String s) {
+    public static String encodeListItem(final char delim, @NonNull final String s) {
         StringBuilder ns = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -346,7 +346,7 @@ public class StringList<T> {
                     break;
                 default:
                     if (c == delim) {
-                        ns.append("\\");
+                        ns.append('\\');
                     }
                     ns.append(c);
             }
@@ -364,9 +364,9 @@ public class StringList<T> {
      * @param key    for value to add
      * @param value  to add
      */
-    public static void addOrAppend(final @NonNull Bundle bundle,
-                                   final @Nullable String key,
-                                   final @NonNull String value) {
+    public static void addOrAppend(@NonNull final Bundle bundle,
+                                   @Nullable final String key,
+                                   @NonNull final String value) {
         String s = encodeListItem(value);
         if (!bundle.containsKey(key) || bundle.getString(key, "").isEmpty()) {
             bundle.putString(key, s);
@@ -382,7 +382,7 @@ public class StringList<T> {
      * @param list  to add to
      * @param value to add
      */
-    public static void addIfHasValue(final @NonNull List<String> list,
+    public static void addIfHasValue(@NonNull final List<String> list,
                                      @Nullable String value) {
         if (value != null) {
             value = value.trim();
@@ -393,12 +393,12 @@ public class StringList<T> {
     }
 
     @NonNull
-    private T get(final @NonNull String source) {
-        return mFactory.get(source);
+    private T get(@NonNull final String stringList) {
+        return mFactory.get(stringList);
     }
 
     public interface Factory<T> {
         @NonNull
-        T get(final @NonNull String source);
+        T get(@NonNull final String stringList);
     }
 }

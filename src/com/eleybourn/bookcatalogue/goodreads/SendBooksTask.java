@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
@@ -11,15 +10,17 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.GoodreadsTask;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
+import java.io.IOException;
+
+import androidx.annotation.NonNull;
+
 /**
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  */
 public abstract class SendBooksTask extends GoodreadsTask {
 
-    private GoodreadsManager mGrManager;
-    protected CatalogueDBAdapter mDb;
-
+    private static final long serialVersionUID = -8519158637447641604L;
     /** Number of books with no ISBN */
     int mNoIsbn = 0;
     /** Number of books that had ISBN but could not be found */
@@ -34,98 +35,97 @@ public abstract class SendBooksTask extends GoodreadsTask {
     /**
      * Run the task, log exceptions.
      *
-     * @return false to requeue, true for success
+     * @return <tt>false</tt> to requeue, <tt>true</tt> for success
      */
     @Override
-    public boolean run(final @NonNull QueueManager queueManager, final @NonNull Context context) {
+    public boolean run(@NonNull final QueueManager queueManager,
+                       @NonNull final Context context) {
         boolean result = false;
-        try {
-            // Use the app context; the calling activity may go away
-            mDb = new CatalogueDBAdapter(context.getApplicationContext());
 
-            // ENHANCE: Work out a way of checking if GR site is up
-            //if (!Utils.hostIsAvailable(context, "www.goodreads.com")) {
-            //	throw new GoodreadsManager.GoodreadsExceptions.NetworkException();
-            //}
+        // ENHANCE: Work out a way of checking if GR site is up
+        //if (!Utils.hostIsAvailable(context, "www.goodreads.com")) {
+        //	throw new IOException();
+        //}
 
-            if (!Utils.isNetworkAvailable(context)) {
-                // Only wait 5 minutes max on network errors.
-                if (getRetryDelay() > 300) {
-                    setRetryDelay(300);
-                }
-                throw new GoodreadsExceptions.NetworkException();
-            }
-
-            mGrManager = new GoodreadsManager();
+        if (Utils.isNetworkAvailable(context)) {
+            GoodreadsManager grManager = new GoodreadsManager();
             // Ensure we are allowed
-            if (!mGrManager.hasValidCredentials()) {
-                throw new GoodreadsExceptions.NotAuthorizedException();
+            if (grManager.hasValidCredentials()) {
+                result = send(queueManager, context, grManager);
+            } else {
+                Logger.error("no valid credentials");
             }
-
-            result = send(queueManager, context);
-
-        } catch (GoodreadsExceptions.NetworkException | GoodreadsExceptions.NotAuthorizedException e) {
-            Logger.error(e);
-        } finally {
-            if (mDb != null) {
-                mDb.close();
+        } else {
+            // Only wait 5 minutes max on network errors.
+            if (getRetryDelay() > 300) {
+                setRetryDelay(300);
             }
+            Logger.error("network not available");
         }
+
         return result;
     }
 
     /**
-     * @return false to requeue, true for success
+     * @return <tt>false</tt> to requeue, <tt>true</tt> for success
      */
-    abstract protected boolean send(final @NonNull QueueManager queueManager,
-                                    final @NonNull Context context);
+    abstract protected boolean send(@NonNull final QueueManager queueManager,
+                                    @NonNull final Context context,
+                                    @NonNull final GoodreadsManager grManager);
 
     /**
      * Try to export one book
      *
-     * @return false on failure, true on success
+     * @return <tt>false</tt> on failure, <tt>true</tt> on success
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    boolean sendOneBook(final @NonNull QueueManager queueManager,
-                        final @NonNull Context context,
+    boolean sendOneBook(@NonNull final QueueManager queueManager,
+                        @NonNull final Context context,
+                        @NonNull final GoodreadsManager grManager,
+                        @NonNull final CatalogueDBAdapter db,
                         final BookRowView bookCursorRow) {
         GoodreadsManager.ExportDisposition disposition;
         Exception exportException = null;
         try {
-            disposition = mGrManager.sendOneBook(mDb, bookCursorRow);
-        } catch (Exception e) {
+            disposition = grManager.sendOneBook(db, bookCursorRow);
+        } catch (GoodreadsExceptions.BookNotFoundException
+                | GoodreadsExceptions.NotAuthorizedException
+                | IOException e) {
             disposition = GoodreadsManager.ExportDisposition.error;
             exportException = e;
         }
 
         // Handle the result
         switch (disposition) {
-            case sent:
+            case sent: {
                 // Record the change
-                mDb.setGoodreadsSyncDate(bookCursorRow.getId());
+                db.setGoodreadsSyncDate(bookCursorRow.getId());
                 mSent++;
                 break;
-
-            case noIsbn:
+            }
+            case noIsbn: {
                 storeEvent(new SendBookEvents.GrNoIsbnEvent(context, bookCursorRow.getId()));
                 mNoIsbn++;
                 break;
-            case notFound:
+            }
+            case notFound: {
                 storeEvent(new SendBookEvents.GrNoMatchEvent(context, bookCursorRow.getId()));
                 mNotFound++;
                 break;
-
-            case error:
+            }
+            case error: {
                 this.setException(exportException);
                 queueManager.updateTask(this);
                 return false;
-            case networkError:
+            }
+            case networkError: {
                 // Only wait 5 minutes on network errors.
                 if (getRetryDelay() > 300) {
                     setRetryDelay(300);
                 }
                 queueManager.updateTask(this);
                 return false;
+            }
         }
         return true;
     }

@@ -46,15 +46,15 @@ public class EditAuthorDialog {
     @NonNull
     private final Runnable mOnChanged;
 
-    public EditAuthorDialog(final @NonNull Activity activity,
-                            final @NonNull CatalogueDBAdapter db,
-                            final @NonNull Runnable onChanged) {
+    public EditAuthorDialog(@NonNull final Activity activity,
+                            @NonNull final CatalogueDBAdapter db,
+                            @NonNull final Runnable onChanged) {
         mDb = db;
         this.mContext = activity;
         mOnChanged = onChanged;
     }
 
-    public void edit(final @NonNull Author author) {
+    public void edit(@NonNull final Author author) {
         // Build the base dialog
         final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
 
@@ -101,7 +101,7 @@ public class EditAuthorDialog {
         dialog.show();
     }
 
-    private void confirmEdit(final @NonNull Author from, final @NonNull Author to) {
+    private void confirmEdit(@NonNull final Author from, @NonNull final Author to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

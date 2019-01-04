@@ -20,24 +20,20 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.ManagedSearchTask;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 /**
  /**
@@ -47,8 +43,8 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public class SearchGoodreadsTask extends ManagedSearchTask {
 
-    public SearchGoodreadsTask(final @NonNull String name,
-                               final @NonNull TaskManager manager) {
+    public SearchGoodreadsTask(@NonNull final String name,
+                               @NonNull final TaskManager manager) {
         super(name, manager);
     }
 
@@ -62,7 +58,7 @@ public class SearchGoodreadsTask extends ManagedSearchTask {
 
     @Override
     protected void runTask() {
-        final @StringRes int R_ID_SEARCHING = R.string.searching_goodreads;
+        @StringRes final int R_ID_SEARCHING = R.string.searching_goodreads;
         mTaskManager.sendTaskProgressMessage(this, R_ID_SEARCHING, 0);
 
         GoodreadsManager grMgr = new GoodreadsManager();
@@ -76,12 +72,7 @@ public class SearchGoodreadsTask extends ManagedSearchTask {
 
         } catch (BookNotFoundException ignore) {
             // ignore, to bad.
-        } catch (GoodreadsExceptions.NotAuthorizedException |
-                OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException
-                e) {
-            // not actually sure if any of these will ever surface here?
-            // but for completeness/curiosity/paranoia sake
-            // see if we can capture any in our logs and fix anything obvious
+        } catch (GoodreadsExceptions.NotAuthorizedException e) {
             Logger.error(e);
             setFinalError(R_ID_SEARCHING, R.string.gr_auth_failed);
 
@@ -94,7 +85,7 @@ public class SearchGoodreadsTask extends ManagedSearchTask {
         } catch (IOException e) {
             Logger.error(e);
             setFinalError(R_ID_SEARCHING, R.string.error_search_failed);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e);
             setFinalError(R_ID_SEARCHING, e);
         }

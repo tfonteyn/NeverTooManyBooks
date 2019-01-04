@@ -28,7 +28,7 @@ import android.widget.ImageView;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
@@ -98,8 +98,8 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
     /**
      * Constructor. Clean the view and save the details of what we want.
      */
-    private GetThumbnailTask(final @NonNull String hash,
-                             final @NonNull ImageView v,
+    private GetThumbnailTask(@NonNull final String hash,
+                             @NonNull final ImageView v,
                              final int maxWidth,
                              final int maxHeight,
                              final boolean cacheWasChecked) {
@@ -126,8 +126,8 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
      * thread checks the cache only if there are no background cache-related tasks
      * currently running.
      */
-    public static void getThumbnail(final @NonNull String uuid,
-                                    final @NonNull ImageView view,
+    public static void getThumbnail(@NonNull final String uuid,
+                                    @NonNull final ImageView view,
                                     final int maxWidth,
                                     final int maxHeight,
                                     final boolean cacheWasChecked) {
@@ -140,7 +140,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
      *
      * @param t Task to put in queue
      */
-    public static void enqueue(final @NonNull SimpleTaskQueue.SimpleTask t) {
+    public static void enqueue(@NonNull final SimpleTaskQueue.SimpleTask t) {
         mQueue.enqueue(t);
     }
 
@@ -154,7 +154,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
      * Used internally and from Utils.fetchFileIntoImageView to ensure that nothing
      * overwrites the view.
      */
-    public static void clearOldTaskFromView(final @NonNull ImageView imageView) {
+    public static void clearOldTaskFromView(@NonNull final ImageView imageView) {
         final GetThumbnailTask oldTask = ViewTagger.getTag(imageView, R.id.TAG_GET_THUMBNAIL_TASK);
         if (oldTask != null) {
             ViewTagger.setTag(imageView, R.id.TAG_GET_THUMBNAIL_TASK, null);
@@ -170,7 +170,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
      * TODO: fetchFileIntoImageView is an expensive operation. Make sure its still needed.
      */
     @Override
-    public void run(final @NonNull SimpleTaskContext taskContext) {
+    public void run(@NonNull final SimpleTaskContext taskContext) {
 			/*
 			try {
 				Thread.sleep(10); // Let the UI have a chance to do something if we are racking up images!
@@ -233,7 +233,7 @@ public class GetThumbnailTask implements SimpleTaskQueue.SimpleTask {
         }
 
         if (mBitmap != null) {
-            if (!mWasInCache && BooklistPreferencesActivity.thumbnailsAreCached()) {
+            if (!mWasInCache && BooklistBuilder.thumbnailsAreCached()) {
                 // Queue the image to be written to the cache. Do it in a separate queue to avoid
                 // delays in displaying image and to avoid contention -- the cache queue only has
                 // one thread. Tell the cache write it can be recycled if we don't have a valid view.

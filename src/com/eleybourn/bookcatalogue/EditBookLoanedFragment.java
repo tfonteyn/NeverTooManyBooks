@@ -26,14 +26,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.PermissionChecker;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,24 +39,34 @@ import com.eleybourn.bookcatalogue.entities.BookManager;
 
 import java.util.ArrayList;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
+
 /**
  * This class is called by {@link EditBookFragment} and displays the Loaned Tab
  *
  * Users can select a book and, from this activity, select a friend to "loan" the book to.
  * * This will then be saved in the database.
  *
- *  So this fragment does NOT participate in
- *      {@link #initFields()}
- *      {@link #onLoadFieldsFromBook} and {@link #onSaveFieldsToBook}
+ * So this fragment does NOT participate in
+ * {@link #initFields()}
+ * {@link #onLoadFieldsFromBook} and {@link #onSaveFieldsToBook}
  */
-public class EditBookLoanedFragment extends BookBaseFragment {
+public class EditBookLoanedFragment
+    extends BookBaseFragment {
 
     public static final String TAG = "EditBookLoanedFragment";
 
     private static final String[] PROJECTION = {
-            ContactsContract.Contacts._ID,
-            ContactsContract.Contacts.LOOKUP_KEY,
-            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
+        ContactsContract.Contacts._ID,
+        ContactsContract.Contacts.LOOKUP_KEY,
+        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
     };
 
     private TextView mLoanedTo;
@@ -73,7 +75,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
-        return ((EditBookFragment)this.getParentFragment()).getBookManager();
+        return ((EditBookFragment) this.getParentFragment()).getBookManager();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -85,7 +87,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
 //     */
 //    @Override
 //    @CallSuper
-//    public void onAttach(final @NonNull Context context) {
+//    public void onAttach(@NonNull final Context context) {
 //        super.onAttach(context);
 //    }
 
@@ -95,9 +97,9 @@ public class EditBookLoanedFragment extends BookBaseFragment {
 //    }
 
     @Override
-    public View onCreateView(final @NonNull LayoutInflater inflater,
-                             final @Nullable ViewGroup container,
-                             final @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_loan_base, container, false);
     }
 
@@ -109,7 +111,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
      */
     @Override
     @CallSuper
-    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
@@ -142,6 +144,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Populate">
+
     /**
      * Display the loan to page. It is slightly different to the existing loan page
      */
@@ -164,7 +167,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
      *
      * @param user The user the book was loaned to
      */
-    private void showLoaned(final @NonNull String user) {
+    private void showLoaned(@NonNull final String user) {
         ViewGroup sv = loadFragmentIntoView(R.layout.fragment_edit_book_loaned);
         mLoanedTo = sv.findViewById(R.id.loaned_to);
         mLoanedTo.setText(user);
@@ -199,7 +202,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
 
 //    @Override
 //    @CallSuper
-//    protected void onSaveFieldsToBook(final @NonNull Book book) {
+//    protected void onSaveFieldsToBook(@NonNull final Book book) {
 //        super.onSaveFieldsToBook(book);
 //    }
 
@@ -211,7 +214,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
 
     /* ------------------------------------------------------------------------------------------ */
 
-    private void saveLoan(final @NonNull String friend) {
+    private void saveLoan(@NonNull final String friend) {
         Book book = getBookManager().getBook();
         book.putString(UniqueId.KEY_LOAN_LOANED_TO, friend);
         mDb.insertLoan(book, true);
@@ -228,7 +231,7 @@ public class EditBookLoanedFragment extends BookBaseFragment {
     private void setPhoneContactsAdapter() {
         // check security
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST);
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS);
             return;
         }
         // call secured method
@@ -244,7 +247,8 @@ public class EditBookLoanedFragment extends BookBaseFragment {
      */
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     @NonNull
-    private ArrayList<String> getPhoneContacts() throws SecurityException {
+    private ArrayList<String> getPhoneContacts()
+        throws SecurityException {
         ArrayList<String> list = new ArrayList<>();
         ContentResolver cr = requireActivity().getContentResolver();
         try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {
@@ -279,11 +283,11 @@ public class EditBookLoanedFragment extends BookBaseFragment {
     @Override
     @PermissionChecker.PermissionResult
     public void onRequestPermissionsResult(final int requestCode,
-                                           final @NonNull String permissions[],
-                                           final @NonNull int[] grantResults) {
+                                           @NonNull final String permissions[],
+                                           @NonNull final int[] grantResults) {
         //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[] must be checked in parallel
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST: {
+            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     setPhoneContactsAdapter();
                 }

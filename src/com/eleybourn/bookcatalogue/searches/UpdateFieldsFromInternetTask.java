@@ -94,7 +94,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
 //    @SuppressWarnings("FieldCanBeLocal")
 //    private final SearchManager.SearchManagerListener mSearchListener = new SearchManager.SearchManagerListener() {
 //        @Override
-//        public boolean onSearchFinished(final @NonNull Bundle bookData, final boolean wasCancelled) {
+//        public boolean onSearchFinished(@NonNull final Bundle bookData, final boolean wasCancelled) {
 //            return UpdateFieldsFromInternetTask.this.onSearchFinished(bookData, wasCancelled);
 //        }
 //    };
@@ -115,10 +115,10 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
      * @param requestedFields fields to update
      * @param listener        where to send our results to
      */
-    public UpdateFieldsFromInternetTask(final @NonNull TaskManager taskManager,
+    public UpdateFieldsFromInternetTask(@NonNull final TaskManager taskManager,
                                         final int searchSites,
-                                        final @NonNull UpdateFieldsFromInternetActivity.FieldUsages requestedFields,
-                                        final @NonNull ManagedTaskListener listener) {
+                                        @NonNull final UpdateFieldsFromInternetActivity.FieldUsages requestedFields,
+                                        @NonNull final ManagedTaskListener listener) {
         super("UpdateFieldsFromInternetTask", taskManager);
 
         mDb = new CatalogueDBAdapter(taskManager.getContext());
@@ -138,9 +138,9 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
      * @param destData   Destination Bundle where the combined list is updated
      * @param <T>        type of the ArrayList elements
      */
-    private static <T extends Parcelable> void combineArrays(final @NonNull String key,
-                                                             final @NonNull Bundle sourceData,
-                                                             final @NonNull Bundle destData) {
+    private static <T extends Parcelable> void combineArrays(@NonNull final String key,
+                                                             @NonNull final Bundle sourceData,
+                                                             @NonNull final Bundle destData) {
         // Each of the lists to combine
         ArrayList<T> sourceList = null;
         ArrayList<T> destList = null;
@@ -177,7 +177,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
      */
     public void setBookId(final long bookId) {
         //TODO: not really happy exposing the DOM's here, but it will do for now. Ideally the sql behind this becomes static and uses binds
-        mBookWhereClause = DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID) + "=" + bookId;
+        mBookWhereClause = DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID) + '=' + bookId;
     }
 
     @Override
@@ -269,7 +269,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
      * See if there is a reason to fetch ANY data by checking which fields this book needs.
      */
     private UpdateFieldsFromInternetActivity.FieldUsages getCurrentBookFieldUsages(
-            final @NonNull UpdateFieldsFromInternetActivity.FieldUsages requestedFields) {
+            @NonNull final UpdateFieldsFromInternetActivity.FieldUsages requestedFields) {
 
         UpdateFieldsFromInternetActivity.FieldUsages fieldUsages = new UpdateFieldsFromInternetActivity.FieldUsages();
         for (Fields.FieldUsage usage : requestedFields.values()) {
@@ -348,23 +348,23 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
      * Called in the main thread for this object when the search for one book has completed.
      */
     @SuppressWarnings("SameReturnValue")
-    public boolean onSearchFinished(final boolean cancelled, final @NonNull Bundle newBookData) {
+    public boolean onSearchFinished(final boolean wasCancelled, @NonNull final Bundle bookData) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, " onSearchFinished|bookId=" + mCurrentBookId);
         }
 
 
-        if (cancelled) {
+        if (wasCancelled) {
             // if the search was cancelled, propagate by cancelling ourselves.
             cancelTask();
-        } else if (newBookData.size() == 0) {
+        } else if (bookData.size() == 0) {
             // tell the user if the search failed.
             mTaskManager.sendTaskUserMessage(BookCatalogueApp.getResourceString(R.string.warning_unable_to_find_book));
         }
 
         // Save the local data from the context so we can start a new search
-        if (!isCancelled() && newBookData.size() > 0) {
-            processSearchResults(mCurrentBookId, mCurrentUuid, mCurrentBookFieldUsages, newBookData, mOriginalBookData);
+        if (!isCancelled() && bookData.size() > 0) {
+            processSearchResults(mCurrentBookId, mCurrentUuid, mCurrentBookFieldUsages, bookData, mOriginalBookData);
         }
 
         /*
@@ -389,10 +389,10 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
      * @param originalBookData Original data
      */
     private void processSearchResults(final long bookId,
-                                      final @NonNull String uuid,
-                                      final @NonNull UpdateFieldsFromInternetActivity.FieldUsages requestedFields,
-                                      final @NonNull Bundle newBookData,
-                                      final @NonNull Bundle originalBookData) {
+                                      @NonNull final String uuid,
+                                      @NonNull final UpdateFieldsFromInternetActivity.FieldUsages requestedFields,
+                                      @NonNull final Bundle newBookData,
+                                      @NonNull final Bundle originalBookData) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, "processSearchResults bookId=" + bookId);
         }
@@ -482,7 +482,7 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                                     break;
                                 default:
                                     // No idea how to handle this for non-arrays
-                                    throw new RTE.IllegalTypeException("Illegal usage '" + usage.usage + "' specified for field '" + usage.fieldId + "'");
+                                    throw new RTE.IllegalTypeException("Illegal usage '" + usage.usage + "' specified for field '" + usage.fieldId + '\'');
                             }
                             break;
                     }

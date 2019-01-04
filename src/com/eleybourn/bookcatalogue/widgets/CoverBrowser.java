@@ -107,9 +107,9 @@ public class CoverBrowser {
      * @param isbn                    ISBN of book
      * @param onImageSelectedListener Handler to call when book selected
      */
-    public CoverBrowser(final @NonNull Activity activity,
-                        final @NonNull String isbn,
-                        final @NonNull OnImageSelectedListener onImageSelectedListener) {
+    public CoverBrowser(@NonNull final Activity activity,
+                        @NonNull final String isbn,
+                        @NonNull final OnImageSelectedListener onImageSelectedListener) {
         mActivity = activity;
         mIsbn = isbn;
         mOnImageSelectedListener = onImageSelectedListener;
@@ -261,7 +261,7 @@ public class CoverBrowser {
      * @author Philip Warner
      */
     public interface OnImageSelectedListener {
-        void onImageSelected(final @NonNull String fileSpec);
+        void onImageSelected(@NonNull final String fileSpec);
     }
 
     /**
@@ -275,7 +275,7 @@ public class CoverBrowser {
         @NonNull
         private final ImageSwitcher mSwitcher;
 
-        CoverImagePagerAdapter(final @NonNull ImageSwitcher switcher) {
+        CoverImagePagerAdapter(@NonNull final ImageSwitcher switcher) {
             mSwitcher = switcher;
             // Setup the background
             TypedArray ta = mActivity.obtainStyledAttributes(R.styleable.CoverGallery);
@@ -285,7 +285,7 @@ public class CoverBrowser {
 
         @NonNull
         @Override
-        public Object instantiateItem(final @NonNull ViewGroup collection, final int position) {
+        public Object instantiateItem(@NonNull final ViewGroup container, final int position) {
             ImageView coverImage = new ImageView(mActivity);
             // If we are shutdown, just return a view
             if (mShutdown) {
@@ -331,13 +331,15 @@ public class CoverBrowser {
                     mImageFetcher.enqueue(task);
                 }
             });
-            collection.addView(coverImage);
+            container.addView(coverImage);
             return coverImage;
         }
 
         @Override
-        public void destroyItem(final @NonNull ViewGroup collection, final int position, final @NonNull Object view) {
-            collection.removeView((ImageView) view);
+        public void destroyItem(@NonNull final ViewGroup container,
+                                final int position,
+                                @NonNull final Object view) {
+            container.removeView((ImageView) view);
         }
 
         @Override
@@ -346,7 +348,7 @@ public class CoverBrowser {
         }
 
         @Override
-        public boolean isViewFromObject(final @NonNull View view, final @NonNull Object object) {
+        public boolean isViewFromObject(@NonNull final View view, @NonNull final Object object) {
             return view == object;
         }
     }
@@ -363,25 +365,25 @@ public class CoverBrowser {
         /**
          * Constructor
          */
-        GetEditionsTask(final @NonNull String isbn) {
+        GetEditionsTask(@NonNull final String isbn) {
             this.isbn = isbn;
         }
 
         @Override
-        public void run(final @NonNull SimpleTaskContext taskContext) {
+        public void run(@NonNull final SimpleTaskContext taskContext) {
             // Get some editions
             // ENHANCE: the list of editions should be expanded to somehow include other sites aside of LibraryThingManager
             // As well as the alternate user-contributed images from LibraryThing. The latter are
             // often the best source but at present could only be obtained by HTML scraping.
             try {
                 mAlternativeEditions = LibraryThingManager.searchEditions(isbn);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 mAlternativeEditions = null;
             }
         }
 
         @Override
-        public void onFinish(final @Nullable Exception e) {
+        public void onFinish(@Nullable final Exception e) {
             if (mAlternativeEditions == null || mAlternativeEditions.isEmpty()) {
                 StandardDialogs.showUserMessage(mActivity, R.string.warning_no_editions);
                 shutdown();
@@ -410,8 +412,8 @@ public class CoverBrowser {
          * @param isbn for requested cover.
          * @param view to update
          */
-        GetThumbnailTask(final @NonNull String isbn,
-                         final @NonNull ImageView view,
+        GetThumbnailTask(@NonNull final String isbn,
+                         @NonNull final ImageView view,
                          final int maxWidth,
                          final int maxHeight) {
             imageView = view;
@@ -421,7 +423,7 @@ public class CoverBrowser {
         }
 
         @Override
-        public void run(final @NonNull SimpleTaskContext taskContext) {
+        public void run(@NonNull final SimpleTaskContext taskContext) {
             // If we are shutdown, just return
             if (mShutdown) {
                 taskContext.setRequiresFinish(false);
@@ -439,7 +441,7 @@ public class CoverBrowser {
         }
 
         @Override
-        public void onFinish(final @Nullable Exception e) {
+        public void onFinish(@Nullable final Exception e) {
             if (mShutdown || fileSpec == null || fileSpec.isEmpty()) {
                 return;
             }
@@ -473,13 +475,13 @@ public class CoverBrowser {
          * @param isbn     in the editions list for the ISBN to use
          * @param switcher ImageSwitcher to update
          */
-        GetFullImageTask(final @NonNull String isbn, final @NonNull ImageSwitcher switcher) {
+        GetFullImageTask(@NonNull final String isbn, @NonNull final ImageSwitcher switcher) {
             this.switcher = switcher;
             this.isbn = isbn;
         }
 
         @Override
-        public void run(final @NonNull SimpleTaskContext taskContext) {
+        public void run(@NonNull final SimpleTaskContext taskContext) {
             // If we are shutdown, just return
             if (mShutdown) {
                 taskContext.setRequiresFinish(false);
@@ -496,7 +498,7 @@ public class CoverBrowser {
         }
 
         @Override
-        public void onFinish(final @Nullable Exception e) {
+        public void onFinish(@Nullable final Exception e) {
             if (mShutdown || fileSpec == null || fileSpec.isEmpty()) {
                 return;
             }
@@ -525,13 +527,13 @@ public class CoverBrowser {
      *
      * @author Philip Warner
      */
-    private class FileManager {
+    private static class FileManager {
         final LibraryThingManager libraryThingManager = new LibraryThingManager();
 
         /** key = isbn + "_" + size */
         private final Bundle files = new Bundle();
 
-        private boolean isGood(final @NonNull File file) {
+        private boolean isGood(@NonNull final File file) {
             boolean ok = false;
 
             if (file.exists() && file.length() != 0) {
@@ -542,7 +544,7 @@ public class CoverBrowser {
                     BitmapFactory.decodeFile(file.getAbsolutePath(), opt);
                     // If too small, it's no good
                     ok = (opt.outHeight >= 8 && opt.outWidth >= 8);
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     // Failed to decode; probably not an image
                     ok = false;
                     Logger.error(e, "Unable to decode thumbnail");
@@ -565,9 +567,9 @@ public class CoverBrowser {
          * @return the fileSpec, or null when not found
          */
         @Nullable
-        public String download(final @NonNull String isbn, final @NonNull ImageSizes size) {
+        public String download(@NonNull final String isbn, @NonNull final ImageSizes size) {
             String fileSpec;
-            String key = isbn + "_" + size;
+            String key = isbn + '_' + size;
 
             synchronized (files) {
                 fileSpec = files.getString(key);
@@ -621,8 +623,8 @@ public class CoverBrowser {
          * Get the requested file, if available, otherwise return null.
          */
         @Nullable
-        public File getFile(final @NonNull String isbn, final @NonNull ImageSizes size) {
-            String key = isbn + "_" + size;
+        public File getFile(@NonNull final String isbn, @NonNull final ImageSizes size) {
+            String key = isbn + '_' + size;
             String fileSpec;
             synchronized (files) {
                 fileSpec = files.getString(key);
@@ -647,7 +649,7 @@ public class CoverBrowser {
                     }
                 }
                 files.clear();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 Logger.error(e);
             }
         }

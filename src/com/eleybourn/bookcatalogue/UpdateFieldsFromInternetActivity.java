@@ -24,11 +24,6 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,14 +46,21 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+
 /**
  * NEWKIND must stay in sync with {@link UpdateFieldsFromInternetTask}
  *
  * FIXME ... re-test and see why the progress stops. Seems we hit some limit in number of HTTP connections (server imposed ?)
  */
-public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
+public class UpdateFieldsFromInternetActivity
+    extends BaseActivityWithTasks {
 
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET;
+    private static final int REQ_PREFERRED_SEARCH_SITES = 0;
 
     /** optionally limit the sites to search on. By default uses {@link SearchSites.Site#SEARCH_ALL} */
     private static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
@@ -77,7 +79,7 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
     /** this is where the results can be 'consumed' before finishing this activity */
     private final ManagedTask.ManagedTaskListener mSearchTaskListener = new ManagedTask.ManagedTaskListener() {
         @Override
-        public void onTaskFinished(final @NonNull ManagedTask task) {
+        public void onTaskFinished(@NonNull final ManagedTask task) {
             mUpdateSenderId = 0;
             Intent data = new Intent();
             data.putExtra(UniqueId.BKEY_CANCELED, task.isCancelled());
@@ -102,7 +104,7 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -141,35 +143,35 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
      */
     private void initFields() {
         addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR,
-                R.string.lbl_author, Fields.FieldUsage.Usage.AddExtra, true);
+            R.string.lbl_author, Fields.FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.KEY_TITLE,
-                R.string.lbl_title, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_title, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_ISBN,
-                R.string.lbl_isbn, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_isbn, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_HAVE_THUMBNAIL,
-                R.string.lbl_cover, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_cover, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES,
-                R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
+            R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.BKEY_TOC_TITLES_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                R.string.table_of_content, Fields.FieldUsage.Usage.AddExtra, true);
+            R.string.table_of_content, Fields.FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.KEY_BOOK_PUBLISHER,
-                R.string.lbl_publisher, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_publisher, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED,
-                R.string.lbl_date_published, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_date_published, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_FIRST_PUBLICATION,
-                R.string.lbl_first_publication, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_first_publication, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_DESCRIPTION,
-                R.string.lbl_description, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_description, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_PAGES,
-                R.string.lbl_pages, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_pages, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_PRICE_LISTED,
-                R.string.lbl_price_listed, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_price_listed, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_FORMAT,
-                R.string.lbl_format, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_format, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_GENRE,
-                R.string.lbl_genre, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_genre, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_LANGUAGE,
-                R.string.lbl_language, Fields.FieldUsage.Usage.CopyIfBlank, false);
+            R.string.lbl_language, Fields.FieldUsage.Usage.CopyIfBlank, false);
     }
 
     /**
@@ -180,9 +182,9 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
      * @param defaultUsage Usage to apply.
      * @param isList       if the field is a list to which we can append to
      */
-    private void addIfVisible(final @NonNull String fieldId,
-                              final @StringRes int nameStringId,
-                              final @NonNull Fields.FieldUsage.Usage defaultUsage,
+    private void addIfVisible(@NonNull final String fieldId,
+                              @StringRes final int nameStringId,
+                              @NonNull final Fields.FieldUsage.Usage defaultUsage,
                               final boolean isList) {
 
         if (Fields.isVisible(fieldId)) {
@@ -199,10 +201,10 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
      * @param defaultUsage Usage to apply.
      * @param isList       if the field is a list to which we can append to
      */
-    private void addIfVisible(final @NonNull String fieldId,
-                              final @NonNull String visField,
-                              final @StringRes int nameStringId,
-                              final @NonNull Fields.FieldUsage.Usage defaultUsage,
+    private void addIfVisible(@NonNull final String fieldId,
+                              @NonNull final String visField,
+                              @StringRes final int nameStringId,
+                              @NonNull final Fields.FieldUsage.Usage defaultUsage,
                               final boolean isList) {
 
         if (Fields.isVisible(visField)) {
@@ -257,31 +259,34 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
                 if (mBookId == 0 && coversWanted.isSelected()) {
                     // Verify - this can be a dangerous operation
                     AlertDialog dialog = new AlertDialog.Builder(UpdateFieldsFromInternetActivity.this)
-                            .setMessage(R.string.overwrite_thumbnail)
-                            .setTitle(R.string.lbl_update_fields)
-                            .setIconAttribute(android.R.attr.alertDialogIcon)
-                            .create();
+                        .setMessage(R.string.overwrite_thumbnail)
+                        .setTitle(R.string.lbl_update_fields)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .create();
                     dialog.setButton(AlertDialog.BUTTON_POSITIVE, UpdateFieldsFromInternetActivity.this.getString(R.string.yes),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(final DialogInterface dialog, final int which) {
-                                    mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL).usage = Fields.FieldUsage.Usage.Overwrite;
-                                    startUpdate(mBookId);
-                                }
-                            });
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog,
+                                                final int which) {
+                                mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL).usage = Fields.FieldUsage.Usage.Overwrite;
+                                startUpdate(mBookId);
+                            }
+                        });
                     dialog.setButton(AlertDialog.BUTTON_NEGATIVE, UpdateFieldsFromInternetActivity.this.getString(android.R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                @SuppressWarnings("EmptyMethod")
-                                public void onClick(final DialogInterface dialog, final int which) {
-                                    //do nothing
-                                }
-                            });
+                        new DialogInterface.OnClickListener() {
+                            @SuppressWarnings("EmptyMethod")
+                            public void onClick(final DialogInterface dialog,
+                                                final int which) {
+                                //do nothing
+                            }
+                        });
                     dialog.setButton(AlertDialog.BUTTON_NEUTRAL, UpdateFieldsFromInternetActivity.this.getString(R.string.no),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(final DialogInterface dialog, final int which) {
-                                    mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL).usage = Fields.FieldUsage.Usage.CopyIfBlank;
-                                    startUpdate(mBookId);
-                                }
-                            });
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog,
+                                                final int which) {
+                                mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL).usage = Fields.FieldUsage.Usage.CopyIfBlank;
+                                startUpdate(mBookId);
+                            }
+                        });
                     dialog.show();
                 } else {
                     startUpdate(mBookId);
@@ -293,7 +298,6 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                setResult(Activity.RESULT_CANCELED);
                 finish();
             }
         });
@@ -309,22 +313,22 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
      */
     @Override
     @CallSuper
-    public boolean onCreateOptionsMenu(final @NonNull Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.tab_lbl_search_sites)
-                .setIcon(R.drawable.ic_search)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            .setIcon(R.drawable.ic_search)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(this, SearchAdminActivity.class);
                 intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB, SearchAdminActivity.TAB_SEARCH_ORDER);
-                startActivityForResult(intent, SearchAdminActivity.REQUEST_CODE); /* 4266b81b-137b-4647-aa1c-8ec0fc8726e6 */
+                startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -332,17 +336,19 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
+    protected void onActivityResult(final int requestCode,
+                                    final int resultCode,
+                                    @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
-            case SearchAdminActivity.REQUEST_CODE: /* 4266b81b-137b-4647-aa1c-8ec0fc8726e6 */
+            case REQ_PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES, mSearchSites);
                 }
                 break;
-
+            }
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
@@ -372,7 +378,7 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
      */
     private void startUpdate(final long bookId) {
         UpdateFieldsFromInternetTask updateTask = new UpdateFieldsFromInternetTask(getTaskManager(),
-                mSearchSites, mFieldUsages, mSearchTaskListener);
+            mSearchSites, mFieldUsages, mSearchTaskListener);
 
         if (bookId > 0) {
             updateTask.setBookId(bookId);
@@ -411,10 +417,12 @@ public class UpdateFieldsFromInternetActivity extends BaseActivityWithTasks {
      *
      * @author Philip Warner
      */
-    public static class FieldUsages extends LinkedHashMap<String, Fields.FieldUsage> {
-        private static final long serialVersionUID = 1L;
+    public static class FieldUsages
+        extends LinkedHashMap<String, Fields.FieldUsage> {
 
-        public void put(final @NonNull Fields.FieldUsage usage) {
+        private static final long serialVersionUID = -1477866533726535097L;
+
+        public void put(@NonNull final Fields.FieldUsage usage) {
             this.put(usage.fieldId, usage);
         }
     }

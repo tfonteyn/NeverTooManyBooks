@@ -20,10 +20,10 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
-import androidx.annotation.NonNull;
-
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
+
+import androidx.annotation.NonNull;
 
 /**
  * Base class for all Goodreads API handler classes.
@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
  */
 abstract class ApiHandler {
 
-    /** XML tags/attrs we look for */
+    /** XML tags/attrs we look for. */
     static final String XML_GOODREADS_RESPONSE = "GoodreadsResponse";
     static final String XML_USER = "user";
     static final String XML_NAME = "name";
@@ -44,8 +44,11 @@ abstract class ApiHandler {
     static final String XML_WORK = "work";
     static final String XML_BODY = "body";
     static final String XML_SEARCH = "search";
-    static final String XML_RESULT = "results";
 
+    static final String XML_RESULT = "results";
+    static final String XML_TOTAL_RESULTS = "total-results";
+    static final String XML_RESULTS_END = "results-end";
+    static final String XML_RESULTS_START = "results-start";
 
     static final String XML_REVIEWS = "reviews";
     static final String XML_REVIEW = "review";
@@ -103,6 +106,8 @@ abstract class ApiHandler {
     static final String XML_TOTAL = "total";
     static final String XML_STARTED_AT = "started_at";
     static final String XML_READ_AT = "read_at";
+    static final String XML_REVIEW_ID = "review-id";
+
 
     @NonNull
     final GoodreadsManager mManager;
@@ -111,7 +116,7 @@ abstract class ApiHandler {
     @NonNull
     final XmlFilter mRootFilter = new XmlFilter("");
 
-    public ApiHandler(final @NonNull GoodreadsManager manager) {
+    ApiHandler(@NonNull final GoodreadsManager manager) {
         mManager = manager;
     }
 }

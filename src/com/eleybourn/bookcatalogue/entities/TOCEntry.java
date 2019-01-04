@@ -75,7 +75,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     /**
      * Constructor that will attempt to parse a single string into an TOCEntry.
      */
-    public TOCEntry(final @NonNull String fromString) {
+    public TOCEntry(@NonNull final String fromString) {
         fromString(fromString);
     }
 
@@ -85,9 +85,9 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
      * @param author Author of title
      * @param title  Title
      */
-    public TOCEntry(final @NonNull Author author,
-                    final @NonNull String title,
-                    final @NonNull String publicationDate) {
+    public TOCEntry(@NonNull final Author author,
+                    @NonNull final String title,
+                    @NonNull final String publicationDate) {
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate;
@@ -115,8 +115,8 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
 
     public static final Creator<TOCEntry> CREATOR = new Creator<TOCEntry>() {
         @Override
-        public TOCEntry createFromParcel(Parcel in) {
-            return new TOCEntry(in);
+        public TOCEntry createFromParcel(Parcel source) {
+            return new TOCEntry(source);
         }
 
         @Override
@@ -128,7 +128,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     /**
      * Helper to check if all titles in a list have the same author.
      */
-    public static boolean isSingleAuthor(final @NonNull List<TOCEntry> results) {
+    public static boolean isSingleAuthor(@NonNull final List<TOCEntry> results) {
         // check if its all the same author or not
         boolean sameAuthor = true;
         if (results.size() > 1) {
@@ -146,7 +146,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     /**
      * Support for decoding from a text file
      */
-    private void fromString(final @NonNull String encodedString) {
+    private void fromString(@NonNull final String encodedString) {
         // V82: Giants In The Sky * Blish, James
         // V83: Giants In The Sky (1952) * Blish, James
 
@@ -181,11 +181,11 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
         String yearStr;
         if (!mFirstPublicationDate.isEmpty()) {
             // start with a space !
-            yearStr = " (" + mFirstPublicationDate + ")";
+            yearStr = " (" + mFirstPublicationDate + ')';
         } else {
             yearStr = "";
         }
-        return StringList.encodeListItem(SEPARATOR, mTitle) + yearStr + " " + TITLE_AUTHOR_DELIM + " " + mAuthor;
+        return StringList.encodeListItem(SEPARATOR, mTitle) + yearStr + ' ' + TITLE_AUTHOR_DELIM + ' ' + mAuthor;
     }
 
     @NonNull
@@ -193,7 +193,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
         return mTitle;
     }
 
-    public void setTitle(final @NonNull String title) {
+    public void setTitle(@NonNull final String title) {
         mTitle = title;
     }
 
@@ -202,7 +202,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
         return mAuthor;
     }
 
-    public void setAuthor(final @NonNull Author author) {
+    public void setAuthor(@NonNull final Author author) {
         mAuthor = author;
     }
 
@@ -211,12 +211,12 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
         return mFirstPublicationDate;
     }
 
-    public void setFirstPublication(final @NonNull String publicationDate) {
+    public void setFirstPublication(@NonNull final String publicationDate) {
         mFirstPublicationDate = publicationDate;
     }
 
     @Override
-    public long fixupId(final @NonNull CatalogueDBAdapter db) {
+    public long fixupId(@NonNull final CatalogueDBAdapter db) {
         this.mAuthor.id = db.getAuthorIdByName(mAuthor.familyName, mAuthor.givenNames);
         this.id = db.getTOCEntryId(mAuthor.id, mTitle);
         return this.id;
@@ -240,14 +240,14 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
-    public boolean equals(final @Nullable Object o) {
-        if (this == o) {
+    public boolean equals(@Nullable final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        TOCEntry that = (TOCEntry) o;
+        TOCEntry that = (TOCEntry) obj;
         if (this.id == 0 || that.id == 0) {
             return Objects.equals(this.mAuthor, that.mAuthor)
                     && Objects.equals(this.mTitle, that.mTitle)
@@ -276,9 +276,8 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
                     return 0x01;
                 case multipleAuthors:
                     return 0x11;
-                default:
-                    return 0x00;
             }
+            return 0x00;
         }
 
         public Type get(final int bitmask) {

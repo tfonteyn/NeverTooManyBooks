@@ -55,7 +55,7 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment<Check
     private final CheckListEditorDialog.OnCheckListEditorResultsListener<T> mEditListener =
             new CheckListEditorDialog.OnCheckListEditorResultsListener<T>() {
                 @Override
-                public void onCheckListEditorSave(final @NonNull List<CheckListItem<T>> list) {
+                public void onCheckListEditorSave(@NonNull final List<CheckListItem<T>> list) {
                     getFragmentListener()
                             .onCheckListEditorSave(CheckListEditorDialogFragment.this,
                                     mDestinationFieldId, list);
@@ -77,7 +77,7 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment<Check
      */
     @NonNull
     @Override
-    public CheckListEditorDialog<T> onCreateDialog(final @Nullable Bundle savedInstanceState) {
+    public CheckListEditorDialog<T> onCreateDialog(@Nullable final Bundle savedInstanceState) {
         initStandardArgs(savedInstanceState);
 
         // Restore saved state info
@@ -102,7 +102,7 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment<Check
 
     @Override
     @CallSuper
-    public void onSaveInstanceState(final @NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         if (mList != null) {
             outState.putParcelableArrayList(BKEY_CHECK_LIST, mList);
         }
@@ -129,11 +129,11 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment<Check
      * Listener interface to receive notifications when dialog is closed by any means.
      */
     public interface OnCheckListEditorResultsListener<T> {
-        void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
+        void onCheckListEditorSave(@NonNull final CheckListEditorDialogFragment dialog,
                                    final int destinationFieldId,
-                                   final @NonNull List<CheckListItem<T>> list);
+                                   @NonNull final List<CheckListItem<T>> list);
 
-        void onCheckListEditorCancel(final @NonNull CheckListEditorDialogFragment dialog,
+        void onCheckListEditorCancel(@NonNull final CheckListEditorDialogFragment dialog,
                                      final int destinationFieldId);
     }
 
@@ -158,7 +158,7 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment<Check
          *
          * @param context Calling context
          */
-        CheckListEditorDialog(final @NonNull Context context) {
+        CheckListEditorDialog(@NonNull final Context context) {
             super(context);
 
             // Get the layout
@@ -204,7 +204,7 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment<Check
         }
 
         /** Set the current list */
-        public void setList(final @NonNull ArrayList<CheckListItem<T>> list) {
+        public void setList(@NonNull final ArrayList<CheckListItem<T>> list) {
             mList = list;
             for (CheckListItem item : mList) {
                 CompoundButton btn = new CheckBox(getContext());
@@ -217,7 +217,7 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment<Check
         }
 
         /** Set the listener */
-        void setResultsListener(final @NonNull OnCheckListEditorResultsListener<T> listener) {
+        void setResultsListener(@NonNull final OnCheckListEditorResultsListener<T> listener) {
             mListener = listener;
         }
 
@@ -225,7 +225,7 @@ public class CheckListEditorDialogFragment<T> extends EditorDialogFragment<Check
          * Listener to receive notifications when dialog is closed by any means.
          */
         interface OnCheckListEditorResultsListener<T> {
-            void onCheckListEditorSave(final @NonNull List<CheckListItem<T>> list);
+            void onCheckListEditorSave(@NonNull final List<CheckListItem<T>> list);
 
             void onCheckListEditorCancel();
         }

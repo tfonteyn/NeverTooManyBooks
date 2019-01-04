@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ####################################################################################### -->
+    <!-- ========== Preferences / PropertyList ========== -->
+    <!-- ####################################################################################### -->
+
+    <!-- Preference VALUE -->
+    <string name="use_default_setting">Öntanımlı ayarları kullan</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_general">Genel</string>
+    <!-- Preference GROUP -->
+    <string name="pg_ui">Kullanıcı arayüzü</string>
+    <!-- Preference GROUP -->
+    <string name="pg_thumbnails">Ufak resimler</string>
+    <!-- Preference GROUP -->
+    <string name="pg_scanning">Tarama</string>
+    <!-- Preference GROUP -->
+    <string name="pg_booklist">Kitap listeleri</string>
+    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_groupings">Öbeklemeler</string>
+
+    <!-- ========== Global preferences ========== -->
+
+    <!-- Preference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
+    <string name="pt_bob_open_book_read_only">Kitabı salt okunur aç</string>
+
+    <!-- Preference - start the cropper with the cropper frame set to the whole image -->
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
+
+    <!-- Preference - use an external app. (Intent) to handle cropping-->
+    <string name="pt_thumbnails_external_cropper">Başka resim kırpıcı kullan (deneysel özellik)</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_valid">Taranan ISBN geçerli ise biple</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_invalid">Taranan ISBN geçerli değil ise biple</string>
+
+     <!--Preference -->
+    <string name="pt_ui_messages_use">İle bilgilendir</string>
+    <string-array name="pe_ui_messages_use">
+        <item translatable="false">Toast</item>
+        <item translatable="false">Snackbar</item>
+    </string-array>
+
+    <!-- Preference -->
+    <string name="pt_ui_theme">Tema</string>
+    <string-array name="pe_ui_theme">
+        <item>karanlık</item>
+        <item>ışık</item>
+    </string-array>
+
+    <!-- Preference - Preferred interface Locale -->
+    <string name="pt_ui_language">Dil</string>
+
+    <!-- Preference - Degrees by which to rotate camera images automatically -->
+    <string name="pt_thumbnails_rotate_auto">Kamera resimlerini özdevinimli olarak döndür</string>
+    <string-array name="pe_thumbnails_rotate_auto">
+        <item>Hayır</item>
+        <item>Saat yönünde döndür</item>
+        <item>Saat yönünün tersine döndür</item>
+        <item>180 derece döndür</item>
+    </string-array>
+
+    <!-- Preference - Compatibility / bug workaround for some devices -->
+    <string name="pt_thumbnail_cropper_layer_type">Küçük resmi kırp \'Layer Type\'</string>
+    <string name="pt_hint_layer_type">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için \'Donanım\' için \'Yazılım\' deneyin, ancak daha hızlı</string>
+    <string-array name="pe_thumbnails_cropper_layer_type">
+        <item>Varsayılan değer</item>
+        <item>Donanım</item>
+        <item>Yazılım</item>
+    </string-array>
+
+    <!-- Preference - the barcode scanner to use-->
+    <string name="pt_scanning_preferred_scanner">Yeğlenen Tarayıcı</string>
+    <string-array name="pe_scanning_preferred_scanner">
+        <item>Zxing Uyumlu Tarayıcı</item>
+        <item>Zxing Tarayıcı</item>
+        <item>Pic2Shop Tarayıcı</item>
+    </string-array>
+
+
+    <!-- ========== Book list preferences ========== -->
+
+    <!-- Preference - Book list state-related preferences -->
+    <string name="pt_bob_list_state">Kitap dizelgesi durumu</string>
+    <string-array name="pe_bob_list_state">
+        <item>Kitap dizelgelerini genişletilmiş olarak başlat</item>
+        <item>Kitap dizelgelerini içe kapalı olarak başlat</item>
+        <item>Kitap dizelgesi durumunu koru</item>
+    </string-array>
+
+    <!--  Preference to override the default method used to generate book lists as defined by API level -->
+    <string name="pt_bob_list_generation">Kitap dizelgesi oluşturma seçeneği</string>
+    <string-array name="pe_bob_list_generation">
+        <item>Özdevinimli olarak önerilen ayarları kullan</item>
+        <item>Tam takım oluşturma seçeneğini zorla</item>
+        <item>Geliştirilmiş uyumluluk kipini zorla</item>
+        <item>Uyumluluk kipini zorla</item>
+    </string-array>
+
+    <!-- Preference - Thumbnails are fetched in a background task -->
+    <string name="pt_bob_thumbnails_generating_mode">Küçük resimleri almak için bir arka plan görevi kullanın</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Ardalanda iş oluştur (dizelgeler daha hızlı kayar, resimlerin görüntülenmesi gecikebilir)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Anında oluştur (dizelgeler daha yavaş kayar, resimler anında görüntülenir)</string>
+
+    <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
+    <string name="pt_bob_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Gerekli olduğunda her seferinde yeniden boyutlandır (daha az yer kaplar, kaydırma daha yavaş olacaktır)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Yeniden boyutlandırılmış ufak resimleri bellekte tut (daha fazla yer kaplar, dizelgeler daha hızlı kayar)</string>
+
+
+    <!-- ========== Book list style preferences ========== -->
+
+    <!-- Preference - Use scaled text and images -->
+    <string name="pt_bob_item_size">Kitap dizelgesi öğeleri boyutu</string>
+    <string-array name="pe_bob_item_size">
+        <item>Olağan</item>
+        <item>Daha ufak</item>
+        <item>Daha büyük</item>
+    </string-array>
+    <!-- Preference - Determines what is show in book list header -->
+    <string name="pt_bob_header">Başlık özet ayrıntıları</string>
+    <string-array name="pe_bob_header">
+        <item>Kitap sayısını göster</item>
+        <item>Başlığı göster</item>
+    </string-array>
+
+    <!-- Preference - Show thumbnail image for each book -->
+    <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
+    <!-- Preference - Show large thumbnail if thumbnails are shown -->
+    <string name="pt_bob_thumbnails_show_large">Büyük resimleri yeğle</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>
+
+    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Yalnızca birincil %1$s altında</string>
+    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Her %1$s altında</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_format_author_name">Yazar adları biçimi</string>
+    <string name="pv_bob_format_author_name_given_first">Ad başta, örneğin \'Özgür Çapulcu\'</string>
+    <string name="pv_bob_format_author_name_family_first">Soyad başta, örneğin \'Çapulcu, Özgür\'</string>
+
+    <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
+    <string name="pt_bob_sort_author_name">Yazarları sırala</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_bob_extra_book_details">Ek kitap ayarları</string>
+</resources>

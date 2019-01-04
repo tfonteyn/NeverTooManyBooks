@@ -19,10 +19,10 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
-import androidx.annotation.NonNull;
-
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
+
+import androidx.annotation.NonNull;
 
 /**
  * 'Meta' Validator to evaluate a list of validators; ALL validators must be true.
@@ -30,23 +30,24 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  * @author Philip Warner
  */
 public class AndValidator extends MetaValidator implements DataValidator {
-    public static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 4769295855105968978L;
 
     // Constructors
-    public AndValidator(final @NonNull DataValidator v1) {
+    public AndValidator(@NonNull final DataValidator v1) {
         super(v1);
     }
 
-    public AndValidator(final @NonNull DataValidator v1, final @NonNull DataValidator v2) {
+    public AndValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2) {
         super(v1, v2);
     }
 
-    public AndValidator(final @NonNull DataValidator v1, final @NonNull DataValidator v2, final @NonNull DataValidator v3) {
+    public AndValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2, @NonNull final DataValidator v3) {
         super(v1, v2, v3);
     }
 
     @Override
-    public void validate(final @NonNull DataManager data, final @NonNull Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException {
         for (DataValidator v : this) {
             // Only set the Bundle for the last in the list

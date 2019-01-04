@@ -19,8 +19,8 @@ import java.net.UnknownHostException;
  */
 public class SearchISFDBTask extends ManagedSearchTask {
 
-    public SearchISFDBTask(final @NonNull String name,
-                           final @NonNull TaskManager manager) {
+    public SearchISFDBTask(@NonNull final String name,
+                           @NonNull final TaskManager manager) {
         super(name, manager);
     }
 
@@ -34,7 +34,7 @@ public class SearchISFDBTask extends ManagedSearchTask {
 
     @Override
     protected void runTask() {
-        final @StringRes int R_ID_SEARCHING = R.string.searching_isfdb;
+        @StringRes final int R_ID_SEARCHING = R.string.searching_isfdb;
         mTaskManager.sendTaskProgressMessage(this, R_ID_SEARCHING, 0);
 
         try {
@@ -53,7 +53,7 @@ public class SearchISFDBTask extends ManagedSearchTask {
         } catch (IOException e) {
             Logger.error(e);
             setFinalError(R_ID_SEARCHING, R.string.error_search_failed);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e);
             setFinalError(R_ID_SEARCHING, e);
         }

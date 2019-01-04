@@ -19,10 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import androidx.annotation.NonNull;
-
 import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
 
 import java.io.File;
@@ -31,13 +27,16 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
+
 /**
  * Interface provided by every entity read from a backup file.
  *
  * @author pjw
  */
 public interface ReaderEntity {
-    /** Get the original "file name" of the object */
+
+    /** Get the original "file name" (archive entry name) of the object */
     @NonNull
     String getName();
 
@@ -45,30 +44,36 @@ public interface ReaderEntity {
     @NonNull
     BackupEntityType getType();
 
+    /** Modified date from archive entry */
+    @NonNull
+    Date getDateModified();
+
+
     /** get the stream to read the entity */
     @NonNull
     InputStream getStream();
 
     /** Save the data to a directory, using the original file name */
-    void saveToDirectory(final @NonNull File dir) throws IOException;
-
-    /** Read the data into a bundle */
-    @NonNull
-    Bundle getBundle() throws IOException;
-
-    /** Read the data into preferences */
-    void getPreferences(final @NonNull SharedPreferences prefs) throws IOException;
+    void saveToDirectory(@NonNull final File dir)
+            throws IOException;
 
     /** Read the data as a Serializable object */
     @NonNull
-    <T extends Serializable> T getSerializable() throws IOException, DeserializationException;
-
-    /** Modified date from archive entry */
-    @NonNull
-    Date getDateModified();
+    <T extends Serializable> T getSerializable()
+            throws IOException, DeserializationException;
 
     /** Supported entity types */
     enum BackupEntityType {
-        Cover, Books, Info, Database, Preferences, BooklistStyle, XML
+        Books,
+        Info,
+        Database,
+        Preferences,
+        BooklistStyles,
+        Cover,
+        XML,
+        Unknown,
+
+        PreferencesPreV200,
+        BooklistStylesPreV200,
     }
 }

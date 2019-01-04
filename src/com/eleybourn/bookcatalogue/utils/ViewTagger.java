@@ -69,7 +69,7 @@ public class ViewTagger {
      * @return ViewTagger object
      */
     @Nullable
-    private static ViewTagger getTagger(final @NonNull View view, final boolean autoCreate) {
+    private static ViewTagger getTagger(@NonNull final View view, final boolean autoCreate) {
         // See if we have one already
         Object tag = view.getTag();
         if (tag == null) {
@@ -98,7 +98,7 @@ public class ViewTagger {
      * @param view View from which to retrieve tag
      */
     @Nullable
-    public static <T> T getTag(final @NonNull View view) {
+    public static <T> T getTag(@NonNull final View view) {
         ViewTagger tagger = getTagger(view, false);
         if (tagger == null) {
             return null;
@@ -116,7 +116,7 @@ public class ViewTagger {
      * @param view View from which to retrieve tag
      */
     @NonNull
-    public static <T> T getTagOrThrow(final @NonNull View view) {
+    public static <T> T getTagOrThrow(@NonNull final View view) {
         //noinspection unchecked
         return (T) Objects.requireNonNull(getTag(view), "tag  was null");
     }
@@ -136,7 +136,7 @@ public class ViewTagger {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T> T getTag(final @NonNull View view, final @IdRes int key) {
+    public static <T> T getTag(@NonNull final View view, final @IdRes int key) {
         ViewTagger tagger = getTagger(view, false);
         Objects.requireNonNull(tagger, "view has no tagger");
         return (T) tagger.get(key);
@@ -157,7 +157,7 @@ public class ViewTagger {
      */
     @SuppressWarnings("unchecked")
     @NonNull
-    public static <T> T getTagOrThrow(final @NonNull View view, final @IdRes int key) {
+    public static <T> T getTagOrThrow(@NonNull final View view, final @IdRes int key) {
         return (T) Objects.requireNonNull(getTag(view, key), "tag " + key + " was null");
     }
 
@@ -167,7 +167,7 @@ public class ViewTagger {
      * @param view  View from which to retrieve tag
      * @param value Object to store at specified tag
      */
-    public static void setTag(final @NonNull View view, final @Nullable Object value) {
+    public static void setTag(@NonNull final View view, @Nullable final Object value) {
         //noinspection ConstantConditions
         getTagger(view, true).set(value);
     }
@@ -179,7 +179,7 @@ public class ViewTagger {
      * @param key   Key of tag to store
      * @param value Object to store at specified tag
      */
-    public static void setTag(final @NonNull View view, final @IdRes int key, final @Nullable Object value) {
+    public static void setTag(@NonNull final View view, final @IdRes int key, @Nullable final Object value) {
         //noinspection ConstantConditions
         getTagger(view, true).set(key, value);
     }
@@ -189,7 +189,7 @@ public class ViewTagger {
      *
      * @param value Value of id-less tag
      */
-    private void set(final @Nullable Object value) {
+    private void set(@Nullable final Object value) {
         mBareTag = value;
     }
 
@@ -199,7 +199,7 @@ public class ViewTagger {
      * @param key   Key of new tag
      * @param value Object to store at specified tag
      */
-    private void set(final @IdRes int key, final @Nullable Object value) {
+    private void set(final @IdRes int key, @Nullable final Object value) {
         synchronized (this) {
             if (mTags == null) {
                 mTags = new SparseArray<>();

@@ -31,13 +31,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -58,7 +58,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.library_thing);
@@ -67,7 +67,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
         findViewById(R.id.register_url).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + "/"));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + '/'));
                 startActivity(intent);
             }
         });
@@ -82,7 +82,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
         });
 
         EditText devKeyView = findViewById(R.id.dev_key);
-        String key = BookCatalogueApp.getStringPreference(LibraryThingManager.PREFS_DEV_KEY, "");
+        String key = Prefs.getString(LibraryThingManager.PREFS_DEV_KEY, "");
         devKeyView.setText(key);
 
         /* Save Button */
@@ -91,7 +91,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
             public void onClick(View v) {
                 EditText devKeyView = findViewById(R.id.dev_key);
                 String devKey = devKeyView.getText().toString().trim();
-                BookCatalogueApp.getSharedPreferences().edit()
+                Prefs.getPrefs().edit()
                         .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
                         .apply();
 
@@ -101,7 +101,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
                          * Validate the key by getting a known cover
                          */
                         @Override
-                        public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @NonNull SimpleTaskContext taskContext) {
+                        public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
                             LibraryThingManager ltm = new LibraryThingManager();
                             File tmpFile = ltm.getCoverImage("0451451783", LibraryThingManager.ImageSizes.SMALL);
                             if (tmpFile != null) {
@@ -119,7 +119,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @Nullable Exception exception) {
+                        public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception e) {
                         }
                     };
 
@@ -134,7 +134,7 @@ public class LibraryThingAdminActivity extends BaseActivity {
         findViewById(R.id.reset_messages).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
+                SharedPreferences prefs = Prefs.getPrefs();
                 SharedPreferences.Editor ed = prefs.edit();
                 for (String key : prefs.getAll().keySet()) {
                     if (key.toLowerCase().startsWith(LibraryThingManager.PREFS_HIDE_ALERT.toLowerCase()))

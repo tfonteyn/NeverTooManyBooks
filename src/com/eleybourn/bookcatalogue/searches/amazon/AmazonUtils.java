@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.webkit.WebView;
 
 import com.amazon.device.associates.AssociatesAPI;
 import com.amazon.device.associates.LinkService;
+import com.amazon.device.associates.NotInitializedException;
 import com.amazon.device.associates.OpenSearchPageRequest;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -19,6 +18,9 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Wrappers for Amazon API
  *
@@ -27,19 +29,24 @@ import java.net.URLEncoder;
  *
  *
  * Not used, but as a reminder this url is also usable:
- *    http://www.amazon.com/gp/product/ASIN-VALUE-HERE
+ * http://www.amazon.com/gp/product/ASIN-VALUE-HERE
  *
  * @author pjw
  */
-public class AmazonUtils {
+public final class AmazonUtils {
 
     private static final String SUFFIX_BASE_URL = "/gp/search?index=books";
     private static final String SUFFIX_EXTRAS = "&tag=bookcatalogue-20&linkCode=da5";
 
-    /** key into the Manifest meta-data */
+    /** key into the Manifest meta-data. */
     private static final String AMAZON_KEY = "amazon.app_key";
 
-    private static void openLink(final @NonNull Context context, @Nullable String author, @Nullable String series) {
+    private AmazonUtils() {
+    }
+
+    private static void openLink(@NonNull final Context context,
+                                 @Nullable String author,
+                                 @Nullable String series) {
         // Build the URL and args
         String url = AmazonManager.getBaseURL() + SUFFIX_BASE_URL;
         author = cleanupSearchString(author);
@@ -62,11 +69,11 @@ public class AmazonUtils {
             linkService = AssociatesAPI.getLinkService();
             try {
                 linkService.overrideLinkInvocation(wv, url);
-            } catch (Exception e2) {
-                OpenSearchPageRequest request = new OpenSearchPageRequest("books", author + " " + series);
+            } catch (RuntimeException e2) {
+                OpenSearchPageRequest request = new OpenSearchPageRequest("books", author + ' ' + series);
                 linkService.openRetailPage(request);
             }
-        } catch (Exception e) {
+        } catch (NotInitializedException e) {
             Logger.error(e, "Unable to use Amazon API, starting external browser instead");
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url + SUFFIX_EXTRAS));
             context.startActivity(intent);
@@ -104,9 +111,10 @@ public class AmazonUtils {
         return extra.trim();
     }
 
-    private static String cleanupSearchString(final @Nullable String search) {
-        if (search == null)
+    private static String cleanupSearchString(@Nullable final String search) {
+        if (search == null) {
             return "";
+        }
 
         StringBuilder out = new StringBuilder(search.length());
         char prev = ' ';
@@ -124,12 +132,12 @@ public class AmazonUtils {
         return out.toString().trim();
     }
 
-    public static void openSearchPage(final @NonNull Activity activity,
-                                      final @Nullable String author,
-                                      final @Nullable String series) {
+    public static void openSearchPage(@NonNull final Activity activity,
+                                      @Nullable final String author,
+                                      @Nullable final String series) {
         try {
             openLink(activity, author, series);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             // An Amazon error should not crash the app
             Logger.error(e, "Unable to call the Amazon API");
             StandardDialogs.showUserMessage(activity, R.string.error_unexpected_error);

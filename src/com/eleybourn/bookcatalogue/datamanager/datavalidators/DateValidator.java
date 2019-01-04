@@ -19,13 +19,13 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 /**
  * Validator to apply a default value and validate as a Date
@@ -38,31 +38,30 @@ public class DateValidator extends DefaultFieldValidator {
         super();
     }
 
-    public DateValidator(final @NonNull String defaultValue) {
+    public DateValidator(@NonNull final String defaultValue) {
         super(defaultValue);
     }
 
     @Override
     @CallSuper
-    public void validate(final @NonNull DataManager data, final @NonNull Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
             return;
         }
-        if (crossValidating)
+        if (crossValidating) {
             return;
+        }
 
         super.validate(data, datum, false);
 
-        try {
-            java.util.Date d = DateUtils.parseDate(data.getString(datum));
-            if (d == null) {
-                throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
-            }
+        java.util.Date d = DateUtils.parseDate(data.getString(datum));
+        if (d != null) {
             data.putString(datum, DateUtils.utcSqlDateTime(d));
-        } catch (Exception e) {
-            throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
+            return;
         }
+        throw new ValidatorException(R.string.vldt_date_expected, new Object[]{datum.getKey()});
+
     }
 }

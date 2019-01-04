@@ -10,7 +10,9 @@ public class DBExceptions {
      * Only use when the Search MUST NOT fail as this would indicate an integrity error
      */
     static class NotFoundException extends RuntimeException {
-        NotFoundException(final @Nullable String msg) {
+        private static final long serialVersionUID = 7073473935257952862L;
+
+        NotFoundException(@Nullable final String msg) {
             super(msg);
         }
     }
@@ -18,20 +20,24 @@ public class DBExceptions {
 
     /** should only be used from INSIDE a transaction so the caller can rollback */
     static class InsertException extends RuntimeException {
-        InsertException(final @Nullable String msg, final @Nullable Exception inner) {
+        private static final long serialVersionUID = 7393004442420653364L;
+
+        InsertException(@Nullable final String msg, @Nullable final Exception inner) {
             super(msg, inner);
         }
     }
 
 
-    static class UpdateException extends RuntimeException {
+    public static class UpdateException extends RuntimeException {
+        private static final long serialVersionUID = 4134182226987220133L;
+
         UpdateException() {
             super();
         }
-        UpdateException(final @Nullable Exception inner) {
+        UpdateException(@Nullable final Exception inner) {
             super(inner);
         }
-        UpdateException(final @Nullable String msg, final @Nullable Exception inner) {
+        UpdateException(@Nullable final String msg, @Nullable final Exception inner) {
             super(msg, inner);
         }
     }
@@ -41,7 +47,9 @@ public class DBExceptions {
 //    }
 
     public static class ColumnNotPresent extends RuntimeException {
-        public ColumnNotPresent(final @NonNull String columnName) {
+        private static final long serialVersionUID = -5065796313450875326L;
+
+        public ColumnNotPresent(@NonNull final String columnName) {
             super("Column " + columnName + " not present in cursor");
         }
 
@@ -51,22 +59,26 @@ public class DBExceptions {
     }
 
     static class TransactionException extends RuntimeException {
+        private static final long serialVersionUID = -3659088149611399296L;
+
         TransactionException() {
             super();
         }
-        TransactionException(final @Nullable String msg) {
+        TransactionException(@Nullable final String msg) {
             super(msg);
         }
-        TransactionException(final @Nullable String msg, final @Nullable Exception inner) {
+        TransactionException(@Nullable final String msg, @Nullable final Exception inner) {
             super(msg, inner);
         }
     }
     static class LockException extends RuntimeException {
-        LockException(final @Nullable String msg) {
+        private static final long serialVersionUID = 7650790928312862831L;
+
+        LockException(@Nullable final String msg) {
             super(msg);
         }
-        LockException(@SuppressWarnings("SameParameterValue") final @Nullable String msg,
-                      final @Nullable Exception inner) {
+        LockException(@SuppressWarnings("SameParameterValue") @Nullable final String msg,
+                      @Nullable final Exception inner) {
             super(msg, inner);
         }
     }

@@ -20,9 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
@@ -30,6 +28,11 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 import org.apache.http.client.methods.HttpPost;
+
+import java.io.IOException;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * API handler for the authUser call. Just gets the current user details.
@@ -42,7 +45,7 @@ public class AuthUserApiHandler extends ApiHandler {
 
     private final XmlHandler mHandleUserStart = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             mUserId = Long.parseLong(context.attributes.getValue("", "id"));
         }
     };
@@ -52,7 +55,7 @@ public class AuthUserApiHandler extends ApiHandler {
 
     private final XmlHandler mHandleUsernameEnd = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             mUsername = context.body;
         }
     };
@@ -60,7 +63,7 @@ public class AuthUserApiHandler extends ApiHandler {
     /**
      * Constructor. Setup the filters.
      */
-    public AuthUserApiHandler(final @NonNull GoodreadsManager manager) {
+    public AuthUserApiHandler(@NonNull final GoodreadsManager manager) {
         super(manager);
         buildFilters();
     }
@@ -81,7 +84,10 @@ public class AuthUserApiHandler extends ApiHandler {
             mManager.execute(post, handler, true);
             // Return user found.
             return mUserId;
-        } catch (Exception e) {
+        } catch (GoodreadsExceptions.BookNotFoundException
+                | GoodreadsExceptions.NotAuthorizedException
+                | IOException
+                | RuntimeException e) {
             return 0;
         }
     }
@@ -89,17 +95,19 @@ public class AuthUserApiHandler extends ApiHandler {
     /**
      * Typical response:
      *
-     * <GoodreadsResponse>
-     * <Request>
-     * <authentication>true</authentication>
-     * <key><![CDATA[KEY]]></key>
-     * <method><![CDATA[api_auth_user]]></method>
-     * </Request>
-     * <user id="5129458">
-     * <name><![CDATA[Grunthos]]></name>
-     * <link><![CDATA[http://www.goodreads.com/user/show/5129458-grunthos?utm_medium=api]]></link>
-     * </user>
-     * </GoodreadsResponse>
+     * <pre>
+     *   <GoodreadsResponse>
+     *     <Request>
+     *       <authentication>true</authentication>
+     *       <key><![CDATA[KEY]]></key>
+     *       <method><![CDATA[api_auth_user]]></method>
+     *     </Request>
+     *     <user id="5129458">
+     *       <name><![CDATA[Grunthos]]></name>
+     *       <link><![CDATA[http://www.goodreads.com/user/show/5129458-grunthos?utm_medium=api]]></link>
+     *     </user>
+     *   </GoodreadsResponse>
+     * </pre>
      */
     private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER).setStartAction(mHandleUserStart);

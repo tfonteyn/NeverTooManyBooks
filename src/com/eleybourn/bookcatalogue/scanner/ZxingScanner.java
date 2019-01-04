@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.scanner;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -20,6 +21,7 @@ import androidx.annotation.Nullable;
  * @author pjw
  */
 public class ZxingScanner implements Scanner {
+
     public static final String ACTION = "com.google.zxing.client.android.SCAN";
     private static final String PACKAGE = "com.google.zxing.client.android";
 
@@ -40,18 +42,20 @@ public class ZxingScanner implements Scanner {
     /**
      * Check if we have a valid intent available.
      *
-     * @return <tt>true</tt>if present
+     * @return <tt>true</tt> if present
      */
-    static boolean isIntentAvailable(final @NonNull Context context, final boolean mustBeZxing) {
+    static boolean isIntentAvailable(@NonNull final Context context,
+                                     final boolean mustBeZxing) {
         return isIntentAvailable(context, mustBeZxing ? PACKAGE : null);
     }
 
     /**
      * Check if the passed intent action is available.
      *
-     * @return <tt>true</tt>if present
+     * @return <tt>true</tt> if present
      */
-    private static boolean isIntentAvailable(final @NonNull Context context, final @Nullable String packageName) {
+    private static boolean isIntentAvailable(@NonNull final Context context,
+                                             @Nullable final String packageName) {
         Intent intent = new Intent(ACTION);
         if (packageName != null && !packageName.isEmpty()) {
             intent.setPackage(packageName);
@@ -63,13 +67,14 @@ public class ZxingScanner implements Scanner {
      * Start the activity with the passed request code.
      */
     @Override
-    public void startActivityForResult(final @NonNull Activity activity, final int requestCode) {
+    public void startActivityForResult(@NonNull final Activity activity,
+                                       final int requestCode) {
         Intent intent = new Intent(ACTION);
         if (mMustBeZxing) {
             intent.setPackage(PACKAGE);
         }
         // not limiting the format, just grab anything supported.
-        activity.startActivityForResult(intent, requestCode); // c2c28575-5327-40c6-827a-c7973bd24d12
+        activity.startActivityForResult(intent, requestCode);
     }
 
     /**
@@ -77,7 +82,7 @@ public class ZxingScanner implements Scanner {
      */
     @NonNull
     @Override
-    public String getBarcode(final @NonNull Intent data) {
+    public String getBarcode(@NonNull final Intent data) {
         return data.getStringExtra(SCAN_RESULT);
     }
 

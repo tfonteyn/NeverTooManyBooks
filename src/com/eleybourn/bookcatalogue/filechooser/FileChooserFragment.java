@@ -22,10 +22,6 @@ package com.eleybourn.bookcatalogue.filechooser;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -48,12 +44,19 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 /**
  * Fragment to display a simple directory/file browser.
  *
  * @author pjw
  */
-public class FileChooserFragment extends Fragment implements FileListerListener {
+public class FileChooserFragment
+        extends Fragment
+        implements FileListerListener {
 
     public static final String TAG = "FileChooserFragment";
 
@@ -65,13 +68,15 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
     private EditText mFilenameField;
     private TextView mPathField;
 
-    OnClickListener onPathUpClickListener = new OnClickListener() {
+    private final OnClickListener onPathUpClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
             String parent = mRootPath.getParent();
             if (parent == null) {
-                //Snackbar.make(this.getView(), R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
-                StandardDialogs.showUserMessage(requireActivity(), R.string.warning_no_parent_directory_found);
+                //Snackbar.make(this.getView(),
+                // R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
+                StandardDialogs
+                        .showUserMessage(requireActivity(), R.string.warning_no_parent_directory_found);
                 return;
             }
             mRootPath = new File(parent);
@@ -86,7 +91,8 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
     /** Create a new chooser fragment */
     @NonNull
-    public static FileChooserFragment newInstance(final @NonNull File root, final @NonNull String fileName) {
+    public static FileChooserFragment newInstance(@NonNull final File root,
+                                                  @NonNull final String fileName) {
         String path;
         // Turn the passed File into a directory
         if (root.isDirectory()) {
@@ -109,22 +115,23 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      */
     @Override
     @CallSuper
-    public void onAttach(final @NonNull Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        if (!(context instanceof OnPathChangedListener))
+        if (!(context instanceof OnPathChangedListener)) {
             throw new RTE.MustImplementException(context, OnPathChangedListener.class);
+        }
     }
 
     @Override
-    public View onCreateView(final @NonNull LayoutInflater inflater,
-                             final @Nullable ViewGroup container,
-                             final @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_file_chooser, container, false);
     }
 
     @Override
     @CallSuper
-    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
@@ -133,7 +140,8 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
         mPathField = getView().findViewById(R.id.path);
 
         if (savedInstanceState != null) {
-            mRootPath = new File(Objects.requireNonNull(savedInstanceState.getString(BKEY_ROOT_PATH)));
+            mRootPath = new File(Objects
+                    .requireNonNull(savedInstanceState.getString(BKEY_ROOT_PATH)));
             ArrayList<FileDetails> list = savedInstanceState.getParcelableArrayList(BKEY_LIST);
             Objects.requireNonNull(list);
             onGotFileList(mRootPath, list);
@@ -166,7 +174,7 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      */
     @Override
     @CallSuper
-    public void onSaveInstanceState(final @NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putString(BKEY_ROOT_PATH, mRootPath.getAbsolutePath());
         outState.putParcelableArrayList(BKEY_LIST, mList);
         super.onSaveInstanceState(outState);
@@ -179,7 +187,9 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      */
     @NonNull
     public File getSelectedFile() {
-        return new File(mRootPath.getAbsolutePath() + File.separator + mFilenameField.getText().toString().trim());
+        return new File(mRootPath.getAbsolutePath() + File.separator + mFilenameField.getText()
+                                                                                     .toString()
+                                                                                     .trim());
     }
 
     /**
@@ -189,7 +199,8 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
      * @param list List of FileDetails
      */
     @Override
-    public void onGotFileList(final @NonNull File root, final @NonNull ArrayList<FileDetails> list) {
+    public void onGotFileList(@NonNull final File root,
+                              @NonNull final ArrayList<FileDetails> list) {
         mRootPath = root;
         mList = list;
 
@@ -205,39 +216,49 @@ public class FileChooserFragment extends Fragment implements FileListerListener 
 
     /**
      * Interface that the containing Activity must implement. Called when user changes path.
-     *
-     * @author pjw
      */
     public interface OnPathChangedListener {
-        void onPathChanged(final @NonNull File root);
+
+        void onPathChanged(@NonNull final File root);
     }
 
-    /** Interface for details of files in current directory */
-    public interface FileDetails extends ViewProvider, Parcelable {
+    /**
+     * Interface for details of files in current directory
+     */
+    public interface FileDetails
+            extends ViewProvider, Parcelable {
+
         /** Get the underlying File object */
         @NonNull
         File getFile();
 
-        /** Called to fill in the details of this object in the View provided by the ViewProvider implementation */
-        void onGetView(final @NonNull View convertView, final @NonNull Context context);
+        /**
+         * Called to fill in the details of this object in the View provided
+         * by the ViewProvider implementation
+         */
+        void onGetView(@NonNull final View convertView,
+                       @NonNull final Context context);
     }
 
     /**
      * List Adapter for FileDetails objects
      *
-     * {@link FileDetails} can provide the view using {@link ViewProvider#getViewId} and {@link ViewProvider#onGetView}
-     *
-     * @author pjw
+     * {@link FileDetails} can provide the view using {@link ViewProvider#getViewId}
+     * and {@link ViewProvider#onGetView}
      */
-    protected class FileDetailsAdapter extends ArrayAdapter<FileDetails> {
+    protected class FileDetailsAdapter
+            extends ArrayAdapter<FileDetails> {
 
-        FileDetailsAdapter(final @NonNull Context context, final @NonNull ArrayList<FileDetails> items) {
+        FileDetailsAdapter(@NonNull final Context context,
+                           @NonNull final ArrayList<FileDetails> items) {
             super(context, 0, items);
         }
 
         @NonNull
         @Override
-        public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
+        public View getView(final int position,
+                            @Nullable View convertView,
+                            @NonNull final ViewGroup parent) {
 
             final FileDetails item = this.getItem(position);
             if (convertView == null) {

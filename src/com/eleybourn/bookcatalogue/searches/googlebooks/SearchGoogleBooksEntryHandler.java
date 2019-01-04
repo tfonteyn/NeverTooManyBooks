@@ -39,40 +39,40 @@ import java.util.ArrayList;
 
 /**
  * An XML handler for the Google Books entry return
- *
+ * <pre>
  * <?xml version='1.0' encoding='UTF-8'?>
  * <entry xmlns='http://www.w3.org/2005/Atom'
- * xmlns:gbs='http://schemas.google.com/books/2008'
- * xmlns:dc='http://purl.org/dc/terms'
- * xmlns:batch='http://schemas.google.com/gdata/batch'
- * xmlns:gd='http://schemas.google.com/g/2005'>
+ *   xmlns:gbs='http://schemas.google.com/books/2008'
+ *   xmlns:dc='http://purl.org/dc/terms'
+ *   xmlns:batch='http://schemas.google.com/gdata/batch'
+ *   xmlns:gd='http://schemas.google.com/g/2005'>
  *
- * <id>http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ</id>
- * <updated>2010-02-28T10:49:24.000Z</updated>
- * <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
- * <title type='text'>The trigger</title>
- * <link rel='http://schemas.google.com/books/2008/info' type='text/html' href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
- * <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
- * <link rel='alternate' type='text/html' href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1'/>
- * <link rel='self' type='application/atom+xml' href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
- * <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
- * <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
- * <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
- * <dc:creator>Arthur Charles Clarke</dc:creator>
- * <dc:creator>Michael P. Kube-McDowell</dc:creator>
- * <dc:date>2000-01-01</dc:date>
- * <dc:format>Dimensions 11.0x18.0x3.6 cm</dc:format>
- * <dc:format>550 pages</dc:format>
- * <dc:format>book</dc:format>
- * <dc:identifier>A4NDPgAACAAJ</dc:identifier>
- * <dc:identifier>ISBN:0006483836</dc:identifier>
- * <dc:identifier>ISBN:9780006483830</dc:identifier>
- * <dc:language>en</dc:language>
- * <dc:publisher>Voyager</dc:publisher>
- * <dc:subject>Fiction / Science Fiction / General</dc:subject>
- * <dc:subject>Fiction / Technological</dc:subject>
- * <dc:subject>Fiction / War &amp; Military</dc:subject>
- * <dc:title>The trigger</dc:title>
+ *   <id>http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ</id>
+ *   <updated>2010-02-28T10:49:24.000Z</updated>
+ *   <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *   <title type='text'>The trigger</title>
+ *   <link rel='http://schemas.google.com/books/2008/info' type='text/html' href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ *   <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *   <link rel='alternate' type='text/html' href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1'/>
+ *   <link rel='self' type='application/atom+xml' href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
+ *   <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
+ *   <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ *   <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
+ *   <dc:creator>Arthur Charles Clarke</dc:creator>
+ *   <dc:creator>Michael P. Kube-McDowell</dc:creator>
+ *   <dc:date>2000-01-01</dc:date>
+ *   <dc:format>Dimensions 11.0x18.0x3.6 cm</dc:format>
+ *   <dc:format>550 pages</dc:format>
+ *   <dc:format>book</dc:format>
+ *   <dc:identifier>A4NDPgAACAAJ</dc:identifier>
+ *   <dc:identifier>ISBN:0006483836</dc:identifier>
+ *   <dc:identifier>ISBN:9780006483830</dc:identifier>
+ *   <dc:language>en</dc:language>
+ *   <dc:publisher>Voyager</dc:publisher>
+ *   <dc:subject>Fiction / Science Fiction / General</dc:subject>
+ *   <dc:subject>Fiction / Technological</dc:subject>
+ *   <dc:subject>Fiction / War &amp; Military</dc:subject>
+ *   <dc:title>The trigger</dc:title>
  * </entry>
  *
  * <?xml version='1.0' encoding='UTF-8'?>
@@ -121,6 +121,7 @@ import java.util.ArrayList;
  * <dc:title>The Geeks' Guide to World Domination</dc:title>
  * <dc:title>Be Afraid, Beautiful People</dc:title>
  * </entry>
+ * </pre>
  */
 class SearchGoogleBooksEntryHandler extends DefaultHandler {
 
@@ -156,12 +157,12 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
      * @param bookData       Bundle to save results in
      * @param fetchThumbnail true if we need to get a thumbnail
      */
-    SearchGoogleBooksEntryHandler(final @NonNull Bundle /* out */ bookData, final boolean fetchThumbnail) {
+    SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData, final boolean fetchThumbnail) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
     }
 
-    private void addIfNotPresent(final @NonNull String key, final @NonNull String value) {
+    private void addIfNotPresent(@NonNull final String key, @NonNull final String value) {
         String test = mBookData.getString(key);
         if (test == null || test.isEmpty()) {
             mBookData.putString(key, value);
@@ -170,7 +171,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
 
     @Override
     @CallSuper
-    public void characters(final @NonNull char[] ch,
+    public void characters(@NonNull final char[] ch,
                            final int start,
                            final int length) throws SAXException {
         super.characters(ch, start, length);
@@ -186,11 +187,11 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void startElement(final @NonNull String uri,
-                             final @NonNull String localName,
-                             final @NonNull String name,
-                             final @NonNull Attributes attributes) throws SAXException {
-        super.startElement(uri, localName, name, attributes);
+    public void startElement(@NonNull final String uri,
+                             @NonNull final String localName,
+                             @NonNull final String qName,
+                             @NonNull final Attributes attributes) throws SAXException {
+        super.startElement(uri, localName, qName, attributes);
 
         // the url is an attribute of the xml element; not the content
         if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
@@ -218,10 +219,10 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void endElement(final @NonNull String uri,
-                           final @NonNull String localName,
-                           final @NonNull String name) throws SAXException {
-        super.endElement(uri, localName, name);
+    public void endElement(@NonNull final String uri,
+                           @NonNull final String localName,
+                           @NonNull final String qName) throws SAXException {
+        super.endElement(uri, localName, qName);
 
         switch (localName.toLowerCase()) {
             case XML_TITLE: {
@@ -288,7 +289,7 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
             default:
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                     // see what we are missing.
-                    Logger.info(this, "Skipping: " + localName + "->'" + mBuilder + "'");
+                    Logger.info(this, "Skipping: " + localName + "->'" + mBuilder + '\'');
                 }
 
         }

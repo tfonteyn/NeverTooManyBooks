@@ -56,8 +56,8 @@ public class Queue extends Thread {
      *
      * @author Philip Warner
      */
-    public Queue(final @NonNull QueueManager manager,
-                 final @NonNull String queueName) {
+    public Queue(@NonNull final QueueManager manager,
+                 @NonNull final String queueName) {
 
         mName = queueName;
         mManager = manager;
@@ -141,7 +141,7 @@ public class Queue extends Thread {
                 synchronized (mManager) {
                     mManager.onQueueTerminating(this);
                 }
-            } catch (Exception ignore) {
+            } catch (RuntimeException ignore) {
             }
         }
     }
@@ -149,7 +149,7 @@ public class Queue extends Thread {
     /**
      * Run the task then save the results.
      */
-    private void runTask(final @NonNull Task task) {
+    private void runTask(@NonNull final Task task) {
         boolean result = false;
         boolean requeue = false;
         try {
@@ -159,7 +159,7 @@ public class Queue extends Thread {
             mManager.notifyTaskChange(task, TaskActions.running);
             result = mManager.runTask(task);
             requeue = !result;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             // Don't overwrite exception set by handler
             if (task.getException() == null) {
                 task.setException(e);
@@ -176,7 +176,7 @@ public class Queue extends Thread {
      * @param result  true on Save, false on cancel
      * @param requeue true if requeue needed
      */
-    private void handleTaskResult(final @NonNull Task task, final boolean result, final boolean requeue) {
+    private void handleTaskResult(@NonNull final Task task, final boolean result, final boolean requeue) {
         TaskActions message;
         synchronized (mManager) {
 

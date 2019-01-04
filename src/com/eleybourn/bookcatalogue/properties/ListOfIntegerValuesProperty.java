@@ -21,15 +21,19 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.os.Parcel;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.utils.Prefs;
+
+import java.util.Objects;
+
+import androidx.annotation.ArrayRes;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.annotation.StringRes;
-
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-
-import java.util.Objects;
 
 /**
  * Implements ListOfValuesProperty with an Integer(nullable) value with associated editing support.
@@ -43,24 +47,46 @@ public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
     /**
      * @param list list with options. Minimum 3 elements.
      */
-    public ListOfIntegerValuesProperty(final @StringRes int nameResourceId,
-                                       final @NonNull PropertyGroup group,
-                                       final @NonNull Integer defaultValue,
-                                       final @NonNull @Size(min = 3) ItemList<Integer> list) {
-        super(nameResourceId, group, defaultValue, list);
+    public ListOfIntegerValuesProperty(@StringRes final int nameResourceId,
+                                       @NonNull final PropertyGroup group,
+                                       @NonNull final Integer defaultValue,
+                                       @NonNull final @Size(min = 3) ItemList<Integer> list) {
+        super(nameResourceId, group, defaultValue);
+        setList(list);
+    }
+
+    /**
+     * @param labels list with options.
+     */
+    public ListOfIntegerValuesProperty(@StringRes final int nameResourceId,
+                                       @NonNull final PropertyGroup group,
+                                       @NonNull final Integer defaultValue,
+                                       final @ArrayRes int labels,
+                                       final @ArrayRes int values) {
+        super(nameResourceId, group, defaultValue);
+
+        ItemList<Integer> list = new ItemList<>();
+        String[] labelArray = BookCatalogueApp.getResourceStringArray(labels);
+        String[] valueArray = BookCatalogueApp.getResourceStringArray(values);
+
+        list.add(new ListEntry<Integer>(null, R.string.use_default_setting));
+        for (int i = 0; i < labelArray.length; i++) {
+            list.add(new ListEntry<>(Integer.parseInt(valueArray[i]), labelArray[i]));
+        }
+        setList(list);
     }
 
     @Override
     @NonNull
     protected Integer getGlobalValue() {
-        return BookCatalogueApp.getIntPreference(getPreferenceKey(), getDefaultValue());
+        return Prefs.getInt(getPreferenceKey(), getDefaultValue());
     }
 
     @Override
     @NonNull
-    protected ListOfIntegerValuesProperty setGlobalValue(final @Nullable Integer value) {
+    protected ListOfIntegerValuesProperty setGlobalValue(@Nullable final Integer value) {
         Objects.requireNonNull(value);
-        BookCatalogueApp.getSharedPreferences().edit().putInt(getPreferenceKey(), value).apply();
+        Prefs.getPrefs().edit().putInt(getPreferenceKey(), value).apply();
         return this;
     }
 
@@ -103,37 +129,28 @@ public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
     @NonNull
     @Override
     @CallSuper
-    public ListOfIntegerValuesProperty setPreferenceKey(final @NonNull String key) {
+    public ListOfIntegerValuesProperty setPreferenceKey(@NonNull final String key) {
         super.setPreferenceKey(key);
         return this;
     }
 
     /**
-     * Our value is Nullable. To Parcel it, we use Integer.MIN_VALUE for null.
-     * Note: Boolean uses -1, but we can't use that here, as an 'int' is far wider.
-     * Let's simply hope we never need Integer.MIN_VALUE as a real value.
-     *
-     * Note that {@link Parcel#writeValue(Object)} actually writes an Integer as 'int'
-     * So 'null' is NOT preserved.
-     *
-     * API_UPGRADE 23 use {@link Parcel#writeTypedObject}
+     * For chaining with correct return type
      */
-    public void writeToParcel(final @NonNull Parcel dest) {
-        Integer value = this.getValue();
-        if (value == null) {
-            dest.writeInt(Integer.MIN_VALUE);
-        } else {
-            dest.writeInt(value);
-        }
+    @NonNull
+    @Override
+    @CallSuper
+    public ListOfIntegerValuesProperty setPreferenceKey(@StringRes final int key) {
+        super.setPreferenceKey(key);
+        return this;
     }
 
-    /**
-     *
-     * API_UPGRADE 23  use {@link Parcel#readTypedObject}
-     */
-    public void readFromParcel(final @NonNull Parcel in) {
-        int parceledInt = in.readInt();
-        setValue(parceledInt == Integer.MIN_VALUE ? null : parceledInt);
+    public void writeToParcel(@NonNull final Parcel dest) {
+        dest.writeValue(this.getValue());
+    }
+
+    public void readFromParcel(@NonNull final Parcel in) {
+        setValue((Integer)in.readValue(getClass().getClassLoader()));
     }
 }
 

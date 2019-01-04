@@ -60,7 +60,7 @@ interface CropIImageList extends Parcelable, AutoCloseable {
     int getCount();
 
 	/**
-	 * @return <tt>true</tt>if the count of image objects is zero.
+	 * @return <tt>true</tt> if the count of image objects is zero.
 	 */
     boolean isEmpty();
 
@@ -82,7 +82,7 @@ interface CropIImageList extends Parcelable, AutoCloseable {
     CropIImage getImageForUri(Uri uri);
 
 	/**
-	 * @return <tt>true</tt>if the image was removed.
+	 * @return <tt>true</tt> if the image was removed.
 	 */
     boolean removeImage(CropIImage image);
 

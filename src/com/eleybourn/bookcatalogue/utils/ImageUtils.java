@@ -29,7 +29,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class ImageUtils {
+public final class ImageUtils {
 
     private ImageUtils() {
     }
@@ -42,8 +42,8 @@ public class ImageUtils {
      * @return The bitmap, or null
      */
     @Nullable
-    public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
-                                                final @NonNull File file,
+    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
+                                                @NonNull final File file,
                                                 final int maxWidth,
                                                 final int maxHeight,
                                                 final boolean exact) {
@@ -66,8 +66,8 @@ public class ImageUtils {
      * @return The bitmap, or null
      */
     @Nullable
-    public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
-                                                final @NonNull String fileSpec,
+    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
+                                                @NonNull final String fileSpec,
                                                 final int maxWidth,
                                                 final int maxHeight,
                                                 final boolean exact) {
@@ -105,12 +105,12 @@ public class ImageUtils {
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
             Logger.info(ImageUtils.class, "fetchFileIntoImageView:\n" +
-                    " filename = " + fileSpec + "\n" +
-                    "  exact       = " + exact + "\n" +
-                    "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth + ", widthRatio   = " + widthRatio + "\n" +
-                    "  maxHeight   = " + maxHeight + ", opt.outHeight= " + opt.outHeight + ",  heightRatio = " + heightRatio + "\n" +
-                    "  ratio            = " + ratio + "\n" +
-                    "  idealSampleSize  = " + idealSampleSize + "\n" +
+                    " filename = " + fileSpec + '\n' +
+                    "  exact       = " + exact + '\n' +
+                    "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth + ", widthRatio   = " + widthRatio + '\n' +
+                    "  maxHeight   = " + maxHeight + ", opt.outHeight= " + opt.outHeight + ",  heightRatio = " + heightRatio + '\n' +
+                    "  ratio            = " + ratio + '\n' +
+                    "  idealSampleSize  = " + idealSampleSize + '\n' +
                     "  samplePow2       = " + samplePow2);
         }
 
@@ -181,8 +181,8 @@ public class ImageUtils {
      * @return Bitmap (if cached) or null (if done in background)
      */
     @Nullable
-    public static Bitmap fetchFileIntoImageView(final @Nullable ImageView destView,
-                                                final @NonNull String uuid,
+    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
+                                                @NonNull final String uuid,
                                                 final int maxWidth,
                                                 final int maxHeight,
                                                 final boolean exact,
@@ -226,7 +226,7 @@ public class ImageUtils {
      * @return Downloaded fileSpec, or null on failure
      */
     @Nullable
-    public static String saveThumbnailFromUrl(final @NonNull String urlText, final @NonNull String name) {
+    public static String saveThumbnailFromUrl(@NonNull final String urlText, @NonNull final String name) {
         boolean success = false;
         final File file = StorageUtils.getTempCoverFile(name);
         try (InputStream in = Utils.getInputStreamWithTerminator(new URL(urlText))) {
@@ -250,7 +250,7 @@ public class ImageUtils {
      * @return Downloaded byte[] or null upon failure
      */
     @Nullable
-    public static byte[] getBytesFromUrl(final @NonNull String urlText) {
+    public static byte[] getBytesFromUrl(@NonNull final String urlText) {
         InputStream in = null;
         ByteArrayOutputStream out = null;
         try {
@@ -295,7 +295,7 @@ public class ImageUtils {
      * @return bitmap
      */
     @Nullable
-    public static Bitmap getBitmapFromBytes(final @NonNull byte[] bytes) {
+    public static Bitmap getBitmapFromBytes(@NonNull final byte[] bytes) {
         if (bytes.length == 0) {
             return null;
         }
@@ -303,7 +303,7 @@ public class ImageUtils {
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, new BitmapFactory.Options());
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(ImageUtils.class, "Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + "x" + bitmap.getWidth());
+            Logger.info(ImageUtils.class, "Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
         }
         return bitmap;
     }
@@ -314,7 +314,7 @@ public class ImageUtils {
      * If there are images, pick the largest one, rename it, and delete the others.
      * Finally, remove the key and set UniqueId.BKEY_HAVE_THUMBNAIL to true
      */
-    public static void cleanupThumbnails(final @Nullable Bundle /* in/out */ bookData) {
+    public static void cleanupThumbnails(@Nullable final Bundle /* in/out */ bookData) {
         if (bookData == null) {
             return;
         }
@@ -370,7 +370,7 @@ public class ImageUtils {
     /**
      * Show large thumbnail in dialog. Closed by click on image area.
      */
-    public static void showZoomedThumb(final @NonNull Activity activity, final @Nullable File thumbFile) {
+    public static void showZoomedThumb(@NonNull final Activity activity, @Nullable final File thumbFile) {
 
         final ThumbSize thumbSizes = getThumbSizes(activity);
 
@@ -409,12 +409,12 @@ public class ImageUtils {
     }
 
     @NonNull
-    public static ThumbSize getThumbSizes(final @NonNull Activity activity) {
+    public static ThumbSize getThumbSizes(@NonNull final Activity activity) {
         return new ThumbSize(activity);
     }
 
     @NonNull
-    public static DisplayMetrics getDisplayMetrics(final @NonNull Activity activity) {
+    public static DisplayMetrics getDisplayMetrics(@NonNull final Activity activity) {
         final DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         return metrics;
@@ -437,7 +437,7 @@ public class ImageUtils {
         public final int standard;
         public final int large;
 
-        public ThumbSize(final @NonNull Activity activity) {
+        public ThumbSize(@NonNull final Activity activity) {
             DisplayMetrics metrics = getDisplayMetrics(activity);
             int maxMetric = Math.max(metrics.widthPixels, metrics.heightPixels);
             small = Math.min(MAX_SIZE_SMALL, maxMetric / 3);
@@ -461,7 +461,7 @@ public class ImageUtils {
 //     * @return The scaled bitmap for the file, or null if no file or bad file.
 //     */
 //    @Nullable
-//    public static Bitmap fetchThumbnailIntoImageView(final @Nullable ImageView destView, final @NonNull String uuid,
+//    public static Bitmap fetchThumbnailIntoImageView(@Nullable final ImageView destView, @NonNull final String uuid,
 //                                                     final int maxWidth, final int maxHeight, final boolean exact) {
 //        try {
 //            return fetchFileIntoImageView(destView, StorageUtils.getCoverFile(uuid), maxWidth, maxHeight, exact);

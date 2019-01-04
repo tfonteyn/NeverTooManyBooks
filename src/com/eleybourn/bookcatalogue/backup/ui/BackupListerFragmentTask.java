@@ -1,8 +1,6 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
@@ -14,6 +12,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Object to provide a FileListerFragmentTask specific to archive files.
@@ -27,20 +28,18 @@ public class BackupListerFragmentTask extends FileListerFragmentTask {
      */
     private final FileFilter mFilter = new FileFilter() {
         @Override
-        public boolean accept(File f) {
-            return (f.isDirectory() && f.canWrite()) || (f.isFile() && BackupFileDetails.isArchive(f));
+        public boolean accept(@NonNull final File pathname) {
+            return (pathname.isDirectory() && pathname.canWrite())
+                    || (pathname.isFile() && BackupFileDetails.isArchive(pathname));
         }
     };
 
-    /**
-     * Constructor
-     */
-    BackupListerFragmentTask(final @NonNull File root) {
+    BackupListerFragmentTask(@NonNull final File root) {
         super(root);
     }
 
     /**
-     * Get the file filter we constructed
+     * Get the file filter we constructed.
      */
     @NonNull
     protected FileFilter getFilter() {
@@ -48,10 +47,11 @@ public class BackupListerFragmentTask extends FileListerFragmentTask {
     }
 
     /**
-     * Process an array of Files into an ArrayList of BackupFileDetails
+     * Process an array of Files into an ArrayList of BackupFileDetails.
      */
     @NonNull
-    protected ArrayList<FileDetails> processList(final @NonNull Context context, final @Nullable File[] files) {
+    protected ArrayList<FileDetails> processList(@NonNull final Context context,
+                                                 @Nullable final File[] files) {
         ArrayList<FileDetails> dirs = new ArrayList<>();
         if (files == null) {
             return dirs;
@@ -60,18 +60,12 @@ public class BackupListerFragmentTask extends FileListerFragmentTask {
             BackupFileDetails fd = new BackupFileDetails(file);
             dirs.add(fd);
             if (BackupFileDetails.isArchive(file)) {
-                BackupReader reader = null;
-                try {
-                    reader = BackupManager.readFrom(file);
-                    fd.setInfo(reader.getInfo());
+                try (BackupReader reader = BackupManager.readFrom(file)) {
+                    if (reader != null) {
+                        fd.setInfo(reader.getInfo());
+                    }
                 } catch (IOException e) {
                     Logger.error(e);
-                } finally {
-                    if (reader != null)
-                        try {
-                            reader.close();
-                        } catch (IOException ignore) {
-                        }
                 }
             }
         }

@@ -20,9 +20,6 @@
 
 package com.eleybourn.bookcatalogue.utils.xml;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.xml.sax.Attributes;
 
 import java.util.ArrayList;
@@ -31,6 +28,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * A class to help parsing Sax Xml output. For goodreads XML output, 90% of the XML can be
@@ -42,13 +42,17 @@ import java.util.Map;
  * @author Philip Warner
  */
 public class XmlFilter {
+
     /** The tag for this specific filter */
     @NonNull
     private final String mTagName;
+
     /** A HashMap to ensure that there are no more than one sub-filter per tag at a given level */
     private final Map<String, XmlFilter> mSubFilterHash = new HashMap<>();
+
     /** List of sub-filters for this filter */
     private final ArrayList<XmlFilter> mSubFilters = new ArrayList<>();
+
     /** Action to perform, if any, when the associated tag is started */
     @Nullable
     private XmlHandler mStartAction = null;
@@ -66,7 +70,7 @@ public class XmlFilter {
      *
      * @param pattern The tag that this filter handles
      */
-    public XmlFilter(final @NonNull String pattern) {
+    public XmlFilter(@NonNull final String pattern) {
         mTagName = pattern;
     }
 
@@ -79,9 +83,10 @@ public class XmlFilter {
      * @return The filter matching the final tag name passed.
      */
     @NonNull
-    public static XmlFilter buildFilter(final @NonNull XmlFilter root, final @NonNull String... filters) {
+    public static XmlFilter buildFilter(@NonNull final XmlFilter root,
+                                        @NonNull final String... filters) {
         if (filters.length <= 0) {
-           throw new IllegalArgumentException("no filters");
+            throw new IllegalArgumentException("no filters");
         }
         return buildFilter(root, 0, Arrays.asList(filters).iterator());
     }
@@ -95,7 +100,8 @@ public class XmlFilter {
      * @return The filter matching the final tag name passed.
      */
     @NonNull
-    static XmlFilter buildFilter(final @NonNull XmlFilter root, final @NonNull List<String> filters) {
+    static XmlFilter buildFilter(@NonNull final XmlFilter root,
+                                 @NonNull final List<String> filters) {
         if (filters.size() <= 0) {
             throw new IllegalArgumentException("no filters");
         }
@@ -103,7 +109,8 @@ public class XmlFilter {
     }
 
     /**
-     * Internal implementation of method to add a filter to a passed tree and return the matching XmlFilter.
+     * Internal implementation of method to add a filter to a passed tree and return
+     * the matching XmlFilter.
      * This is called recursively to process the filter list.
      *
      * @param root     Root XmlFilter object.
@@ -113,9 +120,12 @@ public class XmlFilter {
      * @return The filter matching the final tag name passed.
      */
     @NonNull
-    private static XmlFilter buildFilter(final @NonNull XmlFilter root, final int depth, final @NonNull Iterator<String> iterator) {
+    private static XmlFilter buildFilter(@NonNull final XmlFilter root,
+                                         final int depth,
+                                         @NonNull final Iterator<String> iterator) {
         //if (!root.matches(filters[depth]))
         //	throw new RuntimeException("Filter at depth=" + depth + " does not match first filter parameter");
+
         final String curr = iterator.next();
         XmlFilter sub = root.getSubFilter(curr);
         if (sub == null) {
@@ -138,7 +148,7 @@ public class XmlFilter {
      *
      * @return Boolean indicating it matches.
      */
-    private boolean matches(final @Nullable String tag) {
+    private boolean matches(@Nullable final String tag) {
         return mTagName.equalsIgnoreCase(tag);
     }
 
@@ -147,7 +157,7 @@ public class XmlFilter {
      * Currently just used local_name from the context.
      */
     @Nullable
-    XmlFilter getSubFilter(final @NonNull ElementContext context) {
+    XmlFilter getSubFilter(@NonNull final ElementContext context) {
         return getSubFilter(context.localName);
     }
 
@@ -159,7 +169,7 @@ public class XmlFilter {
      * @return Matching filter, or NULL
      */
     @Nullable
-    private XmlFilter getSubFilter(final @Nullable String name) {
+    private XmlFilter getSubFilter(@Nullable final String name) {
         for (XmlFilter f : mSubFilters) {
             if (f.matches(name)) {
                 return f;
@@ -171,7 +181,7 @@ public class XmlFilter {
     /**
      * Called when associated tag is started.
      */
-    void processStart(final @NonNull ElementContext context) {
+    void processStart(@NonNull final ElementContext context) {
         if (mStartAction != null) {
             context.userArg = mStartArg;
             mStartAction.process(context);
@@ -181,7 +191,7 @@ public class XmlFilter {
     /**
      * Called when associated tag is finished.
      */
-    void processEnd(final @NonNull ElementContext context) {
+    void processEnd(@NonNull final ElementContext context) {
         if (mEndAction != null) {
             context.userArg = mEndArg;
             mEndAction.process(context);
@@ -197,29 +207,6 @@ public class XmlFilter {
     }
 
     /**
-     * Set the action to perform when the tag associated with this filter is finished.
-     *
-     * @param endAction XmlHandler to call
-     *
-     * @return This XmlFilter, to allow chaining
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public XmlFilter setEndAction(final @NonNull XmlHandler endAction) {
-        return setEndAction(endAction, null);
-    }
-
-    @NonNull
-    public XmlFilter setEndAction(final @NonNull XmlHandler endAction, final @Nullable Object userArg) {
-        if (mEndAction != null) {
-            throw new IllegalStateException("End Action already set");
-        }
-        mEndAction = endAction;
-        mEndArg = userArg;
-        return this;
-    }
-
-    /**
      * Set the action to perform when the tag associated with this filter is started.
      *
      * @param startAction XmlHandler to call
@@ -227,12 +214,13 @@ public class XmlFilter {
      * @return This XmlFilter, to allow chaining
      */
     @NonNull
-    public XmlFilter setStartAction(final @NonNull XmlHandler startAction) {
+    public XmlFilter setStartAction(@NonNull final XmlHandler startAction) {
         return setStartAction(startAction, null);
     }
 
     @NonNull
-    public XmlFilter setStartAction(final @NonNull XmlHandler startAction, final @Nullable Object userArg) {
+    public XmlFilter setStartAction(@NonNull final XmlHandler startAction,
+                                    @Nullable final Object userArg) {
         if (mStartAction != null) {
             throw new IllegalStateException("Start Action already set");
         }
@@ -242,11 +230,36 @@ public class XmlFilter {
     }
 
     /**
+     * Set the action to perform when the tag associated with this filter is finished.
+     *
+     * @param endAction XmlHandler to call
+     *
+     * @return This XmlFilter, to allow chaining
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public XmlFilter setEndAction(@NonNull final XmlHandler endAction) {
+        return setEndAction(endAction, null);
+    }
+
+    @NonNull
+    public XmlFilter setEndAction(@NonNull final XmlHandler endAction,
+                                  @Nullable final Object userArg) {
+        if (mEndAction != null) {
+            throw new IllegalStateException("End Action already set");
+        }
+        mEndAction = endAction;
+        mEndArg = userArg;
+        return this;
+    }
+
+
+    /**
      * Add a filter at this level; ensure it is unique.
      *
      * @param filter filter to add
      */
-    private void addFilter(final @NonNull XmlFilter filter) {
+    private void addFilter(@NonNull final XmlFilter filter) {
         String lcPat = filter.getTagName().toLowerCase();
         if (mSubFilterHash.containsKey(lcPat)) {
             throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
@@ -257,48 +270,85 @@ public class XmlFilter {
 
     /** Interface definition for filter handlers */
     public interface XmlHandler {
-        void process(final @NonNull ElementContext context);
+
+        void process(@NonNull final ElementContext context);
     }
 
-//    /** Interface definition for filter handlers */
-//    public interface XmlHandlerExt<T> {
-//        void process(final @NonNull ElementContext context, final @NonNull T arg);
-//    }
-
     /**
-     * Class used to define the context of a specific tag. The 'body' element will only be
-     * filled in the call to the 'processEnd' method.
+     * Class used to define the context of a specific tag.
+     *
+     * The 'body' element will only be set when the tag end is handled.
      *
      * @author Philip Warner
      */
     public static class ElementContext {
-        public final String uri;
+
+        /** the short name of the tag */
         public final String localName;
-        public final String name;
+        /** Attributes on this tag */
         public final Attributes attributes;
-        public final String preText;
+        /** not used for now */
+        private final String uri;
+        /** not used for now */
+        private final String qName;
+        /** the inner-tag text */
+        private final String text;
+        /** */
         public String body;
+
+        /** filter on this tag */
         public XmlFilter filter;
+
+        /**
+         * the user argument fed into the {@link XmlFilter#setStartAction(XmlHandler, Object)}
+         * and {@link XmlFilter#setEndAction(XmlHandler, Object)}
+         */
         public Object userArg;
 
-        public ElementContext() {
+        /**
+         * @param filter to use for this tag
+         */
+        public ElementContext(@NonNull final XmlFilter filter) {
+            this.filter = filter;
+
             this.uri = null;
             this.localName = null;
-            this.name = null;
+            this.qName = null;
             this.attributes = null;
-            this.preText = null;
+            this.text = null;
         }
 
-        public ElementContext(final @NonNull String uri,
-                              final @NonNull String localName,
-                              final @NonNull String name,
-                              final @NonNull Attributes attributes,
-                              final @NonNull String preText) {
+        /**
+         * Same arguments coming from the SAX Handler + the current inter-tag text
+         *
+         * @param uri        The Namespace URI, or the empty string if the
+         *                   element has no Namespace URI or if Namespace
+         *                   processing is not being performed.
+         * @param localName  The local name (without prefix), or the
+         *                   empty string if Namespace processing is not being
+         *                   performed.
+         * @param qName      The qualified name (with prefix), or the
+         *                   empty string if qualified names are not available.
+         * @param attributes The attributes attached to the element.  If
+         *                   there are no attributes, it shall be an empty
+         *                   Attributes object.
+         * @param text       current inter-tag text
+         */
+        public ElementContext(@NonNull final String uri,
+                              @NonNull final String localName,
+                              @NonNull final String qName,
+                              @NonNull final Attributes attributes,
+                              @NonNull final String text) {
             this.uri = uri;
             this.localName = localName;
-            this.name = name;
+            this.qName = qName;
             this.attributes = attributes;
-            this.preText = preText;
+
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
         }
     }
 

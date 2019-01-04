@@ -113,7 +113,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         SimpleTaskQueue.OnTaskFinishListener mTaskFinishListener = new SimpleTaskQueue.OnTaskFinishListener() {
 
             @Override
-            public void onTaskFinish(final @NonNull SimpleTaskQueue.SimpleTask task, final @Nullable Exception e) {
+            public void onTaskFinish(@NonNull final SimpleTaskQueue.SimpleTask task, @Nullable final Exception e) {
                 /* Dismiss dialog if all tasks finished */
                 if (!mQueue.hasActiveTasks()) {
                     queueAllTasksFinished();
@@ -133,9 +133,9 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
      * @param taskId          Unique ID for this task. Can be used like menu or activity IDs
      */
     @NonNull
-    public static SimpleTaskQueueProgressDialogFragment newInstance(final @NonNull FragmentActivity context,
-                                                                    final @StringRes int messageId,
-                                                                    final @NonNull FragmentTask task,
+    public static SimpleTaskQueueProgressDialogFragment newInstance(@NonNull final FragmentActivity context,
+                                                                    @StringRes final int messageId,
+                                                                    @NonNull final FragmentTask task,
                                                                     final boolean isIndeterminate,
                                                                     final int taskId) {
         SimpleTaskQueueProgressDialogFragment frag = new SimpleTaskQueueProgressDialogFragment();
@@ -152,7 +152,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     /**
      * Queue a TaskMessage and then try to process the queue.
      */
-    private void queueMessage(final @NonNull TaskMessage m) {
+    private void queueMessage(@NonNull final TaskMessage m) {
 
         synchronized (mTaskMessages) {
             mTaskMessages.add(m);
@@ -163,7 +163,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     /**
      * Queue a TaskFinished message
      */
-    private void queueTaskFinished(final @NonNull FragmentTask t, final @Nullable Exception e) {
+    private void queueTaskFinished(@NonNull final FragmentTask t, @Nullable final Exception e) {
         queueMessage(new TaskFinishedMessage(t, e));
     }
 
@@ -191,7 +191,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
                 for (TaskMessage message : toDeliver) {
                     try {
                         message.deliver(activity);
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                         Logger.error(e);
                     }
                 }
@@ -203,7 +203,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     /**
      * Utility routine to display a message or queue it as appropriate.
      */
-    public void showUserMessage(final @NonNull String message) {
+    public void showUserMessage(@NonNull final String message) {
         // Can only display in main thread.
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             synchronized (this) {
@@ -233,14 +233,14 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     /**
      * Post a runnable to the UI thread
      */
-    public void post(final @NonNull Runnable runnable) {
+    public void post(@NonNull final Runnable runnable) {
         mHandler.post(runnable);
     }
 
     /**
      * Enqueue a task for this fragment
      */
-    private void enqueue(final @NonNull FragmentTask task) {
+    private void enqueue(@NonNull final FragmentTask task) {
         mQueue.enqueue(new FragmentTaskWrapper(task));
     }
 
@@ -249,7 +249,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
      */
     @Override
     @CallSuper
-    public void onAttach(final @NonNull Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
 
         synchronized (this) {
@@ -266,7 +266,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -282,7 +282,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
 
     @Override
     @CallSuper
-    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
@@ -304,7 +304,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // savedInstanceState not used
         Bundle args = getArguments();
         Objects.requireNonNull(args);
@@ -337,7 +337,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
 
     @Override
     @CallSuper
-    public void onCancel(final @NonNull DialogInterface dialog) {
+    public void onCancel(@NonNull final DialogInterface dialog) {
         super.onCancel(dialog);
         mWasCancelled = true;
         mQueue.terminate();
@@ -368,7 +368,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
      */
     private void requestUpdateProgress() {
         if (DEBUG_SWITCHES.SQPFragment && BuildConfig.DEBUG) {
-            Logger.info(this, mMessage + " (" + mProgress + "/" + mMax + ")");
+            Logger.info(this, mMessage + " (" + mProgress + '/' + mMax + ')');
         }
         if (Thread.currentThread() == mHandler.getLooper().getThread()) {
             updateProgress();
@@ -383,9 +383,9 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     }
 
     /**
-     * Convenience method to step the progress by the passed delta
+     * Convenience method to onProgress the progress by the passed delta
      */
-    public void step(final @Nullable String message, final int delta) {
+    public void onProgressStep(@Nullable final String message, final int delta) {
         synchronized (this) {
             if (message != null) {
                 mMessage = message;
@@ -400,7 +400,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     /**
      * Direct update of message and progress value
      */
-    public void onProgress(final @Nullable String message, final int progress) {
+    public void onProgress(@Nullable final String message, final int progress) {
 
         synchronized (this) {
             if (message != null) {
@@ -456,7 +456,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
     /**
      * Set the progress number format
      */
-    public void setNumberFormat(final @Nullable String format) {
+    public void setNumberFormat(@Nullable final String format) {
         synchronized (this) {
             mNumberFormat = format;
             mNumberFormatChanged = true;
@@ -485,18 +485,18 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
      * when the underlying Activity is actually present.
      */
     private interface TaskMessage {
-        void deliver(final @NonNull Activity activity);
+        void deliver(@NonNull final Activity activity);
     }
 
     /**
      * Listener for OnTaskFinished messages
      */
     public interface OnTaskFinishedListener {
-        void onTaskFinished(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+        void onTaskFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                             final int taskId,
                             final boolean success,
                             final boolean cancelled,
-                            final @NonNull FragmentTask task);
+                            @NonNull final FragmentTask task);
     }
 
     /**
@@ -504,7 +504,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
      */
     public interface OnAllTasksFinishedListener {
         @SuppressWarnings("EmptyMethod")
-        void onAllTasksFinished(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+        void onAllTasksFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                                 final int taskId,
                                 final boolean success,
                                 final boolean cancelled);
@@ -522,17 +522,17 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         /**
          * Run the task in it's own thread
          */
-        void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
-                 final @NonNull SimpleTaskContext taskContext) throws Exception;
+        void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                 @NonNull final SimpleTaskContext taskContext) throws Exception;
 
         /**
          * Called in UI thread after task complete
          */
-        void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
-                      final @Nullable Exception exception);
+        void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                      @Nullable final Exception e);
 
         /** set an optional generic tag */
-        void setTag(final @Nullable Object tag);
+        void setTag(@Nullable final Object tag);
         /** get an optional generic tag */
         @Nullable
         Object getTag();
@@ -547,8 +547,8 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         private Object mTag = 0;
 
         @Override
-        public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
-                             final @Nullable Exception e) {
+        public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                             @Nullable final Exception e) {
             if (e != null) {
                 Logger.error(e);
                 StandardDialogs.showUserMessage(fragment.requireActivity(),
@@ -574,16 +574,16 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         @Nullable
         final Exception mException;
 
-        TaskFinishedMessage(final @NonNull FragmentTask task, final @Nullable Exception e) {
+        TaskFinishedMessage(@NonNull final FragmentTask task, @Nullable final Exception e) {
             mTask = task;
             mException = e;
         }
 
         @Override
-        public void deliver(final @NonNull Activity activity) {
+        public void deliver(@NonNull final Activity activity) {
             try {
                 mTask.onFinish(SimpleTaskQueueProgressDialogFragment.this, mException);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 Logger.error(e);
             }
             try {
@@ -592,7 +592,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
                             SimpleTaskQueueProgressDialogFragment.this,
                             mTaskId, mSuccess, mWasCancelled, mTask);
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 Logger.error(e);
             }
 
@@ -609,7 +609,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         }
 
         @Override
-        public void deliver(final @NonNull Activity activity) {
+        public void deliver(@NonNull final Activity activity) {
             if (activity instanceof OnAllTasksFinishedListener) {
                 ((OnAllTasksFinishedListener) activity).onAllTasksFinished(SimpleTaskQueueProgressDialogFragment.this, mTaskId, mSuccess, mWasCancelled);
             }
@@ -627,12 +627,12 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         @NonNull
         private final FragmentTask mInnerTask;
 
-        FragmentTaskWrapper(final @NonNull FragmentTask task) {
+        FragmentTaskWrapper(@NonNull final FragmentTask task) {
             mInnerTask = task;
         }
 
         @Override
-        public void run(final @NonNull SimpleTaskContext taskContext) throws Exception {
+        public void run(@NonNull final SimpleTaskContext taskContext) throws Exception {
             try {
                 mInnerTask.run(SimpleTaskQueueProgressDialogFragment.this, taskContext);
             } catch (Exception e) {
@@ -642,7 +642,7 @@ public class SimpleTaskQueueProgressDialogFragment extends DialogFragment {
         }
 
         @Override
-        public void onFinish(final @Nullable Exception e) {
+        public void onFinish(@Nullable final Exception e) {
             //  Queue a TaskFinished message to whoever created us.
             SimpleTaskQueueProgressDialogFragment.this.queueTaskFinished(mInnerTask, e);
         }

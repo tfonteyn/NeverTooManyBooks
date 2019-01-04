@@ -82,7 +82,7 @@ public class EventQueueListActivity extends BindableItemListActivity {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         mDb = new CatalogueDBAdapter(this);
 
@@ -92,12 +92,12 @@ public class EventQueueListActivity extends BindableItemListActivity {
         }
         // Once the basic criteria have been setup, call the parent
         super.onCreate(savedInstanceState);
-        setTitle(R.string.title_task_errors);
+        setTitle(R.string.gr_tq_title_task_errors);
 
         QueueManager.getQueueManager().registerEventListener(mOnEventChangeListener);
 
         Button cleanupBtn = findViewById(R.id.cleanup);
-        cleanupBtn.setText(R.string.btn_cleanup_old_events);
+        cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_events);
         cleanupBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,8 +127,8 @@ public class EventQueueListActivity extends BindableItemListActivity {
      * Build a context menu dialogue when an item is clicked.
      */
     @Override
-    public void onListItemClick(final @NonNull AdapterView<?> parent,
-                                final @NonNull View v,
+    public void onListItemClick(@NonNull final AdapterView<?> parent,
+                                @NonNull final View v,
                                 final int position, final long id) {
         // get the event object
         final Event event = ViewTagger.getTag(v, R.id.TAG_EVENT);
@@ -148,8 +148,8 @@ public class EventQueueListActivity extends BindableItemListActivity {
         }
     }
 
-    private void doContextMenu(final @NonNull AdapterView<?> parent,
-                               final @NonNull View v,
+    private void doContextMenu(@NonNull final AdapterView<?> parent,
+                               @NonNull final View v,
                                final int position, final long id) {
         final Event event = ViewTagger.getTagOrThrow(v, R.id.TAG_EVENT);
         final List<ContextDialogItem> items = new ArrayList<>();
@@ -170,12 +170,12 @@ public class EventQueueListActivity extends BindableItemListActivity {
             if (mCursor != null) {
                 mCursor.close();
             }
-        } catch (Exception ignore) {
+        } catch (RuntimeException ignore) {
         }
 
         try {
             QueueManager.getQueueManager().unregisterEventListener(mOnEventChangeListener);
-        } catch (Exception ignore) {
+        } catch (RuntimeException ignore) {
         }
 
         if (mDb != null) {
@@ -197,12 +197,12 @@ public class EventQueueListActivity extends BindableItemListActivity {
      * Let the Event bind itself.
      */
     @Override
-    public void bindViewToItem(final @NonNull Context context,
-                               final @NonNull View view,
-                               final @NonNull BindableItemCursor cursor,
-                               final @NonNull BindableItemCursorAdapter.BindableItem item) {
-        ViewTagger.setTag(view, R.id.TAG_EVENT, item);
-        item.bindView(view, context, cursor, mDb);
+    public void bindViewToItem(@NonNull final Context context,
+                               @NonNull final View convertView,
+                               @NonNull final BindableItemCursor cursor,
+                               @NonNull final BindableItemCursorAdapter.BindableItem item) {
+        ViewTagger.setTag(convertView, R.id.TAG_EVENT, item);
+        item.bindView(convertView, context, cursor, mDb);
     }
 
     /**
@@ -210,7 +210,7 @@ public class EventQueueListActivity extends BindableItemListActivity {
      */
     @NonNull
     @Override
-    protected BindableItemCursor getBindableItemCursor(final @Nullable Bundle savedInstanceState) {
+    protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
         if (mTaskId == 0) {
             mCursor = QueueManager.getQueueManager().getAllEvents();
         } else {

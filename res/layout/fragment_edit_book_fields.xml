@@ -361,7 +361,7 @@
                 android:id="@+id/btn_description"
                 style="@style/itemEditButton"
                 android:layout_alignBottom="@id/lbl_description"
-                app:srcCompat="@drawable/ic_mode_edit"
+                app:srcCompat="@drawable/ic_edit"
                 tools:ignore="ContentDescription" />
         </RelativeLayout>
 

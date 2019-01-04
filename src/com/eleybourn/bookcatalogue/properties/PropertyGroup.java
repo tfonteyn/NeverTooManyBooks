@@ -20,31 +20,19 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.R;
 
 /**
  * Defines a set of groups of properties for use in the UI
  */
 public class PropertyGroup implements Comparable<PropertyGroup> {
 
-    public static final PropertyGroup GRP_GENERAL = new PropertyGroup(R.string.general, 1);
-    public static final PropertyGroup GRP_ADVANCED_OPTIONS = new PropertyGroup(R.string.lbl_advanced_options, 80);
-
-    public static final PropertyGroup GRP_USER_INTERFACE = new PropertyGroup(R.string.user_interface, 35);
-    public static final PropertyGroup GRP_SCANNER = new PropertyGroup(R.string.scanning, 70);
-
-    public static final PropertyGroup GRP_THUMBNAILS = new PropertyGroup(R.string.thumbnails, 40);
-
-    public static final PropertyGroup GRP_AUTHOR = new PropertyGroup(R.string.lbl_author, 50);
-    public static final PropertyGroup GRP_SERIES = new PropertyGroup(R.string.lbl_series, 50);
-
-    public static final PropertyGroup GRP_FILTERS = new PropertyGroup(R.string.booklist_filters, 70);
-    public static final PropertyGroup GRP_EXTRA_BOOK_DETAILS = new PropertyGroup(R.string.blp_extra_book_details, 100);
+    public static final PropertyGroup GRP_GENERAL = new PropertyGroup(R.string.pg_general, 1);
 
     /** String resource ID for group name */
     @StringRes
@@ -59,17 +47,17 @@ public class PropertyGroup implements Comparable<PropertyGroup> {
     /**
      * Constructor
      */
-    public PropertyGroup(final @StringRes int nameResourceId, final int weight) {
+    public PropertyGroup(@StringRes final int nameResourceId, final int weight) {
         this.mNameResourceId = nameResourceId;
         this.mWeight = weight;
     }
 
     @StringRes
-    int getNameId() {
+    public int getNameResourceId() {
         return mNameResourceId;
     }
 
-    /** Realize and return the group name */
+    /** Realize and return the group name. */
     @NonNull
     private String getName() {
         if (mName == null) {
@@ -78,18 +66,18 @@ public class PropertyGroup implements Comparable<PropertyGroup> {
         return mName;
     }
 
-    /** Compare two groups for sorting purposes */
+    /** Compare two groups for sorting purposes. */
     @Override
-    public int compareTo(@NonNull final PropertyGroup rhs) {
+    public int compareTo(@NonNull final PropertyGroup o) {
         // Compare weights
-        final int wCmp = mWeight.compareTo(rhs.mWeight);
+        final int wCmp = mWeight.compareTo(o.mWeight);
         if (wCmp != 0) {
             return wCmp;
         }
 
         // Weights match, compare names
-        if (mNameResourceId != rhs.mNameResourceId) {
-            return getName().compareTo(rhs.getName());
+        if (mNameResourceId != o.mNameResourceId) {
+            return getName().compareTo(o.getName());
         } else {
             return 0;
         }

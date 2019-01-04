@@ -19,8 +19,8 @@ import java.net.UnknownHostException;
  */
 public class SearchGoogleBooksTask extends ManagedSearchTask {
 
-    public SearchGoogleBooksTask(final @NonNull String name,
-                                 final @NonNull TaskManager manager) {
+    public SearchGoogleBooksTask(@NonNull final String name,
+                                 @NonNull final TaskManager manager) {
         super(name, manager);
     }
 
@@ -54,7 +54,7 @@ public class SearchGoogleBooksTask extends ManagedSearchTask {
         } catch (IOException e) {
             Logger.error(e);
             setFinalError(R_ID_SEARCHING, R.string.error_search_failed);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e);
             setFinalError(R_ID_SEARCHING, e);
         }

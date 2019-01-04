@@ -1,8 +1,6 @@
 package com.eleybourn.bookcatalogue.searches.librarything;
 
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -14,6 +12,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 /**
  * Parser Handler to collect the book data.
@@ -294,18 +295,19 @@ import java.util.ArrayList;
  *
  * A less well-known work produces rather less data:
  *
- * <?xml version="1.0" encoding="UTF-8"?>
- * <response stat="ok">
- * <ltml xmlns="http://www.librarything.com/" version="1.1">
- * <item id="255375" type="work">
- * <author id="359458" authorcode="fallonmary">Mary Fallon</author>
- * <url>http://www.librarything.com/work/255375</url>
- * <commonknowledge/>
- * </item>
- * <legal>By using this data you agree to the LibraryThing API terms of service.</legal>
- * </ltml>
- * </response>
- *
+ * <pre>
+ *   <?xml version="1.0" encoding="UTF-8"?>
+ *   <response stat="ok">
+ *     <ltml xmlns="http://www.librarything.com/" version="1.1">
+ *       <item id="255375" type="work">
+ *         <author id="359458" authorcode="fallonmary">Mary Fallon</author>
+ *         <url>http://www.librarything.com/work/255375</url>
+ *         <commonknowledge/>
+ *       </item>
+ *       <legal>By using this data you agree to the LibraryThing API terms of service.</legal>
+ *     </ltml>
+ *   </response>
+ * </pre>
  * but in both cases, it should be noted that the covers are still available.
  *
  * @author Philip Warner
@@ -382,7 +384,7 @@ class SearchLibraryThingHandler extends DefaultHandler {
      *
      * @param bookData Bundle to save results in
      */
-    SearchLibraryThingHandler(final @NonNull Bundle /* out */bookData) {
+    SearchLibraryThingHandler(@NonNull final Bundle /* out */bookData) {
         mBookData = bookData;
     }
 
@@ -390,7 +392,8 @@ class SearchLibraryThingHandler extends DefaultHandler {
     @CallSuper
     public void characters(final char[] ch,
                            final int start,
-                           final int length) throws SAXException {
+                           final int length)
+            throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
     }
@@ -405,10 +408,11 @@ class SearchLibraryThingHandler extends DefaultHandler {
     @Override
     @CallSuper
     public void startElement(final String uri,
-                             final @NonNull String localName,
-                             final String name,
-                             final @NonNull Attributes attributes) throws SAXException {
-        super.startElement(uri, localName, name, attributes);
+                             @NonNull final String localName,
+                             final String qName,
+                             @NonNull final Attributes attributes)
+            throws SAXException {
+        super.startElement(uri, localName, qName, attributes);
 
         // reset the string. See note in endElement() for a discussion.
         mBuilder.setLength(0);
@@ -456,9 +460,10 @@ class SearchLibraryThingHandler extends DefaultHandler {
     @Override
     @CallSuper
     public void endElement(final String uri,
-                           final @NonNull String localName,
-                           final String name) throws SAXException {
-        super.endElement(uri, localName, name);
+                           @NonNull final String localName,
+                           final String qName)
+            throws SAXException {
+        super.endElement(uri, localName, qName);
 
         if (localName.equalsIgnoreCase(XML_FIELD)) {
             // end of Field reached, reset the current field
@@ -504,7 +509,8 @@ class SearchLibraryThingHandler extends DefaultHandler {
      * Store the accumulated data in the results
      */
     @Override
-    public void endDocument() throws SAXException {
+    public void endDocument()
+            throws SAXException {
         super.endDocument();
 
         mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);

@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ####################################################################################### -->
+    <!-- ========== Preferences / PropertyList ========== -->
+    <!-- ####################################################################################### -->
+
+    <!-- The defaults for MultiSelect fields, i.e. select nothing -->
+    <string-array name="empty_array" />
+
+    <!-- Preference Category -->
+    <string name="pg_general">General</string>
+    <!-- Preference Category -->
+    <string name="pg_ui">User Interface</string>
+    <!-- Preference Category -->
+    <string name="pg_thumbnails">Thumbnails</string>
+    <!-- Preference Category -->
+    <string name="pg_scanning">Scanning</string>
+
+    <!-- Preference Category -->
+    <string name="pg_booklist">Book Lists</string>
+    <!-- Preference Category; filters in booklist style -->
+    <string name="pg_filters">Filters</string>
+    <!-- Preference Category; groups (RowKinds) in booklist style -->
+    <string name="pg_groupings">Groupings</string>
+
+    <!-- ========== Global preferences ========== -->
+
+    <!-- Preference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
+    <string name="pt_bob_open_book_read_only">Open book in read-only mode</string>
+    <string name="pk_bob_open_book_read_only" translatable="false">BooksOnBookshelf.OpenBookReadOnly</string>
+
+    <!-- Preference - start the cropper with the cropper frame set to the whole image -->
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
+    <string name="pk_thumbnails_crop_frame_is_whole_image" translatable="false">Image.Cropper.FrameIsWholeImage</string>
+
+    <!-- Preference - use an external app. (Intent) to handle cropping-->
+    <string name="pt_thumbnails_external_cropper">Use external image cropper</string>
+    <string name="pk_thumbnails_external_cropper" translatable="false">Image.Cropper.UseExternalApp</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_valid">Beep if scanned ISBN is valid</string>
+    <string name="pk_scanning_beep_if_isbn_valid" translatable="false">SoundManager.BeepIfScannedIsbnValid</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
+    <string name="pk_scanning_beep_if_isbn_invalid" translatable="false">SoundManager.BeepIfScannedIsbnInvalid</string>
+
+    <!-- Preference -->
+    <string name="pt_ui_messages_use">Messages use</string>
+    <string name="pk_ui_messages_use" translatable="false">App.UserMessage</string>
+    <string-array name="pe_ui_messages_use">
+        <item translatable="false">Toast</item>
+        <item translatable="false">Snackbar</item>
+    </string-array>
+    <string-array name="pv_ui_messages_use">
+        <item translatable="false">0</item>
+        <item translatable="false">1</item>
+    </string-array>
+
+    <!-- Preference -->
+    <string name="pt_ui_theme">Interface Theme</string>
+    <string name="pk_ui_theme" translatable="false">App.Theme</string>
+    <string-array name="pe_ui_theme">
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
+    <string-array name="pv_ui_theme">
+        <item translatable="false">0</item>
+        <item translatable="false">1</item>
+    </string-array>
+
+    <!-- Preference - Preferred interface Locale -->
+    <string name="pt_ui_language">Preferred UI Language</string>
+    <string name="pk_ui_language" translatable="false">App.Locale</string>
+    <string-array name="pe_ui_language">
+        <item translatable="false">English</item>
+        <item translatable="false">Deutsch</item>
+        <item translatable="false">Français</item>
+        <item translatable="false">Nederlands</item>
+        <item translatable="false">Español</item>
+        <item translatable="false">Italiano</item>
+        <item translatable="false">ελληνικά</item>
+        <item translatable="false">русский</item>
+        <item translatable="false">Türk</item>
+    </string-array>
+    <string-array name="pv_ui_language">
+        <item translatable="false">en</item>
+        <item translatable="false">de</item>
+        <item translatable="false">fr</item>
+        <item translatable="false">nl</item>
+        <item translatable="false">es</item>
+        <item translatable="false">it</item>
+        <item translatable="false">el</item>
+        <item translatable="false">ru</item>
+        <item translatable="false">tr</item>
+    </string-array>
+
+    <!-- Preference - Degrees by which to rotate camera images automatically -->
+    <string name="pt_thumbnails_rotate_auto">Automatically rotate images captured by camera</string>
+    <string name="pk_thumbnails_rotate_auto" translatable="false">Image.Camera.Autorotate</string>
+    <string-array name="pe_thumbnails_rotate_auto">
+        <item>No</item>
+        <item>Clockwise</item>
+        <item>Anti-Clockwise</item>
+        <item>180 deg</item>
+    </string-array>
+    <string-array name="pv_thumbnails_rotate_auto">
+        <item translatable="false">0</item>
+        <item translatable="false">90</item>
+        <item translatable="false">-90</item>
+        <item translatable="false">180</item>
+    </string-array>
+
+    <!-- Preference - Compatibility / bug workaround for some devices -->
+    <string name="pt_thumbnail_cropper_layer_type">Cropper Layer Type</string>
+    <string name="pk_thumbnail_cropper_layer_type" translatable="false">Image.ViewLayerType</string>
+    <string name="pt_hint_layer_type">Leave this setting on \'Use default\' unless you experience crashes while cropping images. Try \'Software\' for safer but slower or force \'Hardware\' for less safe, but faster</string>
+    <string-array name="pe_thumbnails_cropper_layer_type">
+        <item>Use default</item>
+        <item>Hardware</item>
+        <item>Software</item>
+    </string-array>
+    <string-array name="pv_thumbnails_cropper_layer_type">
+        <item translatable="false">-1</item>
+        <item translatable="false">2</item>
+        <item translatable="false">1</item>
+    </string-array>
+
+    <!-- Preference - the barcode scanner to use-->
+    <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
+    <string name="pk_scanning_preferred_scanner" translatable="false">ScannerManager.PreferredScanner</string>
+    <string-array name="pe_scanning_preferred_scanner">
+        <item>Zxing Compatible Scanner</item>
+        <item>Zxing Scanner</item>
+        <item>Pic2Shop Scanner</item>
+    </string-array>
+    <string-array name="pv_scanning_preferred_scanner">
+        <item translatable="false">0</item>
+        <item translatable="false">1</item>
+        <item translatable="false">2</item>
+    </string-array>
+
+
+    <!-- ========== Book list preferences ========== -->
+
+    <!-- Preference - Book list state-related preferences -->
+    <string name="pt_bob_list_state">Book list state</string>
+    <string name="pk_bob_list_state" translatable="false">BookList.ListRebuildState</string>
+    <string-array name="pe_bob_list_state">
+        <item>Always start book lists expanded</item>
+        <item>Always start book lists collapsed</item>
+        <item>Preserve book list state</item>
+    </string-array>
+    <string-array name="pv_bob_list_state">
+        <item translatable="false">0</item>
+        <item translatable="false">1</item>
+        <item translatable="false">2</item>
+    </string-array>
+
+    <!--  Preference to override the default method used to generate book lists as defined by API level -->
+    <string name="pt_bob_list_generation">Book List Generation Option</string>
+    <string name="pk_bob_list_generation" translatable="false">BookList.CompatibilityMode</string>
+    <string-array name="pe_bob_list_generation">
+        <item>Automatically use recommended option</item>
+        <item>Force Fully Featured</item>
+        <item>Force Enhanced Compatibility Mode</item>
+        <item>Force Compatibility Mode</item>
+    </string-array>
+    <string-array name="pv_bob_list_generation">
+        <item translatable="false">0</item>
+        <item translatable="false">1</item>
+        <item translatable="false">2</item>
+        <item translatable="false">3</item>
+    </string-array>
+
+    <!-- Preference - Thumbnails are fetched in a background task -->
+    <string name="pt_bob_thumbnails_generating_mode">Use a background task to fetch thumbnails</string>
+    <string name="pk_bob_thumbnails_generating_mode" translatable="false">BookList.ThumbnailsInBackground</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">
+        Use background thread (lists scroll faster, images may be delayed)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">
+        Generate immediately (lists scroll slower, images will be displayed immediately)</string>
+
+    <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
+    <string name="pt_bob_thumbnails_cache_resized">Cache resized thumbnails</string>
+    <string name="pk_bob_thumbnails_cache_resized" translatable="false">BookList.ThumbnailsCached</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">
+        Resize each time they are needed (uses less storage, scrolling will be slower)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">
+        Cache resized thumbnails (uses more storage, lists will scroll faster)</string>
+
+    <!-- ========== Book list style preferences ========== -->
+
+    <string name="pk_bob_style_name" translatable="false">BookList.Style.Name</string>
+    <string name="pk_bob_groups" translatable="false">BookList.Style.Groups</string>
+
+
+    <!-- Preference - Use scaled text and images (not boolean, as we might add more size-options -->
+    <string name="pt_bob_item_size">Size of book list items</string>
+    <string name="pk_bob_item_size" translatable="false">BookList.Style.Scaling</string>
+    <string-array name="pe_bob_item_size">
+        <item>Normal</item>
+        <item>Smaller</item>
+        <item>Larger</item>
+    </string-array>
+    <string-array name="pv_bob_item_size">
+        <item translatable="false">1</item>
+        <item translatable="false">2</item>
+        <item translatable="false">3</item>
+    </string-array>
+
+    <!-- Preference - Determines what is show in book list header -->
+    <string name="pt_bob_header">Summary details in header</string>
+    <string name="pk_bob_header" translatable="false">BookList.Style.Show.HeaderInfo</string>
+    <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all -->
+    <string-array name="pe_bob_header">
+        <item>Show number of books</item>
+        <item>Show first level heading</item>
+    </string-array>
+    <!-- multi-select: use bitmask values: 1,2,4,8,...-->
+    <string-array name="pv_bob_header">
+        <item translatable="false">1</item>
+        <item translatable="false">2</item>
+    </string-array>
+
+    <!-- Preference - Show thumbnail image for each book -->
+    <string name="pt_bob_thumbnails_show">Show Thumbnails</string>
+    <string name="pk_bob_thumbnails_show" translatable="false">BookList.Style.Show.Thumbnails</string>
+
+    <!-- Preference - Show large thumbnail if thumbnails are shown -->
+    <string name="pt_bob_thumbnails_show_large">Prefer large thumbnails</string>
+    <string name="pk_bob_thumbnails_show_large" translatable="false">BookList.Style.Show.LargeThumbnails</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_authors">Books with multiple authors</string>
+    <string name="pk_bob_books_under_multiple_authors" translatable="false">BookList.Style.Group.Authors.ShowAll</string>
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_series">Books in multiple series</string>
+    <string name="pk_bob_books_under_multiple_series" translatable="false">BookList.Style.Group.Series.ShowAll</string>
+
+    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Under primary %1$s only</string>
+    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Under each %1$s</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_format_author_name">Format of author names</string>
+    <string name="pk_bob_format_author_name" translatable="false">BookList.Style.Group.Authors.DisplayFirstThenLast</string>
+    <string name="pv_bob_format_author_name_given_first">Given name first eg. \'Bill Smith\'</string>
+    <string name="pv_bob_format_author_name_family_first">Family name first eg. \'Smith, Bill\'</string>
+
+    <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
+    <string name="pt_bob_sort_author_name">Sorting of author names</string>
+    <string name="pk_bob_sort_author_name" translatable="false">BookList.Style.Sort.Author.GivenFirst</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_bob_extra_book_details">Extra Book Details</string>
+
+    <!-- Preference - Show list of bookshelves for each book -->
+    <string name="pk_bob_show_bookshelves" translatable="false">BookList.Style.Show.Bookshelves</string>
+    <!-- Preference - Show location for each book -->
+    <string name="pk_bob_show_location" translatable="false">BookList.Style.Show.Location</string>
+    <!-- Preference - Show author for each book -->
+    <string name="pk_bob_show_author" translatable="false">BookList.Style.Show.Author</string>
+    <!-- Preference - Show publisher for each book -->
+    <string name="pk_bob_show_publisher" translatable="false">BookList.Style.Show.Publisher</string>
+    <!-- Preference - Show format for each book -->
+    <string name="pk_bob_show_format" translatable="false">BookList.Style.Show.Format</string>
+
+    <!-- Preference - Booklist Filter -->
+    <string name="pk_bob_filter_read" translatable="false">BookList.Style.Filter.Read</string>
+    <string-array name="pe_bob_filter_read">
+        <item>@string/all_books</item>
+        <item>Read books</item>
+        <item>Unread books</item>
+    </string-array>
+
+    <!-- Preference - Booklist Filter -->
+    <string name="pk_bob_filter_signed" translatable="false">BookList.Style.Filter.Signed</string>
+    <string-array name="pe_bob_filter_signed">
+        <item>@string/all_books</item>
+        <item>Signed books</item>
+        <item>Unsigned books</item>
+    </string-array>
+
+    <!-- Preference - Booklist Filter -->
+    <string name="pk_bob_filter_loaned" translatable="false">BookList.Style.Filter.Loaned</string>
+    <string-array name="pe_bob_filter_loaned">
+        <item>@string/all_books</item>
+        <item>Loaned books</item>
+        <item>Available books</item>
+    </string-array>
+
+    <!-- Preference - Booklist Filter -->
+    <string name="pk_bob_filter_anthology" translatable="false">BookList.Style.Filter.Anthology</string>
+    <string-array name="pe_bob_filter_anthology">
+        <item>@string/all_books</item>
+        <item>Anthology books</item>
+        <item>Non-Anthology books</item>
+    </string-array>
+
+    <!-- shared for all Filters: don't-use-filter (-1), filter-true (1), filter-false (0) -->
+    <string-array name="pv_bob_filter_values">
+        <item translatable="false">-1</item>
+        <item translatable="false">1</item>
+        <item translatable="false">0</item>
+    </string-array>
+
+</resources>

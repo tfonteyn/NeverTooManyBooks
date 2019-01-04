@@ -142,7 +142,7 @@ public class ISFDBBook extends AbstractBase {
     /**
      * @param editionUrls List of url's; example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
      */
-    ISFDBBook(final @NonNull @Size(min = 1) List<String> editionUrls) {
+    ISFDBBook(@NonNull final @Size(min = 1) List<String> editionUrls) {
         mEditions = editionUrls;
         mPath = editionUrls.get(0);
         mPublicationRecord = stripNumber(mPath);
@@ -151,7 +151,7 @@ public class ISFDBBook extends AbstractBase {
     /**
      * @param path example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
      */
-    ISFDBBook(final @NonNull String path) {
+    ISFDBBook(@NonNull final String path) {
         mPath = path;
         mPublicationRecord = stripNumber(mPath);
     }
@@ -200,7 +200,7 @@ public class ISFDBBook extends AbstractBase {
         </div>
      */
 
-    public void fetch(final @NonNull Bundle /* out */ bookData,
+    public void fetch(@NonNull final Bundle /* out */ bookData,
                       final boolean withThumbnail) throws SocketTimeoutException {
         if (!loadPage()) {
             return;
@@ -230,7 +230,7 @@ public class ISFDBBook extends AbstractBase {
                 }
 
                 if (DEBUG_SWITCHES.ISFDB_SEARCH && BuildConfig.DEBUG) {
-                    Logger.info(this, "fieldName=`" + fieldName + "`");
+                    Logger.info(this, "fieldName=`" + fieldName + '`');
                 }
 
                 if ("Publication:".equalsIgnoreCase(fieldName)) {
@@ -275,7 +275,7 @@ public class ISFDBBook extends AbstractBase {
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(3).attr("href");
                     //ENHANCE: pass and store these ISFBD id's
-//                    bookData.putString(ISFDB_BKEY_PUBLISHER_ID, Long.toString(stripNumber(tmp)));
+//                    bookData.putString(ISFDB_BKEY_PUBLISHER_ID, String.valueOf(stripNumber(tmp)));
 
                     tmp = li.childNode(3).childNode(0).toString().trim();
                     bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, tmp);
@@ -309,7 +309,7 @@ public class ISFDBBook extends AbstractBase {
                             int decDigits = currency.getDefaultFractionDigits();
                             // format with 'digits' decimal places
                             Float price = Float.parseFloat(data[1]);
-                            String priceStr = String.format("%." + decDigits + "f", price);
+                            String priceStr = String.format("%." + decDigits + 'f', price);
 
                             bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED, priceStr);
                             // re-get the code just in case ISFDB/Utils uses a recognised but non-standard one
@@ -357,14 +357,14 @@ public class ISFDBBook extends AbstractBase {
 //
 //                    // Cover artist
 //                    Node node_a = li.childNode(4);
-//                    StringList.addOrAppend(bookData, ISFDB_BKEY_BOOK_COVER_ARTIST_ID, Long.toString(stripNumber(node_a.attr("href"))));
+//                    StringList.addOrAppend(bookData, ISFDB_BKEY_BOOK_COVER_ARTIST_ID, String.valueOf(stripNumber(node_a.attr("href"))));
 //                    StringList.addOrAppend(bookData, ISFDB_BKEY_BOOK_COVER_ARTIST, node_a.childNode(0).toString().trim());
 //
 //                } else if ("Editors:".equalsIgnoreCase(fieldName)) {
 //                    Elements as = li.select("a");
 //                    if (as != null) {
 //                        for (Element a : as) {
-//                            StringList.addOrAppend(bookData, ISFDB_BKEY_BKEY_EDITORS_ID, Long.toString(stripNumber(a.attr("href"))));
+//                            StringList.addOrAppend(bookData, ISFDB_BKEY_BKEY_EDITORS_ID, String.valueOf(stripNumber(a.attr("href"))));
 //                            StringList.addOrAppend(bookData, ISFDB_BKEY_EDITORS, a.text());
 //                        }
 //                    }
@@ -427,7 +427,7 @@ public class ISFDBBook extends AbstractBase {
      * Filter a string of all non-digits. Used to clean isbn strings.
      */
     @Nullable
-    private String digits(final @Nullable String s) {
+    private String digits(@Nullable final String s) {
         if (s == null) {
             return null;
         }
@@ -441,7 +441,7 @@ public class ISFDBBook extends AbstractBase {
         return sb.toString();
     }
 
-    public void fetchCover(final @NonNull Bundle /* out */ bookData) throws SocketTimeoutException {
+    public void fetchCover(@NonNull final Bundle /* out */ bookData) throws SocketTimeoutException {
         if (!loadPage()) {
             return;
         }
@@ -458,7 +458,7 @@ public class ISFDBBook extends AbstractBase {
         <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg" alt="picture" class="scan"></a>
     </td>
     */
-    private void fetchCover(final @NonNull Bundle /* out */ bookData, final @NonNull Element contentBox) {
+    private void fetchCover(@NonNull final Bundle /* out */ bookData, @NonNull final Element contentBox) {
         Element img = contentBox.selectFirst("img");
         if (img != null) {
             String thumbnail = img.attr("src");
@@ -488,7 +488,7 @@ public class ISFDBBook extends AbstractBase {
         This method returns the list for easy use, but ALSO adds the data to the book bundle !
      */
     @NonNull
-    private ArrayList<TOCEntry> getTableOfContentList(final @NonNull Bundle /* out */ bookData) throws SocketTimeoutException {
+    private ArrayList<TOCEntry> getTableOfContentList(@NonNull final Bundle /* out */ bookData) throws SocketTimeoutException {
 
         final ArrayList<TOCEntry> results = new ArrayList<>();
 
@@ -563,8 +563,8 @@ public class ISFDBBook extends AbstractBase {
                     String seriesName = a.text();
                     String seriesNum = null;
                     // check for the number; series don't always have a number
-                    int start = liAsString.indexOf("[");
-                    int end = liAsString.indexOf("]");
+                    int start = liAsString.indexOf('[');
+                    int end = liAsString.indexOf(']');
                     if (start > 1 && end > start) {
                         String tmp = liAsString.substring(start, end);
                         // yes, hex... despite browser view-source shows &#8226; (see comment section above)

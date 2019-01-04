@@ -7,7 +7,10 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
-public class BundleUtils {
+public final class BundleUtils {
+    private BundleUtils() {
+    }
+
     /**
      * Check if passed Bundle contains a non-blank string .
      *
@@ -16,8 +19,8 @@ public class BundleUtils {
      *
      * @return Present/absent
      */
-    public static boolean isNonBlankString(final @NonNull Bundle bundle,
-                                           final @NonNull String key) {
+    public static boolean isNonBlankString(@NonNull final Bundle bundle,
+                                           @NonNull final String key) {
         String s = bundle.getString(key);
         return (s != null && !s.trim().isEmpty());
     }
@@ -28,9 +31,9 @@ public class BundleUtils {
      * @param bundle to check
      * @param key    for data to add
      */
-    public static void addIfNotPresent(final @NonNull Bundle bundle,
-                                       final @NonNull String key,
-                                       final @NonNull String value) {
+    public static void addIfNotPresent(@NonNull final Bundle bundle,
+                                       @NonNull final String key,
+                                       @NonNull final String value) {
         String test = bundle.getString(key);
         if (test == null || test.isEmpty()) {
             bundle.putString(key, value.trim());
@@ -66,7 +69,7 @@ public class BundleUtils {
      *
      * @return Result or 0 when not found
      */
-    public static int getIntFromBundles(final String key, final @NonNull Bundle... bundles) {
+    public static int getIntFromBundles(final String key, @NonNull final Bundle... bundles) {
         int value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {
@@ -87,7 +90,7 @@ public class BundleUtils {
      *
      * @return Result or 0 when not found
      */
-    public static long getLongFromBundles(final @Nullable String key, final @NonNull Bundle... bundles) {
+    public static long getLongFromBundles(@Nullable final String key, @NonNull final Bundle... bundles) {
         long value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {
@@ -108,7 +111,7 @@ public class BundleUtils {
      *
      * @return Result or null when not found
      */
-    public static Bundle getBundleFromBundles(final @Nullable String key, final @NonNull Bundle... bundles) {
+    public static Bundle getBundleFromBundles(@Nullable final String key, @NonNull final Bundle... bundles) {
         Bundle value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {
@@ -130,7 +133,7 @@ public class BundleUtils {
      * @return List, or null when not present
      */
     @Nullable
-    public static <T extends Parcelable> ArrayList<T> getParcelableArrayList(final @Nullable String key, final @NonNull Bundle... bundles) {
+    public static <T extends Parcelable> ArrayList<T> getParcelableArrayList(@Nullable final String key, @NonNull final Bundle... bundles) {
         ArrayList<T> value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {

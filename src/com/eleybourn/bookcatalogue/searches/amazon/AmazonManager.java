@@ -3,9 +3,9 @@ package com.eleybourn.bookcatalogue.searches.amazon;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.SAXException;
@@ -17,20 +17,23 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class AmazonManager {
+public final class AmazonManager {
 
     private static final String TAG = "Amazon.";
 
     private static final String PREFS_HOST_URL = TAG + "hostUrl";
 
+    private AmazonManager() {
+    }
+
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return BookCatalogueApp.getStringPreference(PREFS_HOST_URL, "http://www.amazon.com");
+        return Prefs.getString(PREFS_HOST_URL, "http://www.amazon.com");
     }
 
-    public static void setBaseURL(final @NonNull String url) {
-        BookCatalogueApp.getSharedPreferences().edit().putString(PREFS_HOST_URL, url).apply();
+    public static void setBaseURL(@NonNull final String url) {
+        Prefs.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
     }
 
     /**
@@ -39,10 +42,10 @@ public class AmazonManager {
      *
      * @param isbn The ISBN to search for
      */
-    public static void search(final @NonNull String isbn,
-                              @NonNull String author,
-                              @NonNull String title,
-                              final @NonNull Bundle /* out*/ bookData,
+    public static void search(@NonNull final String isbn,
+                              @NonNull final String author,
+                              @NonNull final String title,
+                              @NonNull final Bundle /* out*/ bookData,
                               final boolean fetchThumbnail) throws IOException {
 
         String urlText = "https://bc.theagiledirector.com/getRest_v3.php";

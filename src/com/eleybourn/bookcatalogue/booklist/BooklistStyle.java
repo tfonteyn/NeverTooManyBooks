@@ -21,30 +21,23 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.booklist.filters.Filter;
-import com.eleybourn.bookcatalogue.booklist.filters.TrinaryFilter;
+import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
+import com.eleybourn.bookcatalogue.booklist.filters.PBooleanFilter;
+import com.eleybourn.bookcatalogue.booklist.prefs.PInt;
+import com.eleybourn.bookcatalogue.booklist.prefs.PIntList;
+import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
+import com.eleybourn.bookcatalogue.booklist.prefs.PString;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
-import com.eleybourn.bookcatalogue.properties.BooleanProperty;
-import com.eleybourn.bookcatalogue.properties.ListOfIntegerValuesProperty;
-import com.eleybourn.bookcatalogue.properties.ListOfValuesProperty.ItemList;
-import com.eleybourn.bookcatalogue.properties.Property;
-import com.eleybourn.bookcatalogue.properties.PropertyGroup;
-import com.eleybourn.bookcatalogue.properties.PropertyList;
-import com.eleybourn.bookcatalogue.properties.StringProperty;
-import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils;
+import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -52,19 +45,39 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
 
 /**
  * Represents a specific style of book list (eg. authors/series).
  * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
  * to describe the resulting list style.
  *
- * ENHANCE: Allow for style-based overrides of things currently stored in preferences
- * This should include thumbnail presence/size, book-in-each-series etc. as well as font sizes.
+ * 2018-12-20: the implementation no longer stores serialized blobs, neither in the database nor
+ * in backup archives (but can still read them from archives).
+ * The database table now consists of a PK id, and a UUID column
+ * The UUID serves as the name of the SharedPreference which describes the style.
+ * Builtin styles are not stored in the database, and (internally) use a UUID==null
+ * and negative id's.
+ * Every setting in a style is backed by a {@link PPref} which handles the storage of that setting.
+ * *All* style settings are private to a style, there is no inheritance of global settings.
+ * ENHANCE: re-introduce global inheritance ? But would that actually be used ?
+ *
+ * ENHANCE: when a style is deleted, the prefs are cleared. But the actual fine is not removed.
+ * How to do this in a device independent manner?
  *
  * How to add a new Group:
  *
- * 1. add it to {@link RowKinds} and update ROW_KIND_MAX
+ * 1. add it to {@link BooklistGroup.RowKind} and update ROW_KIND_MAX
  *
  * 2. if necessary add new domain to {@link DatabaseDefinitions }
  *
@@ -72,22 +85,21 @@ import java.util.Map;
  *
  * 4. modify {@link BooksMultiTypeListHandler} ; If it is just a string field,
  * then use a {@link BooksMultiTypeListHandler.GenericStringHolder}, otherwise add a new holder.
- *
- *
- * Need to at least modify {@link BooksMultiTypeListHandler#newHolder}
+ * Need to at least modify {@link BooksMultiTypeListHandler#createHolder}
  *
  * @author Philip Warner
  */
-public class BooklistStyle implements Serializable, Parcelable {
+public class BooklistStyle
+    implements Serializable, Parcelable {
 
     public static final Creator<BooklistStyle> CREATOR = new Creator<BooklistStyle>() {
         @Override
-        public BooklistStyle createFromParcel(Parcel in) {
-            return new BooklistStyle(in);
+        public BooklistStyle createFromParcel(@NonNull final Parcel source) {
+            return new BooklistStyle(source);
         }
 
         @Override
-        public BooklistStyle[] newArray(int size) {
+        public BooklistStyle[] newArray(final int size) {
             return new BooklistStyle[size];
         }
     };
@@ -99,6 +111,8 @@ public class BooklistStyle implements Serializable, Parcelable {
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_LOCATION = (1 << 1);
     /** Extra book data to show at lowest level */
+    public static final int EXTRAS_FORMAT = (1 << 2);
+    /** Extra book data to show at lowest level */
     public static final int EXTRAS_PUBLISHER = (1 << 3);
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_AUTHOR = (1 << 4);
@@ -106,13 +120,13 @@ public class BooklistStyle implements Serializable, Parcelable {
     public static final int EXTRAS_THUMBNAIL = (1 << 5);
     /** Extra book data to show at lowest level */
     public static final int EXTRAS_THUMBNAIL_LARGE = (1 << 6);
-    /** Extra book data to show at lowest level */
-    public static final int EXTRAS_FORMAT = (1 << 7);
+
 
     /**
      * the amount of details to show in the header
      */
-    private static final Integer SUMMARY_HIDE = 0;
+    @SuppressWarnings("WeakerAccess")
+    public static final Integer SUMMARY_HIDE = 0;
     /** the amount of details to show in the header */
     public static final Integer SUMMARY_SHOW_COUNT = 1;
     /** the amount of details to show in the header */
@@ -122,109 +136,40 @@ public class BooklistStyle implements Serializable, Parcelable {
     /** the amount of details to show in the header */
     public static final Integer SUMMARY_SHOW_ALL = 0xff;
 
-    /**
-     * Scaling of text and images
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static final int SCALE_SIZE_USE_DEFAULT = 0;
     /** Scaling of text and images */
     public static final int SCALE_SIZE_NORMAL = 1;
     /** Scaling of text and images */
     public static final int SCALE_SIZE_SMALLER = 2;
-
+    /** Scaling of text and images */
+    public static final int SCALE_SIZE_LARGER = 3;
     /**
-     * Prefix for all prefs
+     * Preferred styles / menu order. Stored in global shared preferences
      */
-    static final String TAG = "BookList.Style.";
-    /** Preferred styles / menu order */
-    public static final String PREF_BL_STYLE_MENU_ITEMS = TAG + "Menu.Items";
-    /** Use scaled text and images */
-    public static final String PREF_BL_STYLE_SCALE_SIZE = TAG + "Scaling";
-    /** Show header info in list */
-    public static final String PREF_BL_STYLE_SHOW_HEADER_INFO = TAG + "Show.HeaderInfo";
-    /** Show thumbnail image for each book */
-    public static final String PREF_BL_STYLE_SHOW_THUMBNAILS = TAG + "Show.Thumbnails";
-    /** Show large thumbnail if thumbnails are shown */
-    public static final String PREF_BL_STYLE_SHOW_LARGE_THUMBNAILS = TAG + "Show.LargeThumbnails";
-    /** Show list of bookshelves for each book */
-    public static final String PREF_BL_STYLE_SHOW_BOOKSHELVES = TAG + "Show.Bookshelves";
-    /** Show location for each book */
-    public static final String PREF_BL_STYLE_SHOW_LOCATION = TAG + "Show.Location";
-    /** Show author for each book */
-    public static final String PREF_BL_STYLE_SHOW_AUTHOR = TAG + "Show.Author";
-    /** Show publisher for each book */
-    public static final String PREF_BL_STYLE_SHOW_PUBLISHER = TAG + "Show.Publisher";
-    /** Show format for each book */
-    @SuppressWarnings("WeakerAccess")
-    public static final String PREF_BL_STYLE_SHOW_FORMAT = TAG + "Show.Format";
-    /** Sorting Author by family (default) or given name. This is independent from the display format */
-    @SuppressWarnings("WeakerAccess")
-    public static final String PREF_BL_STYLE_SORT_AUTHOR_GIVEN_FIRST = "Sort.Author.GivenFirst";
-
+    public static final String PREF_BL_PREFERRED_STYLES = "BookList.Style.Preferred.Order";
+    /** version field used in serialized data reading from file, see {@link #readObject} */
+    static final long realSerialVersion = 5;
+    /**
+     * Unique name. This is a stored in our preference file (with the same name)
+     * and is used for backup/restore purposes as the 'id'.
+     *
+     * (this is not a PPref, as we'd need the uuid to store the uuid....)
+     */
+    private static final String PREF_STYLE_UUID = "BookList.Style.uuid";
     /** serialization id for plain class data */
     private static final long serialVersionUID = 6615877148246388549L;
-    /** version field used in serialized data reading from file, see {@link #readObject} */
-    private static final long realSerialVersion = 5;
-
-
-    /** Support for 'Font Size' property */
-    private static final ItemList<Integer> mListFontSizeListItems;
-    /** Support for 'Show List Header Info' property */
-    private static final ItemList<Integer> mShowHeaderInfoListItems = new ItemList<>();
-
-    /** Support for filter */
-    private static final ItemList<Integer> mReadFilterListItems = new ItemList<>();
-    /** Support for filter */
-    private static final ItemList<Integer> mSignedFilterListItems = new ItemList<>();
-    /** Support for filter */
-    private static final ItemList<Integer> mAnthologyFilterListItems = new ItemList<>();
-    /** Support for filter */
-    private static final ItemList<Integer> mLoanedFilterListItems = new ItemList<>();
-
-    static {
-        mListFontSizeListItems = new ItemList<>();
-        mListFontSizeListItems.add(null, R.string.use_default_setting);
-        mListFontSizeListItems.add(SCALE_SIZE_NORMAL, R.string.blp_item_size_normal);
-        mListFontSizeListItems.add(SCALE_SIZE_SMALLER, R.string.blp_item_size_smaller);
-
-        mShowHeaderInfoListItems.add(null, R.string.use_default_setting);
-        mShowHeaderInfoListItems.add(SUMMARY_HIDE, R.string.blp_summary_hide);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT, R.string.blp_summary_book_count);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_COUNT ^ SUMMARY_SHOW_LEVEL_1, R.string.blp_summary_first_level_and_book_count);
-        mShowHeaderInfoListItems.add(SUMMARY_SHOW_ALL, R.string.blp_summary_show_all);
-
-        mReadFilterListItems.add(null, R.string.use_default_setting);
-        mReadFilterListItems.add(TrinaryFilter.FILTER_NOT_USED, R.string.all_books);
-        mReadFilterListItems.add(TrinaryFilter.FILTER_NO, R.string.booklist_filters_unread);
-        mReadFilterListItems.add(TrinaryFilter.FILTER_YES, R.string.booklist_filters_read);
-
-        mSignedFilterListItems.add(null, R.string.use_default_setting);
-        mSignedFilterListItems.add(TrinaryFilter.FILTER_NOT_USED, R.string.all_books);
-        mSignedFilterListItems.add(TrinaryFilter.FILTER_NO, R.string.booklist_filters_signed_no);
-        mSignedFilterListItems.add(TrinaryFilter.FILTER_YES, R.string.booklist_filters_signed_yes);
-
-        mAnthologyFilterListItems.add(null, R.string.use_default_setting);
-        mAnthologyFilterListItems.add(TrinaryFilter.FILTER_NOT_USED, R.string.all_books);
-        mAnthologyFilterListItems.add(TrinaryFilter.FILTER_NO, R.string.booklist_filters_is_anthology_no);
-        mAnthologyFilterListItems.add(TrinaryFilter.FILTER_YES, R.string.booklist_filters_is_anthology_yes);
-
-        mLoanedFilterListItems.add(null, R.string.use_default_setting);
-        mLoanedFilterListItems.add(TrinaryFilter.FILTER_NOT_USED, R.string.all_books);
-        mLoanedFilterListItems.add(TrinaryFilter.FILTER_NO, R.string.booklist_filters_loaned_no);
-        mLoanedFilterListItems.add(TrinaryFilter.FILTER_YES, R.string.booklist_filters_loaned_yes);
-    }
-
-
-    /** List of groups */
-    @NonNull
-    private final ArrayList<BooklistGroup> mGroups;
 
     /**
      * Row id of database row from which this object comes
      * A '0' is for an as yet unsaved user-style.
      * Always NEGATIVE (e.g. <0 ) for a build-in style
      */
-    public long id = 0;
+    public long id;
+
+    /**
+     * the unique uuid based SharedPreference name
+     */
+    @Nullable
+    public String uuid;
 
     /**
      * ID if string representing name of this style.
@@ -232,131 +177,252 @@ public class BooklistStyle implements Serializable, Parcelable {
      * Always 0 for a user-defined style
      */
     @StringRes
-    private int mNameStringId;
+    private int mNameResId;
+
     /**
-     * User-defined name of this style.
+     * Display name of this style.
+     *
+     * Used for user-defined styles.
+     * encapsulated value always null for a builtin style.
      */
-    private transient StringProperty mNameProperty;
+    private transient PString mDisplayNamePref;
+
     /**
      * Legacy field needs to be kept for backward serialization compatibility,
-     * replaced by {@link #mNameProperty}
+     * replaced by {@link #mDisplayNamePref}
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private String mName;
 
     /**
+     * Legacy field needs to be kept for backward serialization compatibility,
+     * replaced by {@link #mStyleGroups}
+     *
+     * Will be converted to the new one during de-serialization, and then null'd
+     * Note to self: a 'List' will NOT be deserialize'd, must be the original ArrayList
+     */
+    @SuppressWarnings("FieldCanBeLocal")
+    private ArrayList<BooklistGroup> mGroups;
+
+    /**
      * Options indicating this style was in the 'preferred' set when it was added to
-     * its Styles collection. The value is not dynamically checked.
+     * its Styles collection. The value is not stored with the Style.
+     * Instead all preferred (user *and* builtin) styles are stored as a single set
+     * in the app-preferences.
      */
     private boolean mIsPreferred;
 
-    /** Show list using smaller text */
-    private transient ListOfIntegerValuesProperty mScaleSize;
-    /** Show list header info */
-    private transient ListOfIntegerValuesProperty mShowHeaderInfo;
-
+    /** Relative size of list text/images. */
+    private transient PInt mScaleSize;
+    /** Show list header info. */
+    private transient PInt mShowHeaderInfo;
     /** Sorting */
-    private transient BooleanProperty mSortAuthor;
-
+    private transient PBoolean mSortAuthor;
     /** Extra details to show on book rows */
-    private transient BooleanProperty mExtraShowThumbnails;
-    private transient BooleanProperty mExtraLargeThumbnails;
-    private transient BooleanProperty mExtraShowBookshelves;
-    private transient BooleanProperty mExtraShowLocation;
-    private transient BooleanProperty mExtraShowAuthor;
-    private transient BooleanProperty mExtraShowPublisher;
-    private transient BooleanProperty mExtraShowFormat;
+    private transient PBoolean mExtraShowThumbnails;
+    private transient PBoolean mExtraLargeThumbnails;
+    private transient PBoolean mExtraShowBookshelves;
+    private transient PBoolean mExtraShowLocation;
+    private transient PBoolean mExtraShowAuthor;
+    private transient PBoolean mExtraShowPublisher;
+    private transient PBoolean mExtraShowFormat;
 
-    private transient ArrayList<Filter> mFilters;
-    private transient TrinaryFilter mFilterRead;
-    private transient TrinaryFilter mFilterSigned;
-    private transient TrinaryFilter mFilterAnthology;
-    private transient TrinaryFilter mFilterLoaned;
+    /**
+     * All groups in this style
+     */
+    private transient PStyleGroups mStyleGroups;
+
+    /**
+     * All filters.
+     */
+    private transient Map<String, PBooleanFilter> mFilters;
+
+    private transient PBooleanFilter mFilterRead;
+    private transient PBooleanFilter mFilterSigned;
+    private transient PBooleanFilter mFilterAnthology;
+    private transient PBooleanFilter mFilterLoaned;
 
     /**
      * Constructor for system-defined styles.
+     *
+     * @param id     a negative int
+     * @param nameId the resource id for the name
+     * @param kinds  a list of group kinds to attach to this style
      */
-    BooklistStyle(final @IntRange(from = -100, to = -1) long id, final @StringRes int stringId) {
+    BooklistStyle(final @IntRange(from = -100, to = -1) long id,
+                  @StringRes final int nameId,
+                  @NonNull final int... kinds) {
+
         this.id = id;
-        mNameStringId = stringId;
-        mGroups = new ArrayList<>();
-        // init first, then set actual values afterwards
-        initProperties();
+        mNameResId = nameId;
+        initPrefs();
+        for (int kind : kinds) {
+            mStyleGroups.add(BooklistGroup.newInstance(kind, null));
+        }
     }
 
     /**
      * Constructor for user-defined styles.
+     *
+     * Only used when styles are loaded from storage.
+     * Real new styles are created by cloning an existing style.
      */
-    public BooklistStyle(final @NonNull String name) {
-        mNameStringId = 0;
-        mGroups = new ArrayList<>();
-        // init first, then set actual values afterwards
-        initProperties();
-        mNameProperty.setValue(name);
+    public BooklistStyle(final long id,
+                         @NonNull final String uuid) {
+        this.id = id;
+        this.uuid = uuid;
+        initPrefs();
     }
 
-    protected BooklistStyle(final @NonNull Parcel in) {
+    /**
+     * Standard Parcelable constructor
+     */
+    protected BooklistStyle(@NonNull final Parcel in) {
+        this(in, false);
+    }
+
+    /**
+     * Custom Parcelable constructor which allows cloning/new
+     *
+     * @param in    Parcel to read the object from
+     * @param doNew when set to true, partially override the incoming data so we get
+     *              a 'new' object but with the settings from the Parcel.
+     */
+    protected BooklistStyle(@NonNull final Parcel in,
+                            final boolean doNew) {
         id = in.readLong();
-        mNameStringId = in.readInt();
-        mGroups = new ArrayList<>();
-        in.readList(mGroups, getClass().getClassLoader());
+        mNameResId = in.readInt();
         mIsPreferred = in.readByte() != 0;
-        // init first, then set their actual values afterwards
-        initProperties();
-        mNameProperty.readFromParcel(in);
+        uuid = in.readString();
+        if (doNew) {
+            uuid = createUniqueName();
+        }
 
-        mScaleSize.readFromParcel(in);
-        mShowHeaderInfo.readFromParcel(in);
+        // only init the prefs once we have a valid uuid
+        initPrefs();
 
-        mExtraShowThumbnails.readFromParcel(in);
-        mExtraLargeThumbnails.readFromParcel(in);
-        mExtraShowBookshelves.readFromParcel(in);
-        mExtraShowLocation.readFromParcel(in);
-        mExtraShowAuthor.readFromParcel(in);
-        mExtraShowPublisher.readFromParcel(in);
-        mExtraShowFormat.readFromParcel(in);
+        mDisplayNamePref.set(uuid, in);
+        mName = mDisplayNamePref.get(uuid);
 
-        mFilterRead.readFromParcel(in);
-        mFilterSigned.readFromParcel(in);
-        mFilterAnthology.readFromParcel(in);
-        mFilterLoaned.readFromParcel(in);
+        // create new clone ?
+        if (doNew) {
+            // get a copy of the name first
+            setName(this.getDisplayName());
+            // now reset the other identifiers.
+            id = 0;
+            mNameResId = 0;
+        }
 
-        mSortAuthor.readFromParcel(in);
+        mScaleSize.set(uuid, in);
+        mShowHeaderInfo.set(uuid, in);
+
+        mStyleGroups.set(uuid, in);
+
+        mExtraShowThumbnails.set(uuid, in);
+        mExtraLargeThumbnails.set(uuid, in);
+        mExtraShowBookshelves.set(uuid, in);
+        mExtraShowLocation.set(uuid, in);
+        mExtraShowAuthor.set(uuid, in);
+        mExtraShowPublisher.set(uuid, in);
+        mExtraShowFormat.set(uuid, in);
+
+        mSortAuthor.set(uuid, in);
+
+        mFilterRead.set(uuid, in);
+        mFilterSigned.set(uuid, in);
+        mFilterAnthology.set(uuid, in);
+        mFilterLoaned.set(uuid, in);
     }
 
     /**
      * Delete *ALL* styles from the database
      */
-    public static void deleteAllStyles(final @NonNull CatalogueDBAdapter db) {
+    @SuppressWarnings("unused")
+    public static void deleteAllStyles(@NonNull final CatalogueDBAdapter db) {
         db.deleteAllBooklistStyle();
     }
 
+    public void setUuid(final String uuid) {
+        this.uuid = uuid;
+    }
+
+    private String createUniqueName() {
+        uuid = UUID.randomUUID().toString();
+        Prefs.getPrefs(uuid).edit().putString(PREF_STYLE_UUID, uuid).apply();
+        return uuid;
+    }
+
+    private void initPrefs() {
+
+        mDisplayNamePref = new PString(R.string.pk_bob_style_name);
+
+        mStyleGroups = new PStyleGroups(R.string.pk_bob_groups);
+
+        mScaleSize = new PInt(R.string.pk_bob_item_size);
+        mShowHeaderInfo = new PInt(R.string.pk_bob_header);
+
+        mSortAuthor = new PBoolean(R.string.pk_bob_sort_author_name);
+
+        mExtraShowThumbnails = new PBoolean(R.string.pk_bob_thumbnails_show);
+        mExtraLargeThumbnails = new PBoolean(R.string.pk_bob_thumbnails_show_large);
+        mExtraShowBookshelves = new PBoolean(R.string.pk_bob_show_bookshelves);
+        mExtraShowLocation = new PBoolean(R.string.pk_bob_show_location);
+        mExtraShowAuthor = new PBoolean(R.string.pk_bob_show_author);
+        mExtraShowPublisher = new PBoolean(R.string.pk_bob_show_publisher);
+        mExtraShowFormat = new PBoolean(R.string.pk_bob_show_format);
+
+        mFilters = new LinkedHashMap<>();
+
+        mFilterRead = new PBooleanFilter(R.string.pk_bob_filter_read,
+                                         DatabaseDefinitions.TBL_BOOKS,
+                                         DatabaseDefinitions.DOM_BOOK_READ);
+        mFilters.put(mFilterRead.getKey(), mFilterRead);
+
+        mFilterSigned = new PBooleanFilter(R.string.pk_bob_filter_signed,
+                                           DatabaseDefinitions.TBL_BOOKS,
+                                           DatabaseDefinitions.DOM_BOOK_SIGNED);
+        mFilters.put(mFilterSigned.getKey(), mFilterSigned);
+
+        mFilterAnthology = new PBooleanFilter(R.string.pk_bob_filter_anthology,
+                                              DatabaseDefinitions.TBL_BOOKS,
+                                              DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK);
+        mFilters.put(mFilterAnthology.getKey(), mFilterAnthology);
+
+        mFilterLoaned = new PBooleanFilter(R.string.pk_bob_filter_loaned,
+                                           DatabaseDefinitions.TBL_BOOKS,
+                                           DatabaseDefinitions.DOM_LOANED_TO);
+        mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
+    }
+
     @Override
-    public void writeToParcel(final @NonNull Parcel dest, final int flags) {
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
         dest.writeLong(id);
-        dest.writeInt(mNameStringId);
-        dest.writeList(mGroups);
+        dest.writeInt(mNameResId);
         dest.writeByte((byte) (mIsPreferred ? 1 : 0));
+        dest.writeString(uuid);
 
-        mNameProperty.writeToParcel(dest);
+        mDisplayNamePref.writeToParcel(uuid, dest);
 
-        mScaleSize.writeToParcel(dest);
-        mShowHeaderInfo.writeToParcel(dest);
+        mScaleSize.writeToParcel(uuid, dest);
+        mShowHeaderInfo.writeToParcel(uuid, dest);
 
-        mExtraShowThumbnails.writeToParcel(dest);
-        mExtraLargeThumbnails.writeToParcel(dest);
-        mExtraShowBookshelves.writeToParcel(dest);
-        mExtraShowLocation.writeToParcel(dest);
-        mExtraShowAuthor.writeToParcel(dest);
-        mExtraShowPublisher.writeToParcel(dest);
-        mExtraShowFormat.writeToParcel(dest);
+        mStyleGroups.writeToParcel(uuid, dest);
 
-        mFilterRead.writeToParcel(dest);
-        mFilterSigned.writeToParcel(dest);
-        mFilterAnthology.writeToParcel(dest);
-        mFilterLoaned.writeToParcel(dest);
+        mExtraShowThumbnails.writeToParcel(uuid, dest);
+        mExtraLargeThumbnails.writeToParcel(uuid, dest);
+        mExtraShowBookshelves.writeToParcel(uuid, dest);
+        mExtraShowLocation.writeToParcel(uuid, dest);
+        mExtraShowAuthor.writeToParcel(uuid, dest);
+        mExtraShowPublisher.writeToParcel(uuid, dest);
+        mExtraShowFormat.writeToParcel(uuid, dest);
 
-        mSortAuthor.writeToParcel(dest);
+        mSortAuthor.writeToParcel(uuid, dest);
+
+        mFilterRead.writeToParcel(uuid, dest);
+        mFilterSigned.writeToParcel(uuid, dest);
+        mFilterAnthology.writeToParcel(uuid, dest);
+        mFilterLoaned.writeToParcel(uuid, dest);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -365,8 +431,38 @@ public class BooklistStyle implements Serializable, Parcelable {
         return 0;
     }
 
-    boolean sortAuthorByGiven() {
-        return mSortAuthor.isTrue();
+    /**
+     * Accessor.
+     * Positive id's: user-defined styles
+     * Negative id's: builtin styles
+     * 0: a user-defined style which has not been saved yet
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * @return the system name or user-defined name based on kind of style this object defines.
+     */
+    @NonNull
+    public String getDisplayName() {
+        if (mNameResId != 0) {
+            return BookCatalogueApp.getResourceString(mNameResId);
+        } else {
+            return mDisplayNamePref.get(uuid);
+        }
+    }
+
+    private void setName(final String name) {
+        mName = name;
+        mDisplayNamePref.set(uuid, name);
+    }
+
+    /**
+     * @return <tt>true</tt> if this style is user-defined.
+     */
+    public boolean isUserDefined() {
+        return (mNameResId == 0 || id > 0);
     }
 
     /**
@@ -384,260 +480,90 @@ public class BooklistStyle implements Serializable, Parcelable {
     }
 
     /**
-     * Accessor. Returns system name or user-defined name based on kind of style this object defines.
+     * Get all of the preferences of this Style and its groups.
      */
     @NonNull
-    public String getDisplayName() {
-        String s = mNameProperty.getResolvedValue();
-        return s.isEmpty() ? BookCatalogueApp.getResourceString(mNameStringId) : s;
-    }
-
-    /**
-     * Accessor. Sets user-defined name.
-     */
-    public void setName(final @NonNull String name) {
-        mNameProperty.setValue(name);
-        mNameStringId = 0;
-    }
-
-    /**
-     * Accessor.
-     * Positive id's: user-defined styles
-     * Negative id's: builtin styles
-     * 0: a user-defined style which has not been saved yet
-     */
-    public long getId() {
-        return id;
-    }
-
-    @NonNull
-    public ArrayList<BooklistGroup> getGroups() {
-        return mGroups;
-    }
-
-    /**
-     * Passed a template style, copy the group structure to this style.
-     */
-    public void setGroups(final @NonNull BooklistStyle fromStyle) {
-        PropertyList newProps = new PropertyList();
-
-        // Save the current groups
+    public Map<String, PPref> getPPrefs() {
         @SuppressLint("UseSparseArrays")
-        Map<Integer, BooklistGroup> oldGroups = new HashMap<>();
-        for (BooklistGroup group : this.getGroups()) {
-            oldGroups.put(group.getRowKind().kind, group);
-        }
-        // Clear the current groups, and rebuild, reusing old values where possible
-        mGroups.clear();
-        for (BooklistGroup group : fromStyle.getGroups()) {
-            BooklistGroup saved = oldGroups.get(group.getRowKind().kind);
-            if (saved != null) {
-                mGroups.add(saved);
-            } else {
-                group.getStyleProperties(newProps);
-                this.addGroup(group.getRowKind().kind);
-            }
-        }
-        // Copy any properties from new groups.
-        this.setProperties(newProps);
-    }
-
-    void addGroup(final @NonNull BooklistGroup group) {
-        mGroups.add(group);
-    }
-
-    /**
-     * Add a group to this style below any already added groups.
-     *
-     * @param kind of group to add.
-     */
-    void addGroup(final @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX) int kind) {
-        BooklistGroup group = BooklistGroup.newInstance(kind);
-        mGroups.add(group);
-    }
-
-    /**
-     * Add a group to this style below any already added groups.
-     *
-     * @param kinds one or more Kind of groups to add.
-     */
-    void addGroups(final @NonNull int... kinds) {
-        for (int kind : kinds) {
-            BooklistGroup group = BooklistGroup.newInstance(kind);
-            mGroups.add(group);
-        }
-    }
-
-    /**
-     * Remove a group from this style.
-     *
-     * @param kind of group to remove from.
-     *
-     * @return removed group.
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @Nullable
-    BooklistGroup removeGroup(final @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX) int kind) {
-        BooklistGroup toRemove = null;
-        for (BooklistGroup group : mGroups) {
-            if (group.getRowKind().kind == kind) {
-                toRemove = group;
-                break;
-            }
-        }
-        if (toRemove != null) {
-            mGroups.remove(toRemove);
-        }
-
-        return toRemove;
-    }
-
-    /**
-     * @return <tt>true</tt>if this style is user-defined.
-     */
-    public boolean isUserDefined() {
-        return (mNameStringId == 0 || id > 0);
-    }
-
-    private void initProperties() {
-
-        /* *****************************************************************************
-         * GRP_GENERAL:
-         ******************************************************************************/
-        /* the name for user-defined styles */
-        mNameProperty = new StringProperty(R.string.name,
-                PropertyGroup.GRP_GENERAL, "")
-                .setRequireNonBlank(true)
-                .setWeight(-100);
-
-        mScaleSize = new ListOfIntegerValuesProperty(R.string.blp_item_size,
-                PropertyGroup.GRP_GENERAL, SCALE_SIZE_USE_DEFAULT, mListFontSizeListItems)
-                .setPreferenceKey(PREF_BL_STYLE_SCALE_SIZE);
-
-        mShowHeaderInfo = new ListOfIntegerValuesProperty(R.string.blp_summary,
-                PropertyGroup.GRP_GENERAL, SUMMARY_SHOW_ALL, mShowHeaderInfoListItems)
-                .setPreferenceKey(PREF_BL_STYLE_SHOW_HEADER_INFO);
-
-        /* *****************************************************************************
-         * GRP_AUTHOR:
-         ******************************************************************************/
-        mSortAuthor = new BooleanProperty(R.string.blp_sort_author_name,
-                PropertyGroup.GRP_AUTHOR)
-                .setPreferenceKey(PREF_BL_STYLE_SORT_AUTHOR_GIVEN_FIRST)
-                .setOptionLabels(R.string.blp_format_author_name_given_first,
-                        R.string.blp_format_author_name_family_first);
-
-        /* *****************************************************************************
-         * GRP_THUMBNAILS:
-         ******************************************************************************/
-        mExtraShowThumbnails = new BooleanProperty(R.string.thumbnails_show,
-                PropertyGroup.GRP_THUMBNAILS, Boolean.TRUE)
-                .setPreferenceKey(PREF_BL_STYLE_SHOW_THUMBNAILS)
-                .setWeight(-100);
-
-        mExtraLargeThumbnails = new BooleanProperty(R.string.thumbnails_prefer_large,
-                PropertyGroup.GRP_THUMBNAILS)
-                .setPreferenceKey(PREF_BL_STYLE_SHOW_LARGE_THUMBNAILS)
-                .setWeight(-99);
-
-        /* *****************************************************************************
-         * GRP_EXTRA_BOOK_DETAILS:
-         ******************************************************************************/
-        mExtraShowBookshelves = new BooleanProperty(R.string.lbl_bookshelves_long,
-                PropertyGroup.GRP_EXTRA_BOOK_DETAILS)
-                .setPreferenceKey(PREF_BL_STYLE_SHOW_BOOKSHELVES);
-
-        mExtraShowLocation = new BooleanProperty(R.string.lbl_location,
-                PropertyGroup.GRP_EXTRA_BOOK_DETAILS)
-                .setPreferenceKey(PREF_BL_STYLE_SHOW_LOCATION);
-
-        mExtraShowPublisher = new BooleanProperty(R.string.lbl_publisher,
-                PropertyGroup.GRP_EXTRA_BOOK_DETAILS)
-                .setPreferenceKey(PREF_BL_STYLE_SHOW_PUBLISHER);
-
-        mExtraShowFormat = new BooleanProperty(R.string.lbl_format,
-                PropertyGroup.GRP_EXTRA_BOOK_DETAILS)
-                .setPreferenceKey(PREF_BL_STYLE_SHOW_FORMAT);
-
-        mExtraShowAuthor = new BooleanProperty(R.string.lbl_author,
-                PropertyGroup.GRP_EXTRA_BOOK_DETAILS)
-                .setPreferenceKey(PREF_BL_STYLE_SHOW_AUTHOR);
-
-        /* *****************************************************************************
-         * GRP_FILTERS:
-         ******************************************************************************/
-        mFilters = new ArrayList<>();
-
-        mFilterRead = new TrinaryFilter(R.string.booklist_filters_select_based_on_read_status,
-                PropertyGroup.GRP_FILTERS, TrinaryFilter.FILTER_NOT_USED, mReadFilterListItems);
-        mFilterRead.setDomain(DatabaseDefinitions.TBL_BOOKS, DatabaseDefinitions.DOM_BOOK_READ);
-        mFilters.add(mFilterRead);
-
-        mFilterSigned = new TrinaryFilter(R.string.booklist_filters_select_based_on_signed_status,
-                PropertyGroup.GRP_FILTERS, TrinaryFilter.FILTER_NOT_USED, mSignedFilterListItems);
-        mFilterSigned.setDomain(DatabaseDefinitions.TBL_BOOKS, DatabaseDefinitions.DOM_BOOK_SIGNED);
-        mFilters.add(mFilterSigned);
-
-        mFilterAnthology = new TrinaryFilter(R.string.booklist_filters_select_based_on_is_anthology_status,
-                PropertyGroup.GRP_FILTERS, TrinaryFilter.FILTER_NOT_USED, mAnthologyFilterListItems);
-        mFilterAnthology.setDomain(DatabaseDefinitions.TBL_BOOKS, DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK);
-        mFilters.add(mFilterAnthology);
-
-        mFilterLoaned = new TrinaryFilter(R.string.booklist_filters_select_based_on_loaned_status,
-                PropertyGroup.GRP_FILTERS, TrinaryFilter.FILTER_NOT_USED, mLoanedFilterListItems);
-        mFilterLoaned.setDomain(DatabaseDefinitions.TBL_BOOKS, DatabaseDefinitions.DOM_LOANED_TO);
-        mFilters.add(mFilterLoaned);
-    }
-
-    /**
-     * Get all of the properties of this Style and its groups.
-     */
-    @NonNull
-    public PropertyList getProperties() {
-        PropertyList list = new PropertyList();
+        Map<String, PPref> map = new HashMap<>();
         // essential property for user-defined styles 'name'
-        list.add(mNameProperty);
-        // properties that can be shown as extra information for each line in the book list
-        list.add(mExtraShowThumbnails);
-        list.add(mExtraLargeThumbnails);
-        list.add(mExtraShowBookshelves);
-        list.add(mExtraShowLocation);
-        list.add(mExtraShowPublisher);
-        list.add(mExtraShowFormat);
-        list.add(mExtraShowAuthor);
-        // smaller font size ?
-        list.add(mScaleSize);
-        // list header information shown
-        list.add(mShowHeaderInfo);
-        // sorting
-        list.add(mSortAuthor);
-        // filter the list according to these
-        list.add(mFilterRead);
-        list.add(mFilterSigned);
-        list.add(mFilterAnthology);
-        list.add(mFilterLoaned);
+        map.put(mDisplayNamePref.getKey(), mDisplayNamePref);
 
-        // now for each group, add its specific properties to our list
-        for (BooklistGroup group : mGroups) {
-            group.getStyleProperties(list);
+        // relative scaling of font and images
+        map.put(mScaleSize.getKey(), mScaleSize);
+        // list header information shown
+        map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
+
+        // properties that can be shown as extra information for each line in the book list
+        map.put(mExtraShowThumbnails.getKey(), mExtraShowThumbnails);
+        map.put(mExtraLargeThumbnails.getKey(), mExtraLargeThumbnails);
+        map.put(mExtraShowBookshelves.getKey(), mExtraShowBookshelves);
+        map.put(mExtraShowLocation.getKey(), mExtraShowLocation);
+        map.put(mExtraShowPublisher.getKey(), mExtraShowPublisher);
+        map.put(mExtraShowFormat.getKey(), mExtraShowFormat);
+        map.put(mExtraShowAuthor.getKey(), mExtraShowAuthor);
+
+        // sorting
+        map.put(mSortAuthor.getKey(), mSortAuthor);
+        // all filters (active or not)
+        map.putAll(mFilters);
+        // the groups that are used by the style
+        map.put(mStyleGroups.getKey(), mStyleGroups);
+
+        // for each group used by the style, add its specific preferences to our list
+        for (BooklistGroup group : mStyleGroups.getGroups()) {
+            map.putAll(group.getStylePPrefs());
         }
 
-        return list;
+        return map;
     }
 
     /**
-     * Passed a PropertyList object, update the properties of this style
-     * based on the values of the passed properties.
+     * update the preferences of this style based on the values of the passed preferences.
+     * Preferences we don't have will be not be added.
      */
-    public void setProperties(final @NonNull PropertyList newProps) {
-        PropertyList props = getProperties();
-        for (Property newVal : newProps) {
-            Property thisProp = props.get(newVal.getUniqueId());
-            if (thisProp != null) {
+    void updatePPref(@NonNull final Map<String, PPref> pPrefs) {
+        Map<String, PPref> currentPPrefs = getPPrefs();
+
+        for (PPref p : pPrefs.values()) {
+            // do we have this PPref ?
+            PPref ourPPref = currentPPrefs.get(p.getKey());
+            // yes we do...
+            if (ourPPref != null) {
+                // ... update our value
                 //noinspection unchecked
-                thisProp.setValue(newVal.getValue());
+                ourPPref.set(uuid, p.get(uuid));
             }
         }
+    }
+
+    boolean sortAuthorByGiven() {
+        return mSortAuthor.isTrue(uuid);
+    }
+
+    public int getShowHeaderInfo() {
+        return mShowHeaderInfo.get(uuid);
+    }
+
+    public float getScaleSize() {
+        switch (mScaleSize.get(uuid)) {
+            case SCALE_SIZE_NORMAL:
+                return 1.0f;
+            case SCALE_SIZE_SMALLER:
+                return 0.8f;
+            case SCALE_SIZE_LARGER:
+                return 1.2f;
+            default:
+                return SCALE_SIZE_NORMAL;
+        }
+    }
+
+    /**
+     * Used by built-in styles only
+     */
+    @SuppressWarnings("SameParameterValue")
+    void setScaleSize(final @IntRange(from = SCALE_SIZE_NORMAL, to = SCALE_SIZE_LARGER) int size) {
+        mScaleSize.set(uuid, size);
     }
 
     /**
@@ -649,31 +575,31 @@ public class BooklistStyle implements Serializable, Parcelable {
     public int getExtraFieldsStatus() {
         int extras = 0;
 
-        if (mExtraShowThumbnails.isTrue()) {
+        if (mExtraShowThumbnails.isTrue(uuid)) {
             extras |= EXTRAS_THUMBNAIL;
         }
 
-        if (mExtraLargeThumbnails.isTrue()) {
+        if (mExtraLargeThumbnails.isTrue(uuid)) {
             extras |= EXTRAS_THUMBNAIL_LARGE;
         }
 
-        if (mExtraShowBookshelves.isTrue()) {
+        if (mExtraShowBookshelves.isTrue(uuid)) {
             extras |= EXTRAS_BOOKSHELVES;
         }
 
-        if (mExtraShowLocation.isTrue()) {
+        if (mExtraShowLocation.isTrue(uuid)) {
             extras |= EXTRAS_LOCATION;
         }
 
-        if (mExtraShowPublisher.isTrue()) {
+        if (mExtraShowPublisher.isTrue(uuid)) {
             extras |= EXTRAS_PUBLISHER;
         }
 
-        if (mExtraShowFormat.isTrue()) {
+        if (mExtraShowFormat.isTrue(uuid)) {
             extras |= EXTRAS_FORMAT;
         }
 
-        if (mExtraShowAuthor.isTrue()) {
+        if (mExtraShowAuthor.isTrue(uuid)) {
             extras |= EXTRAS_AUTHOR;
         }
 
@@ -681,200 +607,11 @@ public class BooklistStyle implements Serializable, Parcelable {
     }
 
     /**
-     * Check if this style has the specified group
-     */
-    boolean hasKind(final @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX) int kind) {
-        for (BooklistGroup group : mGroups) {
-            if (group.getRowKind().kind == kind) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Get the group at the passed index.
-     */
-    @NonNull
-    public BooklistGroup getGroupAt(final int index) {
-        return mGroups.get(index);
-    }
-
-    /**
-     * Get the number of groups in this style
-     */
-    public int size() {
-        return mGroups.size();
-    }
-
-    public int getShowHeaderInfo() {
-        return mShowHeaderInfo.getResolvedValue();
-    }
-
-    public float getScaleSize() {
-        switch (mScaleSize.getResolvedValue()) {
-            case SCALE_SIZE_NORMAL:
-                return 1.0f;
-            case SCALE_SIZE_SMALLER:
-                return 0.8f;
-
-            default:
-                return SCALE_SIZE_NORMAL;
-        }
-    }
-
-    /**
-     * Used by built-in styles only
-     */
-    @SuppressWarnings("SameParameterValue")
-    void setScaleSize(final @IntRange(from = SCALE_SIZE_USE_DEFAULT, to = SCALE_SIZE_SMALLER) int size) {
-        mScaleSize.setValue(size);
-    }
-
-    /**
-     * Delete this style from the database
-     */
-    public void delete(final @NonNull CatalogueDBAdapter db) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("Style is not stored in the database, can not be deleted");
-        }
-        db.deleteBooklistStyle(id);
-    }
-
-    /**
-     * Convenience function to return a list of group names.
-     */
-    @NonNull
-    String getGroupListDisplayNames() {
-        StringBuilder groups = new StringBuilder();
-        boolean first = true;
-        for (BooklistGroup group : this.getGroups()) {
-            if (first) {
-                first = false;
-            } else {
-                groups.append(" / ");
-            }
-            groups.append(group.getRowKind().getName());
-        }
-        return groups.toString();
-    }
-
-    /**
-     * Custom serialization support. The signature of this method should never be changed.
-     *
-     * @see Serializable
-     */
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        out.writeObject(realSerialVersion);
-        out.writeObject(mExtraShowThumbnails.getValue());
-        out.writeObject(mExtraLargeThumbnails.getValue());
-        out.writeObject(mExtraShowBookshelves.getValue());
-        out.writeObject(mExtraShowLocation.getValue());
-        out.writeObject(mExtraShowPublisher.getValue());
-        out.writeObject(mExtraShowAuthor.getValue());
-        out.writeObject(mFilterRead.getValue());
-        // v1
-        out.writeObject(mScaleSize.getValue());
-        // v2
-        out.writeObject(mNameProperty.getValue());
-        // v3 / v4
-        out.writeObject(mShowHeaderInfo.getValue());
-        // v5
-        out.writeObject(mExtraShowFormat.getValue());
-
-        out.writeObject(mFilterSigned.getValue());
-        out.writeObject(mFilterAnthology.getValue());
-        out.writeObject(mFilterLoaned.getValue());
-
-        out.writeObject(mSortAuthor.getValue());
-    }
-
-    /**
-     * Custom serialization support. The signature of this method should never be changed.
-     *
-     * @see Serializable
-     */
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        // init first, then set all actual values afterwards
-        initProperties();
-
-        Object object = in.readObject();
-        long version = 0;
-        if (object instanceof Long) {
-            // It's the version
-            version = ((Long) object);
-            // Get the next object
-            object = in.readObject();
-        } // else it's a pre-version object..
-        // just use it
-        mExtraShowThumbnails.setValue((Boolean) object);
-
-        mExtraLargeThumbnails.setValue((Boolean) in.readObject());
-        mExtraShowBookshelves.setValue((Boolean) in.readObject());
-        mExtraShowLocation.setValue((Boolean) in.readObject());
-        mExtraShowPublisher.setValue((Boolean) in.readObject());
-        mExtraShowAuthor.setValue((Boolean) in.readObject());
-        mFilterRead.setValue((Integer) in.readObject());
-
-        // v1 'condensed' was a Boolean.
-        // v5+ it's an Integer and re-used for Font Size of which 'condensed' is just one option.
-        Object tmpCondensed = in.readObject();
-        if ((version > 0) && (version < 5)) {
-            // up to and including v4: Boolean: null=='use-defaults', false='normal', true='condensed'
-            if (tmpCondensed == null) {
-                mScaleSize.setValue(SCALE_SIZE_USE_DEFAULT);
-            } else {
-                mScaleSize.setValue((Boolean) tmpCondensed ? SCALE_SIZE_SMALLER : SCALE_SIZE_NORMAL);
-            }
-        } else if (version >= 5) {
-            // starting v5: Integer
-            mScaleSize.setValue((Integer) tmpCondensed);
-        }
-
-        // v2
-        if (version > 1) {
-            mNameProperty.setValue((String) in.readObject());
-        } else {
-            // v0/1, we had a simple String 'mName' which 'defaultReadObject' de-serialized.
-            // transfer that value into our new mNameProperty.
-            mNameProperty.setValue(mName);
-        }
-
-        // v3 Added mShowHeaderInfo as a Boolean
-        if (version == 3) {
-            Boolean isSet = (Boolean) in.readObject();
-            if (isSet == null) {
-                mShowHeaderInfo.setValue(null);
-            } else {
-                mShowHeaderInfo.setValue(isSet ? SUMMARY_SHOW_ALL : SUMMARY_HIDE);
-            }
-        }
-
-        // v4 Changed mShowHeaderInfo from Boolean to Integer
-        if (version > 3) {
-            mShowHeaderInfo.setValue((Integer) in.readObject());
-        }
-
-        // v5
-        if (version > 4) {
-            mExtraShowFormat.setValue((Boolean) in.readObject());
-
-            mFilterSigned.setValue((Integer) in.readObject());
-            mFilterAnthology.setValue((Integer) in.readObject());
-            mFilterLoaned.setValue((Integer) in.readObject());
-
-            mSortAuthor.setValue((Boolean) in.readObject());
-        }
-    }
-
-    /**
      * Used by built-in styles only
      */
     @SuppressWarnings("SameParameterValue")
     void setShowAuthor(final boolean show) {
-        mExtraShowAuthor.setValue(show);
+        mExtraShowAuthor.set(uuid, show);
     }
 
     /**
@@ -882,98 +619,455 @@ public class BooklistStyle implements Serializable, Parcelable {
      */
     @SuppressWarnings("SameParameterValue")
     void setShowThumbnails(final boolean show) {
-        mExtraShowThumbnails.setValue(show);
+        mExtraShowThumbnails.set(uuid, show);
+    }
+
+    @NonNull
+    public List<BooklistGroup> getGroups() {
+        return mStyleGroups.getGroups();
+    }
+
+    /**
+     * Passed a template style, copy the group structure to this style.
+     */
+    public void setGroups(@NonNull final BooklistStyle source) {
+
+        // Save the current groups
+        Map<Integer, BooklistGroup> currentGroups = new LinkedHashMap<>();
+        for (BooklistGroup group : mStyleGroups.getGroups()) {
+            currentGroups.put(group.getKind(), group);
+        }
+
+        // we'll collect the new PPrefs to add here
+        Map<String, PPref> newPPrefs = new LinkedHashMap<>();
+
+        // Clear the current groups, and rebuild, reusing old values where possible
+        mStyleGroups.clear();
+        for (BooklistGroup newGroup : source.getGroups()) {
+            BooklistGroup current = currentGroups.get(newGroup.getKind());
+            // if we don't have the new one...
+            if (current == null) {
+                // copy the groups PPrefs locally
+                newPPrefs.putAll(newGroup.getStylePPrefs());
+                // and add a new instance of that group
+                mStyleGroups.add(BooklistGroup.newInstance(newGroup.getKind(), uuid));
+            } else {
+                // otherwise, just re-add our (old) current group.
+                mStyleGroups.add(current);
+            }
+        }
+
+        // Lastly, copy any Preference values from new groups.
+        updatePPref(newPPrefs);
+    }
+
+    /**
+     * Add an already existing instance
+     *
+     * @param group to add
+     */
+    void addGroup(@NonNull final BooklistGroup group) {
+        mStyleGroups.add(group);
+    }
+
+    /**
+     * Remove a group from this style.
+     *
+     * @param group kind to remove.
+     */
+    void removeGroup(final int group) {
+        mStyleGroups.remove(group);
+    }
+
+    /**
+     * Convenience function to return a list of group names in a human readable format
+     */
+    @NonNull
+    public String getGroupListDisplayNames() {
+        return Utils.toDisplayString(mStyleGroups.getGroups());
+    }
+
+    /**
+     * Check if this style has the specified group
+     */
+    boolean hasGroupKind(final @IntRange(from = 0, to = BooklistGroup.RowKind.ROW_KIND_MAX) int kind) {
+        return mStyleGroups.getGroupKinds().contains(kind);
+    }
+
+    /**
+     * Get the group at the passed index.
+     */
+    @NonNull
+    BooklistGroup getGroupAt(final int index) {
+        return mStyleGroups.getGroupAt(index);
+    }
+
+    /**
+     * Get the group kind at the passed index.
+     */
+    @NonNull
+    public int getGroupKindAt(final int index) {
+        return mStyleGroups.getGroupKindAt(index);
+    }
+
+    /**
+     * Get the number of groups in this style
+     */
+    public int groupCount() {
+        return mStyleGroups.size();
+    }
+
+    @NonNull
+    public Map<String, PBooleanFilter> getFilters() {
+        return mFilters;
     }
 
     /**
      * Used by built-in styles only
      */
     @SuppressWarnings("SameParameterValue")
-    void setReadFilter(final @NonNull Integer value) {
-        mFilterRead.setValue(value);
+    void setFilter(@NonNull final Integer key,
+                   final boolean value) {
+        mFilters.get(BookCatalogueApp.getResourceString(key)).set(uuid, value);
     }
 
     /**
-     * Used by built-in styles only
+     * Custom serialization support. The signature of this method should never be changed.
+     *
+     * @see Serializable
      */
-    @SuppressWarnings("unused")
-    void setSignedFilter(final @NonNull Integer value) {
-        mFilterSigned.setValue(value);
+    private void writeObject(ObjectOutputStream out)
+        throws IOException {
+        out.defaultWriteObject();
+        // version must use writeObject
+        out.writeObject(realSerialVersion);
+        // uuid is done by defaultWriteObject, so next up is the name
+        out.writeObject(mDisplayNamePref.get(uuid));
+
+        out.writeInt(mScaleSize.get(uuid));
+        out.writeInt(mShowHeaderInfo.get(uuid));
+
+        out.writeBoolean(mExtraShowThumbnails.get(uuid));
+        out.writeBoolean(mExtraLargeThumbnails.get(uuid));
+        out.writeBoolean(mExtraShowBookshelves.get(uuid));
+        out.writeBoolean(mExtraShowLocation.get(uuid));
+        out.writeBoolean(mExtraShowPublisher.get(uuid));
+        out.writeBoolean(mExtraShowAuthor.get(uuid));
+        out.writeBoolean(mExtraShowFormat.get(uuid));
+
+        out.writeBoolean(mSortAuthor.get(uuid));
+
+        out.writeInt(mFilterRead.get(uuid));
+        out.writeInt(mFilterSigned.get(uuid));
+        out.writeInt(mFilterAnthology.get(uuid));
+        out.writeInt(mFilterLoaned.get(uuid));
     }
 
     /**
-     * Used by built-in styles only
+     * Custom serialization support. The signature of this method should never be changed.
+     *
+     * @see Serializable
      */
-    @SuppressWarnings("unused")
-    void setAnthologyFilter(final @NonNull Integer value) {
-        mFilterAnthology.setValue(value);
+    private void readObject(ObjectInputStream in)
+        throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+
+        Object object = in.readObject();
+        long version = 0;
+        if (object instanceof Long) {
+            // It's the version
+            version = ((Long) object);
+            if (version > 4) {
+                readObjectPostVersion4(version, in);
+                return;
+            }
+            // Get the next object
+            object = in.readObject();
+        } // else it's a pre-version object, just use it
+
+        // pre-v5 we did not have a UUID, create one so the prefs file will be written.
+        uuid = createUniqueName();
+        initPrefs();
+
+        SharedPreferences.Editor ed = Prefs.getPrefs(uuid).edit();
+        mExtraShowThumbnails.set(ed, (Boolean) object);
+
+        mExtraLargeThumbnails.set(ed, (Boolean) in.readObject());
+        mExtraShowBookshelves.set(ed, (Boolean) in.readObject());
+        mExtraShowLocation.set(ed, (Boolean) in.readObject());
+        mExtraShowPublisher.set(ed, (Boolean) in.readObject());
+        mExtraShowAuthor.set(ed, (Boolean) in.readObject());
+        mFilterRead.set(ed, (Integer) in.readObject());
+
+        // v1 'condensed' was a Boolean.
+        Object tmpCondensed = in.readObject();
+        // up to and including v4: Boolean: null=='use-defaults', false='normal', true='condensed'
+        if (tmpCondensed == null) {
+            mScaleSize.set(ed, SCALE_SIZE_NORMAL);
+        } else {
+            mScaleSize.set(ed, (Boolean) tmpCondensed ? SCALE_SIZE_SMALLER : SCALE_SIZE_NORMAL);
+        }
+
+        // v2
+        if (version > 1) {
+            mName = ((String) in.readObject());
+            mDisplayNamePref.set(ed, mName);
+        }
+
+        // v3 Added mShowHeaderInfo as a Boolean
+        if (version == 3) {
+            Boolean isSet = (Boolean) in.readObject();
+            if (isSet != null) {
+                mShowHeaderInfo.set(ed, isSet ? SUMMARY_SHOW_ALL : SUMMARY_HIDE);
+            }
+        }
+
+        // v4 Changed mShowHeaderInfo from Boolean to Integer
+        if (version > 3) {
+            Integer i = ((Integer) in.readObject());
+            if (i != null) {
+                mShowHeaderInfo.set(ed, i);
+            }
+        }
+
+        // base class de-serialized the groups, convert them
+        for (BooklistGroup group : mGroups) {
+            mStyleGroups.add(group);
+        }
+        mGroups = null;
+        ed.apply();
+    }
+
+    private void readObjectPostVersion4(@SuppressWarnings("unused") final long version,
+                                        final ObjectInputStream in)
+        throws IOException, ClassNotFoundException {
+        initPrefs();
+
+        SharedPreferences.Editor ed = Prefs.getPrefs(uuid).edit();
+        mDisplayNamePref.set(ed, (String) in.readObject());
+
+        mScaleSize.set(ed, in.readInt());
+        mShowHeaderInfo.set(ed, in.readInt());
+
+        mExtraShowThumbnails.set(ed, in.readBoolean());
+        mExtraLargeThumbnails.set(ed, in.readBoolean());
+        mExtraShowBookshelves.set(ed, in.readBoolean());
+        mExtraShowLocation.set(ed, in.readBoolean());
+        mExtraShowPublisher.set(ed, in.readBoolean());
+        mExtraShowAuthor.set(ed, in.readBoolean());
+        mExtraShowFormat.set(ed, in.readBoolean());
+
+        mSortAuthor.set(ed, in.readBoolean());
+
+        mFilterRead.set(ed, in.readInt());
+        mFilterSigned.set(ed, in.readInt());
+        mFilterAnthology.set(ed, in.readInt());
+        mFilterLoaned.set(ed, in.readInt());
+        ed.apply();
     }
 
     /**
-     * Used by built-in styles only
-     */
-    @SuppressWarnings("unused")
-    void setLoanedFilter(final @NonNull Integer value) {
-        mFilterLoaned.setValue(value);
-    }
-
-    /**
-     * Construct a deep clone of this object.
+     * Construct a clone of this object.
+     * The clone is committed! (written to a new pref file, and stored in the database)
      */
     @NonNull
-    BooklistStyle getClone() throws DeserializationException {
-        BooklistStyle clone = SerializationUtils.cloneObject(this);
-        clone.id = 0;
+    public BooklistStyle getClone(@NonNull final CatalogueDBAdapter db) {
+        Parcel parcel = Parcel.obtain();
+        writeToParcel(parcel, 0);
+        byte[] bytes = parcel.marshall();
+        parcel.recycle();
+
+        parcel = Parcel.obtain();
+        parcel.unmarshall(bytes, 0, bytes.length);
+        parcel.setDataPosition(0);
+        BooklistStyle clone = new BooklistStyle(parcel, true);
+        parcel.recycle();
+
+        clone.save(db);
+
         return clone;
     }
 
-    public ArrayList<Filter> getFilters() {
-        return mFilters;
+    /**
+     * if an insert fails, the style retains id==0
+     */
+    public void save(@NonNull final CatalogueDBAdapter db) {
+        // negative id == builtin style
+        if (id < 0) {
+            throw new IllegalArgumentException(
+                "Builtin Style is not stored in the database, can not be saved");
+        }
+
+        // check if the style already exists. This is easy as we have a UUID.
+        long existingId = db.getBooklistStyleIdByUuid(uuid);
+        if (existingId == 0) {
+            long newId = db.insertBooklistStyle(this);
+            if (newId > 0) {
+                id = newId;
+            }
+        } else {
+            // force-update the id.
+            id = existingId;
+            db.updateBooklistStyle(this);
+        }
     }
 
     /**
-     * Represents a collection of domains that make a unique key for a given group.
-     *
-     * @author Philip Warner
+     * Delete this style
      */
-    static class CompoundKey implements Parcelable {
-        public static final Creator<CompoundKey> CREATOR = new Creator<CompoundKey>() {
-            @Override
-            public CompoundKey createFromParcel(Parcel in) {
-                return new CompoundKey(in);
-            }
+    public void delete(@NonNull final CatalogueDBAdapter db) {
+        // cannot delete a builtin or a 'new' style(id==0)
+        if (id <= 0) {
+            throw new IllegalArgumentException(
+                "Style is not stored in the database, can not be deleted");
+        }
+        db.deleteBooklistStyle(id);
+        Prefs.getPrefs(uuid).edit().clear().apply();
+    }
 
-            @Override
-            public CompoundKey[] newArray(int size) {
-                return new CompoundKey[size];
+    @Override
+    public String toString() {
+        return "\nBooklistStyle{" +
+            "id=" + id +
+            "\nuuid=`" + uuid + '`' +
+            "\nmNameResId=" + mNameResId +
+            "\nmDisplayNamePref=" + mDisplayNamePref +
+            "\nmName=`" + mName + '`' +
+            "\nmIsPreferred=" + mIsPreferred +
+            "\nmScaleSize=" + mScaleSize +
+            "\nmShowHeaderInfo=" + mShowHeaderInfo +
+            "\nmSortAuthor=" + mSortAuthor +
+            "\nmExtraShowThumbnails=" + mExtraShowThumbnails +
+            "\nmExtraLargeThumbnails=" + mExtraLargeThumbnails +
+            "\nmExtraShowBookshelves=" + mExtraShowBookshelves +
+            "\nmExtraShowLocation=" + mExtraShowLocation +
+            "\nmExtraShowAuthor=" + mExtraShowAuthor +
+            "\nmExtraShowPublisher=" + mExtraShowPublisher +
+            "\nmExtraShowFormat=" + mExtraShowFormat +
+
+            "\nmFilters=\n" + mFilters +
+            "\nmStyleGroups=\n" + mStyleGroups +
+            '}';
+    }
+
+    /**
+     * fronts an ArrayList<BooklistGroup> with backend storage of the 'kind' in a preference file.
+     *
+     * Not static as it uses the {@link #uuid}
+     */
+    private class PStyleGroups
+        extends PIntList {
+
+        private final ArrayList<BooklistGroup> mGroups = new ArrayList<>();
+
+        PStyleGroups(final int key) {
+            super(key);
+            loadGroups();
+        }
+
+        /**
+         * load the group id's from the SharedPreference and populates the Group object list
+         */
+        private void loadGroups() {
+            mGroups.clear();
+            for (int kind : get(uuid)) {
+                mGroups.add(BooklistGroup.newInstance(kind, uuid));
             }
-        };
-        /** Unique prefix used to represent a key in the hierarchy */
+        }
+
+        /**
+         * Walk the list of Groups, and store their kind in SharedPreference
+         */
+        private void writeGroupIds() {
+            List<Integer> list = new ArrayList<>();
+            for (BooklistGroup group : mGroups) {
+                list.add(group.getKind());
+            }
+            set(uuid, list);
+        }
+
         @NonNull
-        final String prefix;
-        /** List of domains in key */
-        final DomainDefinition[] domains;
-
-        CompoundKey(final @NonNull String prefix, final @NonNull DomainDefinition... domains) {
-            this.prefix = prefix;
-            this.domains = domains;
+        public List<BooklistGroup> getGroups() {
+            return mGroups;
         }
 
-        CompoundKey(final @NonNull Parcel in) {
-            prefix = in.readString();
-            domains = in.createTypedArray(DomainDefinition.CREATOR);
+        BooklistGroup getGroupAt(final int index) {
+            return mGroups.get(index);
+        }
+
+        @NonNull
+        List<Integer> getGroupKinds() {
+            return this.get(uuid);
+        }
+
+        int getGroupKindAt(final int index) {
+            return (int) this.get(uuid).toArray()[index];
+        }
+
+        public void clear() {
+            mGroups.clear();
+            super.clear(uuid);
+        }
+
+        public int size() {
+            return get(uuid).size();
         }
 
         @Override
-        public void writeToParcel(final @NonNull Parcel dest, final int flags) {
-            dest.writeString(prefix);
-            dest.writeTypedArray(domains, flags);
+        public void set(@Nullable final String uuid,
+                        @NonNull final Parcel in) {
+            this.clear();
+            in.readList(mGroups, getClass().getClassLoader());
+            writeGroupIds();
         }
 
-        @SuppressWarnings("SameReturnValue")
         @Override
-        public int describeContents() {
-            return 0;
+        public void writeToParcel(@Nullable final String uuid,
+                                  @NonNull final Parcel dest) {
+            dest.writeList(mGroups);
+        }
+
+        public void add(@NonNull final BooklistGroup group) {
+            mGroups.add(group);
+            super.add(uuid, group.getKind());
+        }
+
+        @Override
+        public void add(@Nullable final String uuid,
+                        @NonNull final Integer value) {
+            throw new IllegalStateException("use add(BooklistGroup) instead");
+        }
+
+        /**
+         * We need the *kind* of group to remove, so we can (optionally) replace it
+         * with a new (different) copy.
+         *
+         * @param kind of group to remove
+         */
+        public void remove(final int kind) {
+            Iterator<BooklistGroup> it = mGroups.iterator();
+            while (it.hasNext()) {
+                int groupKind = it.next().getKind();
+                if (groupKind == kind) {
+                    it.remove();
+                    super.remove(uuid, groupKind);
+                }
+            }
+        }
+
+        @Override
+        public void remove(@Nullable final String uuid,
+                           @NonNull final Integer value) {
+            throw new IllegalStateException("use remove(BooklistGroup) instead");
+        }
+
+        @Override
+        public String toString() {
+            return "PStyleGroups{" +
+                "mGroups=" + mGroups +
+                ", nonPersistedValue=" + nonPersistedValue +
+                ", defaultValue=" + defaultValue +
+                '}';
         }
     }
 }

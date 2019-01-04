@@ -2,6 +2,9 @@
  * Archive Format
  * ==============
  *
+ * The below was for archiver version 1. Things have changed... TODO: update this description
+ *
+ *
  * Assumed to have multiple 'entries', processed sequentially. Could be zip, tar, or any other
  * amenable stream
  *
@@ -11,22 +14,16 @@
  * Contains a simple name-value set including:
  *
  * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_ARCHIVER_VERSION}
- * Archiver internal Version number (initially 1)
+ * Archiver internal Version number.
  *
  * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_CREATION_DATE}
- * Creation Date of archive (in SQL format)
+ * Creation Date of archive (in SQL format).
  *
  * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_NUMBOOKS}
- * # of books in archive (will/may be fewer pictures)
+ * # of books in archive (will/may be fewer pictures).
  *
  * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_APPVERSIONCODE}
- * BC Version that created it
- *
- * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_COMPATARCHIVER}
- * CompatArchiver
- * Last known compatible archiver version (initially 1, ideally always 1) that can read this archive
- * We may in the dim distance future decide to make a new TAR format that older versions will be unable to
- * understand. This is only a relevant field for DOWNGRADING.
+ * BC Version that created it.
  *
  * For a full list, see {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo}
  *
@@ -72,7 +69,6 @@
  *
  * Optional Data Entries: "preferences"
  * ------------------------------------
- * xml file with {@link com.eleybourn.bookcatalogue.BookCatalogueApp#APP_SHARED_PREFERENCES}
  *
  * Note: future versions may drop this entry when writing and instead write
  * into an extendable xml file, for example "config.xml", section "<preferences>"

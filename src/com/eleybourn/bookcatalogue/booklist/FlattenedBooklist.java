@@ -1,8 +1,9 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.database.sqlite.SQLiteDoneException;
-import androidx.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
@@ -12,13 +13,17 @@ import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
+import androidx.annotation.NonNull;
+
 /**
  * Class to provide a simple interface into a temporary table containing a list of book IDs on
  * the same order as an underlying book list.
  *
  * @author pjw
  */
-public class FlattenedBooklist implements AutoCloseable {
+public class FlattenedBooklist
+    implements AutoCloseable {
+
     /** Name for the 'next' statement */
     private static final String NEXT_STMT_NAME = "next";
     /** Name for the 'prev' statement */
@@ -45,10 +50,14 @@ public class FlattenedBooklist implements AutoCloseable {
      * @param db    Database connection
      * @param table Table definition
      */
-    FlattenedBooklist(final @NonNull SynchronizedDb db, final @NonNull TableDefinition table) {
-        Tracker.enterFunction(this, "FlattenedBooklist(final @NonNull SynchronizedDb db [not logged], final @NonNull TableDefinition table)", table);
+    FlattenedBooklist(@NonNull final SynchronizedDb db,
+                      @NonNull final TableDefinition table) {
+        Tracker.enterFunction(this,
+                              "FlattenedBooklist(SynchronizedDb [not logged], TableDefinition)",
+                              table);
         init(db, table.clone());
-        Tracker.exitFunction(this, "FlattenedBooklist(final @NonNull SynchronizedDb db, final @NonNull TableDefinition table)");
+        Tracker.exitFunction(this,
+                             "FlattenedBooklist(SynchronizedDb db, TableDefinition)");
     }
 
     /**
@@ -57,15 +66,21 @@ public class FlattenedBooklist implements AutoCloseable {
      * @param db        Database connection
      * @param tableName Name of underlying table
      */
-    public FlattenedBooklist(final @NonNull CatalogueDBAdapter db, final @NonNull String tableName) {
-        Tracker.enterFunction(this, "FlattenedBooklist(final @NonNull CatalogueDBAdapter db [not logged], final @NonNull String tableName)", tableName);
+    public FlattenedBooklist(@NonNull final CatalogueDBAdapter db,
+                             @NonNull final String tableName) {
+        Tracker.enterFunction(this,
+                              "FlattenedBooklist(CatalogueDBAdapter [not logged], String)",
+                              tableName);
 
         TableDefinition flat = DatabaseDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
         flat.setName(tableName);
-        flat.setType(TableTypes.Temporary); //RELEASE Make sure is TEMPORARY
-
+        if (DEBUG_SWITCHES.TEMP_TABLES_ARE_STANDARD && BuildConfig.DEBUG) {
+            flat.setType(TableTypes.Standard);
+        } else {
+            flat.setType(TableTypes.Temporary); //RELEASE Make sure is TEMPORARY
+        }
         init(db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing(), flat);
-        Tracker.exitFunction(this, "FlattenedBooklist(final @NonNull CatalogueDBAdapter db, final @NonNull String tableName)");
+        Tracker.exitFunction(this,"FlattenedBooklist(CatalogueDBAdapter, String)");
     }
 
     /**
@@ -74,7 +89,8 @@ public class FlattenedBooklist implements AutoCloseable {
      * @param db    Database connection
      * @param table Table definition
      */
-    private void init(final @NonNull SynchronizedDb db, final @NonNull TableDefinition table) {
+    private void init(@NonNull final SynchronizedDb db,
+                      @NonNull final TableDefinition table) {
         mSyncedDb = db;
         mTable = table;
         mStatements = new SqlStatementManager(mSyncedDb);
@@ -90,25 +106,9 @@ public class FlattenedBooklist implements AutoCloseable {
     }
 
     /**
-     * Release resource-consuming stuff
-     */
-    @Override
-    public void close() {
-        mStatements.close();
-    }
-
-    /**
-     * Cleanup the underlying table
-     */
-    public void deleteData() {
-        mTable.drop(mSyncedDb);
-        mTable.close();
-    }
-
-    /**
      * Passed a statement update the 'current' row details based on the columns returned
      */
-    private boolean fetchBookIdAndPosition(final @NonNull SynchronizedStatement stmt) {
+    private boolean fetchBookIdAndPosition(@NonNull final SynchronizedStatement stmt) {
         // Get a pair of ID's separated by a '/'
         try {
             final String[] data = stmt.simpleQueryForString().split("/");
@@ -137,10 +137,13 @@ public class FlattenedBooklist implements AutoCloseable {
     public boolean moveNext() {
         SynchronizedStatement stmt = mStatements.get(NEXT_STMT_NAME);
         if (stmt == null) {
-            String sql = "SELECT " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "|| '/' || " + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID)
-                    + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " > ? AND " + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID) + " <> Coalesce(?,-1)"
-                    + " ORDER BY " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " ASC LIMIT 1";
+            String sql = "SELECT " + mTable.dot(
+                DatabaseDefinitions.DOM_PK_ID) + "|| '/' || " + mTable.dot(
+                DatabaseDefinitions.DOM_FK_BOOK_ID)
+                + " FROM " + mTable.ref()
+                + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " > ? AND " + mTable.dot(
+                DatabaseDefinitions.DOM_FK_BOOK_ID) + " <> Coalesce(?,-1)"
+                + " ORDER BY " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " ASC LIMIT 1";
             stmt = mStatements.add(NEXT_STMT_NAME, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -161,10 +164,13 @@ public class FlattenedBooklist implements AutoCloseable {
     public boolean movePrev() {
         SynchronizedStatement stmt = mStatements.get(PREV_STMT_NAME);
         if (stmt == null) {
-            String sql = "SELECT " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "|| '/' || " + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID)
-                    + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " < ? AND " + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID) + " <> Coalesce(?,-1)"
-                    + " ORDER BY " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " DESC LIMIT 1";
+            String sql = "SELECT " + mTable.dot(
+                DatabaseDefinitions.DOM_PK_ID) + "|| '/' || " + mTable.dot(
+                DatabaseDefinitions.DOM_FK_BOOK_ID)
+                + " FROM " + mTable.ref()
+                + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " < ? AND " + mTable.dot(
+                DatabaseDefinitions.DOM_FK_BOOK_ID) + " <> Coalesce(?,-1)"
+                + " ORDER BY " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " DESC LIMIT 1";
             stmt = mStatements.add(PREV_STMT_NAME, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -187,8 +193,11 @@ public class FlattenedBooklist implements AutoCloseable {
     public boolean moveTo(final int pos) {
         SynchronizedStatement stmt = mStatements.get(MOVE_STMT_NAME);
         if (stmt == null) {
-            String sql = "SELECT " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "|| '/' || " + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID) +
-                    " FROM " + mTable.ref() + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "=?";
+            String sql = "SELECT " + mTable.dot(
+                DatabaseDefinitions.DOM_PK_ID) + "|| '/' || " + mTable.dot(
+                DatabaseDefinitions.DOM_FK_BOOK_ID) +
+                " FROM " + mTable.ref() + " WHERE " + mTable.dot(
+                DatabaseDefinitions.DOM_PK_ID) + "=?";
             stmt = mStatements.add(MOVE_STMT_NAME, sql);
         }
         stmt.bindLong(1, pos);
@@ -248,17 +257,34 @@ public class FlattenedBooklist implements AutoCloseable {
         SynchronizedStatement stmt = mStatements.get(POSITION_STMT_NAME);
         if (stmt == null) {
             String sql = "SELECT COUNT(*) FROM " + mTable.ref() +
-                    " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " <= ?";
+                " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " <= ?";
             stmt = mStatements.add(POSITION_STMT_NAME, sql);
         }
         stmt.bindLong(1, mPosition);
         return stmt.count();
     }
 
+
+    /**
+     * Release resource-consuming stuff
+     */
+    @Override
+    public void close() {
+        mStatements.close();
+    }
+
+    /**
+     * Cleanup the underlying table
+     */
+    public void deleteData() {
+        mTable.drop(mSyncedDb);
+        mTable.close();
+    }
+
     /**
      * Cleanup the statements
      */
-    public void finalize() {
+    protected void finalize() {
         close();
     }
 }

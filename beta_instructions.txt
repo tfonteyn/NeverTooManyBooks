@@ -15,7 +15,7 @@ The suggested procedure for testing is as follows:
 
 6. Once the application is installed, run it and make sure it works.
 
-7. Because I am paranoid, undo what you did in step 4: go into your phone settings, click on 'Applications', and make sure 'Unknown Sources' is UNCHECKED. This will PREVENT apps to be installed from places other than the Android Market. Of course, if we send you another beta, you will need to recheck it before you can install the update.
+7. Because I am paranoid, undo what you did in onProgress 4: go into your phone settings, click on 'Applications', and make sure 'Unknown Sources' is UNCHECKED. This will PREVENT apps to be installed from places other than the Android Market. Of course, if we send you another beta, you will need to recheck it before you can install the update.
 
 That't it! We have tested the app on version 1.6 through 4.0 of Android, and there are a small number of known bugs. We have also tested it on two 'real' phones, so are reasonably confident that any problems you may encounter should be swiftly resolved.
 

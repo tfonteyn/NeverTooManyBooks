@@ -1,63 +1,64 @@
 package com.eleybourn.bookcatalogue.backup.csv;
 
-import androidx.annotation.NonNull;
-
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.LocalCoverFinder;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+
+import androidx.annotation.NonNull;
 
 /**
  * Class to handle import in a separate thread.
  *
  * @author Philip Warner
  */
-public class CsvImportTask extends ManagedTask {
+public class CsvImportTask
+    extends ManagedTask {
+
     @NonNull
     private final ImportSettings mSettings;
     @NonNull
     private final Importer.CoverFinder mCoverFinder;
-    private final Importer.OnImporterListener mImportListener = new Importer.OnImporterListener() {
+    private final Importer.ImportListener mImportListener =
+        new Importer.ImportListener() {
 
-        @Override
-        public void onProgress(final @NonNull String message, final int position) {
-            if (position > 0) {
-                mTaskManager.sendTaskProgressMessage(CsvImportTask.this, message, position);
-            } else {
-                mTaskManager.sendHeaderTaskProgressMessage(message);
+            @Override
+            public void onProgress(@NonNull final String message,
+                                   final int position) {
+                if (position > 0) {
+                    mTaskManager.sendTaskProgressMessage(CsvImportTask.this, message, position);
+                } else {
+                    mTaskManager.sendHeaderTaskProgressMessage(message);
+                }
             }
-        }
 
-		@Override
-		public boolean isActive() {
-			return !CsvImportTask.this.isCancelled();
-		}
+            @Override
+            public boolean isCancelled() {
+                return CsvImportTask.this.isCancelled();
+            }
 
-        @Override
-        public void setMax(final int max) {
-            mTaskManager.setMaxProgress(CsvImportTask.this, max);
-        }
-    };
+            @Override
+            public void setMax(final int max) {
+                mTaskManager.setMaxProgress(CsvImportTask.this, max);
+            }
+        };
 
     @NonNull
     private final CsvImporter mImporter;
 
-    public CsvImportTask(final @NonNull TaskManager manager, final @NonNull ImportSettings settings) {
+    public CsvImportTask(@NonNull final TaskManager manager,
+                         @NonNull final ImportSettings settings) {
         super("CsvImportTask", manager);
 
         mSettings = settings;
         mImporter = new CsvImporter(settings);
-        mCoverFinder = new LocalCoverFinder(manager.getContext(),
-                // the source is the folder from which we are importing.
-                mSettings.file.getParent(),
-                // If this is not the Shared Storage folder, we'll be doing copies, else renames (to 'cover' folder)
-                StorageUtils.getSharedStorage().getAbsolutePath());
+        mCoverFinder = new LocalCoverFinder(mSettings.file.getParent());
     }
 
     @Override
@@ -79,8 +80,8 @@ public class CsvImportTask extends ManagedTask {
     @Override
     protected void onTaskFinish() {
         try {
-            mCoverFinder.close();
-        } catch (Exception ignore) {
+            mImporter.close();
+        } catch (IOException ignore) {
         }
     }
 }

@@ -39,14 +39,14 @@ import java.util.Locale;
  */
 public class EditLanguageDialog extends EditStringDialog {
 
-    public EditLanguageDialog(final @NonNull Activity activity,
-                              final @NonNull CatalogueDBAdapter db,
-                              final @NonNull Runnable onChanged) {
+    public EditLanguageDialog(@NonNull final Activity activity,
+                              @NonNull final CatalogueDBAdapter db,
+                              @NonNull final Runnable onChanged) {
         super(activity, db, onChanged);
     }
 
     @CallSuper
-    public void edit(final @NonNull String lang) {
+    public void edit(@NonNull final String lang) {
         String editLang;
         if (lang.length() > 3) {
             editLang = lang;
@@ -58,7 +58,7 @@ public class EditLanguageDialog extends EditStringDialog {
     }
 
     @Override
-    protected void confirmEdit(final @NonNull String from, final @NonNull String to) {
+    protected void confirmEdit(@NonNull final String from, @NonNull final String to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

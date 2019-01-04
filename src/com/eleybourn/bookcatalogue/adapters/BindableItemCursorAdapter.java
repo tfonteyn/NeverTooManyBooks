@@ -22,9 +22,6 @@ package com.eleybourn.bookcatalogue.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,13 +32,17 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 public class BindableItemCursorAdapter extends CursorAdapter {
 
-    /** A local Inflater for convenience */
+    /** A local Inflater for convenience. */
     @NonNull
     private final LayoutInflater mInflater;
     @NonNull
@@ -49,13 +50,13 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     @NonNull
     private final BindableItemBinder mBinder;
 
-    /** hash of class names and values used to dynamically allocate layout numbers */
-    private final Map<String, Integer> mItemTypeLookups = new Hashtable<>();
-    /** The position passed to the last call of {@link #getItemViewType} */
+    /** hash of class names and values used to dynamically allocate layout numbers. */
+    private final Map<String, Integer> mItemTypeLookups = new HashMap<>();
+    /** The position passed to the last call of {@link #getItemViewType}. */
     private int mLastItemViewTypePos = -1;
-    /** The item type returned by the last call of {@link #getItemViewType} */
+    /** The item type returned by the last call of {@link #getItemViewType}. */
     private int mLastItemViewType = -1;
-    /** The Event used in the last call of {@link #getItemViewType} */
+    /** The Event used in the last call of {@link #getItemViewType}. */
     private BindableItem mLastItemViewTypeEvent = null;
     private int mItemTypeCount = 0;
 
@@ -65,9 +66,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
      * @param context Context of call
      * @param cursor  Cursor to use as source
      */
-    public BindableItemCursorAdapter(final @NonNull BindableItemBinder binder,
-                                     final @NonNull Context context,
-                                     final @NonNull Cursor cursor) {
+    public BindableItemCursorAdapter(@NonNull final BindableItemBinder binder,
+                                     @NonNull final Context context,
+                                     @NonNull final Cursor cursor) {
         super(context, cursor);
         //noinspection ConstantConditions
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -79,7 +80,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
      * NOT USED. Should never be called.
      */
     @Override
-    public void bindView(final @NonNull View view, final @NonNull Context context, final @NonNull Cursor cursor) {
+    public void bindView(@NonNull final View view,
+                         @NonNull final Context context,
+                         @NonNull final Cursor cursor) {
         throw new UnsupportedOperationException();
     }
 
@@ -88,7 +91,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
      */
     @NonNull
     @Override
-    public View newView(final @NonNull Context context, final @NonNull Cursor cursor, final @NonNull ViewGroup parent) {
+    public View newView(@NonNull final Context context,
+                        @NonNull final Cursor cursor,
+                        @NonNull final ViewGroup parent) {
         throw new UnsupportedOperationException();
     }
 
@@ -135,9 +140,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
         }
 
         //
-        // Cache the recent results; this is a optimization kludge based on the fact that current code
-        // always call this method before getView(...) so we can avoid one deserialization by caching
-        // here.
+        // Cache the recent results; this is a optimization kludge based on the fact
+        // that current code always call this method before getView(...)
+        // so we can avoid one deserialization by caching here.
         //
         // NOTE: if this assumption fails, the code still works. It just runs slower.
         //
@@ -150,7 +155,8 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     }
 
     /**
-     * Get the (approximate, overestimate) of the number of Event subclasses in use in this list.
+     * Get the (approximate, overestimate) of the number of Event subclasses
+     * in use in this list.
      */
     @Override
     public int getViewTypeCount() {
@@ -160,7 +166,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
 
     @Nullable
     @Override
-    public View getView(final int position, @Nullable View convertView, final @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
         BindableItemCursor cursor = (BindableItemCursor) this.getCursor();
         cursor.moveToPosition(position);
 
@@ -183,6 +189,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     }
 
     public interface BindableItemBinder {
+
         /**
          * Return the number of different Event types and event that the list will display.
          * An approximation is fine, but overestimating will be more efficient than underestimating.
@@ -202,13 +209,14 @@ public class BindableItemCursorAdapter extends CursorAdapter {
          * @param convertView View to populate
          * @param cursor      Cursor, positions at the relevant row
          */
-        void bindViewToItem(final @NonNull Context context,
-                            final @NonNull View convertView,
-                            final @NonNull BindableItemCursor cursor,
-                            final @NonNull BindableItem bindable);
+        void bindViewToItem(@NonNull final Context context,
+                            @NonNull final View convertView,
+                            @NonNull final BindableItemCursor cursor,
+                            @NonNull final BindableItem item);
     }
 
     public interface BindableItem {
+
         /**
          * Get a new View object suitable for displaying this type of event.
          *
@@ -222,10 +230,10 @@ public class BindableItemCursorAdapter extends CursorAdapter {
          *
          * @return a new view
          */
-        View newListItemView(final @NonNull LayoutInflater inflater,
-                             final @NonNull Context context,
-                             final @NonNull BindableItemCursor cursor,
-                             final @NonNull ViewGroup parent);
+        View newListItemView(@NonNull final LayoutInflater inflater,
+                             @NonNull final Context context,
+                             @NonNull final BindableItemCursor cursor,
+                             @NonNull final ViewGroup parent);
 
         /**
          * Bind this Event to the passed view. The view will be one created by a call
@@ -234,34 +242,32 @@ public class BindableItemCursorAdapter extends CursorAdapter {
          * @param view    View to populate
          * @param context Context using view
          * @param cursor  EventsCursor for this event, positioned at its row.
-         * @param appInfo Any application-specific object the caller chooses to send.
-         *                eg. a database adapter.
+         * @param db      database adapter.
          */
-        void bindView(final @NonNull View view,
-                      final @NonNull Context context,
-                      final @NonNull BindableItemCursor cursor,
-                      final @NonNull CatalogueDBAdapter appInfo);
+        void bindView(@NonNull final View view,
+                      @NonNull final Context context,
+                      @NonNull final BindableItemCursor cursor,
+                      @NonNull final CatalogueDBAdapter db);
 
         /**
          * Called when an item in a list has been clicked, this method should populate the passed
          * 'items' parameter with one {@link ContextDialogItem} per operation that can be
          * performed on this object.
          *
-         * @param ctx      Context resulting in Click() event
+         * @param context  Context resulting in Click() event
          * @param parent   ListView (or other) that contained the item
-         * @param v        View that was clicked
+         * @param view     View that was clicked
          * @param position position in cursor of item
          * @param id       row id of item
          * @param items    items collection to fill
-         * @param appInfo  Any application-specific object the caller chooses to send.
-         *                 eg. a database adapter.
+         * @param db       database adapter.
          */
-        void addContextMenuItems(final @NonNull Context ctx,
+        void addContextMenuItems(@NonNull final Context context,
                                  @NonNull AdapterView<?> parent,
-                                 final @NonNull View v,
+                                 @NonNull final View view,
                                  final int position,
                                  final long id,
-                                 final @NonNull List<ContextDialogItem> items,
-                                 final @NonNull CatalogueDBAdapter appInfo);
+                                 @NonNull final List<ContextDialogItem> items,
+                                 @NonNull final CatalogueDBAdapter db);
     }
 }

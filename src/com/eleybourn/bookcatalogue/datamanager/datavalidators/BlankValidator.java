@@ -19,11 +19,11 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
-import androidx.annotation.NonNull;
-
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
+
+import androidx.annotation.NonNull;
 
 /**
  * Validator that requires a blank field
@@ -31,8 +31,9 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  * @author Philip Warner
  */
 public class BlankValidator implements DataValidator {
+
     @Override
-    public void validate(final @NonNull DataManager data, final @NonNull Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
@@ -43,14 +44,11 @@ public class BlankValidator implements DataValidator {
             return;
         }
 
-        try {
-            String s = data.getString(datum).trim();
-            if (!s.isEmpty()) {
-                throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
-            }
+        String s = data.getString(datum).trim();
+        if (s.isEmpty()) {
             data.putString(datum, s);
-        } catch (Exception e) {
-            throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
+            return;
         }
+        throw new ValidatorException(R.string.vldt_blank_required, new Object[]{datum.getKey()});
     }
 }

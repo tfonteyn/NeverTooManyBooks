@@ -24,11 +24,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -44,7 +39,12 @@ import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.util.ArrayList;
-import java.util.Objects;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * ENHANCE: Ultimately, this should become a Fragment.
@@ -145,6 +145,7 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     protected String mBookTitle;
     /** Row ID... mainly used (if list is from a book) to know if book is new. */
     protected long mRowId = 0;
+
     /**
      * Constructor
      *
@@ -154,10 +155,10 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      */
     protected EditObjectListActivity(final @LayoutRes int baseViewId,
                                      final @LayoutRes int rowViewId,
-                                     final @Nullable String bkey) {
-        mBKey = bkey;
+                                     @Nullable final String bkey) {
         mBaseViewId = baseViewId;
         mRowViewId = rowViewId;
+        mBKey = bkey;
     }
 
     @Override
@@ -167,7 +168,7 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
 
     @Override
     @CallSuper
-    protected void onCreate(final @Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -206,36 +207,33 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      * 4. throw FATAL error
      */
     @NonNull
-    private ArrayList<T> getList(String key, final @Nullable Bundle savedInstanceState) {
+    private ArrayList<T> getList(@NonNull final String key, @Nullable final Bundle savedInstanceState) {
         ArrayList<T> list = null;
 
-        // we need the ArrayList before building the adapter.
         if (key != null) {
             list = BundleUtils.getParcelableArrayList(key, savedInstanceState, getIntent().getExtras());
         }
-        // nothing ? Then ask the subclass to setup the list
-        if (list == null) {
-            list = getList();
+        if (list != null) {
+            return list;
         }
-        // give up if still null
-        Objects.requireNonNull(list, "Unable to find list for key '" + key + "'");
 
-        return list;
+        // no list yet ? Then ask the subclass to setup the list
+        return getList();
     }
 
     /**
      * Called to get the list if it was not in the intent.
      * Override to make it do something
      */
-    @Nullable
+    @NonNull
     protected ArrayList<T> getList() {
-        return null;
+        throw new IllegalStateException();
     }
 
     /**
      * Replace the current list
      */
-    protected void setList(final @NonNull ArrayList<T> newList) {
+    protected void setList(@NonNull final ArrayList<T> newList) {
         View listView = getListView().getChildAt(0);
         final int savedTop = listView == null ? 0 : listView.getTop();
         final int savedRow = getListView().getFirstVisiblePosition();
@@ -256,14 +254,14 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      * get the specific list adapter from the child class
      */
     abstract protected SimpleListAdapter<T> createListAdapter(final @LayoutRes int rowViewId,
-                                                              final @NonNull ArrayList<T> list);
+                                                              @NonNull final ArrayList<T> list);
 
     /**
      * Called when user clicks the 'Add' button (if present).
      *
      * @param target The view that was clicked ('add' button).
      */
-    protected void onAdd(final @NonNull View target) {
+    protected void onAdd(@NonNull final View target) {
         throw new UnsupportedOperationException("Must be overridden");
     }
 
@@ -327,9 +325,9 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      * @param data A newly created Intent to store output if necessary.
      *             Comes pre-populated with data.putExtra(mBKey, mList);
      *
-     * @return <tt>true</tt>if activity should exit, false to abort exit.
+     * @return <tt>true</tt> if activity should exit, <tt>false</tt> to abort exit.
      */
-    protected boolean onSave(final @NonNull Intent data) {
+    protected boolean onSave(@NonNull final Intent data) {
         setResult(Activity.RESULT_OK, data); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
                  dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17
                  13854efe-e8fd-447a-a195-47678c0d87e7 */
@@ -343,7 +341,7 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      * <p>
      * Can be overridden to perform other checks.
      *
-     * @return <tt>true</tt>if activity should exit, false to abort exit.
+     * @return <tt>true</tt> if activity should exit, <tt>false</tt> to abort exit.
      */
     @SuppressWarnings("SameReturnValue")
     protected boolean onCancel() {
@@ -370,7 +368,7 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      * @param viewId   Resource ID
      * @param listener Listener
      */
-    private void setOnClickListener(final @IdRes int viewId, final @NonNull OnClickListener listener) {
+    private void setOnClickListener(final @IdRes int viewId, @NonNull final OnClickListener listener) {
         View view = findViewById(viewId);
         if (view != null) {
             view.setOnClickListener(listener);
@@ -383,7 +381,7 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      * @param viewId View ID
      * @param value  String to set
      */
-    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue") final @IdRes int viewId, final @Nullable String value) {
+    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue") final @IdRes int viewId, @Nullable final String value) {
         TextView textView = this.findViewById(viewId);
         if (textView == null) {
             return;
@@ -401,7 +399,7 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      */
     @Override
     @CallSuper
-    protected void onSaveInstanceState(final @NonNull Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putParcelableArrayList(mBKey, mList);
 
         super.onSaveInstanceState(outState);
@@ -423,8 +421,8 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      */
     @Override
     @CallSuper
-    public void onRestoreInstanceState(final Bundle state) {
-        super.onRestoreInstanceState(state);
+    public void onRestoreInstanceState(final Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override

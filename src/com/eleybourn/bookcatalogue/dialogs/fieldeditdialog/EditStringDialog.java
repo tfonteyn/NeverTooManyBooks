@@ -28,9 +28,9 @@ abstract class EditStringDialog {
     /**
      * EditText
      */
-    EditStringDialog(final @NonNull Activity activity,
-                     final @NonNull CatalogueDBAdapter db,
-                     final @NonNull Runnable onChanged) {
+    EditStringDialog(@NonNull final Activity activity,
+                     @NonNull final CatalogueDBAdapter db,
+                     @NonNull final Runnable onChanged) {
         this.mActivity = activity;
         mOnChanged = onChanged;
         mDb = db;
@@ -41,11 +41,11 @@ abstract class EditStringDialog {
      * @param list         for theAutoCompleteTextView
      * @param onChanged    Runnable to be started after user confirming
      */
-    EditStringDialog(final @NonNull Activity activity,
-                     final @NonNull CatalogueDBAdapter db,
+    EditStringDialog(@NonNull final Activity activity,
+                     @NonNull final CatalogueDBAdapter db,
                      @SuppressWarnings("SameParameterValue") final @LayoutRes int adapterResId,
-                     final @NonNull List<String> list,
-                     final @NonNull Runnable onChanged) {
+                     @NonNull final List<String> list,
+                     @NonNull final Runnable onChanged) {
         this.mActivity = activity;
         mOnChanged = onChanged;
         mDb = db;
@@ -58,9 +58,9 @@ abstract class EditStringDialog {
      * @param layout        dialog content view layout
      * @param title         dialog title
      */
-    protected void edit(final @NonNull String currentText,
+    protected void edit(@NonNull final String currentText,
                         final @LayoutRes int layout,
-                        final @StringRes int title) {
+                        @StringRes final int title) {
         // Build the base dialog
         final View root = mActivity.getLayoutInflater().inflate(layout, null);
 
@@ -100,5 +100,5 @@ abstract class EditStringDialog {
         dialog.show();
     }
 
-    abstract protected void confirmEdit(final @NonNull String from, final @NonNull String to);
+    abstract protected void confirmEdit(@NonNull final String from, @NonNull final String to);
 }

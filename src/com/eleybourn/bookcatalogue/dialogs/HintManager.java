@@ -34,6 +34,7 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.HashMap;
@@ -49,7 +50,7 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public class HintManager {
+public final class HintManager {
     /** Preferences prefix */
     private final static String TAG = "HintManager.";
     /** Preferences prefix for hints */
@@ -59,10 +60,12 @@ public class HintManager {
     private static final  Map<Integer, Hint> mHints = new HashMap<>();
 
     static {
+        mHints.put(R.string.hint_booklist_style_menu, new Hint("hint_booklist_style_menu"));
         mHints.put(R.string.hint_booklist_styles_editor, new Hint("BOOKLIST_STYLES_EDITOR"));
         mHints.put(R.string.hint_booklist_style_groups, new Hint("BOOKLIST_STYLE_GROUPS"));
         mHints.put(R.string.hint_booklist_style_properties, new Hint("BOOKLIST_STYLE_PROPERTIES"));
-        mHints.put(R.string.hint_booklist_global_properties, new Hint("BOOKLIST_GLOBAL_PROPERTIES"));
+        // keep, might need again if re-implemented
+        //mHints.put(R.string.hint_booklist_global_properties, new Hint("BOOKLIST_GLOBAL_PROPERTIES"));
 
         mHints.put(R.string.hint_authors_book_may_appear_more_than_once, new Hint("BOOKLIST_MULTI_AUTHORS"));
         mHints.put(R.string.hint_series_book_may_appear_more_than_once, new Hint("BOOKLIST_MULTI_SERIES"));
@@ -73,17 +76,17 @@ public class HintManager {
         mHints.put(R.string.gr_explain_goodreads_no_isbn, new Hint("explain_goodreads_no_isbn"));
         mHints.put(R.string.gr_explain_goodreads_no_match, new Hint("explain_goodreads_no_match"));
 
+        // advert
         //mHints.put(R.string.hint_tempus_locum, new Hint("hint_tempus_locum"));
 
-        mHints.put(R.string.hint_booklist_style_menu, new Hint("hint_booklist_style_menu"));
         mHints.put(R.string.hint_autorotate_camera_images, new Hint("hint_autorotate_camera_images"));
         mHints.put(R.string.hint_view_only_book_details, new Hint("hint_view_only_book_details"));
         mHints.put(R.string.hint_view_only_help, new Hint("hint_view_only_help"));
         mHints.put(R.string.hint_book_list, new Hint("hint_book_list"));
         mHints.put(R.string.hint_amazon_links_blurb, new Hint("hint_amazon_links_blurb"));
         mHints.put(R.string.hint_book_search_by_text, new Hint("hint_book_search_by_text"));
-        // v83
-        mHints.put(R.string.hint_pref_layer_type, new Hint("hint_pref_layer_type"));
+        // v200
+        mHints.put(R.string.pt_hint_layer_type, new Hint("hint_pref_layer_type"));
     }
 
     private HintManager() {
@@ -97,24 +100,26 @@ public class HintManager {
         }
     }
 
-    public static boolean shouldBeShown(final @StringRes int id) {
+    public static boolean shouldBeShown(@StringRes final int id) {
         return mHints.get(id).shouldBeShown();
     }
 
     /** Display the passed hint, if the user has not disabled it */
-    public static void displayHint(final @NonNull LayoutInflater inflater,
-                                   final @StringRes int stringId,
-                                   final @Nullable Runnable postRun,
-                                   final @Nullable Object... args) {
+    public static void displayHint(@NonNull final LayoutInflater inflater,
+                                   @StringRes final int stringId,
+                                   @Nullable final Runnable postRun,
+                                   @Nullable final Object... args) {
         // Get the hint and return if it has been disabled.
         final Hint hint = mHints.get(stringId);
         if (hint == null) {
+            // log but ignore.
             Logger.error("displayHint|not found|stringId=" + stringId);
             return;
         }
         if (!hint.shouldBeShown()) {
-            if (postRun != null)
+            if (postRun != null) {
                 postRun.run();
+            }
             return;
         }
 
@@ -141,6 +146,9 @@ public class HintManager {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                if (postRun != null) {
+                    postRun.run();
+                }
             }
         });
 
@@ -150,6 +158,9 @@ public class HintManager {
             public void onClick(View v) {
                 dialog.dismiss();
                 hint.setVisibility(false);
+                if (postRun != null) {
+                    postRun.run();
+                }
             }
         });
         dialog.show();
@@ -179,7 +190,7 @@ public class HintManager {
          *
          * @param key Preferences key suffix specific to this hint
          */
-        private Hint(final @NonNull String key) {
+        private Hint(@NonNull final String key) {
             this.key = key;
         }
 
@@ -199,14 +210,14 @@ public class HintManager {
          * @param visible Options indicating future visibility
          */
         public void setVisibility(final boolean visible) {
-            BookCatalogueApp.getSharedPreferences().edit().putBoolean(getFullPrefName(), visible).apply();
+            Prefs.getPrefs().edit().putBoolean(getFullPrefName(), visible).apply();
         }
 
         /**
          * Check if this hint should be shown
          */
         boolean shouldBeShown() {
-            return !hasBeenDisplayed() && BookCatalogueApp.getBooleanPreference(getFullPrefName(), true);
+            return !hasBeenDisplayed() && Prefs.getBoolean(getFullPrefName(), true);
         }
 
         boolean hasBeenDisplayed() {

@@ -22,7 +22,7 @@ public abstract class CheckListItemBase<T> implements CheckListItem<T>, Parcelab
     protected CheckListItemBase() {
     }
 
-    protected CheckListItemBase(final @NonNull T item, final boolean selected) {
+    protected CheckListItemBase(@NonNull final T item, final boolean selected) {
         this.item = item;
         this.selected = selected;
     }
@@ -70,7 +70,7 @@ public abstract class CheckListItemBase<T> implements CheckListItem<T>, Parcelab
     }
 
     @NonNull
-    public ArrayList<T> extractList(final @NonNull List<CheckListItem<T>> list) {
+    public ArrayList<T> extractList(@NonNull final List<CheckListItem<T>> list) {
         ArrayList<T> result = new ArrayList<>();
         for (CheckListItem<T> entry : list) {
             if (entry.getSelected()) {

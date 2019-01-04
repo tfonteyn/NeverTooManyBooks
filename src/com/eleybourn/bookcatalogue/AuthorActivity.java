@@ -1,8 +1,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 import android.widget.ArrayAdapter;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
@@ -14,10 +12,14 @@ import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+
 /**
- * ENHANCE: add book list to each title, and make the clickable to goto the book
+ * ENHANCE: add book list to each title, and make the clickable to goto the book.
  */
-public class AuthorActivity extends BaseListActivity {
+public class AuthorActivity
+    extends BaseListActivity {
 
     private CatalogueDBAdapter mDb;
     private ArrayList<TOCEntry> mList;
@@ -29,7 +31,7 @@ public class AuthorActivity extends BaseListActivity {
 
     @Override
     @CallSuper
-    protected void onCreate(final @Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 

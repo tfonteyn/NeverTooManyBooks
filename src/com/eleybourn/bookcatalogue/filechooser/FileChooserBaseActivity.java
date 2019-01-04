@@ -79,7 +79,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -102,7 +102,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
         // Handle 'Cancel' button
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(final View view) {
+            public void onClick(final View v) {
                 setResult(Activity.RESULT_CANCELED);
                 finish();
             }
@@ -115,7 +115,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
             confirm.setText(R.string.btn_confirm_save);
             confirm.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(final View view) {
+                public void onClick(final View v) {
                     handleSave();
                 }
             });
@@ -124,7 +124,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
             confirm.setText(R.string.btn_confirm_open);
             confirm.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(final View view) {
+                public void onClick(final View v) {
                     handleOpen();
                 }
             });
@@ -137,14 +137,14 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
      *
      * @param file Selected file
      */
-    protected abstract void onOpen(final @NonNull File file);
+    protected abstract void onOpen(@NonNull final File file);
 
     /**
      * Implemented by subclass to handle a click on the 'Save' button
      *
      * @param file Selected file
      */
-    protected abstract void onSave(final @NonNull File file);
+    protected abstract void onSave(@NonNull final File file);
 
     /**
      * Local handler for 'Open'. Perform basic validation, and pass on.
@@ -182,7 +182,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
      * Called by lister fragment to pass on the list of files.
      */
     @Override
-    public void onGotFileList(final @NonNull File root, final @NonNull ArrayList<FileDetails> list) {
+    public void onGotFileList(@NonNull final File root, @NonNull final ArrayList<FileDetails> list) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.browser_fragment);
         if (frag instanceof FileListerListener) {
             ((FileListerListener) frag).onGotFileList(root, list);
@@ -193,14 +193,14 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
      * Get an object for building an list of files in background.
      */
     @NonNull
-    protected abstract FileListerFragmentTask getFileLister(final @NonNull File root);
+    protected abstract FileListerFragmentTask getFileLister(@NonNull final File root);
 
     /**
      * Rebuild the file list in background; gather whatever data is necessary to
      * ensure fast building of views in the UI thread.
      */
     @Override
-    public void onPathChanged(final @Nullable File root) {
+    public void onPathChanged(@Nullable final File root) {
         if (root == null || !root.isDirectory())
             return;
 

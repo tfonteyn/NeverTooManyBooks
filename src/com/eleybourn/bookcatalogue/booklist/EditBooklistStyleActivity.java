@@ -24,9 +24,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,23 +33,27 @@ import android.widget.TextView;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.properties.PropertyList;
-import com.eleybourn.bookcatalogue.properties.Property.ValidationException;
 import com.eleybourn.bookcatalogue.properties.PropertyGroup;
 import com.eleybourn.bookcatalogue.properties.StringProperty;
+import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
+import java.util.Map;
 import java.util.Objects;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Edit the properties associated with a passed style
  *
  * Started from:
- * - {@link BooklistPreferredStylesActivity}
+ * - {@link PreferredStylesActivity}
  *
  * Starts
  * - {@link EditBooklistStyleGroupsActivity}
@@ -67,11 +68,10 @@ import java.util.Objects;
  */
 public class EditBooklistStyleActivity extends BaseActivity {
 
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES;
+    private static final int REQ_EDIT_GROUPS = 0;
 
-    private static final String TAG = "BooklistStyleProperties";
     /** Parameter used to pass data to this activity */
-    public static final String REQUEST_BKEY_STYLE = TAG + ".Style";
+    public static final String REQUEST_BKEY_STYLE = "Style";
 
     /** Database connection, if used */
     @Nullable
@@ -80,7 +80,7 @@ public class EditBooklistStyleActivity extends BaseActivity {
     /** Style we are editing */
     private BooklistStyle mStyle;
     /** PropertyList object constructed from current style */
-    private PropertyList mPropertyList;
+    private Map<String, PPref> mPropertyList;
 
     @Override
     protected int getLayoutId() {
@@ -89,7 +89,7 @@ public class EditBooklistStyleActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    protected void onCreate(final @Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -111,14 +111,14 @@ public class EditBooklistStyleActivity extends BaseActivity {
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    mPropertyList.validate();
-                } catch (ValidationException e) {
-                    StandardDialogs.showUserMessage(EditBooklistStyleActivity.this, e.getLocalizedMessage());
-                    return;
-                }
+//                try {
+//                    mPropertyList.validate();
+//                } catch (ValidationException e) {
+//                    StandardDialogs.showUserMessage(EditBooklistStyleActivity.this, e.getLocalizedMessage());
+//                    return;
+//                }
 
-                getDb().insertOrUpdateBooklistStyle(mStyle);
+                mStyle.save(getDb());
 
                 Intent data = new Intent();
                 data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
@@ -151,9 +151,9 @@ public class EditBooklistStyleActivity extends BaseActivity {
         ViewGroup vg = this.findViewById(R.id.body);
         vg.removeAllViews();
 
-        mPropertyList = mStyle.getProperties();
-        mPropertyList.add(new GroupsProperty());
-        mPropertyList.buildView(this.getLayoutInflater(), vg);
+        mPropertyList = mStyle.getPPrefs();
+//        mPropertyList.add(new GroupsProperty());
+        //mPropertyList.buildView(this.getLayoutInflater(), vg);
     }
 
     /**
@@ -163,16 +163,16 @@ public class EditBooklistStyleActivity extends BaseActivity {
         Intent intent = new Intent(this, EditBooklistStyleGroupsActivity.class);
         intent.putExtra(EditBooklistStyleGroupsActivity.REQUEST_BKEY_STYLE, (Parcelable) mStyle);
         intent.putExtra(EditBooklistStyleGroupsActivity.REQUEST_BKEY_SAVE_TO_DATABASE, false);
-        startActivityForResult(intent, EditBooklistStyleGroupsActivity.REQUEST_CODE); /* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
+        startActivityForResult(intent, REQ_EDIT_GROUPS);
     }
 
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
-            case EditBooklistStyleGroupsActivity.REQUEST_CODE: {/* 06ed8d0e-7120-47aa-b47e-c0cd46361dcb */
+            case REQ_EDIT_GROUPS: {
                 switch (resultCode) {
                     case Activity.RESULT_OK: {
                         Objects.requireNonNull(data);
@@ -231,7 +231,7 @@ public class EditBooklistStyleActivity extends BaseActivity {
          */
         GroupsProperty() {
             // default "" is a dummy
-            super(R.string.groupings, PropertyGroup.GRP_GENERAL, "");
+            super(R.string.pg_groupings, PropertyGroup.GRP_GENERAL, "");
         }
 
         /**
@@ -248,7 +248,7 @@ public class EditBooklistStyleActivity extends BaseActivity {
          */
         @Override
         @NonNull
-        public GroupsProperty setValue(final @Nullable String value) {
+        public GroupsProperty setValue(@Nullable final String value) {
             throw new UnsupportedOperationException("Attempt to set read-only property string");
         }
 
@@ -257,7 +257,7 @@ public class EditBooklistStyleActivity extends BaseActivity {
          */
         @NonNull
         @Override
-        public View getView(final @NonNull LayoutInflater inflater) {
+        public View getView(@NonNull final LayoutInflater inflater) {
             final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.row_property_string_with_edit_button, null);
             // create Holder -> not needed here
 

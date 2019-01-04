@@ -542,7 +542,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnText("Administration Functions");
 		t.assertCurrentActivity("Expected AdminActivity activity", "AdminActivity");
 		t.clickOnText("Manage Field Visibility");
-		t.assertCurrentActivity("Expected FieldVisibilityActivity activity", "FieldVisibilityActivity");
+		t.assertCurrentActivity("Expected FieldVisibilitySettingsFragment", "FieldVisibilitySettingsFragment");
 		
 		//set all as true (reset)
 		ArrayList<CheckBox> fields = t.getCurrentCheckBoxes();
@@ -628,7 +628,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnText("Administration Functions");
 		t.assertCurrentActivity("Expected AdminActivity activity", "AdminActivity");
 		t.clickOnText("Manage Field Visibility");
-		t.assertCurrentActivity("Expected FieldVisibilityActivity activity", "FieldVisibilityActivity");
+		t.assertCurrentActivity("Expected FieldVisibilitySettingsFragment", "FieldVisibilitySettingsFragment");
 		
 		//set all as true (reset)
 		//ArrayList<CheckBox> fields = t.getCurrentCheckBoxes();

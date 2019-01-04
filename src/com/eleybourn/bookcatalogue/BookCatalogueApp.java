@@ -26,17 +26,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import androidx.annotation.ArrayRes;
-import androidx.annotation.AttrRes;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.debug.DebugReport;
@@ -50,11 +43,14 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+
+import androidx.annotation.ArrayRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 /**
  * BookCatalogue Application implementation. Useful for making globals available and for being a
@@ -63,49 +59,48 @@ import java.util.Objects;
  * @author Philip Warner
  */
 @ReportsCrashes(
-        //mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
-        mailTo = "test@local.net",
-        mode = ReportingInteractionMode.DIALOG,
-        customReportContent = {
-                ReportField.APP_VERSION_CODE,
-                ReportField.APP_VERSION_NAME,
-                ReportField.PACKAGE_NAME,
-                ReportField.PHONE_MODEL,
-                ReportField.ANDROID_VERSION,
-                ReportField.BUILD,
-                ReportField.PRODUCT,
-                ReportField.TOTAL_MEM_SIZE,
-                ReportField.AVAILABLE_MEM_SIZE,
+    //mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
+    mailTo = "test@local.net",
+    mode = ReportingInteractionMode.DIALOG,
+    customReportContent = {
+        ReportField.APP_VERSION_CODE,
+        ReportField.APP_VERSION_NAME,
+        ReportField.PACKAGE_NAME,
+        ReportField.PHONE_MODEL,
+        ReportField.ANDROID_VERSION,
+        ReportField.BUILD,
+        ReportField.PRODUCT,
+        ReportField.TOTAL_MEM_SIZE,
+        ReportField.AVAILABLE_MEM_SIZE,
 
-                ReportField.CUSTOM_DATA,
-                ReportField.STACK_TRACE,
-                ReportField.DISPLAY,
+        ReportField.CUSTOM_DATA,
+        ReportField.STACK_TRACE,
+        ReportField.DISPLAY,
 
-                ReportField.USER_COMMENT,
-                ReportField.USER_APP_START_DATE,
-                ReportField.USER_CRASH_DATE,
-                ReportField.THREAD_DETAILS,
+        ReportField.USER_COMMENT,
+        ReportField.USER_APP_START_DATE,
+        ReportField.USER_CRASH_DATE,
+        ReportField.THREAD_DETAILS,
 //                ReportField.APPLICATION_LOG,
-        }
-        //optional, displayed as soon as the crash occurs, before collecting data which can take a few seconds
-        , resToastText = R.string.acra_resToastText
-        , resNotifTickerText = R.string.acra_resNotifTickerText
-        , resNotifTitle = R.string.acra_resNotifTitle
-        , resNotifText = R.string.acra_resNotifText
-        , resDialogText = R.string.acra_resDialogText
-        // optional. default is your application name
-        , resDialogTitle = R.string.acra_resDialogTitle
-        // optional. when defined, adds a user text field input with this text resource as a label
-        , resDialogCommentPrompt = R.string.acra_resDialogCommentPrompt
-        // optional. displays a message when the user accepts to send a report.
-        , resDialogOkToast = R.string.acra_resDialogOkToast
+    }
+    //optional, displayed as soon as the crash occurs, before collecting data which can take a few seconds
+    , resToastText = R.string.acra_resToastText
+    , resNotifTickerText = R.string.acra_resNotifTickerText
+    , resNotifTitle = R.string.acra_resNotifTitle
+    , resNotifText = R.string.acra_resNotifText
+    , resDialogText = R.string.acra_resDialogText
+    // optional. default is your application name
+    , resDialogTitle = R.string.acra_resDialogTitle
+    // optional. when defined, adds a user text field input with this text resource as a label
+    , resDialogCommentPrompt = R.string.acra_resDialogCommentPrompt
+    // optional. displays a message when the user accepts to send a report.
+    , resDialogOkToast = R.string.acra_resDialogOkToast
 //        ,applicationLogFile = ""
 //        ,applicationLogFileLines = 1000
 )
 
-public class BookCatalogueApp extends Application {
-    /** the name used for calls to Context.getSharedPreferences(name, ...) */
-    private static final String APP_SHARED_PREFERENCES = "bookCatalogue";
+public class BookCatalogueApp
+    extends Application {
 
     /** Implementation to use for {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showUserMessage} */
     public static final String PREF_APP_USER_MESSAGE = "App.UserMessage";
@@ -126,6 +121,118 @@ public class BookCatalogueApp extends Application {
         mInstance = this;
     }
 
+    @NonNull
+    public static Context getAppContext() {
+        return mInstance.getApplicationContext();
+    }
+
+    /**
+     * Show a notification while this app is running.
+     */
+    public static void showNotification(@NonNull final Context context,
+                                        @NonNull final String title,
+                                        @NonNull final String message) {
+
+        Intent intent = new Intent(context, StartupActivity.class);
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        Notification notification = new Notification.Builder(mInstance.getApplicationContext())
+            .setSmallIcon(R.drawable.ic_info_outline)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setWhen(System.currentTimeMillis())
+            .setAutoCancel(true)
+            // The PendingIntent to launch our activity if the user selects this notification
+            .setContentIntent(PendingIntent.getActivity(mInstance.getApplicationContext(), 0, intent, 0))
+            .build();
+
+        mNotifier.notify(NOTIFICATION_ID, notification);
+    }
+
+    /**
+     * Read a string from the META tags in the Manifest.
+     *
+     * @param name string to read
+     *
+     * @return value
+     */
+    @NonNull
+    public static String getManifestString(@Nullable final String name) {
+        ApplicationInfo ai;
+        try {
+            ai = mInstance.getApplicationContext()
+                          .getPackageManager()
+                          .getApplicationInfo(mInstance.getPackageName(), PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            Logger.error(e);
+            throw new IllegalStateException();
+        }
+        String result = ai.metaData.getString(name);
+        Objects.requireNonNull(result);
+        return result.trim();
+    }
+
+    /**
+     * Using the global app theme.
+     *
+     * @param attr resource id to get
+     *
+     * @return resolved attribute
+     */
+    @SuppressWarnings("unused")
+    public static int getAttr(final @AttrRes int attr) {
+        return getAttr(mInstance.getApplicationContext().getTheme(), attr);
+    }
+
+    /**
+     * @param theme allows to override the app theme, e.g. with Dialog Themes
+     * @param attr  resource id to get
+     *
+     * @return resolved attribute
+     */
+    public static int getAttr(@NonNull final Resources.Theme theme,
+                              final @AttrRes int attr) {
+        TypedValue tv = new TypedValue();
+        theme.resolveAttribute(attr, tv, true);
+        return tv.resourceId;
+    }
+
+    /**
+     * Wrapper to reduce explicit use of the 'context' member.
+     *
+     * @param resId Resource ID
+     *
+     * @return Localized resource string
+     */
+    public static String getResourceString(@StringRes final int resId) {
+        return mInstance.getApplicationContext().getString(resId).trim();
+    }
+
+    /**
+     * Wrapper to reduce explicit use of the 'context' member.
+     *
+     * @param resId Resource ID
+     *
+     * @return Localized resource string[]
+     */
+    public static String[] getResourceStringArray(@ArrayRes final int resId) {
+        return mInstance.getApplicationContext().getResources().getStringArray(resId);
+    }
+
+    /**
+     * Wrapper to reduce explicit use of the 'context' member.
+     *
+     * @param resId Resource ID
+     *
+     * @return Localized resource string
+     */
+    @NonNull
+    public static String getResourceString(@StringRes final int resId,
+                                           @Nullable final Object... objects) {
+        return mInstance.getApplicationContext().getString(resId, objects).trim();
+    }
+
     /**
      * As per {@link ACRA#init} documentation:
      *
@@ -137,7 +244,7 @@ public class BookCatalogueApp extends Application {
      */
     @Override
     @CallSuper
-    protected void attachBaseContext(final @NonNull Context base) {
+    protected void attachBaseContext(@NonNull final Context base) {
         super.attachBaseContext(base);
 
         ACRA.init(this);
@@ -154,13 +261,17 @@ public class BookCatalogueApp extends Application {
     public void onCreate() {
         // Get the preferred locale as soon as possible
         try {
+            // make sure the static initialization is done (race problem ?)
+            LocaleUtils.init();
+            // before we can use the object.
             LocaleUtils.loadPreferred();
             LocaleUtils.apply(getBaseContext().getResources());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             // Not much we can do...we want locale set early, but not fatal if it fails.
             Logger.error(e);
         }
 
+        // make sure the static initialization is done (race problem ?)
         Terminator.init();
 
         // Create the notifier
@@ -189,204 +300,8 @@ public class BookCatalogueApp extends Application {
      */
     @Override
     @CallSuper
-    public void onConfigurationChanged(final @NonNull Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         LocaleUtils.apply(getBaseContext().getResources());
-    }
-
-    @NonNull
-    public static Context getAppContext() {
-        return mInstance.getApplicationContext();
-    }
-
-    /**
-     * Show a notification while this app is running.
-     */
-    public static void showNotification(final @NonNull Context context,
-                                        final @NonNull String title,
-                                        final @NonNull String message) {
-
-        Intent intent = new Intent(context, StartupActivity.class);
-        intent.setAction(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-
-        Notification notification = new Notification.Builder(mInstance.getApplicationContext())
-                .setSmallIcon(R.drawable.ic_info_outline)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setWhen(System.currentTimeMillis())
-                .setAutoCancel(true)
-                // The PendingIntent to launch our activity if the user selects this notification
-                .setContentIntent(PendingIntent.getActivity(mInstance.getApplicationContext(), 0, intent, 0))
-                .build();
-
-        mNotifier.notify(NOTIFICATION_ID, notification);
-    }
-
-    /**
-     * Read a string from the META tags in the Manifest.
-     *
-     * @param name string to read
-     *
-     * @return value
-     */
-    @NonNull
-    public static String getManifestString(final @Nullable String name) {
-        ApplicationInfo ai;
-        try {
-            ai = mInstance.getApplicationContext()
-                    .getPackageManager()
-                    .getApplicationInfo(mInstance.getPackageName(), PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            Logger.error(e);
-            throw new IllegalStateException();
-        }
-        String result = ai.metaData.getString(name);
-        Objects.requireNonNull(result);
-        return result.trim();
-    }
-
-
-
-
-    /**
-     * Using the global app theme.
-     *
-     * @param attr resource id to get
-     *
-     * @return resolved attribute
-     */
-    @SuppressWarnings("unused")
-    public static int getAttr(final @AttrRes int attr) {
-        return getAttr(mInstance.getApplicationContext().getTheme(), attr);
-    }
-
-    /**
-     * @param theme allows to override the app theme, e.g. with Dialog Themes
-     * @param attr  resource id to get
-     *
-     * @return resolved attribute
-     */
-    public static int getAttr(final @NonNull Resources.Theme theme, final @AttrRes int attr) {
-        TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-        return tv.resourceId;
-    }
-
-    /**
-     * Wrapper to reduce explicit use of the 'context' member.
-     *
-     * @param resId Resource ID
-     *
-     * @return Localized resource string
-     */
-    public static String getResourceString(final @StringRes int resId) {
-        return mInstance.getApplicationContext().getString(resId).trim();
-    }
-
-    /**
-     * Wrapper to reduce explicit use of the 'context' member.
-     *
-     * @param resId Resource ID
-     *
-     * @return Localized resource string[]
-     */
-    public static String[] getResourceStringArray(@ArrayRes final int resId) {
-        return mInstance.getApplicationContext().getResources().getStringArray(resId);
-    }
-
-    /**
-     * Wrapper to reduce explicit use of the 'context' member.
-     *
-     * @param resId Resource ID
-     *
-     * @return Localized resource string
-     */
-    @NonNull
-    public static String getResourceString(final @StringRes int resId, final @Nullable Object... objects) {
-        return mInstance.getApplicationContext().getString(resId, objects).trim();
-    }
-
-    @NonNull
-    public static SharedPreferences getSharedPreferences() {
-        // no point in storing a local reference, the thing itself is a singleton
-        return mInstance.getApplicationContext().getSharedPreferences(BookCatalogueApp.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-    }
-
-    /** ClassCastException protected - Get a named boolean preference */
-    public static boolean getBooleanPreference(final @NonNull String name, final boolean defaultValue) {
-        boolean result;
-        try {
-            result = getSharedPreferences().getBoolean(name, defaultValue);
-        } catch (ClassCastException e) {
-            result = defaultValue;
-        }
-        return result;
-    }
-
-    /** ClassCastException protected - Get a named int preference */
-    public static int getIntPreference(final @NonNull String name, final int defaultValue) {
-        int result;
-        try {
-            result = getSharedPreferences().getInt(name, defaultValue);
-        } catch (ClassCastException e) {
-            result = defaultValue;
-        }
-        return result;
-    }
-
-    /** ClassCastException protected - Get a named long preference */
-    public static long getLongPreference(final String name, final long defaultValue) {
-        long result;
-        try {
-            result = getSharedPreferences().getLong(name, defaultValue);
-        } catch (ClassCastException e) {
-            result = defaultValue;
-        }
-        return result;
-    }
-
-    /** ClassCastException protected - Get a named string preference */
-    @NonNull
-    public static String getStringPreference(final @Nullable String name, final @StringRes int defaultValue) {
-        String result;
-        try {
-            result = getSharedPreferences().getString(name, getResourceString(defaultValue));
-        } catch (ClassCastException e) {
-            result = getResourceString(defaultValue);
-        }
-        return result;
-    }
-
-    /** ClassCastException protected - Get a named string preference */
-    @Nullable
-    public static String getStringPreference(final @Nullable String name, final @Nullable String defaultValue) {
-        String result;
-        try {
-            result = getSharedPreferences().getString(name, defaultValue);
-        } catch (ClassCastException e) {
-            result = defaultValue;
-        }
-        return result;
-    }
-
-    /**
-     * DEBUG method
-     */
-    public static void dumpPreferences() {
-        if (/* always show debug */ BuildConfig.DEBUG) {
-            StringBuilder sb = new StringBuilder("\n\nSharedPreferences: ");
-            Map<String, ?> map = getSharedPreferences().getAll();
-            List<String> keyList = new ArrayList<>(map.keySet());
-            String[] keys = keyList.toArray(new String[]{});
-            Arrays.sort(keys);
-
-            for (String key : keys) {
-                Object value = map.get(key);
-                sb.append("\n").append(key).append("=").append(value);
-            }
-            sb.append("\n\n");
-            Logger.info(BookCatalogueApp.class, sb.toString());
-        }
     }
 }

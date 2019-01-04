@@ -23,9 +23,6 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +42,10 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.util.ArrayList;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
@@ -52,9 +53,8 @@ import java.util.ArrayList;
  * refit with extends {@link EditObjectListActivity} ? => no point,
  * we don't want/need a {@link TouchListView}
  */
-public class EditBookshelfListActivity extends BaseListActivity {
-
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST;
+public class EditBookshelfListActivity
+    extends BaseListActivity {
 
     private CatalogueDBAdapter mDb;
     private ArrayList<Bookshelf> mList;
@@ -65,7 +65,7 @@ public class EditBookshelfListActivity extends BaseListActivity {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_edit_bookshelves);
@@ -86,10 +86,13 @@ public class EditBookshelfListActivity extends BaseListActivity {
      * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
      */
     @Override
-    public void initListViewContextMenuListener(final @NonNull Context context) {
+    public void initListViewContextMenuListener(@NonNull final Context context) {
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+            public boolean onItemLongClick(final AdapterView<?> parent,
+                                           final View view,
+                                           final int position,
+                                           final long id) {
                 String menuTitle = mList.get(position).name;
 
                 // legal trick to get an instance of Menu.
@@ -98,9 +101,9 @@ public class EditBookshelfListActivity extends BaseListActivity {
                 SelectOneDialog.SimpleDialogMenuInfo menuInfo = new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
                 // populate the menu
                 mListViewContextMenu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit_bookshelf)
-                        .setIcon(R.drawable.ic_mode_edit);
+                                    .setIcon(R.drawable.ic_edit);
                 mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete_bookshelf)
-                        .setIcon(R.drawable.ic_delete);
+                                    .setIcon(R.drawable.ic_delete);
                 // display
                 onCreateListViewContextMenu(mListViewContextMenu, view, menuInfo);
                 return true;
@@ -112,8 +115,8 @@ public class EditBookshelfListActivity extends BaseListActivity {
      * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
      */
     @Override
-    public boolean onListViewContextItemSelected(final @NonNull MenuItem menuItem,
-                                                 final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+    public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
+                                                 @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
         switch (menuItem.getItemId()) {
             case R.id.MENU_EDIT: {
                 Bookshelf bookshelf = mList.get(menuInfo.position);
@@ -145,18 +148,18 @@ public class EditBookshelfListActivity extends BaseListActivity {
      */
     @Override
     @CallSuper
-    public boolean onCreateOptionsMenu(final @NonNull Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
         menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_add_bookshelf)
-                .setIcon(R.drawable.ic_add)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            .setIcon(R.drawable.ic_add)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_INSERT: {
                 doEditDialog(new Bookshelf(""));
@@ -172,12 +175,15 @@ public class EditBookshelfListActivity extends BaseListActivity {
      * {@link BaseListActivity} enables 'this' as the listener
      */
     @Override
-    public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+    public void onItemClick(final AdapterView<?> parent,
+                            final View view,
+                            final int position,
+                            final long id) {
         Bookshelf bookshelf = mList.get(position);
         doEditDialog(bookshelf);
     }
 
-    private void doEditDialog(final @NonNull Bookshelf bookshelf) {
+    private void doEditDialog(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialog d = new EditBookshelfDialog(this, mDb, new Runnable() {
             @Override
             public void run() {

@@ -30,16 +30,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SelectOneDialog {
+public final class SelectOneDialog {
+    private SelectOneDialog() {
+    }
+
     /**
      * Select a custom item from a list, and call handler when/if item is selected.
      */
-    private static void selectItemDialog(final @NonNull LayoutInflater inflater,
-                                         final @Nullable String title,
-                                         final @Nullable String message,
-                                         final @NonNull List<SimpleDialogItem> items,
-                                         final @Nullable SimpleDialogItem selectedItem,
-                                         final @NonNull SimpleDialogOnClickListener handler) {
+    private static void selectItemDialog(@NonNull final LayoutInflater inflater,
+                                         @Nullable final String title,
+                                         @Nullable final String message,
+                                         @NonNull final List<SimpleDialogItem> items,
+                                         @Nullable final SimpleDialogItem selectedItem,
+                                         @NonNull final SimpleDialogOnClickListener handler) {
 
         // Build the base dialog
         final View root = inflater.inflate(R.layout.dialog_select_one_from_list, null);
@@ -63,7 +66,7 @@ public class SelectOneDialog {
         // Create the listener for each item
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
-            public void onClick(final @NonNull View view) {
+            public void onClick(@NonNull final View view) {
                 SimpleDialogItem item = ViewTagger.getTag(view, R.id.TAG_DIALOG_ITEM);
                 // For a consistent UI, make sure the selector is checked as well.
                 // NOT mandatory from a functional point of view, just consistent
@@ -107,10 +110,10 @@ public class SelectOneDialog {
      *
      * @see #selectItemDialog
      */
-    public static void selectFileDialog(final @NonNull LayoutInflater inflater,
-                                        final @Nullable String title,
-                                        final @NonNull List<File> files,
-                                        final @NonNull SimpleDialogOnClickListener handler) {
+    public static void selectFileDialog(@NonNull final LayoutInflater inflater,
+                                        @Nullable final String title,
+                                        @NonNull final List<File> files,
+                                        @NonNull final SimpleDialogOnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         for (File file : files) {
             items.add(new SimpleDialogFileItem(file));
@@ -128,11 +131,11 @@ public class SelectOneDialog {
      *
      * @see #selectItemDialog
      */
-    public static <T> void selectObjectDialog(final @NonNull LayoutInflater inflater,
-                                              final @Nullable String title,
-                                              final @NonNull Fields.Field field,
-                                              final @NonNull List<T> list,
-                                              final @NonNull SimpleDialogOnClickListener handler) {
+    public static <T> void selectObjectDialog(@NonNull final LayoutInflater inflater,
+                                              @Nullable final String title,
+                                              @NonNull final Fields.Field field,
+                                              @NonNull final List<T> list,
+                                              @NonNull final SimpleDialogOnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
         for (T listEntry : list) {
@@ -149,10 +152,10 @@ public class SelectOneDialog {
      *
      * @see #selectItemDialog
      */
-    public static void showContextMenuDialog(final @NonNull LayoutInflater inflater,
-                                             final @NonNull SimpleDialogMenuInfo menuInfo,
-                                             final @NonNull Menu menu,
-                                             final @NonNull SimpleDialogOnClickListener handler) {
+    public static void showContextMenuDialog(@NonNull final LayoutInflater inflater,
+                                             @NonNull final SimpleDialogMenuInfo menuInfo,
+                                             @NonNull final Menu menu,
+                                             @NonNull final SimpleDialogOnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
@@ -166,7 +169,7 @@ public class SelectOneDialog {
      */
     public interface SimpleDialogItem {
         @NonNull
-        View getView(final @NonNull LayoutInflater inflater);
+        View getView(@NonNull final LayoutInflater inflater);
 
         /** optional, for visual effects only */
         @Nullable
@@ -177,33 +180,33 @@ public class SelectOneDialog {
      * Interface to listen for item selection in a custom dialog list
      */
     public interface SimpleDialogOnClickListener {
-        void onClick(final @NonNull SimpleDialogItem item);
+        void onClick(@NonNull final SimpleDialogItem item);
     }
 
     /** Marker interface to indicate the {@link BaseListActivity} has a {@link ListView} using this type of context menu */
     public interface hasListViewContextMenu {
-        void initListViewContextMenuListener(final @NonNull Context context);
+        void initListViewContextMenuListener(@NonNull final Context context);
 
-        void onCreateListViewContextMenu(final @NonNull Menu menu,
-                                         final @NonNull View view,
-                                         final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo);
+        void onCreateListViewContextMenu(@NonNull final Menu menu,
+                                         @NonNull final View view,
+                                         @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo);
 
         @SuppressWarnings("UnusedReturnValue")
-        boolean onListViewContextItemSelected(final @NonNull MenuItem menuItem,
-                                              final @NonNull SimpleDialogMenuInfo menuInfo);
+        boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
+                                              @NonNull final SimpleDialogMenuInfo menuInfo);
     }
 
     /** Marker interface to indicate the {@link BaseActivity} has a {@link View} using this type of context menu */
     public interface hasViewContextMenu {
-        void initViewContextMenuListener(final @NonNull Context context, final @NonNull View view);
+        void initViewContextMenuListener(@NonNull final Context context, @NonNull final View view);
 
-        void onCreateViewContextMenu(final @NonNull Menu menu,
-                                     final @NonNull View view,
-                                     final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo);
+        void onCreateViewContextMenu(@NonNull final Menu menu,
+                                     @NonNull final View view,
+                                     @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo);
 
         @SuppressWarnings("UnusedReturnValue")
-        boolean onViewContextItemSelected(final @NonNull MenuItem menuItem,
-                                          final @NonNull View view);
+        boolean onViewContextItemSelected(@NonNull final MenuItem menuItem,
+                                          @NonNull final View view);
     }
 
     /**
@@ -215,7 +218,7 @@ public class SelectOneDialog {
         /**
          * @param menuItem a standard ContextMenu MenuItem.
          */
-        SimpleDialogMenuItem(final @NonNull MenuItem menuItem) {
+        SimpleDialogMenuItem(@NonNull final MenuItem menuItem) {
             mMenuItem = menuItem;
         }
 
@@ -226,7 +229,7 @@ public class SelectOneDialog {
 
         @Override
         @NonNull
-        public View getView(final @NonNull LayoutInflater inflater) {
+        public View getView(@NonNull final LayoutInflater inflater) {
             @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.row_simple_dialog_list_item, null);
             TextView line = root.findViewById(R.id.name);
             line.setText(mMenuItem.getTitle());
@@ -240,7 +243,7 @@ public class SelectOneDialog {
         }
 
         @Nullable
-        public CompoundButton getSelector(final @NonNull View view) {
+        public CompoundButton getSelector(@NonNull final View view) {
             return null;
         }
     }
@@ -252,7 +255,7 @@ public class SelectOneDialog {
         @NonNull
         private final File mFile;
 
-        SimpleDialogFileItem(final @NonNull File file) {
+        SimpleDialogFileItem(@NonNull final File file) {
             mFile = file;
         }
 
@@ -266,7 +269,7 @@ public class SelectOneDialog {
          */
         @Override
         @NonNull
-        public View getView(final @NonNull LayoutInflater inflater) {
+        public View getView(@NonNull final LayoutInflater inflater) {
             @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.dialog_file_list_item, null);
             TextView name = root.findViewById(R.id.name);
             name.setText(mFile.getName());
@@ -304,7 +307,7 @@ public class SelectOneDialog {
         @NonNull
         private final Object mRawValue;
 
-        SimpleDialogObjectItem( final @NonNull Fields.Field field, final @NonNull Object value) {
+        SimpleDialogObjectItem( @NonNull final Fields.Field field, @NonNull final Object value) {
             mField = field;
             mRawValue = value;
         }
@@ -314,7 +317,7 @@ public class SelectOneDialog {
          */
         @Override
         @NonNull
-        public View getView(final @NonNull LayoutInflater inflater) {
+        public View getView(@NonNull final LayoutInflater inflater) {
             @SuppressLint("InflateParams") View root = inflater.inflate(R.layout.row_simple_dialog_list_item, null);
             TextView name = root.findViewById(R.id.name);
             name.setText(mField.format(mRawValue.toString()));
@@ -322,7 +325,7 @@ public class SelectOneDialog {
         }
 
         @NonNull
-        public CompoundButton getSelector(final @NonNull View view) {
+        public CompoundButton getSelector(@NonNull final View view) {
             return (CompoundButton) view.findViewById(R.id.selector);
         }
 
@@ -356,8 +359,8 @@ public class SelectOneDialog {
          */
         public String title;
 
-        public SimpleDialogMenuInfo(final @NonNull String title,
-                                    final @NonNull View targetView,
+        public SimpleDialogMenuInfo(@NonNull final String title,
+                                    @NonNull final View targetView,
                                     final int position) {
             this.targetView = targetView;
             this.position = position;

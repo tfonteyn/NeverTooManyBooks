@@ -49,7 +49,9 @@
             android:paddingTop="@dimen/padding_border_double"
             android:paddingBottom="@dimen/padding_border"
             android:text="@string/export_option_info_books_since_date"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </RadioGroup>
     <!-- Disabled to reduce complexity of UI and app; may enable one day. Deemed to be too rarely of use. -->

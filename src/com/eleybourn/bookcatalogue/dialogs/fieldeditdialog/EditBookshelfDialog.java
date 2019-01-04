@@ -46,15 +46,15 @@ public class EditBookshelfDialog {
     @NonNull
     private final Runnable mOnChanged;
 
-    public EditBookshelfDialog(final @NonNull Activity activity,
-                               final @NonNull CatalogueDBAdapter db,
-                               final @NonNull Runnable onChanged) {
+    public EditBookshelfDialog(@NonNull final Activity activity,
+                               @NonNull final CatalogueDBAdapter db,
+                               @NonNull final Runnable onChanged) {
         mDb = db;
         mContext = activity;
         mOnChanged = onChanged;
     }
 
-    public void edit(final @NonNull Bookshelf bookshelf) {
+    public void edit(@NonNull final Bookshelf bookshelf) {
         // Build the base dialog
         final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_bookshelf, null);
 
@@ -103,9 +103,9 @@ public class EditBookshelfDialog {
         dialog.show();
     }
 
-    private void confirmEdit(final @NonNull Bookshelf bookshelf,
-                             final @NonNull String newName,
-                             final @Nullable Bookshelf existingShelf) {
+    private void confirmEdit(@NonNull final Bookshelf bookshelf,
+                             @NonNull final String newName,
+                             @Nullable final Bookshelf existingShelf) {
         // case sensitive equality
         if (bookshelf.name.equals(newName)) {
             return;

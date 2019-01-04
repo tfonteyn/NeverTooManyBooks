@@ -19,6 +19,7 @@ package com.eleybourn.bookcatalogue.cropper;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -28,10 +29,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.ImageView;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.CoverHandler;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 
 public abstract class CropImageViewTouchBase extends AppCompatImageView {
 
@@ -89,12 +91,12 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
     @Nullable
     private Runnable mOnLayoutRunnable = null;
 
-    public CropImageViewTouchBase(final @NonNull Context context) {
+    public CropImageViewTouchBase(@NonNull final Context context) {
         super(context);
         init();
     }
 
-    public CropImageViewTouchBase(final @NonNull Context context, final @NonNull AttributeSet attrs) {
+    public CropImageViewTouchBase(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
         init();
     }
@@ -119,9 +121,10 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
      *
      * We use 1 and 2; and 'abuse' -1 to mean 'leave it unset'
      *
+     * see {@link View#setLayerType(int, Paint)}
      */
     private void initRenderer() {
-        int type = BookCatalogueApp.getIntPreference(CoverHandler.PREF_IMAGE_VIEW_LAYER_TYPE, -1);
+        int type = Prefs.getInt(R.string.pk_thumbnail_cropper_layer_type, -1);
         if (type == -1) {
             return;
         }
@@ -129,7 +132,7 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     @SuppressWarnings("unused")
-    public void setRecycler(final @NonNull Recycler r) {
+    public void setRecycler(@NonNull final Recycler r) {
         mRecycler = r;
     }
 
@@ -168,12 +171,12 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     @Override
-    public void setImageBitmap(final @Nullable Bitmap bitmap) {
-        setImageBitmap(bitmap, 0);
+    public void setImageBitmap(@Nullable final Bitmap bm) {
+        setImageBitmap(bm, 0);
     }
 
     @CallSuper
-    private void setImageBitmap(final @Nullable Bitmap bitmap, final int rotation) {
+    private void setImageBitmap(@Nullable final Bitmap bitmap, final int rotation) {
         super.setImageBitmap(bitmap);
         Drawable d = getDrawable();
         if (d != null) {
@@ -197,11 +200,11 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
      * This function changes bitmap, reset base matrix according to the size
      * of the bitmap, and optionally reset the supplementary matrix.
      */
-    public void setImageBitmapResetBase(final @Nullable Bitmap bitmap, final boolean resetSupp) {
+    public void setImageBitmapResetBase(@Nullable final Bitmap bitmap, final boolean resetSupp) {
         setImageRotateBitmapResetBase(new CropRotateBitmap(bitmap), resetSupp);
     }
 
-    public void setImageRotateBitmapResetBase(final @NonNull CropRotateBitmap bitmap, final boolean resetSupp) {
+    public void setImageRotateBitmapResetBase(@NonNull final CropRotateBitmap bitmap, final boolean resetSupp) {
         final int viewWidth = getWidth();
 
         if (viewWidth <= 0) {
@@ -278,13 +281,13 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
         setImageMatrix(getImageViewMatrix());
     }
 
-    protected float getValue(final @NonNull Matrix matrix, @SuppressWarnings("SameParameterValue") final int whichValue) {
+    protected float getValue(@NonNull final Matrix matrix, @SuppressWarnings("SameParameterValue") final int whichValue) {
         matrix.getValues(mMatrixValues);
         return mMatrixValues[whichValue];
     }
 
     // Get the SCALE factor out of the matrix.
-    protected float getScale(final @NonNull Matrix matrix) {
+    protected float getScale(@NonNull final Matrix matrix) {
         return getValue(matrix, Matrix.MSCALE_X);
     }
 
@@ -293,7 +296,7 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     /** Setup the base matrix so that the image is centered and scaled properly. */
-    private void getProperBaseMatrix(final @NonNull CropRotateBitmap bitmap, final @NonNull Matrix matrix) {
+    private void getProperBaseMatrix(@NonNull final CropRotateBitmap bitmap, @NonNull final Matrix matrix) {
         float viewWidth = getWidth();
         float viewHeight = getHeight();
 
@@ -446,6 +449,6 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
      * its use of that Bitmap.
      */
     public interface Recycler {
-        void recycle(final @NonNull Bitmap b);
+        void recycle(@NonNull final Bitmap b);
     }
 }

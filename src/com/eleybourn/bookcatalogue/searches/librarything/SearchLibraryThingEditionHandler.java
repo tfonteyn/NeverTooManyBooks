@@ -1,12 +1,12 @@
 package com.eleybourn.bookcatalogue.searches.librarything;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.List;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 /**
  * Parser Handler to collect the edition data.
@@ -14,16 +14,17 @@ import java.util.List;
  * http://www.librarything.com/api/thingISBN/<ISBN>
  *
  * Typical request output:
- *
- * <?xml version="1.0" encoding="utf-8"?>
- * <idlist>
- * <isbn>0380014300</isbn>
- * <isbn>0839824270</isbn>
- * <isbn>0722194390</isbn>
- * <isbn>0783884257</isbn>
- * ...etc...
- * <isbn>2207301907</isbn>
- * </idlist>
+ * <pre>
+ *   <?xml version="1.0" encoding="utf-8"?>
+ *   <idlist>
+ *     <isbn>0380014300</isbn>
+ *     <isbn>0839824270</isbn>
+ *     <isbn>0722194390</isbn>
+ *     <isbn>0783884257</isbn>
+ *     ...etc...
+ *     <isbn>2207301907</isbn>
+ *   </idlist>
+ * </pre>
  *
  * @author Philip Warner
  */
@@ -39,28 +40,30 @@ class SearchLibraryThingEditionHandler extends DefaultHandler {
     /**
      * Constructor
      *
-     * @param editions  the bundle to which we'll write the results
+     * @param editions the bundle to which we'll write the results
      */
-    SearchLibraryThingEditionHandler(final @NonNull List<String> /* out */ editions) {
+    SearchLibraryThingEditionHandler(@NonNull final List<String> /* out */ editions) {
         mEditions = editions;
     }
 
     @Override
     @CallSuper
-    public void characters(final char[] ch, final int start, final int length) throws SAXException {
+    public void characters(final char[] ch, final int start, final int length)
+            throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
     }
 
     @Override
     @CallSuper
-    public void endElement(final String uri, final @NonNull String localName, final String name) throws SAXException {
-        super.endElement(uri, localName, name);
+    public void endElement(final String uri, @NonNull final String localName, final String qName)
+            throws SAXException {
+        super.endElement(uri, localName, qName);
 
         if (localName.equalsIgnoreCase(XML_ISBN)) {
             // Add the isbn
             String isbn = mBuilder.toString();
-                mEditions.add(isbn);
+            mEditions.add(isbn);
         }
         // Note:
         // Always reset the length. This is not entirely the right thing to do, but works

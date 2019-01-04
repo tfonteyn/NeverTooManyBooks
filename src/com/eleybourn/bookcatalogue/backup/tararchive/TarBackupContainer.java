@@ -19,9 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.backup.tararchive;
 
-import androidx.annotation.NonNull;
-
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriter;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -29,6 +28,8 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Pattern;
+
+import androidx.annotation.NonNull;
 
 /**
  * Class to handle TAR archive storage.
@@ -40,11 +41,28 @@ import java.util.regex.Pattern;
  * So we:
  *
  * - use "file names" to encode special meaning (eg. "books*.csv" is always an export file).
- * - use intermediate temp files so we can out sizes
+ * - use intermediate temp files so we can figure out sizes
+ *
+ * {@link #getVersion()}
+ * #1: original code, used serialized styles and flat xml files for info/prefs
+ *
+ * #2: writes new xml format supporting lists of elements, styles are xml as wel now.
+ * Can still read #1 archives
  *
  * @author pjw
  */
 public class TarBackupContainer implements BackupContainer {
+
+    /** UNICODE stream type for read/write text files */
+    public static final String UTF8 = "utf8";
+    /** Buffer size for buffered streams */
+    public static final int BUFFER_SIZE = 32768;
+
+    /** archives are written in this version */
+    public static final int VERSION_WRITTEN = 2;
+    /** we can still read archives frm this version and up */
+    public static final int VERSION_READ = 1;
+
     /** Always first entry; Used in the storage and identification of data store in TAR file */
     static final String INFO_FILE = "INFO.xml";
     /** Used in the storage and identification of data store in TAR file */
@@ -57,19 +75,18 @@ public class TarBackupContainer implements BackupContainer {
 
     /** Used in the storage and identification of data store in TAR file */
     static final String DB_FILE = "snapshot.db";
-
     /** Used in the storage and identification of data store in TAR file */
-    static final String STYLE_PREFIX = "style.blob.";
+    static final String PREFERENCES = "preferences.xml";
     /** Used in the storage and identification of data store in TAR file */
-    static final Pattern STYLE_PATTERN = Pattern.compile("^" + STYLE_PREFIX + "[0-9]*$", Pattern.CASE_INSENSITIVE);
+    static final String STYLES = "styles.xml";
+    /**
+     * archive entry that will contain xml dumps of actual tables
+     * For now, this is export only, cannot import yet.
+     * Meant for those who want to experiment with the data on a desktop/server
+     * without the need to parse csv strings
+     */
+    static final String XML_DATA = "data.xml";
 
-    /** Used in the storage and identification of data store in TAR file */
-    static final String PREFERENCES = "preferences";
-    /** UNICODE stream type for read/write text files */
-    public static final String UTF8 = "utf8";
-
-    /** Buffer size for buffered streams */
-    public static final int BUFFER_SIZE = 32768;
 
     /** Backup file spec */
     @NonNull
@@ -78,7 +95,7 @@ public class TarBackupContainer implements BackupContainer {
     /**
      * Constructor
      */
-    public TarBackupContainer(final @NonNull File file) {
+    public TarBackupContainer(@NonNull final File file) {
         mFile = file;
     }
 
@@ -89,32 +106,47 @@ public class TarBackupContainer implements BackupContainer {
 
     @Override
     @NonNull
-    public BackupReader newReader() throws IOException {
+    public BackupReader newReader()
+            throws IOException {
         return new TarBackupReader(this);
     }
 
     @Override
     @NonNull
-    public BackupWriter newWriter() throws IOException {
+    public BackupWriter newWriter()
+            throws IOException {
         return new TarBackupWriter(this);
     }
 
+    /**
+     * We write version 2 archives (no backwards compatibility)
+     */
     @Override
     public int getVersion() {
-        return 1;
+        return VERSION_WRITTEN;
     }
 
+    /**
+     * We can still read this older version.
+     */
+    @Override
+    public int canReadVersion() {
+        return VERSION_READ;
+    }
+
+    /**
+     * @return <tt>true</tt> if valid
+     */
     @Override
     public boolean isValid() {
         // The reader will do basic validation.
-        try {
-            final BackupReader reader = new TarBackupReader(this);
-            reader.close();
+        try (BackupReader reader = new TarBackupReader(this)) {
+            BackupInfo backupInfo = reader.getInfo();
+            // the info block will/can do more checks.
+            return backupInfo.isValid();
         } catch (IOException e) {
             Logger.error(e);
-            return false;
         }
-
-        return true;
+        return false;
     }
 }

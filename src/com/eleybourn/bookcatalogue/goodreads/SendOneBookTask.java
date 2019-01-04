@@ -21,14 +21,17 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
+
+import androidx.annotation.NonNull;
 
 /**
  * Task to send a single books details to Goodreads.
@@ -39,6 +42,7 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
  * @author Philip Warner
  */
 public class SendOneBookTask extends SendBooksTask {
+
     private static final long serialVersionUID = 8585857100291691934L;
 
     /** ID of book to send */
@@ -57,13 +61,16 @@ public class SendOneBookTask extends SendBooksTask {
     /**
      * Perform the main task
      */
-    protected boolean send(final @NonNull QueueManager queueManager,
-                           final @NonNull Context context) {
+    protected boolean send(@NonNull final QueueManager queueManager,
+                           @NonNull final Context context,
+                           @NonNull final GoodreadsManager grManager) {
 
-        try (BookCursor bookCursor = mDb.fetchBookForGoodreadsCursor(mBookId)) {
+        // Use the app context; the calling activity may go away
+        try (CatalogueDBAdapter db = new CatalogueDBAdapter(context.getApplicationContext());
+             BookCursor bookCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
             final BookRowView bookCursorRow = bookCursor.getCursorRow();
             while (bookCursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, bookCursorRow)) {
+                if (!sendOneBook(queueManager, context, grManager, db, bookCursorRow)) {
                     // quit on error
                     return false;
                 }

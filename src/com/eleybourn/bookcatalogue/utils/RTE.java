@@ -18,11 +18,11 @@ public class RTE {
     public static class IsbnInvalidException extends RuntimeException {
         private static final long serialVersionUID = 2652418388349622089L;
 
-        public IsbnInvalidException(final @Nullable String message) {
+        public IsbnInvalidException(@Nullable final String message) {
             super(message);
         }
 
-        public IsbnInvalidException(final @Nullable Exception inner) {
+        public IsbnInvalidException(@Nullable final Exception inner) {
             super(inner);
         }
     }
@@ -31,7 +31,8 @@ public class RTE {
      * Avoid calling out to dev-only sites when the developer (me!) forgot his keys
      */
     public static class DeveloperKeyMissingException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
+
+        private static final long serialVersionUID = -3253636387309338422L;
 
         public DeveloperKeyMissingException() {
             super();
@@ -43,21 +44,24 @@ public class RTE {
      * Often used in 'default:' in a switch as well.
      */
     public static class IllegalTypeException extends IllegalStateException {
-        private static final long serialVersionUID = 1L;
 
-        public IllegalTypeException(final @NonNull String message) {
+        private static final long serialVersionUID = -6589992995979719380L;
+
+        public IllegalTypeException(@NonNull final String message) {
             super(message);
         }
     }
 
     /**
-     * This is really a debug message, but unfortunately one we cannot reliably intercept in development.
+     * This is really a debug message, but unfortunately one we cannot reliably
+     * intercept in development.
      * (e.g. testing needs to be unit/automated!)
      */
     public static class MustImplementException extends IllegalStateException {
-        private static final long serialVersionUID = 1L;
 
-        public MustImplementException(final @NonNull Context context, final @NonNull Class clazz) {
+        private static final long serialVersionUID = 1254362943479705468L;
+
+        public MustImplementException(@NonNull final Context context, @NonNull final Class clazz) {
             super("Class " + context.getClass().getCanonicalName() + " must implement " + clazz.getCanonicalName());
         }
     }
@@ -70,7 +74,7 @@ public class RTE {
     public static class DeserializationException extends Exception {
         private static final long serialVersionUID = -2040548134317746620L;
 
-        DeserializationException(final @Nullable Exception e) {
+        DeserializationException(@Nullable final Exception e) {
             super();
             initCause(e);
         }

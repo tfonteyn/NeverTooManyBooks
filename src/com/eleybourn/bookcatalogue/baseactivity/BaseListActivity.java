@@ -5,9 +5,6 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +18,10 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 
 import java.util.Objects;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * This has now become a copy from {@link ListActivity} but extending {@link BaseActivity}
@@ -67,7 +68,7 @@ import java.util.Objects;
  * </LinearLayout>
  * </pre>
  */
-abstract public class BaseListActivity extends BaseActivity implements
+public abstract class BaseListActivity extends BaseActivity implements
         AdapterView.OnItemClickListener,
         SelectOneDialog.hasListViewContextMenu {
 
@@ -138,6 +139,12 @@ abstract public class BaseListActivity extends BaseActivity implements
      * Listen for clicks on items in our list
      *
      * {@link #onContentChanged} enables 'this' as the listener for our ListView
+     *
+     * @param parent   The AdapterView where the click happened.
+     * @param view     The view within the AdapterView that was clicked (this
+     *                 will be a view provided by the adapter)
+     * @param position The position of the view in the adapter.
+     * @param id       The row id of the item that was clicked.
      */
     @Override
     public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
@@ -185,7 +192,7 @@ abstract public class BaseListActivity extends BaseActivity implements
     /**
      * Provide the cursor for the list view.
      */
-    protected void setListAdapter(final @NonNull ListAdapter adapter) {
+    protected void setListAdapter(@NonNull final ListAdapter adapter) {
         synchronized (this) {
             mListAdapter = adapter;
             mListView.setAdapter(adapter);
@@ -228,14 +235,14 @@ abstract public class BaseListActivity extends BaseActivity implements
      * Replaces: {@link #onCreateContextMenu(ContextMenu, View, ContextMenu.ContextMenuInfo)}
      */
     @Override
-    public final void onCreateListViewContextMenu(final @NonNull Menu menu,
-                                                  final @NonNull View view,
-                                                  final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+    public final void onCreateListViewContextMenu(@NonNull final Menu menu,
+                                                  @NonNull final View view,
+                                                  @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
         if (menu.size() > 0) {
             SelectOneDialog.showContextMenuDialog(getLayoutInflater(), menuInfo, menu,
                     new SelectOneDialog.SimpleDialogOnClickListener() {
                         @Override
-                        public void onClick(final @NonNull SelectOneDialog.SimpleDialogItem item) {
+                        public void onClick(@NonNull final SelectOneDialog.SimpleDialogItem item) {
                             MenuItem menuItem = ((SelectOneDialog.SimpleDialogMenuItem) item).getMenuItem();
                             if (menuItem.hasSubMenu()) {
                                 menuInfo.title = menuItem.getTitle().toString();
@@ -253,8 +260,8 @@ abstract public class BaseListActivity extends BaseActivity implements
      */
     @SuppressWarnings("UnusedReturnValue")
     @Override
-    public boolean onListViewContextItemSelected(final @NonNull MenuItem menuItem,
-                                                 final @NonNull SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+    public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
+                                                 @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
         return false;
     }
 

@@ -22,8 +22,8 @@ import java.net.UnknownHostException;
  */
 public class SearchLibraryThingTask extends ManagedSearchTask {
 
-    public SearchLibraryThingTask(final @NonNull String name,
-                                  final @NonNull TaskManager manager) {
+    public SearchLibraryThingTask(@NonNull final String name,
+                                  @NonNull final TaskManager manager) {
         super(name, manager);
     }
 
@@ -37,7 +37,7 @@ public class SearchLibraryThingTask extends ManagedSearchTask {
 
     @Override
     protected void runTask() {
-        final @StringRes int R_ID_SEARCHING = R.string.searching_library_thing;
+        @StringRes final int R_ID_SEARCHING = R.string.searching_library_thing;
         mTaskManager.sendTaskProgressMessage(this, R_ID_SEARCHING, 0);
 
         LibraryThingManager ltm = new LibraryThingManager();
@@ -61,7 +61,7 @@ public class SearchLibraryThingTask extends ManagedSearchTask {
         } catch (IOException e) {
             setFinalError(R_ID_SEARCHING, R.string.error_search_failed);
             Logger.error(e);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e);
             setFinalError(R_ID_SEARCHING, e);
         }

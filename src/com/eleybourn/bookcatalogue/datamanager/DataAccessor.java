@@ -32,22 +32,22 @@ public interface DataAccessor {
      * Get the specified {@link Datum} from the passed {@link DataManager} or {@link Bundle}
      */
     @NonNull
-    Object get(final @NonNull DataManager data,
-               final @NonNull Datum datum,
-               final @NonNull Bundle rawData);
+    Object get(@NonNull final DataManager data,
+               @NonNull final Datum datum,
+               @NonNull final Bundle rawData);
 
     /**
      * Set the specified {@link Datum} in the passed Bundle
      */
-    void set(final @NonNull DataManager data,
-             final @NonNull Datum datum,
-             final @NonNull Bundle rawData,
-             final @NonNull Object value);
+    void set(@NonNull final DataManager data,
+             @NonNull final Datum datum,
+             @NonNull final Bundle rawData,
+             @NonNull final Object value);
 
     /**
      *  Check if the specified {@link Datum} is present in the passed Bundle
      */
-    boolean isPresent(final @NonNull DataManager data,
-                      final @NonNull Datum datum,
-                      final @NonNull Bundle rawData);
+    boolean isPresent(@NonNull final DataManager data,
+                      @NonNull final Datum datum,
+                      @NonNull final Bundle rawData);
 }

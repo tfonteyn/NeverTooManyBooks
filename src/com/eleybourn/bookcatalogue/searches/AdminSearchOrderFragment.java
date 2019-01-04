@@ -2,10 +2,6 @@ package com.eleybourn.bookcatalogue.searches;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 /**
  * Ideally should use {@link EditObjectListActivity} but that needs to be converted to a Fragment first.
  */
@@ -37,15 +38,15 @@ public class AdminSearchOrderFragment extends Fragment
     private SearchSiteListAdapter mListAdapter;
 
     @Override
-    public View onCreateView(final @NonNull LayoutInflater inflater,
-                             final @Nullable ViewGroup container,
-                             final @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_search_order, container, false);
     }
 
     @Override
     @CallSuper
-    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
         Bundle args = getArguments();
@@ -95,10 +96,10 @@ public class AdminSearchOrderFragment extends Fragment
         return mList;
     }
 
-    private class SearchSiteListAdapter extends ArrayAdapter<SearchSites.Site> {
+    private static class SearchSiteListAdapter extends ArrayAdapter<SearchSites.Site> {
 
-        SearchSiteListAdapter(final @NonNull Context context,
-                              final @NonNull List<SearchSites.Site> list) {
+        SearchSiteListAdapter(@NonNull final Context context,
+                              @NonNull final List<SearchSites.Site> list) {
             super(context, 0, list);
         }
 
@@ -146,7 +147,8 @@ public class AdminSearchOrderFragment extends Fragment
     /**
      * Holder pattern for each row.
      */
-    private class Holder {
+    private static class Holder {
+
         SearchSites.Site site;
         CheckedTextView checkable;
         TextView name;

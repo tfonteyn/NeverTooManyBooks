@@ -37,13 +37,13 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
     @NonNull
     private final DbSync.SynchronizedDb mSyncedDb;
 
-    public TableInfo(final @NonNull DbSync.SynchronizedDb db, final @NonNull String tableName) {
+    public TableInfo(@NonNull final DbSync.SynchronizedDb db, @NonNull final String tableName) {
         mSyncedDb = db;
         mColumns = describeTable(tableName);
     }
 
     @Nullable
-    public ColumnInfo getColumn(final @NonNull String name) {
+    public ColumnInfo getColumn(@NonNull final String name) {
         String lcName = name.toLowerCase();
         if (!mColumns.containsKey(lcName)) {
             return null;
@@ -65,8 +65,8 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
      * @return A collection of ColumnInfo objects.
      */
     @NonNull
-    private Map<String, ColumnInfo> describeTable(final @NonNull String tableName) {
-        String sql = "PRAGMA table_info(" + tableName + ")";
+    private Map<String, ColumnInfo> describeTable(@NonNull final String tableName) {
+        String sql = "PRAGMA table_info(" + tableName + ')';
 
         Map<String, ColumnInfo> allColumns = new HashMap<>();
 
@@ -100,7 +100,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
     public enum StorageClass {
         Integer, Real, Text, Blob;
 
-        public static StorageClass newInstance(final @NonNull String columnType) {
+        public static StorageClass newInstance(@NonNull final String columnType) {
             // hardcoded strings are for backwards compatibility
             switch (columnType.toLowerCase()) {
                 case TYPE_INTEGER:
@@ -125,7 +125,7 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
 
                 default:
                     // note that "" (empty) type is treated as TEXT. But we really should not allow our columns to be defined without a type.
-                    throw new RTE.IllegalTypeException("columnType=`" + columnType + "`");
+                    throw new RTE.IllegalTypeException("columnType=`" + columnType + '`');
             }
         }
     }

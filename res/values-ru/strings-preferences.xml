@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ####################################################################################### -->
+    <!-- ========== Preferences / PropertyList ========== -->
+    <!-- ####################################################################################### -->
+
+    <!-- Preference VALUE -->
+    <string name="use_default_setting">Использовать настройки по умолчанию</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_general">Основные</string>
+    <!-- Preference GROUP -->
+    <string name="pg_ui">Пользовательский интерфейс</string>
+    <!-- Preference GROUP -->
+    <string name="pg_thumbnails">Миниатюры</string>
+    <!-- Preference GROUP -->
+    <string name="pg_scanning">Сканирование</string>
+    <!-- Preference GROUP -->
+    <string name="pg_booklist">Списки книг</string>
+    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_groupings">Группирование</string>
+
+    <!-- ========== Global preferences ========== -->
+
+    <!-- Preference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
+    <string name="pt_bob_open_book_read_only">Просмотр книги в режиме чтения</string>
+
+    <!-- Preference - start the cropper with the cropper frame set to the whole image -->
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
+
+    <!-- Preference - use an external app. (Intent) to handle cropping-->
+    <string name="pt_thumbnails_external_cropper">Использовать внешний редактор рисунков (экспериментально)</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
+
+     <!--Preference -->
+    <string name="pt_ui_messages_use">Сообщить с</string>
+    <string-array name="pe_ui_messages_use">
+        <item translatable="false">Toast</item>
+        <item translatable="false">Snackbar</item>
+    </string-array>
+
+    <!-- Preference -->
+    <string name="pt_ui_theme">тема</string>
+    <string-array name="pe_ui_theme">
+        <item>темный</item>
+        <item>свет</item>
+    </string-array>
+
+    <!-- Preference - Preferred interface Locale -->
+    <string name="pt_ui_language">Предпочтительный язык</string>
+
+    <!-- Preference - Degrees by which to rotate camera images automatically -->
+    <string name="pt_thumbnails_rotate_auto">Автоматически поворачивать фото, полученное камерой</string>
+    <string-array name="pe_thumbnails_rotate_auto">
+        <item>Нет</item>
+        <item>Повернуть по часовой</item>
+        <item>Повернуть против часовой</item>
+        <item>Повернуть на 180</item>
+    </string-array>
+
+    <!-- Preference - Compatibility / bug workaround for some devices -->
+    <string name="pt_thumbnail_cropper_layer_type">Обрезать \'Layer Type\'</string>
+    <string name="pt_hint_layer_type">Оставьте этот параметр по умолчанию, если вы не столкнетесь с падениями при кадрировании изображений. Попробуйте «программное обеспечение» для более безопасного, но медленного или принудительного «оборудования» для менее безопасного, но быстрее</string>
+    <string-array name="pe_thumbnails_cropper_layer_type">
+        <item>дефолт</item>
+        <item>аппаратные средства</item>
+        <item>Программного обеспечения</item>
+    </string-array>
+
+    <!-- Preference - the barcode scanner to use-->
+    <string name="pt_scanning_preferred_scanner">Предпочтительный сканер</string>
+    <string-array name="pe_scanning_preferred_scanner">
+        <item>Zxing совместимый сканер</item>
+        <item>Zxing сканер</item>
+        <item>Pic2Shop сканер</item>
+    </string-array>
+
+
+    <!-- ========== Book list preferences ========== -->
+
+    <!-- Preference - Book list state-related preferences -->
+    <string name="pt_bob_list_state">Состояние списка книг</string>
+    <string-array name="pe_bob_list_state">
+        <item>Всегда открывать списки раскрытыми</item>
+        <item>Всегда открывать списоки свернутыми</item>
+        <item>Запоминать состояние списков</item>
+    </string-array>
+
+    <!--  Preference to override the default method used to generate book lists as defined by API level -->
+    <string name="pt_bob_list_generation">Составление списка книг</string>
+    <string-array name="pe_bob_list_generation">
+        <item>Автоматически использовать рекомендованный вариант</item>
+        <item>Полная функциональность</item>
+        <item>Повышенный режим совместимости</item>
+        <item>Режим совместимости</item>
+    </string-array>
+
+    <!-- Preference - Thumbnails are fetched in a background task -->
+    <string name="pt_bob_thumbnails_generating_mode">Используйте фоновое задание для извлечения миниатюр</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Использовать фоновый поток (списки пролистываются быстрее, картинки показываются по мере их загрузки)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Создавать немедленно (списки пролистываются медленнее, зато картинки показываются сразу)</string>
+
+    <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
+    <string name="pt_bob_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Кэшировать(используется больше места, но пролистывание быстрее)</string>
+
+
+    <!-- ========== Book list style preferences ========== -->
+
+    <!-- Preference - Use scaled text and images -->
+    <string name="pt_bob_item_size">Размер элемента списка книг</string>
+    <string-array name="pe_bob_item_size">
+        <item>Нормальный</item>
+        <item>Меньший</item>
+        <item>больше</item>
+    </string-array>
+
+    <!-- Preference - Determines what is show in book list header -->
+    <string name="pt_bob_header">Суммарная информация в заголовке</string>
+    <string-array name="pe_bob_header">
+        <item>Показывать номера книг</item>
+        <item>Показать заголовок</item>
+    </string-array>
+
+    <!-- Preference - Show thumbnail image for each book -->
+    <string name="pt_bob_thumbnails_show">Показывать миниатюры</string>
+    <!-- Preference - Show large thumbnail if thumbnails are shown -->
+    <string name="pt_bob_thumbnails_show_large">Большие миниатюры предпочтительней</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
+
+    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Только под первым %1$s</string>
+    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Под каждым %1$s</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_format_author_name">Форматирование по авторским именам</string>
+    <string name="pv_bob_format_author_name_given_first">Первое имя, например \'Иван, Иванов\'</string>
+    <string name="pv_bob_format_author_name_family_first">Первая фамилия, например \'Иванов, Иван\'</string>
+
+    <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
+    <string name="pt_bob_sort_author_name">Сортировать авторов</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_bob_extra_book_details">Дополнительная информация</string>
+</resources>

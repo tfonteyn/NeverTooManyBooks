@@ -21,10 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,12 +41,19 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * This class is called by {@link EditBookFragment} and displays the Notes Tab
  */
-public class EditBookNotesFragment extends BookBaseFragment implements
-        CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Integer>,
-        PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
+public class EditBookNotesFragment
+    extends BookBaseFragment
+    implements
+    CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Integer>,
+    PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
 
     public static final String TAG = "EditBookNotesFragment";
 
@@ -73,9 +76,9 @@ public class EditBookNotesFragment extends BookBaseFragment implements
     //<editor-fold desc="Fragment startup">
 
     @Override
-    public View onCreateView(final @NonNull LayoutInflater inflater,
-                             final @Nullable ViewGroup container,
-                             final @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_notes, container, false);
     }
 
@@ -87,14 +90,14 @@ public class EditBookNotesFragment extends BookBaseFragment implements
      */
     @Override
     @CallSuper
-    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
         try {
             //noinspection ConstantConditions
             ViewUtils.fixFocusSettings(getView());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             // Log, but ignore. This is a non-critical feature that prevents crashes when the
             // 'next' key is pressed and some views have been hidden.
             Logger.error(e);
@@ -114,7 +117,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
         Field field;
 
         mFields.add(R.id.read, UniqueId.KEY_BOOK_READ)
-                .getView().setOnClickListener(new View.OnClickListener() {
+               .getView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 // when user sets 'read', also set the read-end date to today (unless set before)
@@ -142,7 +145,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
         initValuePicker(field, R.string.lbl_location, R.id.btn_location, getLocations());
 
         field = mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
-                .setFormatter(new Fields.BookEditionsFormatter());
+                       .setFormatter(new Fields.BookEditionsFormatter());
         initCheckListEditor(TAG, field, R.string.lbl_edition, new CheckListEditorListGetter<Integer>() {
             @Override
             public ArrayList<CheckListItem<Integer>> getList() {
@@ -151,19 +154,23 @@ public class EditBookNotesFragment extends BookBaseFragment implements
         });
 
         field = mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
-                .setFormatter(dateFormatter);
+                       .setFormatter(dateFormatter);
         initPartialDatePicker(TAG, field, R.string.lbl_date_acquired, true);
 
         field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
-                .setFormatter(dateFormatter);
+                       .setFormatter(dateFormatter);
         initPartialDatePicker(TAG, field, R.string.lbl_read_start, true);
 
         field = mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END)
-                .setFormatter(dateFormatter);
+                       .setFormatter(dateFormatter);
         initPartialDatePicker(TAG, field, R.string.lbl_read_end, true);
 
         mFields.addCrossValidator(new Fields.FieldCrossValidator() {
-            public void validate(final @NonNull Fields fields, final @NonNull Bundle values) throws ValidatorException {
+            private static final long serialVersionUID = -3288341939109142352L;
+
+            public void validate(@NonNull final Fields fields,
+                                 @NonNull final Bundle values)
+                throws ValidatorException {
                 String start = values.getString(UniqueId.KEY_BOOK_READ_START);
                 if (start == null || start.isEmpty()) {
                     return;
@@ -181,7 +188,8 @@ public class EditBookNotesFragment extends BookBaseFragment implements
 
     @Override
     @CallSuper
-    protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+    protected void onLoadFieldsFromBook(@NonNull final Book book,
+                                        final boolean setAllFrom) {
         Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
@@ -210,7 +218,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
      * Overriding to get extra debug
      */
     @Override
-    protected void onSaveFieldsToBook(final @NonNull Book book) {
+    protected void onSaveFieldsToBook(@NonNull final Book book) {
         Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
         super.onSaveFieldsToBook(book);
         Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
@@ -222,9 +230,9 @@ public class EditBookNotesFragment extends BookBaseFragment implements
 
     //<editor-fold desc="Field editors callbacks">
     @Override
-    public void onCheckListEditorSave(final @NonNull CheckListEditorDialogFragment dialog,
+    public void onCheckListEditorSave(@NonNull final CheckListEditorDialogFragment dialog,
                                       final int destinationFieldId,
-                                      final @NonNull List<CheckListItem<Integer>> list) {
+                                      @NonNull final List<CheckListItem<Integer>> list) {
         dialog.dismiss();
 
         if (destinationFieldId == R.id.edition) {
@@ -235,7 +243,7 @@ public class EditBookNotesFragment extends BookBaseFragment implements
     }
 
     @Override
-    public void onCheckListEditorCancel(final @NonNull CheckListEditorDialogFragment dialog,
+    public void onCheckListEditorCancel(@NonNull final CheckListEditorDialogFragment dialog,
                                         final @IdRes int destinationFieldId) {
         dialog.dismiss();
     }

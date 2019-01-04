@@ -23,10 +23,6 @@ package com.eleybourn.bookcatalogue.goodreads;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -39,6 +35,9 @@ import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 
 /**
  * Activity to handle searching Goodreads for books that did not automatically convert.
@@ -53,8 +52,6 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
  */
 public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_GOODREADS_SEARCH_CRITERIA;
-
     private CatalogueDBAdapter mDb;
     private long mBookId = 0;
 
@@ -67,7 +64,7 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -99,18 +96,18 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
                 final BookRowView bookCursorRow = cursor.getCursorRow();
                 {
                     String s = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();
-                    ((TextView)findViewById(R.id.author)).setText(s);
-                    criteria.append(s).append(" ");
+                    ((TextView) findViewById(R.id.author)).setText(s);
+                    criteria.append(s).append(' ');
                 }
                 {
                     String s = bookCursorRow.getTitle();
-                    ((TextView)findViewById(R.id.title)).setText(s);
-                    criteria.append(s).append(" ");
+                    ((TextView) findViewById(R.id.title)).setText(s);
+                    criteria.append(s).append(' ');
                 }
                 {
                     String s = bookCursorRow.getIsbn();
-                    ((TextView)findViewById(R.id.isbn)).setText(s);
-                    criteria.append(s).append(" ");
+                    ((TextView) findViewById(R.id.isbn)).setText(s);
+                    criteria.append(s).append(' ');
                 }
             }
 

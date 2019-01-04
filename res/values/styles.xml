@@ -395,14 +395,17 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingStart">@dimen/padding_prefs_item</item>
+        <item name="android:paddingBottom">@dimen/padding_border_double</item>
         <item name="android:drawablePadding">@dimen/padding_prefs_item</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
     <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...) -->
     <style name="row_option_checkable">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/padding_border_double</item>
+        <item name="android:paddingBottom">@dimen/padding_border</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 

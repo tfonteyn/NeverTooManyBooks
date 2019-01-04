@@ -29,14 +29,15 @@ import java.util.ArrayList;
  * @author Philip Warner
  */
 abstract class MetaValidator extends ArrayList<DataValidator> implements DataValidator {
-	public static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 4716913649965681332L;
 
 	/**
 	 * Constructor taking one 'sub' Validator.
 	 * 
 	 * @param v1	Validator to check
 	 */
-	MetaValidator(final @NonNull DataValidator v1) {
+	MetaValidator(@NonNull final DataValidator v1) {
 		this.add(v1);
 	}
 
@@ -46,7 +47,7 @@ abstract class MetaValidator extends ArrayList<DataValidator> implements DataVal
 	 * @param v1	Validator to check
 	 * @param v2	Validator to check
 	 */
-	MetaValidator(final @NonNull DataValidator v1, final @NonNull DataValidator v2) {
+	MetaValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2) {
 		this.add(v1);
 		this.add(v2);
 	}
@@ -58,7 +59,7 @@ abstract class MetaValidator extends ArrayList<DataValidator> implements DataVal
 	 * @param v2	Validator to check
 	 * @param v3	Validator to check
 	 */
-	MetaValidator(final @NonNull DataValidator v1, final @NonNull DataValidator v2,  final @NonNull DataValidator v3) {
+	MetaValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2,  @NonNull final DataValidator v3) {
 		this.add(v1);
 		this.add(v2);
 		this.add(v3);

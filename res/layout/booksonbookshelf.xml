@@ -25,17 +25,6 @@
                 android:id="@+id/toolbar"
                 style="@style/toolbar" />
 
-            <!--<android.support.design.widget.FloatingActionButton-->
-            <!--android:id="@+id/floatingAddButton"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:layout_alignParentEnd="true"-->
-            <!--app:fabSize="mini"-->
-            <!--android:src="@drawable/ic_menu_add"-->
-            <!--android:layout_margin="16dp" />-->
-            <!--android:layout_gravity="end|bottom"-->
-
             <!-- the header with the Bookshelf Spinner and information lines -->
             <RelativeLayout
                 android:id="@+id/header"

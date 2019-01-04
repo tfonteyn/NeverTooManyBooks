@@ -51,9 +51,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
     @NonNull
     private final MultiTypeListHandler mListHandler;
 
-    public MultiTypeListCursorAdapter(final @NonNull Activity activity,
-                                      final @NonNull Cursor cursor,
-                                      final @NonNull MultiTypeListHandler handler) {
+    public MultiTypeListCursorAdapter(@NonNull final Activity activity,
+                                      @NonNull final Cursor cursor,
+                                      @NonNull final MultiTypeListHandler handler) {
         super(activity, cursor);
         //noinspection ConstantConditions
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -88,9 +88,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         // NOTE: It DOES NOT fix the error; just gathers more debug info
         //
         if (listCursor.isClosed()) {
-            throw new IllegalStateException("Attempt to get type of item on closed cursor (" + listCursor + ")");
+            throw new IllegalStateException("Attempt to get type of item on closed cursor (" + listCursor + ')');
         } else if (position >= listCursor.getCount()) {
-            throw new IllegalStateException("Attempt to get type of item beyond end of cursor (" + listCursor + ")");
+            throw new IllegalStateException("Attempt to get type of item beyond end of cursor (" + listCursor + ')');
         } else {
             listCursor.moveToPosition(position);
             return mListHandler.getItemViewType(listCursor);
@@ -104,7 +104,7 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
 
     @NonNull
     @Override
-    public View getView(final int position, final View convertView, final @NonNull ViewGroup parent) {
+    public View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {
         Cursor listCursor = this.getCursor();
         listCursor.moveToPosition(position);
 

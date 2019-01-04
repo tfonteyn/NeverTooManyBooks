@@ -3,10 +3,11 @@ package com.eleybourn.bookcatalogue;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.booklist.BooklistPreferredStylesActivity;
 import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleActivity;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.settings.FieldVisibilitySettingsFragment;
+import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
@@ -51,48 +52,19 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
 /**
  * Global String constants
  */
-public class UniqueId {
+public final class UniqueId {
 
-    // can't move these to res/values/ids.xml, as they need to be 16 bit values
+    // BEGIN RequestCodes used in more then one class for startActivityForResult / onActivityResult
 
-    // BEGIN RequestCodes used for startActivityForResult / onActivityResult
+    public static final int REQ_NAV_PANEL_EDIT_PREFERRED_STYLES = 1_001;
+    public static final int REQ_NAV_PANEL_ADMIN = 1_002;
+    public static final int REQ_NAV_PANEL_EDIT_BOOKSHELVES = 1_003;
 
-    // these should not be used directly, but via the REQUEST_CODE of the actual Activity.
-    public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOK = 101;
-    public static final int ACTIVITY_REQUEST_CODE_EDIT_AUTHORS = 102;
-    public static final int ACTIVITY_REQUEST_CODE_EDIT_SERIES = 103;
-    public static final int ACTIVITY_REQUEST_CODE_VIEW_BOOK = 104;
-    public static final int ACTIVITY_REQUEST_CODE_SEARCH = 150;
-
-    public static final int ACTIVITY_REQUEST_CODE_UPDATE_FROM_INTERNET = 201;
-    public static final int ACTIVITY_REQUEST_CODE_GOODREADS_SEARCH_CRITERIA = 203;
-
-    public static final int ACTIVITY_REQUEST_CODE_SCANNER = 300;
-    public static final int ACTIVITY_REQUEST_CODE_ADD_BOOK = 302;
-
-    public static final int ACTIVITY_REQUEST_CODE_CROP_IMAGE = 401;
-
-    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERRED_STYLES = 501;
-    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_PROPERTIES = 502;
-    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_STYLE_GROUPS = 503;
-    public static final int ACTIVITY_REQUEST_CODE_BOOKLIST_PREFERENCES = 504;
-
-    public static final int ACTIVITY_REQUEST_CODE_ADMIN = 601;
-    public static final int ACTIVITY_REQUEST_CODE_PREFERENCES = 602;
-    public static final int ACTIVITY_REQUEST_CODE_FIELD_VISIBILITY = 603;
-    public static final int ACTIVITY_REQUEST_CODE_SEARCH_SITES = 604;
-    public static final int ACTIVITY_REQUEST_CODE_BACKUP_CHOOSER = 605;
-
-    public static final int ACTIVITY_REQUEST_CODE_EDIT_BOOKSHELF_LIST = 701;
-
+    static final int REQ_BOOK_EDIT = 2_000;
+    static final int REQ_BOOK_DUPLICATE = 2_001;
 
     // Build-in system
-    public static final int ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST = 1000;
-    public static final int ACTIVITY_REQUEST_CODE_ANDROID_IMAGE_CAPTURE = 1001;
-    public static final int ACTIVITY_REQUEST_CODE_ANDROID_ACTION_GET_CONTENT = 1002;
-    // External app
-    public static final int ACTIVITY_REQUEST_CODE_EXTERNAL_CROP_IMAGE =1003;
-
+    static final int ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS = 9_000;
     // END Request Codes used for startActivityForResult / onActivityResult
 
     // BEGIN Result Codes used for setResult / onActivityResult
@@ -100,7 +72,7 @@ public class UniqueId {
     /** generic delete */
     public static final int ACTIVITY_RESULT_DELETED_SOMETHING = 10_001;
 
-    /** {@link BooklistPreferredStylesActivity} need distinct code as it can trickle up */
+    /** {@link PreferredStylesActivity} need distinct code as it can trickle up */
     public static final int ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity = 10_101;
     /** {@link EditBooklistStyleActivity} need distinct code as it can trickle up */
     public static final int ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity = 10_102;
@@ -109,15 +81,17 @@ public class UniqueId {
     // END Result Codes used for setResult / onActivityResult
 
 
-    /** If set when calling startActivity, it will override the default layout for that activity.
-     *  This is done in {@link BaseActivity} */
+    /**
+     * If set when calling startActivity, it will override the default layout for that activity.
+     * This is done in {@link BaseActivity}
+     */
     public static final String BKEY_LAYOUT = "layout";
 
     /** used to pass a Bundle with book data around; e.g. before becoming an actual {@link Book} */
     public static final String BKEY_BOOK_DATA = "bookData";
 
     /** bundle key to pass an {@link java.util.ArrayList<Integer>} around. */
-     public static final String BKEY_BOOK_ID_LIST = "bookIdList";
+    public static final String BKEY_BOOK_ID_LIST = "bookIdList";
 
     /** Bundle keys for ParcelableArrayList<Entity> */
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
@@ -135,7 +109,7 @@ public class UniqueId {
     /**
      * 3 uses:
      * Boolean indicating if we have a thumbnail or not.
-     * Visibility indicator, see {@link FieldVisibilityActivity}
+     * Visibility indicator, see {@link FieldVisibilitySettingsFragment}
      * Flag to indicate we 'want' a thumbnail, in {@link Fields.FieldUsage.Usage}
      */
     public static final String BKEY_HAVE_THUMBNAIL = "thumbnail";
@@ -148,6 +122,8 @@ public class UniqueId {
     public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
 
 
+    /** int, id of fragment to display if an Activity supports multiple */
+    public static final String FRAGMENT_ID = "fragment";
 
     public static final String BKEY_NO_COVER = "noCover";
 
@@ -221,4 +197,7 @@ public class UniqueId {
     public static final String KEY_BOOK_GOODREADS_LAST_SYNC_DATE = DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name;
 
     public static final String KEY_LOAN_LOANED_TO = DOM_LOANED_TO.name;
+
+    private UniqueId() {
+    }
 }

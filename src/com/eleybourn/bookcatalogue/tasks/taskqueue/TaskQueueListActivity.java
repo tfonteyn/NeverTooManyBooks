@@ -57,7 +57,7 @@ public class TaskQueueListActivity extends BindableItemListActivity {
      */
     private final OnTaskChangeListener mOnTaskChangeListener = new OnTaskChangeListener() {
         @Override
-        public void onTaskChange(final @Nullable Task task, final @NonNull TaskActions action) {
+        public void onTaskChange(@Nullable final Task task, @NonNull final TaskActions action) {
             TaskQueueListActivity.this.refreshData();
         }
     };
@@ -72,10 +72,10 @@ public class TaskQueueListActivity extends BindableItemListActivity {
 
     @Override
     @CallSuper
-    protected void onCreate(final @Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
-        setTitle(R.string.menu_background_tasks);
+        setTitle(R.string.gr_tq_menu_background_tasks);
 
         mDb = new CatalogueDBAdapter(this);
 
@@ -83,7 +83,7 @@ public class TaskQueueListActivity extends BindableItemListActivity {
         QueueManager.getQueueManager().registerTaskListener(mOnTaskChangeListener);
 
         Button cleanupBtn = findViewById(R.id.cleanup);
-        cleanupBtn.setText(R.string.btn_cleanup_old_tasks);
+        cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_tasks);
         cleanupBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,11 +113,11 @@ public class TaskQueueListActivity extends BindableItemListActivity {
      * Build a context menu dialogue when an item is clicked.
      */
     @Override
-    public void onListItemClick(@NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
+    public void onListItemClick(@NonNull AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
         Task task = ViewTagger.getTagOrThrow(v, R.id.TAG_TASK);
         List<ContextDialogItem> items = new ArrayList<>();
 
-        items.add(new ContextDialogItem(getString(R.string.show_events_ellipsis), new Runnable() {
+        items.add(new ContextDialogItem(getString(R.string.gr_tq_show_events_ellipsis), new Runnable() {
             @Override
             public void run() {
                 doShowTaskEvents(id);
@@ -150,12 +150,12 @@ public class TaskQueueListActivity extends BindableItemListActivity {
      * Pass binding off to the task object.
      */
     @Override
-    public void bindViewToItem(final @NonNull Context context,
-                               final @NonNull View view,
-                               final @NonNull BindableItemCursor cursor,
-                               final @NonNull BindableItemCursorAdapter.BindableItem bindable) {
-        ViewTagger.setTag(view, R.id.TAG_TASK, bindable);
-        bindable.bindView(view, context, cursor, mDb);
+    public void bindViewToItem(@NonNull final Context context,
+                               @NonNull final View convertView,
+                               @NonNull final BindableItemCursor cursor,
+                               @NonNull final BindableItemCursorAdapter.BindableItem item) {
+        ViewTagger.setTag(convertView, R.id.TAG_TASK, item);
+        item.bindView(convertView, context, cursor, mDb);
     }
 
     /**
@@ -165,7 +165,7 @@ public class TaskQueueListActivity extends BindableItemListActivity {
      */
     @NonNull
     @Override
-    protected BindableItemCursor getBindableItemCursor(final @Nullable Bundle savedInstanceState) {
+    protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
         mCursor = QueueManager.getQueueManager().getTasks();
         return mCursor;
     }
@@ -177,14 +177,14 @@ public class TaskQueueListActivity extends BindableItemListActivity {
 
         try {
             QueueManager.getQueueManager().unregisterTaskListener(mOnTaskChangeListener);
-        } catch (Exception ignore) {
+        } catch (RuntimeException ignore) {
         }
 
         try {
             if (mCursor != null) {
                 mCursor.close();
             }
-        } catch (Exception ignore) {
+        } catch (RuntimeException ignore) {
         }
 
         if (mDb != null) {

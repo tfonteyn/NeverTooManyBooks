@@ -81,7 +81,7 @@ public class QueueManager {
     private final List<WeakReference<OnTaskChangeListener>> mTaskChangeListeners;
 
     /** Handle inter-thread messages */
-    private MessageHandler mMessageHandler;
+    private final MessageHandler mMessageHandler;
 
     /**
      * Reminder: as we're a singleton, we cannot cache the Context.
@@ -122,7 +122,7 @@ public class QueueManager {
         return mInstance;
     }
 
-    void registerEventListener(final @NonNull OnEventChangeListener listener) {
+    void registerEventListener(@NonNull final OnEventChangeListener listener) {
         synchronized (mEventChangeListeners) {
             for (WeakReference<OnEventChangeListener> lr : mEventChangeListeners) {
                 OnEventChangeListener l = lr.get();
@@ -134,7 +134,7 @@ public class QueueManager {
         }
     }
 
-    void unregisterEventListener(final @NonNull OnEventChangeListener listener) {
+    void unregisterEventListener(@NonNull final OnEventChangeListener listener) {
         synchronized (mEventChangeListeners) {
             List<WeakReference<OnEventChangeListener>> ll = new ArrayList<>();
             for (WeakReference<OnEventChangeListener> l : mEventChangeListeners) {
@@ -148,7 +148,7 @@ public class QueueManager {
         }
     }
 
-    void registerTaskListener(final @NonNull OnTaskChangeListener listener) {
+    void registerTaskListener(@NonNull final OnTaskChangeListener listener) {
         synchronized (mTaskChangeListeners) {
             for (WeakReference<OnTaskChangeListener> lr : mTaskChangeListeners) {
                 OnTaskChangeListener l = lr.get();
@@ -160,7 +160,7 @@ public class QueueManager {
         }
     }
 
-    void unregisterTaskListener(final @NonNull OnTaskChangeListener listener) {
+    void unregisterTaskListener(@NonNull final OnTaskChangeListener listener) {
         synchronized (mTaskChangeListeners) {
             List<WeakReference<OnTaskChangeListener>> ll = new ArrayList<>();
             for (WeakReference<OnTaskChangeListener> l : mTaskChangeListeners) {
@@ -174,7 +174,7 @@ public class QueueManager {
         }
     }
 
-    void notifyTaskChange(final @Nullable Task task, final @NonNull TaskActions action) {
+    void notifyTaskChange(@Nullable final Task task, @NonNull final TaskActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnTaskChangeListener>> list;
         synchronized (mTaskChangeListeners) {
@@ -196,13 +196,13 @@ public class QueueManager {
                         }
                     };
                     mMessageHandler.post(r);
-                } catch (Exception ignore) {
+                } catch (RuntimeException ignore) {
                 }
             }
         }
     }
 
-    private void notifyEventChange(final @Nullable Event event, final @NonNull EventActions action) {
+    private void notifyEventChange(@Nullable final Event event, @NonNull final EventActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnEventChangeListener>> list;
         synchronized (mEventChangeListeners) {
@@ -224,7 +224,7 @@ public class QueueManager {
                         }
                     };
                     mMessageHandler.post(r);
-                } catch (Exception ignore) {
+                } catch (RuntimeException ignore) {
                 }
             }
         }
@@ -236,8 +236,8 @@ public class QueueManager {
      * @param task      task to queue
      * @param queueName Name of queue
      */
-    public void enqueueTask(final @NonNull Task task,
-                            final @NonNull String queueName) {
+    public void enqueueTask(@NonNull final Task task,
+                            @NonNull final String queueName) {
         synchronized (this) {
             // Save it
             mDb.enqueueTask(task, queueName);
@@ -258,7 +258,7 @@ public class QueueManager {
      *
      * @param name Name of the queue
      */
-    private void initializeQueue(final @NonNull String name) {
+    private void initializeQueue(@NonNull final String name) {
         mDb.createQueue(name);
     }
 
@@ -267,7 +267,7 @@ public class QueueManager {
      *
      * @param queue New queue object
      */
-    void onQueueStarting(final @NonNull Queue queue) {
+    void onQueueStarting(@NonNull final Queue queue) {
         synchronized (this) {
             mActiveQueues.put(queue.getQueueName(), queue);
         }
@@ -278,7 +278,7 @@ public class QueueManager {
      *
      * @param queue Queue that is stopping
      */
-    void onQueueTerminating(final @NonNull Queue queue) {
+    void onQueueTerminating(@NonNull final Queue queue) {
         synchronized (this) {
             try {
                 // It's possible that a queue terminated and another started; make sure we are removing
@@ -287,7 +287,7 @@ public class QueueManager {
                 if (q.equals(queue)) {
                     mActiveQueues.remove(queue.getQueueName());
                 }
-            } catch (Exception ignore) {
+            } catch (RuntimeException ignore) {
             }
         }
     }
@@ -298,9 +298,9 @@ public class QueueManager {
      *
      * @param task Task to run
      *
-     * @return false to requeue, true for success
+     * @return <tt>false</tt> to requeue, <tt>true</tt> for success
      */
-    boolean runTask(final @NonNull Task task) {
+    boolean runTask(@NonNull final Task task) {
         if (task instanceof GoodreadsTask) {
             return ((GoodreadsTask) task).run(this, BookCatalogueApp.getAppContext());
         } else {
@@ -315,7 +315,7 @@ public class QueueManager {
      *
      * @param task The task to be updated. Must exist in database.
      */
-    public void updateTask(final @NonNull Task task) {
+    public void updateTask(@NonNull final Task task) {
         mDb.updateTask(task);
         this.notifyTaskChange(task, TaskActions.updated);
     }
@@ -323,7 +323,7 @@ public class QueueManager {
     /**
      * Make a toast message for the caller. Queue in UI thread if necessary.
      */
-    private void doToast(final @Nullable String message) {
+    private void doToast(@Nullable final String message) {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
                 StandardDialogs.showUserMessage(message);
@@ -346,7 +346,7 @@ public class QueueManager {
      * @param t Related task
      * @param e Exception (usually subclassed)
      */
-    void storeTaskEvent(final @NonNull Task t, final @NonNull Event e) {
+    void storeTaskEvent(@NonNull final Task t, @NonNull final Event e) {
         mDb.storeTaskEvent(t, e);
         this.notifyEventChange(e, EventActions.created);
     }
@@ -498,11 +498,11 @@ public class QueueManager {
         @NonNull
         private final WeakReference<QueueManager> mQueueManager;
 
-        MessageHandler(final @NonNull WeakReference<QueueManager> queueManager) {
+        MessageHandler(@NonNull final WeakReference<QueueManager> queueManager) {
             mQueueManager = queueManager;
         }
 
-        public void handleMessage(final @NonNull Message msg) {
+        public void handleMessage(@NonNull final Message msg) {
             Bundle bundle = msg.getData();
             if (bundle.containsKey(INTERNAL)) {
                 String kind = bundle.getString(INTERNAL);

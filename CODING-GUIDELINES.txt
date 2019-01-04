@@ -21,7 +21,7 @@ Small notes in addition:
   getSharedPreferences strings
   not checked yet.
 
-  The database (as of v82) will/can contain untrimmed strings.
+  The database (checked with v82) will/can contain untrimmed strings.
   Best to add .trim() to al locations where a getString is done.
   Eventually the database will then be trim-proof.
   TODO: perhaps run a batch correction on all fields as an update ? bit brutal...
@@ -54,7 +54,7 @@ Small notes in addition:
   - TODO
   - FIXME
   - ENHANCE
-  - API_UPGRADE: like enhance, but specific for Android API level upgrades
+  - API: like enhance, but specific for Android API level upgrades
   - TEST: work done, but needs proper testing
   - RELEASE : things that must be checked before doing a public release
   - NEWKIND : where a list of 'items' is processed -> where you can/should add 'items' to that list

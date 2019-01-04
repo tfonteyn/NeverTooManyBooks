@@ -21,7 +21,7 @@
     <ImageButton
         android:id="@+id/btn_edit"
         style="@style/itemEditButton"
-        app:srcCompat="@drawable/ic_mode_edit"
+        app:srcCompat="@drawable/ic_edit"
         tools:ignore="ContentDescription" />
 
     <View style="@style/divider_horizontalList" />

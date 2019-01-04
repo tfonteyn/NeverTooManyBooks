@@ -19,9 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.tasks.simpletasks;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 
@@ -29,12 +26,15 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Class to execute Runnable objects in a separate thread after a predetermined delay.
  *
  * @author pjw
  */
-public class Terminator {
+public final class Terminator {
 
     /** Task queue to get book lists in background */
     private static final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("Terminator", 1);
@@ -47,6 +47,9 @@ public class Terminator {
      */
     private static boolean mIsRunning = false;
 
+    private Terminator() {
+    }
+
     /**
      * Dummy method to make sure static initialization is done. Needs to be
      * called from main thread (usually at app startup).
@@ -58,10 +61,10 @@ public class Terminator {
     /**
      * Enqueue the passed runnable to be run after the specified delay.
      *
-     * @param runnable      Runnable to execute
-     * @param delay         Delay in milliseconds before execution
+     * @param runnable Runnable to execute
+     * @param delay    Delay in milliseconds before execution
      */
-    public static void enqueue(final @NonNull Runnable runnable, final long delay) {
+    public static void enqueue(@NonNull final Runnable runnable, final long delay) {
         // Compute actual time
         long time = System.currentTimeMillis() + delay;
         // Create Event and add to queue.
@@ -87,7 +90,7 @@ public class Terminator {
         public final Runnable runnable;
         final long time;
 
-        public Event(final @NonNull Runnable runnable, final long time) {
+        public Event(@NonNull final Runnable runnable, final long time) {
             this.runnable = runnable;
             this.time = time;
         }
@@ -95,11 +98,12 @@ public class Terminator {
 
     /** Comparator to ensure Event objects are returned in the correct order */
     private static class EventComparator implements Comparator<Event>, Serializable {
-        private static final long serialVersionUID = 1L;
+
+        private static final long serialVersionUID = 1835857521140326924L;
 
         @Override
-        public int compare(@NonNull Event lhs, @NonNull Event rhs) {
-            return Long.compare(lhs.time, rhs.time);
+        public int compare(@NonNull Event o1, @NonNull Event o2) {
+            return Long.compare(o1.time, o2.time);
         }
     }
 
@@ -111,19 +115,15 @@ public class Terminator {
     private static class TerminatorTask implements SimpleTaskQueue.SimpleTask {
 
         @Override
-        public void run(final @NonNull SimpleTaskContext taskContext) {
-            Logger.info(this,"Terminator: Nice night for a walk.");
+        public void run(@NonNull final SimpleTaskContext taskContext) {
+            Logger.info(this, "Terminator: Nice night for a walk.");
             do {
                 Event event;
                 long delay;
                 // Check when next task due
                 synchronized (mTaskQueue) {
-                    // Look for a task; if exception or none found, abort.
-                    try {
-                        event = mEvents.peek();
-                    } catch (Exception ex) {
-                        event = null;
-                    }
+                    // Look for a task
+                    event = mEvents.peek();
                     // none ? quit running task. Will be restarted if/when needed.
                     if (event == null) {
                         mIsRunning = false;
@@ -132,8 +132,9 @@ public class Terminator {
                     // Check how long until it should run
                     delay = event.time - System.currentTimeMillis();
                     // If it's due now, then remove it from the queue.
-                    if (delay <= 0)
+                    if (delay <= 0) {
                         mEvents.remove(event);
+                    }
                 }
 
                 if (delay > 0) {
@@ -141,7 +142,7 @@ public class Terminator {
                     synchronized (mWaitObject) {
                         try {
                             mWaitObject.wait(delay);
-                        } catch (Exception e) {
+                        } catch (InterruptedException e) {
                             Logger.error(e);
                         }
                     }
@@ -152,7 +153,7 @@ public class Terminator {
                     // But...not for now.
                     try {
                         event.runnable.run();
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                         Logger.error(e);
                     }
                 }
@@ -161,7 +162,7 @@ public class Terminator {
 
         @Override
         public void onFinish(@Nullable Exception e) {
-            Logger.info(this,"Terminator: I'll be back.");
+            Logger.info(this, "Terminator: I'll be back.");
             if (e != null) {
                 Logger.error(e);
             }

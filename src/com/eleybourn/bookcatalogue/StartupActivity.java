@@ -31,30 +31,22 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.PermissionChecker;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 
-import com.eleybourn.bookcatalogue.booklist.BooklistPreferencesActivity;
+import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.database.DBCleaner;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.OnTaskFinishListener;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
@@ -62,28 +54,38 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
+
 /**
  * Single Activity to be the 'Main' activity for the app. It does app-startup stuff which is initially
  * to start the 'real' main activity.
  *
  * @author Philip Warner
  */
-public class StartupActivity extends AppCompatActivity {
+public class StartupActivity
+    extends AppCompatActivity {
 
-    public static final String TAG = "Startup.";
     /** the 'LastVersion' e.g. the version which was installed before the current one. */
-    public final static String PREF_STARTUP_LAST_VERSION = TAG + "LastVersion";
+    public final static String PREF_STARTUP_LAST_VERSION = "Startup.LastVersion";
     /** Number of times the app has been started */
-    public static final String PREF_STARTUP_COUNT = TAG + "StartCount";
+    public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
-    public static final String PREFS_STARTUP_COUNTDOWN =  TAG + "StartCountdown";
+    public static final String PREFS_STARTUP_COUNTDOWN = "Startup.StartCountdown";
     /** Number of app startup's between offers to backup */
     private static final int PROMPT_WAIT_BACKUP = 5;
     /** Number of app startup's between displaying the Amazon hint */
     private static final int PROMPT_WAIT_AMAZON = 7;
 
     /** Options to indicate FTS rebuild is required at startup */
-    private static final String PREF_STARTUP_FTS_REBUILD_REQUIRED = TAG + "FtsRebuildRequired";
+    public static final String PREF_STARTUP_FTS_REBUILD_REQUIRED = "Startup.FtsRebuildRequired";
 
     /** Indicates the upgrade message has been shown */
     private static boolean mUpgradeMessageShown = false;
@@ -99,7 +101,7 @@ public class StartupActivity extends AppCompatActivity {
     private SimpleTaskQueue mTaskQueue = null;
     /**
      * Progress Dialog for startup tasks
-     * API_UPGRADE 26 this is a global requirement: ProgressDialog is deprecated
+     * API 26 this is a global requirement: ProgressDialog is deprecated
      * https://developer.android.com/reference/android/app/ProgressDialog
      * Suggested: ProgressBar or Notification.
      * Alternative maybe: SnackBar (recommended replacement for Toast)
@@ -117,7 +119,7 @@ public class StartupActivity extends AppCompatActivity {
 
     /** Set the flag to indicate an FTS rebuild is required */
     public static void scheduleFtsRebuild() {
-        BookCatalogueApp.getSharedPreferences().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
+        Prefs.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
     }
 
     /**
@@ -136,7 +138,7 @@ public class StartupActivity extends AppCompatActivity {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -158,7 +160,7 @@ public class StartupActivity extends AppCompatActivity {
 
     private void initStorage() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS);
             return;
         }
         StorageUtils.initSharedDirectories();
@@ -175,16 +177,16 @@ public class StartupActivity extends AppCompatActivity {
             case 1: {
                 // Create a progress dialog; we may not use it...but we need it to be created in the UI thread.
                 mProgress = ProgressDialog.show(this,
-                        getString(R.string.lbl_book_catalogue_startup),
-                        getString(R.string.progress_msg_starting_up),
-                        true,
-                        true, new OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialog) {
-                                // Cancelling the list cancels the activity.
-                                StartupActivity.this.finish();
-                            }
-                        });
+                    getString(R.string.lbl_application_startup),
+                    getString(R.string.progress_msg_starting_up),
+                    true,
+                    true, new OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            // Cancelling the list cancels the activity.
+                            StartupActivity.this.finish();
+                        }
+                    });
                 startTasks();
                 break;
             }
@@ -242,14 +244,14 @@ public class StartupActivity extends AppCompatActivity {
     /**
      * Update the progress dialog, if it has not been dismissed.
      */
-    public void updateProgress(final @StringRes int stringId) {
+    public void updateProgress(@StringRes final int stringId) {
         updateProgress(getString(stringId));
     }
 
     /**
      * Update the progress dialog, if it has not been dismissed.
      */
-    private void updateProgress(final @NonNull String message) {
+    private void updateProgress(@NonNull final String message) {
         // If mProgress is null, it has been dismissed. Don't update.
         if (mProgress == null) {
             return;
@@ -266,7 +268,7 @@ public class StartupActivity extends AppCompatActivity {
                     if (!mProgress.isShowing()) {
                         mProgress.show();
                     }
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     Logger.error(e);
                 }
             }
@@ -309,7 +311,8 @@ public class StartupActivity extends AppCompatActivity {
             // Listen for task completions
             mTaskQueue.setTaskFinishListener(new OnTaskFinishListener() {
                 @Override
-                public void onTaskFinish(final @NonNull SimpleTaskQueue.SimpleTask task, final @Nullable Exception e) {
+                public void onTaskFinish(@NonNull final SimpleTaskQueue.SimpleTask task,
+                                         @Nullable final Exception e) {
                     taskCompleted(task);
                 }
             });
@@ -336,18 +339,19 @@ public class StartupActivity extends AppCompatActivity {
         }
 
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
-                .setTitle(R.string.about_lbl_upgrade)
-                .setIcon(R.drawable.ic_info_outline)
-                .create();
+            .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
+            .setTitle(R.string.about_lbl_upgrade)
+            .setIcon(R.drawable.ic_info_outline)
+            .create();
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        UpgradeMessageManager.setUpgradeAcknowledged();
-                        startNextStage();
-                    }
-                });
+            new DialogInterface.OnClickListener() {
+                public void onClick(final DialogInterface dialog,
+                                    final int which) {
+                    UpgradeMessageManager.setUpgradeAcknowledged();
+                    startNextStage();
+                }
+            });
         dialog.show();
         mUpgradeMessageShown = true;
     }
@@ -357,26 +361,28 @@ public class StartupActivity extends AppCompatActivity {
 
         if (proposeBackup()) {
             AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setMessage(R.string.backup_request)
-                    .setTitle(R.string.lbl_backup_dialog)
-                    .setIcon(R.drawable.ic_help_outline)
-                    .create();
+                .setMessage(R.string.backup_request)
+                .setTitle(R.string.lbl_backup_dialog)
+                .setIcon(R.drawable.ic_help_outline)
+                .create();
 
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                    getString(android.R.string.cancel)
-                    , new DialogInterface.OnClickListener() {
-                        public void onClick(final @NonNull DialogInterface dialog, final int which) {
-                            dialog.dismiss();
-                        }
-                    });
+                getString(android.R.string.cancel)
+                , new DialogInterface.OnClickListener() {
+                    public void onClick(@NonNull final DialogInterface dialog,
+                                        final int which) {
+                        dialog.dismiss();
+                    }
+                });
             dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                    getString(android.R.string.ok),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(final @NonNull DialogInterface dialog, final int which) {
-                            mBackupRequired = true;
-                            dialog.dismiss();
-                        }
-                    });
+                getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(@NonNull final DialogInterface dialog,
+                                        final int which) {
+                        mBackupRequired = true;
+                        dialog.dismiss();
+                    }
+                });
             dialog.setOnDismissListener(new OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
@@ -393,13 +399,13 @@ public class StartupActivity extends AppCompatActivity {
      * Decrease and store the number of times the app was opened.
      * Used for proposing Backup/Amazon
      *
-     * @return true when counter reached 0
+     * @return <tt>true</tt> when counter reached 0
      */
     private boolean proposeBackup() {
-        int opened = BookCatalogueApp.getIntPreference(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
-        int startCount = BookCatalogueApp.getIntPreference(PREF_STARTUP_COUNT, 0) + 1;
+        int opened = Prefs.getInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
+        int startCount = Prefs.getInt(PREF_STARTUP_COUNT, 0) + 1;
 
-        final SharedPreferences.Editor ed = BookCatalogueApp.getSharedPreferences().edit();
+        final SharedPreferences.Editor ed = Prefs.getPrefs().edit();
         if (opened == 0) {
             ed.putInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
         } else {
@@ -413,7 +419,7 @@ public class StartupActivity extends AppCompatActivity {
     }
 
     /**
-     * Last step
+     * Last onProgress
      */
     private void gotoMainScreen() {
         Intent intent = new Intent(this, BooksOnBookshelf.class);
@@ -459,15 +465,17 @@ public class StartupActivity extends AppCompatActivity {
      */
     @Override
     @PermissionChecker.PermissionResult
-    public void onRequestPermissionsResult(final int requestCode, final @NonNull String permissions[], final @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode,
+                                           @NonNull final String permissions[],
+                                           @NonNull final int[] grantResults) {
         //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[] must be checked in parallel
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS_REQUEST: {
+            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initStorage();
                 } else {
                     // we can't work without Shared Storage, so die; can't use Logger as we don't have a log file!
-                    Log.e("StartupActivity","No Shared Storage permissions granted, quiting");
+                    Log.e("StartupActivity", "No Shared Storage permissions granted, quiting");
                     finishAndRemoveTask();
                 }
             }
@@ -479,9 +487,11 @@ public class StartupActivity extends AppCompatActivity {
      * Build the dedicated SharedPreferences file with the language mappings.
      * Only build once per Locale.
      */
-    public class BuildLanguageMappingsTask implements SimpleTaskQueue.SimpleTask {
+    public class BuildLanguageMappingsTask
+        implements SimpleTaskQueue.SimpleTask {
+
         @Override
-        public void run(final @NonNull SimpleTaskContext taskContext) {
+        public void run(@NonNull final SimpleTaskContext taskContext) {
             updateProgress(R.string.progress_msg_updating_languages);
 
             // generate initial language2iso mappings.
@@ -501,9 +511,11 @@ public class StartupActivity extends AppCompatActivity {
     /**
      * Data cleaning. This is done each startup. TODO: is that needed ?
      */
-    public class DBCleanerTask implements SimpleTaskQueue.SimpleTask {
+    public class DBCleanerTask
+        implements SimpleTaskQueue.SimpleTask {
+
         @Override
-        public void run(final @NonNull SimpleTaskContext taskContext) {
+        public void run(@NonNull final SimpleTaskContext taskContext) {
             updateProgress(R.string.progress_msg_cleaning_database);
 
             // Get a DB, do not close the database!
@@ -516,7 +528,7 @@ public class StartupActivity extends AppCompatActivity {
             for (String name : names) {
                 if (name != null && name.length() > 3) {
                     String iso = LocaleUtils.getISO3Language(name);
-                    Logger.info(this, "Global language update of `" + name + "` to `" + iso + "`");
+                    Logger.info(this, "Global language update of `" + name + "` to `" + iso + '`');
                     if (!iso.equals(name)) {
                         db.globalReplaceLanguage(name, iso);
                     }
@@ -538,16 +550,17 @@ public class StartupActivity extends AppCompatActivity {
      *
      * @author Philip Warner
      */
-    public class RebuildFtsTask implements SimpleTaskQueue.SimpleTask {
+    public class RebuildFtsTask
+        implements SimpleTaskQueue.SimpleTask {
 
         @Override
-        public void run(final @NonNull SimpleTaskContext taskContext) {
+        public void run(@NonNull final SimpleTaskContext taskContext) {
             // Get a DB to make sure the FTS rebuild flag is set appropriately, do not close the database!
             CatalogueDBAdapter db = taskContext.getDb();
-            if (BookCatalogueApp.getBooleanPreference(PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
+            if (Prefs.getBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
                 updateProgress(R.string.progress_msg_rebuilding_search_index);
                 db.rebuildFts();
-                BookCatalogueApp.getSharedPreferences().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, false).apply();
+                Prefs.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, false).apply();
             }
         }
 
@@ -556,24 +569,25 @@ public class StartupActivity extends AppCompatActivity {
         }
     }
 
-    public class AnalyzeDbTask implements SimpleTaskQueue.SimpleTask {
+    public class AnalyzeDbTask
+        implements SimpleTaskQueue.SimpleTask {
 
         @Override
-        public void run(final @NonNull SimpleTaskContext taskContext) {
+        public void run(@NonNull final SimpleTaskContext taskContext) {
             updateProgress(R.string.progress_msg_optimizing_databases);
 
             // Get a connection, do not close the databases!
             CatalogueDBAdapter db = taskContext.getDb();
             db.analyzeDb();
 
-            if (BooklistPreferencesActivity.thumbnailsAreCached()) {
+            if (BooklistBuilder.thumbnailsAreCached()) {
                 CoversDBAdapter coversDBAdapter = taskContext.getCoversDb();
                 coversDBAdapter.analyze();
             }
 
-            if (BookCatalogueApp.getBooleanPreference(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
+            if (Prefs.getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
                 UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
-                BookCatalogueApp.getSharedPreferences().edit().remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED).apply();
+                Prefs.getPrefs().edit().remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED).apply();
             }
         }
 

@@ -20,9 +20,7 @@
 
 package com.eleybourn.bookcatalogue.utils.xml;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
 
 import org.xml.sax.Attributes;
@@ -30,6 +28,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 /**
  * Base class for parsing the output any web request that returns an XML response. NOTE: this does
@@ -41,6 +42,7 @@ import java.util.ArrayList;
  * @author Philip Warner
  */
 public class XmlResponseParser extends DefaultHandler {
+
     /** Temporary storage for inter-tag text */
     private final StringBuilder mBuilder = new StringBuilder();
     /** Stack of parsed tags giving context to the XML parser */
@@ -51,11 +53,10 @@ public class XmlResponseParser extends DefaultHandler {
      *
      * @param rootFilter Filter tree to use
      */
-    public XmlResponseParser(final @NonNull XmlFilter rootFilter) {
+    public XmlResponseParser(@NonNull final XmlFilter rootFilter) {
         // Build the root context and add to hierarchy.
-        ElementContext ctx = new ElementContext();
-        ctx.filter = rootFilter;
-        mParents.add(ctx);
+        ElementContext tag = new ElementContext(rootFilter);
+        mParents.add(tag);
     }
 
     /**
@@ -63,7 +64,8 @@ public class XmlResponseParser extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void characters(final @NonNull char[] ch, final int start, final int length) throws SAXException {
+    public void characters(@NonNull final char[] ch, final int start, final int length)
+            throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
     }
@@ -73,32 +75,33 @@ public class XmlResponseParser extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void startElement(final @NonNull String uri,
-                             final @NonNull String localName,
-                             final @NonNull String name,
-                             final @NonNull Attributes attributes) throws SAXException {
-        super.startElement(uri, localName, name, attributes);
+    public void startElement(@NonNull final String uri,
+                             @NonNull final String localName,
+                             @NonNull final String qName,
+                             @NonNull final Attributes attributes)
+            throws SAXException {
+        super.startElement(uri, localName, qName, attributes);
 
-        // Get the current context (ie. the enclosing tag)
-        ElementContext currElement = mParents.get(mParents.size() - 1);
-        // Get the active filter for the outer context, if present
-        XmlFilter currFilter = currElement.filter;
+        Logger.info(this, "startElement|localName=`" + localName + "`");
         // Create a new context for this new tag saving the current inter-tag text for later
-        ElementContext ctx = new ElementContext(uri, localName, name, attributes, mBuilder.toString());
+        ElementContext tag = new ElementContext(uri, localName, qName, attributes, mBuilder.toString());
+
+        // Get the current element
+        ElementContext enclosingTag = mParents.get(mParents.size() - 1);
 
         // If there is an active filter, then see if the new tag is of any interest
-        if (currFilter != null) {
+        if (enclosingTag.filter != null) {
             // Check for interest in new tag
-            XmlFilter filter = currElement.filter.getSubFilter(ctx);
+            XmlFilter filter = enclosingTag.filter.getSubFilter(tag);
             // If new tag has a filter, store it in the new context object
-            ctx.filter = filter;
+            tag.filter = filter;
             // If we got a filter, tell it a tag is now starting.
             if (filter != null) {
-                filter.processStart(ctx);
+                filter.processStart(tag);
             }
         }
         // Add the new tag to the context hierarchy and reset
-        mParents.add(ctx);
+        mParents.add(tag);
         // Reset the inter-tag text storage.
         mBuilder.setLength(0);
     }
@@ -108,26 +111,30 @@ public class XmlResponseParser extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void endElement(final @NonNull String uri, final @NonNull String localName, final @NonNull String name) throws SAXException {
-        super.endElement(uri, localName, name);
+    public void endElement(@NonNull final String uri,
+                           @NonNull final String localName,
+                           @NonNull final String qName)
+            throws SAXException {
+        super.endElement(uri, localName, qName);
 
         // Get out current context from the hierarchy and pop from stack
-        ElementContext thisElement = mParents.remove(mParents.size() - 1);
+        ElementContext tag = mParents.remove(mParents.size() - 1);
+
         // Minor paranoia. Make sure name matches. Total waste of time, right?
-        if (!localName.equals(thisElement.localName)) {
-            throw new IllegalStateException("End element '" + localName + "' does not match start element '" + thisElement.localName + "'");
+        if (!localName.equals(tag.localName)) {
+            throw new IllegalStateException("End element '" + localName + "' does not match start element '" + tag.localName + '\'');
         }
 
         // Save the text that appeared inside this tag (but not inside inner tags)
-        thisElement.body = mBuilder.toString();
+        tag.body = mBuilder.toString();
 
         // If there is an active filter in this context, then tell it the tag is finished.
-        if (thisElement.filter != null) {
-            thisElement.filter.processEnd(thisElement);
+        if (tag.filter != null) {
+            tag.filter.processEnd(tag);
         }
 
-        // Reset the inter-tag text and and append the previously saved 'pre-text'.
+        // Reset the inter-tag text and append the previously saved 'pre-text'.
         mBuilder.setLength(0);
-        mBuilder.append(thisElement.preText);
+        mBuilder.append(tag.getText());
     }
 }

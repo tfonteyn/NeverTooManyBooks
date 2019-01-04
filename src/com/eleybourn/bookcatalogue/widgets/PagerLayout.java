@@ -42,17 +42,17 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     private ViewPager mPager;
     private boolean mNeedsRedraw = false;
 
-    public PagerLayout(final @NonNull Context context) {
+    public PagerLayout(@NonNull final Context context) {
         super(context);
         init();
     }
 
-    public PagerLayout(final @NonNull Context context, final @NonNull AttributeSet attrs) {
+    public PagerLayout(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public PagerLayout(final @NonNull Context context, final @NonNull AttributeSet attrs, final int defStyle) {
+    public PagerLayout(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -61,7 +61,7 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
         //Disable clipping of children so non-selected pages are visible
         setClipChildren(false);
 
-        //RELEASE: Child clipping doesn't work with hardware acceleration in Android 3.x/4.x => is this relevant ? or just remove this comment ?
+        //RELEASE: Child clipping doesn't work with hardware acceleration in Android 3.x/4.x => is this still relevant ? or just remove this comment ?
         //You need to set this value here if using hardware acceleration in an
         // application targeted at these releases.
 
@@ -75,7 +75,7 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
         try {
             mPager = (ViewPager) getChildAt(0);
             mPager.addOnPageChangeListener(this);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new IllegalStateException("The root child of PagerLayout must be a ViewPager", e);
         }
     }
@@ -88,25 +88,25 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     private final Point mInitialTouch = new Point();
 
     @Override
-    protected void onSizeChanged(final int width, final int height, final int oldWidth, final int oldHeight) {
-        mCenter.x = width / 2;
-        mCenter.y = height / 2;
+    protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
+        mCenter.x = w / 2;
+        mCenter.y = h / 2;
     }
 
     @Override
-    public boolean onTouchEvent(final @NonNull MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull final MotionEvent event) {
         //We capture any touches not already handled by the ViewPager
         // to implement scrolling from a touch outside the pager bounds.
-        switch (ev.getAction()) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mInitialTouch.x = (int)ev.getX();
-                mInitialTouch.y = (int)ev.getY();
+                mInitialTouch.x = (int) event.getX();
+                mInitialTouch.y = (int) event.getY();
             default:
-                ev.offsetLocation(mCenter.x - mInitialTouch.x, mCenter.y - mInitialTouch.y);
+                event.offsetLocation(mCenter.x - mInitialTouch.x, mCenter.y - mInitialTouch.y);
                 break;
         }
 
-        return mPager.dispatchTouchEvent(ev);
+        return mPager.dispatchTouchEvent(event);
     }
 
     @Override

@@ -24,11 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.fragment.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -37,11 +32,18 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+
+import java.io.IOException;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * Activity to allow the user to authorize the application to access their Goodreads account and
@@ -54,7 +56,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
     /**
      * Called by button click to start a non-UI-thread task to do the work.
      */
-    public static void requestAuthorizationInBackground(final @NonNull FragmentActivity activity) {
+    public static void requestAuthorizationInBackground(@NonNull final FragmentActivity activity) {
         FragmentTask task = new SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract() {
             @StringRes
             private int mMessage = 0;
@@ -63,8 +65,8 @@ public class GoodreadsRegisterActivity extends BaseActivity {
              * Call the static method to start the web page; this can take a few seconds
              */
             @Override
-            public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
-                            final @NonNull SimpleTaskContext taskContext) {
+            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                            @NonNull final SimpleTaskContext taskContext) {
                 mMessage = requestAuthorizationImmediate(activity);
             }
 
@@ -72,10 +74,11 @@ public class GoodreadsRegisterActivity extends BaseActivity {
              * Display any error message
              */
             @Override
-            public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
-                                 final @Nullable Exception exception) {
-                if (mMessage != 0)
+            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                                 @Nullable final Exception e) {
+                if (mMessage != 0) {
                     fragment.showUserMessage(fragment.getString(mMessage));
+                }
             }
 
         };
@@ -88,15 +91,17 @@ public class GoodreadsRegisterActivity extends BaseActivity {
      * Static method to request authorization from Goodreads.
      */
     @StringRes
-    private static int requestAuthorizationImmediate(final @NonNull Context context) {
+    private static int requestAuthorizationImmediate(@NonNull final Context context) {
         GoodreadsManager grMgr = new GoodreadsManager();
-        // This next step can take several seconds....
+        // This next onProgress can take several seconds....
         if (!grMgr.hasValidCredentials()) {
             try {
                 grMgr.requestAuthorization(context);
-            } catch (NetworkException e) {
+            } catch (IOException e) {
                 Logger.error(e);
                 return R.string.gr_access_error;
+            } catch (GoodreadsExceptions.NotAuthorizedException e) {
+                return R.string.gr_auth_failed;
             }
         } else {
             return R.string.gr_auth_access_already_auth;
@@ -111,7 +116,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.goodreads);

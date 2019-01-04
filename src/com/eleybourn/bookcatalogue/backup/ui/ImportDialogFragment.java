@@ -13,7 +13,6 @@ import android.view.View.OnClickListener;
 import android.widget.Checkable;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
@@ -37,7 +36,7 @@ public class ImportDialogFragment extends DialogFragment {
      * @return Created fragment
      */
     @NonNull
-    public static ImportDialogFragment newInstance(final @NonNull ImportSettings settings) {
+    public static ImportDialogFragment newInstance(@NonNull final ImportSettings settings) {
         ImportDialogFragment frag = new ImportDialogFragment();
         Bundle args = new Bundle();
         args.putString(UniqueId.BKEY_FILE_SPEC, settings.file.getAbsolutePath());
@@ -50,7 +49,7 @@ public class ImportDialogFragment extends DialogFragment {
      */
     @Override
     @CallSuper
-    public void onAttach(final @NonNull Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
         if (!(context instanceof OnImportTypeSelectionDialogResultsListener))
             throw new RTE.MustImplementException(context, OnImportTypeSelectionDialogResultsListener.class);
@@ -61,17 +60,13 @@ public class ImportDialogFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // savedInstanceState not used.
         Bundle args = getArguments();
         Objects.requireNonNull(args);
         settings.file = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
         View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_import_options, null);
-
-        if (BuildConfig.DEBUG) {
-            root.findViewById(R.id.row__xml_tables).setVisibility(View.VISIBLE);
-        }
 
         root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
@@ -91,9 +86,6 @@ public class ImportDialogFragment extends DialogFragment {
             }
         });
 
-        TextView coverBlurb = root.findViewById(R.id.cover_images_blurb);
-        coverBlurb.setText(R.string.lbl_cover_images);
-
         if (!archiveHasValidDates()) {
             View radioNewAndUpdatedBooks = root.findViewById(R.id.radioNewAndUpdatedBooks);
             radioNewAndUpdatedBooks.setEnabled(false);
@@ -103,7 +95,7 @@ public class ImportDialogFragment extends DialogFragment {
 
         AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                 .setView(root)
-                .setTitle(R.string.import_from_archive)
+                .setTitle(R.string.lbl_import_from_archive)
                 .setIcon(R.drawable.ic_warning)
                 .create();
         dialog.setCanceledOnTouchOutside(false);
@@ -112,7 +104,7 @@ public class ImportDialogFragment extends DialogFragment {
 
     private void updateOptions() {
         Dialog dialog = this.getDialog();
-        // what to import. All three checked == ImportSettings.IMPORT_ALL
+        // what to import. All three checked == ImportSettings.ALL
         if (((Checkable) dialog.findViewById(R.id.books_check)).isChecked()) {
             settings.what |= ImportSettings.BOOK_CSV;
         }
@@ -134,8 +126,8 @@ public class ImportDialogFragment extends DialogFragment {
      */
     private boolean archiveHasValidDates() {
         boolean mArchiveHasValidDates;
-        try {
-            BackupReader reader = BackupManager.readFrom(settings.file);
+        try (BackupReader reader = BackupManager.readFrom(settings.file)) {
+            Objects.requireNonNull(reader);
             BackupInfo info = reader.getInfo();
             reader.close();
             mArchiveHasValidDates = info.getAppVersionCode() >= 152;
@@ -150,7 +142,7 @@ public class ImportDialogFragment extends DialogFragment {
      * Listener interface to receive notifications when dialog is closed by any means.
      */
     public interface OnImportTypeSelectionDialogResultsListener {
-        void onImportTypeSelectionDialogResult(final @NonNull ImportSettings settings);
+        void onImportTypeSelectionDialogResult(@NonNull final ImportSettings settings);
     }
 
 }

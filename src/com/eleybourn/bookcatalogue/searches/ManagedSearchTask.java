@@ -57,15 +57,15 @@ abstract public class ManagedSearchTask extends ManagedTask {
      * @param name    of this thread
      * @param manager TaskHandler implementation
      */
-    protected ManagedSearchTask(final @NonNull String name,
-                                final @NonNull TaskManager manager) {
+    protected ManagedSearchTask(@NonNull final String name,
+                                @NonNull final TaskManager manager) {
         super(name, manager);
     }
 
     /**
      * @param isbn to search for
      */
-    public void setIsbn(final @NonNull String isbn) {
+    public void setIsbn(@NonNull final String isbn) {
         // trims might not be needed, but heck.
         mIsbn = isbn.trim();
     }
@@ -73,7 +73,7 @@ abstract public class ManagedSearchTask extends ManagedTask {
     /**
      * @param author to search for
      */
-    public void setAuthor(final @NonNull String author) {
+    public void setAuthor(@NonNull final String author) {
         // trims might not be needed, but heck.
         mAuthor = author.trim();
     }
@@ -81,7 +81,7 @@ abstract public class ManagedSearchTask extends ManagedTask {
     /**
      * @param title to search for
      */
-    public void setTitle(final @NonNull String title) {
+    public void setTitle(@NonNull final String title) {
         // trims might not be needed, but heck.
         mTitle = title.trim();
     }
@@ -126,11 +126,11 @@ abstract public class ManagedSearchTask extends ManagedTask {
     /**
      * Show an unexpected exception message after task finish
      */
-    protected void setFinalError(final @StringRes int id, final @NonNull Exception e) {
+    protected void setFinalError(@StringRes final int id, @NonNull final Exception e) {
         String s;
         try {
             s = e.getLocalizedMessage();
-        } catch (Exception e2) {
+        } catch (RuntimeException e2) {
             s = e2.getClass().getCanonicalName();
         }
         mFinalMessage = String.format(getString(R.string.error_search_exception), getString(id), s);
@@ -139,7 +139,7 @@ abstract public class ManagedSearchTask extends ManagedTask {
     /**
      * Show a 'known' error after task finish, without the dreaded exception message
      */
-    protected void setFinalError(final @StringRes int id, final @StringRes int error) {
+    protected void setFinalError(@StringRes final int id, @StringRes final int error) {
        mFinalMessage = String.format(getString(R.string.error_search_exception), getString(id), error);
     }
 

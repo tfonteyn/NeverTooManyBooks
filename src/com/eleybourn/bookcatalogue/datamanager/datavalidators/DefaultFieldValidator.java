@@ -47,13 +47,13 @@ public class DefaultFieldValidator implements DataValidator {
      *
      * @param defaultValue Default to apply
      */
-    DefaultFieldValidator(final @NonNull String defaultValue) {
+    DefaultFieldValidator(@NonNull final String defaultValue) {
         mDefault = defaultValue;
     }
 
     @Override
     @CallSuper
-    public void validate(final @NonNull DataManager data, final @NonNull Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
@@ -69,7 +69,7 @@ public class DefaultFieldValidator implements DataValidator {
             if (value != null && value.toString().trim().isEmpty()) {
                 data.putString(datum, mDefault);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new ValidatorException(R.string.vldt_unable_to_get_value, new Object[]{datum.getKey()});
         }
     }

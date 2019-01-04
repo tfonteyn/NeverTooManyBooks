@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.Objects;
@@ -48,16 +49,16 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
     /** Options indicating value must be non-blank */
     private boolean mRequireNonBlank = false;
 
-    public StringProperty(final @StringRes int nameResourceId,
-                          final @NonNull PropertyGroup group,
-                          final @NonNull String defaultValue) {
+    public StringProperty(@StringRes final int nameResourceId,
+                          @NonNull final PropertyGroup group,
+                          @NonNull final String defaultValue) {
         super(group, nameResourceId, defaultValue);
     }
 
     /** Build the editor for this property */
     @Override
     @NonNull
-    public View getView(final @NonNull LayoutInflater inflater) {
+    public View getView(@NonNull final LayoutInflater inflater) {
         final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.row_property_string_in_place_editing, null);
         // create Holder
         Holder holder = new Holder();
@@ -76,17 +77,17 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
         // Reflect all changes in underlying data
         holder.value.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(final @NonNull CharSequence s,
+            public void beforeTextChanged(@NonNull final CharSequence s,
                                           final int start, final int count, final int after) {
             }
 
             @Override
-            public void onTextChanged(final @NonNull CharSequence s,
+            public void onTextChanged(@NonNull final CharSequence s,
                                       final int start, final int before, final int count) {
             }
 
             @Override
-            public void afterTextChanged(final @NonNull Editable s) {
+            public void afterTextChanged(@NonNull final Editable s) {
                 setValue(s.toString());
             }
         });
@@ -99,15 +100,15 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
     @NonNull
     protected String getGlobalValue() {
         //noinspection ConstantConditions
-        return BookCatalogueApp.getStringPreference(getPreferenceKey(), getDefaultValue());
+        return Prefs.getString(getPreferenceKey(), getDefaultValue());
     }
 
     /** Set underlying preferences value */
     @Override
     @NonNull
-    protected StringProperty setGlobalValue(final @Nullable String value) {
+    protected StringProperty setGlobalValue(@Nullable final String value) {
         Objects.requireNonNull(value);
-        BookCatalogueApp.getSharedPreferences().edit().putString(getPreferenceKey(), value).apply();
+        Prefs.getPrefs().edit().putString(getPreferenceKey(), value).apply();
         return this;
     }
 
@@ -141,7 +142,7 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
     @Override
     @NonNull
     @CallSuper
-    public StringProperty setDefaultValue(final @NonNull String value) {
+    public StringProperty setDefaultValue(@NonNull final String value) {
         super.setDefaultValue(value);
         return this;
     }
@@ -163,17 +164,17 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
     @Override
     @NonNull
     @CallSuper
-    public StringProperty setGroup(final @NonNull PropertyGroup group) {
+    public StringProperty setGroup(@NonNull final PropertyGroup group) {
         super.setGroup(group);
         return this;
     }
 
-    public void writeToParcel(final @NonNull Parcel dest) {
+    public void writeToParcel(@NonNull final Parcel dest) {
         String value = this.getValue();
         dest.writeString(value);
     }
 
-    public void readFromParcel(final @NonNull Parcel in) {
+    public void readFromParcel(@NonNull final Parcel in) {
         String parceledString = in.readString();
         setValue(parceledString);
     }

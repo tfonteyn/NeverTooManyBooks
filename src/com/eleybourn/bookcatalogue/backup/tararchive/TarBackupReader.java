@@ -19,27 +19,35 @@
  */
 package com.eleybourn.bookcatalogue.backup.tararchive;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReaderAbstract;
 import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity;
 import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity.BackupEntityType;
+import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntityAbstract;
+import com.eleybourn.bookcatalogue.backup.xml.XmlImporter;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.regex.Pattern;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Implementation of TAR-specific reader functions
  *
  * @author pjw
  */
-public class TarBackupReader extends BackupReaderAbstract {
+public class TarBackupReader
+    extends BackupReaderAbstract {
+
     /** The data stream for the archive */
     @NonNull
     private final TarArchiveInputStream mInput;
@@ -55,7 +63,8 @@ public class TarBackupReader extends BackupReaderAbstract {
      *
      * @param container Parent
      */
-    TarBackupReader(final @NonNull TarBackupContainer container) throws IOException {
+    TarBackupReader(@NonNull final TarBackupContainer container)
+        throws IOException {
         super();
 
         // Open the file and create the archive stream
@@ -63,19 +72,23 @@ public class TarBackupReader extends BackupReaderAbstract {
         mInput = new TarArchiveInputStream(in);
 
         // Process the INFO entry. Should be first.
-        ReaderEntity info = nextEntity();
-        if (info == null || info.getType() != BackupEntityType.Info)
+        ReaderEntity entity = nextEntity();
+        if (entity == null || entity.getType() != BackupEntityType.Info) {
             throw new IOException("Not a valid backup");
+        }
 
-        // Save the INFO
-        mInfo = new BackupInfo(info.getBundle());
+        // read the INFO
+        mInfo = new BackupInfo();
+        try (XmlImporter importer = new XmlImporter()) {
+            importer.doBackupInfoBlock(entity, mInfo);
+        }
 
         // Skip any following INFOs. Later versions may store more.
-        while (info != null && info.getType() == BackupEntityType.Info) {
-            info = nextEntity();
+        while (entity != null && entity.getType() == BackupEntityType.Info) {
+            entity = nextEntity();
         }
         // Save the 'peeked' entity
-        mPushedEntity = info;
+        mPushedEntity = entity;
     }
 
     /**
@@ -85,7 +98,8 @@ public class TarBackupReader extends BackupReaderAbstract {
      */
     @Override
     @Nullable
-    public ReaderEntity nextEntity() throws IOException {
+    public ReaderEntity nextEntity()
+        throws IOException {
 
         if (mPushedEntity != null) {
             ReaderEntity e = mPushedEntity;
@@ -102,44 +116,55 @@ public class TarBackupReader extends BackupReaderAbstract {
         BackupEntityType type = getBackupEntityType(entry);
 
         // Create entity
-        return new TarBackupReaderEntity(this, entry, type);
+        return new TarBackupReaderEntity(type, this, entry);
 
     }
 
     /**
      * @return the TarArchiveEntry type. However, {@link BackupEntityType#Cover} is returned for
-     *         *all* files which are not actually recognised.
+     * *all* files which are not actually recognised.
      */
     @NonNull
-    private BackupEntityType getBackupEntityType(final @NonNull TarArchiveEntry entry) {
+    private BackupEntityType getBackupEntityType(@NonNull final TarArchiveEntry entry) {
         String name = entry.getName();
 
-        if (name.equalsIgnoreCase(TarBackupContainer.BOOKS_FILE)
-                ||TarBackupContainer.BOOKS_PATTERN.matcher(name).find()) {
+        // check covers first, as we will have many
+        if (name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".png")) {
+            return BackupEntityType.Cover;
+
+        } else if (TarBackupContainer.INFO_FILE.equalsIgnoreCase(name)
+            || TarBackupContainer.INFO_PATTERN.matcher(name).find()) {
+            return BackupEntityType.Info;
+
+        } else if (TarBackupContainer.BOOKS_FILE.equalsIgnoreCase(name)
+            || TarBackupContainer.BOOKS_PATTERN.matcher(name).find()) {
             return BackupEntityType.Books;
 
-        } else if (name.equalsIgnoreCase(TarBackupContainer.INFO_FILE)
-                || TarBackupContainer.INFO_PATTERN.matcher(name).find()) {
-            return  BackupEntityType.Info;
-
-        } else if (name.toLowerCase().endsWith(".xml")) {
-            return  BackupEntityType.XML;
-
-        } else if (name.equalsIgnoreCase(TarBackupContainer.DB_FILE)) {
-            return  BackupEntityType.Database;
-
-        } else if (TarBackupContainer.STYLE_PATTERN.matcher(name).find()) {
-            return BackupEntityType.BooklistStyle;
-
-        } else if (name.equalsIgnoreCase(TarBackupContainer.PREFERENCES)) {
+        } else if (TarBackupContainer.PREFERENCES.equalsIgnoreCase(name)) {
             return BackupEntityType.Preferences;
 
-//        } else if (name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".png")) {
-//            return BackupEntityType.Cover;
+        } else if (TarBackupContainer.STYLES.equalsIgnoreCase(name)) {
+            return BackupEntityType.BooklistStyles;
+
+        } else if (TarBackupContainer.DB_FILE.equalsIgnoreCase(name)) {
+            return BackupEntityType.Database;
+
+            // pre-v200
+        } else if (Pattern.compile('^' + "style.blob." + "[0-9]*$",
+                                   Pattern.CASE_INSENSITIVE).matcher(name).find()) {
+            return BackupEntityType.BooklistStylesPreV200;
+
+            // pre-v200
+        } else if ("preferences".equalsIgnoreCase(name)) {
+            return BackupEntityType.PreferencesPreV200;
+
+            // needs to be below any specific xml files.
+        } else if (name.toLowerCase().endsWith(".xml")) {
+            return BackupEntityType.XML;
 
         } else {
-            // any not recognised file is considered a cover file.
-            return BackupEntityType.Cover;
+            Logger.info(this, "Unknown file in archive: " + name);
+            return BackupEntityType.Unknown;
         }
     }
 
@@ -159,8 +184,59 @@ public class TarBackupReader extends BackupReaderAbstract {
 
     @Override
     @CallSuper
-    public void close() throws IOException {
+    public void close()
+        throws IOException {
         super.close();
         mInput.close();
+    }
+
+    /**
+     * Implementation of TAR-specific ReaderEntity functions. Not much to do.
+     *
+     * @author pjw
+     */
+    public static class TarBackupReaderEntity
+        extends ReaderEntityAbstract {
+
+        @NonNull
+        private final TarBackupReader mReader;
+        @NonNull
+        private final TarArchiveEntry mEntry;
+
+        /**
+         * Constructor
+         *
+         * @param type   Type of item
+         * @param reader Parent
+         * @param entry  Corresponding archive entry
+         */
+        TarBackupReaderEntity(@NonNull final BackupEntityType type,
+                              @NonNull final TarBackupReader reader,
+                              @NonNull final TarArchiveEntry entry) {
+            super(type);
+            mReader = reader;
+            mEntry = entry;
+        }
+
+        /** Get the original "file name" of the object */
+        @NonNull
+        @Override
+        public String getName() {
+            return mEntry.getName();
+        }
+
+        /** Modified date from archive entry */
+        @NonNull
+        @Override
+        public Date getDateModified() {
+            return mEntry.getLastModifiedDate();
+        }
+
+        /** get the stream to read the entity */
+        @NonNull
+        @Override
+        public InputStream getStream() {
+            return mReader.getInput();
+        }
     }
 }

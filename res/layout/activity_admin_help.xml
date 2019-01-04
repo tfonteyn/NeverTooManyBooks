@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/padding_border_quad"
                 android:paddingTop="@dimen/padding_border_double"
-                android:text="@string/send_info_text"
+                android:text="@string/debug_send_info_text"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Button

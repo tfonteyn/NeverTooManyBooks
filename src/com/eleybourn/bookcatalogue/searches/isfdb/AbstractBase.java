@@ -45,7 +45,7 @@ abstract class AbstractBase {
      *
      * The content encoding by default is: "Accept-Encoding", "gzip"
      *
-     * @return true when fetched and parsed ok.
+     * @return <tt>true</tt> when fetched and parsed ok.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean loadPage() throws SocketTimeoutException {
@@ -80,14 +80,14 @@ abstract class AbstractBase {
     }
 
     @NonNull
-    String cleanUpName(final @NonNull String s) {
+    String cleanUpName(@NonNull final String s) {
         return s.trim()
                 .replace("\n", " ")
                 .replaceAll(CLEANUP_TITLE_REGEX, "")
                 .trim();
     }
 
-    long stripNumber(final @NonNull String url) {
+    long stripNumber(@NonNull final String url) {
         return Long.parseLong(url.split("\\?")[1]);
     }
 }

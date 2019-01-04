@@ -54,7 +54,7 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
     private final TextFieldEditorDialog.OnTextFieldEditorResultsListener mEditListener =
             new TextFieldEditorDialog.OnTextFieldEditorResultsListener() {
                 @Override
-                public void onTextFieldEditorSave(final @NonNull String newText) {
+                public void onTextFieldEditorSave(@NonNull final String newText) {
                      getFragmentListener()
                             .onTextFieldEditorSave(TextFieldEditorDialogFragment.this,
                                     mDestinationFieldId, newText);
@@ -78,7 +78,7 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         initStandardArgs(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -103,7 +103,7 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
 
     @Override
     @CallSuper
-    public void onSaveInstanceState(final @NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         if (mText != null) {
             outState.putString(BKEY_TEXT, mText);
         }
@@ -133,11 +133,11 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
      * @author pjw
      */
     public interface OnTextFieldEditorResultsListener {
-        void onTextFieldEditorSave(final @NonNull TextFieldEditorDialogFragment dialog,
+        void onTextFieldEditorSave(@NonNull final TextFieldEditorDialogFragment dialog,
                                    final int destinationFieldId,
-                                   final @NonNull String newText);
+                                   @NonNull final String newText);
 
-        void onTextFieldEditorCancel(final @NonNull TextFieldEditorDialogFragment dialog,
+        void onTextFieldEditorCancel(@NonNull final TextFieldEditorDialogFragment dialog,
                                      final int destinationFieldId);
     }
 
@@ -153,7 +153,7 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
          *
          * @param context Calling context
          */
-        TextFieldEditorDialog(final @NonNull Context context, final boolean multiLine) {
+        TextFieldEditorDialog(@NonNull final Context context, final boolean multiLine) {
             super(context);
 
             // Get the layout
@@ -211,12 +211,12 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
         }
 
         /** Set the listener */
-        void setResultsListener(final @NonNull OnTextFieldEditorResultsListener listener) {
+        void setResultsListener(@NonNull final OnTextFieldEditorResultsListener listener) {
             mListener = listener;
         }
 
         /** Set the current text */
-        public void setText(final @Nullable String text) {
+        public void setText(@Nullable final String text) {
             mTextView.setText(text);
         }
 
@@ -230,7 +230,7 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
          * @author pjw
          */
         protected interface OnTextFieldEditorResultsListener {
-            void onTextFieldEditorSave(final @NonNull String newText);
+            void onTextFieldEditorSave(@NonNull final String newText);
 
             void onTextFieldEditorCancel();
         }

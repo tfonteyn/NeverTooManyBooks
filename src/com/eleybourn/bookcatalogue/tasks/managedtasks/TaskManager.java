@@ -138,7 +138,7 @@ public class TaskManager {
     /**
      * Constructor.
      */
-    public TaskManager(final @NonNull Context context) {
+    public TaskManager(@NonNull final Context context) {
 
         /* Controller instance for this specific SearchManager */
         TaskManagerController controller = new TaskManagerController() {
@@ -184,7 +184,7 @@ public class TaskManager {
      *
      * @param task to add
      */
-    public void addTask(final @NonNull ManagedTask task) {
+    public void addTask(@NonNull final ManagedTask task) {
         // sanity check.
         if (mIsClosing) {
             throw new IllegalStateException("Can not add a task when closing down");
@@ -212,7 +212,7 @@ public class TaskManager {
      * Used (generally) by {@link BaseActivityWithTasks} to display some text above
      * the task info. Set to null to ensure ProgressDialog will be removed.
      */
-    public void sendHeaderTaskProgressMessage(final @Nullable String message) {
+    public void sendHeaderTaskProgressMessage(@Nullable final String message) {
         mBaseMessage = message;
         sendTaskProgressMessage();
     }
@@ -224,8 +224,8 @@ public class TaskManager {
      * @param messageId Message string id
      * @param count     Counter for progress
      */
-    public void sendTaskProgressMessage(final @NonNull ManagedTask task,
-                                        final @StringRes int messageId,
+    public void sendTaskProgressMessage(@NonNull final ManagedTask task,
+                                        @StringRes final int messageId,
                                         final int count) {
         TaskInfo taskInfo = getTaskInfo(task);
         if (taskInfo != null) {
@@ -242,8 +242,8 @@ public class TaskManager {
      * @param message Message text
      * @param count   Counter for progress
      */
-    public void sendTaskProgressMessage(final @NonNull ManagedTask task,
-                                        final @Nullable String message,
+    public void sendTaskProgressMessage(@NonNull final ManagedTask task,
+                                        @Nullable final String message,
                                         final int count) {
         TaskInfo taskInfo = getTaskInfo(task);
         if (taskInfo != null) {
@@ -285,7 +285,7 @@ public class TaskManager {
                             String oneMsg = taskInfo.progressMessage;
                             if (oneMsg != null && !oneMsg.trim().isEmpty()) {
                                 if (got) {
-                                    message.append("\n");
+                                    message.append('\n');
                                 } else {
                                     got = true;
                                 }
@@ -312,7 +312,7 @@ public class TaskManager {
             mMessageSwitch.send(mMessageSenderId,
                     new TaskProgressMessage(progressCount, progressMax, progressMessage));
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Error updating progress");
         }
     }
@@ -322,7 +322,7 @@ public class TaskManager {
      *
      * @param message Message to send
      */
-    public void sendTaskUserMessage(final @NonNull String message) {
+    public void sendTaskUserMessage(@NonNull final String message) {
         mMessageSwitch.send(mMessageSenderId, new TaskUserMessage(message));
     }
 
@@ -334,7 +334,7 @@ public class TaskManager {
      * @return TaskInfo associated with task.
      */
     @Nullable
-    private TaskInfo getTaskInfo(final @NonNull ManagedTask task) {
+    private TaskInfo getTaskInfo(@NonNull final ManagedTask task) {
         synchronized (mManagedTasks) {
             for (TaskInfo taskInfo : mManagedTasks) {
                 if (taskInfo.task == task) {
@@ -348,7 +348,7 @@ public class TaskManager {
     /**
      * Set the maximum value for progress for the passed task.
      */
-    public void setMaxProgress(final @NonNull ManagedTask task, final int max) {
+    public void setMaxProgress(@NonNull final ManagedTask task, final int max) {
         TaskInfo taskInfo = getTaskInfo(task);
         if (taskInfo != null) {
             taskInfo.progressMax = max;
@@ -378,6 +378,18 @@ public class TaskManager {
         cancelAllTasks();
     }
 
+    @Override
+    public String toString() {
+        return "TaskManager{" +
+                "mMessageSenderId=" + mMessageSenderId +
+                ", mManagedTasks=" + mManagedTasks +
+                ", mBaseMessage='" + mBaseMessage + '\'' +
+                ", mManagedTaskListener=" + mManagedTaskListener +
+                ", mCancelling=" + mCancelling +
+                ", mIsClosing=" + mIsClosing +
+                '}';
+    }
+
     /**
      * Controller interface for this Object
      */
@@ -397,11 +409,11 @@ public class TaskManager {
      */
     public interface TaskManagerListener {
 
-        void onProgress(final int count, final int max, final @NonNull String message);
+        void onProgress(final int count, final int max, @NonNull final String message);
 
-        void onUserMessage(final @NonNull String message);
+        void onUserMessage(@NonNull final String message);
 
-        void onTaskFinished(final @NonNull TaskManager manager, final @NonNull ManagedTask task);
+        void onTaskFinished(@NonNull final TaskManager manager, @NonNull final ManagedTask task);
     }
 
     public static class TaskFinishedMessage implements Message<TaskManagerListener> {
@@ -410,16 +422,16 @@ public class TaskManager {
         @NonNull
         private final ManagedTask mTask;
 
-        TaskFinishedMessage(final @NonNull TaskManager manager, final @NonNull ManagedTask task) {
+        TaskFinishedMessage(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
             mManager = manager;
             mTask = task;
         }
 
         @Override
-        public boolean deliver(final @NonNull TaskManagerListener listener) {
+        public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(this, "Delivering 'TaskFinishedMessage' to listener: " + listener +
-                        "\n mTask=`" + mTask + "`");
+                        "\n mTask=`" + mTask + '`');
             }
             listener.onTaskFinished(mManager, mTask);
             return false;
@@ -440,17 +452,17 @@ public class TaskManager {
         @NonNull
         private final String mMessage;
 
-        TaskProgressMessage(final int count, final int max, final @NonNull String message) {
+        TaskProgressMessage(final int count, final int max, @NonNull final String message) {
             mCount = count;
             mMax = max;
             mMessage = message;
         }
 
         @Override
-        public boolean deliver(final @NonNull TaskManagerListener listener) {
+        public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(this, "Delivering 'TaskProgressMessage' to listener: " + listener +
-                        "\n mMessage=`" + mMessage + "`");
+                        "\n mMessage=`" + mMessage + '`');
             }
             listener.onProgress(mCount, mMax, mMessage);
             return false;
@@ -470,15 +482,15 @@ public class TaskManager {
         @NonNull
         private final String mMessage;
 
-        TaskUserMessage(final @NonNull String message) {
+        TaskUserMessage(@NonNull final String message) {
             mMessage = message;
         }
 
         @Override
-        public boolean deliver(final @NonNull TaskManagerListener listener) {
+        public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(this, "Delivering 'TaskUserMessage' to listener: " + listener +
-                        "\n mMessage=`" + mMessage + "`");
+                        "\n mMessage=`" + mMessage + '`');
             }
             listener.onUserMessage(mMessage);
             return false;
@@ -495,7 +507,7 @@ public class TaskManager {
     /**
      * Task info for each ManagedTask object so we can keep track of progress
      */
-    private class TaskInfo {
+    private static class TaskInfo {
         @NonNull
         final ManagedTask task;
         @Nullable
@@ -503,7 +515,7 @@ public class TaskManager {
         int progressMax;
         int progressCurrent;
 
-        TaskInfo(final @NonNull ManagedTask task) {
+        TaskInfo(@NonNull final ManagedTask task) {
             this.task = task;
         }
     }

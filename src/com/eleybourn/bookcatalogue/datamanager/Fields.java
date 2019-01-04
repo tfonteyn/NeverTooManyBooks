@@ -27,12 +27,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -59,17 +53,27 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
 
 /**
  * This is the class that manages data and views for an Activity; access to the data that
@@ -132,20 +136,17 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class Fields extends ArrayList<Fields.Field> {
-    public static final long serialVersionUID = 1L;
-    /** Prefix for all preferences */
-    public final static String TAG = "fields.";
-    /** whether the user wants a field visible or not */
-    public final static String PREFS_FIELD_VISIBILITY = TAG + "visibility."; /* + fieldName */
 
+    /** whether the user wants a field visible or not */
+    public final static String PREFS_FIELD_VISIBILITY = "fields.visibility."; /* + fieldName */
+    private static final long serialVersionUID = -4528188641451863555L;
     /** The activity related to this object. */
     @NonNull
     private final FieldsContext mContext;
-
-    /** All validator exceptions caught */
-    private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final List<FieldCrossValidator> mCrossValidators = new ArrayList<>();
+    /** All validator exceptions caught */
+    private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
     @Nullable
     private AfterFieldChangeListener mAfterFieldChangeListener = null;
 
@@ -154,7 +155,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param fragment The parent fragment which contains all Views this object will manage.
      */
-    public Fields(final @NonNull Fragment fragment) {
+    public Fields(@NonNull final Fragment fragment) {
         super();
         mContext = new FragmentContext(fragment);
     }
@@ -165,7 +166,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @param activity The parent activity which contains all Views this object will manage.
      */
     @SuppressWarnings("unused")
-    Fields(final @NonNull Activity activity) {
+    Fields(@NonNull final Activity activity) {
         super();
         mContext = new ActivityContext(activity);
     }
@@ -190,7 +191,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * is removed from the screen. In this case, there is no need to synchronize the values
      * since the view is gone.
      */
-    private static void debugNullView(final @NonNull Field field) {
+    private static void debugNullView(@NonNull final Field field) {
         String msg = "NULL View: col=" + field.column + ", id=" + field.id + ", group=" + field.group;
         Fields fields = field.getFields();
         if (fields == null) {
@@ -198,43 +199,39 @@ public class Fields extends ArrayList<Fields.Field> {
         } else {
             msg += ". Fields is valid.";
             FieldsContext context = fields.getContext();
-            msg += ". Context is " + context.getClass().getCanonicalName() + ".";
+            msg += ". Context is " + context.getClass().getCanonicalName() + '.';
             Object ownerContext = context.dbgGetOwnerContext();
             if (ownerContext == null) {
                 msg += ". Owner is NULL.";
             } else {
-                msg += ". Owner is " + ownerContext.getClass().getCanonicalName() + " (" + ownerContext + ")";
+                msg += ". Owner is " + ownerContext.getClass().getCanonicalName() + " (" + ownerContext + ')';
             }
         }
         throw new IllegalStateException("Unable to get associated View object\n" + msg);
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static boolean isVisible(final @NonNull String fieldName) {
-        return BookCatalogueApp.getBooleanPreference(PREFS_FIELD_VISIBILITY + fieldName, true);
+    public static boolean isVisible(@NonNull final String fieldName) {
+        return Prefs.getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
     public static void setVisibility(final String fieldName, final boolean isVisible) {
-        BookCatalogueApp.getSharedPreferences().edit().putBoolean(PREFS_FIELD_VISIBILITY + fieldName, isVisible).apply();
+        Prefs.getPrefs().edit().putBoolean(PREFS_FIELD_VISIBILITY + fieldName, isVisible).apply();
     }
 
     /**
      * @param listener the listener for field changes
-     *
-     * @return original listener
      */
-    @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
+    @SuppressWarnings({"WeakerAccess"})
     @Nullable
-    public AfterFieldChangeListener setAfterFieldChangeListener(final @Nullable AfterFieldChangeListener listener) {
-        AfterFieldChangeListener old = mAfterFieldChangeListener;
+    public void setAfterFieldChangeListener(@Nullable final AfterFieldChangeListener listener) {
         mAfterFieldChangeListener = listener;
-        return old;
     }
 
     /**
-     * Accessor for related Activity
+     * Accessor for related FieldsContext
      *
-     * @return Activity for this collection.
+     * @return FieldsContext for this collection.
      */
     @NonNull
     private FieldsContext getContext() {
@@ -260,7 +257,7 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     @NonNull
     public Field add(final @IdRes int fieldId,
-                     final @NonNull String sourceColumn) {
+                     @NonNull final String sourceColumn) {
         return add(fieldId, sourceColumn, sourceColumn);
     }
 
@@ -275,8 +272,8 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     @NonNull
     public Field add(final @IdRes int fieldId,
-                     final @NonNull String sourceColumn,
-                     final @NonNull String visibilityGroup) {
+                     @NonNull final String sourceColumn,
+                     @NonNull final String visibilityGroup) {
         Field field = new Field(this, fieldId, sourceColumn, visibilityGroup);
         this.add(field);
         return field;
@@ -304,7 +301,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @param fieldId Layout ID of View
      * @param adapter Adapter to use
      */
-    public void setAdapter(final @IdRes int fieldId, final @NonNull ArrayAdapter<String> adapter) {
+    public void setAdapter(final @IdRes int fieldId, @NonNull final ArrayAdapter<String> adapter) {
         Field field = getField(fieldId);
         TextView textView = field.getView();
         if (textView instanceof AutoCompleteTextView) {
@@ -320,7 +317,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @throws DBExceptions.ColumnNotPresent if the Cursor does not have a required column
      */
     @SuppressWarnings("unused")
-    public void setAllFrom(final @NonNull Cursor cursor) {
+    public void setAllFrom(@NonNull final Cursor cursor) {
         for (Field field : this) {
             field.setValueFrom(cursor);
         }
@@ -332,7 +329,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @param values with data to load.
      */
     @SuppressWarnings("WeakerAccess")
-    public void setAllFrom(final @NonNull Bundle values) {
+    public void setAllFrom(@NonNull final Bundle values) {
         for (Field field : this) {
             field.setValueFrom(values);
         }
@@ -344,7 +341,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @param values        with data to load.
      * @param withOverwrite if true, all fields are copied. If false, only non-existent fields are copied.
      */
-    public void setAllFrom(final @NonNull Bundle values, final boolean withOverwrite) {
+    public void setAllFrom(@NonNull final Bundle values, final boolean withOverwrite) {
         if (withOverwrite) {
             setAllFrom(values);
         } else {
@@ -365,7 +362,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param data DataManager to load Field objects from.
      */
-    public void setAllFrom(final @NonNull DataManager data) {
+    public void setAllFrom(@NonNull final DataManager data) {
         for (Field field : this) {
             field.setValueFrom(data);
         }
@@ -376,7 +373,7 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param data DataManager to put Field objects in.
      */
-    public void putAllInto(final @NonNull DataManager data) {
+    public void putAllInto(@NonNull final DataManager data) {
         for (Field field : this) {
             if (!field.column.isEmpty()) {
                 field.putValueInto(data);
@@ -406,10 +403,10 @@ public class Fields extends ArrayList<Fields.Field> {
      *
      * @param values The Bundle collection to fill
      *
-     * @return boolean True if all validation passed.
+     * @return <tt>true</tt> if all validation passed.
      */
     @SuppressWarnings("unused")
-    public boolean validateAllFields(final @NonNull Bundle values) {
+    public boolean validateAllFields(@NonNull final Bundle values) {
         boolean isOk = true;
         mValidationExceptions.clear();
 
@@ -446,7 +443,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @param crossValidating Options indicating if this is a cross validation pass.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean validateAllFields(final @NonNull Bundle values, final boolean crossValidating) {
+    private boolean validateAllFields(@NonNull final Bundle values, final boolean crossValidating) {
         boolean isOk = true;
         for (Field field : this) {
             if (field.validator != null) {
@@ -459,7 +456,7 @@ public class Fields extends ArrayList<Fields.Field> {
                     if (!crossValidating) {
                         try {
                             values.putString(field.column, field.getValue().toString().trim());
-                        } catch (Exception ignored) {
+                        } catch (RuntimeException ignored) {
                         }
                     }
                 }
@@ -477,7 +474,7 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     @NonNull
     @SuppressWarnings("unused")
-    public String getValidationExceptionMessage(final @NonNull Resources res) {
+    public String getValidationExceptionMessage(@NonNull final Resources res) {
         if (mValidationExceptions.size() == 0) {
             return "No error";
         } else {
@@ -485,11 +482,11 @@ public class Fields extends ArrayList<Fields.Field> {
             Iterator<ValidatorException> i = mValidationExceptions.iterator();
             int cnt = 1;
             if (i.hasNext()) {
-                message.append("(").append(cnt).append(") ").append(i.next().getFormattedMessage(res));
+                message.append('(').append(cnt).append(") ").append(i.next().getFormattedMessage(res));
             }
             while (i.hasNext()) {
                 cnt++;
-                message.append(" (").append(cnt).append(") ").append(i.next().getFormattedMessage(res)).append("\n");
+                message.append(" (").append(cnt).append(") ").append(i.next().getFormattedMessage(res)).append('\n');
             }
             return message.toString();
         }
@@ -502,15 +499,18 @@ public class Fields extends ArrayList<Fields.Field> {
      * @param validator An instance of FieldCrossValidator to append
      */
     @SuppressWarnings("WeakerAccess")
-    public void addCrossValidator(final @NonNull FieldCrossValidator validator) {
+    public void addCrossValidator(@NonNull final FieldCrossValidator validator) {
         mCrossValidators.add(validator);
     }
 
     /**
      * added to the Fields collection with (2018-11-11) a simple call to setDirty(true)
+     *
+     * Serializable: because it's a member of a serializable class (and lint...)
      */
-    public interface AfterFieldChangeListener {
-        void afterFieldChange(final @NonNull Field field, final @Nullable String newValue);
+    public interface AfterFieldChangeListener extends Serializable{
+
+        void afterFieldChange(@NonNull final Field field, @Nullable final String newValue);
     }
 
     /**
@@ -527,6 +527,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     public interface FieldValidator {
+
         /**
          * Validation method. Must throw a {@link ValidatorException} if validation fails.
          *
@@ -539,26 +540,31 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @throws ValidatorException For any validation failure.
          */
-        void validate(final @NonNull Fields fields,
-                      final @NonNull Field field,
-                      final @NonNull Bundle values,
-                      final boolean crossValidating) throws ValidatorException;
+        void validate(@NonNull final Fields fields,
+                      @NonNull final Field field,
+                      @NonNull final Bundle values,
+                      final boolean crossValidating)
+                throws ValidatorException;
     }
 
     /**
      * Interface for all cross-validators; these are applied after all field-level validators
      * have succeeded.
      *
+     * Serializable: because it's a member of a serializable class (and lint...)
+     *
      * @author Philip Warner
      */
-    public interface FieldCrossValidator {
+    public interface FieldCrossValidator extends Serializable {
+
         /**
          * @param fields The Fields object containing the Field being validated
          * @param values A Bundle collection with all validated field values.
          *
          * @throws ValidatorException For any validation failure.
          */
-        void validate(final @NonNull Fields fields, final @NonNull Bundle values) throws ValidatorException;
+        void validate(@NonNull final Fields fields, @NonNull final Bundle values)
+                throws ValidatorException;
     }
 
     /**
@@ -568,6 +574,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     public interface FieldDataAccessor {
+
         /**
          * Passed a Field and a Cursor get the column from the cursor and set the view value.
          *
@@ -576,7 +583,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @throws CursorIndexOutOfBoundsException if the cursor does not have a required column
          */
-        void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor);
+        void setFieldValueFrom(@NonNull final Field field, @NonNull final Cursor cursor);
 
         /**
          * Passed a Field and a Bundle get the column from the Bundle and set the view value.
@@ -584,7 +591,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @param field  which defines the View details
          * @param values with data to load.
          */
-        void setFieldValueFrom(final @NonNull Field field, final @NonNull Bundle values);
+        void setFieldValueFrom(@NonNull final Field field, @NonNull final Bundle values);
 
         /**
          * Passed a Field and a DataManager get the column from the DataManager and set the view value.
@@ -592,7 +599,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @param field  which defines the View details
          * @param values with data to load.
          */
-        void setFieldValueFrom(final @NonNull Field field, final @NonNull DataManager values);
+        void setFieldValueFrom(@NonNull final Field field, @NonNull final DataManager values);
 
         /**
          * Passed a Field and a String, use the string to set the view value.
@@ -600,7 +607,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @param field which defines the View details
          * @param value to set.
          */
-        void set(final @NonNull Field field, final @NonNull String value);
+        void set(@NonNull final Field field, @NonNull final String value);
 
         /**
          * Get the the value from the view associated with Field and store a native version
@@ -609,7 +616,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @param field  associated with the View object
          * @param values Collection to save value into.
          */
-        void putFieldValueInto(final @NonNull Field field, final @NonNull Bundle values);
+        void putFieldValueInto(@NonNull final Field field, @NonNull final Bundle values);
 
         /**
          * Get the the value from the view associated with Field and store a native version
@@ -618,7 +625,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @param field  associated with the View object
          * @param values Collection to save value into.
          */
-        void putFieldValueInto(final @NonNull Field field, final @NonNull DataManager values);
+        void putFieldValueInto(@NonNull final Field field, @NonNull final DataManager values);
 
         /**
          * Get the the value from the view associated with Field and return it as an Object.
@@ -628,7 +635,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @return The most natural value to associate with the View value.
          */
         @NonNull
-        Object get(final @NonNull Field field);
+        Object get(@NonNull final Field field);
     }
 
     /**
@@ -637,6 +644,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     public interface FieldFormatter {
+
         /**
          * Format a string for applying to a View
          *
@@ -645,7 +653,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @return The formatted value. If the source is null, should return "" (and log an error)
          */
         @NonNull
-        String format(final @NonNull Field field, final @Nullable String source);
+        String format(@NonNull final Field field, @Nullable final String source);
 
         /**
          * This method is intended to be called from a {@link FieldDataAccessor}
@@ -657,11 +665,14 @@ public class Fields extends ArrayList<Fields.Field> {
          * @return The extracted value
          */
         @NonNull
-        String extract(final @NonNull Field field, final @NonNull String source);
+        String extract(@NonNull final Field field, @NonNull final String source);
     }
 
-    /** fronts an Activity/Fragment context */
+    /**
+     * fronts an Activity/Fragment context
+     * */
     private interface FieldsContext {
+
         /** DEBUG only */
         Object dbgGetOwnerContext();
 
@@ -671,20 +682,21 @@ public class Fields extends ArrayList<Fields.Field> {
 
     /** Base implementation */
     private static abstract class BaseDataAccessor implements FieldDataAccessor {
+
         @Override
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor) {
+        public void setFieldValueFrom(@NonNull final Field field, @NonNull final Cursor cursor) {
             set(field, cursor.getString(cursor.getColumnIndex(field.column)));
         }
 
         @Override
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Bundle values) {
+        public void setFieldValueFrom(@NonNull final Field field, @NonNull final Bundle values) {
             String v = values.getString(field.column);
             Objects.requireNonNull(v);
             set(field, v);
         }
 
         @Override
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull DataManager values) {
+        public void setFieldValueFrom(@NonNull final Field field, @NonNull final DataManager values) {
             set(field, values.getString(field.column));
         }
     }
@@ -696,27 +708,28 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     static public class StringDataAccessor extends BaseDataAccessor {
+
         @NonNull
         private String mLocalValue = "";
 
         @Override
-        public void set(final @NonNull Field field, final @NonNull String value) {
+        public void set(@NonNull final Field field, @NonNull final String value) {
             mLocalValue = field.format(value);
         }
 
         @Override
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull Bundle values) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final Bundle values) {
             values.putString(field.column, field.extract(mLocalValue).trim());
         }
 
         @Override
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull DataManager values) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final DataManager values) {
             values.putString(field.column, field.extract(mLocalValue).trim());
         }
 
         @NonNull
         @Override
-        public Object get(final @NonNull Field field) {
+        public Object get(@NonNull final Field field) {
             return field.extract(mLocalValue);
         }
     }
@@ -731,11 +744,12 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     static public class TextViewAccessor extends BaseDataAccessor {
+
         private boolean mFormatHtml;
         @NonNull
         private String mRawValue = "";
 
-        public void set(final @NonNull Field field, final @NonNull String value) {
+        public void set(@NonNull final Field field, @NonNull final String value) {
             mRawValue = value;
             TextView view = field.getView();
             if (mFormatHtml) {
@@ -748,17 +762,17 @@ public class Fields extends ArrayList<Fields.Field> {
             }
         }
 
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull Bundle values) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final Bundle values) {
             values.putString(field.column, mRawValue.trim());
         }
 
         @Override
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull DataManager values) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final DataManager values) {
             values.putString(field.column, mRawValue.trim());
         }
 
         @NonNull
-        public Object get(final @NonNull Field field) {
+        public Object get(@NonNull final Field field) {
             return mRawValue;
         }
 
@@ -781,7 +795,7 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     static public class EditTextAccessor extends BaseDataAccessor {
 
-        public synchronized void set(final @NonNull Field field, final @NonNull String value) {
+        public synchronized void set(@NonNull final Field field, @NonNull final String value) {
             EditText view = field.getView();
             view.removeTextChangedListener(field.textWatcher);
 
@@ -793,23 +807,19 @@ public class Fields extends ArrayList<Fields.Field> {
             view.addTextChangedListener(field.textWatcher);
         }
 
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull Bundle values) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final Bundle values) {
             EditText view = field.getView();
             values.putString(field.column, field.extract(view.getText().toString()).trim());
         }
 
         @Override
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull DataManager dataManager) {
-            try {
-                EditText view = field.getView();
-                dataManager.putString(field.column, field.extract(view.getText().toString()).trim());
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to save data", e);
-            }
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final DataManager values) {
+            EditText view = field.getView();
+            values.putString(field.column, field.extract(view.getText().toString()).trim());
         }
 
         @NonNull
-        public Object get(final @NonNull Field field) {
+        public Object get(@NonNull final Field field) {
             EditText view = field.getView();
             return field.extract(view.getText().toString().trim());
         }
@@ -826,12 +836,12 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     static public class CheckableAccessor extends BaseDataAccessor {
 
-        public void set(final @NonNull Field field, final @Nullable String value) {
+        public void set(@NonNull final Field field, @Nullable final String value) {
             Checkable cb = field.getView();
             if (value != null) {
                 try {
                     cb.setChecked(Datum.toBoolean(field.format(value), true));
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     cb.setChecked(false);
                 }
             } else {
@@ -839,7 +849,7 @@ public class Fields extends ArrayList<Fields.Field> {
             }
         }
 
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull Bundle values) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final Bundle values) {
             Checkable cb = field.getView();
             if (field.formatter != null) {
                 values.putString(field.column, field.formatter.extract(field, cb.isChecked() ? "1" : "0"));
@@ -849,17 +859,17 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         @Override
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull DataManager dataManager) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final DataManager values) {
             Checkable cb = field.getView();
             if (field.formatter != null) {
-                dataManager.putString(field.column, field.formatter.extract(field, cb.isChecked() ? "1" : "0"));
+                values.putString(field.column, field.formatter.extract(field, cb.isChecked() ? "1" : "0"));
             } else {
-                dataManager.putBoolean(field.column, cb.isChecked());
+                values.putBoolean(field.column, cb.isChecked());
             }
         }
 
         @NonNull
-        public Object get(final @NonNull Field field) {
+        public Object get(@NonNull final Field field) {
             Checkable cb = field.getView();
             if (field.formatter != null) {
                 return field.formatter.extract(field, (cb.isChecked() ? "1" : "0"));
@@ -875,7 +885,8 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     static public class RatingBarAccessor extends BaseDataAccessor {
-        public void setFieldValueFrom(final @NonNull Field field, final @NonNull Cursor cursor) {
+
+        public void setFieldValueFrom(@NonNull final Field field, @NonNull final Cursor cursor) {
             RatingBar ratingBar = field.getView();
             if (field.formatter != null) {
                 ratingBar.setRating(Float.parseFloat(field.formatter.format(field, cursor.getString(cursor.getColumnIndex(field.column)))));
@@ -884,7 +895,7 @@ public class Fields extends ArrayList<Fields.Field> {
             }
         }
 
-        public void set(final @NonNull Field field, final @Nullable String value) {
+        public void set(@NonNull final Field field, @Nullable final String value) {
             RatingBar ratingBar = field.getView();
             Float f = 0.0f;
             try {
@@ -894,26 +905,26 @@ public class Fields extends ArrayList<Fields.Field> {
             ratingBar.setRating(f);
         }
 
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull Bundle bundle) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final Bundle values) {
             RatingBar ratingBar = field.getView();
             if (field.formatter != null) {
-                bundle.putString(field.column, field.formatter.extract(field, "" + ratingBar.getRating()));
+                values.putString(field.column, field.formatter.extract(field, "" + ratingBar.getRating()));
             } else {
-                bundle.putFloat(field.column, ratingBar.getRating());
+                values.putFloat(field.column, ratingBar.getRating());
             }
         }
 
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull DataManager dataManager) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final DataManager values) {
             RatingBar ratingBar = field.getView();
             if (field.formatter != null) {
-                dataManager.putString(field.column, field.formatter.extract(field, "" + ratingBar.getRating()));
+                values.putString(field.column, field.formatter.extract(field, "" + ratingBar.getRating()));
             } else {
-                dataManager.putFloat(field.column, ratingBar.getRating());
+                values.putFloat(field.column, ratingBar.getRating());
             }
         }
 
         @NonNull
-        public Object get(final @NonNull Field field) {
+        public Object get(@NonNull final Field field) {
             RatingBar ratingBar = field.getView();
             return ratingBar.getRating();
         }
@@ -927,7 +938,7 @@ public class Fields extends ArrayList<Fields.Field> {
      */
     static public class SpinnerAccessor extends BaseDataAccessor {
 
-        public void set(final @NonNull Field field, final @Nullable String value) {
+        public void set(@NonNull final Field field, @Nullable final String value) {
             Spinner spinner = field.getView();
             String s = field.format(value);
             for (int i = 0; i < spinner.getCount(); i++) {
@@ -938,21 +949,21 @@ public class Fields extends ArrayList<Fields.Field> {
             }
         }
 
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull Bundle values) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final Bundle values) {
             values.putString(field.column, getValue(field));
         }
 
-        public void putFieldValueInto(final @NonNull Field field, final @NonNull DataManager values) {
+        public void putFieldValueInto(@NonNull final Field field, @NonNull final DataManager values) {
             values.putString(field.column, getValue(field));
         }
 
         @NonNull
-        public Object get(final @NonNull Field field) {
+        public Object get(@NonNull final Field field) {
             return field.extract(getValue(field));
         }
 
         @NonNull
-        private String getValue(final @NonNull Field field) {
+        private String getValue(@NonNull final Field field) {
             Spinner spinner = field.getView();
             Object selItem = spinner.getSelectedItem();
             if (selItem != null) {
@@ -970,20 +981,21 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     static public class DateFieldFormatter implements FieldFormatter {
+
         /**
          * Display as a human-friendly date, local timezone.
          */
         @NonNull
-        public String format(final @NonNull Field field, final @Nullable String source) {
+        public String format(@NonNull final Field field, @Nullable final String source) {
             if (source == null || source.isEmpty()) {
                 return "";
             }
             try {
-                java.util.Date d = DateUtils.parseDate(source);
+                Date d = DateUtils.parseDate(source);
                 if (d != null) {
                     return DateUtils.toPrettyDate(d);
                 }
-            } catch (Exception ignore) {
+            } catch (RuntimeException ignore) {
             }
             return source;
         }
@@ -992,13 +1004,13 @@ public class Fields extends ArrayList<Fields.Field> {
          * Extract as an SQL date, UTC timezone.
          */
         @NonNull
-        public String extract(final @NonNull Field field, final @NonNull String source) {
+        public String extract(@NonNull final Field field, @NonNull final String source) {
             try {
-                java.util.Date d = DateUtils.parseDate(source);
+                Date d = DateUtils.parseDate(source);
                 if (d != null) {
                     return DateUtils.utcSqlDate(d);
                 }
-            } catch (Exception ignore) {
+            } catch (RuntimeException ignore) {
             }
             return source;
         }
@@ -1018,7 +1030,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @param context so we can get the strings to display
          */
         @SuppressWarnings("WeakerAccess")
-        public BinaryYesNoEmptyFormatter(final @NonNull Context context) {
+        public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
             mContext = context;
         }
 
@@ -1026,7 +1038,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * Display as a human-friendly yes/no string
          */
         @NonNull
-        public String format(final @NonNull Field field, final @Nullable String source) {
+        public String format(@NonNull final Field field, @Nullable final String source) {
             if (source == null) {
                 return "";
             }
@@ -1042,7 +1054,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * Extract as a boolean string
          */
         @NonNull
-        public String extract(final @NonNull Field field, final @NonNull String source) {
+        public String extract(@NonNull final Field field, @NonNull final String source) {
             try {
                 return Datum.toBoolean(source, false) ? "1" : "0";
             } catch (IllegalArgumentException e) {
@@ -1064,7 +1076,7 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          */
         @SuppressWarnings("WeakerAccess")
-        public PriceFormatter(final @NonNull String currencyCode) {
+        public PriceFormatter(@NonNull final String currencyCode) {
             this.currencyCode = currencyCode;
         }
 
@@ -1072,7 +1084,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * Display with the currency symbol
          */
         @NonNull
-        public String format(final @NonNull Field field, final @Nullable String source) {
+        public String format(@NonNull final Field field, @Nullable final String source) {
             if (source == null || source.isEmpty()) {
                 return "";
             }
@@ -1091,13 +1103,13 @@ public class Fields extends ArrayList<Fields.Field> {
                 currencyInstance.setCurrency(Currency.getInstance(currencyCode));
                 return currencyInstance.format(price);
             } catch (IllegalArgumentException e) {
-                Logger.error(e, "currencyCode=`" + currencyCode + "`, source=`" + source + "`");
-                return currencyCode + " " + source;
+                Logger.error(e, "currencyCode=`" + currencyCode + "`, source=`" + source + '`');
+                return currencyCode + ' ' + source;
             }
         }
 
         @NonNull
-        public String extract(final @NonNull Field field, final @NonNull String source) {
+        public String extract(@NonNull final Field field, @NonNull final String source) {
             throw new UnsupportedOperationException();
         }
     }
@@ -1123,7 +1135,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * Otherwise, simply return the source string itself.
          */
         @NonNull
-        public String format(final @NonNull Field field, final @Nullable String source) {
+        public String format(@NonNull final Field field, @Nullable final String source) {
             if (source == null || source.isEmpty()) {
                 return "";
             }
@@ -1136,7 +1148,7 @@ public class Fields extends ArrayList<Fields.Field> {
         }
 
         @NonNull
-        public String extract(final @NonNull Field field, final @NonNull String source) {
+        public String extract(@NonNull final Field field, @NonNull final String source) {
             // we need to transform a localised language name to it's ISO equivalent.
             return LocaleUtils.getISO3Language(source);
         }
@@ -1148,6 +1160,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * Does not support {@link FieldFormatter#extract}
      */
     static public class BookEditionsFormatter implements FieldFormatter {
+
         @NonNull
         @Override
         public String format(@NonNull final Field field, @Nullable final String source) {
@@ -1179,6 +1192,7 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     public static class FieldUsage {
+
         /** a key, usually from {@link UniqueId} */
         @NonNull
         public final String fieldId;
@@ -1192,9 +1206,9 @@ public class Fields extends ArrayList<Fields.Field> {
         public Usage usage;
 
 
-        public FieldUsage(final @NonNull String fieldId,
-                          final @StringRes int nameStringId,
-                          final @NonNull Usage usage,
+        public FieldUsage(@NonNull final String fieldId,
+                          @StringRes final int nameStringId,
+                          @NonNull final Usage usage,
                           final boolean isList) {
             this.fieldId = fieldId;
             this.nameStringId = nameStringId;
@@ -1206,11 +1220,11 @@ public class Fields extends ArrayList<Fields.Field> {
             return (usage != Usage.Skip);
         }
 
-        public String getLabel(final @NonNull Context context) {
+        public String getLabel(@NonNull final Context context) {
             return context.getString(nameStringId);
         }
 
-        public String getUsageInfo(final @NonNull Context context) {
+        public String getUsageInfo(@NonNull final Context context) {
             return context.getString(usage.getStringId());
         }
 
@@ -1241,10 +1255,8 @@ public class Fields extends ArrayList<Fields.Field> {
                         return Overwrite;
                     case Overwrite:
                         return Skip;
-                    default:
-                        // never reached
-                        return Skip;
                 }
+                return null;
             }
 
             @StringRes
@@ -1264,11 +1276,12 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /** fronts an Activity context */
-    private class ActivityContext implements FieldsContext {
+    private static class ActivityContext implements FieldsContext {
+
         @NonNull
         private final WeakReference<Activity> mActivity;
 
-        ActivityContext(final @NonNull Activity activity) {
+        ActivityContext(@NonNull final Activity activity) {
             mActivity = new WeakReference<>(activity);
         }
 
@@ -1284,11 +1297,12 @@ public class Fields extends ArrayList<Fields.Field> {
     }
 
     /** fronts a Fragment context */
-    private class FragmentContext implements FieldsContext {
+    private static class FragmentContext implements FieldsContext {
+
         @NonNull
         private final WeakReference<Fragment> mFragment;
 
-        FragmentContext(final @NonNull Fragment fragment) {
+        FragmentContext(@NonNull final Fragment fragment) {
             mFragment = new WeakReference<>(fragment);
         }
 
@@ -1326,6 +1340,7 @@ public class Fields extends ArrayList<Fields.Field> {
      * @author Philip Warner
      */
     public class Field {
+
         /** Field ID */
         @IdRes
         public final int id;
@@ -1382,10 +1397,10 @@ public class Fields extends ArrayList<Fields.Field> {
          * @param sourceColumn        Source database column. Can be empty.
          * @param visibilityGroupName Visibility group. Can be blank.
          */
-        Field(final @NonNull Fields fields,
+        Field(@NonNull final Fields fields,
               final @IdRes int fieldId,
-              final @NonNull String sourceColumn,
-              final @NonNull String visibilityGroupName) {
+              @NonNull final String sourceColumn,
+              @NonNull final String visibilityGroupName) {
 
             mFields = new WeakReference<>(fields);
             id = fieldId;
@@ -1411,17 +1426,17 @@ public class Fields extends ArrayList<Fields.Field> {
                     EditText et = (EditText) view;
                     textWatcher = new TextWatcher() {
                         @Override
-                        public void beforeTextChanged(final @NonNull CharSequence s,
+                        public void beforeTextChanged(@NonNull final CharSequence s,
                                                       final int start, final int count, final int after) {
                         }
 
                         @Override
-                        public void onTextChanged(final @NonNull CharSequence s,
+                        public void onTextChanged(@NonNull final CharSequence s,
                                                   final int start, final int before, final int count) {
                         }
 
                         @Override
-                        public void afterTextChanged(final @NonNull Editable s) {
+                        public void afterTextChanged(@NonNull final Editable s) {
                             Field.this.setValue(s.toString());
                         }
                     };
@@ -1454,7 +1469,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @return field (for chaining)
          */
-        public Field setAccessor(final @NonNull FieldDataAccessor accessor) {
+        public Field setAccessor(@NonNull final FieldDataAccessor accessor) {
             this.accessor = accessor;
             return this;
         }
@@ -1464,7 +1479,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @return field (for chaining)
          */
-        public Field setFormatter(final @NonNull FieldFormatter formatter) {
+        public Field setFormatter(@NonNull final FieldFormatter formatter) {
             this.formatter = formatter;
             return this;
         }
@@ -1474,7 +1489,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @return field (for chaining)
          */
-        public Field setValidator(final @NonNull FieldValidator validator) {
+        public Field setValidator(@NonNull final FieldValidator validator) {
             this.validator = validator;
             return this;
         }
@@ -1507,7 +1522,7 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * Reset one fields visibility based on user preferences
          */
-        private void resetVisibility(final @Nullable FieldsContext context) {
+        private void resetVisibility(@Nullable final FieldsContext context) {
             if (context == null) {
                 return;
             }
@@ -1524,12 +1539,12 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @param view The view to watch
          */
-        private void addTouchSignalsDirty(final @NonNull View view) {
+        private void addTouchSignalsDirty(@NonNull final View view) {
             // Touching this is considered a change
             //TODO We need to introduce a better way to handle this.
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public boolean onTouch(final @NonNull View v, final @NonNull MotionEvent event) {
+                public boolean onTouch(@NonNull final View v, @NonNull final MotionEvent event) {
                     if (MotionEvent.ACTION_UP == event.getAction()) {
                         if (mAfterFieldChangeListener != null) {
                             mAfterFieldChangeListener.afterFieldChange(Field.this, null);
@@ -1584,7 +1599,7 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * Set the current value of the tag field.
          */
-        public void setTag(final @NonNull Object tag) {
+        public void setTag(@NonNull final Object tag) {
             mTag = tag;
         }
 
@@ -1603,7 +1618,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @param s New value
          */
-        public void setValue(final @NonNull String s) {
+        public void setValue(@NonNull final String s) {
             accessor.set(this, s);
             if (mAfterFieldChangeListener != null) {
                 mAfterFieldChangeListener.afterFieldChange(this, s);
@@ -1613,14 +1628,14 @@ public class Fields extends ArrayList<Fields.Field> {
         /**
          * Get the current value of this field and put it into the Bundle collection.
          **/
-        public void putValueInto(final @NonNull Bundle values) {
+        public void putValueInto(@NonNull final Bundle values) {
             accessor.putFieldValueInto(this, values);
         }
 
         /**
          * Get the current value of this field and put it into the Bundle collection.
          **/
-        public void putValueInto(final @NonNull DataManager data) {
+        public void putValueInto(@NonNull final DataManager data) {
             accessor.putFieldValueInto(this, data);
         }
 
@@ -1630,7 +1645,7 @@ public class Fields extends ArrayList<Fields.Field> {
          *
          * @throws DBExceptions.ColumnNotPresent if the cursor does not have a required column
          */
-        public void setValueFrom(final @NonNull Cursor cursor) {
+        public void setValueFrom(@NonNull final Cursor cursor) {
             if (!column.isEmpty() && !doNoFetch) {
                 try {
                     accessor.setFieldValueFrom(this, cursor);
@@ -1644,7 +1659,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * Set the value of this field from the passed Bundle.
          * Useful for getting access to raw data values from a saved data bundle.
          */
-        public void setValueFrom(final @NonNull Bundle bundle) {
+        public void setValueFrom(@NonNull final Bundle bundle) {
             if (!column.isEmpty() && !doNoFetch) {
                 accessor.setFieldValueFrom(this, bundle);
             }
@@ -1654,7 +1669,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * Set the value of this field from the passed DataManager.
          * Useful for getting access to raw data values from a saved data bundle.
          */
-        public void setValueFrom(final @NonNull DataManager dataManager) {
+        public void setValueFrom(@NonNull final DataManager dataManager) {
             if (!column.isEmpty() && !doNoFetch) {
                 accessor.setFieldValueFrom(this, dataManager);
 
@@ -1670,7 +1685,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * @return The formatted value. If the source is null, should return "" (and log an error)
          */
         @NonNull
-        public String format(final @Nullable String s) {
+        public String format(@Nullable final String s) {
             if (s == null) {
                 return "";
             }
@@ -1685,7 +1700,7 @@ public class Fields extends ArrayList<Fields.Field> {
          * or just return the raw value.
          */
         @SuppressWarnings("WeakerAccess")
-        public String extract(final @NonNull String s) {
+        public String extract(@NonNull final String s) {
             if (formatter == null) {
                 return s;
             }

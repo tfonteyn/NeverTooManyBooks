@@ -2,8 +2,6 @@ package com.eleybourn.bookcatalogue.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -12,7 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+public class Bookshelf
+        implements Parcelable, Utils.ItemWithIdFixup {
 
     /** how to concat bookshelf names */
     public static final Character SEPARATOR = ',';
@@ -22,23 +24,33 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
 
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
     public static final int DEFAULT_ID = 1;
+    public static final Creator<Bookshelf> CREATOR = new Creator<Bookshelf>() {
+        @Override
+        public Bookshelf createFromParcel(Parcel source) {
+            return new Bookshelf(source);
+        }
 
+        @Override
+        public Bookshelf[] newArray(int size) {
+            return new Bookshelf[size];
+        }
+    };
     public long id;
     @NonNull
     public String name;
 
     /**
      * Constructor
-     *
      */
-    public Bookshelf(final @NonNull String name) {
+    public Bookshelf(@NonNull final String name) {
         this.name = name.trim();
     }
 
     /**
      * Constructor
      */
-    public Bookshelf(final long id, final @NonNull String name) {
+    public Bookshelf(final long id,
+                     @NonNull final String name) {
         this.id = id;
         this.name = name.trim();
     }
@@ -62,7 +74,8 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest,
+                              int flags) {
         dest.writeLong(id);
         dest.writeString(name);
     }
@@ -72,18 +85,6 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
     public int describeContents() {
         return 0;
     }
-
-    public static final Creator<Bookshelf> CREATOR = new Creator<Bookshelf>() {
-        @Override
-        public Bookshelf createFromParcel(Parcel in) {
-            return new Bookshelf(in);
-        }
-
-        @Override
-        public Bookshelf[] newArray(int size) {
-            return new Bookshelf[size];
-        }
-    };
 
     /**
      * Support for encoding to a text file
@@ -99,7 +100,7 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
     }
 
     @Override
-    public long fixupId(final @NonNull CatalogueDBAdapter db) {
+    public long fixupId(@NonNull final CatalogueDBAdapter db) {
         this.id = db.getBookshelfId(this);
         return this.id;
     }
@@ -117,23 +118,23 @@ public class Bookshelf implements Parcelable, Utils.ItemWithIdFixup {
      *
      * - it's the same Object duh..
      * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
-     *   AND all their other fields are equal
+     * AND all their other fields are equal
      *
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
-    public boolean equals(final @Nullable Object o) {
-        if (this == o) {
+    public boolean equals(@Nullable final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Bookshelf that = (Bookshelf) o;
-        if (this.id == 0 || that.id == 0 || this.id == that.id) {
-            return Objects.equals(this.name, that.name);
+        Bookshelf that = (Bookshelf) obj;
+        if (this.id != 0 && that.id != 0 && this.id != that.id) {
+            return false;
         }
-        return false;
+        return Objects.equals(this.name, that.name);
     }
 
     @Override

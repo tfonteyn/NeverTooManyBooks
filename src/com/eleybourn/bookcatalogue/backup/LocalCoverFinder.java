@@ -19,75 +19,103 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.eleybourn.bookcatalogue.backup.csv.Importer;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Class to find covers for an importer when the import is reading from a local directory.
  *
+ * Used be the CSV file import class. It check for a cover with the UUID or the id
+ *
  * @author pjw
  */
-public class LocalCoverFinder implements Importer.CoverFinder {
+public class LocalCoverFinder
+    implements Importer.CoverFinder {
+
     /** The root path to search for files */
     @NonNull
     private final String mSrc;
     private final boolean mIsForeign;
-    @NonNull
-    private final CatalogueDBAdapter mDb;
 
-    public LocalCoverFinder(final @NonNull Context context, final @NonNull String srcPath, final @NonNull String dstPath) {
+    public LocalCoverFinder(@NonNull final String srcPath) {
         mSrc = srcPath;
-        mIsForeign = !mSrc.equals(dstPath);
-        mDb = new CatalogueDBAdapter(context);
+        mIsForeign = !mSrc.equals(StorageUtils.getSharedStorage().getAbsolutePath());
     }
 
+    /**
+     * Entry point for the CSV importer.
+     *
+     * @param srcId used to find a cover file
+     * @param uuidFromBook of the book
+     *
+     * @throws IOException on any failure
+     */
     @Override
-    public void close() {
-        mDb.close();
-    }
+    public void copyOrRenameCoverFile(final long srcId,
+                                      @NonNull final String uuidFromBook)
+        throws IOException {
 
-    public void copyOrRenameCoverFile(final @Nullable String srcUuid, final long srcId, final long dstId) throws IOException {
-        if (srcUuid != null && !srcUuid.isEmpty()) {
-            // Only copy UUID files if they are foreign...since they already exists, otherwise.
+        if (srcId != 0) {
             if (mIsForeign) {
-                copyCoverImageIfMissing(srcUuid);
-            }
-        } else {
-            if (srcId != 0) {
-                // This will be a rename or a copy
-                if (mIsForeign) {
-                    copyCoverImageIfMissing(srcId, dstId);
-                } else {
-                    renameCoverImageIfMissing(srcId, dstId);
+                // copy it
+                File source = findExternalCover(String.valueOf(srcId));
+                if (source == null || !source.exists() || source.length() == 0) {
+                    return;
                 }
+                copyFileToCoverImageIfMissing(source, uuidFromBook);
+
+            } else {
+                // it's a rename
+                File source = findExternalCover(String.valueOf(srcId));
+                if (source == null || !source.exists() || source.length() == 0) {
+                    return;
+                }
+
+                // Check for ANY current image as we do NOT want to overwrite one.
+                File destination = getCoverFile(uuidFromBook);
+                if (destination.exists()) {
+                    return;
+                }
+                StorageUtils.renameFile(source, destination);
             }
         }
+    }
 
+    /**
+     * Entry point for the CSV importer.
+     *
+     * @param uuidFromFile used to find a cover file; uuid must be valid. No checks are made.
+     *
+     * @throws IOException on any failure
+     */
+    @Override
+    public void copyOrRenameCoverFile(@NonNull final String uuidFromFile)
+        throws IOException {
+        // Only copy UUID files if they are foreign...since they already exists, otherwise.
+        if (mIsForeign) {
+            File source = findExternalCover(uuidFromFile);
+            if (source == null || !source.exists() || source.length() == 0) {
+                return;
+            }
+            copyFileToCoverImageIfMissing(source, uuidFromFile);
+        }
     }
 
     @Nullable
-    private File findExternalCover(final long externalId) {
-        return findExternalCover(Long.toString(externalId));
-    }
-
-    @Nullable
-    private File findExternalCover(final @NonNull String name) {
+    private File findExternalCover(@NonNull final String name) {
         // Find the original, if present.
-        File orig = new File(mSrc + File.separator + name + ".jpg");
-        if (!orig.exists()) {
-            orig = new File(mSrc + File.separator + name + ".png");
+        File source = new File(mSrc + File.separator + name + ".jpg");
+        if (!source.exists()) {
+            source = new File(mSrc + File.separator + name + ".png");
         }
 
         // Nothing to copy?
-        return orig.exists() ? orig : null;
+        return source.exists() ? source : null;
 
     }
 
@@ -99,7 +127,7 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      * @return Existing file (if length > 0), or new file object
      */
     @NonNull
-    private File getNewCoverFile(final @NonNull String uuid) {
+    private File getCoverFile(@NonNull final String uuid) {
         // Check for ANY current image; delete empty ones and retry
         File newFile = StorageUtils.getCoverFile(uuid);
         while (newFile.exists()) {
@@ -118,82 +146,20 @@ public class LocalCoverFinder implements Importer.CoverFinder {
      * Copy a specified source file into the default cover location for a new file.
      * DO NO Overwrite EXISTING FILES.
      */
-    private void copyFileToCoverImageIfMissing(final @Nullable File orig, final @NonNull String newUuid) throws IOException {
+    private void copyFileToCoverImageIfMissing(@Nullable final File orig,
+                                               @NonNull final String newUuid)
+        throws IOException {
         // Nothing to copy?
         if (orig == null || !orig.exists() || orig.length() == 0) {
             return;
         }
 
         // Check for ANY current image
-        final File newFile = getNewCoverFile(newUuid);
+        final File newFile = getCoverFile(newUuid);
         if (newFile.exists()) {
             return;
         }
 
         StorageUtils.copyFile(orig, newFile);
-    }
-
-    /**
-     * Rename/move a specified source file into the default cover location for a new file.
-     * DO NOT Overwrite EXISTING FILES.
-     */
-    private void renameFileToCoverImageIfMissing(final @Nullable File source, final @NonNull String newUuid) {
-        // Nothing to copy?
-        if (source == null || !source.exists() || source.length() == 0) {
-            return;
-        }
-
-        // Check for ANY current image
-        final File destination = getNewCoverFile(newUuid);
-        if (destination.exists()) {
-            return;
-        }
-
-        StorageUtils.renameFile(source, destination);
-    }
-
-    /**
-     * Copy the ID-based cover from its current location to the correct location in Shared Storage, if it exists.
-     *
-     * @param externalId The file ID in external media
-     * @param newId      The new file ID
-     */
-    private void renameCoverImageIfMissing(final long externalId, final long newId) {
-        File orig = findExternalCover(externalId);
-        // Nothing to copy?
-        if (orig == null || !orig.exists() || orig.length() == 0) {
-            return;
-        }
-
-        renameFileToCoverImageIfMissing(orig, mDb.getBookUuid(newId));
-    }
-
-    /**
-     * Copy the ID-based cover from its current location to the correct location in Shared Storage, if it exists.
-     *
-     * @param externalId The file ID in external media
-     * @param newId      The new file ID
-     */
-    private void copyCoverImageIfMissing(final long externalId, final long newId) throws IOException {
-        File orig = findExternalCover(externalId);
-        // Nothing to copy?
-        if (orig == null || !orig.exists() || orig.length() == 0) {
-            return;
-        }
-
-        copyFileToCoverImageIfMissing(orig, mDb.getBookUuid(newId));
-    }
-
-    /**
-     * Copy the UUID-based cover from its current location to the correct location in Shared Storage, if it exists.
-     */
-    private void copyCoverImageIfMissing(final @NonNull String uuid) throws IOException {
-        File orig = findExternalCover(uuid);
-        // Nothing to copy?
-        if (orig == null || !orig.exists()) {
-            return;
-        }
-
-        copyFileToCoverImageIfMissing(orig, uuid);
     }
 }

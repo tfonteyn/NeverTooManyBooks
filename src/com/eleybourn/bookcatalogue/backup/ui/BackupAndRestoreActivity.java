@@ -21,19 +21,20 @@ package com.eleybourn.bookcatalogue.backup.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserBaseActivity;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment;
@@ -41,14 +42,16 @@ import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.UpgradeMigrations;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
 import java.util.Objects;
 
-import static com.eleybourn.bookcatalogue.backup.BackupManager.PREF_LAST_BACKUP_FILE;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Lets the user choose an archive file to backup to, or import from.
@@ -59,9 +62,6 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
         ImportDialogFragment.OnImportTypeSelectionDialogResultsListener,
         ExportDialogFragment.OnExportTypeSelectionDialogResultsListener {
 
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_BACKUP_CHOOSER;
-
-
     /**
      * ID's to use when kicking of the tasks for doing a backup or restore.
      * We get it back in {@link #onTaskFinished} so we know the type of task.
@@ -71,22 +71,22 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
     private static final int TASK_ID_SAVE_TO_ARCHIVE = 1;
     private static final int TASK_ID_READ_FROM_ARCHIVE = 2;
 
-    final ImportSettings importSettings = new ImportSettings();
-    final ExportSettings exportSettings = new ExportSettings();
+    private final ImportSettings importSettings = new ImportSettings();
+    private final ExportSettings exportSettings = new ExportSettings();
 
     @CallSuper
     @Override
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        setTitle(isSave() ? R.string.backup_to_archive : R.string.import_from_archive);
+        setTitle(isSave() ? R.string.lbl_backup : R.string.lbl_import_from_archive);
 
         Tracker.exitOnCreate(this);
     }
 
     /**
-     * Setup the default file name: blank for 'open', date-based for save
+     * Setup the default file name: blank for 'open', date-based for save.
      */
     @NonNull
     private String getDefaultFileName() {
@@ -101,12 +101,13 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
     }
 
     /**
-     * Create the fragment using the last backup for the path, and the default file name (if saving)
+     * Create the fragment using the last backup for the path,
+     * and the default file name (if saving).
      */
     @NonNull
     @Override
     protected FileChooserFragment getChooserFragment() {
-        String lastBackupFile = BookCatalogueApp.getStringPreference(PREF_LAST_BACKUP_FILE,
+        String lastBackupFile = Prefs.getString(BackupManager.PREF_LAST_BACKUP_FILE,
                 StorageUtils.getSharedStorage().getAbsolutePath());
 
         return FileChooserFragment.newInstance(new File(Objects.requireNonNull(lastBackupFile)),
@@ -118,7 +119,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
      */
     @NonNull
     @Override
-    public FileListerFragmentTask getFileLister(@NonNull File root) {
+    public FileListerFragmentTask getFileLister(@NonNull final File root) {
         return new BackupListerFragmentTask(root);
     }
 
@@ -129,17 +130,17 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
      * - options
      */
     @Override
-    public void onOpen(final @NonNull File file) {
+    public void onOpen(@NonNull final File file) {
         importSettings.file = file;
 
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.import_from_archive)
+                .setTitle(R.string.lbl_import_from_archive)
                 .setMessage(R.string.import_option_info_all_books)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
                         // User wants to import all.
-                        importSettings.what = ImportSettings.IMPORT_ALL;
+                        importSettings.what = ImportSettings.ALL;
                         BackupManager.restore(BackupAndRestoreActivity.this, TASK_ID_READ_FROM_ARCHIVE, importSettings);
                     }
                 })
@@ -165,7 +166,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
      * User has set his choices for import... kick of the restore task
      */
     @Override
-    public void onImportTypeSelectionDialogResult(final @NonNull ImportSettings settings) {
+    public void onImportTypeSelectionDialogResult(@NonNull final ImportSettings settings) {
         // sanity check
         if (settings.what == ImportSettings.NOTHING) {
             return;
@@ -177,17 +178,17 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
      * If a file was selected, offer the user settings on how to save the archive.
      */
     @Override
-    public void onSave(final @NonNull File file) {
+    public void onSave(@NonNull final File file) {
         exportSettings.file = file;
 
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.backup_to_archive)
+                .setTitle(R.string.lbl_backup)
                 .setMessage(R.string.export_info_backup_all)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
                         // User wants to backup all.
-                        exportSettings.what = ExportSettings.EXPORT_ALL;
+                        exportSettings.what = ExportSettings.ALL;
                         BackupManager.backup(BackupAndRestoreActivity.this, TASK_ID_SAVE_TO_ARCHIVE, exportSettings);
                     }
                 })
@@ -214,7 +215,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
      * User has set his choices for backup... check them, and kick of the backup task
      */
     @Override
-    public void onExportTypeSelectionDialogResult(final @NonNull ExportSettings settings) {
+    public void onExportTypeSelectionDialogResult(@NonNull final ExportSettings settings) {
         // sanity check
         if (settings.what == ExportSettings.NOTHING) {
             return;
@@ -224,7 +225,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
         if ((settings.what & ExportSettings.EXPORT_SINCE) != 0) {
             // no date set, use "since last backup."
             if (settings.dateFrom == null) {
-                String lastBackup = BookCatalogueApp.getStringPreference(BackupManager.PREF_LAST_BACKUP_DATE, null);
+                String lastBackup = Prefs.getString(BackupManager.PREF_LAST_BACKUP_DATE, null);
                 if (lastBackup != null && !lastBackup.isEmpty()) {
                     settings.dateFrom = DateUtils.parseDate(lastBackup);
                 }
@@ -239,11 +240,11 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
 
     /** the import/export has finished */
     @Override
-    public void onTaskFinished(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+    public void onTaskFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                                final int taskId,
                                final boolean success,
                                final boolean cancelled,
-                               final @NonNull FragmentTask task) {
+                               @NonNull final FragmentTask task) {
 
         Object resultSettings = Objects.requireNonNull(task.getTag());
 
@@ -263,13 +264,13 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
 
     private void handleReadFromArchiveResults(final boolean success,
                                               final boolean cancelled,
-                                              final @NonNull ImportSettings resultSettings) {
+                                              @NonNull final ImportSettings resultSettings) {
         if (!success) {
             String msg = getString(R.string.error_import_failed)
-                    + " " + getString(R.string.error_storage_not_readable)
+                    + ' ' + getString(R.string.error_storage_not_readable)
                     + "\n\n" + getString(R.string.error_if_the_problem_persists);
             AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setTitle(R.string.import_from_archive)
+                    .setTitle(R.string.lbl_import_from_archive)
                     .setMessage(msg)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
@@ -287,14 +288,21 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
             return;
         }
 
+        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+            Logger.info(this, "Imported: " + resultSettings);
+        }
         // see if there are any pre-200 preferences that need migrating.
         if ((resultSettings.what & ImportSettings.PREFERENCES) != 0) {
-            UpgradeMigrations.v200preferences(BookCatalogueApp.getSharedPreferences(), false);
+            Prefs.migratePreV200preferences(BookCatalogueApp.getAppContext()
+                    .getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE).getAll()
+            );
+            BookCatalogueApp.getAppContext().getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE).edit().clear().apply();
+
         }
 
         // all done
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.import_from_archive)
+                .setTitle(R.string.lbl_import_from_archive)
                 .setMessage(R.string.progress_end_import_complete)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
@@ -312,14 +320,14 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
 
     private void handleSaveToArchiveResults(final boolean success,
                                             final boolean cancelled,
-                                            final @NonNull ExportSettings resultSettings) {
+                                            @NonNull final ExportSettings resultSettings) {
         if (!success) {
             String msg = getString(R.string.export_error_backup_failed)
-                    + " " + getString(R.string.error_storage_not_writable)
+                    + ' ' + getString(R.string.error_storage_not_writable)
                     + "\n\n" + getString(R.string.error_if_the_problem_persists);
 
             AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setTitle(R.string.backup_to_archive)
+                    .setTitle(R.string.lbl_backup)
                     .setMessage(msg)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
@@ -345,7 +353,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
                 resultSettings.file.getName(),
                 Utils.formatFileSize(resultSettings.file.length()));
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.backup_to_archive)
+                .setTitle(R.string.lbl_backup)
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
@@ -365,7 +373,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
      * Not needed, there is only ever one task for restore/backup
      */
     @Override
-    public void onAllTasksFinished(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
+    public void onAllTasksFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                                    final int taskId,
                                    final boolean success,
                                    final boolean cancelled) {

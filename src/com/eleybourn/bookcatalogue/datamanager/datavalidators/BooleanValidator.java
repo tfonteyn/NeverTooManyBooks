@@ -36,13 +36,13 @@ public class BooleanValidator extends DefaultFieldValidator {
         super();
     }
 
-    public BooleanValidator(final @NonNull String defaultValue) {
+    public BooleanValidator(@NonNull final String defaultValue) {
         super(defaultValue);
     }
 
     @Override
     @CallSuper
-    public void validate(final @NonNull DataManager data, final @NonNull Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
@@ -66,7 +66,7 @@ public class BooleanValidator extends DefaultFieldValidator {
                 value = false;
             }
             data.putBoolean(datum, value);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new ValidatorException(R.string.vldt_boolean_expected, new Object[]{datum.getKey()});
         }
     }

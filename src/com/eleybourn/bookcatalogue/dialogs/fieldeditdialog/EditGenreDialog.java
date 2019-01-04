@@ -28,17 +28,17 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
 public class EditGenreDialog extends EditStringDialog {
-    public EditGenreDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
+    public EditGenreDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
         super(activity, db, onChanged);
     }
 
     @CallSuper
-    public void edit(final @NonNull String s) {
+    public void edit(@NonNull final String s) {
         super.edit(s, R.layout.dialog_edit_genre, R.string.title_edit_genre);
     }
 
     @Override
-    protected void confirmEdit(final @NonNull String from, final @NonNull String to) {
+    protected void confirmEdit(@NonNull final String from, @NonNull final String to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

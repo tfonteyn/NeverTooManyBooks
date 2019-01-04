@@ -29,9 +29,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.widget.ImageView;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -52,6 +49,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * DB Helper for Covers DB. It uses the Application Context.
@@ -94,7 +95,8 @@ public class CoversDBAdapter implements AutoCloseable {
     /** TBL_IMAGE */
     private static final DomainDefinition DOM_ID = new DomainDefinition("_id");
 
-    private static final DomainDefinition DOM_DATE = new DomainDefinition("date", TableInfo.TYPE_DATETIME, true, "default current_timestamp");
+    private static final DomainDefinition DOM_DATE = new DomainDefinition("date", TableInfo.TYPE_DATETIME, true)
+            .setDefault("current_timestamp");
     // T = Thumbnail; C = cover? Only found reference to "T"
     private static final DomainDefinition DOM_TYPE = new DomainDefinition("type", TableInfo.TYPE_TEXT, true);
     private static final DomainDefinition DOM_IMAGE = new DomainDefinition("image", TableInfo.TYPE_BLOB, true);
@@ -178,19 +180,19 @@ public class CoversDBAdapter implements AutoCloseable {
      * @param maxHeight used to construct the cacheId
      */
     @NonNull
-    public static String getThumbnailCoverCacheId(final @NonNull String uuid,
+    public static String getThumbnailCoverCacheId(@NonNull final String uuid,
                                                   final int maxWidth,
                                                   final int maxHeight) {
-        return uuid + ".thumb." + maxWidth + "x" + maxHeight + ".jpg";
+        return uuid + ".thumb." + maxWidth + 'x' + maxHeight + ".jpg";
     }
 
-    private void open(final @NonNull Context context) {
+    private void open(@NonNull final Context context) {
         final SQLiteOpenHelper coversHelper = new CoversDbHelper(context, mTrackedCursorFactory);
 
         // Try to connect.
         try {
             mSyncedDb = new SynchronizedDb(coversHelper, mSynchronizer);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             // Assume exception means DB corrupt. Log, rename, and retry
             Logger.error(e, "Failed to open covers db");
             if (!StorageUtils.renameFile(StorageUtils.getFile(COVERS_DATABASE_NAME),
@@ -201,7 +203,7 @@ public class CoversDBAdapter implements AutoCloseable {
             // try again?
             try {
                 mSyncedDb = new SynchronizedDb(coversHelper, mSynchronizer);
-            } catch (Exception e2) {
+            } catch (RuntimeException e2) {
                 // If we fail a second time (creating a new DB), then just give up.
                 Logger.error(e2, "Covers database unavailable");
             }
@@ -246,8 +248,8 @@ public class CoversDBAdapter implements AutoCloseable {
      * @return Bitmap (if cached) or null (if not cached)
      */
     @Nullable
-    public Bitmap fetchCachedImage(final @NonNull File originalFile,
-                                   final @NonNull String uuid,
+    public Bitmap fetchCachedImage(@NonNull final File originalFile,
+                                   @NonNull final String uuid,
                                    final int maxWidth,
                                    final int maxHeight) {
         return fetchCachedImageIntoImageView(null, originalFile, uuid, maxWidth, maxHeight);
@@ -265,9 +267,9 @@ public class CoversDBAdapter implements AutoCloseable {
      * @return Bitmap (if cached) or null (if not cached)
      */
     @Nullable
-    public Bitmap fetchCachedImageIntoImageView(final @Nullable ImageView destView,
-                                                final @NonNull File originalFile,
-                                                final @NonNull String uuid,
+    public Bitmap fetchCachedImageIntoImageView(@Nullable final ImageView destView,
+                                                @NonNull final File originalFile,
+                                                @NonNull final String uuid,
                                                 final int maxWidth,
                                                 final int maxHeight) {
         if (mSyncedDb == null) {
@@ -283,14 +285,14 @@ public class CoversDBAdapter implements AutoCloseable {
         // Wrap in try/catch. It's possible the SDCard got removed and DB is now inaccessible
         try {
             bytes = getFile(cacheId, expiryDate);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return null;
         }
 
         if (bytes != null) {
             try {
                 bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 Logger.error(e, "");
                 return null;
             }
@@ -321,7 +323,7 @@ public class CoversDBAdapter implements AutoCloseable {
      * @return byte[] of image data
      */
     @Nullable
-    private byte[] getFile(final @NonNull String filename, final @NonNull Date lastModified) {
+    private byte[] getFile(@NonNull final String filename, @NonNull final Date lastModified) {
         if (mSyncedDb == null) {
             return null;
         }
@@ -346,7 +348,7 @@ public class CoversDBAdapter implements AutoCloseable {
      * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long saveFile(final @NonNull Bitmap bitmap, final @NonNull String filename) {
+    public long saveFile(@NonNull final Bitmap bitmap, @NonNull final String filename) {
         if (mSyncedDb == null) {
             return -1L;
         }
@@ -363,10 +365,10 @@ public class CoversDBAdapter implements AutoCloseable {
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
      */
-    private long saveFile(final @NonNull String filename,
+    private long saveFile(@NonNull final String filename,
                           final int height,
                           final int width,
-                          final @NonNull byte[] bytes) {
+                          @NonNull final byte[] bytes) {
         if (mSyncedDb == null) {
             return -1L;
         }
@@ -397,16 +399,16 @@ public class CoversDBAdapter implements AutoCloseable {
      * Delete the cached covers associated with the passed book uuid
      *
      * The original code also had a 2nd 'delete' method with a different where clause:
-     *         // We use encodeString here because it's possible a user screws up the data and imports
-     *         // bad UUIDs...this has happened.
-     *         // String whereClause = DOM_FILENAME + " glob '" + CatalogueDBAdapter.encodeString(uuid) + ".*'";
-     *         In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
+     * // We use encodeString here because it's possible a user screws up the data and imports
+     * // bad UUIDs...this has happened.
+     * // String whereClause = DOM_FILENAME + " glob '" + CatalogueDBAdapter.encodeString(uuid) + ".*'";
+     * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
      */
-    public void deleteBookCover(final @NonNull String uuid) {
+    public void deleteBookCover(@NonNull final String uuid) {
         if (mSyncedDb == null) {
             return;
         }
-        mSyncedDb.delete(TBL_IMAGE.getName(), DOM_FILENAME + " LIKE ?", new String[]{uuid + "%"});
+        mSyncedDb.delete(TBL_IMAGE.getName(), DOM_FILENAME + " LIKE ?", new String[]{uuid + '%'});
     }
 
     /**
@@ -431,12 +433,12 @@ public class CoversDBAdapter implements AutoCloseable {
 
     public static class CoversDbHelper extends SQLiteOpenHelper {
 
-        CoversDbHelper(final @NonNull Context context,
-                       @SuppressWarnings("SameParameterValue") final @NonNull SQLiteDatabase.CursorFactory factory) {
+        CoversDbHelper(@NonNull final Context context,
+                       @SuppressWarnings("SameParameterValue") @NonNull final SQLiteDatabase.CursorFactory factory) {
             super(context, COVERS_DATABASE_NAME, factory, COVERS_DATABASE_VERSION);
         }
 
-        public static String getDatabasePath(final @NonNull Context context) {
+        public static String getDatabasePath(@NonNull final Context context) {
             return context.getDatabasePath(COVERS_DATABASE_NAME).getAbsolutePath();
         }
 
@@ -445,7 +447,7 @@ public class CoversDBAdapter implements AutoCloseable {
          */
         @Override
         @CallSuper
-        public void onCreate(final @NonNull SQLiteDatabase db) {
+        public void onCreate(@NonNull final SQLiteDatabase db) {
             Logger.info(this, "Creating database: " + db.getPath());
             TableDefinition.createTables(new SynchronizedDb(db, mSynchronizer), TABLES);
         }
@@ -455,7 +457,7 @@ public class CoversDBAdapter implements AutoCloseable {
          */
         @Override
         @CallSuper
-        public void onUpgrade(final @NonNull SQLiteDatabase db, final int oldVersion, final int newVersion) {
+        public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
             Logger.info(this, "Upgrading database: " + db.getPath());
             throw new IllegalStateException("Upgrades not handled yet!");
         }

@@ -26,15 +26,16 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteQuery;
-import androidx.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 import java.util.Date;
+
+import androidx.annotation.NonNull;
 
 import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_CATEGORY;
 import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_EVENT_COUNT;
@@ -55,37 +56,40 @@ import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.TBL_
  *
  * @author Philip Warner
  */
-public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
+public class TasksCursor
+    extends SQLiteCursor
+    implements BindableItemCursor {
 
     /** Static Factory object to create the custom cursor */
     private static final CursorFactory mFactory = new CursorFactory() {
         @Override
         public Cursor newCursor(SQLiteDatabase db,
-                                @NonNull SQLiteCursorDriver masterQuery, @NonNull String editTable,
+                                @NonNull SQLiteCursorDriver masterQuery,
+                                @NonNull String editTable,
                                 @NonNull SQLiteQuery query) {
             return new TasksCursor(masterQuery, editTable, query);
         }
     };
 
     private static final String mFailedTasksQuery = "SELECT *, "
-            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
-            + " FROM " + TBL_TASK + " t "
-            + " WHERE " + DOM_STATUS_CODE + " = 'F' %1$s ORDER BY " + DOM_ID + " DESC";
+        + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+        + " FROM " + TBL_TASK + " t "
+        + " WHERE " + DOM_STATUS_CODE + " = 'F' %1$s ORDER BY " + DOM_ID + " DESC";
 
     private static final String mAllTasksQuery = "SELECT *, "
-            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
-            + " FROM " + TBL_TASK + " t WHERE 1 = 1 %1$s"
-            + " ORDER BY " + DOM_ID + " DESC";
+        + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+        + " FROM " + TBL_TASK + " t WHERE 1 = 1 %1$s"
+        + " ORDER BY " + DOM_ID + " DESC";
 
     private static final String mActiveTasksQuery = "SELECT *, "
-            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
-            + " FROM " + TBL_TASK + " t "
-            + " WHERE Not " + DOM_STATUS_CODE + " In ('S','F') %1$s ORDER BY " + DOM_ID + " DESC";
+        + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+        + " FROM " + TBL_TASK + " t "
+        + " WHERE Not " + DOM_STATUS_CODE + " In ('S','F') %1$s ORDER BY " + DOM_ID + " DESC";
 
     private static final String mQueuedTasksQuery = "SELECT *, "
-            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
-            + " FROM " + TBL_TASK + " t "
-            + " WHERE " + DOM_STATUS_CODE + " = 'Q' %1$s ORDER BY " + DOM_ID + " DESC";
+        + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+        + " FROM " + TBL_TASK + " t "
+        + " WHERE " + DOM_STATUS_CODE + " = 'Q' %1$s ORDER BY " + DOM_ID + " DESC";
     /** Column number of ID column. */
     private static int mIdCol = -1;
 
@@ -105,12 +109,13 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     private static int mReasonCol = -2;
     /** Column number of Exception column. */
     private static int mExceptionCol = -2;
+
     /**
      * Constructor, based on SQLiteCursor constructor
      */
-    private TasksCursor(final @NonNull SQLiteCursorDriver driver,
-                        final @NonNull String editTable,
-                        final @NonNull SQLiteQuery query) {
+    private TasksCursor(@NonNull final SQLiteCursorDriver driver,
+                        @NonNull final String editTable,
+                        @NonNull final SQLiteQuery query) {
         super(driver, editTable, query);
     }
 
@@ -120,9 +125,9 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
      * @return A new TaskExceptionsCursor
      */
     @NonNull
-    static TasksCursor fetchTasks(final @NonNull SQLiteDatabase db,
+    static TasksCursor fetchTasks(@NonNull final SQLiteDatabase db,
                                   final long category,
-                                  final @NonNull TaskCursorSubtype type) {
+                                  @NonNull final TaskCursorSubtype type) {
         String query;
         switch (type) {
             case all:
@@ -142,11 +147,13 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
         }
         // Add extra 'where' clause
         query = String.format(query, " AND " + DOM_CATEGORY + "=?");
-        return (TasksCursor) db.rawQueryWithFactory(mFactory, query, new String[]{Long.toString(category)}, "");
+        return (TasksCursor) db.rawQueryWithFactory(mFactory, query,
+                                                    new String[]{String.valueOf(category)}, "");
     }
 
     @NonNull
-    static TasksCursor fetchTasks(final @NonNull SQLiteDatabase db, final @NonNull TaskCursorSubtype type) {
+    static TasksCursor fetchTasks(@NonNull final SQLiteDatabase db,
+                                  @NonNull final TaskCursorSubtype type) {
         String query;
         switch (type) {
             case all:
@@ -178,8 +185,9 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
     }
 
     public long getQueueId() {
-        if (mQueueIdCol == -1)
+        if (mQueueIdCol == -1) {
             mQueueIdCol = this.getColumnIndex(DOM_QUEUE_ID);
+        }
         return getLong(mQueueIdCol);
     }
 
@@ -222,8 +230,9 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
      * @return reason
      */
     public String getReason() {
-        if (mReasonCol == -1)
+        if (mReasonCol == -1) {
             mReasonCol = this.getColumnIndex(DOM_FAILURE_REASON);
+        }
         return getString(mReasonCol);
     }
 
@@ -231,11 +240,14 @@ public class TasksCursor extends SQLiteCursor implements BindableItemCursor {
      * Accessor for Exception field.
      *
      * @return TaskException object
-     * @throws  RTE.DeserializationException f
+     *
+     * @throws RTE.DeserializationException f
      */
-    public Exception getException() throws RTE.DeserializationException {
-        if (mExceptionCol == -1)
+    public Exception getException()
+        throws RTE.DeserializationException {
+        if (mExceptionCol == -1) {
             mExceptionCol = this.getColumnIndex(DOM_EXCEPTION);
+        }
         return (Exception) SerializationUtils.deserializeObject(getBlob(mExceptionCol));
     }
 

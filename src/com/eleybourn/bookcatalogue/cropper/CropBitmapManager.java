@@ -58,7 +58,7 @@ class CropBitmapManager {
      * Get thread status and create one if specified.
      */
     @NonNull
-    private synchronized ThreadStatus getOrCreateThreadStatus(final @NonNull Thread t) {
+    private synchronized ThreadStatus getOrCreateThreadStatus(@NonNull final Thread t) {
         ThreadStatus status = mThreadStatus.get(t);
         if (status == null) {
             status = new ThreadStatus();
@@ -72,20 +72,20 @@ class CropBitmapManager {
      * BitmapFaction.Options used for decoding and cancelling.
      */
     @SuppressWarnings("unused")
-    private synchronized void setDecodingOptions(final @NonNull Thread t,
-                                                 final @NonNull BitmapFactory.Options options) {
+    private synchronized void setDecodingOptions(@NonNull final Thread t,
+                                                 @NonNull final BitmapFactory.Options options) {
         getOrCreateThreadStatus(t).mOptions = options;
     }
 
     @SuppressWarnings("unused")
     @Nullable
-    synchronized BitmapFactory.Options getDecodingOptions(final @NonNull Thread t) {
+    synchronized BitmapFactory.Options getDecodingOptions(@NonNull final Thread t) {
         ThreadStatus status = mThreadStatus.get(t);
         return status != null ? status.mOptions : null;
     }
 
     @SuppressWarnings("unused")
-    private synchronized void removeDecodingOptions(final @NonNull Thread t) {
+    private synchronized void removeDecodingOptions(@NonNull final Thread t) {
         ThreadStatus status = mThreadStatus.get(t);
         status.mOptions = null;
     }
@@ -95,13 +95,13 @@ class CropBitmapManager {
      * bitmap decoding.
      */
     @SuppressWarnings("unused")
-    public synchronized void allowThreadDecoding(final @NonNull ThreadSet threads) {
+    public synchronized void allowThreadDecoding(@NonNull final ThreadSet threads) {
         for (Thread t : threads) {
             allowThreadDecoding(t);
         }
     }
 
-    synchronized void cancelThreadDecoding(final @NonNull ThreadSet threads) {
+    synchronized void cancelThreadDecoding(@NonNull final ThreadSet threads) {
         for (Thread t : threads) {
             cancelThreadDecoding(t);
         }
@@ -112,20 +112,20 @@ class CropBitmapManager {
      * being disabled for bitmap decoding.
      */
     @SuppressWarnings("unused")
-    private synchronized boolean canThreadDecoding(final @NonNull Thread t) {
+    private synchronized boolean canThreadDecoding(@NonNull final Thread t) {
         ThreadStatus status = mThreadStatus.get(t);
         // allow decoding by default
-        return status == null || (status.mState != State.CANCEL);
+        return status == null || (status.mState != State.Cancel);
 
     }
 
-    private synchronized void allowThreadDecoding(final @NonNull Thread t) {
-        getOrCreateThreadStatus(t).mState = State.ALLOW;
+    private synchronized void allowThreadDecoding(@NonNull final Thread t) {
+        getOrCreateThreadStatus(t).mState = State.Allow;
     }
 
-    private synchronized void cancelThreadDecoding(final @NonNull Thread t) {
+    private synchronized void cancelThreadDecoding(@NonNull final Thread t) {
         ThreadStatus status = getOrCreateThreadStatus(t);
-        status.mState = State.CANCEL;
+        status.mState = State.Cancel;
         if (status.mOptions != null) {
             status.mOptions.requestCancelDecode();
         }
@@ -135,32 +135,26 @@ class CropBitmapManager {
     }
 
     private enum State {
-        CANCEL, ALLOW;
+        Cancel, Allow;
 
         @NonNull
         @Override
         public String toString() {
             switch (this) {
-                case CANCEL:
+                case Cancel:
                     return "Cancel";
-                default:
-                case ALLOW:
+                case Allow:
                     return "Allow";
             }
+            return "";
         }
     }
 
     private static class ThreadStatus {
         @NonNull
-        State mState = State.ALLOW;
+        State mState = State.Allow;
         @Nullable
         BitmapFactory.Options mOptions;
-
-        @NonNull
-        @Override
-        public String toString() {
-            return "thread state = " + mState + ", options = " + mOptions;
-        }
     }
 
 //	 /**
@@ -178,11 +172,11 @@ class CropBitmapManager {
     public static class ThreadSet implements Iterable<Thread> {
         private final Map<Thread, Object> mWeakCollection = new WeakHashMap<>();
 
-        public void add(final @NonNull Thread t) {
+        public void add(@NonNull final Thread t) {
             mWeakCollection.put(t, null);
         }
 
-        public void remove(final @NonNull Thread t) {
+        public void remove(@NonNull final Thread t) {
             mWeakCollection.remove(t);
         }
 
@@ -196,7 +190,7 @@ class CropBitmapManager {
 //	 * The real place to delegate bitmap decoding to BitmapFactory.
 //	 */
 //	@Nullable
-//	public Bitmap decodeFileDescriptor(final @NonNull FileDescriptor fd,
+//	public Bitmap decodeFileDescriptor(@NonNull final FileDescriptor fd,
 //			BitmapFactory.Options options) {
 //		if (options.mCancel) {
 //			return null;

@@ -41,7 +41,7 @@ public class ContextDialogItem implements CharSequence {
     @NonNull
     private final String name;
 
-    public ContextDialogItem(final @NonNull String name, final @NonNull Runnable handler) {
+    public ContextDialogItem(@NonNull final String name, @NonNull final Runnable handler) {
         this.name = name;
         this.handler = handler;
     }

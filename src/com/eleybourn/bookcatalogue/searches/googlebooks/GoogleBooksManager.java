@@ -5,10 +5,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -25,19 +25,22 @@ import javax.xml.parsers.SAXParserFactory;
 
 // ENHANCE: Get editions via: http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
 
-public class GoogleBooksManager {
+public final class GoogleBooksManager {
     private static final String TAG = "GoogleBooks.";
 
     private static final String PREFS_HOST_URL = TAG + "hostUrl";
 
+    private GoogleBooksManager() {
+    }
+
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return BookCatalogueApp.getStringPreference(PREFS_HOST_URL, "http://books.google.com");
+        return Prefs.getString(PREFS_HOST_URL, "http://books.google.com");
     }
 
-    public static void setBaseURL(final @NonNull String url) {
-        BookCatalogueApp.getSharedPreferences().edit().putString(PREFS_HOST_URL, url).apply();
+    public static void setBaseURL(@NonNull final String url) {
+        Prefs.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
     }
 
     /**
@@ -47,7 +50,7 @@ public class GoogleBooksManager {
      * @return found/saved File, or null when none found (or any other failure)
      */
     @Nullable
-    static public File getCoverImage(final @NonNull String isbn) {
+    static public File getCoverImage(@NonNull final String isbn) {
         // sanity check
         if (!IsbnUtils.isValid(isbn)) {
             return null;
@@ -61,22 +64,22 @@ public class GoogleBooksManager {
             ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
             if (imageList != null && !imageList.isEmpty()) {
                 File found = new File(imageList.get(0));
-                File coverFile = new File(found.getAbsolutePath() + "_" + isbn);
+                File coverFile = new File(found.getAbsolutePath() + '_' + isbn);
                 StorageUtils.renameFile(found, coverFile);
                 return coverFile;
             } else {
                 return null;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             Logger.error(e, "Error getting thumbnail from Google");
             return null;
         }
     }
 
-    public static void search(final @NonNull String isbn,
-                              final @NonNull String author,
-                              final @NonNull String title,
-                              final @NonNull Bundle /* out */ book,
+    public static void search(@NonNull final String isbn,
+                              @NonNull final String author,
+                              @NonNull final String title,
+                              @NonNull final Bundle /* out */ book,
                               final boolean fetchThumbnail) throws IOException {
 
         String urlText = getBaseURL() + "/books/feeds/volumes";

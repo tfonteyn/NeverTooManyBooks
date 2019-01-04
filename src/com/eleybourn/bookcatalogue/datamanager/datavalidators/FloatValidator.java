@@ -33,13 +33,13 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  */
 public class FloatValidator extends DefaultFieldValidator {
 
-    public FloatValidator(final @NonNull String defaultValue) {
+    public FloatValidator(@NonNull final String defaultValue) {
         super(defaultValue);
     }
 
     @Override
     @CallSuper
-    public void validate(final @NonNull DataManager data, final @NonNull Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
@@ -59,11 +59,10 @@ public class FloatValidator extends DefaultFieldValidator {
             } else if (o instanceof Integer) {
                 value = ((Integer) o).floatValue();
             } else {
-                //noinspection ConstantConditions
                 value = Float.parseFloat(o.toString());
             }
             data.putFloat(datum, value);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             throw new ValidatorException(R.string.vldt_real_expected, new Object[]{datum.getKey()});
         }
     }

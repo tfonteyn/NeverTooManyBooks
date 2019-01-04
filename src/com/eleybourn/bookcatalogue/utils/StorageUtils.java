@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,7 +73,7 @@ import java.util.regex.Pattern;
  *
  * @author Philip Warner
  */
-public class StorageUtils {
+public final class StorageUtils {
 
     /** error result code for {@link #getSharedStorageFreeSpace} */
     public static final int ERROR_CANNOT_STAT = -2;
@@ -110,7 +111,7 @@ public class StorageUtils {
      * Don't log anything, we might not have a log file!
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private static boolean createDir(final @NonNull String name) throws SecurityException {
+    private static boolean createDir(@NonNull final String name) throws SecurityException {
         final File dir = new File(name);
         return dir.isDirectory() || dir.mkdirs();
     }
@@ -186,7 +187,7 @@ public class StorageUtils {
      *
      * @return the file
      */
-    public static File getFile(final @NonNull String fileName) {
+    public static File getFile(@NonNull final String fileName) {
         return new File(SHARED_STORAGE_PATH + File.separator + fileName);
     }
 
@@ -210,7 +211,7 @@ public class StorageUtils {
     /**
      * Get a temp cover file 'name'
      */
-    public static File getTempCoverFile(final @NonNull String name) {
+    public static File getTempCoverFile(@NonNull final String name) {
         return new File(getTemp() + File.separator + "tmp" + name + ".jpg");
     }
 
@@ -222,7 +223,7 @@ public class StorageUtils {
      * @return a File with that name, located in the covers directory
      */
     @NonNull
-    public static File getRawCoverFile(final @NonNull String filename) {
+    public static File getRawCoverFile(@NonNull final String filename) {
         return new File(COVER_FILE_PATH + File.separator + filename);
     }
 
@@ -234,7 +235,7 @@ public class StorageUtils {
      * @return The File object for existing files, or a new (jpg) placeholder.
      */
     @NonNull
-    public static File getCoverFile(final @NonNull String uuid) {
+    public static File getCoverFile(@NonNull final String uuid) {
         final File jpg = new File(COVER_FILE_PATH + File.separator + uuid + ".jpg");
         if (jpg.exists()) {
             return jpg;
@@ -271,7 +272,7 @@ public class StorageUtils {
     }
     /* ------------------------------------------------------------------------------------------ */
 
-    private static long purgeDir(final @NonNull File dir, final boolean reallyDelete) {
+    private static long purgeDir(@NonNull final File dir, final boolean reallyDelete) {
         long size = 0;
         for (String name : dir.list()) {
             size += purgeFile(name, reallyDelete);
@@ -279,7 +280,7 @@ public class StorageUtils {
         Logger.info(StorageUtils.class, "purge dir=" + dir + ", size=" + size);
         return size;
     }
-    private static long purgeFile(final @NonNull String name, final boolean reallyDelete) {
+    private static long purgeFile(@NonNull final String name, final boolean reallyDelete) {
         long totalSize = 0;
         for (String prefix : mPurgeableFilePrefixes) {
             if (name.startsWith(prefix)) {
@@ -328,8 +329,8 @@ public class StorageUtils {
         // Make a filter for files ending in .csv
         FilenameFilter csvFilter = new FilenameFilter() {
             @Override
-            public boolean accept(File dir, String filename) {
-                final String fl = filename.toLowerCase();
+            public boolean accept(File dir, String name) {
+                final String fl = name.toLowerCase();
                 return (fl.endsWith(".csv"));
                 //ENHANCE: Allow for other files? Backups? || fl.endsWith(".csv.bak"));
             }
@@ -348,7 +349,7 @@ public class StorageUtils {
             String line;
             while ((line = in.readLine()) != null) {
                 if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-                    debugInfo.append("   checking ").append(line).append("\n");
+                    debugInfo.append("   checking ").append(line).append('\n');
                 }
                 final Matcher m = MOUNT_POINT_PATH.matcher(line);
                 // Get the mount point
@@ -356,7 +357,7 @@ public class StorageUtils {
                     // See if it has a bookCatalogue directory
                     final File dir = new File(m.group(1) + File.separator + DIRECTORY_NAME);
                     if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-                        debugInfo.append("       matched ").append(dir.getAbsolutePath()).append("\n");
+                        debugInfo.append("       matched ").append(dir.getAbsolutePath()).append('\n');
                     }
                     dirs.add(dir);
                 } else {
@@ -380,7 +381,7 @@ public class StorageUtils {
                 final File dir = new File(loc1 + File.separator + DIRECTORY_NAME);
                 dirs.add(dir);
                 if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-                    debugInfo.append("EXTERNAL_STORAGE added ").append(dir.getAbsolutePath()).append("\n");
+                    debugInfo.append("EXTERNAL_STORAGE added ").append(dir.getAbsolutePath()).append('\n');
                 }
             } else {
                 if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
@@ -393,14 +394,14 @@ public class StorageUtils {
                 final File dir = new File(loc2 + File.separator + DIRECTORY_NAME);
                 dirs.add(dir);
                 if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-                    debugInfo.append("SECONDARY_STORAGE added ").append(dir.getAbsolutePath()).append("\n");
+                    debugInfo.append("SECONDARY_STORAGE added ").append(dir.getAbsolutePath()).append('\n');
                 }
             } else {
                 if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-                    debugInfo.append("SECONDARY_STORAGE ignored: ").append(loc2).append("\n");
+                    debugInfo.append("SECONDARY_STORAGE ignored: ").append(loc2).append('\n');
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Failed to get external storage from environment variables");
         }
 
@@ -418,7 +419,7 @@ public class StorageUtils {
                     final File[] csvFiles = dir.listFiles(csvFilter);
                     if (csvFiles != null) {
                         if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-                            debugInfo.append("    found ").append(csvFiles.length).append(" in ").append(dir.getAbsolutePath()).append("\n");
+                            debugInfo.append("    found ").append(csvFiles.length).append(" in ").append(dir.getAbsolutePath()).append('\n');
                         }
                         for (File f : csvFiles) {
                             if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
@@ -427,19 +428,19 @@ public class StorageUtils {
                             final String cp = f.getCanonicalPath();
                             if (paths.contains(cp)) {
                                 if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-                                    debugInfo.append("        already present as ").append(cp).append("\n");
+                                    debugInfo.append("        already present as ").append(cp).append('\n');
                                 }
                             } else {
                                 files.add(f);
                                 paths.add(cp);
                                 if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-                                    debugInfo.append("        added as ").append(cp).append("\n");
+                                    debugInfo.append("        added as ").append(cp).append('\n');
                                 }
                             }
                         }
                     } else {
                         if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-                            debugInfo.append("    null returned by listFiles() in ").append(dir.getAbsolutePath()).append("\n");
+                            debugInfo.append("    null returned by listFiles() in ").append(dir.getAbsolutePath()).append('\n');
                         }
                     }
                 } else {
@@ -467,9 +468,9 @@ public class StorageUtils {
      * @param in  InputStream to read
      * @param out File to save
      *
-     * @return <tt>true</tt>if successful
+     * @return <tt>true</tt> if successful
      */
-    public static boolean saveInputStreamToFile(final @Nullable InputStream in, final @NonNull File out) {
+    public static boolean saveInputStreamToFile(@Nullable final InputStream in, @NonNull final File out) {
         Objects.requireNonNull(in);
 
         File temp = null;
@@ -500,7 +501,7 @@ public class StorageUtils {
      *
      * @param file to delete
      */
-    public static void deleteFile(final @Nullable File file) {
+    public static void deleteFile(@Nullable final File file) {
         if (file != null && file.exists()) {
             try {
                 //noinspection ResultOfMethodCallIgnored
@@ -508,7 +509,7 @@ public class StorageUtils {
                 if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
                     Logger.info(StorageUtils.class, "deleteFile|file=" + file.getAbsolutePath());
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 Logger.error(e);
             }
         }
@@ -518,10 +519,10 @@ public class StorageUtils {
      * ENHANCE: make suitable for multiple filesystems using {@link #copyFile(File, File)}
      * from the Android docs {@link File#renameTo(File)}: Both paths be on the same mount point.
      *
-     * @return <tt>true</tt>if the rename worked, this is really a ".exists()" call.
+     * @return <tt>true</tt> if the rename worked, this is really a ".exists()" call.
      * and not relying on the OS renameTo call.
      */
-    public static boolean renameFile(final @NonNull File src, final @NonNull File dst) {
+    public static boolean renameFile(@NonNull final File src, @NonNull final File dst) {
         if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
             Logger.info(StorageUtils.class, "renameFile|src=" + src.getAbsolutePath() + "|dst=" + dst.getAbsolutePath());
         }
@@ -529,7 +530,7 @@ public class StorageUtils {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 src.renameTo(dst);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 Logger.error(e);
             }
         }
@@ -539,7 +540,7 @@ public class StorageUtils {
     /**
      * Create a copy of the databases into the Shared Storage location
      */
-    public static void exportDatabaseFiles(final @NonNull Context context) {
+    public static void exportDatabaseFiles(@NonNull final Context context) {
         exportFile(CatalogueDBHelper.getDatabasePath(context), "DbExport.db");
         exportFile(CoversDBAdapter.CoversDbHelper.getDatabasePath(context), "DbExport-covers.db");
     }
@@ -548,14 +549,14 @@ public class StorageUtils {
      * @param sourcePath      absolute path to file to export
      * @param destinationPath destination file name, will be stored in our directory in Shared Storage
      */
-    public static void exportFile(final @NonNull String sourcePath, final @NonNull String destinationPath) {
+    public static void exportFile(@NonNull final String sourcePath, @NonNull final String destinationPath) {
         try {
             // rename the previously copied file
             StorageUtils.renameFile(getFile(destinationPath), getFile(destinationPath + ".bak"));
             // and create a new copy. Note that the source is a fully qualified name, so NOT using getFile()
             copyFile(new File(sourcePath), getFile(destinationPath));
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             Logger.error(e);
         }
     }
@@ -563,7 +564,7 @@ public class StorageUtils {
     /**
      * @throws IOException upon failure
      */
-    public static void copyFile(final @NonNull File source, final @NonNull File destination) throws IOException {
+    public static void copyFile(@NonNull final File source, @NonNull final File destination) throws IOException {
         try (InputStream is = new FileInputStream(source)) {
             copyFile(is, FILE_COPY_BUFFER_SIZE, destination);
         }
@@ -576,9 +577,9 @@ public class StorageUtils {
      *
      * @throws IOException at failures
      */
-    public static void copyFile(final @NonNull InputStream is,
+    public static void copyFile(@NonNull final InputStream is,
                                 final int bufferSize,
-                                final @NonNull File destination) throws IOException {
+                                @NonNull final File destination) throws IOException {
         try (OutputStream out = new FileOutputStream(destination)) {
             byte[] buffer = new byte[bufferSize];
             int nRead;
@@ -596,7 +597,7 @@ public class StorageUtils {
      */
 
     @SuppressWarnings("unused")
-    private static void copyFile2(final @NonNull File source, final @NonNull File destination) throws IOException {
+    private static void copyFile2(@NonNull final File source, @NonNull final File destination) throws IOException {
         FileInputStream fis = new FileInputStream(source);
         FileOutputStream fos = new FileOutputStream(destination);
         FileChannel inChannel = fis.getChannel();
@@ -659,7 +660,8 @@ public class StorageUtils {
      *
      * @author Philip Warner
      */
-    static class FileDateComparator implements Comparator<File> {
+    static class FileDateComparator implements Comparator<File>, Serializable {
+        private static final long serialVersionUID = 6004008051110452600L;
         /** Ascending is >= 0, Descending is < 0. */
         private final int mDirection;
 
@@ -674,9 +676,9 @@ public class StorageUtils {
          * Compare based on modified date
          */
         @Override
-        public int compare(final @NonNull File lhs, final @NonNull File rhs) {
-            final long l = lhs.lastModified();
-            final long r = rhs.lastModified();
+        public int compare(@NonNull final File o1, @NonNull final File o2) {
+            final long l = o1.lastModified();
+            final long r = o2.lastModified();
             if (l < r) {
                 return -mDirection;
             } else if (l > r) {

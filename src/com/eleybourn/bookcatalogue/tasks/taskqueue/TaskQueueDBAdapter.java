@@ -109,7 +109,7 @@ class TaskQueueDBAdapter {
      *
      * @return The ID of the queue, 0 if no match
      */
-    private long getQueueId(final @NonNull String name) {
+    private long getQueueId(@NonNull final String name) {
         final String sql = "SELECT " + DOM_ID + " FROM " + TBL_QUEUE + " WHERE " + DOM_NAME + "=?";
 
         try (Cursor cursor =  getDb().rawQuery(sql, new String[]{name})) {
@@ -126,7 +126,7 @@ class TaskQueueDBAdapter {
      *
      * @param queueManager Owner of the created Queue objects
      */
-    void getAllQueues(final @NonNull QueueManager queueManager) {
+    void getAllQueues(@NonNull final QueueManager queueManager) {
         String sql = "SELECT " + DOM_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + DOM_NAME;
 
         try (Cursor cursor = getDb().rawQuery(sql, null)) {
@@ -149,7 +149,7 @@ class TaskQueueDBAdapter {
      * @return ScheduledTask object containing details of task
      */
     @Nullable
-    ScheduledTask getNextTask(final @NonNull String queueName) {
+    ScheduledTask getNextTask(@NonNull final String queueName) {
         Date currentTime = new Date();
         String currTimeStr = DateUtils.utcSqlDate(currentTime);
 
@@ -213,7 +213,7 @@ class TaskQueueDBAdapter {
      *
      * @param queueName Name of the queue
      */
-    void createQueue(final @NonNull String queueName) {
+    void createQueue(@NonNull final String queueName) {
         long id = getQueueId(queueName);
         if (id == 0) {
             ContentValues cv = new ContentValues();
@@ -230,11 +230,11 @@ class TaskQueueDBAdapter {
      *
      * @param task The task to be saved. Must exist in database.
      */
-    void updateTask(final @NonNull Task task) {
+    void updateTask(@NonNull final Task task) {
         ContentValues cv = new ContentValues();
         cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
         cv.put(DOM_CATEGORY, task.getCategory());
-        getDb().update(TBL_TASK, cv, DOM_ID + "=?", new String[]{Long.toString(task.getId())});
+        getDb().update(TBL_TASK, cv, DOM_ID + "=?", new String[]{String.valueOf(task.getId())});
     }
 
     /**
@@ -243,7 +243,7 @@ class TaskQueueDBAdapter {
      * @param task      Task instance to save and run
      * @param queueName Queue name
      */
-    void enqueueTask(final @NonNull Task task, final @NonNull String queueName) {
+    void enqueueTask(@NonNull final Task task, @NonNull final String queueName) {
         long queueId = getQueueId(queueName);
         if (queueId == 0) {
             throw new IllegalArgumentException("Queue '" + queueName + "' does not exist");
@@ -265,18 +265,18 @@ class TaskQueueDBAdapter {
      *
      * @param task Task object
      */
-    void setTaskOk(final @NonNull Task task) {
+    void setTaskOk(@NonNull final Task task) {
         SQLiteDatabase db = getDb();
 
         // See if the task has any Events recorded
         String sql = "SELECT COUNT(*) FROM " + TBL_EVENT + " WHERE " + DOM_TASK_ID + "=?";
-        try (Cursor cursor = db.rawQuery(sql, new String[]{Long.toString(task.getId())})) {
+        try (Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(task.getId())})) {
             if (cursor.moveToFirst() && cursor.getLong(0) == 0) {
                 // Delete successful tasks with no events
-                db.delete(TBL_TASK, DOM_ID + " =?" , new String[]{Long.toString(task.getId())});
+                db.delete(TBL_TASK, DOM_ID + " =?" , new String[]{String.valueOf(task.getId())});
             } else {
                 // Just set is as successful
-                sql = "UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S' WHERE " + DOM_ID + "=" + task.getId();
+                sql = "UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S' WHERE " + DOM_ID + '=' + task.getId();
                 db.execSQL(sql);
             }
         }
@@ -329,11 +329,11 @@ class TaskQueueDBAdapter {
         try {
             // Remove orphaned events -- should never be needed
             String whereClause = "NOT " + DOM_TASK_ID + " IS NULL"
-                    + " AND NOT EXISTS(SELECT * FROM " + TBL_TASK + " t WHERE " + TBL_EVENT + "." + DOM_TASK_ID + "=t." + DOM_ID + ")";
+                    + " AND NOT EXISTS(SELECT * FROM " + TBL_TASK + " t WHERE " + TBL_EVENT + '.' + DOM_TASK_ID + "=t." + DOM_ID + ')';
             db.delete(TBL_EVENT, whereClause, null);
 
             // Remove orphaned tasks THAT WERE SUCCESSFUL
-            whereClause = "NOT EXISTS(SELECT * FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=" + TBL_TASK + "." + DOM_ID + ")"
+            whereClause = "NOT EXISTS(SELECT * FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + '=' + TBL_TASK + '.' + DOM_ID + ')'
                     + " AND " + DOM_STATUS_CODE + " = 'S'";
             db.delete(TBL_TASK, whereClause, null);
             db.setTransactionSuccessful();
@@ -349,7 +349,7 @@ class TaskQueueDBAdapter {
      *
      * @param task task object to requeue.
      */
-    void setTaskRequeue(final @NonNull Task task) {
+    void setTaskRequeue(@NonNull final Task task) {
         if (!task.canRetry()) {
             // We have waited a lot already; just give up.
             setTaskFail(task, "Retry limit exceeded");
@@ -363,7 +363,7 @@ class TaskQueueDBAdapter {
             cv.put(DOM_RETRY_DATE, DateUtils.utcSqlDateTime(cal.getTime()));
             cv.put(DOM_RETRY_COUNT, task.getRetries() + 1);
             cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
-            getDb().update(TBL_TASK, cv, DOM_ID + "=?",  new String[]{Long.toString(task.getId())});
+            getDb().update(TBL_TASK, cv, DOM_ID + "=?",  new String[]{String.valueOf(task.getId())});
         }
     }
 
@@ -375,7 +375,7 @@ class TaskQueueDBAdapter {
      * @param task    Task that failed.
      * @param message Final message to store. Task can also contain an Exception object.
      */
-    void setTaskFail(final @NonNull Task task, final @NonNull String message) {
+    void setTaskFail(@NonNull final Task task, @NonNull final String message) {
         task.setState(TaskState.failed);
 
         ContentValues cv = new ContentValues();
@@ -387,7 +387,7 @@ class TaskQueueDBAdapter {
             cv.put(DOM_EXCEPTION, SerializationUtils.serializeObject(e));
         }
 
-        getDb().update(TBL_TASK, cv, DOM_ID + "=?",  new String[]{Long.toString(task.getId())});
+        getDb().update(TBL_TASK, cv, DOM_ID + "=?",  new String[]{String.valueOf(task.getId())});
     }
 
     /**
@@ -396,7 +396,7 @@ class TaskQueueDBAdapter {
      *
      * NOTE: this code must not assume the task exists. IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      */
-    void storeTaskEvent(final @NonNull Task task, final @NonNull Event event) {
+    void storeTaskEvent(@NonNull final Task task, @NonNull final Event event) {
         SQLiteDatabase db = getDb();
 
         // Setup parameters for insert
@@ -438,7 +438,7 @@ class TaskQueueDBAdapter {
         String sql = "SELECT e.* FROM " + TBL_EVENT + " e "
                 + " WHERE e." + DOM_TASK_ID + "=?"
                 + " ORDER BY e." + DOM_ID + " ASC";
-        return (EventsCursor) getDb().rawQueryWithFactory(mEventsCursorFactory, sql, new String[]{Long.toString(taskId)}, "");
+        return (EventsCursor) getDb().rawQueryWithFactory(mEventsCursorFactory, sql, new String[]{String.valueOf(taskId)}, "");
     }
 
     /**
@@ -475,7 +475,7 @@ class TaskQueueDBAdapter {
      * @param id ID of Event to delete.
      */
     void deleteEvent(final long id) {
-        getDb().delete(TBL_EVENT, DOM_ID + "=?", new String[]{Long.toString(id)});
+        getDb().delete(TBL_EVENT, DOM_ID + "=?", new String[]{String.valueOf(id)});
         cleanupOrphans();
     }
 
@@ -488,8 +488,8 @@ class TaskQueueDBAdapter {
         SQLiteDatabase db = getDb();
         db.beginTransaction();
         try {
-            db.delete(TBL_EVENT, DOM_TASK_ID + "=?", new String[]{Long.toString(id)});
-            db.delete(TBL_TASK, DOM_ID + "=?", new String[]{Long.toString(id)});
+            db.delete(TBL_EVENT, DOM_TASK_ID + "=?", new String[]{String.valueOf(id)});
+            db.delete(TBL_TASK, DOM_ID + "=?", new String[]{String.valueOf(id)});
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -504,11 +504,11 @@ class TaskQueueDBAdapter {
             for (SQLiteStatement s : mStatements) {
                 try {
                     s.close();
-                } catch (Exception ignore) {
+                } catch (RuntimeException ignore) {
                 }
             }
             mTaskQueueDBHelper.close();
-        } catch (Exception ignore) {
+        } catch (RuntimeException ignore) {
         } finally {
             mStatements.clear();
         }
@@ -519,7 +519,7 @@ class TaskQueueDBAdapter {
      *
      * @author Philip Warner
      */
-    protected class ScheduledTask {
+    protected static class ScheduledTask {
         /** Time, in milliseconds, until Task needs to be executed. */
         final long timeUntilRunnable;
         /** Blob for Task retrieved from DB. We do not deserializeObject until necessary. */
@@ -535,7 +535,7 @@ class TaskQueueDBAdapter {
          * @param timeUntilRunnable Milliseconds until task should be run
          * @param cursor            Cursor positioned at task details
          */
-        ScheduledTask(final long timeUntilRunnable, final @NonNull Cursor cursor) {
+        ScheduledTask(final long timeUntilRunnable, @NonNull final Cursor cursor) {
             this.timeUntilRunnable = timeUntilRunnable;
             mRetries = cursor.getInt(cursor.getColumnIndex(DOM_RETRY_COUNT));
             this.id = cursor.getInt(cursor.getColumnIndex(DOM_ID));

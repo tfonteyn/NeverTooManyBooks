@@ -31,20 +31,20 @@ import androidx.annotation.StringRes;
  * @author Philip Warner
  */
 public class ValidatorException extends RuntimeException {
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -726920065494753160L;
     @StringRes
     private final int mStringId;
     /** Args to pass to format function */
     @NonNull
     private final Object[] mArgs;
 
-    public ValidatorException(final @StringRes int stringId, final @NonNull Object[] args) {
+    public ValidatorException(@StringRes final int stringId, @NonNull final Object[] args) {
         mStringId = stringId;
         mArgs = args;
     }
 
     @NonNull
-    public String getFormattedMessage(final @NonNull Resources res) {
+    public String getFormattedMessage(@NonNull final Resources res) {
         return res.getString(mStringId, mArgs);
     }
 }

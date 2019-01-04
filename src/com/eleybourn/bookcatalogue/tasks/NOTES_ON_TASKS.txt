@@ -2,8 +2,8 @@ PROBLEM:
 too many ways of using tasks.
 
 GOALS:
- 1. Removal of taskqueue, replace with SimpleTask/FragmentTask
- 2. Removal of ManagedTask; replace with ? TBD
+ 1. Removal of taskqueue
+ 2. Removal of ManagedTask
  3. retire...
  4. Move to using ASyncTask (single-threaded) or Executor (multi-threaded) for all ?
  5. cropper ?
@@ -49,8 +49,8 @@ Used by:
    RunnableTask extends Task
    GenericTask extends RunnableTask
 
-Used by:
-- goodreads api
+Only used by the GoodReads api where it does make sense to have 'survivable' tasks.
+-> Android Service ?
 
  ----------------------------------------------------------------------------------------------------
 6. CropImageActivity

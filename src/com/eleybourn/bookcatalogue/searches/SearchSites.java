@@ -5,13 +5,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.searches.amazon.SearchAmazonTask;
 import com.eleybourn.bookcatalogue.searches.goodreads.SearchGoodreadsTask;
 import com.eleybourn.bookcatalogue.searches.googlebooks.SearchGoogleBooksTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.SearchISFDBTask;
 import com.eleybourn.bookcatalogue.searches.librarything.SearchLibraryThingTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.List;
  *
  * Static class; Holds various lists with {@link Site} 's for use by the {@link SearchManager}
  */
-public class SearchSites {
+public final class SearchSites {
 
     /** */
     static final String BKEY_SEARCH_SITES = "searchSitesList";
@@ -92,6 +92,9 @@ public class SearchSites {
         }
     }
 
+    private SearchSites() {
+    }
+
     @NonNull
     static List<Site> getSitesByReliability() {
         return mPreferredReliabilityOrder;
@@ -102,9 +105,9 @@ public class SearchSites {
         return mPreferredSearchOrder;
     }
 
-    static void setSearchOrder(final @NonNull ArrayList<Site> newList) {
+    static void setSearchOrder(@NonNull final ArrayList<Site> newList) {
         mPreferredSearchOrder = newList;
-        SharedPreferences.Editor e = BookCatalogueApp.getSharedPreferences().edit();
+        SharedPreferences.Editor e = Prefs.getPrefs().edit();
         for (Site site : newList) {
             site.saveToPrefs(e);
         }
@@ -116,9 +119,9 @@ public class SearchSites {
         return mPreferredCoverSearchOrder;
     }
 
-    static void setCoverSearchOrder(final @NonNull ArrayList<Site> newList) {
+    static void setCoverSearchOrder(@NonNull final ArrayList<Site> newList) {
         mPreferredCoverSearchOrder = newList;
-        SharedPreferences.Editor e = BookCatalogueApp.getSharedPreferences().edit();
+        SharedPreferences.Editor e = Prefs.getPrefs().edit();
         for (Site site : newList) {
             site.saveToPrefs(e);
         }
@@ -131,8 +134,8 @@ public class SearchSites {
     public static class Site implements Parcelable {
         public static final Creator<Site> CREATOR = new Creator<Site>() {
             @Override
-            public Site createFromParcel(final @NonNull Parcel in) {
-                return new Site(in);
+            public Site createFromParcel(@NonNull final Parcel source) {
+                return new Site(source);
             }
 
             @Override
@@ -172,7 +175,7 @@ public class SearchSites {
          * @param priority the search priority order
          */
         @SuppressWarnings("SameParameterValue")
-        Site(final int id, final @NonNull String name, final int priority) {
+        Site(final int id, @NonNull final String name, final int priority) {
             this.id = id;
             this.name = name;
             this.priority = priority;
@@ -192,7 +195,7 @@ public class SearchSites {
          * @param reliability the search reliability order
          */
         @SuppressWarnings("SameParameterValue")
-        Site(final int id, final @NonNull String name, final int priority, final int reliability) {
+        Site(final int id, @NonNull final String name, final int priority, final int reliability) {
             this.id = id;
             this.name = name;
             this.priority = priority;
@@ -204,7 +207,7 @@ public class SearchSites {
         /**
          * Reminder: this is IPC.. so don't load prefs!
          */
-        Site(final @NonNull Parcel in) {
+        Site(@NonNull final Parcel in) {
             id = in.readInt();
             name = in.readString();
             enabled = in.readByte() != 0;
@@ -217,7 +220,7 @@ public class SearchSites {
          * Reminder: this is IPC.. so don't save prefs!
          */
         @Override
-        public void writeToParcel(final @NonNull Parcel dest, final int flags) {
+        public void writeToParcel(@NonNull final Parcel dest, final int flags) {
             dest.writeInt(id);
             dest.writeString(name);
             dest.writeByte((byte) (enabled ? 1 : 0));
@@ -227,17 +230,17 @@ public class SearchSites {
         }
 
         private void loadFromPrefs() {
-            enabled = BookCatalogueApp.getBooleanPreference(TAG + "." + name + ".enabled", enabled);
-            priority = BookCatalogueApp.getIntPreference(TAG + "." + name + ".order", priority);
-            reliability = BookCatalogueApp.getIntPreference(TAG + "." + name + ".reliability", reliability);
+            enabled = Prefs.getBoolean(TAG + '.' + name + ".enabled", enabled);
+            priority = Prefs.getInt(TAG + '.' + name + ".order", priority);
+            reliability = Prefs.getInt(TAG + '.' + name + ".reliability", reliability);
             // leaving commented as a reminder; this is NOT a preference but a site rule
-            //isbnOnly = BookCatalogueApp.getBooleanPreference(TAG + "." + name + ".isbnOnly", isbnOnly);
+            //isbnOnly = BookCatalogueApp.getBoolean(TAG + "." + name + ".isbnOnly", isbnOnly);
         }
 
-        void saveToPrefs(final @NonNull SharedPreferences.Editor editor) {
-            editor.putBoolean(TAG + "." + name + ".enabled", enabled);
-            editor.putInt(TAG + "." + name + ".order", priority);
-            editor.putInt(TAG + "." + name + ".reliability", reliability);
+        void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
+            editor.putBoolean(TAG + '.' + name + ".enabled", enabled);
+            editor.putInt(TAG + '.' + name + ".order", priority);
+            editor.putInt(TAG + '.' + name + ".reliability", reliability);
         }
 
         @Override
@@ -248,7 +251,7 @@ public class SearchSites {
         /**
          * NEWKIND: search web site configuration
          */
-        ManagedSearchTask getTask(final @NonNull TaskManager manager) {
+        ManagedSearchTask getTask(@NonNull final TaskManager manager) {
             switch (id) {
                 case SEARCH_GOOGLE:
                     return new SearchGoogleBooksTask(name, manager);

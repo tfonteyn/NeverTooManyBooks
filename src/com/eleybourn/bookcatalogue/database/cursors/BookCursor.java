@@ -47,10 +47,10 @@ public class BookCursor extends TrackedCursor implements Closeable {
     @Nullable
     private BookRowView mBookCursorRow;
 
-    public BookCursor(final @NonNull SQLiteCursorDriver driver,
-                      final @NonNull String editTable,
-                      final @NonNull SQLiteQuery query,
-                      final @NonNull Synchronizer sync) {
+    public BookCursor(@NonNull final SQLiteCursorDriver driver,
+                      @NonNull final String editTable,
+                      @NonNull final SQLiteQuery query,
+                      @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
     }
 

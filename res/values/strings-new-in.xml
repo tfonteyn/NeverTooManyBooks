@@ -1,5 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+        <string name="new_in_600">
+		<![CDATA[
+			<p><b>New in 6.0.0</b>\n\n
+				* Modernisation to Android 5.0 bringing lots of new UI goodies.\n
+                * Cover thumbnails and log files moved to dedicated sub folders.\n
+                * Configurable websites search order.\n
+                * New Search website: ISFDB.\n
+                * Better Anthology support (Edit/View/cross-book) and morphed into \'Table of Content\' or \'TOC\'\n
+                * TOC auto populated (ISFDB site only!).\n
+                * Language field wil show the translated name for the current locale.\n
+                * Removed the old \'Classic\' view (sorry)\n
+                * Books & Anthology/TOC titles now have a \'first published\' field\n
+                * Books Editions (1st, book-club, etc)\n
+                * Book paid price\n
+                * Book date acquired\n
+                * Currency support for prices\n
+                * Styles now exported/imported in XML format\n
+                * Export of Book information in XML (no import yet)\n
+                * LibraryThing & ISFDB local id for future usage\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_522">
+		<![CDATA[
+			<p><b>New in 5.2.2</b>\n\n
+				* Bug fixes\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_520">
+		<![CDATA[
+			<p><b>New in 5.2.0</b>\n\n
+			    * User-selectable locale in Preferences\n\n
+			    * Greek translation (Dimitris Klisiaris)\n\n
+        * Locale-specific capitalization (de, fr)\n\n
+        * Improvements to search\n\n
+				* Bug fixes\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_511">
+		<![CDATA[
+			<p><b>New in 5.1.1</b>\n\n
+				* Bug fixes\n\n
+				* New style: Group by last update date\n\n
+				* New style: Group by rating\n\n
+				* New style: Group by bookshelf name\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_510">
+		<![CDATA[
+			<p><b>New in 5.1.0</b>\n\n
+				* Italian translation (Eugenio Davolio)\n\n
+				* Spanish translation (José M. Galdo)\n\n
+				* Turkish translations (Emir Sarı)\n\n
+				* Ability to archive only new/updated books and to exclude covers (or books)\n\n
+				* Better thumbnail size in lists for high density screens\n\n
+				* Added options to see books by author/series at Amazon\n\n
+				* Other minor bug fixes\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_509">
+		<![CDATA[
+			<p><b>New in 5.0.9</b>\n\n
+				* Bug fix for Android 4.4 (KitKat)\n\n
+				* Dutch translation (Gideon van Melle)\n\n
+				* Other minor bug fixes
+			</p>
+		]]>
+    </string>
+    <string name="new_in_508">
+		<![CDATA[
+			<p><b>New in 5.0.8</b>\n\n
+				* German translation updates (Robert Wetzlmayr)\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_505">
+		<![CDATA[
+			<p><b>New in 5.0.5</b>\n\n
+				* "Added Date" List now sorted in reverse order \n\n
+				* French translation updates (Imkal)\n\n
+				* Bug fixes\n\n
+			</p>
+		]]>
+    </string>
+
+    <string name="new_in_504">
+		<![CDATA[
+			<p><b>New in 5.0.4</b>\n\n
+				* New field: Language\n\n
+				* French translation updates (Imkal)\n\n
+				* Bug fixes\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_503">
+		<![CDATA[
+			<p><b>New in 5.0.3</b>\n\n
+				* Bug fixes\n\n
+				* French translation updates (Imkal)\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_502">
+		<![CDATA[
+			<p><b>New in 5.0.2</b>\n\n
+				* Bug fixes\n\n
+			</p>
+		]]>
+    </string>
+    <!-- This is pretty close to the expected feature list! It is a merge of 424 and 430... -->
+    <string name="new_in_500">
+        <![CDATA[
+            <p><b>New in 5.0.0</b>\n\n
+                * A non-editable view of book details, with \'fling\' support! (See \"Other Preferences\") (Nick Silin)\n\n
+                * Archiving (Backup & Import) of entire catalogue, including books, covers, preferences and styles\n\n
+                * Updated interface with Action Bar support for usability and to work better on devices without menu buttons\n\n
+                * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)\n\n
+                * Goodreads now appears in main menu if you authorize it\n\n
+                * Check internet connection earlier when trying to scan books\n\n
+                * More German translation updates (Robert Wetzlmayr)\n\n
+                * More French translation updates (Imkal & Djiko)\n\n
+                * More Russian translation updates (Nick Silin)\n\n
+                * Internal changes in anticipation of an improved tablet interface\n\n
+                * Bug fixes\n\n
+                </p>
+        ]]>
+    </string>
+    <string name="new_in_424">
+        <![CDATA[
+            <p><b>New in 4.2.4</b>\n\n
+                * A non-editable view of book details, with \'fling\' support! (See \"Other Preferences\") (Nick Silin)\n\n
+                * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)\n\n
+                * Check internet connection earlier when trying to scan books\n\n
+                * More German translation updates (Robert Wetzlmayr)\n\n
+                * More French translation updates (Djiko)\n\n
+                * Bug fixes\n\n
+                </p>
+		]]>
+    </string>
+    <string name="new_in_423">
+        <![CDATA[
+            <p><b>New in 4.2.3</b>\n\n
+			    * Improve handling of invalid ISBNs when sending to Goodreads\n\n
+			    * Other minor bug fixes\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_422">
+        <![CDATA[
+            <p><b>New in 4.2.2</b>\n\n
+			     * Fix tiling of background image for some Android versions\n\n
+			     * Better handling of incompatible scanner apps\n\n
+			     * Send more details on crash or when asking for help\n\n
+			     * Cleanup of layouts (Nick Silin)\n\n
+			     * Bug fixes\n\n
+			</p>
+		]]>
+    </string>
+    <string name="new_in_421">
+        <![CDATA[
+            <p><b>New in 4.2.1</b>\n\n
+			     * Fix crash when expanding list items and using \'Expand All\'\n\n
+			</p>
+		]]>
+    </string>
     <string name="new_in_42">
         <![CDATA[
             <p><b>New in 4.2</b>\n\n
@@ -24,151 +194,5 @@
                 Blame Grunthos for all bugs and errors. And send us bug reports.
             </p>
         ]]>
-    </string>
-    <string name="new_in_421">
-        <![CDATA[
-            <p><b>New in 4.2.1</b>\n\n
-			     * Fix crash when expanding list items and using \'Expand All\'\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_422">
-        <![CDATA[
-            <p><b>New in 4.2.2</b>\n\n
-			     * Fix tiling of background image for some Android versions\n\n
-			     * Better handling of incompatible scanner apps\n\n
-			     * Send more details on crash or when asking for help\n\n
-			     * Cleanup of layouts (Nick Silin)\n\n
-			     * Bug fixes\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_423">
-        <![CDATA[
-            <p><b>New in 4.2.3</b>\n\n
-			    * Improve handling of invalid ISBNs when sending to Goodreads\n\n
-			    * Other minor bug fixes\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_424">
-        <![CDATA[
-            <p><b>New in 4.2.4</b>\n\n
-                * A non-editable view of book details, with \'fling\' support! (See \"Other Preferences\") (Nick Silin)\n\n
-                * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)\n\n
-                * Check internet connection earlier when trying to scan books\n\n
-                * More German translation updates (Robert Wetzlmayr)\n\n
-                * More French translation updates (Djiko)\n\n
-                * Bug fixes\n\n
-                </p>
-		]]>
-    </string>
-    <!-- This is pretty close to the expected feature list! It is a merge of 424 and 430... -->
-    <string name="new_in_500">
-        <![CDATA[
-            <p><b>New in 5.0.0</b>\n\n
-                * A non-editable view of book details, with \'fling\' support! (See \"Other Preferences\") (Nick Silin)\n\n
-                * Archiving (Backup & Import) of entire catalogue, including books, covers, preferences and styles\n\n
-                * Updated interface with Action Bar support for usability and to work better on devices without menu buttons\n\n
-                * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)\n\n
-                * Goodreads now appears in main menu if you authorize it\n\n
-                * Check internet connection earlier when trying to scan books\n\n
-                * More German translation updates (Robert Wetzlmayr)\n\n
-                * More French translation updates (Imkal & Djiko)\n\n
-                * More Russian translation updates (Nick Silin)\n\n
-                * Internal changes in anticipation of an improved tablet interface\n\n
-                * Bug fixes\n\n
-                </p>
-        ]]>
-    </string>
-    <string name="new_in_502">
-		<![CDATA[
-			<p><b>New in 5.0.2</b>\n\n
-				* Bug fixes\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_503">
-		<![CDATA[
-			<p><b>New in 5.0.3</b>\n\n
-				* Bug fixes\n\n
-				* French translation updates (Imkal)\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_504">
-		<![CDATA[
-			<p><b>New in 5.0.4</b>\n\n
-				* New field: Language\n\n
-				* French translation updates (Imkal)\n\n
-				* Bug fixes\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_505">
-		<![CDATA[
-			<p><b>New in 5.0.5</b>\n\n
-				* "Added Date" List now sorted in reverse order \n\n
-				* French translation updates (Imkal)\n\n
-				* Bug fixes\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_508">
-		<![CDATA[
-			<p><b>New in 5.0.8</b>\n\n
-				* German translation updates (Robert Wetzlmayr)\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_509">
-		<![CDATA[
-			<p><b>New in 5.0.9</b>\n\n
-				* Bug fix for Android 4.4 (KitKat)\n\n
-				* Dutch translation (Gideon van Melle)\n\n
-				* Other minor bug fixes
-			</p>
-		]]>
-    </string>
-    <string name="new_in_510">
-		<![CDATA[
-			<p><b>New in 5.1.0</b>\n\n
-				* Italian translation (Eugenio Davolio)\n\n
-				* Spanish translation (José M. Galdo)\n\n
-				* Turkish translations (Emir Sarı)\n\n
-				* Ability to archive only new/updated books and to exclude covers (or books)\n\n
-				* Better thumbnail size in lists for high density screens\n\n
-				* Added options to see books by author/series at Amazon\n\n
-				* Other minor bug fixes\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_511">
-		<![CDATA[
-			<p><b>New in 5.1.1</b>\n\n
-				* Bug fixes\n\n
-				* New style: Group by last update date\n\n
-				* New style: Group by rating\n\n
-				* New style: Group by bookshelf name\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_520">
-		<![CDATA[
-			<p><b>New in 5.2.0</b>\n\n
-			    * User-selectable locale in Preferences\n\n
-			    * Greek translation (Dimitris Klisiaris)\n\n
-        * Locale-specific capitalization (de, fr)\n\n
-        * Improvements to search\n\n
-				* Bug fixes\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_522">
-		<![CDATA[
-			<p><b>New in 5.2.2</b>\n\n
-				* Bug fixes\n\n
-			</p>
-		]]>
     </string>
 </resources>

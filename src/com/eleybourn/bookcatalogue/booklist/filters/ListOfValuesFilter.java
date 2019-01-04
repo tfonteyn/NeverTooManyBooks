@@ -6,14 +6,26 @@ import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
+/**
+ * an SQL WHERE clause  (column IN (a,b,c,...)
+ *
+ * @param <T> type the elements of the 'IN' list.
+ */
 public class ListOfValuesFilter<T> implements Filter {
 
-    private TableDefinition table;
-    private DomainDefinition domain;
+    @NonNull
+    private final TableDefinition table;
+    @NonNull
+    private final DomainDefinition domain;
 
-    private String criteria;
+    @NonNull
+    private final String criteria;
 
-    public ListOfValuesFilter(final TableDefinition table, final DomainDefinition domain, final List<T> list) {
+    public ListOfValuesFilter(@NonNull final TableDefinition table,
+                              @NonNull final DomainDefinition domain,
+                              @NonNull final List<T> list) {
         this.table = table;
         this.domain = domain;
 
@@ -22,7 +34,8 @@ public class ListOfValuesFilter<T> implements Filter {
     }
 
     @Override
-    public String getExpression() {
-        return "(" + table.dot(domain) + " IN (" + criteria + "))";
+    @NonNull
+    public String getExpression(@NonNull final String uuid) {
+        return '(' + table.dot(domain) + " IN (" + criteria + "))";
     }
 }

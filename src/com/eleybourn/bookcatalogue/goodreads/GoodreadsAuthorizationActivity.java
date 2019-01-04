@@ -23,18 +23,22 @@ package com.eleybourn.bookcatalogue.goodreads;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer,
  * it does not seem to be possible to get them to work from web browser callbacks. So, we just
  * do the necessary processing here and exit.
+ *
+ * {@link GoodreadsManager#AUTHORIZATION_CALLBACK}
  *
  * the filters in the manifest will bring us here
  * "com.eleybourn.bookcatalogue://goodreadsauth"
@@ -43,9 +47,10 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
  * @author Philip Warner
  */
 public class GoodreadsAuthorizationActivity extends BaseActivity {
+
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 

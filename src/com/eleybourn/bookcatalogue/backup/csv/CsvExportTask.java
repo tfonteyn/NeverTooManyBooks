@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
@@ -22,7 +23,7 @@ public class CsvExportTask extends ManagedTask {
 
     private final Exporter.ExportListener mOnExportListener = new Exporter.ExportListener() {
         @Override
-        public void onProgress(final @NonNull String message, final int position) {
+        public void onProgress(@NonNull final String message, final int position) {
             if (position > 0) {
                 mTaskManager.sendTaskProgressMessage(CsvExportTask.this, message, position);
             } else {
@@ -45,7 +46,7 @@ public class CsvExportTask extends ManagedTask {
     @NonNull
     private final CsvExporter mExporter;
 
-    public CsvExportTask(final @NonNull TaskManager manager, final @NonNull ExportSettings settings) {
+    public CsvExportTask(@NonNull final TaskManager manager, @NonNull final ExportSettings settings) {
         super("CsvExportTask", manager);
         settings.validate();
         mExporter = new CsvExporter(settings);
@@ -56,7 +57,7 @@ public class CsvExportTask extends ManagedTask {
         try {
             File tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
             final FileOutputStream out = new FileOutputStream(tmpFile);
-            mExporter.doExport(out, mOnExportListener);
+            mExporter.doBooks(out, mOnExportListener);
 
             if (out.getChannel().isOpen()) {
                 out.close();

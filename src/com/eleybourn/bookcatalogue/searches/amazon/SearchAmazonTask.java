@@ -19,8 +19,8 @@ import java.net.UnknownHostException;
  */
 public class SearchAmazonTask extends ManagedSearchTask {
 
-    public SearchAmazonTask(final @NonNull String name,
-                            final @NonNull TaskManager manager) {
+    public SearchAmazonTask(@NonNull final String name,
+                            @NonNull final TaskManager manager) {
         super(name, manager);
     }
 
@@ -34,7 +34,7 @@ public class SearchAmazonTask extends ManagedSearchTask {
 
     @Override
     protected void runTask() {
-        final @StringRes int R_ID_SEARCHING = R.string.searching_amazon_books;
+        @StringRes final int R_ID_SEARCHING = R.string.searching_amazon_books;
         mTaskManager.sendTaskProgressMessage(this, R_ID_SEARCHING, 0);
 
         try {
@@ -53,7 +53,7 @@ public class SearchAmazonTask extends ManagedSearchTask {
         } catch (IOException e) {
             Logger.error(e);
             setFinalError(R_ID_SEARCHING, R.string.error_search_failed);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e);
             setFinalError(R_ID_SEARCHING, e);
         }

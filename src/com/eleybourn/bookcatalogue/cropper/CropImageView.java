@@ -83,11 +83,11 @@ class CropImageView extends CropImageViewTouchBase {
 
     @Override
     @CallSuper
-    protected void postTranslate(final float deltaX, final float deltaY) {
-        super.postTranslate(deltaX, deltaY);
+    protected void postTranslate(final float dx, final float dy) {
+        super.postTranslate(dx, dy);
         for (int i = 0; i < mHighlightViews.size(); i++) {
             CropHighlightView hv = mHighlightViews.get(i);
-            hv.mMatrix.postTranslate(deltaX, deltaY);
+            hv.mMatrix.postTranslate(dx, dy);
             hv.invalidate();
         }
     }
@@ -96,7 +96,7 @@ class CropImageView extends CropImageViewTouchBase {
      * According to the event's position, change the focus to the first
      * hitting cropping rectangle.
      */
-    private void recomputeFocus(final @NonNull MotionEvent event) {
+    private void recomputeFocus(@NonNull final MotionEvent event) {
         for (int i = 0; i < mHighlightViews.size(); i++) {
             CropHighlightView hv = mHighlightViews.get(i);
             hv.setFocus(false);
@@ -118,7 +118,7 @@ class CropImageView extends CropImageViewTouchBase {
     }
 
     @Override
-    public boolean onTouchEvent(final @NonNull MotionEvent event) {
+    public boolean onTouchEvent(@NonNull final MotionEvent event) {
         CropImageActivity cropImage = (CropImageActivity) mContext;
         if (cropImage.mSaving) {
             return false;
@@ -202,7 +202,7 @@ class CropImageView extends CropImageViewTouchBase {
     }
 
     // Pan the displayed image to make sure the cropping rectangle is visible.
-    private void ensureVisible(final @NonNull CropHighlightView hv) {
+    private void ensureVisible(@NonNull final CropHighlightView hv) {
         Rect r = hv.mDrawRect;
 
         int panDeltaX1 = Math.max(0, mLeft - r.left);
@@ -221,7 +221,7 @@ class CropImageView extends CropImageViewTouchBase {
 
     // If the cropping rectangle's size changed significantly, change the
     // view's center and SCALE according to the cropping rectangle.
-    private void centerBasedOnHighlightView(final @NonNull CropHighlightView hv) {
+    private void centerBasedOnHighlightView(@NonNull final CropHighlightView hv) {
         Rect drawRect = hv.mDrawRect;
 
         float width = drawRect.width();
@@ -248,18 +248,18 @@ class CropImageView extends CropImageViewTouchBase {
 
     @Override
     @CallSuper
-    protected void onDraw(final @NonNull Canvas canvas) {
+    protected void onDraw(@NonNull final Canvas canvas) {
         try {
             super.onDraw(canvas);
             for (int i = 0; i < mHighlightViews.size(); i++) {
                 mHighlightViews.get(i).draw(canvas);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e);
         }
     }
 
-    public void add(final @NonNull CropHighlightView hv) {
+    public void add(@NonNull final CropHighlightView hv) {
         mHighlightViews.add(hv);
         invalidate();
     }

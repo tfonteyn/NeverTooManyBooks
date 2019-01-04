@@ -22,9 +22,6 @@ package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Context;
 import android.content.Intent;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,12 +38,12 @@ import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
+import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Event;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.EventsCursor;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
@@ -56,12 +53,17 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
 /**
  * Class to define all book-related events that may be stored in the QueueManager.
  *
  * @author Philip Warner
  */
 class SendBookEvents {
+
     private SendBookEvents() {
     }
 
@@ -71,10 +73,8 @@ class SendBookEvents {
      * @author Philip Warner
      */
     private static class GrSendBookEvent extends Event {
-        private static final long serialVersionUID = 2L;
 
-        @NonNull
-        protected final Context mContext;
+        private static final long serialVersionUID = 8056090158313083738L;
 
         final long mBookId;
 
@@ -84,8 +84,8 @@ class SendBookEvents {
         @Nullable
         static final OnClickListener mRetryButtonListener = new OnClickListener() {
             @Override
-            public void onClick(@NonNull View view) {
-                BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
+            public void onClick(@NonNull View v) {
+                BookEventHolder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_BOOK_EVENT_HOLDER);
                 holder.event.retry();
             }
         };
@@ -93,12 +93,11 @@ class SendBookEvents {
         /**
          * Constructor
          *
-         * @param bookId      ID of related book.
+         * @param bookId    ID of related book.
          * @param messageId Description of this event.
          */
-        GrSendBookEvent(final @NonNull Context context, final long bookId, final @StringRes int messageId) {
+        GrSendBookEvent(@NonNull final Context context, final long bookId, @StringRes final int messageId) {
             super(context.getResources().getString(messageId));
-            mContext = context;
             mBookId = bookId;
         }
 
@@ -128,10 +127,10 @@ class SendBookEvents {
          * This method also prepares the BookEventHolder object for the View.
          */
         @Override
-        public View newListItemView(final @NonNull LayoutInflater inflater,
-                                    final @NonNull Context context,
-                                    final @NonNull BindableItemCursor cursor,
-                                    final @NonNull ViewGroup parent) {
+        public View newListItemView(@NonNull final LayoutInflater inflater,
+                                    @NonNull final Context context,
+                                    @NonNull final BindableItemCursor cursor,
+                                    @NonNull final ViewGroup parent) {
             View view = inflater.inflate(R.layout.row_book_event_info, parent, false);
             ViewTagger.setTag(view, R.id.TAG_EVENT, this);
             BookEventHolder holder = new BookEventHolder();
@@ -156,30 +155,31 @@ class SendBookEvents {
          * Display the related book details in the passed View object.
          */
         @Override
-        public void bindView(final @NonNull View view,
-                             final @NonNull Context context,
-                             final @NonNull BindableItemCursor bindableCursor,
-                             final @NonNull CatalogueDBAdapter db) {
-            final EventsCursor cursor = (EventsCursor) bindableCursor;
+        public void bindView(@NonNull final View view,
+                             @NonNull final Context context,
+                             @NonNull final BindableItemCursor cursor,
+                             @NonNull final CatalogueDBAdapter db) {
+            final EventsCursor eventsCursor = (EventsCursor) cursor;
 
             // Update event info binding; the Views in the holder are unchanged, but when it is reused
             // the Event and ID will change.
             BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
             holder.event = this;
-            holder.rowId = cursor.getId();
+            holder.rowId = eventsCursor.getId();
 
             ArrayList<Author> authors = db.getBookAuthorList(mBookId);
             String author;
             if (authors.size() > 0) {
                 author = authors.get(0).getDisplayName();
-                if (authors.size() > 1)
-                    author = author + " " + BookCatalogueApp.getResourceString(R.string.and_others);
+                if (authors.size() > 1) {
+                    author = author + ' ' + BookCatalogueApp.getResourceString(R.string.and_others);
+                }
             } else {
                 author = context.getString(R.string.unknown_uc);
             }
 
             String title = db.getBookTitle(mBookId);
-            if (title==null) {
+            if (title == null) {
                 title = context.getString(R.string.warning_book_was_deleted_uc);
             }
 
@@ -187,18 +187,18 @@ class SendBookEvents {
             holder.author.setText(String.format(context.getString(R.string.lbl_by_authors), author));
             holder.error.setText(this.getDescription());
 
-            String date = String.format("(" + context.getString(R.string.occurred_at) + ")",
-                    DateUtils.toPrettyDateTime(cursor.getEventDate()));
+            String date = String.format(context.getString(R.string.gr_tq_occurred_at),
+                    DateUtils.toPrettyDateTime(eventsCursor.getEventDate()));
             holder.date.setText(date);
 
             holder.retry.setVisibility(View.GONE);
 
-            holder.button.setChecked(cursor.getIsSelected());
+            holder.button.setChecked(eventsCursor.getIsSelected());
             holder.button.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
                     BookEventHolder holder = ViewTagger.getTagOrThrow(buttonView, R.id.TAG_BOOK_EVENT_HOLDER);
-                    cursor.setIsSelected(holder.rowId, isChecked);
+                    eventsCursor.setIsSelected(holder.rowId, isChecked);
                 }
             });
 
@@ -225,13 +225,13 @@ class SendBookEvents {
          * Subclass can override this and add items at end/start or just replace these completely.
          */
         @Override
-        public void addContextMenuItems(final @NonNull Context context,
-                                        final @NonNull AdapterView<?> parent,
-                                        final @NonNull View view,
+        public void addContextMenuItems(@NonNull final Context context,
+                                        @NonNull final AdapterView<?> parent,
+                                        @NonNull final View view,
                                         final int position,
-                                        final long eventId,
-                                        final @NonNull List<ContextDialogItem> items,
-                                        final @NonNull CatalogueDBAdapter db) {
+                                        final long id,
+                                        @NonNull final List<ContextDialogItem> items,
+                                        @NonNull final CatalogueDBAdapter db) {
 
             // EDIT BOOK
             items.add(new ContextDialogItem(context.getString(R.string.menu_edit_book), new Runnable() {
@@ -239,11 +239,11 @@ class SendBookEvents {
                 public void run() {
                     try {
                         GrSendBookEvent event = ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
-                            Intent intent = new Intent(context, EditBookActivity.class);
-                            intent.putExtra(UniqueId.KEY_ID, event.getBookId());
-                            intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
-                            context.startActivity(intent);
-                    } catch (Exception ignore) {
+                        Intent intent = new Intent(context, EditBookActivity.class);
+                        intent.putExtra(UniqueId.KEY_ID, event.getBookId());
+                        intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
+                        context.startActivity(intent);
+                    } catch (RuntimeException ignore) {
                         // not a book event?
                     }
                 }
@@ -261,10 +261,10 @@ class SendBookEvents {
 //            	}}));
 
             // DELETE EVENT
-            items.add(new ContextDialogItem(context.getString(R.string.menu_delete_event), new Runnable() {
+            items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event), new Runnable() {
                 @Override
                 public void run() {
-                    QueueManager.getQueueManager().deleteEvent(eventId);
+                    QueueManager.getQueueManager().deleteEvent(id);
                 }
             }));
 
@@ -279,8 +279,8 @@ class SendBookEvents {
                                 try {
                                     GrSendBookEvent event = ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
                                     event.retry();
-                                    QueueManager.getQueueManager().deleteEvent(eventId);
-                                } catch (Exception ignore) {
+                                    QueueManager.getQueueManager().deleteEvent(id);
+                                } catch (RuntimeException ignore) {
                                     // not a book event?
                                 }
                             }
@@ -295,7 +295,8 @@ class SendBookEvents {
          *
          * @author Philip Warner
          */
-        class BookEventHolder {
+        static class BookEventHolder {
+
             long rowId;
             GrSendBookEvent event;
             TextView title;
@@ -314,9 +315,10 @@ class SendBookEvents {
      * @author Philip Warner
      */
     public static class GrNoMatchEvent extends GrSendBookEvent implements HintOwner {
+
         private static final long serialVersionUID = -7684121345325648066L;
 
-        GrNoMatchEvent(final @NonNull Context context, final long bookId) {
+        GrNoMatchEvent(@NonNull final Context context, final long bookId) {
             super(context, bookId, R.string.warning_no_matching_book_found);
         }
 
@@ -333,9 +335,10 @@ class SendBookEvents {
      * @author Philip Warner
      */
     public static class GrNoIsbnEvent extends GrSendBookEvent implements HintOwner {
+
         private static final long serialVersionUID = 7260496259505914311L;
 
-        GrNoIsbnEvent(final @NonNull Context context, final long bookId) {
+        GrNoIsbnEvent(@NonNull final Context context, final long bookId) {
             super(context, bookId, R.string.warning_no_isbn_stored_for_book);
         }
 

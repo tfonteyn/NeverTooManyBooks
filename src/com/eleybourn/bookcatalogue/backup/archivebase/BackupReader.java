@@ -19,13 +19,13 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 
 import java.io.Closeable;
 import java.io.IOException;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Public interface for any backup archive reader.
@@ -41,8 +41,13 @@ public interface BackupReader extends Closeable {
      * See BackupReaderAbstract for a default implementation.
      *
      * @param listener Listener to receive progress information.
+     *
+     * @throws IOException on failure
+     *
      */
-    void restore(final @NonNull ImportSettings settings, final @NonNull BackupReaderListener listener) throws IOException;
+    void restore(@NonNull final ImportSettings settings,
+                 @NonNull final BackupReaderListener listener)
+            throws IOException;
 
     /**
      * Read the next ReaderEntity from the backup.
@@ -50,15 +55,21 @@ public interface BackupReader extends Closeable {
      * Currently, backup files are read sequentially.
      *
      * @return The next entity, or null if at end
+     *
+     * @throws IOException on failure
      */
     @Nullable
-    ReaderEntity nextEntity() throws IOException;
+    ReaderEntity nextEntity()
+            throws IOException;
 
     /**
      * Close the reader
+     *
+     * @throws IOException on failure
      */
     @Override
-    void close() throws IOException;
+    void close()
+            throws IOException;
 
     /**
      * @return the INFO object read from the backup
@@ -67,23 +78,24 @@ public interface BackupReader extends Closeable {
     BackupInfo getInfo();
 
     /**
-     * Interface for processes doing a restore operation; allows for progress indications
+     * Interface for processes doing a restore operation; allows for progress indications.
      *
      * @author pjw
      */
     interface BackupReaderListener {
+
         /**
-         * Set the end point for the progress
+         * Set the end point for the progress.
          */
         void setMax(final int max);
 
         /**
-         * Advance progress by 'delta'
+         * Advance progress by 'delta'.
          */
-        void step(final @NonNull String message, final int delta);
+        void onProgressStep(@NonNull final String message, final int delta);
 
         /**
-         * Check if operation is cancelled
+         * Check if operation is cancelled.
          */
         @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         boolean isCancelled();

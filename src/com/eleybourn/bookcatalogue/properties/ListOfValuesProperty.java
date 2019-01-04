@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.properties;
 
 import android.annotation.SuppressLint;
 import android.graphics.Typeface;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
@@ -54,23 +55,22 @@ import java.util.ArrayList;
 public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T> {
     /** List of valid values */
     @NonNull
-    private final ItemList<T> mList;
+    private ItemList<T> mList;
 
-    /**
-     * @param list list with options. Minimum 0 element; a 'use default' is added automatically.
-     */
-    ListOfValuesProperty(final @StringRes int nameResourceId,
-                         final @NonNull PropertyGroup group,
-                         final @NonNull T defaultValue,
-                         final @NonNull @Size(min = 0) ItemList<T> list) {
+    ListOfValuesProperty(@StringRes final int nameResourceId,
+                         @NonNull final PropertyGroup group,
+                         @NonNull final T defaultValue) {
         super(group, nameResourceId, defaultValue);
+    }
+
+    public void setList( @NonNull final @Size(min = 0) ItemList<T> list) {
         mList = list;
     }
 
     /** Return the default list editor view with associated event handlers. */
     @NonNull
     @Override
-    public View getView(final @NonNull LayoutInflater inflater) {
+    public View getView(@NonNull final LayoutInflater inflater) {
         final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.row_property_list_of_values, null);
 
         // create Holder -> not needed here
@@ -116,7 +116,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
     }
 
     /** Set the 'value' field in the passed view to match the passed item. */
-    private void setValueInView(final @NonNull View baseView, final @Nullable ListEntry<T> item) {
+    private void setValueInView(@NonNull final View baseView, @Nullable final ListEntry<T> item) {
         TextView view = baseView.findViewById(R.id.value);
 
         if (item == null) {
@@ -132,7 +132,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         }
     }
 
-    private void handleClick(final @NonNull View base, final @NonNull LayoutInflater inflater) {
+    private void handleClick(@NonNull final View base, @NonNull final LayoutInflater inflater) {
         final ItemList<T> items = mList;
         if (this.hasHint()) {
             HintManager.displayHint(inflater, this.getHint(), new Runnable() {
@@ -153,9 +153,9 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
      * @param inflater LayoutInflater
      * @param items    All list items
      */
-    private void displayList(final @NonNull View baseView,
-                             final @NonNull LayoutInflater inflater,
-                             final @NonNull ItemList<T> items) {
+    private void displayList(@NonNull final View baseView,
+                             @NonNull final LayoutInflater inflater,
+                             @NonNull final ItemList<T> items) {
 
         T currentValue = this.getValue();
 
@@ -219,7 +219,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
                 "mList=[");
 
         for (ListEntry entry : mList) {
-            sb.append("{").append(entry).append("}");
+            sb.append('{').append(entry).append('}');
         }
         sb.append("]}");
         return sb.toString();
@@ -238,26 +238,37 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         final T value;
         /** Text description of the meaning of that value */
         @StringRes
-        private int stringId;
+        private int stringId = 0;
+        private String name;
+
         @Nullable
         private Object[] textArgs;
 
         /** Constructor. Instantiates string. */
-        ListEntry(final @Nullable T value, final @StringRes int stringId, final @Nullable Object... args) {
+        ListEntry(@Nullable final T value, @StringRes final int stringId, @Nullable final Object... args) {
             this.value = value;
             this.stringId = stringId;
             this.textArgs = args;
         }
+        /** Constructor. Instantiates string. */
+        ListEntry(@Nullable final T value, @NonNull final String name) {
+            this.value = value;
+            this.name = name;
+        }
 
         @NonNull
         String getLabel() {
-            return BookCatalogueApp.getResourceString(stringId, textArgs);
+            if (stringId != 0) {
+                return BookCatalogueApp.getResourceString(stringId, textArgs);
+            } else {
+                return name;
+            }
         }
 
         @NonNull
         @Override
         public String toString() {
-            return getLabel() + "=" + (value == null ? null : value.toString());
+            return getLabel() + '=' + (value == null ? null : value.toString());
         }
     }
 
@@ -269,6 +280,8 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
      * @author Philip Warner
      */
     public static class ItemList<T> extends ArrayList<ListEntry<T>> {
+        private static final long serialVersionUID = 4578945419593293928L;
+
         /**
          * Utility to make adding items easier.
          *
@@ -279,10 +292,17 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
          * @return this for chaining
          */
         @NonNull
-        public ItemList<T> add(final @Nullable T value,
-                               final @StringRes int stringId,
-                               final @NonNull Object... args) {
+        public ItemList<T> add(@Nullable final T value,
+                               @StringRes final int stringId,
+                               @NonNull final Object... args) {
             add(new ListEntry<>(value, stringId, args));
+            return this;
+        }
+
+        @NonNull
+        public ItemList<T> add(@Nullable final T value,
+                               @NonNull final String name) {
+            add(new ListEntry<>(value, name));
             return this;
         }
     }
@@ -300,7 +320,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         @NonNull
         final View baseView;
 
-        Holder(final @NonNull ListEntry<T> item, final @NonNull View baseView) {
+        Holder(@NonNull final ListEntry<T> item, @NonNull final View baseView) {
             this.item = item;
             this.baseView = baseView;
         }

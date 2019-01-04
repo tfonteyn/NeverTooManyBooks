@@ -141,7 +141,7 @@ public class FastScroller {
     private SectionIndexerV2 mSectionIndexerV2; // our own
     private boolean mChangedBounds;
 
-    FastScroller(final @NonNull Context context, final @NonNull AbsListView listView) {
+    FastScroller(@NonNull final Context context, @NonNull final AbsListView listView) {
         mList = listView;
         int overlaySize;
         // Determine the overlay size based on 3xLargeTextSize; if
@@ -150,7 +150,7 @@ public class FastScroller {
             final float scale = context.getResources().getDisplayMetrics().scaledDensity;
             mLargeTextScaledSize = (int) (mLargeTextSpSize * scale);
             overlaySize = 3 * mLargeTextScaledSize;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             // Not a critical value; just try to get it close.
             mLargeTextScaledSize = mLargeTextSpSize;
             overlaySize = 3 * mLargeTextScaledSize;
@@ -183,8 +183,7 @@ public class FastScroller {
                 mHandler.removeCallbacks(mScrollFade);
                 break;
             case STATE_EXIT:
-                int viewWidth = mList.getWidth();
-                mList.invalidate(viewWidth - mThumbW, mThumbY, viewWidth, mThumbY + mThumbH);
+                mList.invalidate();
                 break;
         }
         mState = state;
@@ -202,7 +201,7 @@ public class FastScroller {
         mThumbDrawable.setAlpha(ScrollFade.ALPHA_MAX);
     }
 
-    private void init(final @NonNull Context context) {
+    private void init(@NonNull final Context context) {
 
         // Can't use the view width yet, because it has probably not been set up so we just
         // use the native width. It will be set later when we come to actually draw it.
@@ -243,7 +242,7 @@ public class FastScroller {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void draw(final @NonNull Canvas canvas) {
+    public void draw(@NonNull final Canvas canvas) {
         if (mState == STATE_NONE) {
             return;
         }
@@ -334,7 +333,7 @@ public class FastScroller {
             if (alpha == 0) { // Done with exit
                 setState(STATE_NONE);
             } else {
-                mList.invalidate(viewWidth - mThumbW, y, viewWidth, y + mThumbH);
+                mList.invalidate();
             }
         }
     }
@@ -452,7 +451,7 @@ public class FastScroller {
         cancelFling.recycle();
     }
 
-    boolean onInterceptTouchEvent(final @NonNull MotionEvent ev) {
+    boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
         if (mState > STATE_NONE && ev.getAction() == MotionEvent.ACTION_DOWN) {
             if (ev.getX() > mList.getWidth() - mThumbW && ev.getY() >= mThumbY &&
                     ev.getY() <= mThumbY + mThumbH) {
@@ -463,7 +462,7 @@ public class FastScroller {
         return false;
     }
 
-    boolean onTouchEvent(final @NonNull MotionEvent me) {
+    boolean onTouchEvent(@NonNull final MotionEvent me) {
         if (mState == STATE_NONE) {
             return false;
         }

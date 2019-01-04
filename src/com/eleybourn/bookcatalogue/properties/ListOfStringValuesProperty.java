@@ -20,15 +20,17 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.utils.Prefs;
+
+import java.util.Objects;
+
+import androidx.annotation.ArrayRes;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Size;
 import androidx.annotation.StringRes;
-
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-
-import java.util.Objects;
 
 /**
  * Implements ListOfValuesProperty with a String(nullable) value with associated editing support.
@@ -38,27 +40,38 @@ import java.util.Objects;
 public class ListOfStringValuesProperty extends ListOfValuesProperty<String> {
 
     /**
-     * @param list list with options. Minimum 0 element; a 'use default' is added automatically.
+     * @param labels list with options.
      */
-    public ListOfStringValuesProperty(final @StringRes int nameResourceId,
-                                      final @NonNull PropertyGroup group,
-                                      final @NonNull String defaultValue,
-                                      final @NonNull @Size(min = 0) ItemList<String> list) {
-        super(nameResourceId, group, defaultValue, list);
+    public ListOfStringValuesProperty(@StringRes final int nameResourceId,
+                                       @NonNull final PropertyGroup group,
+                                       @NonNull final String defaultValue,
+                                       final @ArrayRes int labels,
+                                       final @ArrayRes int values) {
+        super(nameResourceId, group, defaultValue);
+
+        ItemList<String> list = new ItemList<>();
+        String[] labelArray = BookCatalogueApp.getResourceStringArray(labels);
+        String[] valueArray = BookCatalogueApp.getResourceStringArray(values);
+
+        list.add(new ListEntry<String>(null, R.string.use_default_setting));
+        for (int i = 0; i < labelArray.length; i++) {
+            list.add(new ListEntry<>(valueArray[i], labelArray[i]));
+        }
+        setList(list);
     }
 
     @Override
     @NonNull
     protected String getGlobalValue() {
         //noinspection ConstantConditions
-        return BookCatalogueApp.getStringPreference(getPreferenceKey(), getDefaultValue());
+        return Prefs.getString(getPreferenceKey(), getDefaultValue());
     }
 
     @NonNull
     @Override
-    protected ListOfStringValuesProperty setGlobalValue(final @Nullable String value) {
+    protected ListOfStringValuesProperty setGlobalValue(@Nullable final String value) {
         Objects.requireNonNull(value);
-        BookCatalogueApp.getSharedPreferences().edit().putString(getPreferenceKey(), value).apply();
+        Prefs.getPrefs().edit().putString(getPreferenceKey(), value).apply();
         return this;
     }
 
@@ -68,7 +81,7 @@ public class ListOfStringValuesProperty extends ListOfValuesProperty<String> {
     @NonNull
     @Override
     @CallSuper
-    public ListOfStringValuesProperty setDefaultValue(final @NonNull String value) {
+    public ListOfStringValuesProperty setDefaultValue(@NonNull final String value) {
         super.setDefaultValue(value);
         return this;
     }
@@ -79,7 +92,18 @@ public class ListOfStringValuesProperty extends ListOfValuesProperty<String> {
     @NonNull
     @Override
     @CallSuper
-    public ListOfStringValuesProperty setPreferenceKey(final @NonNull String key) {
+    public ListOfStringValuesProperty setPreferenceKey(@NonNull final String key) {
+        super.setPreferenceKey(key);
+        return this;
+    }
+
+    /**
+     * For chaining with correct return type
+     */
+    @NonNull
+    @Override
+    @CallSuper
+    public ListOfStringValuesProperty setPreferenceKey(@StringRes final int key) {
         super.setPreferenceKey(key);
         return this;
     }

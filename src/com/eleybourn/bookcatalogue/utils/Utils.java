@@ -58,7 +58,7 @@ import java.util.Objects;
  * ENHANCE: make timeouts configurable; global ? or per {@link SearchSites.Site} ?
  * However, not all connections actually use this method + this is old... do we still need this ?
  */
-public class Utils {
+public final class Utils {
 
     private static final Object lock = new Object();
 
@@ -90,7 +90,7 @@ public class Utils {
      * @return InputStream
      */
     @Nullable
-    public static InputStream getInputStreamWithTerminator(final @NonNull URL url) throws IOException {
+    public static InputStream getInputStreamWithTerminator(@NonNull final URL url) throws IOException {
 
         synchronized (lock) {
 
@@ -144,7 +144,7 @@ public class Utils {
 
                     if (connInfo.connection != null && connInfo.connection.getResponseCode() >= 300) {
                         Logger.error("URL lookup failed: " + connInfo.connection.getResponseCode()
-                                + " " + connInfo.connection.getResponseMessage() + ", URL: " + url);
+                                + ' ' + connInfo.connection.getResponseMessage() + ", URL: " + url);
                         return null;
                     }
 
@@ -158,7 +158,9 @@ public class Utils {
                     }
                     try {
                         Thread.sleep(500);
-                    } catch (Exception ignored) {
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    } catch (RuntimeException ignored) {
                     }
                     if (connInfo.connection != null) {
                         connInfo.connection.disconnect();
@@ -181,9 +183,9 @@ public class Utils {
     }
 
     /**
-     * @return boolean return true if the application can access the internet
+     * @return <tt>true</tt> if the application can access the internet
      */
-    public static boolean isNetworkAvailable(final @NonNull Context context) {
+    public static boolean isNetworkAvailable(@NonNull final Context context) {
         ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
             NetworkInfo[] info = connectivity.getAllNetworkInfo();
@@ -208,8 +210,8 @@ public class Utils {
      * @param db   Database connection to lookup IDs
      * @param list List to clean up
      */
-    public static <T extends ItemWithIdFixup> boolean pruneList(final @NonNull CatalogueDBAdapter db,
-                                                                final @Nullable List<T> list) {
+    public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final CatalogueDBAdapter db,
+                                                                @Nullable final List<T> list) {
         Objects.requireNonNull(list);
 
         Map<String, Boolean> names = new HashMap<>();
@@ -254,7 +256,7 @@ public class Utils {
      * @see #linkifyHtml(String, int)
      */
     @NonNull
-    public static Spannable linkifyHtml(final @NonNull String html) {
+    public static Spannable linkifyHtml(@NonNull final String html) {
         return linkifyHtml(html, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
     }
 
@@ -272,7 +274,7 @@ public class Utils {
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    public static Spannable linkifyHtml(final @NonNull String html, final int linkifyMask) {
+    public static Spannable linkifyHtml(@NonNull final String html, final int linkifyMask) {
         // Get the spannable HTML
         Spanned text = Html.fromHtml(html);
         // Save the span details for later restoration
@@ -289,36 +291,6 @@ public class Utils {
             buffer.setSpan(span, start, end, 0);
         }
         return buffer;
-    }
-
-    /**
-     * Join the passed array of strings, with 'delim' between them.
-     *
-     * API_UPGRADE 26 needed for {@link String#join(CharSequence, Iterable)} }
-     *
-     * @param delim Delimiter to place between entries
-     * @param sa    Array of strings to join
-     *
-     * @return The joined strings
-     */
-    @NonNull
-    public static String join(final @NonNull String delim, final @NonNull String... sa) {
-        // Simple case, return empty string
-        if (sa.length <= 0) {
-            return "";
-        }
-
-        // Initialize with first
-        StringBuilder sb = new StringBuilder(sa[0]);
-
-        if (sa.length > 1) {
-            // If more than one, loop appending delim then string.
-            for (int i = 1; i < sa.length; i++) {
-                sb.append(delim);
-                sb.append(sa[i]);
-            }
-        }
-        return sb.toString();
     }
 
     /**
@@ -347,7 +319,7 @@ public class Utils {
      * @return Resulting string
      */
     @NonNull
-    public static <T> String toDisplayString(final @NonNull List<T> list) {
+    public static <T> String toDisplayString(@NonNull final List<T> list) {
         if (list.isEmpty()) {
             return "";
         }
@@ -359,7 +331,7 @@ public class Utils {
     }
 
     public interface ItemWithIdFixup {
-        long fixupId(final @NonNull CatalogueDBAdapter db);
+        long fixupId(@NonNull final CatalogueDBAdapter db);
 
         boolean isUniqueById();
     }
@@ -374,7 +346,7 @@ public class Utils {
     public static class StatefulBufferedInputStream extends BufferedInputStream implements Closeable {
         private boolean mIsOpen = true;
 
-        StatefulBufferedInputStream(final @NonNull InputStream in) {
+        StatefulBufferedInputStream(@NonNull final InputStream in) {
             super(in);
         }
 

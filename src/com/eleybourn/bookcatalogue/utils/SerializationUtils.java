@@ -37,20 +37,22 @@ import java.io.Serializable;
  *
  * @author Philip Warner
  */
-public class SerializationUtils {
+public final class SerializationUtils {
+
+    private SerializationUtils() {
+    }
 
     /**
      * Utility routine to convert a Serializable object to a byte array.
      *
-     * Note: original code caught exceptions and returned 'null'. No longer doing this as
-     * IMHO any exception means something is wrong and should be flagged as such.
-     *
      * @param o Object to convert
      *
      * @return Resulting byte array.
+     *
+     * @throws IllegalStateException upon failure.
      */
     @NonNull
-    public static byte[] serializeObject(final @NonNull Serializable o) {
+    public static byte[] serializeObject(@NonNull final Serializable o) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(o);
@@ -63,10 +65,12 @@ public class SerializationUtils {
 
     /**
      * Deserialize the passed byte array
+     *
+     * @throws RTE.DeserializationException on failure
      */
     @SuppressWarnings("unchecked")
     @NonNull
-    public static <T> T deserializeObject(final @NonNull byte[] o) throws RTE.DeserializationException {
+    public static <T> T deserializeObject(@NonNull final byte[] o) throws RTE.DeserializationException {
         try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(o))) {
             return (T) in.readObject();
         } catch (@NonNull ClassCastException | ClassNotFoundException | IOException e) {
@@ -77,8 +81,9 @@ public class SerializationUtils {
     /**
      * Serialize then de-serialize to create a deep clone.
      */
+    @SuppressWarnings("unused")
     @NonNull
-    public static <T extends Serializable> T cloneObject(final @NonNull T o) throws RTE.DeserializationException {
+    public static <T extends Serializable> T cloneObject(@NonNull final T o) throws RTE.DeserializationException {
         return deserializeObject(serializeObject(o));
     }
 

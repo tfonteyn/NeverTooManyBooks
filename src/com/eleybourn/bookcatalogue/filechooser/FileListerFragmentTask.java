@@ -2,8 +2,6 @@ package com.eleybourn.bookcatalogue.filechooser;
 
 import android.app.Activity;
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
@@ -15,12 +13,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Partially implements a FragmentTask to build a list of files in the background.
  *
  * @author pjw
  */
-public abstract class FileListerFragmentTask extends SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract {
+public abstract class FileListerFragmentTask
+        extends SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract {
+
     @NonNull
     private final File mRoot;
 
@@ -29,8 +32,10 @@ public abstract class FileListerFragmentTask extends SimpleTaskQueueProgressDial
      */
     private final Comparator<FileDetails> mComparator = new Comparator<FileDetails>() {
 
-        public int compare(final @NonNull FileDetails f1, final @NonNull FileDetails f2) {
-            return f1.getFile().getName().toLowerCase().compareTo(f2.getFile().getName().toLowerCase());
+        public int compare(@NonNull final FileDetails o1,
+                           @NonNull final FileDetails o2) {
+            return o1.getFile().getName().toLowerCase()
+                     .compareTo(o2.getFile().getName().toLowerCase());
         }
     };
 
@@ -39,7 +44,7 @@ public abstract class FileListerFragmentTask extends SimpleTaskQueueProgressDial
     /**
      * Constructor
      */
-    protected FileListerFragmentTask(final @NonNull File root) {
+    protected FileListerFragmentTask(@NonNull final File root) {
         mRoot = root;
     }
 
@@ -49,11 +54,12 @@ public abstract class FileListerFragmentTask extends SimpleTaskQueueProgressDial
 
     /** Turn an array of Files into an ArrayList of FileDetails. */
     @NonNull
-    protected abstract ArrayList<FileDetails> processList(final @NonNull Context context, final @Nullable File[] files);
+    protected abstract ArrayList<FileDetails> processList(@NonNull final Context context,
+                                                          @Nullable final File[] files);
 
     @Override
-    public void run(final @NonNull SimpleTaskQueueProgressDialogFragment fragment,
-                    final @NonNull SimpleTaskContext taskContext) {
+    public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                    @NonNull final SimpleTaskContext taskContext) {
         // Get a file list
         File[] files = mRoot.listFiles(getFilter());
         // Filter/fill-in using the subclass
@@ -63,7 +69,8 @@ public abstract class FileListerFragmentTask extends SimpleTaskQueueProgressDial
     }
 
     @Override
-    public void onFinish(final @NonNull SimpleTaskQueueProgressDialogFragment fragment, final @Nullable Exception exception) {
+    public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                         @Nullable final Exception e) {
         // Display it in UI thread.
         Activity listenerActivity = fragment.getActivity();
         if (listenerActivity instanceof FileListerListener) {
@@ -77,7 +84,9 @@ public abstract class FileListerFragmentTask extends SimpleTaskQueueProgressDial
      * @author pjw
      */
     public interface FileListerListener {
-        void onGotFileList(final @NonNull File root, final @NonNull ArrayList<FileDetails> list);
+
+        void onGotFileList(@NonNull final File root,
+                           @NonNull final ArrayList<FileDetails> list);
     }
 
 }

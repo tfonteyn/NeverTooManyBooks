@@ -77,10 +77,10 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
     /** Already closed */
     private boolean mIsClosedFlg = false;
 
-    public TrackedCursor(final @NonNull SQLiteCursorDriver driver,
-                         final @NonNull String editTable,
-                         final @NonNull SQLiteQuery query,
-                         final @NonNull Synchronizer sync) {
+    public TrackedCursor(@NonNull final SQLiteCursorDriver driver,
+                         @NonNull final String editTable,
+                         @NonNull final SQLiteQuery query,
+                         @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
 
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
@@ -211,7 +211,7 @@ public class TrackedCursor extends SynchronizedCursor implements Closeable {
      */
     @Override
     @CallSuper
-    public void finalize() {
+    protected void finalize() {
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
             // This is a cursor that is being deleted before it is closed.
             // Setting a break here is sometimes useful.

@@ -20,11 +20,11 @@
 package com.eleybourn.bookcatalogue.debug;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -35,17 +35,20 @@ import org.acra.ACRA;
 
 import java.util.Date;
 
-public class Tracker {
+public final class Tracker {
 
     private final static int K_MAX_EVENTS = 100;
     private static final Event[] mEventBuffer = new Event[K_MAX_EVENTS];
     private static int mNextEventBufferPos = 0;
 
+    private Tracker() {
+    }
+
     /**
      * @param a                  Activity or Fragment
      * @param savedInstanceState Bundle
      */
-    public static void enterOnCreate(final @NonNull Object a, final @Nullable Bundle savedInstanceState) {
+    public static void enterOnCreate(@NonNull final Object a, @Nullable final Bundle savedInstanceState) {
         handleEvent(a, States.Enter, "onCreate");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
             Logger.info(a, "onCreate|" + States.Enter + "|savedInstanceState=" + savedInstanceState);
@@ -64,7 +67,7 @@ public class Tracker {
     /**
      * @param a Activity or Fragment
      */
-    public static void exitOnCreate(final @NonNull Object a) {
+    public static void exitOnCreate(@NonNull final Object a) {
         handleEvent(a, States.Exit, "onCreate");
     }
 
@@ -72,7 +75,7 @@ public class Tracker {
      * @param a                  Fragment
      * @param savedInstanceState Bundle
      */
-    public static void enterOnActivityCreated(final @NonNull Object a, @Nullable final Bundle savedInstanceState) {
+    public static void enterOnActivityCreated(@NonNull final Object a, @Nullable final Bundle savedInstanceState) {
         handleEvent(a, States.Enter, "onActivityCreated");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
             Logger.info(a, "onActivityCreated|" + States.Enter + "|savedInstanceState=" + savedInstanceState);
@@ -88,45 +91,45 @@ public class Tracker {
         }
     }
 
-    public static void exitOnActivityCreated(final @NonNull Object a) {
+    public static void exitOnActivityCreated(@NonNull final Object a) {
         handleEvent(a, States.Exit, "onActivityCreated");
     }
 
 
-    public static void enterOnActivityResult(final @NonNull Object a, final int requestCode, final int resultCode, final @Nullable Intent data) {
-        handleEvent(a, States.Enter, "onActivityResult|" + requestCode + "|" + resultCode);
+    public static void enterOnActivityResult(@NonNull final Object a, final int requestCode, final int resultCode, @Nullable final Intent data) {
+        handleEvent(a, States.Enter, "onActivityResult|" + requestCode + '|' + resultCode);
         if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
             Logger.info(a, "onActivityResult|" + States.Enter + "|requestCode=" + requestCode + "|resultCode=" + resultCode + "|data=" + data);
         }
     }
 
-    public static void exitOnActivityResult(final @NonNull Object a) {
+    public static void exitOnActivityResult(@NonNull final Object a) {
         handleEvent(a, States.Exit, "onActivityResult");
     }
 
 
-    public static void enterOnSaveInstanceState(final @NonNull Object a, final @NonNull Bundle outState) {
+    public static void enterOnSaveInstanceState(@NonNull final Object a, @NonNull final Bundle outState) {
         handleEvent(a, States.Enter, "onSaveInstanceState");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
             Logger.info(a, "onSaveInstanceState|" + States.Enter + "|outState=" + outState);
         }
     }
 
-    public static void exitOnSaveInstanceState(final @NonNull Object a, final @NonNull Bundle outState) {
+    public static void exitOnSaveInstanceState(@NonNull final Object a, @NonNull final Bundle outState) {
         handleEvent(a, States.Exit, "onSaveInstanceState");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
             Logger.info(a, "onSaveInstanceState|" + States.Exit + "|outState=" + outState);
         }
     }
 
-    public static void enterOnRestoreInstanceState(final @NonNull Object a, final @Nullable Bundle savedInstanceState) {
+    public static void enterOnRestoreInstanceState(@NonNull final Object a, @Nullable final Bundle savedInstanceState) {
         handleEvent(a, States.Enter, "onRestoreInstanceState");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
             Logger.info(a, "onRestoreInstanceState|" + States.Enter + "|savedInstanceState=" + savedInstanceState);
         }
     }
 
-    public static void exitOnRestoreInstanceState(final @NonNull Object a, final @Nullable Bundle savedInstanceState) {
+    public static void exitOnRestoreInstanceState(@NonNull final Object a, @Nullable final Bundle savedInstanceState) {
         handleEvent(a, States.Exit, "onRestoreInstanceState");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
             Logger.info(a, "onRestoreInstanceState|" + States.Exit + "|savedInstanceState=" + savedInstanceState);
@@ -134,64 +137,64 @@ public class Tracker {
     }
 
 
-    public static void enterOnLoadFieldsFromBook(final @NonNull Object a, final long bookId) {
+    public static void enterOnLoadFieldsFromBook(@NonNull final Object a, final long bookId) {
         handleEvent(a, States.Enter, "onLoadFieldsFromBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(a, "onLoadFieldsFromBook|" + States.Enter + "|bookId=" + bookId);
         }
     }
 
-    public static void exitOnLoadFieldsFromBook(final @NonNull Object a, final long bookId) {
+    public static void exitOnLoadFieldsFromBook(@NonNull final Object a, final long bookId) {
         handleEvent(a, States.Exit, "onLoadFieldsFromBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(a, "onLoadFieldsFromBook|" + States.Exit + "|bookId=" + bookId);
         }
     }
 
-    public static void enterOnSaveFieldsToBook(final @NonNull Object a, final long bookId) {
+    public static void enterOnSaveFieldsToBook(@NonNull final Object a, final long bookId) {
         handleEvent(a, States.Enter, "onSaveFieldsToBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(a, "onSaveFieldsToBook|" + States.Enter + "|bookId=" + bookId);
         }
     }
 
-    public static void exitOnSaveFieldsToBook(final @NonNull Object a, final long bookId) {
+    public static void exitOnSaveFieldsToBook(@NonNull final Object a, final long bookId) {
         handleEvent(a, States.Exit, "onSaveFieldsToBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
             Logger.info(a, "onSaveFieldsToBook|" + States.Exit + "|bookId=" + bookId);
         }
     }
 
-    public static void enterOnDestroy(final @NonNull Object a) {
+    public static void enterOnDestroy(@NonNull final Object a) {
         handleEvent(a, States.Enter, "onDestroy");
     }
 
-    public static void exitOnDestroy(final @NonNull Object a) {
+    public static void exitOnDestroy(@NonNull final Object a) {
         handleEvent(a, States.Exit, "onDestroy");
     }
 
-    public static void enterOnPause(final @NonNull Object a) {
+    public static void enterOnPause(@NonNull final Object a) {
         handleEvent(a, States.Enter, "onPause");
     }
 
-    public static void exitOnPause(final @NonNull Object a) {
+    public static void exitOnPause(@NonNull final Object a) {
         handleEvent(a, States.Exit, "onPause");
     }
 
-    public static void enterOnResume(final @NonNull Object a) {
+    public static void enterOnResume(@NonNull final Object a) {
         handleEvent(a, States.Enter, "onResume");
     }
 
-    public static void exitOnResume(final @NonNull Object a) {
+    public static void exitOnResume(@NonNull final Object a) {
         handleEvent(a, States.Exit, "onResume");
     }
 
-    public static void enterFunction(final @NonNull Object a, final @NonNull String name, final @NonNull Object... params) {
-        StringBuilder fullName = new StringBuilder(name + "(");
+    public static void enterFunction(@NonNull final Object a, @NonNull final String name, @NonNull final Object... params) {
+        StringBuilder fullName = new StringBuilder(name + '(');
         for (Object parameter : params) {
-            fullName.append(parameter).append(",");
+            fullName.append(parameter).append(',');
         }
-        fullName.append(")");
+        fullName.append(')');
         String s = fullName.toString();
         if (BuildConfig.DEBUG) {
             Logger.info(a, s);
@@ -199,21 +202,21 @@ public class Tracker {
         handleEvent(a, States.Enter, s);
     }
 
-    public static void exitFunction(final @NonNull Object a, final @NonNull String s) {
+    public static void exitFunction(@NonNull final Object a, @NonNull final String s) {
         handleEvent(a, States.Exit, s);
         if (BuildConfig.DEBUG) {
             Logger.info(a, s);
         }
     }
-    public static void exitFunction(final @NonNull Object a, final @NonNull String name, final @NonNull Object result) {
-        String s = name + "|" + result;
+    public static void exitFunction(@NonNull final Object a, @NonNull final String name, @NonNull final Object result) {
+        String s = name + '|' + result;
         handleEvent(a, States.Exit, s);
         if (BuildConfig.DEBUG) {
             Logger.info(a, s);
         }
     }
 
-    public static void handleEvent(final @NonNull Object o, final @NonNull States type, final @NonNull String message) {
+    public static void handleEvent(@NonNull final Object o, @NonNull final States type, @NonNull final String message) {
         Event e = new Event(o, type, message);
         mEventBuffer[mNextEventBufferPos] = e;
         ACRA.getErrorReporter().putCustomData("History-" + mNextEventBufferPos, e.getInfo());
@@ -229,7 +232,7 @@ public class Tracker {
             Event e = mEventBuffer[index];
             if (e != null) {
                 s.append(e.getInfo());
-                s.append("\n");
+                s.append('\n');
             }
         }
         return s.toString();
@@ -252,7 +255,7 @@ public class Tracker {
         @NonNull
         final String clazz;
 
-        public Event(final @NonNull Object clazz, final @NonNull States state, final @NonNull String message) {
+        public Event(@NonNull final Object clazz, @NonNull final States state, @NonNull final String message) {
             this.clazz = clazz.getClass().getCanonicalName();
             this.message = message;
             this.state = state;
@@ -261,7 +264,7 @@ public class Tracker {
 
         @NonNull
         public String getInfo() {
-            return DateUtils.utcSqlDateTime(date) + "|" + clazz + "|" + state + "|" + message;
+            return DateUtils.utcSqlDateTime(date) + '|' + clazz + '|' + state + '|' + message;
         }
     }
 }

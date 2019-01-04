@@ -21,20 +21,16 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
+import androidx.annotation.NonNull;
 
 /**
  * Class to call the search.books api (using a Goodreads 'work' ID).
@@ -43,7 +39,8 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public class ShowBookByIdApiHandler extends ShowBookApiHandler {
 
-    public ShowBookByIdApiHandler(final @NonNull GoodreadsManager manager) {
+    public ShowBookByIdApiHandler(@NonNull final GoodreadsManager manager) {
+
         super(manager, true);
     }
 
@@ -53,10 +50,10 @@ public class ShowBookByIdApiHandler extends ShowBookApiHandler {
      * @return the array of GoodreadsWork objects.
      */
     @NonNull
-    public Bundle get(final long workId, final boolean fetchThumbnail) throws
-            OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
-            NotAuthorizedException,
-            BookNotFoundException, IOException, NetworkException {
+    public Bundle get(final long workId, final boolean fetchThumbnail)
+            throws NotAuthorizedException,
+                   BookNotFoundException,
+                   IOException {
 
         // Setup API call
         final String urlBase = GoodreadsManager.BASE_URL + "/book/show/%1$s.xml?key=%2$s";
@@ -65,5 +62,4 @@ public class ShowBookByIdApiHandler extends ShowBookApiHandler {
 
         return sendRequest(get, fetchThumbnail);
     }
-
 }

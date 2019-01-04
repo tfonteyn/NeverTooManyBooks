@@ -28,8 +28,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteQuery;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -46,6 +44,7 @@ import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -58,8 +57,6 @@ import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.RTE;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
@@ -68,12 +65,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.COLLATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
@@ -130,8 +131,8 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_STYLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKLIST_STYLES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
@@ -172,14 +173,15 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_E
  *
  * ENHANCE: Use date_acquired to add 'Recent Acquisitions' virtual shelf; need to resolve how this may relate to date_added
  */
-public class CatalogueDBAdapter implements AutoCloseable {
+public class CatalogueDBAdapter
+    implements AutoCloseable {
 
     /**
      * Options indicating the UPDATE_DATE field from the bundle should be trusted.
      * If this flag is not set, the UPDATE_DATE will be set based on the current time
      */
     public static final int BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT = 1;
-    /** Options indicating to skip doing the 'purge' step; mainly used in batch operations. */
+    /** Options indicating to skip doing the 'purge' onProgress; mainly used in batch operations. */
     public static final int BOOK_UPDATE_SKIP_PURGE_REFERENCES = 1 << 1;
 
     /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync */
@@ -189,10 +191,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
         @Override
         @NonNull
         public Cursor newCursor(
-                final SQLiteDatabase db,
-                final @NonNull SQLiteCursorDriver masterQuery,
-                final @NonNull String editTable,
-                final @NonNull SQLiteQuery query) {
+            final SQLiteDatabase db,
+            @NonNull final SQLiteCursorDriver masterQuery,
+            @NonNull final String editTable,
+            @NonNull final SQLiteQuery query) {
             return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
         }
     };
@@ -201,10 +203,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
     private static final CursorFactory mBooksCursorFactory = new CursorFactory() {
         @Override
         public Cursor newCursor(
-                final SQLiteDatabase db,
-                final @NonNull SQLiteCursorDriver masterQuery,
-                final @NonNull String editTable,
-                final @NonNull SQLiteQuery query) {
+            final SQLiteDatabase db,
+            @NonNull final SQLiteCursorDriver masterQuery,
+            @NonNull final String editTable,
+            @NonNull final SQLiteQuery query) {
             return new BookCursor(masterQuery, editTable, query, mSynchronizer);
         }
     };
@@ -314,6 +316,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
     /** {@link #getBookshelfIdByName} */
     @Nullable
     private SynchronizedStatement mGetBookshelfIdByNameQuery = null;
+    /** {@link #getBooklistStyleIdByUuid} */
+    @Nullable
+    private SynchronizedStatement mGetBooklistStyleStmt = null;
     /** {@link #insertBooklistStyle} */
     @Nullable
     private SynchronizedStatement mInsertBooklistStyleStmt = null;
@@ -385,7 +390,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @param context the Context within which to work
      */
-    public CatalogueDBAdapter(final @NonNull Context context) {
+    public CatalogueDBAdapter(@NonNull final Context context) {
         mContext = context;
         // initialise static if not done yet
         if (mDbHelper == null) {
@@ -400,6 +405,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
             mSyncedDb.execSQL("PRAGMA foreign_keys = ON");
             // Turn on recursive triggers; not strictly necessary
             mSyncedDb.execSQL("PRAGMA recursive_triggers = ON");
+
+            mSyncedDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing().setMaxSqlCacheSize(10);
         }
 
         // for debug
@@ -429,17 +436,22 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * double the single quotation marks (standard SQL escape)
      */
     @NonNull
-    public static String encodeString(final @NonNull String value) {
+    public static String encodeString(@NonNull final String value) {
         return value.replace("'", "''");
     }
 
     @NonNull
-    public static String SELECT(final @NonNull String... sa) {
+    public static String SELECT(@NonNull final DomainDefinition... sa) {
         return SELECTx("SELECT", sa);
     }
 
     @NonNull
-    public static String SELECT_DISTINCT(final @NonNull String... sa) {
+    public static String SELECT(@NonNull final String... sa) {
+        return SELECTx("SELECT", sa);
+    }
+
+    @NonNull
+    public static String SELECT_DISTINCT(@NonNull final String... sa) {
         return SELECTx("SELECT DISTINCT", sa);
     }
 
@@ -452,14 +464,39 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return a partial sql statement "SELECT c1,c2,..."
      */
     @NonNull
-    private static String SELECTx(final @NonNull String prefix, final @NonNull String... sa) {
+    private static String SELECTx(@NonNull final String prefix,
+                                  @NonNull final String... sa) {
         // Initialize with first
-        StringBuilder sb = new StringBuilder(prefix + " " + sa[0]);
+        StringBuilder sb = new StringBuilder(prefix + ' ' + sa[0]);
 
         if (sa.length > 1) {
             // If more than one, loop appending delim then string.
             for (int i = 1; i < sa.length; i++) {
-                sb.append(",");
+                sb.append(',');
+                sb.append(sa[i]);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * customized String.join specific for creating a SELECT clause.
+     *
+     * @param prefix for the sql, usually "SELECT" or "SELECT DISTINCT"
+     * @param sa     columns to select
+     *
+     * @return a partial sql statement "SELECT c1,c2,..."
+     */
+    @NonNull
+    private static String SELECTx(@NonNull final String prefix,
+                                  @NonNull final DomainDefinition... sa) {
+        // Initialize with first
+        StringBuilder sb = new StringBuilder(prefix + ' ' + sa[0]);
+
+        if (sa.length > 1) {
+            // If more than one, loop appending delim then string.
+            for (int i = 1; i < sa.length; i++) {
+                sb.append(',');
                 sb.append(sa[i]);
             }
         }
@@ -479,7 +516,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return Clean string
      */
     @NonNull
-    public static String cleanupFtsCriterion(final @NonNull String search) {
+    public static String cleanupFtsCriterion(@NonNull final String search) {
         if (search.isEmpty()) {
             return search;
         }
@@ -531,7 +568,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * DEBUG only
      */
     @SuppressWarnings("unused")
-    private static void debugAddInstance(final @NonNull CatalogueDBAdapter db) {
+    private static void debugAddInstance(@NonNull final CatalogueDBAdapter db) {
         mInstances.add(new InstanceRefDebug(db));
     }
 
@@ -539,14 +576,16 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * DEBUG only
      */
     @SuppressWarnings("unused")
-    private static void debugRemoveInstance(final @NonNull CatalogueDBAdapter db) {
+    private static void debugRemoveInstance(@NonNull final CatalogueDBAdapter db) {
         List<InstanceRefDebug> toDelete = new ArrayList<>();
         for (InstanceRefDebug ref : mInstances) {
             CatalogueDBAdapter refDb = ref.get();
             if (refDb == null) {
-                Logger.info(CatalogueDBAdapter.class, "<-- **** Missing ref (not closed?) **** vvvvvvv");
+                Logger.info(CatalogueDBAdapter.class,
+                            "<-- **** Missing ref (not closed?) **** vvvvvvv");
                 Logger.error(ref.getCreationException());
-                Logger.info(CatalogueDBAdapter.class, "--> **** Missing ref (not closed?) **** ^^^^^^^");
+                Logger.info(CatalogueDBAdapter.class,
+                            "--> **** Missing ref (not closed?) **** ^^^^^^^");
             } else {
                 if (refDb == db) {
                     toDelete.add(ref);
@@ -563,9 +602,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * there are still non-fatal anomalies.
      */
     @SuppressWarnings("unused")
-    public static void debugPrintReferenceCount(final @Nullable String msg) {
+    public static void debugPrintReferenceCount(@Nullable final String msg) {
         if (mSyncedDb != null) {
-            SynchronizedDb.printRefCount(msg, mSyncedDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing());
+            SynchronizedDb.printRefCount(msg,
+                                         mSyncedDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing());
         }
     }
 
@@ -576,9 +616,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public static void debugDumpInstances() {
         for (InstanceRefDebug ref : mInstances) {
             if (ref.get() == null) {
-                Logger.info(CatalogueDBAdapter.class, "<-- **** Missing ref (not closed?) **** vvvvvvv");
+                Logger.info(CatalogueDBAdapter.class,
+                            "<-- **** Missing ref (not closed?) **** vvvvvvv");
                 Logger.error(ref.getCreationException());
-                Logger.info(CatalogueDBAdapter.class, "--> **** Missing ref (not closed?) **** ^^^^^^^");
+                Logger.info(CatalogueDBAdapter.class,
+                            "--> **** Missing ref (not closed?) **** ^^^^^^^");
             } else {
                 Logger.error(ref.getCreationException());
             }
@@ -598,7 +640,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public void analyzeDb() {
         try {
             mSyncedDb.analyze();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Analyze failed");
         }
     }
@@ -620,7 +662,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public void setGoodreadsSyncDate(final long bookId) {
         if (mSetGoodreadsSyncDateStmt == null) {
             mSetGoodreadsSyncDateStmt = mStatements.add("mSetGoodreadsSyncDateStmt",
-                    SqlString.GOODREADS_UPDATE_BOOK_LAST_SYNC_DATE);
+                                                        SqlString.GOODREADS_UPDATE_BOOK_LAST_SYNC_DATE);
         }
         mSetGoodreadsSyncDateStmt.bindLong(1, bookId);
         mSetGoodreadsSyncDateStmt.executeUpdateDelete();
@@ -703,9 +745,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @throws DBExceptions.UpdateException if the update failed
      */
     private long insertOrUpdateTOCEntry(final long authorId,
-                                        final @NonNull String title,
-                                        final @NonNull String publicationDate)
-            throws DBExceptions.UpdateException {
+                                        @NonNull final String title,
+                                        @NonNull final String publicationDate)
+        throws DBExceptions.UpdateException {
 
         if (title.isEmpty()) {
             return -1L;
@@ -724,17 +766,20 @@ public class CatalogueDBAdapter implements AutoCloseable {
             tocEntryId = mSyncedDb.insert(TBL_TOC_ENTRIES.getName(), null, cv);
 
             if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
-                Logger.info(this, "inserted TOCEntry: " + tocEntryId + ", authorId=" + authorId + ", " + title);
+                Logger.info(this,
+                            "inserted TOCEntry: " + tocEntryId + ", authorId=" + authorId + ", " + title);
             }
         } else {
             int rowsAffected = mSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
-                    DOM_PK_ID + "=?", new String[]{Long.toString(tocEntryId)});
+                                                DOM_PK_ID + "=?",
+                                                new String[]{String.valueOf(tocEntryId)});
             if (rowsAffected != 1) {
                 throw new DBExceptions.UpdateException();
             }
 
             if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
-                Logger.info(this, "updated TOCEntry: " + tocEntryId + ", authorId=" + authorId + ", " + title);
+                Logger.info(this,
+                            "updated TOCEntry: " + tocEntryId + ", authorId=" + authorId + ", " + title);
             }
         }
         return tocEntryId;
@@ -758,7 +803,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
         ContentValues cv = new ContentValues();
         cv.put(DOM_FK_TOC_ENTRY_ID.name, tocEntryId);
         cv.put(DOM_FK_BOOK_ID.name, bookId);
-        cv.put(DOM_BOOK_TOC_ENTRY_POSITION.name, getBookTOCEntryAtHighestPositionByBookId(bookId) + 1);
+        cv.put(DOM_BOOK_TOC_ENTRY_POSITION.name,
+               getBookTOCEntryAtHighestPositionByBookId(bookId) + 1);
         long newId = mSyncedDb.insert(TBL_BOOK_TOC_ENTRIES.getName(), null, cv);
 
         if (newId > 0 && dirtyBookIfNecessary) {
@@ -781,7 +827,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
                                          final boolean dirtyBookIfNecessary) {
 
         int rowsAffected = mSyncedDb.delete(TBL_BOOK_TOC_ENTRIES.getName(),
-                DOM_FK_BOOK_ID + "=?", new String[]{Long.toString(bookId)});
+                                            DOM_FK_BOOK_ID + "=?",
+                                            new String[]{String.valueOf(bookId)});
         if (rowsAffected > 0) {
             if (dirtyBookIfNecessary) {
                 setBookDirty(bookId);
@@ -799,12 +846,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the id of the TOCEntry entry, or 0 if not found
      */
-    public long getTOCEntryId(final long authorId, final @NonNull String title) {
+    public long getTOCEntryId(final long authorId,
+                              @NonNull final String title) {
         if (mGetTOCEntryIdQuery == null) {
             mGetTOCEntryIdQuery = mStatements.add("mGetTOCEntryIdQuery",
-                    "SELECT Coalesce( Min(" + DOM_PK_ID + "),0) FROM " + TBL_TOC_ENTRIES +
-                            " WHERE " + DOM_FK_AUTHOR_ID + "=? AND (" + DOM_TITLE + "=? OR " + DOM_TITLE + "=?)" +
-                            COLLATION);
+                                                  "SELECT Coalesce( Min(" + DOM_PK_ID + "),0) FROM " + TBL_TOC_ENTRIES +
+                                                      " WHERE " + DOM_FK_AUTHOR_ID + "=? AND (" + DOM_TITLE + "=? OR " + DOM_TITLE + "=?)" +
+                                                      COLLATION);
         }
         mGetTOCEntryIdQuery.bindLong(1, authorId);
         mGetTOCEntryIdQuery.bindString(2, title);
@@ -823,9 +871,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     private long getBookTOCEntryAtHighestPositionByBookId(final long bookId) {
         if (mGetBookTOCEntryAtHighestPositionByBookIdQuery == null) {
-            mGetBookTOCEntryAtHighestPositionByBookIdQuery = mStatements.add("mGetBookTOCEntryAtHighestPositionByBookIdQuery",
-                    "SELECT max(" + DOM_BOOK_TOC_ENTRY_POSITION + ") FROM " + TBL_BOOK_TOC_ENTRIES +
-                            " WHERE " + DOM_FK_BOOK_ID + "=?");
+            mGetBookTOCEntryAtHighestPositionByBookIdQuery = mStatements.add(
+                "mGetBookTOCEntryAtHighestPositionByBookIdQuery",
+                "SELECT max(" + DOM_BOOK_TOC_ENTRY_POSITION + ") FROM " + TBL_BOOK_TOC_ENTRIES +
+                    " WHERE " + DOM_FK_BOOK_ID + "=?");
         }
 
         mGetBookTOCEntryAtHighestPositionByBookIdQuery.bindLong(1, bookId);
@@ -848,7 +897,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
             }
             ColumnMapper mapper = new ColumnMapper(cursor, DOM_TITLE, DOM_FIRST_PUBLICATION);
             while (cursor.moveToNext()) {
-                TOCEntry title = new TOCEntry(author, mapper.getString(DOM_TITLE), mapper.getString(DOM_FIRST_PUBLICATION));
+                TOCEntry title = new TOCEntry(author, mapper.getString(DOM_TITLE),
+                                              mapper.getString(DOM_FIRST_PUBLICATION));
                 list.add(title);
             }
         }
@@ -867,7 +917,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @NonNull
     private Cursor fetchTOCEntriesByBookId(final long bookId) {
-        return mSyncedDb.rawQuery(SqlString.GET_TOC_ENTRIES_BY_BOOK_ID, new String[]{Long.toString(bookId)});
+        return mSyncedDb.rawQuery(SqlString.GET_TOC_ENTRIES_BY_BOOK_ID,
+                                  new String[]{String.valueOf(bookId)});
     }
 
     /**
@@ -880,7 +931,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @NonNull
     private Cursor fetchTOCEntriesByAuthorId(final long authorId) {
-        return mSyncedDb.rawQuery(SqlString.GET_TOC_ENTRIES_BY_AUTHOR_ID, new String[]{Long.toString(authorId)});
+        return mSyncedDb.rawQuery(SqlString.GET_TOC_ENTRIES_BY_AUTHOR_ID,
+                                  new String[]{String.valueOf(authorId)});
     }
 
     /**
@@ -890,7 +942,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the row ID of the newly inserted Author, or -1 if an error occurred
      */
-    private long insertAuthor(final @NonNull Author /* in/out */ author) {
+    private long insertAuthor(@NonNull final Author /* in/out */ author) {
         ContentValues cv = new ContentValues();
         cv.put(DOM_AUTHOR_FAMILY_NAME.name, author.familyName);
         cv.put(DOM_AUTHOR_GIVEN_NAMES.name, author.givenNames);
@@ -909,8 +961,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @throws DBExceptions.UpdateException on failure to update
      */
-    public int updateAuthor(final @NonNull Author author)
-            throws DBExceptions.UpdateException {
+    public int updateAuthor(@NonNull final Author author)
+        throws DBExceptions.UpdateException {
 
         ContentValues cv = new ContentValues();
         cv.put(DOM_AUTHOR_FAMILY_NAME.name, author.familyName);
@@ -918,7 +970,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
         cv.put(DOM_AUTHOR_IS_COMPLETE.name, author.isComplete);
 
         int rowsAffected = mSyncedDb.update(TBL_AUTHORS.getName(), cv,
-                DOM_PK_ID + "=?", new String[]{Long.toString(author.id)});
+                                            DOM_PK_ID + "=?",
+                                            new String[]{String.valueOf(author.id)});
         if (rowsAffected == 1) {
             setBooksDirtyByAuthorId(author.id);
             return 1;
@@ -938,8 +991,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @throws DBExceptions.UpdateException if the update failed
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long insertOrUpdateAuthor(final @NonNull /* in/out */ Author author)
-            throws DBExceptions.UpdateException {
+    public long insertOrUpdateAuthor(@NonNull final /* in/out */ Author author)
+        throws DBExceptions.UpdateException {
 
         if (author.id != 0) {
             // check if we actually need to update
@@ -961,6 +1014,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public Cursor fetchAuthors() {
         return mSyncedDb.rawQuery("SELECT * FROM " + TBL_AUTHORS, null);
     }
+
     /**
      * This will return the Author based on the ID.
      *
@@ -968,21 +1022,24 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @Nullable
     public Author getAuthor(final long id) {
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlString.GET_AUTHOR_BY_ID, new String[]{Long.toString(id)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(SqlString.GET_AUTHOR_BY_ID,
+                                                new String[]{String.valueOf(id)})) {
             return (cursor.moveToFirst() ?
-                    new Author(id,
-                            cursor.getString(0),
-                            cursor.getString(1),
-                            (cursor.getInt(2) == 1)) : null);
+                new Author(id,
+                           cursor.getString(0),
+                           cursor.getString(1),
+                           (cursor.getInt(2) == 1)) : null);
         }
     }
 
     /**
      * @return author id, or 0 (e.g. 'new') when not found
      */
-    public long getAuthorIdByName(final @NonNull String familyName, final @NonNull String givenNames) {
+    public long getAuthorIdByName(@NonNull final String familyName,
+                                  @NonNull final String givenNames) {
         if (mGetAuthorIdQuery == null) {
-            mGetAuthorIdQuery = mStatements.add("mGetAuthorIdQuery", SqlString.GET_AUTHOR_ID_BY_NAME);
+            mGetAuthorIdQuery = mStatements.add("mGetAuthorIdQuery",
+                                                SqlString.GET_AUTHOR_ID_BY_NAME);
         }
 
         mGetAuthorIdQuery.bindString(1, familyName);
@@ -997,7 +1054,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the row ID of the Author (new of existing), or -1 if an insert error occurred
      */
-    private long getOrInsertAuthorId(final @NonNull Author author) {
+    private long getOrInsertAuthorId(@NonNull final Author author) {
         long id = getAuthorIdByName(author.familyName, author.givenNames);
         return id == 0 ? insertAuthor(author) : id;
     }
@@ -1009,7 +1066,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * Will NOT insert a new Author if not found.
      */
-    public void refreshAuthor(final @NonNull Author /* out */ author) {
+    public void refreshAuthor(@NonNull final Author /* out */ author) {
         if (author.id == 0) {
             // It wasn't a known author; see if it is now. If so, update ID.
             long id = getAuthorIdByName(author.familyName, author.givenNames);
@@ -1035,7 +1092,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @throws DBExceptions.UpdateException   on failure to insertOrUpdateAuthor(to) or on the global replace itself
      * @throws DBExceptions.NotFoundException on failure to find old Author
      */
-    public void globalReplaceAuthor(final @NonNull Author from, final @NonNull Author to) {
+    public void globalReplaceAuthor(@NonNull final Author from,
+                                    @NonNull final Author to) {
         // Create or update the new author
         if (to.id == 0) {
             // try to find
@@ -1068,16 +1126,19 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
             // First handle anthologies; they have a single author and are easy
             if (mGlobalReplaceAuthorOnTOCEntries == null) {
-                mGlobalReplaceAuthorOnTOCEntries = mStatements.add("mGlobalReplaceAuthorOnTOCEntries", SqlString.GLOBAL_REPLACE_AUTHOR_ON_TOC_ENTRIES);
+                mGlobalReplaceAuthorOnTOCEntries = mStatements.add(
+                    "mGlobalReplaceAuthorOnTOCEntries",
+                    SqlString.GLOBAL_REPLACE_AUTHOR_ON_TOC_ENTRIES);
             }
             mGlobalReplaceAuthorOnTOCEntries.bindLong(1, to.id);
             mGlobalReplaceAuthorOnTOCEntries.bindLong(2, from.id);
             mGlobalReplaceAuthorOnTOCEntries.executeUpdateDelete();
 
-            globalReplacePositionedBookItem(TBL_BOOK_AUTHOR, DOM_FK_AUTHOR_ID.name, DOM_BOOK_AUTHOR_POSITION.name, from.id, to.id);
+            globalReplacePositionedBookItem(TBL_BOOK_AUTHOR, DOM_FK_AUTHOR_ID.name,
+                                            DOM_BOOK_AUTHOR_POSITION.name, from.id, to.id);
 
             mSyncedDb.setTransactionSuccessful();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e);
             throw new DBExceptions.UpdateException(e);
         } finally {
@@ -1092,7 +1153,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @NonNull
     public ArrayList<String> getAuthorsFormattedName() {
         ArrayList<String> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlString.GET_ALL_AUTHORS_WITH_FORMATTED_NAMES, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(SqlString.GET_ALL_AUTHORS_WITH_FORMATTED_NAMES,
+                                                null)) {
             int col = cursor.getColumnIndexOrThrow(DOM_AUTHOR_FORMATTED.name);
             while (cursor.moveToNext()) {
                 String name = cursor.getString(col);
@@ -1110,21 +1172,21 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public void purgeAuthors() {
         if (mPurgeBookAuthorsStmt == null) {
             mPurgeBookAuthorsStmt = mStatements.add("mPurgeBookAuthorsStmt",
-                    SqlString.PURGE_TBL_BOOK_AUTHORS);
+                                                    SqlString.PURGE_TBL_BOOK_AUTHORS);
         }
         try {
             mPurgeBookAuthorsStmt.executeUpdateDelete();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Failed to purge " + TBL_BOOK_AUTHOR);
         }
 
         if (mPurgeAuthorsStmt == null) {
             mPurgeAuthorsStmt = mStatements.add("mPurgeAuthorsStmt",
-                    SqlString.PURGE_TBL_AUTHORS);
+                                                SqlString.PURGE_TBL_AUTHORS);
         }
         try {
             mPurgeAuthorsStmt.executeUpdateDelete();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Failed to purge " + TBL_AUTHORS);
         }
     }
@@ -1139,7 +1201,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @NonNull
     private Cursor fetchAuthorsByBookId(final long id) {
-        return mSyncedDb.rawQuery(SqlString.GET_AUTHORS_BY_BOOK_ID, new String[]{Long.toString(id)});
+        return mSyncedDb.rawQuery(SqlString.GET_AUTHORS_BY_BOOK_ID,
+                                  new String[]{String.valueOf(id)});
     }
 
     /**
@@ -1147,7 +1210,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the number of {@link Book} this {@link Author} has
      */
-    public long countAuthorBooks(final @NonNull Author author) {
+    public long countAuthorBooks(@NonNull final Author author) {
         if (author.id == 0) {
             author.id = getAuthorIdByName(author.familyName, author.givenNames);
         }
@@ -1158,7 +1221,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         if (mGetAuthorBookCountQuery == null) {
             mGetAuthorBookCountQuery = mStatements.add("mGetAuthorBookCountQuery",
-                    "SELECT COUNT(" + DOM_FK_BOOK_ID + ") FROM " + TBL_BOOK_AUTHOR + " WHERE " + DOM_FK_AUTHOR_ID + "=?");
+                                                       "SELECT COUNT(" + DOM_FK_BOOK_ID + ") FROM " + TBL_BOOK_AUTHOR + " WHERE " + DOM_FK_AUTHOR_ID + "=?");
         }
         // Be cautious
         synchronized (mGetAuthorBookCountQuery) {
@@ -1172,7 +1235,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the number of {@link TOCEntry} this {@link Author} has
      */
-    public long countAuthorAnthologies(final @NonNull Author author) {
+    public long countAuthorAnthologies(@NonNull final Author author) {
         if (author.id == 0) {
             author.id = getAuthorIdByName(author.familyName, author.givenNames);
         }
@@ -1182,7 +1245,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         if (mGetAuthorAnthologyCountQuery == null) {
             mGetAuthorAnthologyCountQuery = mStatements.add("mGetAuthorAnthologyCountQuery",
-                    "SELECT COUNT(" + DOM_PK_ID + ") FROM " + TBL_TOC_ENTRIES + " WHERE " + DOM_FK_AUTHOR_ID + "=?");
+                                                            "SELECT COUNT(" + DOM_PK_ID + ") FROM " + TBL_TOC_ENTRIES + " WHERE " + DOM_FK_AUTHOR_ID + "=?");
         }
         // Be cautious
         synchronized (mGetAuthorAnthologyCountQuery) {
@@ -1197,7 +1260,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param isNew indicates if the book is new
      * @param book  A collection with the columns to be set. May contain extra data.
      */
-    private void preprocessBook(final boolean isNew, final @NonNull Book book) {
+    private void preprocessBook(final boolean isNew,
+                                @NonNull final Book book) {
 
         // Handle AUTHOR
         // If present, get the author ID from the author name (it may have changed with a name change)
@@ -1238,11 +1302,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // Handle currencies making sure they are uppercase
         if (book.containsKey(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)) {
             book.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
-                    book.getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY).toUpperCase());
+                           book.getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY).toUpperCase());
         }
         if (book.containsKey(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY)) {
             book.putString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY,
-                    book.getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY).toUpperCase());
+                           book.getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY).toUpperCase());
         }
 
         // Handle Language field. Try to only store ISO3 code.
@@ -1256,40 +1320,40 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // Remove blank/null fields that have default values defined in the database
         // or which should never be blank.
         for (String name : new String[]{
-                UniqueId.KEY_BOOK_UUID,
+            UniqueId.KEY_BOOK_UUID,
 
-                UniqueId.KEY_BOOK_ISBN,
-                UniqueId.KEY_BOOK_PUBLISHER,
-                UniqueId.KEY_BOOK_DATE_PUBLISHED,
-                UniqueId.KEY_FIRST_PUBLICATION,
-                UniqueId.KEY_BOOK_EDITION_BITMASK,
-                UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+            UniqueId.KEY_BOOK_ISBN,
+            UniqueId.KEY_BOOK_PUBLISHER,
+            UniqueId.KEY_BOOK_DATE_PUBLISHED,
+            UniqueId.KEY_FIRST_PUBLICATION,
+            UniqueId.KEY_BOOK_EDITION_BITMASK,
+            UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
 
-                UniqueId.KEY_BOOK_PRICE_LISTED,
-                UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
-                UniqueId.KEY_BOOK_PRICE_PAID,
-                UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY,
-                UniqueId.KEY_BOOK_DATE_ACQUIRED,
+            UniqueId.KEY_BOOK_PRICE_LISTED,
+            UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
+            UniqueId.KEY_BOOK_PRICE_PAID,
+            UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY,
+            UniqueId.KEY_BOOK_DATE_ACQUIRED,
 
-                UniqueId.KEY_BOOK_FORMAT,
-                UniqueId.KEY_BOOK_GENRE,
-                UniqueId.KEY_BOOK_LANGUAGE,
-                UniqueId.KEY_BOOK_LOCATION,
+            UniqueId.KEY_BOOK_FORMAT,
+            UniqueId.KEY_BOOK_GENRE,
+            UniqueId.KEY_BOOK_LANGUAGE,
+            UniqueId.KEY_BOOK_LOCATION,
 
-                UniqueId.KEY_BOOK_READ,
-                UniqueId.KEY_BOOK_READ_START,
-                UniqueId.KEY_BOOK_READ_END,
+            UniqueId.KEY_BOOK_READ,
+            UniqueId.KEY_BOOK_READ_START,
+            UniqueId.KEY_BOOK_READ_END,
 
-                UniqueId.KEY_BOOK_SIGNED,
-                UniqueId.KEY_BOOK_RATING,
+            UniqueId.KEY_BOOK_SIGNED,
+            UniqueId.KEY_BOOK_RATING,
 
-                UniqueId.KEY_BOOK_DESCRIPTION,
-                UniqueId.KEY_BOOK_NOTES,
+            UniqueId.KEY_BOOK_DESCRIPTION,
+            UniqueId.KEY_BOOK_NOTES,
 
-                UniqueId.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
+            UniqueId.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
 
-                UniqueId.KEY_BOOK_DATE_ADDED,
-                UniqueId.KEY_LAST_UPDATE_DATE,
+            UniqueId.KEY_BOOK_DATE_ADDED,
+            UniqueId.KEY_LAST_UPDATE_DATE,
         }) {
             if (book.containsKey(name)) {
                 Object o = book.get(name);
@@ -1309,7 +1373,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return formatted title
      */
-    private String preprocessTitle(final @NonNull String title) {
+    private String preprocessTitle(@NonNull final String title) {
 
         StringBuilder newTitle = new StringBuilder();
         String[] title_words = title.split(" ");
@@ -1317,36 +1381,37 @@ public class CatalogueDBAdapter implements AutoCloseable {
             if (title_words[0].matches(mContext.getString(R.string.title_reorder))) {
                 for (int i = 1; i < title_words.length; i++) {
                     if (i != 1) {
-                        newTitle.append(" ");
+                        newTitle.append(' ');
                     }
                     newTitle.append(title_words[i]);
                 }
                 newTitle.append(", ").append(title_words[0]);
                 return newTitle.toString();
             }
-        } catch (Exception ignore) {
+        } catch (RuntimeException ignore) {
             //do nothing. Title stays the same
         }
         return title;
     }
 
     /**
-     * Utility routine to return the book uuid based on the id.
+     * Utility routine to return the book UUID based on the id.
      *
      * @param bookId of the book
      *
-     * @return the book uuid
+     * @return the book UUID
      *
      * @throws SQLiteDoneException if zero rows found
      */
     @NonNull
-    public String getBookUuid(final long bookId) throws SQLiteDoneException {
+    public String getBookUuid(final long bookId)
+        throws SQLiteDoneException {
         if (mGetBookUuidQuery == null) {
             mGetBookUuidQuery = mStatements.add("mGetBookUuidQuery",
-                    "SELECT " +
-                            DOM_BOOK_UUID +
-                            " FROM " + TBL_BOOKS +
-                            " WHERE " + DOM_PK_ID + "=?");
+                                                "SELECT " +
+                                                    DOM_BOOK_UUID +
+                                                    " FROM " + TBL_BOOKS +
+                                                    " WHERE " + DOM_PK_ID + "=?");
         }
         // Be cautious; other threads may call this and set parameters.
         synchronized (mGetBookUuidQuery) {
@@ -1362,13 +1427,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return ID of the book, or 0 'new' if not found
      */
-    public long getBookIdFromUuid(final @NonNull String uuid) {
+    public long getBookIdFromUuid(@NonNull final String uuid) {
         if (mGetBookIdFromUuidQuery == null) {
             mGetBookIdFromUuidQuery = mStatements.add("mGetBookIdFromUuidQuery",
-                    "SELECT " +
-                            DOM_PK_ID +
-                            " FROM " + TBL_BOOKS +
-                            " WHERE " + DOM_BOOK_UUID + "=?");
+                                                      "SELECT " +
+                                                          DOM_PK_ID +
+                                                          " FROM " + TBL_BOOKS +
+                                                          " WHERE " + DOM_BOOK_UUID + "=?");
         }
 
         mGetBookIdFromUuidQuery.bindString(1, uuid);
@@ -1384,10 +1449,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public String getBookLastUpdateDate(final long bookId) {
         if (mGetBookUpdateDateQuery == null) {
             mGetBookUpdateDateQuery = mStatements.add("mGetBookUpdateDateQuery",
-                    "SELECT " +
-                            DOM_LAST_UPDATE_DATE +
-                            " FROM " + TBL_BOOKS +
-                            " WHERE " + DOM_PK_ID + "=?");
+                                                      "SELECT " +
+                                                          DOM_LAST_UPDATE_DATE +
+                                                          " FROM " + TBL_BOOKS +
+                                                          " WHERE " + DOM_PK_ID + "=?");
         }
         // Be cautious
         synchronized (mGetBookUpdateDateQuery) {
@@ -1405,10 +1470,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public String getBookTitle(final long bookId) {
         if (mGetBookTitleQuery == null) {
             mGetBookTitleQuery = mStatements.add("mGetBookTitleQuery",
-                    "SELECT " +
-                            DOM_TITLE +
-                            " FROM " + TBL_BOOKS +
-                            " WHERE " + DOM_PK_ID + "=?");
+                                                 "SELECT " +
+                                                     DOM_TITLE +
+                                                     " FROM " + TBL_BOOKS +
+                                                     " WHERE " + DOM_PK_ID + "=?");
         }
         // Be cautious
         synchronized (mGetBookTitleQuery) {
@@ -1427,13 +1492,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
         String uuid = null;
         try {
             uuid = this.getBookUuid(bookId);
-        } catch (Exception e) {
+        } catch (SQLiteDoneException e) {
             Logger.error(e, "Failed to get book UUID");
         }
+
         int rowsAffected = 0;
         SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
-            rowsAffected = mSyncedDb.delete(TBL_BOOKS.getName(), DOM_PK_ID + "=?", new String[]{Long.toString(bookId)});
+            rowsAffected = mSyncedDb.delete(TBL_BOOKS.getName(), DOM_PK_ID + "=?",
+                                            new String[]{String.valueOf(bookId)});
             if (rowsAffected > 0) {
                 purgeAuthors();
                 purgeSeries();
@@ -1441,7 +1508,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 deleteThumbnail(uuid);
             }
             mSyncedDb.setTransactionSuccessful();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Failed to delete book");
         } finally {
             mSyncedDb.endTransaction(txLock);
@@ -1450,7 +1517,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         return rowsAffected;
     }
 
-    private void deleteThumbnail(final @Nullable String uuid) {
+    private void deleteThumbnail(@Nullable final String uuid) {
         if (uuid != null) {
             // remove from file system
             StorageUtils.deleteFile(StorageUtils.getCoverFile(uuid));
@@ -1470,7 +1537,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    public long insertBook(final @NonNull Book book) {
+    public long insertBook(@NonNull final Book book) {
         return insertBookWithId(0, book);
     }
 
@@ -1487,7 +1554,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    public long insertBookWithId(final long bookId, final @NonNull Book /* in/out */ book) {
+    public long insertBookWithId(final long bookId,
+                                 @NonNull final Book /* in/out */ book) {
 
         SyncLock txLock = null;
         if (!mSyncedDb.inTransaction()) {
@@ -1514,7 +1582,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
             // Make sure we have an author
             List<Author> authors = book.getAuthorList();
             if (authors.size() == 0) {
-                throw new IllegalArgumentException();
+                Logger.error("No authors in book from\n" + book);
+                return -1L;
             }
 
             ContentValues cv = filterValues(TBL_BOOKS.getName(), book);
@@ -1541,8 +1610,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
             // and return it
             return newBookId;
 
-        } catch (Exception e) {
-            Logger.error(e, "Error creating book from\n" + book);
+        } catch (NumberFormatException e) {
+            Logger.error(e, "NumberFormatException creating book from\n" + book);
+            return -1L;
+        } catch (RuntimeException e) {
+            Logger.error(e, "Exception Error creating book from\n" + book);
             return -1L;
         } finally {
             if (txLock != null) {
@@ -1562,7 +1634,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @throws DBExceptions.UpdateException on failure
      */
-    public int updateBook(final long bookId, final @NonNull Book book, final int flags) {
+    public int updateBook(final long bookId,
+                          @NonNull final Book book,
+                          final int flags) {
 
         SyncLock txLock = null;
         if (!mSyncedDb.inTransaction()) {
@@ -1586,12 +1660,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
             // set the DOM_LAST_UPDATE_DATE to 'now' if we're allowed, or if it's not present already.
             if ((flags & BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT) == 0
-                    || !cv.containsKey(DOM_LAST_UPDATE_DATE.name)) {
+                || !cv.containsKey(DOM_LAST_UPDATE_DATE.name)) {
                 cv.put(DOM_LAST_UPDATE_DATE.name, DateUtils.utcSqlDateTimeForToday());
             }
 
             // go !
-            int rowsAffected = mSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?", new String[]{Long.toString(bookId)});
+            int rowsAffected = mSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
+                                                new String[]{String.valueOf(bookId)});
             insertBookDependents(bookId, book);
 
             // Only really skip the purge if a batch update of multiple books is being done.
@@ -1611,7 +1686,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
             return rowsAffected;
         } catch (Exception e) {
             Logger.error(e);
-            throw new DBExceptions.UpdateException("Error updating book from " + book + ": " + e.getLocalizedMessage(), e);
+            throw new DBExceptions.UpdateException(
+                "Error updating book from " + book + ": " + e.getLocalizedMessage(), e);
         } finally {
             if (txLock != null) {
                 mSyncedDb.endTransaction(txLock);
@@ -1627,7 +1703,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param bookId of the book
      * @param book   A collection with the columns to be set. May contain extra data.
      */
-    private void insertBookDependents(final long bookId, final @NonNull Book book) {
+    private void insertBookDependents(final long bookId,
+                                      @NonNull final Book book) {
 
         if (book.containsKey(UniqueId.BKEY_BOOKSHELF_ARRAY)) {
             insertBookBookshelf(bookId, book.getBookshelfList(), false);
@@ -1645,7 +1722,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
             insertOrUpdateTOC(bookId, book.getTOC(), false);
         }
 
-        if (book.containsKey(UniqueId.KEY_LOAN_LOANED_TO) && !book.getString(UniqueId.KEY_LOAN_LOANED_TO).isEmpty()) {
+        if (book.containsKey(UniqueId.KEY_LOAN_LOANED_TO) && !book.getString(
+            UniqueId.KEY_LOAN_LOANED_TO).isEmpty()) {
             deleteLoan(bookId, false);
             insertLoan(book, false); // don't care about insert failures really
         }
@@ -1657,7 +1735,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     public int countBooks() {
         if (mCountBooksQuery == null) {
             mCountBooksQuery = mStatements.add("mGetAuthorBookCountQuery",
-                    "SELECT COUNT(*) FROM " + TBL_BOOKS);
+                                               "SELECT COUNT(*) FROM " + TBL_BOOKS);
         }
         return (int) mCountBooksQuery.count();
     }
@@ -1670,9 +1748,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @NonNull
     public Cursor fetchBookUuidList() {
         return mSyncedDb.rawQuery(
-                "SELECT " +
-                        DOM_BOOK_UUID +
-                        " FROM " + TBL_BOOKS, new String[]{});
+            "SELECT " +
+                DOM_BOOK_UUID +
+                " FROM " + TBL_BOOKS, new String[]{});
     }
 
     /**
@@ -1680,25 +1758,26 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return book id, or 0 if not found
      */
-    public long getIdFromIsbn(final @NonNull String isbn, final boolean checkBothIsbn10and13) {
+    public long getIdFromIsbn(@NonNull final String isbn,
+                              final boolean checkBothIsbn10and13) {
         SynchronizedStatement stmt;
         if (checkBothIsbn10and13 && IsbnUtils.isValid(isbn)) {
             if (mGetIdFromIsbn2Query == null) {
                 mGetIdFromIsbn2Query = mStatements.add("mGetIdFromIsbn2Query",
-                        "SELECT" +
-                                " Coalesce(max(" + DOM_PK_ID + "), 0)" +
-                                " FROM " + TBL_BOOKS +
-                                " WHERE lower(" + DOM_BOOK_ISBN + ") IN (lower(?), lower(?))");
+                                                       "SELECT" +
+                                                           " Coalesce(max(" + DOM_PK_ID + "), 0)" +
+                                                           " FROM " + TBL_BOOKS +
+                                                           " WHERE lower(" + DOM_BOOK_ISBN + ") IN (lower(?), lower(?))");
             }
             stmt = mGetIdFromIsbn2Query;
             stmt.bindString(2, IsbnUtils.isbn2isbn(isbn));
         } else {
             if (mGetIdFromIsbn1Query == null) {
                 mGetIdFromIsbn1Query = mStatements.add("mGetIdFromIsbn1Query",
-                        "SELECT" +
-                                " Coalesce(max(" + DOM_PK_ID + "), 0)" +
-                                " FROM " + TBL_BOOKS +
-                                " WHERE lower(" + DOM_BOOK_ISBN + ") = lower(?)");
+                                                       "SELECT" +
+                                                           " Coalesce(max(" + DOM_PK_ID + "), 0)" +
+                                                           " FROM " + TBL_BOOKS +
+                                                           " WHERE lower(" + DOM_BOOK_ISBN + ") = lower(?)");
             }
             stmt = mGetIdFromIsbn1Query;
         }
@@ -1711,15 +1790,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @param bookId of the book
      *
-     * @return <tt>true</tt>if exists
+     * @return <tt>true</tt> if exists
      */
     public boolean bookExists(final long bookId) {
         if (mCheckBookExistsStmt == null) {
             mCheckBookExistsStmt = mStatements.add("mCheckBookExistsStmt",
-                    "SELECT " +
-                            DOM_PK_ID +
-                            " FROM " + TBL_BOOKS +
-                            " WHERE " + DOM_PK_ID + "=?");
+                                                   "SELECT " +
+                                                       DOM_PK_ID +
+                                                       " FROM " + TBL_BOOKS +
+                                                       " WHERE " + DOM_PK_ID + "=?");
         }
         mCheckBookExistsStmt.bindLong(1, bookId);
         return (0 != mCheckBookExistsStmt.simpleQueryForLongOrZero());
@@ -1733,7 +1812,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     private void setBookDirty(final long bookId) {
         if (mSetBooksDirtyStmt == null) {
             mSetBooksDirtyStmt = mStatements.add("mSetBooksDirtyStmt",
-                    SqlString.SET_BOOK_LAST_UPDATE_DATE_BY_BOOK_ID);
+                                                 SqlString.SET_BOOK_LAST_UPDATE_DATE_BY_BOOK_ID);
         }
         mSetBooksDirtyStmt.bindLong(1, bookId);
         mSetBooksDirtyStmt.executeUpdateDelete();
@@ -1746,7 +1825,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // set all related books based on anthology Author as dirty
         if (mSetBooksDirtyByAuthor1Stmt == null) {
             mSetBooksDirtyByAuthor1Stmt = mStatements.add("mSetBooksDirtyByAuthor1Stmt",
-                    SqlString.SET_BOOK_LAST_UPDATE_DATE_BY_TOC_ENTRY_AUTHOR_ID);
+                                                          SqlString.SET_BOOK_LAST_UPDATE_DATE_BY_TOC_ENTRY_AUTHOR_ID);
         }
         mSetBooksDirtyByAuthor1Stmt.bindLong(1, authorId);
         mSetBooksDirtyByAuthor1Stmt.executeUpdateDelete();
@@ -1754,7 +1833,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // set all books of this Author dirty
         if (mSetBooksDirtyByAuthor2Stmt == null) {
             mSetBooksDirtyByAuthor2Stmt = mStatements.add("mSetBooksDirtyByAuthor2Stmt",
-                    SqlString.SET_BOOK_LAST_UPDATE_DATE_BY_AUTHOR_ID);
+                                                          SqlString.SET_BOOK_LAST_UPDATE_DATE_BY_AUTHOR_ID);
         }
         mSetBooksDirtyByAuthor2Stmt.bindLong(1, authorId);
         mSetBooksDirtyByAuthor2Stmt.executeUpdateDelete();
@@ -1766,7 +1845,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     private void setBooksDirtyBySeriesId(final long seriesId) {
         if (mSetBooksDirtyBySeriesStmt == null) {
             mSetBooksDirtyBySeriesStmt = mStatements.add("mSetBooksDirtyBySeriesStmt",
-                    SqlString.SET_BOOK_LAST_UPDATE_DATE_BY_SERIES_ID);
+                                                         SqlString.SET_BOOK_LAST_UPDATE_DATE_BY_SERIES_ID);
         }
         mSetBooksDirtyBySeriesStmt.bindLong(1, seriesId);
         mSetBooksDirtyBySeriesStmt.executeUpdateDelete();
@@ -1778,7 +1857,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     private void setBooksDirtyByBookshelfId(final long bookshelfId) {
         if (mSetBooksDirtyByBookshelfStmt == null) {
             mSetBooksDirtyByBookshelfStmt = mStatements.add("mSetBooksDirtyByBookshelfStmt",
-                    SqlString.SET_BOOK_LAST_UPDATE_DATE_BY_BOOKSHELF_ID);
+                                                            SqlString.SET_BOOK_LAST_UPDATE_DATE_BY_BOOKSHELF_ID);
         }
         mSetBooksDirtyByBookshelfStmt.bindLong(1, bookshelfId);
         mSetBooksDirtyByBookshelfStmt.executeUpdateDelete();
@@ -1797,7 +1876,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param dirtyBookIfNecessary flag to set book dirty or not
      */
     private void insertBookSeries(final long bookId,
-                                  final @NonNull List<Series> list,
+                                  @NonNull final List<Series> list,
                                   boolean dirtyBookIfNecessary) {
         if (!mSyncedDb.inTransaction()) {
             throw new DBExceptions.TransactionException();
@@ -1811,7 +1890,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // set of updates could result in unique key or index violations.
         if (mDeleteBookSeriesStmt == null) {
             mDeleteBookSeriesStmt = mStatements.add("mDeleteBookSeriesStmt",
-                    "DELETE FROM " + TBL_BOOK_SERIES + " WHERE " + DOM_FK_BOOK_ID + "=?");
+                                                    "DELETE FROM " + TBL_BOOK_SERIES + " WHERE " + DOM_FK_BOOK_ID + "=?");
         }
         mDeleteBookSeriesStmt.bindLong(1, bookId);
         mDeleteBookSeriesStmt.executeUpdateDelete();
@@ -1823,12 +1902,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         if (mAddBookSeriesStmt == null) {
             mAddBookSeriesStmt = mStatements.add("mAddBookSeriesStmt",
-                    "INSERT INTO " + TBL_BOOK_SERIES + "(" +
-                            DOM_FK_BOOK_ID + "," +
-                            DOM_FK_SERIES_ID + "," +
-                            DOM_BOOK_SERIES_NUM + "," +
-                            DOM_BOOK_SERIES_POSITION + ")"
-                            + " VALUES(?,?,?,?)");
+                                                 "INSERT INTO " + TBL_BOOK_SERIES + '(' +
+                                                     DOM_FK_BOOK_ID + ',' +
+                                                     DOM_FK_SERIES_ID + ',' +
+                                                     DOM_BOOK_SERIES_NUM + ',' +
+                                                     DOM_BOOK_SERIES_POSITION + ')'
+                                                     + " VALUES(?,?,?,?)");
         }
 
         /*
@@ -1866,7 +1945,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                     }
                 }
 
-                String uniqueId = seriesId + "(" + series.number.toUpperCase() + ")";
+                String uniqueId = seriesId + "(" + series.number.toUpperCase() + ')';
                 if (!idHash.containsKey(uniqueId)) {
                     idHash.put(uniqueId, true);
                     pos++;
@@ -1879,7 +1958,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
             } catch (Exception e) {
                 Logger.error(e);
                 throw new DBExceptions.InsertException("Error adding series '" + series.name +
-                        "' {" + seriesId + "} to book " + bookId + ": " + e.getLocalizedMessage(), e);
+                                                           "' {" + seriesId + "} to book " + bookId + ": " + e.getLocalizedMessage(),
+                                                       e);
             }
         }
     }
@@ -1892,7 +1972,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param dirtyBookIfNecessary flag to set book dirty or not
      */
     private void insertOrUpdateTOC(final long bookId,
-                                   final @NonNull List<TOCEntry> list,
+                                   @NonNull final List<TOCEntry> list,
                                    boolean dirtyBookIfNecessary) {
         if (!mSyncedDb.inTransaction()) {
             throw new DBExceptions.TransactionException();
@@ -1906,7 +1986,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // set of updates could result in unique key or index violations.
         int rowsAffected = deleteTOCEntriesByBookId(bookId, false);
         if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
-            Logger.info(this, "deleteTOCEntriesByBookId: bookId=" + bookId + ", rowsAffected=" + rowsAffected);
+            Logger.info(this,
+                        "deleteTOCEntriesByBookId: bookId=" + bookId + ", rowsAffected=" + rowsAffected);
         }
 
         // anything to insert ?
@@ -1921,7 +2002,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
             long authorId = getOrInsertAuthorId(tocEntry.getAuthor());
 
             // insert new stories, or get the id from existing stories
-            long tocId = insertOrUpdateTOCEntry(authorId, tocEntry.getTitle(), tocEntry.getFirstPublication());
+            long tocId = insertOrUpdateTOCEntry(authorId, tocEntry.getTitle(),
+                                                tocEntry.getFirstPublication());
 
             // create the book<->TOCEntry link
             long btId = insertBookTOCEntry(tocId, bookId, false);
@@ -1948,7 +2030,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param dirtyBookIfNecessary flag to set book dirty or not
      */
     private void insertBookAuthors(final long bookId,
-                                   final @NonNull List<Author> list,
+                                   @NonNull final List<Author> list,
                                    final boolean dirtyBookIfNecessary) {
 
         if (!mSyncedDb.inTransaction()) {
@@ -1963,7 +2045,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // set of updates could result in unique key or index violations.
         if (mDeleteBookAuthorsStmt == null) {
             mDeleteBookAuthorsStmt = mStatements.add("mDeleteBookAuthorsStmt",
-                    "DELETE FROM " + TBL_BOOK_AUTHOR + " WHERE " + DOM_FK_BOOK_ID + "=?");
+                                                     "DELETE FROM " + TBL_BOOK_AUTHOR + " WHERE " + DOM_FK_BOOK_ID + "=?");
         }
         mDeleteBookAuthorsStmt.bindLong(1, bookId);
         mDeleteBookAuthorsStmt.executeUpdateDelete();
@@ -1975,12 +2057,12 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         if (mAddBookAuthorsStmt == null) {
             mAddBookAuthorsStmt = mStatements.add("mAddBookAuthorsStmt",
-                    "INSERT INTO " + TBL_BOOK_AUTHOR
-                            + "(" +
-                            DOM_FK_BOOK_ID + "," +
-                            DOM_FK_AUTHOR_ID + "," +
-                            DOM_BOOK_AUTHOR_POSITION +
-                            ") VALUES(?,?,?)");
+                                                  "INSERT INTO " + TBL_BOOK_AUTHOR
+                                                      + '(' +
+                                                      DOM_FK_BOOK_ID + ',' +
+                                                      DOM_FK_AUTHOR_ID + ',' +
+                                                      DOM_BOOK_AUTHOR_POSITION +
+                                                      ") VALUES(?,?,?)");
         }
 
         // The list MAY contain duplicates (eg. from Internet lookups of multiple
@@ -1993,7 +2075,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 // find/insert the author
                 authorId = getOrInsertAuthorId(author);
                 // we use the id as the KEY here, so yes, a String.
-                String authorIdStr = Long.toString(authorId);
+                String authorIdStr = String.valueOf(authorId);
                 if (!idHash.containsKey(authorIdStr)) {
                     // indicate this author(id) is already present... but override, so we get elimination of duplicates.
                     idHash.put(authorIdStr, true);
@@ -2011,7 +2093,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 }
             } catch (Exception e) {
                 Logger.error(e);
-                throw new DBExceptions.InsertException("Error adding author '" + author + "' {" + authorId + "} to book " + bookId + ": " + e.getLocalizedMessage(), e);
+                throw new DBExceptions.InsertException(
+                    "Error adding author '" + author + "' {" + authorId + "} to book " + bookId + ": " + e.getLocalizedMessage(),
+                    e);
             }
         }
 
@@ -2030,7 +2114,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param dirtyBookIfNecessary flag to set book dirty or not
      */
     private void insertBookBookshelf(final long bookId,
-                                     final @NonNull List<Bookshelf> list,
+                                     @NonNull final List<Bookshelf> list,
                                      final boolean dirtyBookIfNecessary) {
         if (!mSyncedDb.inTransaction()) {
             throw new DBExceptions.TransactionException();
@@ -2044,7 +2128,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // set of updates could result in unique key or index violations.
         if (mDeleteBookBookshelfStmt == null) {
             mDeleteBookBookshelfStmt = mStatements.add("mDeleteBookBookshelfStmt",
-                    "DELETE FROM " + TBL_BOOK_BOOKSHELF + " WHERE " + DOM_FK_BOOK_ID + "=?");
+                                                       "DELETE FROM " + TBL_BOOK_BOOKSHELF + " WHERE " + DOM_FK_BOOK_ID + "=?");
         }
         mDeleteBookBookshelfStmt.bindLong(1, bookId);
         mDeleteBookBookshelfStmt.executeUpdateDelete();
@@ -2056,10 +2140,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         if (mInsertBookBookshelfStmt == null) {
             mInsertBookBookshelfStmt = mStatements.add("mInsertBookBookshelfStmt",
-                    "INSERT INTO " + TBL_BOOK_BOOKSHELF + "(" +
-                            DOM_FK_BOOK_ID + "," +
-                            DOM_BOOKSHELF +
-                            ") VALUES (?,?)");
+                                                       "INSERT INTO " + TBL_BOOK_BOOKSHELF + '(' +
+                                                           DOM_FK_BOOK_ID + ',' +
+                                                           DOM_BOOKSHELF +
+                                                           ") VALUES (?,?)");
         }
 
         for (Bookshelf bookshelf : list) {
@@ -2091,9 +2175,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * transaction: needs
      * throws exceptions, caller must handle
      */
-    private void globalReplacePositionedBookItem(final @NonNull TableDefinition table,
-                                                 final @NonNull String objectIdField,
-                                                 final @NonNull String positionField,
+    private void globalReplacePositionedBookItem(@NonNull final TableDefinition table,
+                                                 @NonNull final String objectIdField,
+                                                 @NonNull final String positionField,
                                                  final long from,
                                                  final long to) {
 
@@ -2103,9 +2187,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         // Update books but prevent duplicate index errors - update books for which the new ID is not already present
         String sql = "UPDATE " + table +
-                " SET " + objectIdField + "=" + to +
-                " WHERE " + objectIdField + "=" + from +
-                " AND NOT EXISTS(SELECT NULL FROM " + table + " WHERE " + DOM_FK_BOOK_ID + "=" + DOM_FK_BOOK_ID + " AND " + objectIdField + "=" + to + ")";
+            " SET " + objectIdField + '=' + to +
+            " WHERE " + objectIdField + '=' + from +
+            " AND NOT EXISTS(SELECT NULL FROM " + table + " WHERE " + DOM_FK_BOOK_ID + '=' + DOM_FK_BOOK_ID + " AND " + objectIdField + '=' + to + ')';
 
         mSyncedDb.execSQL(sql);
 
@@ -2116,8 +2200,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // We also move remaining items up one place to ensure positions remain correct
         //
         sql = "SELECT * FROM " + table + " WHERE " +
-                objectIdField + "=" + from +
-                " AND EXISTS(SELECT NULL FROM " + table + " WHERE " + DOM_FK_BOOK_ID + "=" + table.dot(DOM_FK_BOOK_ID) + " AND " + objectIdField + "=" + to + ")";
+            objectIdField + '=' + from +
+            " AND EXISTS(SELECT NULL FROM " + table + " WHERE " + DOM_FK_BOOK_ID + '=' + table.dot(
+            DOM_FK_BOOK_ID) + " AND " + objectIdField + '=' + to + ')';
 
         SynchronizedStatement delStmt = null;
         SynchronizedStatement replacementIdPosStmt = null;
@@ -2131,28 +2216,28 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
             // Statement to delete a specific object record
             delStmt = mSyncedDb.compileStatement(
-                    "DELETE FROM " + table +
-                            " WHERE " + objectIdField + "=? AND " + DOM_FK_BOOK_ID + "=?");
+                "DELETE FROM " + table +
+                    " WHERE " + objectIdField + "=? AND " + DOM_FK_BOOK_ID + "=?");
 
             // Statement to get the position of the already-existing 'new/replacement' object
             replacementIdPosStmt = mSyncedDb.compileStatement(
-                    "SELECT " +
-                            positionField +
-                            " FROM " + table +
-                            " WHERE " + DOM_FK_BOOK_ID + "=? AND " + objectIdField + "=?");
+                "SELECT " +
+                    positionField +
+                    " FROM " + table +
+                    " WHERE " + DOM_FK_BOOK_ID + "=? AND " + objectIdField + "=?");
 
             // Move statement; move a single entry to a new position
             moveStmt = mSyncedDb.compileStatement(
-                    "UPDATE " + table +
-                            " SET " + positionField + "=?" +
-                            " WHERE " + DOM_FK_BOOK_ID + "=? AND " + positionField + "=?");
+                "UPDATE " + table +
+                    " SET " + positionField + "=?" +
+                    " WHERE " + DOM_FK_BOOK_ID + "=? AND " + positionField + "=?");
 
             // Sanity check to deal with legacy bad data
             checkMinStmt = mSyncedDb.compileStatement(
-                    "SELECT" +
-                            " min(" + positionField + ")" +
-                            " FROM " + table +
-                            " WHERE " + DOM_FK_BOOK_ID + "=?");
+                "SELECT" +
+                    " min(" + positionField + ')' +
+                    " FROM " + table +
+                    " WHERE " + DOM_FK_BOOK_ID + "=?");
 
             // Loop through all instances of the old author appearing
             while (cursor.moveToNext()) {
@@ -2222,17 +2307,19 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 return list;
             }
             ColumnMapper mapper = new ColumnMapper(cursor, DOM_FK_AUTHOR_ID,
-                    DOM_AUTHOR_FAMILY_NAME, DOM_AUTHOR_GIVEN_NAMES, DOM_AUTHOR_IS_COMPLETE,
-                    DOM_TITLE,DOM_FIRST_PUBLICATION);
+                                                   DOM_AUTHOR_FAMILY_NAME, DOM_AUTHOR_GIVEN_NAMES,
+                                                   DOM_AUTHOR_IS_COMPLETE,
+                                                   DOM_TITLE, DOM_FIRST_PUBLICATION);
             //DOM_BOOK_TOC_ENTRY_POSITION
 
             while (cursor.moveToNext()) {
                 Author author = new Author(
-                        mapper.getLong(DOM_FK_AUTHOR_ID),
-                        mapper.getString(DOM_AUTHOR_FAMILY_NAME),
-                        mapper.getString(DOM_AUTHOR_GIVEN_NAMES),
-                        mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE));
-                list.add(new TOCEntry(author, mapper.getString(DOM_TITLE), mapper.getString(DOM_FIRST_PUBLICATION)));
+                    mapper.getLong(DOM_FK_AUTHOR_ID),
+                    mapper.getString(DOM_AUTHOR_FAMILY_NAME),
+                    mapper.getString(DOM_AUTHOR_GIVEN_NAMES),
+                    mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE));
+                list.add(new TOCEntry(author, mapper.getString(DOM_TITLE),
+                                      mapper.getString(DOM_FIRST_PUBLICATION)));
             }
         }
         return list;
@@ -2251,9 +2338,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_AUTHORS);
             while (cursor.moveToNext()) {
                 list.add(new Author(mapper.getLong(DOM_PK_ID),
-                        mapper.getString(DOM_AUTHOR_FAMILY_NAME),
-                        mapper.getString(DOM_AUTHOR_GIVEN_NAMES),
-                        mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE)));
+                                    mapper.getString(DOM_AUTHOR_FAMILY_NAME),
+                                    mapper.getString(DOM_AUTHOR_GIVEN_NAMES),
+                                    mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE)));
             }
         }
         return list;
@@ -2272,9 +2359,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_SERIES, DOM_BOOK_SERIES_NUM);
             while (cursor.moveToNext()) {
                 list.add(new Series(mapper.getLong(DOM_PK_ID),
-                        mapper.getString(DOM_SERIES_NAME),
-                        mapper.getBoolean(DOM_SERIES_IS_COMPLETE),
-                        mapper.getString(DOM_BOOK_SERIES_NUM)));
+                                    mapper.getString(DOM_SERIES_NAME),
+                                    mapper.getBoolean(DOM_SERIES_IS_COMPLETE),
+                                    mapper.getString(DOM_BOOK_SERIES_NUM)));
             }
         }
         return list;
@@ -2320,67 +2407,68 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return A full piece of SQL to perform the search
      */
     @NonNull
-    private String getAllBooksSql(final @NonNull String whereClause) {
+    private String getAllBooksSql(@NonNull final String whereClause) {
 
         //TODO: redo this so the sql becomes static
 
         // there is no 'real' FROM table set. The 'from' is a combo of three sub-selects
         String fullSql = SELECT(
-                "b.*",
-                // these two SQL macros use "a." due to TBL_AUTHOR being "a." but that is just a happy (on purpose) coincidence.
-                // Here, the "a." refers to the JOIN "Get the 'default' author" (see below)
-                SqlString.FIELDS_FOR_AUTHOR,
-                SqlString.FIELDS_AUTHOR_FORMATTED_GIVEN_FIRST,
-                "a." + DOM_FK_AUTHOR_ID + " AS " + DOM_FK_AUTHOR_ID,
+            "b.*",
+            // these two SQL macros use "a." due to TBL_AUTHOR being "a." but that is just a happy (on purpose) coincidence.
+            // Here, the "a." refers to the JOIN "Get the 'default' author" (see below)
+            SqlString.FIELDS_FOR_AUTHOR,
+            SqlString.FIELDS_AUTHOR_FORMATTED_GIVEN_FIRST,
+            "a." + DOM_FK_AUTHOR_ID + " AS " + DOM_FK_AUTHOR_ID,
 
-                "Coalesce(s." + DOM_FK_SERIES_ID + ", 0) AS " + DOM_FK_SERIES_ID,
-                "Coalesce(s." + DOM_SERIES_NAME + ", '') AS " + DOM_SERIES_NAME,
-                "Coalesce(s." + DOM_BOOK_SERIES_NUM + ", '') AS " + DOM_BOOK_SERIES_NUM,
-                // if in more then one series, concat " et al"
-                " Case" +
-                        "  When " + COLUMN_ALIAS_NR_OF_SERIES + " < 2" +
-                        "   Then Coalesce(s." + DOM_SERIES_FORMATTED + ", '')" +
-                        "   Else " + DOM_SERIES_FORMATTED + "||' " + BookCatalogueApp.getResourceString(R.string.and_others) + "'" +
-                        " End AS " + DOM_SERIES_FORMATTED
+            "Coalesce(s." + DOM_FK_SERIES_ID + ", 0) AS " + DOM_FK_SERIES_ID,
+            "Coalesce(s." + DOM_SERIES_NAME + ", '') AS " + DOM_SERIES_NAME,
+            "Coalesce(s." + DOM_BOOK_SERIES_NUM + ", '') AS " + DOM_BOOK_SERIES_NUM,
+            // if in more then one series, concat " et al"
+            " Case" +
+                "  When " + COLUMN_ALIAS_NR_OF_SERIES + " < 2" +
+                "   Then Coalesce(s." + DOM_SERIES_FORMATTED + ", '')" +
+                "   Else " + DOM_SERIES_FORMATTED + "||' " + BookCatalogueApp.getResourceString(
+                R.string.and_others) + '\'' +
+                " End AS " + DOM_SERIES_FORMATTED
         ) +
-                " FROM (" +
-                /* */ "SELECT DISTINCT " + SqlString.FIELDS_FOR_BOOK + " FROM " + TBL_BOOKS.ref() +
-                /* */ (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ")" : "") +
-                /* */ " ORDER BY lower(" + TBL_BOOKS.dot(DOM_TITLE) + ") " + COLLATION + " ASC"
-                + ") b" +
+            " FROM (" +
+            /* */ "SELECT DISTINCT " + SqlString.FIELDS_FOR_BOOK + " FROM " + TBL_BOOKS.ref() +
+            /* */ (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "") +
+            /* */ " ORDER BY lower(" + TBL_BOOKS.dot(DOM_TITLE) + ") " + COLLATION + " ASC"
+            + ") b" +
 
-                // Get the 'default' author
-                " JOIN (" +
-                /* */ SELECT(
-                /* */ DOM_FK_AUTHOR_ID.name,
-                /* */ TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME),
-                /* */ TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES),
-                /* */ TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE),
-                /* */ SqlString.FIELDS_AUTHOR_FORMATTED,
-                /* */ TBL_BOOK_AUTHOR.dotAs(DOM_FK_BOOK_ID)
+            // Get the 'default' author
+            " JOIN (" +
+            /* */ SELECT(
+            /* */ DOM_FK_AUTHOR_ID.name,
+            /* */ TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME),
+            /* */ TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES),
+            /* */ TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE),
+            /* */ SqlString.FIELDS_AUTHOR_FORMATTED,
+            /* */ TBL_BOOK_AUTHOR.dotAs(DOM_FK_BOOK_ID)
         ) +
-                /* */ " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
-                ") a ON a." + DOM_FK_BOOK_ID + "=b." + DOM_PK_ID +
-                /* */ " AND a." + DOM_FK_AUTHOR_ID + "=b." + DOM_FK_AUTHOR_ID +
+            /* */ " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
+            ") a ON a." + DOM_FK_BOOK_ID + "=b." + DOM_PK_ID +
+            /* */ " AND a." + DOM_FK_AUTHOR_ID + "=b." + DOM_FK_AUTHOR_ID +
 
-                // Get the 'default' series
-                " LEFT OUTER JOIN (" +
-                /* */ SELECT(
-                /* */ DOM_FK_SERIES_ID.name,
-                /* */ TBL_SERIES.dotAs(DOM_SERIES_NAME),
-                /* */ TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE),
-                /* */ TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_NUM),
-                /* */ TBL_BOOK_SERIES.dotAs(DOM_FK_BOOK_ID),
-                /* */ " Case" +
-                        /* */ " When " + DOM_BOOK_SERIES_NUM + " = ''" +
-                        /* */ "  Then " + DOM_SERIES_NAME + "" +
-                        /* */ "  Else " + DOM_SERIES_NAME + "||' #'||" + DOM_BOOK_SERIES_NUM +
-                        /* */ " End AS " + DOM_SERIES_FORMATTED
+            // Get the 'default' series
+            " LEFT OUTER JOIN (" +
+            /* */ SELECT(
+            /* */ DOM_FK_SERIES_ID.name,
+            /* */ TBL_SERIES.dotAs(DOM_SERIES_NAME),
+            /* */ TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE),
+            /* */ TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_NUM),
+            /* */ TBL_BOOK_SERIES.dotAs(DOM_FK_BOOK_ID),
+            /* */ " Case" +
+                      /* */ " When " + DOM_BOOK_SERIES_NUM + " = ''" +
+                      /* */ "  Then " + DOM_SERIES_NAME + "" +
+                      /* */ "  Else " + DOM_SERIES_NAME + "||' #'||" + DOM_BOOK_SERIES_NUM +
+                      /* */ " End AS " + DOM_SERIES_FORMATTED
         ) +
-                /* */ " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
-                ") s ON s." + DOM_FK_BOOK_ID + "=b." + DOM_PK_ID +
-                /* */ " AND s." + DOM_FK_SERIES_ID + "=b." + DOM_FK_SERIES_ID +
-                /* */ " AND lower(s." + DOM_BOOK_SERIES_NUM + ")=lower(b." + DOM_BOOK_SERIES_NUM + ") " + COLLATION;
+            /* */ " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
+            ") s ON s." + DOM_FK_BOOK_ID + "=b." + DOM_PK_ID +
+            /* */ " AND s." + DOM_FK_SERIES_ID + "=b." + DOM_FK_SERIES_ID +
+            /* */ " AND lower(s." + DOM_BOOK_SERIES_NUM + ")=lower(b." + DOM_BOOK_SERIES_NUM + ") " + COLLATION;
 
 
         if (DEBUG_SWITCHES.SQL && DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
@@ -2398,8 +2486,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return @return {@link Cursor} containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBookById(final long bookId) throws DBExceptions.NotFoundException {
-        return fetchBooksWhere(TBL_BOOKS.dot(DOM_PK_ID) + "=?", new String[]{Long.toString(bookId)}, "");
+    public BookCursor fetchBookById(final long bookId)
+        throws DBExceptions.NotFoundException {
+        return fetchBooksWhere(TBL_BOOKS.dot(DOM_PK_ID) + "=?",
+                               new String[]{String.valueOf(bookId)}, "");
     }
 
     /**
@@ -2410,9 +2500,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    private BookCursor fetchBooks(final @NonNull String sql,
-                                  final @Nullable String[] selectionArgs) {
-        return (BookCursor) mSyncedDb.rawQueryWithFactory(mBooksCursorFactory, sql, selectionArgs, "");
+    private BookCursor fetchBooks(@NonNull final String sql,
+                                  @Nullable final String[] selectionArgs) {
+        return (BookCursor) mSyncedDb.rawQueryWithFactory(mBooksCursorFactory, sql, selectionArgs,
+                                                          "");
     }
 
     /**
@@ -2425,9 +2516,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBooksWhere(final @NonNull String whereClause,
-                                      final @Nullable String[] selectionArgs,
-                                      final @NonNull String order) {
+    public BookCursor fetchBooksWhere(@NonNull final String whereClause,
+                                      @Nullable final String[] selectionArgs,
+                                      @NonNull final String order) {
         String sql = getAllBooksSql(whereClause);
         if (!order.isEmpty()) {
             sql += " ORDER BY " + order;
@@ -2444,14 +2535,14 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBooksByIsbnList(final @NonNull List<String> isbnList) {
+    public BookCursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
         if (isbnList.size() == 0) {
             throw new IllegalArgumentException("isbnList was empty");
         }
 
         StringBuilder where = new StringBuilder(TBL_BOOKS.dot(DOM_BOOK_ISBN));
         if (isbnList.size() == 1) {
-            where.append("='").append(encodeString(isbnList.get(0))).append("'");
+            where.append("='").append(encodeString(isbnList.get(0))).append('\'');
         } else {
             where.append(" IN (");
             boolean first = true;
@@ -2459,11 +2550,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 if (first) {
                     first = false;
                 } else {
-                    where.append(",");
+                    where.append(',');
                 }
-                where.append("'").append(encodeString(isbn)).append("'");
+                where.append('\'').append(encodeString(isbn)).append('\'');
             }
-            where.append(")");
+            where.append(')');
         }
         return fetchBooksWhere(where.toString(), null, "");
     }
@@ -2476,22 +2567,23 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return BookCursor over all books, authors, etc
      */
     @NonNull
-    public BookCursor fetchFlattenedBooks(final @Nullable Date sinceDate) {
+    public BookCursor fetchFlattenedBooks(@Nullable final Date sinceDate) {
         String whereClause;
         if (sinceDate == null) {
             whereClause = "";
         } else {
-            whereClause = " WHERE " + TBL_BOOKS.dot(DOM_LAST_UPDATE_DATE) + " > '" + DateUtils.utcSqlDateTime(sinceDate) + "' ";
+            whereClause = " WHERE " + TBL_BOOKS.dot(
+                DOM_LAST_UPDATE_DATE) + " > '" + DateUtils.utcSqlDateTime(sinceDate) + "' ";
         }
 
         String sql = SELECT_DISTINCT(
-                SqlString.FIELDS_FOR_BOOK,
-                TBL_LOAN.dotAs(DOM_LOANED_TO)
+            SqlString.FIELDS_FOR_BOOK,
+            TBL_LOAN.dotAs(DOM_LOANED_TO)
         ) +
-                " FROM " + TBL_BOOKS.ref() + " LEFT OUTER JOIN " + TBL_LOAN.ref() +
-                " ON (" + TBL_LOAN.dot(DOM_FK_BOOK_ID) + "=" + TBL_BOOKS.dot(DOM_PK_ID) + ") " +
-                whereClause +
-                " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
+            " FROM " + TBL_BOOKS.ref() + " LEFT OUTER JOIN " + TBL_LOAN.ref() +
+            " ON (" + TBL_LOAN.dot(DOM_FK_BOOK_ID) + '=' + TBL_BOOKS.dot(DOM_PK_ID) + ") " +
+            whereClause +
+            " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
         return fetchBooks(sql, null);
     }
 
@@ -2502,7 +2594,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    public long insertBookshelf(final @NonNull Bookshelf /* in/out */ bookshelf) {
+    public long insertBookshelf(@NonNull final Bookshelf /* in/out */ bookshelf) {
         // TODO: Decide if we need to backup EMPTY bookshelves...
         ContentValues cv = new ContentValues();
         cv.put(DOM_BOOKSHELF.name, bookshelf.name);
@@ -2519,16 +2611,17 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @throws DBExceptions.UpdateException if the update failed
      */
-    public void mergeBookshelves(final long sourceId, final long destId)
-            throws DBExceptions.UpdateException {
+    public void mergeBookshelves(final long sourceId,
+                                 final long destId)
+        throws DBExceptions.UpdateException {
 
         SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
             String sql = "UPDATE " + TBL_BOOK_BOOKSHELF +
-                    " SET " + DOM_FK_BOOKSHELF_ID + "=" + destId + " WHERE " + DOM_FK_BOOKSHELF_ID + "=" + sourceId;
+                " SET " + DOM_FK_BOOKSHELF_ID + '=' + destId + " WHERE " + DOM_FK_BOOKSHELF_ID + '=' + sourceId;
             mSyncedDb.execSQL(sql);
 
-            sql = "DELETE FROM " + TBL_BOOKSHELF + " WHERE " + DOM_PK_ID + "=" + sourceId;
+            sql = "DELETE FROM " + TBL_BOOKSHELF + " WHERE " + DOM_PK_ID + '=' + sourceId;
             mSyncedDb.execSQL(sql);
 
             mSyncedDb.setTransactionSuccessful();
@@ -2550,10 +2643,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @throws SQLiteDoneException if zero rows found
      */
     @NonNull
-    public String getBookshelfName(final long id) throws SQLiteDoneException {
+    public String getBookshelfName(final long id)
+        throws SQLiteDoneException {
         if (mGetBookshelfNameQuery == null) {
             mGetBookshelfNameQuery = mStatements.add("mGetBookshelfNameQuery",
-                    SqlString.GET_BOOKSHELF_NAME_BY_ID);
+                                                     SqlString.GET_BOOKSHELF_NAME_BY_ID);
         }
         mGetBookshelfNameQuery.bindLong(1, id);
         return mGetBookshelfNameQuery.simpleQueryForString();
@@ -2569,8 +2663,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @SuppressWarnings("UnusedReturnValue")
     public int deleteBookshelf(final long id) {
 
-        boolean dirty = (0 < mSyncedDb.delete(TBL_BOOK_BOOKSHELF.getName(), DOM_BOOKSHELF + "=?", new String[]{Long.toString(id)}));
-        int rowsAffected = mSyncedDb.delete(TBL_BOOKSHELF.getName(), DOM_PK_ID + "=?", new String[]{Long.toString(id)});
+        boolean dirty = (0 < mSyncedDb.delete(TBL_BOOK_BOOKSHELF.getName(), DOM_BOOKSHELF + "=?",
+                                              new String[]{String.valueOf(id)}));
+        int rowsAffected = mSyncedDb.delete(TBL_BOOKSHELF.getName(), DOM_PK_ID + "=?",
+                                            new String[]{String.valueOf(id)});
 
         if (dirty || rowsAffected > 0) {
             setBooksDirtyByBookshelfId(id);
@@ -2583,7 +2679,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the id or 0 if not found
      */
-    public long getBookshelfId(final @NonNull Bookshelf bookshelf) {
+    public long getBookshelfId(@NonNull final Bookshelf bookshelf) {
         Bookshelf bs = getBookshelfByName(bookshelf.name);
         return (bs != null ? bs.id : 0);
     }
@@ -2594,13 +2690,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return the Bookshelf, or null if not found
      */
     @Nullable
-    public Bookshelf getBookshelfByName(final @NonNull String name) {
+    public Bookshelf getBookshelfByName(@NonNull final String name) {
         if (mGetBookshelfIdQuery == null) {
             mGetBookshelfIdQuery = mStatements.add("mGetBookshelfIdQuery",
-                    "SELECT " +
-                            DOM_PK_ID +
-                            " FROM " + TBL_BOOKSHELF +
-                            " WHERE lower(" + DOM_BOOKSHELF + ") = lower(?)" + COLLATION);
+                                                   "SELECT " +
+                                                       DOM_PK_ID +
+                                                       " FROM " + TBL_BOOKSHELF +
+                                                       " WHERE lower(" + DOM_BOOKSHELF + ") = lower(?)" + COLLATION);
         }
 
         mGetBookshelfIdQuery.bindString(1, name);
@@ -2619,10 +2715,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @Nullable
     public Bookshelf getBookshelf(final long id) {
         String sql = SELECT(DOM_PK_ID.name, DOM_BOOKSHELF.name) +
-                " FROM " + TBL_BOOKSHELF +
-                " WHERE " + DOM_PK_ID + "=?";
+            " FROM " + TBL_BOOKSHELF +
+            " WHERE " + DOM_PK_ID + "=?";
 
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{Long.toString(id)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Bookshelf(id, cursor.getString(0));
             }
@@ -2640,14 +2736,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @throws DBExceptions.UpdateException on failure to update
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int updateBookshelf(final @NonNull Bookshelf bookshelf)
-            throws DBExceptions.UpdateException {
+    public int updateBookshelf(@NonNull final Bookshelf bookshelf)
+        throws DBExceptions.UpdateException {
 
         ContentValues cv = new ContentValues();
         cv.put(DOM_BOOKSHELF.name, bookshelf.name);
 
         int rowsAffected = mSyncedDb.update(TBL_BOOKSHELF.getName(), cv,
-                DOM_PK_ID + "=?", new String[]{Long.toString(bookshelf.id)});
+                                            DOM_PK_ID + "=?",
+                                            new String[]{String.valueOf(bookshelf.id)});
 
         if (rowsAffected == 1) {
             setBooksDirtyByBookshelfId(bookshelf.id);
@@ -2668,8 +2765,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @throws DBExceptions.UpdateException if the update failed
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long insertOrUpdateBookshelf(final @NonNull /* in/out */ Bookshelf bookshelf)
-            throws DBExceptions.UpdateException {
+    public long insertOrUpdateBookshelf(@NonNull final /* in/out */ Bookshelf bookshelf)
+        throws DBExceptions.UpdateException {
 
         if (bookshelf.id != 0) {
             // check if we actually need to update
@@ -2689,13 +2786,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return bookshelf id, or 0 when not found
      */
-    private long getBookshelfIdByName(final @NonNull String name) {
+    private long getBookshelfIdByName(@NonNull final String name) {
         if (mGetBookshelfIdByNameQuery == null) {
             mGetBookshelfIdByNameQuery = mStatements.add("mGetBookshelfIdByNameQuery",
-                    "SELECT " +
-                            DOM_PK_ID +
-                            " FROM " + DOM_BOOKSHELF +
-                            " WHERE lower(" + DOM_BOOKSHELF + ") = lower(?)" + COLLATION);
+                                                         "SELECT " +
+                                                             DOM_PK_ID +
+                                                             " FROM " + DOM_BOOKSHELF +
+                                                             " WHERE lower(" + DOM_BOOKSHELF + ") = lower(?)" + COLLATION);
         }
         mGetBookshelfIdByNameQuery.bindString(1, name);
         return mGetBookshelfIdByNameQuery.simpleQueryForLongOrZero();
@@ -2726,7 +2823,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @NonNull
     public Cursor fetchBookshelvesByBookId(final long bookId) {
-        return mSyncedDb.rawQuery(SqlString.GET_BOOKSHELVES_BY_BOOK_ID, new String[]{Long.toString(bookId)});
+        return mSyncedDb.rawQuery(SqlString.GET_BOOKSHELVES_BY_BOOK_ID,
+                                  new String[]{String.valueOf(bookId)});
     }
 
     public ArrayList<Bookshelf> getBookshelvesByBookId(final long bookId) {
@@ -2743,49 +2841,32 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return a list of all defined styles in the database
      */
     @NonNull
-    public List<BooklistStyle> getBooklistStyles() {
-        final List<BooklistStyle> list = new ArrayList<>();
+    public Map<Long, BooklistStyle> getBooklistStyles() {
+        Map<Long, BooklistStyle> list = new LinkedHashMap<>();
         try (Cursor cursor = mSyncedDb.rawQuery(SqlString.GET_ALL_BOOKLIST_STYLES, null)) {
-            ColumnMapper mapper = new ColumnMapper(cursor, TBL_BOOKLIST_STYLES);
+            ColumnMapper mapper = new ColumnMapper(cursor, DOM_PK_ID, DOM_UUID);
             while (cursor.moveToNext()) {
                 long id = mapper.getLong(DOM_PK_ID);
-                byte[] blob = mapper.getBlob(DOM_STYLE);
-                BooklistStyle style;
-                try {
-                    style = SerializationUtils.deserializeObject(blob);
-                    style.id = id;
-                    list.add(style);
-                } catch (RTE.DeserializationException e) {
-                    Logger.error(e, "BooklistStyle id=" + id);
-                    // Not much we can do; just delete it. Really should only happen in development.
-                    deleteBooklistStyle(id);
-                }
+                list.put(id, new BooklistStyle(id, mapper.getString(DOM_UUID)));
             }
         }
         return list;
     }
 
     /**
-     * Save this style as a custom user style to the database.
-     * Either updates or creates as necessary
+     * Get the id of a Style with matching UUID
      *
-     * @return insert: the row ID of the newly inserted row, or -1 if an error occurred during insert
-     * update: the existing id
+     * @param uuid to find
+     *
+     * @return id
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public long insertOrUpdateBooklistStyle(final @NonNull BooklistStyle /* in/out */ style) {
-        if (style.id != 0) {
-            updateBooklistStyle(style);
-        } else {
-            long newId = insertBooklistStyle(style);
-            if (newId > 0) {
-                style.id = newId;
-            } else {
-                //error
-                return newId;
-            }
+    public long getBooklistStyleIdByUuid(@NonNull final String uuid) {
+        if (mGetBooklistStyleStmt == null) {
+            mGetBooklistStyleStmt = mStatements.add("mGetBooklistStyleStmt",
+                                                    SqlString.GET_BOOKLIST_STYLE_ID_BY_UUID);
         }
-        return style.id;
+        mGetBooklistStyleStmt.bindString(1, uuid);
+        return mGetBooklistStyleStmt.simpleQueryForLongOrZero();
     }
 
     /**
@@ -2795,12 +2876,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the row ID of the last row inserted, if this insert is successful. -1 otherwise.
      */
-    private long insertBooklistStyle(final @NonNull BooklistStyle style) {
+    public long insertBooklistStyle(@NonNull final BooklistStyle /* in/out */ style) {
         if (mInsertBooklistStyleStmt == null) {
             mInsertBooklistStyleStmt = mStatements.add("mInsertBooklistStyleStmt",
-                    TBL_BOOKLIST_STYLES.getInsert(DOM_STYLE) + " VALUES (?)");
+                                                       TBL_BOOKLIST_STYLES.getInsert(
+                                                           DOM_UUID) + " VALUES (?)");
         }
-        mInsertBooklistStyleStmt.bindBlob(1, SerializationUtils.serializeObject(style));
+        mInsertBooklistStyleStmt.bindString(1, style.uuid);
         long id = mInsertBooklistStyleStmt.executeInsert();
         if (id > 0) {
             style.id = id;
@@ -2808,22 +2890,32 @@ public class CatalogueDBAdapter implements AutoCloseable {
         return id;
     }
 
-    private void updateBooklistStyle(final @NonNull BooklistStyle style) {
+    public void updateBooklistStyle(@NonNull final BooklistStyle style) {
         if (mUpdateBooklistStyleStmt == null) {
             mUpdateBooklistStyleStmt = mStatements.add("mUpdateBooklistStyleStmt",
-                    TBL_BOOKLIST_STYLES.getInsertOrReplaceValues(DOM_PK_ID, DOM_STYLE));
+                                                       TBL_BOOKLIST_STYLES.getInsertOrReplaceValues(
+                                                           DOM_PK_ID, DOM_UUID));
         }
         mUpdateBooklistStyleStmt.bindLong(1, style.id);
-        mUpdateBooklistStyleStmt.bindBlob(2, SerializationUtils.serializeObject(style));
+        mUpdateBooklistStyleStmt.bindString(2, style.uuid);
         mUpdateBooklistStyleStmt.executeUpdateDelete();
     }
 
     public void deleteBooklistStyle(final long id) {
         if (mDeleteBooklistStyleStmt == null) {
             mDeleteBooklistStyleStmt = mStatements.add("mDeleteBooklistStyleStmt",
-                    "DELETE FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_PK_ID + "=?");
+                                                       "DELETE FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_PK_ID + "=?");
         }
         mDeleteBooklistStyleStmt.bindLong(1, id);
+        mDeleteBooklistStyleStmt.executeUpdateDelete();
+    }
+
+    public void deleteBooklistStyle(final String uuid) {
+        if (mDeleteBooklistStyleStmt == null) {
+            mDeleteBooklistStyleStmt = mStatements.add("mDeleteBooklistStyleStmt",
+                                                       "DELETE FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_UUID + "=?");
+        }
+        mDeleteBooklistStyleStmt.bindString(1, uuid);
         mDeleteBooklistStyleStmt.executeUpdateDelete();
     }
 
@@ -2842,8 +2934,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return {@link Cursor} containing all records, if any
      */
     @NonNull
-    public Cursor fetchSearchSuggestions(final @NonNull String query) {
-        String q = query + "%";
+    public Cursor fetchSearchSuggestions(@NonNull final String query) {
+        String q = query + '%';
         return mSyncedDb.rawQuery(SqlString.SEARCH_SUGGESTIONS, new String[]{q, q, q, q});
     }
 
@@ -2853,7 +2945,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return The list
      */
     @NonNull
-    public ArrayList<String> getCurrencyCodes(final @NonNull String type) {
+    public ArrayList<String> getCurrencyCodes(@NonNull final String type) {
         String column;
         if (UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY.equals(type)) {
             column = DOM_BOOK_PRICE_LISTED_CURRENCY.name;
@@ -2863,9 +2955,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
 
         String sql = "SELECT DISTINCT " +
-                column +
-                " FROM " + TBL_BOOKS +
-                " ORDER BY lower(" + column + ") " + COLLATION;
+            column +
+            " FROM " + TBL_BOOKS +
+            " ORDER BY lower(" + column + ") " + COLLATION;
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
             ArrayList<String> list = getFirstColumnAsList(cursor);
@@ -2892,13 +2984,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
     }
 
-    public void globalReplaceFormat(final @NonNull String from, final @NonNull String to) {
+    public void globalReplaceFormat(@NonNull final String from,
+                                    @NonNull final String to) {
         if (Objects.equals(from, to)) {
             return;
         }
         // Update books but prevent duplicate index errors
         if (mGlobalReplaceFormat == null) {
-            mGlobalReplaceFormat = mStatements.add("mGlobalReplaceFormat", SqlString.GLOBAL_REPLACE_FORMAT);
+            mGlobalReplaceFormat = mStatements.add("mGlobalReplaceFormat",
+                                                   SqlString.GLOBAL_REPLACE_FORMAT);
         }
         mGlobalReplaceFormat.bindString(1, to);
         mGlobalReplaceFormat.bindString(2, from);
@@ -2917,13 +3011,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
     }
 
-    public void globalReplaceGenre(final @NonNull String from, final @NonNull String to) {
+    public void globalReplaceGenre(@NonNull final String from,
+                                   @NonNull final String to) {
         if (Objects.equals(from, to)) {
             return;
         }
         // Update books but prevent duplicate index errors
         if (mGlobalReplaceGenre == null) {
-            mGlobalReplaceGenre = mStatements.add("mGlobalReplaceGenre", SqlString.GLOBAL_REPLACE_GENRE);
+            mGlobalReplaceGenre = mStatements.add("mGlobalReplaceGenre",
+                                                  SqlString.GLOBAL_REPLACE_GENRE);
         }
         mGlobalReplaceGenre.bindString(1, to);
         mGlobalReplaceGenre.bindString(2, from);
@@ -2957,13 +3053,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
         return names;
     }
 
-    public void globalReplaceLanguage(final @NonNull String from, final @NonNull String to) {
+    public void globalReplaceLanguage(@NonNull final String from,
+                                      @NonNull final String to) {
         if (Objects.equals(from, to)) {
             return;
         }
         // Update books but prevent duplicate index errors
         if (mGlobalReplaceLanguage == null) {
-            mGlobalReplaceLanguage = mStatements.add("mGlobalReplaceLanguage", SqlString.GLOBAL_REPLACE_LANGUAGE);
+            mGlobalReplaceLanguage = mStatements.add("mGlobalReplaceLanguage",
+                                                     SqlString.GLOBAL_REPLACE_LANGUAGE);
         }
         mGlobalReplaceLanguage.bindString(1, to);
         mGlobalReplaceLanguage.bindString(2, from);
@@ -2980,9 +3078,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @Nullable
     public String getLoanByBookId(final long bookId) {
         try (Cursor cursor = mSyncedDb.query(TBL_LOAN.getName(),
-                new String[]{DOM_FK_BOOK_ID.name, DOM_LOANED_TO.name},
-                DOM_FK_BOOK_ID + "=?", new String[]{Long.toString(bookId)},
-                null, null, null)) {
+                                             new String[]{DOM_FK_BOOK_ID.name, DOM_LOANED_TO.name},
+                                             DOM_FK_BOOK_ID + "=?",
+                                             new String[]{String.valueOf(bookId)},
+                                             null, null, null)) {
 
             // 1= DOM_LOANED_TO.name
             return cursor.moveToFirst() ? cursor.getString(1) : null;
@@ -2998,7 +3097,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long insertLoan(final @NonNull Book book, final boolean dirtyBookIfNecessary) {
+    public long insertLoan(@NonNull final Book book,
+                           final boolean dirtyBookIfNecessary) {
         ContentValues cv = new ContentValues();
         cv.put(DOM_FK_BOOK_ID.name, book.getBookId());
         cv.put(DOM_LOANED_TO.name, book.getString(DOM_LOANED_TO.name));
@@ -3022,10 +3122,11 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return the number of rows affected
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int deleteLoan(final long bookId, final boolean dirtyBookIfNecessary) {
+    public int deleteLoan(final long bookId,
+                          final boolean dirtyBookIfNecessary) {
         int rowsAffected = mSyncedDb.delete(TBL_LOAN.getName(),
-                DOM_FK_BOOK_ID + "=?",
-                new String[]{Long.toString(bookId)});
+                                            DOM_FK_BOOK_ID + "=?",
+                                            new String[]{String.valueOf(bookId)});
         if (rowsAffected > 0) {
             purgeLoans();
             if (dirtyBookIfNecessary) {
@@ -3042,9 +3143,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     private void purgeLoans() {
         mSyncedDb.delete(TBL_LOAN.getName(),
-                "(" + DOM_FK_BOOK_ID + "='' OR " + DOM_FK_BOOK_ID + "=null" +
-                        " OR " + DOM_LOANED_TO + "='' OR " + DOM_LOANED_TO + "=null) ",
-                null);
+                         "(" + DOM_FK_BOOK_ID + "='' OR " + DOM_FK_BOOK_ID + "=null" +
+                             " OR " + DOM_LOANED_TO + "='' OR " + DOM_LOANED_TO + "=null) ",
+                         null);
     }
 
     /**
@@ -3059,13 +3160,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
     }
 
-    public void globalReplaceLocation(final @NonNull String from, final @NonNull String to) {
+    public void globalReplaceLocation(@NonNull final String from,
+                                      @NonNull final String to) {
         if (Objects.equals(from, to)) {
             return;
         }
         // Update books but prevent duplicate index errors
         if (mGlobalReplaceLocation == null) {
-            mGlobalReplaceLocation = mStatements.add("mGlobalReplaceLocation", SqlString.GLOBAL_REPLACE_LOCATION);
+            mGlobalReplaceLocation = mStatements.add("mGlobalReplaceLocation",
+                                                     SqlString.GLOBAL_REPLACE_LOCATION);
         }
         mGlobalReplaceLocation.bindString(1, to);
         mGlobalReplaceLocation.bindString(2, from);
@@ -3084,13 +3187,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
     }
 
-    public void globalReplacePublisher(final @NonNull Publisher from, final @NonNull Publisher to) {
+    public void globalReplacePublisher(@NonNull final Publisher from,
+                                       @NonNull final Publisher to) {
         if (Objects.equals(from, to)) {
             return;
         }
         // Update books but prevent duplicate index errors
         if (mGlobalReplacePublisher == null) {
-            mGlobalReplacePublisher = mStatements.add("mGlobalReplacePublisher", SqlString.GLOBAL_REPLACE_PUBLISHER);
+            mGlobalReplacePublisher = mStatements.add("mGlobalReplacePublisher",
+                                                      SqlString.GLOBAL_REPLACE_PUBLISHER);
         }
         mGlobalReplacePublisher.bindString(1, to.name);
         mGlobalReplacePublisher.bindString(2, from.name);
@@ -3104,7 +3209,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    private long insertSeries(final @NonNull Series series) {
+    private long insertSeries(@NonNull final Series series) {
         ContentValues cv = new ContentValues();
         cv.put(DOM_SERIES_NAME.name, series.name);
         cv.put(DOM_SERIES_IS_COMPLETE.name, series.isComplete);
@@ -3122,15 +3227,16 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @throws DBExceptions.UpdateException on failure to update
      */
-    public int updateSeries(final @NonNull Series series)
-            throws DBExceptions.UpdateException {
+    public int updateSeries(@NonNull final Series series)
+        throws DBExceptions.UpdateException {
 
         ContentValues cv = new ContentValues();
         cv.put(DOM_SERIES_NAME.name, series.name);
         cv.put(DOM_SERIES_IS_COMPLETE.name, series.isComplete);
 
         int rowsAffected = mSyncedDb.update(TBL_SERIES.getName(), cv,
-                DOM_PK_ID + "=?", new String[]{Long.toString(series.id)});
+                                            DOM_PK_ID + "=?",
+                                            new String[]{String.valueOf(series.id)});
         if (rowsAffected == 1) {
             setBooksDirtyBySeriesId(series.id);
             return 1;
@@ -3150,8 +3256,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @throws DBExceptions.UpdateException if the update failed
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long insertOrUpdateSeries(final @NonNull /* in/out */ Series series)
-            throws DBExceptions.UpdateException {
+    public long insertOrUpdateSeries(@NonNull final /* in/out */ Series series)
+        throws DBExceptions.UpdateException {
 
         if (series.id != 0) {
             // check if we actually need to update
@@ -3173,7 +3279,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteSeries(final long id) {
-        int rowsAffected = mSyncedDb.delete(TBL_BOOK_SERIES.getName(), DOM_FK_SERIES_ID + "=?", new String[]{Long.toString(id)});
+        int rowsAffected = mSyncedDb.delete(TBL_BOOK_SERIES.getName(), DOM_FK_SERIES_ID + "=?",
+                                            new String[]{String.valueOf(id)});
         if (rowsAffected > 0) {
             setBooksDirtyBySeriesId(id);
             purgeSeries();
@@ -3199,35 +3306,35 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @Nullable
     public Series getSeries(final long id) {
         String sql = SELECT(
-                TBL_SERIES.dotAs(DOM_SERIES_NAME),
-                TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE)
+            TBL_SERIES.dotAs(DOM_SERIES_NAME),
+            TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE)
         ) +
-                " FROM " + TBL_SERIES.ref() + " WHERE " + DOM_PK_ID + "=?";
+            " FROM " + TBL_SERIES.ref() + " WHERE " + DOM_PK_ID + "=?";
 
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{Long.toString(id)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(id)})) {
             return cursor.moveToFirst() ?
-                    new Series(id, cursor.getString(0), (cursor.getInt(1) == 1), "")
-                    : null;
+                new Series(id, cursor.getString(0), (cursor.getInt(1) == 1), "")
+                : null;
         }
     }
 
     /**
      * @return the id, or 0 when not found
      */
-    public long getSeriesId(final @NonNull Series s) {
+    public long getSeriesId(@NonNull final Series s) {
         return getSeriesIdByName(s.name);
     }
 
     /**
      * @return the id, or 0 when not found
      */
-    public long getSeriesIdByName(final @NonNull String name) {
+    public long getSeriesIdByName(@NonNull final String name) {
         if (mGetSeriesIdQuery == null) {
             mGetSeriesIdQuery = mStatements.add("mGetSeriesIdQuery",
-                    "SELECT " +
-                            DOM_PK_ID +
-                            " FROM " + TBL_SERIES +
-                            " WHERE lower(" + DOM_SERIES_NAME + ") = lower(?)" + COLLATION);
+                                                "SELECT " +
+                                                    DOM_PK_ID +
+                                                    " FROM " + TBL_SERIES +
+                                                    " WHERE lower(" + DOM_SERIES_NAME + ") = lower(?)" + COLLATION);
         }
         mGetSeriesIdQuery.bindString(1, name);
         return mGetSeriesIdQuery.simpleQueryForLongOrZero();
@@ -3237,8 +3344,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @throws DBExceptions.UpdateException   on failure to insertOrUpdateSeries(to) or on the global replace itself
      * @throws DBExceptions.NotFoundException on failure to find old series
      */
-    public void globalReplaceSeries(final @NonNull Series from, final @NonNull Series to)
-            throws DBExceptions.UpdateException, DBExceptions.NotFoundException {
+    public void globalReplaceSeries(@NonNull final Series from,
+                                    @NonNull final Series to)
+        throws DBExceptions.UpdateException, DBExceptions.NotFoundException {
         // Create or update the new series
         if (to.id == 0) {
             // try to find
@@ -3271,17 +3379,19 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
             // Update books but prevent duplicate index errors
             if (mGlobalReplaceSeries == null) {
-                mGlobalReplaceSeries = mStatements.add("mGlobalReplaceSeries", SqlString.GLOBAL_REPLACE_SERIES);
+                mGlobalReplaceSeries = mStatements.add("mGlobalReplaceSeries",
+                                                       SqlString.GLOBAL_REPLACE_SERIES);
             }
             mGlobalReplaceSeries.bindLong(1, to.id);
             mGlobalReplaceSeries.bindLong(2, from.id);
             mGlobalReplaceSeries.bindLong(3, to.id);
             mGlobalReplaceSeries.executeUpdateDelete();
 
-            globalReplacePositionedBookItem(TBL_BOOK_SERIES, DOM_FK_SERIES_ID.name, DOM_BOOK_SERIES_POSITION.name, from.id, to.id);
+            globalReplacePositionedBookItem(TBL_BOOK_SERIES, DOM_FK_SERIES_ID.name,
+                                            DOM_BOOK_SERIES_POSITION.name, from.id, to.id);
 
             mSyncedDb.setTransactionSuccessful();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e);
             throw new DBExceptions.UpdateException(e);
         } finally {
@@ -3298,23 +3408,23 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         if (mPurgeBookSeriesStmt == null) {
             mPurgeBookSeriesStmt = mStatements.add("mPurgeBookSeriesStmt",
-                    "DELETE FROM " + TBL_BOOK_SERIES + " WHERE " + DOM_FK_BOOK_ID +
-                            " NOT IN (SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKS + ")");
+                                                   "DELETE FROM " + TBL_BOOK_SERIES + " WHERE " + DOM_FK_BOOK_ID +
+                                                       " NOT IN (SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKS + ')');
         }
         try {
             mPurgeBookSeriesStmt.executeUpdateDelete();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Failed to purge " + TBL_BOOK_SERIES);
         }
 
         if (mPurgeSeriesStmt == null) {
             mPurgeSeriesStmt = mStatements.add("mPurgeSeriesStmt",
-                    "DELETE FROM " + TBL_SERIES + " WHERE " + DOM_PK_ID +
-                            " NOT IN (SELECT DISTINCT " + DOM_FK_SERIES_ID + " FROM " + TBL_BOOK_SERIES + ") ");
+                                               "DELETE FROM " + TBL_SERIES + " WHERE " + DOM_PK_ID +
+                                                   " NOT IN (SELECT DISTINCT " + DOM_FK_SERIES_ID + " FROM " + TBL_BOOK_SERIES + ") ");
         }
         try {
             mPurgeSeriesStmt.executeUpdateDelete();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Failed to purge " + TBL_SERIES);
         }
     }
@@ -3324,7 +3434,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * @return number of books in series
      */
-    public long countSeriesBooks(final @NonNull Series series) {
+    public long countSeriesBooks(@NonNull final Series series) {
         if (series.id == 0) {
             series.id = getSeriesId(series);
         }
@@ -3334,10 +3444,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
         if (mGetSeriesBookCountQuery == null) {
             mGetSeriesBookCountQuery = mStatements.add("mGetSeriesBookCountQuery",
-                    "SELECT" +
-                            " COUNT(" + DOM_FK_BOOK_ID + ")" +
-                            " FROM " + TBL_BOOK_SERIES +
-                            " WHERE " + DOM_FK_SERIES_ID + "=?");
+                                                       "SELECT" +
+                                                           " COUNT(" + DOM_FK_BOOK_ID + ')' +
+                                                           " FROM " + TBL_BOOK_SERIES +
+                                                           " WHERE " + DOM_FK_SERIES_ID + "=?");
         }
         // Be cautious
         synchronized (mGetSeriesBookCountQuery) {
@@ -3367,16 +3477,18 @@ public class CatalogueDBAdapter implements AutoCloseable {
      */
     @NonNull
     private Cursor fetchAllSeriesByBookId(final long id) {
-        return mSyncedDb.rawQuery(SqlString.GET_SERIES_BY_BOOK_ID, new String[]{Long.toString(id)});
+        return mSyncedDb.rawQuery(SqlString.GET_SERIES_BY_BOOK_ID,
+                                  new String[]{String.valueOf(id)});
     }
 
     /**
      * Set the Goodreads book id for this book
      */
-    public void setGoodreadsBookId(final long bookId, final long goodreadsBookId) {
+    public void setGoodreadsBookId(final long bookId,
+                                   final long goodreadsBookId) {
         if (mSetGoodreadsBookIdStmt == null) {
             mSetGoodreadsBookIdStmt = mStatements.add("mSetGoodreadsBookIdStmt",
-                    SqlString.GOODREADS_UPDATE_BOOK_GR_ID);
+                                                      SqlString.GOODREADS_UPDATE_BOOK_GR_ID);
         }
         mSetGoodreadsBookIdStmt.bindLong(1, goodreadsBookId);
         mSetGoodreadsBookIdStmt.bindLong(2, bookId);
@@ -3394,7 +3506,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @NonNull
     public BookCursor fetchBooksByGoodreadsBookId(long grBookId) {
         return fetchBooksWhere(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_BOOK_ID) + "=?",
-                new String[]{Long.toString(grBookId)}, "");
+                               new String[]{String.valueOf(grBookId)}, "");
     }
 
     /**
@@ -3406,16 +3518,17 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return {@link BookCursor} containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBooksForGoodreadsCursor(final long startId, final boolean updatesOnly) {
+    public BookCursor fetchBooksForGoodreadsCursor(final long startId,
+                                                   final boolean updatesOnly) {
         String sql = "SELECT " + SqlString.GOODREADS_FIELDS_FOR_SENDING +
-                " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + " > ?";
+            " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + " > ?";
         if (updatesOnly) {
             sql += " AND " + DOM_LAST_UPDATE_DATE + " > " + DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
         }
         // the order by is used to be able to restart an export.
         sql += " ORDER BY " + DOM_PK_ID;
 
-        return fetchBooks(sql, new String[]{Long.toString(startId)});
+        return fetchBooks(sql, new String[]{String.valueOf(startId)});
     }
 
     /**
@@ -3428,7 +3541,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
     @NonNull
     public BookCursor fetchBookForGoodreadsCursor(final long bookId) {
         return fetchBooks(SqlString.GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID,
-                new String[]{Long.toString(bookId)});
+                          new String[]{String.valueOf(bookId)});
     }
 
     /**
@@ -3442,7 +3555,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @see #getFirstColumnAsList
      */
     @NonNull
-    private ArrayList<String> getColumnAsList(final @NonNull String sql, final @NonNull String columnName) {
+    private ArrayList<String> getColumnAsList(@NonNull final String sql,
+                                              @NonNull final String columnName) {
         ArrayList<String> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
             int column = cursor.getColumnIndexOrThrow(columnName);
@@ -3463,7 +3577,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @see #getColumnAsList
      */
     @NonNull
-    private ArrayList<String> getFirstColumnAsList(final @NonNull Cursor cursor) {
+    private ArrayList<String> getFirstColumnAsList(@NonNull final Cursor cursor) {
         ArrayList<String> list = new ArrayList<>();
         try {
             while (cursor.moveToNext()) {
@@ -3496,8 +3610,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @throws NumberFormatException on parsing issues
      */
     @NonNull
-    private ContentValues filterValues(final @NonNull String tableName,
-                                       final @NonNull Book book) throws NumberFormatException {
+    private ContentValues filterValues(@NonNull final String tableName,
+                                       @NonNull final Book book)
+        throws NumberFormatException {
 
         TableInfo table = new TableInfo(mSyncedDb, tableName);
 
@@ -3563,7 +3678,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @param books Cursor of books to update
      * @param stmt  Statement to execute (insert or update)
      */
-    private void ftsSendBooks(final @NonNull BookCursor books, final @NonNull SynchronizedStatement stmt) {
+    private void ftsSendBooks(@NonNull final BookCursor books,
+                              @NonNull final SynchronizedStatement stmt) {
 
         if (!mSyncedDb.inTransaction()) {
             throw new DBExceptions.TransactionException();
@@ -3591,7 +3707,8 @@ public class CatalogueDBAdapter implements AutoCloseable {
             titleText.setLength(0);
             // Get list of authors
             try (Cursor c = mSyncedDb.rawQuery(SqlString.FTS_GET_AUTHORS_BY_BOOK_ID,
-                    new String[]{Long.toString(bookCursorRow.getId())})) {
+                                               new String[]{String.valueOf(
+                                                   bookCursorRow.getId())})) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = c.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.name);
@@ -3602,14 +3719,16 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 // Append each author
                 while (c.moveToNext()) {
                     authorText.append(c.getString(colGivenNames));
-                    authorText.append(" ");
+                    authorText.append(' ');
                     authorText.append(c.getString(colFamilyName));
-                    authorText.append(";");
+                    authorText.append(';');
                 }
             }
 
             // Get list of series
-            try (Cursor c = mSyncedDb.rawQuery(SqlString.FTS_GET_SERIES_BY_BOOK_ID, new String[]{Long.toString(bookCursorRow.getId())})) {
+            try (Cursor c = mSyncedDb.rawQuery(SqlString.FTS_GET_SERIES_BY_BOOK_ID,
+                                               new String[]{String.valueOf(
+                                                   bookCursorRow.getId())})) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
                     colSeriesInfo = c.getColumnIndexOrThrow("seriesInfo");
@@ -3617,16 +3736,19 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 // Append each series
                 while (c.moveToNext()) {
                     seriesText.append(c.getString(colSeriesInfo));
-                    seriesText.append(";");
+                    seriesText.append(';');
                 }
             }
 
 
             // Get list of anthology data (author and title)
-            try (Cursor c = mSyncedDb.rawQuery(SqlString.FTS_GET_TOC_ENTRIES_BY_BOOK_ID, new String[]{Long.toString(bookCursorRow.getId())})) {
+            try (Cursor c = mSyncedDb.rawQuery(SqlString.FTS_GET_TOC_ENTRIES_BY_BOOK_ID,
+                                               new String[]{String.valueOf(
+                                                   bookCursorRow.getId())})) {
                 // Get column indexes, if not already got
                 if (colTOCEntryAuthorInfo < 0) {
-                    colTOCEntryAuthorInfo = c.getColumnIndexOrThrow(SqlString.DOM_TOC_ENTRY_AUTHOR_INFO);
+                    colTOCEntryAuthorInfo = c.getColumnIndexOrThrow(
+                        SqlString.DOM_TOC_ENTRY_AUTHOR_INFO);
                 }
                 if (colTOCEntryInfo < 0) {
                     colTOCEntryInfo = c.getColumnIndexOrThrow(SqlString.DOM_TOC_ENTRY_INFO);
@@ -3634,9 +3756,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
                 // Append each series
                 while (c.moveToNext()) {
                     authorText.append(c.getString(colTOCEntryAuthorInfo));
-                    authorText.append(";");
+                    authorText.append(';');
                     titleText.append(c.getString(colTOCEntryInfo));
-                    titleText.append(";");
+                    titleText.append(';');
                 }
             }
 
@@ -3663,7 +3785,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
      *
      * NOTE: We specifically want to use the default locale for this.
      */
-    private void bindStringOrNull(final @NonNull SynchronizedStatement stmt, final int position, final @Nullable String s) {
+    private void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
+                                  final int position,
+                                  @Nullable final String s) {
         if (s == null) {
             stmt.bindNull(position);
         } else {
@@ -3696,21 +3820,26 @@ public class CatalogueDBAdapter implements AutoCloseable {
             if (mInsertFtsStmt == null) {
                 // Build the FTS insert statement base. The parameter order MUST match the order expected in {@link #ftsSendBooks}.
                 mInsertFtsStmt = mStatements.add("mInsertFtsStmt",
-                        TBL_BOOKS_FTS.getInsert(
-                                DOM_FTS_AUTHOR_NAME, DOM_TITLE, DOM_BOOK_DESCRIPTION,
-                                DOM_BOOK_NOTES, DOM_BOOK_PUBLISHER, DOM_BOOK_GENRE,
-                                DOM_BOOK_LOCATION, DOM_BOOK_ISBN, DOM_PK_DOCID)
-                                + " VALUES (?,?,?,?,?,?,?,?,?)");
+                                                 TBL_BOOKS_FTS.getInsert(
+                                                     DOM_FTS_AUTHOR_NAME, DOM_TITLE,
+                                                     DOM_BOOK_DESCRIPTION,
+                                                     DOM_BOOK_NOTES, DOM_BOOK_PUBLISHER,
+                                                     DOM_BOOK_GENRE,
+                                                     DOM_BOOK_LOCATION, DOM_BOOK_ISBN, DOM_PK_DOCID)
+                                                     + " VALUES (?,?,?,?,?,?,?,?,?)");
             }
 
-            try (BookCursor books = fetchBooks("SELECT * FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=? ", new String[]{Long.toString(bookId)})) {
+            try (BookCursor books = fetchBooks(
+                "SELECT * FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=? ",
+                new String[]{String.valueOf(bookId)})) {
                 ftsSendBooks(books, mInsertFtsStmt);
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    Logger.info(this, "Inserted FTS in " + (System.currentTimeMillis() - t0) + "ms");
+                    Logger.info(this,
+                                "Inserted FTS in " + (System.currentTimeMillis() - t0) + "ms");
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Failed to update FTS");
         }
     }
@@ -3737,20 +3866,25 @@ public class CatalogueDBAdapter implements AutoCloseable {
             if (mUpdateFtsStmt == null) {
                 // Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
                 mUpdateFtsStmt = mStatements.add("mUpdateFtsStmt",
-                        TBL_BOOKS_FTS.getUpdate(
-                                DOM_FTS_AUTHOR_NAME, DOM_TITLE, DOM_BOOK_DESCRIPTION,
-                                DOM_BOOK_NOTES, DOM_BOOK_PUBLISHER, DOM_BOOK_GENRE,
-                                DOM_BOOK_LOCATION, DOM_BOOK_ISBN) + " WHERE " + DOM_PK_DOCID + "=?");
+                                                 TBL_BOOKS_FTS.getUpdate(
+                                                     DOM_FTS_AUTHOR_NAME, DOM_TITLE,
+                                                     DOM_BOOK_DESCRIPTION,
+                                                     DOM_BOOK_NOTES, DOM_BOOK_PUBLISHER,
+                                                     DOM_BOOK_GENRE,
+                                                     DOM_BOOK_LOCATION,
+                                                     DOM_BOOK_ISBN) + " WHERE " + DOM_PK_DOCID + "=?");
             }
 
-            try (BookCursor books = fetchBooks("SELECT * FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?", new String[]{Long.toString(bookId)})) {
+            try (BookCursor books = fetchBooks(
+                "SELECT * FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?",
+                new String[]{String.valueOf(bookId)})) {
                 ftsSendBooks(books, mUpdateFtsStmt);
             } finally {
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                     Logger.info(this, "Updated FTS in " + (System.currentTimeMillis() - t0) + "ms");
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Failed to update FTS");
         }
     }
@@ -3774,14 +3908,15 @@ public class CatalogueDBAdapter implements AutoCloseable {
             }
             if (mDeleteFtsStmt == null) {
                 mDeleteFtsStmt = mStatements.add("mDeleteFtsStmt",
-                        "DELETE FROM " + TBL_BOOKS_FTS + " WHERE " + DOM_PK_DOCID + "=?");
+                                                 "DELETE FROM " + TBL_BOOKS_FTS + " WHERE " + DOM_PK_DOCID + "=?");
             }
             mDeleteFtsStmt.bindLong(1, bookId);
             mDeleteFtsStmt.executeUpdateDelete();
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                Logger.info(this, "Deleted FROM FTS in " + (System.currentTimeMillis() - t0) + "ms");
+                Logger.info(this,
+                            "Deleted FROM FTS in " + (System.currentTimeMillis() - t0) + "ms");
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Failed to delete FTS");
         }
     }
@@ -3812,10 +3947,10 @@ public class CatalogueDBAdapter implements AutoCloseable {
         // Build the FTS update statement base. The parameter order MUST match the order expected in ftsSendBooks().
         // reminder (to me) .. don't re-use in mStatements as the table is temporary.
         final String sql = ftsTemp.getInsert(
-                DOM_FTS_AUTHOR_NAME, DOM_TITLE, DOM_BOOK_DESCRIPTION,
-                DOM_BOOK_NOTES, DOM_BOOK_PUBLISHER, DOM_BOOK_GENRE,
-                DOM_BOOK_LOCATION, DOM_BOOK_ISBN, DOM_PK_DOCID)
-                + " VALUES (?,?,?,?,?,?,?,?,?)";
+            DOM_FTS_AUTHOR_NAME, DOM_TITLE, DOM_BOOK_DESCRIPTION,
+            DOM_BOOK_NOTES, DOM_BOOK_PUBLISHER, DOM_BOOK_GENRE,
+            DOM_BOOK_LOCATION, DOM_BOOK_ISBN, DOM_PK_DOCID)
+            + " VALUES (?,?,?,?,?,?,?,?,?)";
         // Drop and recreate our temp copy
         ftsTemp.create(mSyncedDb, false);
         ftsTemp.drop(mSyncedDb);
@@ -3827,7 +3962,7 @@ public class CatalogueDBAdapter implements AutoCloseable {
             TBL_BOOKS_FTS.drop(mSyncedDb);
 
             mSyncedDb.setTransactionSuccessful();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e);
             gotError = true;
         } finally {
@@ -3863,7 +3998,9 @@ public class CatalogueDBAdapter implements AutoCloseable {
      * @return a cursor, or null if all input was empty
      */
     @Nullable
-    public Cursor searchFts(@NonNull String author, @NonNull String title, @NonNull String keywords) {
+    public Cursor searchFts(@NonNull String author,
+                            @NonNull String title,
+                            @NonNull String keywords) {
         author = cleanupFtsCriterion(author);
         title = cleanupFtsCriterion(title);
         keywords = cleanupFtsCriterion(keywords);
@@ -3873,19 +4010,19 @@ public class CatalogueDBAdapter implements AutoCloseable {
         }
 
         StringBuilder sql = new StringBuilder(
-                "SELECT " + DOM_PK_DOCID + " FROM " + TBL_BOOKS_FTS + " WHERE " + TBL_BOOKS_FTS + " MATCH '" + keywords);
+            "SELECT " + DOM_PK_DOCID + " FROM " + TBL_BOOKS_FTS + " WHERE " + TBL_BOOKS_FTS + " MATCH '" + keywords);
 
         for (String w : author.split(" ")) {
             if (!w.isEmpty()) {
-                sql.append(" ").append(DOM_FTS_AUTHOR_NAME).append(":").append(w);
+                sql.append(' ').append(DOM_FTS_AUTHOR_NAME).append(':').append(w);
             }
         }
         for (String w : title.split(" ")) {
             if (!w.isEmpty()) {
-                sql.append(" ").append(DOM_TITLE).append(":").append(w);
+                sql.append(' ').append(DOM_TITLE).append(':').append(w);
             }
         }
-        sql.append("'");
+        sql.append('\'');
 
         return mSyncedDb.rawQuery(sql.toString(), null);
     }
@@ -3893,11 +4030,13 @@ public class CatalogueDBAdapter implements AutoCloseable {
     /**
      * DEBUG only
      */
-    private static class InstanceRefDebug extends WeakReference<CatalogueDBAdapter> {
+    private static class InstanceRefDebug
+        extends WeakReference<CatalogueDBAdapter> {
+
         @NonNull
         private final Exception mCreationException;
 
-        InstanceRefDebug(final @NonNull CatalogueDBAdapter db) {
+        InstanceRefDebug(@NonNull final CatalogueDBAdapter db) {
             super(db);
             mCreationException = new RuntimeException();
         }
@@ -3910,66 +4049,74 @@ public class CatalogueDBAdapter implements AutoCloseable {
 
     /**
      * Collecting all static SQL strings in one place.
-     * Purely for esthetics's as Studio 'reformat code' keeps moving them to the top of the file.
      */
-    private static class SqlString {
+    private static final class SqlString {
 
         /**
          * set of fields suitable for a select of a Book
          */
         private static final String FIELDS_FOR_BOOK =
-                TBL_BOOKS.dotAs(DOM_PK_ID) + "," +
-                        TBL_BOOKS.dotAs(DOM_TITLE) + "," +
-                        // Find FIRST series ID.
-                        "(SELECT " + DOM_FK_SERIES_ID + " FROM " + TBL_BOOK_SERIES.ref() +
-                        " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=" + TBL_BOOKS.dot(DOM_PK_ID) +
-                        " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  LIMIT 1) AS " + DOM_FK_SERIES_ID + "," +
-                        // Find FIRST series NUM.
-                        "(SELECT " + DOM_BOOK_SERIES_NUM + " FROM " + TBL_BOOK_SERIES.ref() +
-                        " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=" + TBL_BOOKS.dot(DOM_PK_ID) +
-                        " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  LIMIT 1) AS " + DOM_BOOK_SERIES_NUM + "," +
-                        // Get the total series count
-                        "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref() +
-                        " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=" + TBL_BOOKS.dot(DOM_PK_ID) + ") AS " + COLUMN_ALIAS_NR_OF_SERIES + "," +
+            TBL_BOOKS.dotAs(DOM_PK_ID) + ',' +
+                TBL_BOOKS.dotAs(DOM_TITLE) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_ISBN) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_DATE_PUBLISHED) + ',' +
+                TBL_BOOKS.dotAs(DOM_FIRST_PUBLICATION) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_EDITION_BITMASK) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_RATING) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_READ) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_PAGES) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_NOTES) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID_CURRENCY) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_DATE_ACQUIRED) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_ANTHOLOGY_BITMASK) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_LOCATION) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_READ_START) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_READ_END) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_FORMAT) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_SIGNED) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_DESCRIPTION) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_GENRE) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_LANGUAGE) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_DATE_ADDED) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_LIBRARY_THING_ID) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_ISFDB_ID) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_BOOK_ID) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE) + ',' +
+                TBL_BOOKS.dotAs(DOM_LAST_UPDATE_DATE) + ',' +
+                TBL_BOOKS.dotAs(DOM_BOOK_UUID) + ',' +
 
-                        // Find the first AUTHOR ID
-                        "(SELECT " + DOM_FK_AUTHOR_ID + " FROM " + TBL_BOOK_AUTHOR.ref() +
-                        " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK_ID) + "=" + TBL_BOOKS.dot(DOM_PK_ID) +
-                        " ORDER BY " + DOM_BOOK_AUTHOR_POSITION + "," + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID) + " LIMIT 1) AS " + DOM_FK_AUTHOR_ID + "," +
-                        // Get the total author count. TODO: does not seem to get used anywhere ?
-                        "(SELECT COUNT(*) FROM " + TBL_BOOK_AUTHOR.ref() +
-                        " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK_ID) + "=" + TBL_BOOKS.dot(DOM_PK_ID) + ") AS " + COLUMN_ALIAS_NR_OF_AUTHORS + "," +
+                // Find FIRST series ID.
+                "(SELECT " + DOM_FK_SERIES_ID + " FROM " + TBL_BOOK_SERIES.ref() +
+                " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + '=' + TBL_BOOKS.dot(DOM_PK_ID) +
+                " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  LIMIT 1)" +
+                " AS " + DOM_FK_SERIES_ID + ',' +
 
-                        TBL_BOOKS.dotAs(DOM_BOOK_ISBN) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_DATE_PUBLISHED) + "," +
-                        TBL_BOOKS.dotAs(DOM_FIRST_PUBLICATION) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_EDITION_BITMASK) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_RATING) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_READ) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_PAGES) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_NOTES) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_PRICE_PAID_CURRENCY) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_DATE_ACQUIRED) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_ANTHOLOGY_BITMASK) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_LOCATION) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_READ_START) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_READ_END) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_FORMAT) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_SIGNED) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_DESCRIPTION) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_GENRE) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_LANGUAGE) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_DATE_ADDED) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_LIBRARY_THING_ID) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_ISFDB_ID) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_BOOK_ID) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE) + "," +
-                        TBL_BOOKS.dotAs(DOM_LAST_UPDATE_DATE) + "," +
-                        TBL_BOOKS.dotAs(DOM_BOOK_UUID);
+                // Find FIRST series NUM.
+                "(SELECT " + DOM_BOOK_SERIES_NUM + " FROM " + TBL_BOOK_SERIES.ref() +
+                " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + '=' + TBL_BOOKS.dot(DOM_PK_ID) +
+                " ORDER BY " + DOM_BOOK_SERIES_POSITION + " ASC  LIMIT 1)" +
+                " AS " + DOM_BOOK_SERIES_NUM + ',' +
+
+                // Get the total series count
+                "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref() +
+                " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + '=' + TBL_BOOKS.dot(DOM_PK_ID) + ')' +
+                " AS " + COLUMN_ALIAS_NR_OF_SERIES + ',' +
+
+                // Find the first AUTHOR ID
+                "(SELECT " + DOM_FK_AUTHOR_ID + " FROM " + TBL_BOOK_AUTHOR.ref() +
+                " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK_ID) + '=' + TBL_BOOKS.dot(DOM_PK_ID) +
+                " ORDER BY " + DOM_BOOK_AUTHOR_POSITION + ',' +
+                /*          */ TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID) + " LIMIT 1)" +
+                " AS " + DOM_FK_AUTHOR_ID + ',' +
+
+                // Get the total author count. TODO: does not seem to get used anywhere ?
+                "(SELECT COUNT(*) FROM " + TBL_BOOK_AUTHOR.ref() +
+                " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK_ID) + '=' + TBL_BOOKS.dot(DOM_PK_ID) + ')' +
+                " AS " + COLUMN_ALIAS_NR_OF_AUTHORS;
 
 
         /**
@@ -3977,295 +4124,313 @@ public class CatalogueDBAdapter implements AutoCloseable {
          * otherwise -> family, given
          */
         private static final String FIELDS_AUTHOR_FORMATTED =
-                " Case When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''" +
-                        " Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
-                        " Else " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " || ',' || " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) +
-                        " End" +
-                        " AS " + DOM_AUTHOR_FORMATTED;
+            " Case When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''" +
+                " Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
+                " Else " + TBL_AUTHORS.dot(
+                DOM_AUTHOR_FAMILY_NAME) + " || ',' || " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) +
+                " End" +
+                " AS " + DOM_AUTHOR_FORMATTED;
 
         /**
          * If no given name -> family name
          * otherwise -> given family
          */
         private static final String FIELDS_AUTHOR_FORMATTED_GIVEN_FIRST =
-                " Case When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''" +
-                        " Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
-                        " Else " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
-                        " End" +
-                        " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
+            " Case When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''" +
+                " Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
+                " Else " + TBL_AUTHORS.dot(
+                DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
+                " End" +
+                " AS " + DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
 
         /**
          * Columns for an Author, with the standard 'family, given' formatted added.
          */
         private static final String FIELDS_FOR_AUTHOR =
-                TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME) + "," +
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES) + "," +
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE) + "," +
-                        FIELDS_AUTHOR_FORMATTED;
+            TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME) + ',' +
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES) + ',' +
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE) + ',' +
+                FIELDS_AUTHOR_FORMATTED;
 
 
         private static final String GET_ALL_BOOKLIST_STYLES =
-                "SELECT " +
-                        TBL_BOOKLIST_STYLES.allColumns() +
-                        " FROM " + TBL_BOOKLIST_STYLES.ref();
+            SELECT(
+                DOM_PK_ID.name,
+                DOM_UUID.name
+            ) +
+                " FROM " + TBL_BOOKLIST_STYLES;
+
+        private static final String GET_BOOKLIST_STYLE_ID_BY_UUID =
+            "SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_UUID + "=?";
 
         private static final String GET_ALL_BOOKSHELVES =
-                SELECT_DISTINCT(
-                        TBL_BOOKSHELF.dotAs(DOM_PK_ID),
-                        TBL_BOOKSHELF.dotAs(DOM_BOOKSHELF)
-                ) +
-                        " FROM " + TBL_BOOKSHELF.ref() +
-                        " ORDER BY lower(" + DOM_BOOKSHELF + ") " + COLLATION;
+            SELECT_DISTINCT(
+                TBL_BOOKSHELF.dotAs(DOM_PK_ID),
+                TBL_BOOKSHELF.dotAs(DOM_BOOKSHELF)
+            ) +
+                " FROM " + TBL_BOOKSHELF.ref() +
+                " ORDER BY lower(" + DOM_BOOKSHELF + ") " + COLLATION;
 
         private static final String GET_BOOKSHELF_NAME_BY_ID =
-                "SELECT " +
-                        DOM_BOOKSHELF +
-                        " FROM " + TBL_BOOKSHELF +
-                        " WHERE " + DOM_PK_ID + "=?";
+            "SELECT " +
+                DOM_BOOKSHELF +
+                " FROM " + TBL_BOOKSHELF +
+                " WHERE " + DOM_PK_ID + "=?";
 
         private static final String GET_BOOKSHELVES_BY_BOOK_ID =
-                SELECT_DISTINCT(
-                        TBL_BOOKSHELF.dotAs(DOM_PK_ID),
-                        TBL_BOOKSHELF.dotAs(DOM_BOOKSHELF)
-                ) +
-                        " FROM " + TBL_BOOK_BOOKSHELF.ref() + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF) +
-                        " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOK_ID) + "=?" +
-                        " ORDER BY lower(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ") " + COLLATION;
+            SELECT_DISTINCT(
+                TBL_BOOKSHELF.dotAs(DOM_PK_ID),
+                TBL_BOOKSHELF.dotAs(DOM_BOOKSHELF)
+            ) +
+                " FROM " + TBL_BOOK_BOOKSHELF.ref() + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF) +
+                " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOK_ID) + "=?" +
+                " ORDER BY lower(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ") " + COLLATION;
 
 
         private static final String GET_AUTHOR_BY_ID =
-                SELECT(
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME),
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES),
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-                ) +
-                        " FROM " + TBL_AUTHORS.ref() + " WHERE " + DOM_PK_ID + "=?";
+            SELECT(
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME),
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES),
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
+            ) +
+                " FROM " + TBL_AUTHORS.ref() + " WHERE " + DOM_PK_ID + "=?";
 
         private static final String GET_AUTHOR_ID_BY_NAME =
-                "SELECT " +
-                        DOM_PK_ID +
-                        " FROM " + TBL_AUTHORS +
-                        " WHERE lower(" + DOM_AUTHOR_FAMILY_NAME + ") = lower(?) " + COLLATION +
-                        " AND lower(" + DOM_AUTHOR_GIVEN_NAMES + ") = lower(?)" + COLLATION;
+            "SELECT " +
+                DOM_PK_ID +
+                " FROM " + TBL_AUTHORS +
+                " WHERE lower(" + DOM_AUTHOR_FAMILY_NAME + ") = lower(?) " + COLLATION +
+                " AND lower(" + DOM_AUTHOR_GIVEN_NAMES + ") = lower(?)" + COLLATION;
 
         private static final String GET_AUTHORS_BY_BOOK_ID =
-                SELECT_DISTINCT(
-                        TBL_AUTHORS.dotAs(DOM_PK_ID),
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME),
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES),
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE),
+            SELECT_DISTINCT(
+                TBL_AUTHORS.dotAs(DOM_PK_ID),
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME),
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES),
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE),
 
-                        SqlString.FIELDS_AUTHOR_FORMATTED,
+                SqlString.FIELDS_AUTHOR_FORMATTED,
 
-                        TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
-                ) +
-                        " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
-                        " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK_ID) + "=?" +
-                        " ORDER BY " +
-                        TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " ASC," +
-                        " lower(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + " ASC," +
-                        " lower(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + " ASC";
+                TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION)
+            ) +
+                " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
+                " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK_ID) + "=?" +
+                " ORDER BY " +
+                TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " ASC," +
+                " lower(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + " ASC," +
+                " lower(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + " ASC";
 
         private static final String GET_SERIES_BY_BOOK_ID =
-                SELECT_DISTINCT(
-                        TBL_SERIES.dotAs(DOM_PK_ID),
-                        TBL_SERIES.dotAs(DOM_SERIES_NAME),
-                        TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE),
-                        TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_NUM),
-                        TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_POSITION),
-                        DOM_SERIES_NAME + "||' ('||" + DOM_BOOK_SERIES_NUM + "||')' AS " + DOM_SERIES_FORMATTED
-                ) +
-                        " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
-                        " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=?" +
-                        " ORDER BY " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ", lower(" + TBL_SERIES.dot(DOM_SERIES_NAME) + ") " + COLLATION + " ASC";
+            SELECT_DISTINCT(
+                TBL_SERIES.dotAs(DOM_PK_ID),
+                TBL_SERIES.dotAs(DOM_SERIES_NAME),
+                TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE),
+                TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_NUM),
+                TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_POSITION),
+                DOM_SERIES_NAME + "||' ('||" + DOM_BOOK_SERIES_NUM + "||')' AS " + DOM_SERIES_FORMATTED
+            ) +
+                " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
+                " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=?" +
+                " ORDER BY " + TBL_BOOK_SERIES.dot(
+                DOM_BOOK_SERIES_POSITION) + ", lower(" + TBL_SERIES.dot(
+                DOM_SERIES_NAME) + ") " + COLLATION + " ASC";
 
         private static final String GET_TOC_ENTRIES_BY_BOOK_ID =
-                SELECT(
-                        TBL_TOC_ENTRIES.dotAs(DOM_PK_ID),
-                        TBL_TOC_ENTRIES.dotAs(DOM_TITLE),
-                        TBL_TOC_ENTRIES.dotAs(DOM_FIRST_PUBLICATION),
-                        // for convenience, we fetch 'full' Author objects here
-                        TBL_TOC_ENTRIES.dotAs(DOM_FK_AUTHOR_ID),
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME),
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES),
-                        TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
-                ) +
-                        " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES) + TBL_TOC_ENTRIES.join(TBL_AUTHORS) +
-                        " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(DOM_FK_BOOK_ID) + "=?" +
-                        " ORDER BY " + TBL_BOOK_TOC_ENTRIES.dot(DOM_BOOK_TOC_ENTRY_POSITION);
+            SELECT(
+                TBL_TOC_ENTRIES.dotAs(DOM_PK_ID),
+                TBL_TOC_ENTRIES.dotAs(DOM_TITLE),
+                TBL_TOC_ENTRIES.dotAs(DOM_FIRST_PUBLICATION),
+                // for convenience, we fetch 'full' Author objects here
+                TBL_TOC_ENTRIES.dotAs(DOM_FK_AUTHOR_ID),
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME),
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES),
+                TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
+            ) +
+                " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(
+                TBL_BOOK_TOC_ENTRIES) + TBL_TOC_ENTRIES.join(TBL_AUTHORS) +
+                " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(DOM_FK_BOOK_ID) + "=?" +
+                " ORDER BY " + TBL_BOOK_TOC_ENTRIES.dot(DOM_BOOK_TOC_ENTRY_POSITION);
 
         private static final String GET_TOC_ENTRIES_BY_AUTHOR_ID =
-                SELECT(
-                        TBL_TOC_ENTRIES.dotAs(DOM_PK_ID),
-                        TBL_TOC_ENTRIES.dotAs(DOM_TITLE),
-                        TBL_TOC_ENTRIES.dotAs(DOM_FIRST_PUBLICATION)
-                ) +
-                        " FROM " + TBL_TOC_ENTRIES.ref() +
-                        " WHERE " + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR_ID) + "=?" +
-                        " ORDER BY lower(" + TBL_TOC_ENTRIES.dot(DOM_TITLE) + ")" + COLLATION;
+            SELECT(
+                TBL_TOC_ENTRIES.dotAs(DOM_PK_ID),
+                TBL_TOC_ENTRIES.dotAs(DOM_TITLE),
+                TBL_TOC_ENTRIES.dotAs(DOM_FIRST_PUBLICATION)
+            ) +
+                " FROM " + TBL_TOC_ENTRIES.ref() +
+                " WHERE " + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR_ID) + "=?" +
+                " ORDER BY lower(" + TBL_TOC_ENTRIES.dot(DOM_TITLE) + ')' + COLLATION;
 
         private static final String GLOBAL_REPLACE_AUTHOR_ON_TOC_ENTRIES =
-                "UPDATE " + TBL_TOC_ENTRIES + " SET " +
-                        DOM_FK_AUTHOR_ID + "=?" +
-                        " WHERE " + DOM_FK_AUTHOR_ID + "=?";
+            "UPDATE " + TBL_TOC_ENTRIES + " SET " +
+                DOM_FK_AUTHOR_ID + "=?" +
+                " WHERE " + DOM_FK_AUTHOR_ID + "=?";
 
         private static final String GET_ALL_SERIES =
-                "SELECT DISTINCT " +
-                        DOM_SERIES_NAME +
-                        " FROM " + TBL_SERIES +
-                        " ORDER BY lower(" + DOM_SERIES_NAME + ") " + COLLATION;
+            "SELECT DISTINCT " +
+                DOM_SERIES_NAME +
+                " FROM " + TBL_SERIES +
+                " ORDER BY lower(" + DOM_SERIES_NAME + ") " + COLLATION;
 
         private static final String GLOBAL_REPLACE_SERIES =
-                "UPDATE " + TBL_BOOK_SERIES + " SET " + DOM_FK_SERIES_ID + "=?" +
-                        " WHERE " + DOM_FK_SERIES_ID + "=?" +
-                        " AND NOT Exists(SELECT NULL FROM " + TBL_BOOK_SERIES.ref() + " WHERE " +
-                        TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=" + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) +
-                        " AND " + TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID) + "=?)";
+            "UPDATE " + TBL_BOOK_SERIES + " SET " + DOM_FK_SERIES_ID + "=?" +
+                " WHERE " + DOM_FK_SERIES_ID + "=?" +
+                " AND NOT Exists(SELECT NULL FROM " + TBL_BOOK_SERIES.ref() + " WHERE " +
+                TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + '=' + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) +
+                " AND " + TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID) + "=?)";
 
 
         private static final String GET_ALL_FORMATS =
-                "SELECT DISTINCT " +
-                        DOM_BOOK_FORMAT +
-                        " FROM " + TBL_BOOKS +
-                        " ORDER BY lower(" + DOM_BOOK_FORMAT + ") " + COLLATION;
+            "SELECT DISTINCT " +
+                DOM_BOOK_FORMAT +
+                " FROM " + TBL_BOOKS +
+                " ORDER BY lower(" + DOM_BOOK_FORMAT + ") " + COLLATION;
 
         private static final String GLOBAL_REPLACE_FORMAT =
-                "UPDATE " + TBL_BOOKS + " SET " +
-                        DOM_BOOK_FORMAT + "=?," +
-                        DOM_LAST_UPDATE_DATE + "=current_timestamp" +
-                        " WHERE " + DOM_BOOK_FORMAT + "=?";
+            "UPDATE " + TBL_BOOKS + " SET " +
+                DOM_BOOK_FORMAT + "=?," +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                " WHERE " + DOM_BOOK_FORMAT + "=?";
 
         private static final String GET_ALL_GENRES =
-                "SELECT DISTINCT " +
-                        DOM_BOOK_GENRE +
-                        " FROM " + TBL_BOOKS +
-                        " ORDER BY lower(" + DOM_BOOK_GENRE + ") " + COLLATION;
+            "SELECT DISTINCT " +
+                DOM_BOOK_GENRE +
+                " FROM " + TBL_BOOKS +
+                " ORDER BY lower(" + DOM_BOOK_GENRE + ") " + COLLATION;
 
         private static final String GLOBAL_REPLACE_GENRE =
-                "UPDATE " + TBL_BOOKS + " SET " +
-                        DOM_BOOK_GENRE + "=?," +
-                        DOM_LAST_UPDATE_DATE + "=current_timestamp" +
-                        " WHERE " + DOM_BOOK_GENRE + "=?";
+            "UPDATE " + TBL_BOOKS + " SET " +
+                DOM_BOOK_GENRE + "=?," +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                " WHERE " + DOM_BOOK_GENRE + "=?";
 
         private static final String GET_ALL_LANGUAGES =
-                "SELECT DISTINCT " +
-                        DOM_BOOK_LANGUAGE +
-                        " FROM " + TBL_BOOKS +
-                        " ORDER BY lower(" + DOM_BOOK_LANGUAGE + ") " + COLLATION;
+            "SELECT DISTINCT " +
+                DOM_BOOK_LANGUAGE +
+                " FROM " + TBL_BOOKS +
+                " ORDER BY lower(" + DOM_BOOK_LANGUAGE + ") " + COLLATION;
 
         private static final String GLOBAL_REPLACE_LANGUAGE =
-                "UPDATE " + TBL_BOOKS + " SET " +
-                        DOM_BOOK_LANGUAGE + "=?," +
-                        DOM_LAST_UPDATE_DATE + "=current_timestamp"
-                        + " WHERE " + DOM_BOOK_LANGUAGE + "=?";
+            "UPDATE " + TBL_BOOKS + " SET " +
+                DOM_BOOK_LANGUAGE + "=?," +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + " WHERE " + DOM_BOOK_LANGUAGE + "=?";
 
         private static final String GET_ALL_LOCATIONS =
-                "SELECT DISTINCT " +
-                        DOM_BOOK_LOCATION +
-                        " FROM " + TBL_BOOKS +
-                        " ORDER BY lower(" + DOM_BOOK_LOCATION + ") " + COLLATION;
+            "SELECT DISTINCT " +
+                DOM_BOOK_LOCATION +
+                " FROM " + TBL_BOOKS +
+                " ORDER BY lower(" + DOM_BOOK_LOCATION + ") " + COLLATION;
 
         private static final String GLOBAL_REPLACE_LOCATION =
-                "UPDATE " + TBL_BOOKS + " SET " +
-                        DOM_BOOK_LOCATION + "=?," +
-                        DOM_LAST_UPDATE_DATE + "=current_timestamp" +
-                        " WHERE " + DOM_BOOK_LOCATION + "=?";
+            "UPDATE " + TBL_BOOKS + " SET " +
+                DOM_BOOK_LOCATION + "=?," +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                " WHERE " + DOM_BOOK_LOCATION + "=?";
 
         private static final String GET_ALL_PUBLISHERS =
-                "SELECT DISTINCT " +
-                        DOM_BOOK_PUBLISHER +
-                        " FROM " + TBL_BOOKS +
-                        " ORDER BY lower(" + DOM_BOOK_PUBLISHER + ") " + COLLATION;
+            "SELECT DISTINCT " +
+                DOM_BOOK_PUBLISHER +
+                " FROM " + TBL_BOOKS +
+                " ORDER BY lower(" + DOM_BOOK_PUBLISHER + ") " + COLLATION;
 
         private static final String GLOBAL_REPLACE_PUBLISHER =
-                "UPDATE " + TBL_BOOKS + " SET " +
-                        DOM_BOOK_PUBLISHER + "=?," +
-                        DOM_LAST_UPDATE_DATE + "=current_timestamp"
-                        + " WHERE " + DOM_BOOK_PUBLISHER + "=?";
+            "UPDATE " + TBL_BOOKS + " SET " +
+                DOM_BOOK_PUBLISHER + "=?," +
+                DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + " WHERE " + DOM_BOOK_PUBLISHER + "=?";
 
 
         private static final String GET_ALL_AUTHORS_WITH_FORMATTED_NAMES =
-                "SELECT DISTINCT " +
-                        SqlString.FIELDS_AUTHOR_FORMATTED +
-                        " FROM " + TBL_AUTHORS.ref() +
-                        " ORDER BY lower(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", lower(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
+            "SELECT DISTINCT " +
+                SqlString.FIELDS_AUTHOR_FORMATTED +
+                " FROM " + TBL_AUTHORS.ref() +
+                " ORDER BY lower(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + ", lower(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION;
 
 
         private static final String SET_BOOK_LAST_UPDATE_DATE_BY_BOOK_ID =
-                "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
-                        " WHERE " + DOM_PK_ID + "=?";
+            "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                " WHERE " + DOM_PK_ID + "=?";
 
         private static final String SET_BOOK_LAST_UPDATE_DATE_BY_TOC_ENTRY_AUTHOR_ID =
-                "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
-                        " WHERE" +
-                        " Exists(SELECT * FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES) + TBL_BOOK_TOC_ENTRIES.join(TBL_BOOKS) +
-                        " WHERE " + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR_ID) + "=?)";
+            "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                " WHERE" +
+                " Exists(SELECT * FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(
+                TBL_BOOK_TOC_ENTRIES) + TBL_BOOK_TOC_ENTRIES.join(TBL_BOOKS) +
+                " WHERE " + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR_ID) + "=?)";
 
         private static final String SET_BOOK_LAST_UPDATE_DATE_BY_AUTHOR_ID =
-                "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
-                        " WHERE" +
-                        " Exists(SELECT * FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_BOOKS) +
-                        " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID) + "=?)";
+            "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                " WHERE" +
+                " Exists(SELECT * FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_BOOKS) +
+                " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID) + "=?)";
 
         private static final String SET_BOOK_LAST_UPDATE_DATE_BY_SERIES_ID =
-                "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
-                        " WHERE" +
-                        " Exists(SELECT * FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_BOOKS) +
-                        " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID) + "=?)";
+            "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                " WHERE" +
+                " Exists(SELECT * FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_BOOKS) +
+                " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID) + "=?)";
 
         private static final String SET_BOOK_LAST_UPDATE_DATE_BY_BOOKSHELF_ID =
-                "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
-                        " WHERE" +
-                        " Exists(SELECT * FROM " + TBL_BOOK_BOOKSHELF.ref() + TBL_BOOK_BOOKSHELF.join(TBL_BOOKS) +
-                        " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF_ID) + "=?)";
+            "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp" +
+                " WHERE" +
+                " Exists(SELECT * FROM " + TBL_BOOK_BOOKSHELF.ref() + TBL_BOOK_BOOKSHELF.join(
+                TBL_BOOKS) +
+                " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF_ID) + "=?)";
 
 
         private static final String PURGE_TBL_BOOK_AUTHORS =
-                "DELETE FROM " + TBL_BOOK_AUTHOR +
-                        " WHERE " + DOM_FK_BOOK_ID + " NOT IN" +
-                        " (SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKS + ")";
+            "DELETE FROM " + TBL_BOOK_AUTHOR +
+                " WHERE " + DOM_FK_BOOK_ID + " NOT IN" +
+                " (SELECT " + DOM_PK_ID + " FROM " + TBL_BOOKS + ')';
 
         private static final String PURGE_TBL_AUTHORS =
-                "DELETE FROM " + TBL_AUTHORS +
-                        " WHERE " + DOM_PK_ID + " NOT IN" +
-                        " (SELECT DISTINCT " + DOM_FK_AUTHOR_ID + " FROM " + TBL_BOOK_AUTHOR + ")" +
-                        " AND " + DOM_PK_ID + " NOT IN" +
-                        " (SELECT DISTINCT " + DOM_FK_AUTHOR_ID + " FROM " + TBL_TOC_ENTRIES + ")";
+            "DELETE FROM " + TBL_AUTHORS +
+                " WHERE " + DOM_PK_ID + " NOT IN" +
+                " (SELECT DISTINCT " + DOM_FK_AUTHOR_ID + " FROM " + TBL_BOOK_AUTHOR + ')' +
+                " AND " + DOM_PK_ID + " NOT IN" +
+                " (SELECT DISTINCT " + DOM_FK_AUTHOR_ID + " FROM " + TBL_TOC_ENTRIES + ')';
 
         private static final String SEARCH_SUGGESTIONS =
-                "SELECT * FROM (SELECT \"BK\" || " + TBL_BOOKS.dotAs(DOM_PK_ID) + "," +
-                        TBL_BOOKS.dot(DOM_TITLE) + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1 + "," +
-                        TBL_BOOKS.dot(DOM_TITLE) + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
-                        " FROM " + TBL_BOOKS.ref() + " WHERE " + TBL_BOOKS.dot(DOM_TITLE) + " LIKE ?" +
-                        " UNION " +
-                        " SELECT \"AF\" || " + TBL_AUTHORS.dotAs(DOM_PK_ID) + "," +
-                        TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1 + "," +
-                        TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
-                        " FROM " + TBL_AUTHORS.ref() + " WHERE " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + " LIKE ?" +
-                        " UNION " +
-                        " SELECT \"AG\" || " + TBL_AUTHORS.dotAs(DOM_PK_ID) + "," +
-                        TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1 + "," +
-                        TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
-                        " FROM " + TBL_AUTHORS.ref() + " WHERE " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " LIKE ?" +
-                        " UNION " +
-                        " SELECT \"BK\" || " + TBL_BOOKS.dotAs(DOM_PK_ID) + "," +
-                        TBL_BOOKS.dot(DOM_BOOK_ISBN) + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1 + "," +
-                        TBL_BOOKS.dot(DOM_BOOK_ISBN) + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
-                        " FROM " + TBL_BOOKS.ref() + " WHERE " + TBL_BOOKS.dot(DOM_BOOK_ISBN) + " LIKE ?" +
-                        " ) AS zzz " +
-                        " ORDER BY lower(" + SearchManager.SUGGEST_COLUMN_TEXT_1 + ") " + COLLATION;
+            "SELECT * FROM (SELECT \"BK\" || " + TBL_BOOKS.dotAs(DOM_PK_ID) + ',' +
+                TBL_BOOKS.dot(DOM_TITLE) + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1 + ',' +
+                TBL_BOOKS.dot(DOM_TITLE) + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
+                " FROM " + TBL_BOOKS.ref() + " WHERE " + TBL_BOOKS.dot(DOM_TITLE) + " LIKE ?" +
+                " UNION " +
+                " SELECT \"AF\" || " + TBL_AUTHORS.dotAs(DOM_PK_ID) + ',' +
+                TBL_AUTHORS.dot(
+                    DOM_AUTHOR_FAMILY_NAME) + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1 + ',' +
+                TBL_AUTHORS.dot(
+                    DOM_AUTHOR_FAMILY_NAME) + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
+                " FROM " + TBL_AUTHORS.ref() + " WHERE " + TBL_AUTHORS.dot(
+                DOM_AUTHOR_FAMILY_NAME) + " LIKE ?" +
+                " UNION " +
+                " SELECT \"AG\" || " + TBL_AUTHORS.dotAs(DOM_PK_ID) + ',' +
+                TBL_AUTHORS.dot(
+                    DOM_AUTHOR_GIVEN_NAMES) + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1 + ',' +
+                TBL_AUTHORS.dot(
+                    DOM_AUTHOR_GIVEN_NAMES) + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
+                " FROM " + TBL_AUTHORS.ref() + " WHERE " + TBL_AUTHORS.dot(
+                DOM_AUTHOR_GIVEN_NAMES) + " LIKE ?" +
+                " UNION " +
+                " SELECT \"BK\" || " + TBL_BOOKS.dotAs(DOM_PK_ID) + ',' +
+                TBL_BOOKS.dot(DOM_BOOK_ISBN) + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1 + ',' +
+                TBL_BOOKS.dot(DOM_BOOK_ISBN) + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA +
+                " FROM " + TBL_BOOKS.ref() + " WHERE " + TBL_BOOKS.dot(DOM_BOOK_ISBN) + " LIKE ?" +
+                " ) AS zzz " +
+                " ORDER BY lower(" + SearchManager.SUGGEST_COLUMN_TEXT_1 + ") " + COLLATION;
 
         /**
          * The columns from {@link DatabaseDefinitions#TBL_BOOKS} we need to send a Book to Goodreads
          */
         private static final String GOODREADS_FIELDS_FOR_SENDING =
-                DOM_PK_ID + "," +
-                        DOM_BOOK_ISBN + "," +
-                        DOM_BOOK_GOODREADS_BOOK_ID + "," +
-                        DOM_BOOK_NOTES + "," +
-                        DOM_BOOK_READ + "," +
-                        DOM_BOOK_READ_END + "," +
-                        DOM_BOOK_RATING;
+            DOM_PK_ID + "," +
+                DOM_BOOK_ISBN + ',' +
+                DOM_BOOK_GOODREADS_BOOK_ID + ',' +
+                DOM_BOOK_NOTES + ',' +
+                DOM_BOOK_READ + ',' +
+                DOM_BOOK_READ_END + ',' +
+                DOM_BOOK_RATING;
 
         /**
          * Fetch a single Book to send to Goodreads
@@ -4273,51 +4438,54 @@ public class CatalogueDBAdapter implements AutoCloseable {
          * param DOM_PK_ID of the Book
          */
         private static final String GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID =
-                "SELECT " + GOODREADS_FIELDS_FOR_SENDING +
-                        " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
+            "SELECT " + GOODREADS_FIELDS_FOR_SENDING +
+                " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Update a single Book's last sync date with Goodreads.
          */
         private static final String GOODREADS_UPDATE_BOOK_LAST_SYNC_DATE =
-                "UPDATE " + TBL_BOOKS + " SET " +
-                        DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=current_timestamp" +
-                        " WHERE " + DOM_PK_ID + "=?";
+            "UPDATE " + TBL_BOOKS + " SET " +
+                DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=current_timestamp" +
+                " WHERE " + DOM_PK_ID + "=?";
 
         /**
          * Update a single Book's Goodreads id.
          */
         private static final String GOODREADS_UPDATE_BOOK_GR_ID =
-                "UPDATE " + TBL_BOOKS + " SET " +
-                        DOM_BOOK_GOODREADS_BOOK_ID + "=?" +
-                        " WHERE " + DOM_PK_ID + "=?";
+            "UPDATE " + TBL_BOOKS + " SET " +
+                DOM_BOOK_GOODREADS_BOOK_ID + "=?" +
+                " WHERE " + DOM_PK_ID + "=?";
 
 
         private static final String FTS_GET_AUTHORS_BY_BOOK_ID =
-                "SELECT " +
-                        TBL_AUTHORS.dot("*") +
-                        " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
-                        " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK_ID) + "=?";
+            "SELECT " +
+                TBL_AUTHORS.dot("*") +
+                " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS) +
+                " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK_ID) + "=?";
 
         private static final String FTS_GET_SERIES_BY_BOOK_ID =
-                SELECT(
-                        TBL_SERIES.dot(DOM_SERIES_NAME) + " || ' ' || Coalesce(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM) + ",'')" +
-                                " AS seriesInfo"
-                ) +
-                        " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
-                        " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=?";
+            SELECT(
+                TBL_SERIES.dot(DOM_SERIES_NAME) + " || ' ' || Coalesce(" + TBL_BOOK_SERIES.dot(
+                    DOM_BOOK_SERIES_NUM) + ",'')" +
+                    " AS seriesInfo"
+            ) +
+                " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
+                " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=?";
 
         private static final String DOM_TOC_ENTRY_INFO = "TOCEntryInfo";
         private static final String DOM_TOC_ENTRY_AUTHOR_INFO = "TOCEntryAuthorInfo";
         private static final String FTS_GET_TOC_ENTRIES_BY_BOOK_ID =
-                SELECT(
-                        TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
-                                " AS " + SqlString.DOM_TOC_ENTRY_AUTHOR_INFO,
-                        DOM_TITLE +
-                                " AS " + SqlString.DOM_TOC_ENTRY_INFO
-                ) +
-                        " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES) + TBL_TOC_ENTRIES.join(TBL_AUTHORS) +
-                        " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(DOM_FK_BOOK_ID) + "=?";
+            SELECT(
+                TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + " || ' ' || " + TBL_AUTHORS.dot(
+                    DOM_AUTHOR_FAMILY_NAME) +
+                    " AS " + SqlString.DOM_TOC_ENTRY_AUTHOR_INFO,
+                DOM_TITLE +
+                    " AS " + SqlString.DOM_TOC_ENTRY_INFO
+            ) +
+                " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(
+                TBL_BOOK_TOC_ENTRIES) + TBL_TOC_ENTRIES.join(TBL_AUTHORS) +
+                " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(DOM_FK_BOOK_ID) + "=?";
     }
 }
 

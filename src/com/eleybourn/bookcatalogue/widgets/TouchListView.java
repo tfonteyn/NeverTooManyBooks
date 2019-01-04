@@ -115,11 +115,11 @@ public class TouchListView<T> extends ListView {
     @Nullable
     private Integer mSavedHeight = null;
 
-    public TouchListView(final @NonNull Context context, final @NonNull AttributeSet attrs) {
+    public TouchListView(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TouchListView(final @NonNull Context context, final @NonNull AttributeSet attrs, final int defStyle) {
+    public TouchListView(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
 
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
@@ -136,24 +136,24 @@ public class TouchListView<T> extends ListView {
     }
 
     @Override
-    final public void addHeaderView(final @NonNull View v, final @NonNull Object data, final boolean isSelectable) {
+    final public void addHeaderView(@NonNull final View v, @NonNull final Object data, final boolean isSelectable) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    final public void addHeaderView(final @NonNull View v) {
+    final public void addHeaderView(@NonNull final View v) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    final public void addFooterView(final @NonNull View v, final @NonNull Object data, final boolean isSelectable) {
+    final public void addFooterView(@NonNull final View v, @NonNull final Object data, final boolean isSelectable) {
         if (mRemoveMode == SLIDE_LEFT || mRemoveMode == SLIDE_RIGHT) {
             throw new UnsupportedOperationException();
         }
     }
 
     @Override
-    final public void addFooterView(final @NonNull View v) {
+    final public void addFooterView(@NonNull final View v) {
         if (mRemoveMode == SLIDE_LEFT || mRemoveMode == SLIDE_RIGHT) {
             throw new UnsupportedOperationException();
         }
@@ -164,7 +164,7 @@ public class TouchListView<T> extends ListView {
      */
     @Override
     @CallSuper
-    public boolean onInterceptTouchEvent(final @NonNull MotionEvent ev) {
+    public boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
         if (mOnRemoveListener != null && mGestureDetector == null) {
             if (mRemoveMode == FLING) {
                 mGestureDetector = new GestureDetector(getContext(), new SimpleOnGestureListener() {
@@ -247,7 +247,7 @@ public class TouchListView<T> extends ListView {
     /**
      * A row is draggable if it has a drag icon
      */
-    private boolean isDraggableRow(final @NonNull View view) {
+    private boolean isDraggableRow(@NonNull final View view) {
         return (view.findViewById(grabberId) != null);
     }
 
@@ -416,7 +416,7 @@ public class TouchListView<T> extends ListView {
 
     @Override
     @CallSuper
-    public boolean onTouchEvent(final @NonNull MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull final MotionEvent ev) {
         if (mGestureDetector != null) {
             mGestureDetector.onTouchEvent(ev);
         }
@@ -502,7 +502,7 @@ public class TouchListView<T> extends ListView {
         return mWindowManager;
     }
 
-    private void startDragging(final @NonNull Bitmap bm, final int x, final int y) {
+    private void startDragging(@NonNull final Bitmap bm, final int x, final int y) {
         stopDragging();
 
         mWindowParams = new WindowManager.LayoutParams();
@@ -558,16 +558,16 @@ public class TouchListView<T> extends ListView {
     }
 
     @SuppressWarnings("unused")
-    public void setOnDragListener(final @NonNull OnDragListener listener) {
+    public void setOnDragListener(@NonNull final OnDragListener listener) {
         mOnDragListener = listener;
     }
 
-    public void setOnDropListener(final @NonNull OnDropListener listener) {
+    public void setOnDropListener(@NonNull final OnDropListener listener) {
         mOnDropListener = listener;
     }
 
     @SuppressWarnings("unused")
-    public void setOnRemoveListener(final @NonNull OnRemoveListener listener) {
+    public void setOnRemoveListener(@NonNull final OnRemoveListener listener) {
         mOnRemoveListener = listener;
     }
 

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ####################################################################################### -->
+    <!-- ========== Preferences / PropertyList ========== -->
+    <!-- ####################################################################################### -->
+
+    <!-- Preference VALUE -->
+    <string name="use_default_setting">Standardeinstellung verwenden</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_general">Allgemein</string>
+    <!-- Preference GROUP -->
+    <string name="pg_ui">Benutzeroberfläche</string>
+    <!-- Preference GROUP -->
+    <string name="pg_thumbnails">Cover-Bilder</string>
+    <!-- Preference GROUP -->
+    <string name="pg_scanning">Scanne</string>
+    <!-- Preference GROUP -->
+    <string name="pg_booklist">Buchlisten</string>
+    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_groupings">Gruppierung</string>
+
+    <!-- ========== Global preferences ========== -->
+
+    <!-- Preference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
+    <string name="pt_bob_open_book_read_only">Buch im schreibgeschützten Modus öffnen</string>
+
+    <!-- Preference - start the cropper with the cropper frame set to the whole image -->
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Standardbeschnitt besteht aus dem gesamten Bild</string>
+
+    <!-- Preference - use an external app. (Intent) to handle cropping-->
+    <string name="pt_thumbnails_external_cropper">Externe Bildbearbeitung verwenden</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_valid">Tonsignal bei gültig gescannter ISBN</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_invalid">Tonsignal, falls die gescannte ISBN ungültig ist</string>
+
+     <!--Preference -->
+    <string name="pt_ui_messages_use">informieren mit</string>
+    <string-array name="pe_ui_messages_use">
+        <item translatable="false">Toast</item>
+        <item translatable="false">Snackbar</item>
+    </string-array>
+
+    <!-- Preference -->
+    <string name="pt_ui_theme">Thema</string>
+    <string-array name="pe_ui_theme">
+        <item>Dunkel</item>
+        <item>Licht</item>
+    </string-array>
+
+    <!-- Preference - Preferred interface Locale -->
+    <string name="pt_ui_language">Bevorzugte Bediensprache</string>
+
+    <!-- Preference - Degrees by which to rotate camera images automatically -->
+    <string name="pt_thumbnails_rotate_auto">Bilder von der Kamera automatisch rotieren</string>
+    <string-array name="pe_thumbnails_rotate_auto">
+        <item>Nein</item>
+        <item>Drehen im Uhrzeigersinn</item>
+        <item>Drehen gegen den Uhrzeigersinn</item>
+        <item>Um 180° drehen</item>
+    </string-array>
+
+    <!-- Preference - Compatibility / bug workaround for some devices -->
+    <string name="pt_thumbnail_cropper_layer_type">Zuschneiden Schicht Typ</string>
+    <string name="pt_hint_layer_type">Behalten Sie diese Einstellung bei \'Standardeinstellung\' bei, es sei denn, Sie stürzen beim Beschneiden von Bildern ab. Probieren Sie \'Software\' aus, um sicherer, aber langsamer zu sein, oder erzwingen Sie \'Hardware\' für weniger Sicherheit, aber schneller.</string>
+    <string-array name="pe_thumbnails_cropper_layer_type">
+        <item>Standardeinstellung verwenden</item>
+        <item>Hardware</item>
+        <item>Software</item>
+    </string-array>
+
+    <!-- Preference - the barcode scanner to use-->
+    <string name="pt_scanning_preferred_scanner">Bevorzugter Scanner</string>
+    <string-array name="pe_scanning_preferred_scanner">
+        <item>Zxing-kompatibler Scanner</item>
+        <item>Zxing Scanner</item>
+        <item>Pic2Shop-Scanner</item>
+    </string-array>
+
+
+    <!-- ========== Book list preferences ========== -->
+
+    <!-- Preference - Book list state-related preferences -->
+    <string name="pt_bob_list_state">Darstellung der Bücherliste</string>
+    <string-array name="pe_bob_list_state">
+        <item>Bücherliste immer ausklappen</item>
+        <item>Bücherliste immer einklappen</item>
+        <item>Darstellung beibehalten</item>
+    </string-array>
+
+    <!--  Preference to override the default method used to generate book lists as defined by API level -->
+    <string name="pt_bob_list_generation">Erzeugung der Bücherliste</string>
+    <string-array name="pe_bob_list_generation">
+        <item>Verwende den am besten geeigneten Modus</item>
+        <item>Benutze vollwertigen Modus</item>
+        <item>Benutze verbesserten Kompatibilitätsmodus</item>
+        <item>Benutze Kompatibilitätsmodus</item>
+    </string-array>
+
+    <!-- Preference - Thumbnails are fetched in a background task -->
+    <string name="pt_bob_thumbnails_generating_mode">Cover-Bilder im Hintergrund laden</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Im Hintergrund laden (schnellerer Bildlauf, Bilder können verzögert sein)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Sofort erzeugen (langsamerer Bildlauf, Bilder sofort angezeigt)</string>
+
+    <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
+    <string name="pt_bob_thumbnails_cache_resized">Größe der Cover-Bilder ändern zwischenspeichern</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Größe bei Bedarf ändern (geringerer Speicherverbrauch, langsamerer Bildlauf)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Cover-Bilder zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
+
+    <!-- ========== Book list style preferences ========== -->
+
+    <!-- Preference - Use scaled text and images -->
+    <string name="pt_bob_item_size">Größe der Einträge in der Bücherliste</string>
+    <string-array name="pe_bob_item_size">
+        <item>Normal</item>
+        <item>Kleiner</item>
+        <item>Größer</item>
+    </string-array>
+
+    <!-- Preference - Determines what is show in book list header -->
+    <string name="pt_bob_header">Zusammenfassung in der Kopfzeile</string>
+    <string-array name="pe_bob_header">
+        <item>Anzahl der Bücher anzeigen</item>
+        <item>Titel der Bücher anzeigen</item>
+    </string-array>
+
+    <!-- Preference - Show thumbnail image for each book -->
+    <string name="pt_bob_thumbnails_show">Cover-Bilder anzeigen</string>
+    <!-- Preference - Show large thumbnail if thumbnails are shown -->
+    <string name="pt_bob_thumbnails_show_large">Große Cover-Bilder bevorzugen</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_authors">Bücher mit mehreren Autoren</string>
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_series">Bücher in mehreren Serien</string>
+
+    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Unter jedem %1$s</string>
+    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Nur unter primärem %1$s</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_format_author_name">Format des Autorennamens</string>
+    <string name="pv_bob_format_author_name_given_first">Vorname zuerst (z.B. \'Max Meier\')</string>
+    <string name="pv_bob_format_author_name_family_first">Familienname zuerst (z.B. \'Meier, Max\')</string>
+
+    <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
+    <string name="pt_bob_sort_author_name">Autorennamen sortieren</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_bob_extra_book_details">Zusätzliche Buchdetails</string>
+</resources>

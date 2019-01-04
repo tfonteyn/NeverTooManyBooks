@@ -1,7 +1,7 @@
 /*
  * @copyright 2012 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -21,12 +21,9 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 
-import androidx.annotation.NonNull;
-
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
@@ -40,84 +37,96 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
+import androidx.annotation.NonNull;
 
 /**
  * Class to add a book to a shelf. In this case, we do not care about the data returned.
- * 
- * ENHANCE: Parse the result and store it against the bookshelf in the database. 
- * 		 	Currently, this is not a simple thing to do because bookshelf naming rules in 
- * 		 	goodreads are much more restrictive: no spaces, punctuation (at least).
- * 
- * 			Need to add the following to bookshelf table:
- * 			- gr_bookshelf_id
- * 			- (perhaps) gr_bookshelf_name
- * 
- * @author Philip Warner
  *
+ * ENHANCE: Parse the result and store it against the bookshelf in the database.
+ * Currently, this is not a simple thing to do because bookshelf naming rules in
+ * goodreads are much more restrictive: no spaces, punctuation (at least).
+ *
+ * Need to add the following to bookshelf table:
+ * - gr_bookshelf_id
+ * - (perhaps) gr_bookshelf_name
+ *
+ * @author Philip Warner
  */
 public class ShelfAddBookHandler extends ApiHandler {
 
-	public ShelfAddBookHandler(final @NonNull GoodreadsManager manager) {
-		super(manager);
-		buildFilters();
-	}
+    private long mReviewId = 0;
+    private final XmlHandler mHandleReviewId = new XmlHandler() {
+        @Override
+        public void process(@NonNull final ElementContext context) {
 
-	private long mReviewId = 0;
+            try {
+                mReviewId = Long.parseLong(context.body.trim());
+            } catch (NumberFormatException ignore) {
+            }
+        }
+    };
 
-	/*
-     * <shelf>
-     *  <created-at type='datetime' nil='true'></created-at>
-     *  <position type='integer' nil='true'></position>
-     *  <review-id type='integer'>254171613</review-id>
-     *  <updated-at type='datetime' nil='true'></updated-at>
-     *  <user-shelf-id type='integer'>16480894</user-shelf-id>
-     *  <name>read</name>
-     * </shelf>
+    /**
+     * <pre>
+     *  <shelf>
+     *     <created-at type='datetime' nil='true'></created-at>
+     *     <position type='integer' nil='true'></position>
+     *     <review-id type='integer'>254171613</review-id>
+     *     <updated-at type='datetime' nil='true'></updated-at>
+     *     <user-shelf-id type='integer'>16480894</user-shelf-id>
+     *     <name>read</name>
+     *   </shelf>
+     * </pre>
      */
+    public ShelfAddBookHandler(@NonNull final GoodreadsManager manager) {
 
-	/**
-	 * Add the passed book to the passed shelf
-	 */
-	public long add(final @NonNull String shelfName, final long grBookId)
-			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
-			NotAuthorizedException, BookNotFoundException, NetworkException
-	{
+        super(manager);
+        buildFilters();
+    }
+
+    /**
+     * Add the passed book to the passed shelf
+     */
+    public long add(@NonNull final String shelfName, final long grBookId)
+            throws IOException,
+                   NotAuthorizedException,
+                   BookNotFoundException {
+
         return doCall(shelfName, grBookId, false);
-	}
+    }
 
-	/**
-	 * Remove the passed book from the passed shelf
-	 */	
-	@SuppressWarnings("UnusedReturnValue")
-	public long remove(final @NonNull String shelfName, final long grBookId)
-			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
-			NotAuthorizedException, BookNotFoundException, NetworkException
-	{
+    /**
+     * Remove the passed book from the passed shelf
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public long remove(@NonNull final String shelfName, final long grBookId)
+            throws IOException,
+                   NotAuthorizedException,
+                   BookNotFoundException {
+
         return doCall(shelfName, grBookId, true);
-	}
+    }
 
-	/**
-	 * Do the main work; same API call for add & remove
-	 */
-	private long doCall(final @NonNull String shelfName, final long grBookId, final boolean isRemove)
-			throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
-			NotAuthorizedException, BookNotFoundException, NetworkException
-	{
-		mReviewId = 0;
+    /**
+     * Do the main work; same API call for add & remove
+     */
+    private long doCall(@NonNull final String shelfName, final long grBookId, final boolean isRemove)
+            throws IOException,
+                   NotAuthorizedException,
+                   BookNotFoundException {
 
-		HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/shelf/add_to_shelf.xml");
+        mReviewId = 0;
 
-		ArrayList<NameValuePair> parameters = new ArrayList<>();
+        HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/shelf/add_to_shelf.xml");
+
+        ArrayList<NameValuePair> parameters = new ArrayList<>();
         if (isRemove) {
-			parameters.add(new BasicNameValuePair("a", "remove"));
-		}
-        parameters.add(new BasicNameValuePair("book_id", Long.toString(grBookId)));
+            parameters.add(new BasicNameValuePair("a", "remove"));
+        }
+        parameters.add(new BasicNameValuePair("book_id", String.valueOf(grBookId)));
         parameters.add(new BasicNameValuePair("name", shelfName));
 
-        post.setEntity(new UrlEncodedFormEntity(parameters, "UTF8"));	        	
+        post.setEntity(new UrlEncodedFormEntity(parameters, "UTF8"));
 
         // Use a parser based on the filters
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
@@ -125,10 +134,10 @@ public class ShelfAddBookHandler extends ApiHandler {
         mManager.execute(post, handler, true);
 
         return mReviewId;
-	}
+    }
 
-	private void buildFilters() {
-		/* Typical output. 
+    private void buildFilters() {
+		/* Typical output.
 			<shelf>
 			  <created-at type='datetime'>2012-01-02T19:07:12-08:00</created-at>
 			  <id type='integer'>167676018</id>
@@ -139,18 +148,8 @@ public class ShelfAddBookHandler extends ApiHandler {
 			  <name>sci-fi-fantasy</name>
 			</shelf>
 		 */
-		// We only care about review-id:
-		XmlFilter.buildFilter(mRootFilter, "shelf", "review-id")
-				.setEndAction(mHandleReviewId);
-	}
-
-	private final XmlHandler mHandleReviewId = new XmlHandler() {
-		@Override
-		public void process(final @NonNull ElementContext context) {
-			try {
-				mReviewId = Long.parseLong(context.body.trim());
-			} catch (Exception ignore) {
-			}
-		}
-	};
+        // We only care about review-id:
+        XmlFilter.buildFilter(mRootFilter, XML_SHELF, XML_REVIEW_ID)
+                .setEndAction(mHandleReviewId);
+    }
 }

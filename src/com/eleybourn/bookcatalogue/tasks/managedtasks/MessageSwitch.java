@@ -86,7 +86,7 @@ public class MessageSwitch<T, U> {
      * @return the unique ID for this sender
      */
     @NonNull
-    public Long createSender(final @NonNull U controller) {
+    public Long createSender(@NonNull final U controller) {
         MessageSender<U> s = new MessageSenderImpl(controller);
         mSenders.put(s.getId(), s);
         return s.getId();
@@ -99,7 +99,7 @@ public class MessageSwitch<T, U> {
      * @param listener    Listener object
      * @param deliverLast If true, send the last message (if any) to this listener
      */
-    public void addListener(final @NonNull Long senderId, final @NonNull T listener, final boolean deliverLast) {
+    public void addListener(@NonNull final Long senderId, @NonNull final T listener, final boolean deliverLast) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, "addListener|" + listener + "|senderId=" + senderId);
         }
@@ -140,9 +140,9 @@ public class MessageSwitch<T, U> {
     }
 
     /** Remove the specified listener from the specified queue */
-    public void removeListener(final @NonNull Long senderId, final @NonNull T listener) {
+    public void removeListener(@NonNull final Long senderId, @NonNull final T listener) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "|removeListener|senderId=" + senderId + "|" + listener);
+            Logger.info(this, "|removeListener|senderId=" + senderId + '|' + listener);
         }
         synchronized (mListeners) {
             MessageListeners queue = mListeners.get(senderId);
@@ -157,7 +157,7 @@ public class MessageSwitch<T, U> {
      * @param senderId Queue ID
      * @param message  Message to send
      */
-    public void send(final @NonNull Long senderId, final @NonNull Message<T> message) {
+    public void send(@NonNull final Long senderId, @NonNull final Message<T> message) {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
             Logger.info(this, "|sending to senderId=" + senderId + "|message: " + message);
         }
@@ -180,7 +180,7 @@ public class MessageSwitch<T, U> {
      * @return Controller object of type 'U'
      */
     @Nullable
-    public U getController(final @NonNull Long senderId) {
+    public U getController(@NonNull final Long senderId) {
         MessageSender<U> sender = mSenders.get(senderId);
         if (sender != null) {
             return sender.getController();
@@ -190,7 +190,7 @@ public class MessageSwitch<T, U> {
     }
 
     /** Remove a sender and it's queue */
-    private void removeSender(final @NonNull MessageSender<U> s) {
+    private void removeSender(@NonNull final MessageSender<U> s) {
         synchronized (mSenders) {
             mSenders.remove(s.getId());
         }
@@ -235,11 +235,11 @@ public class MessageSwitch<T, U> {
          *
          * @param listener Listener to who message must be delivered
          *
-         * @return <tt>true</tt>if message should not be delivered to any other listeners or
+         * @return <tt>true</tt> if message should not be delivered to any other listeners or
          * stored for delivery as 'last message'. Should only return true if the message has
          * been handled and would break the app if delivered more than once.
          */
-        boolean deliver(final @NonNull T listener);
+        boolean deliver(@NonNull final T listener);
     }
 
     /**
@@ -277,12 +277,12 @@ public class MessageSwitch<T, U> {
             return mLastMessage;
         }
 
-        void setLastMessage(final @Nullable MessageRoutingSlip m) {
+        void setLastMessage(@Nullable final MessageRoutingSlip m) {
             mLastMessage = m;
         }
 
         /** Add a listener to this queue */
-        public void add(final @NonNull T listener) {
+        public void add(@NonNull final T listener) {
             synchronized (mList) {
                 mList.add(new WeakReference<>(listener));
             }
@@ -293,7 +293,7 @@ public class MessageSwitch<T, U> {
          *
          * @param listener Listener to be removed
          */
-        public void remove(final @NonNull T listener) {
+        public void remove(@NonNull final T listener) {
             synchronized (mList) {
                 // List of refs to be removed
                 List<WeakReference<T>> toRemove = new ArrayList<>();
@@ -356,7 +356,7 @@ public class MessageSwitch<T, U> {
         final Message<T> message;
 
         /** Constructor */
-        MessageRoutingSlip(final @NonNull Long destination, final @NonNull Message<T> message) {
+        MessageRoutingSlip(@NonNull final Long destination, @NonNull final Message<T> message) {
             this.destination = destination;
             this.message = message;
         }
@@ -394,7 +394,7 @@ public class MessageSwitch<T, U> {
                             break;
                         }
 
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                         Logger.error(e, "Error delivering message to listener");
                     }
                 }
@@ -413,7 +413,7 @@ public class MessageSwitch<T, U> {
         private final U mController;
 
         /** Constructor */
-        MessageSenderImpl(final @NonNull U controller) {
+        MessageSenderImpl(@NonNull final U controller) {
             mController = controller;
         }
 

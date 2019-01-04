@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pg_ui">
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_ui_language"
+            android:entryValues="@array/pv_ui_language"
+            android:icon="@drawable/ic_language"
+            android:key="@string/pk_ui_language"
+            android:title="@string/pt_ui_language" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_ui_theme"
+            android:entryValues="@array/pv_ui_theme"
+            android:icon="@drawable/ic_settings_brightness"
+            android:key="@string/pk_ui_theme"
+            android:title="@string/pt_ui_theme" />
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/pe_ui_messages_use"
+            android:entryValues="@array/pv_ui_messages_use"
+            android:icon="@drawable/ic_message"
+            android:key="@string/pk_ui_messages_use"
+            android:title="@string/pt_ui_messages_use" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pg_booklist">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_edit"
+            android:key="@string/pk_bob_open_book_read_only"
+            android:title="@string/pt_bob_open_book_read_only" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_bob_list_state"
+            android:entryValues="@array/pv_bob_list_state"
+            android:icon="@drawable/ic_view_list"
+            android:key="@string/pk_bob_list_state"
+            android:title="@string/pt_bob_list_state" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_bob_list_generation"
+            android:entryValues="@array/pv_bob_list_generation"
+            android:icon="@drawable/ic_build"
+            android:key="@string/pk_bob_list_generation"
+            android:title="@string/pt_bob_list_generation" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pg_scanning">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_surround_sound"
+            android:key="@string/pk_scanning_beep_if_isbn_invalid"
+            android:title="@string/pt_scanning_beep_if_isbn_invalid" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_surround_sound"
+            android:key="@string/pk_scanning_beep_if_isbn_valid"
+            android:title="@string/pt_scanning_beep_if_isbn_valid" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_scanning_preferred_scanner"
+            android:entryValues="@array/pv_scanning_preferred_scanner"
+            android:icon="@drawable/ic_scanner"
+            android:key="@string/pk_scanning_preferred_scanner"
+            android:title="@string/pt_scanning_preferred_scanner" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pg_thumbnails">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_crop_original"
+            android:key="@string/pk_thumbnails_crop_frame_is_whole_image"
+            android:title="@string/pt_thumbnails_crop_frame_is_whole_image" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_apps"
+            android:key="@string/pk_thumbnails_external_cropper"
+            android:title="@string/pt_thumbnails_external_cropper" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_cached"
+            android:key="@string/pk_bob_thumbnails_cache_resized"
+            android:summaryOff="@string/pe_bob_thumbnails_cache_resized_each_time"
+            android:summaryOn="@string/pe_bob_thumbnails_cache_resized_stored"
+            android:title="@string/pt_bob_thumbnails_cache_resized" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_directions_run"
+            android:key="@string/pk_bob_thumbnails_generating_mode"
+            android:summaryOff="@string/pe_bob_thumbnails_generating_mode_immediately"
+            android:summaryOn="@string/pe_bob_thumbnails_generating_mode_background"
+            android:title="@string/pt_bob_thumbnails_generating_mode" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_thumbnails_rotate_auto"
+            android:entryValues="@array/pv_thumbnails_rotate_auto"
+            android:icon="@android:drawable/ic_menu_camera"
+            android:key="@string/pk_thumbnails_rotate_auto"
+            android:title="@string/pt_thumbnails_rotate_auto" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:dialogIcon="@drawable/ic_warning"
+            android:entries="@array/pe_thumbnails_cropper_layer_type"
+            android:entryValues="@array/pv_thumbnails_cropper_layer_type"
+            android:icon="@drawable/ic_build"
+            android:key="@string/pk_thumbnail_cropper_layer_type"
+            android:title="@string/pt_thumbnail_cropper_layer_type" />
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

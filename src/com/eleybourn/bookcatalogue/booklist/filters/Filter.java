@@ -1,5 +1,9 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 public interface Filter {
-    String getExpression();
+    @NonNull
+    String getExpression(@Nullable final String uuid);
 }

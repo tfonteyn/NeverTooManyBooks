@@ -56,24 +56,24 @@ public abstract class GoodreadsTask extends Task implements Serializable {
     private static final String STATUS_FAILED = "F";
     private static final String STATUS_QUEUED = "Q";
 
-    public GoodreadsTask(final @NonNull String description) {
+    public GoodreadsTask(@NonNull final String description) {
         super(description);
     }
 
     /**
-     * @return false to requeue, true for success
+     * @return <tt>false</tt> to requeue, <tt>true</tt> for success
      */
-    public abstract boolean run(final @NonNull QueueManager queueManager,
-                                final @NonNull Context context);
+    public abstract boolean run(@NonNull final QueueManager queueManager,
+                                @NonNull final Context context);
 
     /**
      * Create a new View
      */
     @Override
-    public View newListItemView(final @NonNull LayoutInflater inflater,
-                                final @NonNull Context context,
-                                final @NonNull BindableItemCursor cursor,
-                                final @NonNull ViewGroup parent) {
+    public View newListItemView(@NonNull final LayoutInflater inflater,
+                                @NonNull final Context context,
+                                @NonNull final BindableItemCursor cursor,
+                                @NonNull final ViewGroup parent) {
         View view = inflater.inflate(R.layout.task_info, parent, false);
         ViewTagger.setTag(view, R.id.TAG_TASK, this);
 
@@ -97,35 +97,35 @@ public abstract class GoodreadsTask extends Task implements Serializable {
      * Bind task details to passed View
      */
     @Override
-    public void bindView(final @NonNull View view,
-                         final @NonNull Context context,
-                         final @NonNull BindableItemCursor bindAbleCursor,
-                         final @NonNull CatalogueDBAdapter db) {
+    public void bindView(@NonNull final View view,
+                         @NonNull final Context context,
+                         @NonNull final BindableItemCursor cursor,
+                         @NonNull final CatalogueDBAdapter db) {
         TaskHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_TASK_HOLDER);
-        TasksCursor cursor = (TasksCursor) bindAbleCursor;
+        TasksCursor tasksCursor = (TasksCursor) cursor;
 
         // Update task info binding
         holder.description.setText(this.getDescription());
-        String statusCode = cursor.getStatusCode().toUpperCase();
+        String statusCode = tasksCursor.getStatusCode().toUpperCase();
         String statusText;
         switch (statusCode) {
             case STATUS_COMPLETE:
-                statusText = context.getString(R.string.completed);
+                statusText = context.getString(R.string.gr_tq_completed);
                 holder.retry_info.setVisibility(View.GONE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
             case STATUS_FAILED:
-                statusText = context.getString(R.string.failed);
+                statusText = context.getString(R.string.gr_tq_failed);
                 holder.retry_info.setVisibility(View.GONE);
                 holder.retryButton.setVisibility(View.VISIBLE);
                 break;
             case STATUS_QUEUED:
-                statusText = context.getString(R.string.queued);
+                statusText = context.getString(R.string.gr_tq_queued);
                 holder.retry_info.setText(
-                        context.getString(R.string.retry_x_of_y_next_at_z,
+                        context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
                                 this.getRetries(),
                                 this.getRetryLimit(),
-                                DateUtils.toPrettyDateTime(cursor.getRetryDate())));
+                                DateUtils.toPrettyDateTime(tasksCursor.getRetryDate())));
                 holder.retry_info.setVisibility(View.VISIBLE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
@@ -136,20 +136,20 @@ public abstract class GoodreadsTask extends Task implements Serializable {
                 break;
         }
 
-        statusText += context.getString(R.string.events_recorded, cursor.getNoteCount());
+        statusText += context.getString(R.string.gr_tq_events_recorded, tasksCursor.getNoteCount());
         holder.state.setText(statusText);
 
         Exception e = this.getException();
         if (e != null) {
             holder.error.setVisibility(View.VISIBLE);
-            holder.error.setText(BookCatalogueApp.getResourceString(R.string.last_error_e, e.getLocalizedMessage()));
+            holder.error.setText(BookCatalogueApp.getResourceString(R.string.gr_tq_last_error_e, e.getLocalizedMessage()));
         } else {
             holder.error.setVisibility(View.GONE);
         }
         //"Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
-        holder.job_info.setText(BookCatalogueApp.getResourceString(R.string.generic_task_info,
+        holder.job_info.setText(BookCatalogueApp.getResourceString(R.string.gr_tq_generic_task_info,
                 this.getId(),
-                DateUtils.toPrettyDateTime(cursor.getQueuedDate())));
+                DateUtils.toPrettyDateTime(tasksCursor.getQueuedDate())));
         //view.requestLayout();
     }
 
@@ -158,15 +158,15 @@ public abstract class GoodreadsTask extends Task implements Serializable {
      * - Allow task deletion
      */
     @Override
-    public void addContextMenuItems(final @NonNull Context context,
-                                    final @NonNull AdapterView<?> parent,
-                                    final @NonNull View view,
+    public void addContextMenuItems(@NonNull final Context context,
+                                    @NonNull final AdapterView<?> parent,
+                                    @NonNull final View view,
                                     final int position,
                                     final long id,
-                                    final @NonNull List<ContextDialogItem> items,
-                                    final @NonNull CatalogueDBAdapter db) {
+                                    @NonNull final List<ContextDialogItem> items,
+                                    @NonNull final CatalogueDBAdapter db) {
 
-        items.add(new ContextDialogItem(context.getString(R.string.menu_delete_task), new Runnable() {
+        items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task), new Runnable() {
                     @Override
                     public void run() {
                         QueueManager.getQueueManager().deleteTask(id);
@@ -180,7 +180,7 @@ public abstract class GoodreadsTask extends Task implements Serializable {
      *
      * @author Philip Warner
      */
-    public class TaskHolder {
+    public static class TaskHolder {
         TextView description;
         TextView state;
         TextView retry_info;

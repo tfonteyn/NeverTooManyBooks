@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,27 +16,32 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
- * Implementation of {@link FileDetails} that collects data about backup files in a background thread.
- *
- * Implements Parcelable but is in fact never Parceled. See constructor/writeToParcel
- * -> the 'File' object was originally serialized, but is now (its name) parcelled. Neither is tested (by me)
+ * Implementation of {@link FileDetails} that collects data about backup files
+ * in a background thread.
  *
  * @author pjw
  */
-public class BackupFileDetails implements FileDetails, Parcelable {
+public class BackupFileDetails
+    implements FileDetails, Parcelable {
 
-    public static final Parcelable.Creator<BackupFileDetails> CREATOR = new Parcelable.Creator<BackupFileDetails>() {
-        public BackupFileDetails createFromParcel(final @NonNull Parcel in) {
-            return new BackupFileDetails(in);
-        }
+    public static final Parcelable.Creator<BackupFileDetails> CREATOR =
+        new Parcelable.Creator<BackupFileDetails>() {
+            public BackupFileDetails createFromParcel(@NonNull final Parcel source) {
+                return new BackupFileDetails(source);
+            }
 
-        public BackupFileDetails[] newArray(final int size) {
-            return new BackupFileDetails[size];
-        }
-    };
+            public BackupFileDetails[] newArray(final int size) {
+                return new BackupFileDetails[size];
+            }
+        };
 
     /** @see #isArchive(File) */
     public static final String ARCHIVE_EXTENSION = ".bcbk";
@@ -53,34 +57,29 @@ public class BackupFileDetails implements FileDetails, Parcelable {
     /**
      * Constructor
      */
-    BackupFileDetails(final @NonNull File file) {
+    BackupFileDetails(@NonNull final File file) {
         mFile = file;
     }
 
     /**
      * Constructor, using a Parcel as source.
      */
-    private BackupFileDetails(final @NonNull Parcel in) {
-        // mFile = (File) in.readSerializable();
+    private BackupFileDetails(@NonNull final Parcel in) {
         mFile = new File(in.readString());
         // flag to indicate the Parcel has the info bundle
-        byte infoFlag = in.readByte();
-        if (infoFlag != (byte) 0) {
-            // note we're only doing the Bundle, not the info object itself.
-            mInfo = new BackupInfo(in.readBundle(getClass().getClassLoader()));
+        boolean hasInfo = (in.readByte() != 0);
+        if (hasInfo) {
+            mInfo = in.readParcelable(getClass().getClassLoader());
         } else {
             mInfo = null;
         }
     }
 
-    public static boolean isArchive(final @NonNull File f) {
+    public static boolean isArchive(@NonNull final File f) {
         return f.getName().toLowerCase().endsWith(ARCHIVE_EXTENSION);
     }
 
-    /**
-     * Accessor
-     */
-    public void setInfo(final @NonNull BackupInfo info) {
+    public void setInfo(@NonNull final BackupInfo info) {
         mInfo = info;
     }
 
@@ -97,22 +96,24 @@ public class BackupFileDetails implements FileDetails, Parcelable {
      */
     @Override
     public int getViewId() {
-        return R.layout.backup_chooser_item;
+        return R.layout.row_backup_chooser_item;
     }
 
     /**
      * Fill in the details for the view we returned above.
      */
     @Override
-    public void onGetView(final @NonNull View convertView, final @NonNull Context context) {
+    public void onGetView(@NonNull final View convertView,
+                          @NonNull final Context context) {
 
         // Set the basic data
         TextView filenameView = convertView.findViewById(R.id.name);
         filenameView.setText(mFile.getName());
 
-        TextView dateView = convertView.findViewById(R.id.date);
         ImageView imageView = convertView.findViewById(R.id.icon);
         TextView detailsView = convertView.findViewById(R.id.details);
+        TextView dateView = convertView.findViewById(R.id.date);
+        TextView sizeView = convertView.findViewById(R.id.size);
 
         // For directories, hide the extra data
         if (mFile.isDirectory()) {
@@ -123,23 +124,39 @@ public class BackupFileDetails implements FileDetails, Parcelable {
             // Display date and backup details
             imageView.setImageDrawable(context.getDrawable(R.drawable.bc_archive));
             dateView.setVisibility(View.VISIBLE);
-            String formattedFleSize = Utils.formatFileSize(mFile.length());
+            String formattedFileSize = Utils.formatFileSize(mFile.length());
             Resources res = context.getResources();
             if (mInfo != null) {
-                String books = res.getQuantityString(R.plurals.n_books, mInfo.getBookCount(), mInfo.getBookCount());
-                if (mInfo.hasCoverCount()) {
-                    String covers = res.getQuantityString(R.plurals.n_covers, mInfo.getCoverCount(), mInfo.getCoverCount());
-                    detailsView.setText(res.getString(R.string.a_comma_b, books, covers));
-                } else {
-                    detailsView.setText(books);
+                List<String> args = new ArrayList<>();
+                if (mInfo.hasBookCount()) {
+                    args.add(res.getQuantityString(R.plurals.n_books, mInfo.getBookCount(),
+                                                   mInfo.getBookCount()));
+                } else if (mInfo.hasBooks()) {
+                    args.add(res.getString(R.string.lbl_books));
                 }
-                //noinspection ConstantConditions
-                dateView.setText(res.getString(R.string.a_comma_b, formattedFleSize,
-                        DateUtils.toPrettyDateTime(mInfo.getCreateDate())));
+                if (mInfo.hasCoverCount()) {
+                    args.add(res.getQuantityString(R.plurals.n_covers, mInfo.getCoverCount(),
+                                                   mInfo.getCoverCount()));
+                } else if (mInfo.hasCovers()) {
+                    args.add(res.getString(R.string.lbl_covers));
+                }
+
+                if (mInfo.hasPreferences()) {
+                    args.add(res.getString(R.string.lbl_preferences));
+                }
+                if (mInfo.hasBooklistStyles()) {
+                    args.add(res.getString(R.string.lbl_styles));
+                }
+
+                // needs RTL
+                detailsView.setText(TextUtils.join(", ", args));
+
+                sizeView.setText(formattedFileSize);
+                dateView.setText(DateUtils.toPrettyDateTime(mInfo.getCreationDate()));
                 detailsView.setVisibility(View.VISIBLE);
             } else {
-                dateView.setText(res.getString(R.string.a_comma_b, formattedFleSize,
-                        DateUtils.toPrettyDateTime(new Date(mFile.lastModified()))));
+                sizeView.setText(formattedFileSize);
+                dateView.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
                 detailsView.setVisibility(View.GONE);
             }
         }
@@ -157,14 +174,13 @@ public class BackupFileDetails implements FileDetails, Parcelable {
      * Save all fields that must be persisted.
      */
     @Override
-    public void writeToParcel(final @NonNull Parcel dest, final int flags) {
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
         dest.writeString(mFile.getAbsolutePath());
-        // dest.writeSerializable(mFile);
         if (mInfo != null) {
             // flag to indicate the Parcel has the info bundle
             dest.writeByte((byte) 1);
-            // note we're only doing the Bundle, not the info object itself.
-            dest.writeBundle(mInfo.getBundle());
+            dest.writeParcelable(mInfo, flags);
         } else {
             dest.writeByte((byte) 0);
         }

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
+
 <resources>
     <!-- ####################################################################################### -->
     <!-- == No translation required == -->
     <!-- ####################################################################################### -->
 
-    <string name="app_name" translatable="false">Book Catalogue</string>
+    <string name="app_name" translatable="false">&APP_NAME;</string>
 
     <!-- Creators etc -->
     <!--<string name="email_contact1" translatable="false">eleybourn@gmail.com</string>-->

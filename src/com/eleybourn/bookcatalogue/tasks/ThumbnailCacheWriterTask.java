@@ -59,8 +59,8 @@ public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
      * @param source     Raw bitmap to store
      * @param canRecycle Indicates bitmap should be recycled after use
      */
-    private ThumbnailCacheWriterTask(final @NonNull String cacheId,
-                                     final @NonNull Bitmap source,
+    private ThumbnailCacheWriterTask(@NonNull final String cacheId,
+                                     @NonNull final Bitmap source,
                                      final boolean canRecycle) {
         mCacheId = cacheId;
         mBitmap = source;
@@ -75,8 +75,8 @@ public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
      * @param source     Raw bitmap to store
      * @param canRecycle Indicates bitmap should be recycled after use
      */
-    public static void writeToCache(final @NonNull String cacheId,
-                                    final @NonNull Bitmap source,
+    public static void writeToCache(@NonNull final String cacheId,
+                                    @NonNull final Bitmap source,
                                     final boolean canRecycle) {
         ThumbnailCacheWriterTask t = new ThumbnailCacheWriterTask(cacheId, source, canRecycle);
         mQueue.enqueue(t);
@@ -93,7 +93,7 @@ public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
      * Do the main work in the background thread.
      */
     @Override
-    public void run(final @NonNull SimpleTaskContext taskContext) {
+    public void run(@NonNull final SimpleTaskContext taskContext) {
         if (mBitmap.isRecycled()) {
             // Was probably recycled by rapid scrolling of view
             mBitmap = null;

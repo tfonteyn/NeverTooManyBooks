@@ -86,8 +86,8 @@ abstract public class ManagedTask extends Thread {
      * @param name        of this task(thread)
      * @param taskManager Associated task manager
      */
-    protected ManagedTask(final @NonNull String name,
-                          final @NonNull TaskManager taskManager) {
+    protected ManagedTask(@NonNull final String name,
+                          @NonNull final TaskManager taskManager) {
 
         /* Controller instance for this specific ManagedTask */
         ManagedTaskController controller = new ManagedTaskController() {
@@ -137,7 +137,7 @@ abstract public class ManagedTask extends Thread {
      * @return Result
      */
     @NonNull
-    protected String getString(final @StringRes int id) {
+    protected String getString(@StringRes final int id) {
         return mTaskManager.getContext().getString(id);
     }
 
@@ -165,7 +165,7 @@ abstract public class ManagedTask extends Thread {
         mMessageSwitch.send(mMessageSenderId,
                 new MessageSwitch.Message<ManagedTaskListener>() {
                     @Override
-                    public boolean deliver(final @NonNull ManagedTaskListener listener) {
+                    public boolean deliver(@NonNull final ManagedTaskListener listener) {
                         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                             Logger.info(ManagedTask.this,
                                     "|ManagedTask=" + ManagedTask.this.getName() +
@@ -229,7 +229,7 @@ abstract public class ManagedTask extends Thread {
      * @author Philip Warner
      */
     public interface ManagedTaskListener {
-        void onTaskFinished(final @NonNull ManagedTask task);
+        void onTaskFinished(@NonNull final ManagedTask task);
     }
 
 

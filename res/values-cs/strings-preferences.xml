@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- incomplete -->
+
+    <!-- ####################################################################################### -->
+    <!-- ========== Preferences / PropertyList ========== -->
+    <!-- ####################################################################################### -->
+
+    <!-- Preference VALUE -->
+    <string name="use_default_setting">Použít defaultní nastavení</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_general">Obecné</string>
+    <!-- Preference GROUP -->
+    <string name="pg_ui">Uživatelské rozhraní</string>
+    <!-- Preference GROUP -->
+    <string name="pg_thumbnails">Náhledy</string>
+    <!--Preference GROUP -->
+    <string name="pg_scanning">Snímání</string>
+    <!-- Preference GROUP -->
+    <string name="pg_booklist">Seznamy knih</string>
+    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_groupings">Seskupení</string>
+
+    <!-- ========== Global preferences ========== -->
+
+    <!-- Preference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
+    <string name="pt_bob_open_book_read_only">Open book in read-only mode</string>
+
+    <!-- Preference - start the cropper with the cropper frame set to the whole image -->
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
+
+    <!-- Preference - use an external app. (Intent) to handle cropping-->
+    <string name="pt_thumbnails_external_cropper">Use external image cropper</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_valid">Beep if scanned ISBN is valid</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
+
+     <!--Preference -->
+    <string name="pt_ui_messages_use">Messages use</string>
+    <string-array name="pe_ui_messages_use">
+        <item translatable="false">Toast</item>
+        <item translatable="false">Snackbar</item>
+    </string-array>
+
+    <!-- Preference -->
+    <string name="pt_ui_theme">Interface Theme</string>
+    <string-array name="pe_ui_theme">
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
+
+    <!-- Preference - Preferred interface Locale -->
+    <string name="pt_ui_language">Preferred UI Language</string>
+
+    <!-- Preference - Degrees by which to rotate camera images automatically -->
+    <string name="pt_thumbnails_rotate_auto">Automatically rotate images captured by camera</string>
+    <string-array name="pe_thumbnails_rotate_auto">
+        <item>Ne</item>
+        <item>Otočit po směru hodinových ručiček</item>
+        <item>Otočit proti směru hodinových ručiček</item>
+        <item>Otočit o 180 stupňů</item>
+    </string-array>
+
+    <!-- Preference - Compatibility / bug workaround for some devices -->
+    <string name="pt_thumbnail_cropper_layer_type">Cropper Layer Type</string>
+    <string name="pt_hint_layer_type">Leave this setting on \'Use default\' unless you experience crashes while cropping images. Try \'Software\' for safer but slower or force \'Hardware\' for less safe, but faster</string>
+    <string-array name="pe_thumbnails_cropper_layer_type">
+        <item>Use default</item>
+        <item>Hardware</item>
+        <item>Software</item>
+    </string-array>
+
+    <!-- Preference - the barcode scanner to use-->
+    <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
+    <string-array name="pe_scanning_preferred_scanner">
+        <item>Zxing Compatible Scanner</item>
+        <item>Zxing Scanner</item>
+        <item>Pic2Shop Scanner</item>
+    </string-array>
+
+
+    <!-- ========== Book list preferences ========== -->
+
+    <!-- Preference - Book list state-related preferences -->
+    <string name="pt_bob_list_state">Stav seznamu knih</string>
+    <string-array name="pe_bob_list_state">
+        <item>Vždy otevřít seznam knih rozbalený</item>
+        <item>Vždy otevřít seznam knih sbalený</item>
+        <item>Zachovat stav seznamu knih</item>
+    </string-array>
+
+    <!--  Preference to override the default method used to generate book lists as defined by API level -->
+    <string name="pt_bob_list_generation">Book List Generation Option</string>
+    <string-array name="pe_bob_list_generation">
+        <item>Automatically use recommended option</item>
+        <item>Force Fully Featured</item>
+        <item>Force Enhanced Compatibility Mode</item>
+        <item>Force Compatibility Mode</item>
+    </string-array>
+
+    <!-- Preference - Thumbnails are fetched in a background task -->
+    <string name="pt_bob_thumbnails_generating_mode">Use background task to fetch thumbnails</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">
+        Use background thread (lists scroll faster, images may be delayed)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">
+        Generate immediately (lists scroll slower, images will be displayed immediately)</string>
+
+    <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
+    <string name="pt_bob_thumbnails_cache_resized">Cache resized thumbnails</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">
+        Resize each time they are needed (uses less storage, scrolling will be slower)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">
+        Cache resized thumbnails (uses more storage, lists will scroll faster)</string>
+
+    <!-- ========== Book list style preferences ========== -->
+
+    <!-- Preference - Use scaled text and images -->
+    <string name="pt_bob_item_size">Velikost položek na seznamu knih</string>
+    <string-array name="pe_bob_item_size">
+        <item>Normální</item>
+        <item>Menší</item>
+        <item>Větší</item>
+    </string-array>
+
+    <!-- Preference - Determines what is show in book list header -->
+    <string name="pt_bob_header">Summary details in header</string>
+    <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all -->
+    <string-array name="pe_bob_header">
+        <item>Show number of books</item>
+        <item>Show first level heading</item>
+    </string-array>
+
+    <!-- Preference - Show thumbnail image for each book -->
+    <string name="pt_bob_thumbnails_show">Zobrazit náhledy</string>
+    <!-- Preference - Show large thumbnail if thumbnails are shown -->
+    <string name="pt_bob_thumbnails_show_large">Preferovat velké náhledy</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>
+
+    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Pouze pod primárním %1$s</string>
+    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Pod každým %1$s</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_format_author_name">Formát zobrazení jména autora</string>
+    <string name="pv_bob_format_author_name_given_first">Zobrazovat nejprve křestní jméno, tj. \'Bill Smith\'</string>
+    <string name="pv_bob_format_author_name_family_first">Zobrazovat nejprve příjmení, tj. \'Smith, Bill\'</string>
+
+    <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
+    <string name="pt_bob_sort_author_name">Sorting of author names</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_bob_extra_book_details">Podrobnosti o knize</string>
+</resources>

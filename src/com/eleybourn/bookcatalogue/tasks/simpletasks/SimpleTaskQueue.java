@@ -21,9 +21,6 @@
 package com.eleybourn.bookcatalogue.tasks.simpletasks;
 
 import android.os.Handler;
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -41,6 +38,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * As a reminder: https://developer.android.com/reference/android/os/AsyncTask
@@ -60,8 +61,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * The tasks run from (currently) a LIFO queue in a single thread; the run() method is called
  * in the alternate thread and the finished() method is called in the UI thread.
  *
- * The execution queue is (currently) a FIFO deque so that the most recent queued is loaded. This is
- * good for loading (eg) gallery images to make sure that the most recently viewed is loaded.
+ * The execution queue is (currently) a FIFO deque so that the most recent queued is loaded.
+ * This is good for loading (e.g.) gallery images to make sure that the most recently
+ * viewed is loaded.
  *
  * The results queue is executed in FIFO order.
  *
@@ -77,6 +79,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Philip Warner
  */
 public class SimpleTaskQueue {
+
     /** Execution queue */
     private final BlockingDeque<SimpleTaskWrapper> mExecutionStack = new LinkedBlockingDeque<>();
     /** Results queue */
@@ -100,7 +103,8 @@ public class SimpleTaskQueue {
     @Nullable
     private OnTaskFinishListener mTaskFinishListener = null;
     /**
-     * Options indicating runnable is queued but not run; avoids multiple unnecessary Runnable's
+     * Options indicating runnable is queued but not run.
+     * Avoids multiple unnecessary Runnable's
      */
     private boolean mDoProcessResultsIsQueued = false;
     /**
@@ -121,7 +125,7 @@ public class SimpleTaskQueue {
      *
      * @author Philip Warner
      */
-    public SimpleTaskQueue(final @NonNull String name) {
+    public SimpleTaskQueue(@NonNull final String name) {
         mName = name;
         mMaxTasks = 5;
     }
@@ -131,7 +135,8 @@ public class SimpleTaskQueue {
      *
      * @author Philip Warner
      */
-    public SimpleTaskQueue(final @NonNull String name, @IntRange(from = 1, to = 10) final int maxTasks) {
+    public SimpleTaskQueue(@NonNull final String name,
+                           @IntRange(from = 1, to = 10) final int maxTasks) {
         mName = name;
         mMaxTasks = maxTasks;
         if (maxTasks < 1 || maxTasks > 10) {
@@ -157,7 +162,7 @@ public class SimpleTaskQueue {
             for (Thread t : mThreads) {
                 try {
                     t.interrupt();
-                } catch (Exception ignored) {
+                } catch (RuntimeException ignored) {
                 }
             }
         }
@@ -177,7 +182,7 @@ public class SimpleTaskQueue {
      *
      * @param task Task to run.
      */
-    public void enqueue(final @NonNull SimpleTask task) {
+    public void enqueue(@NonNull final SimpleTask task) {
         SimpleTaskWrapper wrapper = new SimpleTaskWrapper(this, task);
 
         synchronized (this) {
@@ -186,7 +191,9 @@ public class SimpleTaskQueue {
         }
 
         if (DEBUG_SWITCHES.SIMPLE_TASKS && BuildConfig.DEBUG) {
-            Logger.info(this,"ExecutionStack size=" +mExecutionStack.size() + "|SimpleTask queued: " + task.toString());
+            Logger.info(this,
+                        "ExecutionStack size=" + mExecutionStack.size() +
+                            "|SimpleTask queued: " + task.toString());
         }
         synchronized (this) {
             int qSize = mExecutionStack.size();
@@ -219,7 +226,7 @@ public class SimpleTaskQueue {
     /**
      * Remove a previously requested task, if present
      */
-    public void remove(final @NonNull SimpleTask task) {
+    public void remove(@NonNull final SimpleTask task) {
         for (SimpleTaskWrapper w : mExecutionStack) {
             if (w.task.equals(task)) {
                 synchronized (this) {
@@ -235,14 +242,14 @@ public class SimpleTaskQueue {
     /**
      * Run the task then queue the results.
      */
-    private void startTask(final @NonNull SimpleTaskQueueThread activeThread,
-                           final @NonNull SimpleTaskWrapper taskWrapper) {
+    private void startTask(@NonNull final SimpleTaskQueueThread activeThread,
+                           @NonNull final SimpleTaskWrapper taskWrapper) {
         final SimpleTask task = taskWrapper.task;
 
         if (mTaskStartListener != null) {
             try {
                 mTaskStartListener.onTaskStart(task);
-            } catch (Exception ignore) {
+            } catch (RuntimeException ignore) {
             }
         }
 
@@ -252,7 +259,7 @@ public class SimpleTaskQueue {
             // kick of the actual task.
             task.run(taskWrapper);
             if (DEBUG_SWITCHES.SIMPLE_TASKS && BuildConfig.DEBUG) {
-                Logger.info(this,"starting SimpleTask: " + task.toString());
+                Logger.info(this, "starting SimpleTask: " + task.toString());
             }
 
         } catch (Exception e) {
@@ -309,7 +316,7 @@ public class SimpleTaskQueue {
                 if (req.finishRequested) {
                     try {
                         task.onFinish(req.exception);
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                         Logger.error(e, "Error processing request result");
                     }
                 }
@@ -318,22 +325,15 @@ public class SimpleTaskQueue {
                 if (mTaskFinishListener != null) {
                     try {
                         mTaskFinishListener.onTaskFinish(task, req.exception);
-                    } catch (Exception e) {
-                        Logger.error(e, "Error from listener while processing request result");
+                    } catch (RuntimeException e) {
+                        Logger.error(e,
+                                     "Error from listener while processing request result");
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e, "Exception in processResults in UI thread");
         }
-    }
-
-    /**
-     * Accessor.
-     */
-    @SuppressWarnings("unused")
-    public void setTaskStartListener(final @NonNull OnTaskStartListener listener) {
-        mTaskStartListener = listener;
     }
 
     /**
@@ -348,8 +348,9 @@ public class SimpleTaskQueue {
     /**
      * Accessor.
      */
-    public void setTaskFinishListener(final @NonNull OnTaskFinishListener listener) {
-        mTaskFinishListener = listener;
+    @SuppressWarnings("unused")
+    public void setTaskStartListener(@NonNull final OnTaskStartListener listener) {
+        mTaskStartListener = listener;
     }
 
     /**
@@ -362,12 +363,20 @@ public class SimpleTaskQueue {
     }
 
     /**
+     * Accessor.
+     */
+    public void setTaskFinishListener(@NonNull final OnTaskFinishListener listener) {
+        mTaskFinishListener = listener;
+    }
+
+    /**
      * Interface for an object to listen for when tasks start.
      *
      * @author Philip Warner
      */
     public interface OnTaskStartListener {
-        void onTaskStart(final @NonNull SimpleTask task);
+
+        void onTaskStart(@NonNull final SimpleTask task);
     }
 
     /**
@@ -376,7 +385,9 @@ public class SimpleTaskQueue {
      * @author Philip Warner
      */
     public interface OnTaskFinishListener {
-        void onTaskFinish(final @NonNull SimpleTask task, final @Nullable Exception e);
+
+        void onTaskFinish(@NonNull final SimpleTask task,
+                          @Nullable final Exception e);
     }
 
     /**
@@ -388,22 +399,26 @@ public class SimpleTaskQueue {
      * @author Philip Warner
      */
     public interface SimpleTask {
+
         /**
          * Method called in queue thread to perform the background task.
          */
-        void run(final @NonNull SimpleTaskContext taskContext) throws Exception;
+        void run(@NonNull final SimpleTaskContext taskContext)
+            throws Exception;
 
         /**
          * Method called in UI thread after the background task has finished.
          *
          * @param e the exception (if any) thrown in the run()
          */
-        void onFinish(final @Nullable Exception e);
+        void onFinish(@Nullable final Exception e);
     }
 
     public interface SimpleTaskContext {
+
         @NonNull
         CatalogueDBAdapter getDb();
+
         @NonNull
         CoversDBAdapter getCoversDb();
 
@@ -417,7 +432,9 @@ public class SimpleTaskQueue {
      *
      * @author Philip Warner
      */
-    private static class SimpleTaskWrapper implements SimpleTaskContext {
+    private static class SimpleTaskWrapper
+        implements SimpleTaskContext {
+
         @NonNull
         private static final AtomicInteger mIdCounter = new AtomicInteger();
         @NonNull
@@ -431,7 +448,8 @@ public class SimpleTaskQueue {
         @Nullable
         SimpleTaskQueueThread activeThread = null;
 
-        SimpleTaskWrapper(final @NonNull SimpleTaskQueue owner, final @NonNull SimpleTask task) {
+        SimpleTaskWrapper(@NonNull final SimpleTaskQueue owner,
+                          @NonNull final SimpleTask task) {
             mOwner = owner;
             this.task = task;
             this.id = mIdCounter.incrementAndGet();
@@ -447,7 +465,8 @@ public class SimpleTaskQueue {
         @NonNull
         @Override
         public CatalogueDBAdapter getDb() {
-            Objects.requireNonNull(activeThread, "SimpleTaskWrapper can only be used in a context during the run() stage");
+            Objects.requireNonNull(activeThread,
+                                   "SimpleTaskWrapper can only be used in a context during the run() stage");
             return activeThread.getDb();
         }
 
@@ -461,7 +480,8 @@ public class SimpleTaskQueue {
         @NonNull
         @Override
         public CoversDBAdapter getCoversDb() {
-            Objects.requireNonNull(activeThread, "SimpleTaskWrapper can only be used in a context during the run() stage");
+            Objects.requireNonNull(activeThread,
+                                   "SimpleTaskWrapper can only be used in a context during the run() stage");
             return activeThread.getCoversDb();
         }
 
@@ -484,7 +504,9 @@ public class SimpleTaskQueue {
      *
      * @author Philip Warner
      */
-    private class SimpleTaskQueueThread extends Thread {
+    private class SimpleTaskQueueThread
+        extends Thread {
+
         /** DB Connection, if task requests one. Survives while thread is alive */
         @Nullable
         CatalogueDBAdapter mDb = null;
@@ -544,15 +566,15 @@ public class SimpleTaskQueue {
                     startTask(this, req);
                 }
             } catch (InterruptedException ignore) {
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 Logger.error(e);
             } finally {
-                    if (mDb != null) {
-                        mDb.close();
-                    }
-                    if (mCoversDBAdapter != null) {
-                        mCoversDBAdapter.close();
-                    }
+                if (mDb != null) {
+                    mDb.close();
+                }
+                if (mCoversDBAdapter != null) {
+                    mCoversDBAdapter.close();
+                }
             }
         }
     }

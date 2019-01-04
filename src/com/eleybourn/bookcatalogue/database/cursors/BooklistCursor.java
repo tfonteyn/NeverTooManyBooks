@@ -54,11 +54,11 @@ public class BooklistCursor extends TrackedCursor implements BooklistSupportProv
      * @param builder   BooklistBuilder used to make the query on which this cursor is based.
      * @param sync      Synchronizer object
      */
-    public BooklistCursor(final @NonNull SQLiteCursorDriver driver,
-                          final @NonNull String editTable,
-                          final @NonNull SQLiteQuery query,
-                          final @NonNull BooklistBuilder builder,
-                          final @NonNull Synchronizer sync) {
+    public BooklistCursor(@NonNull final SQLiteCursorDriver driver,
+                          @NonNull final String editTable,
+                          @NonNull final SQLiteQuery query,
+                          @NonNull final BooklistBuilder builder,
+                          @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
         mBuilder = builder;
     }

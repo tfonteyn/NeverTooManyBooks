@@ -38,7 +38,7 @@ public class EditorDialogFragment<LT> extends DialogFragment {
         return (LT) getFragmentManager().findFragmentByTag(mCallerTag);
     }
 
-    public void initStandardArgs(final @Nullable Bundle savedInstanceState) {
+    public void initStandardArgs(@Nullable final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mCallerTag = savedInstanceState.getString(UniqueId.BKEY_CALLER_ID);
             mTitleId = savedInstanceState.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
@@ -54,7 +54,7 @@ public class EditorDialogFragment<LT> extends DialogFragment {
 
     @Override
     @CallSuper
-    public void onSaveInstanceState(final @NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putString(UniqueId.BKEY_CALLER_ID, mCallerTag);
         outState.putInt(UniqueId.BKEY_DIALOG_TITLE, mTitleId);
         outState.putInt(UniqueId.BKEY_FIELD_ID, mDestinationFieldId);

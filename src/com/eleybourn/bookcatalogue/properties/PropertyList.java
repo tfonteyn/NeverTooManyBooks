@@ -20,9 +20,7 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,25 +30,27 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.properties.Property.ValidationException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
 
 /**
  * Class to manage a set of properties.
  *
  * @author Philip Warner
  */
-public class PropertyList extends ArrayList<Property> {
-    @SuppressLint("UseSparseArrays")
-    private final Map<Integer, Property> mMap = new HashMap<>();
+public class PropertyList {
+    private final Map<Integer, Property> mMap = new LinkedHashMap<>();
 
     /** Add a property to this collection */
-    public boolean add(final @NonNull Property p) {
-        mMap.put(p.getUniqueId(), p);
-        return super.add(p);
+    public Property add(@NonNull final Property p) {
+        return mMap.put(p.getUniqueId(), p);
     }
 
     /**
@@ -64,18 +64,20 @@ public class PropertyList extends ArrayList<Property> {
      * Passed a parent ViewGroup, build the property editors for all properties
      * inside the parent.
      */
-    public void buildView(final @NonNull LayoutInflater inflater, final @NonNull ViewGroup parent) {
+    public void buildView(@NonNull final LayoutInflater inflater, @NonNull final ViewGroup parent) {
         // Sort the properties based on their group weight, group name, weight and name.
-        Collections.sort(this, new PropertyComparator(BookCatalogueApp.getAppContext()));
+        List<Property> tmpList = new ArrayList<>(mMap.values());
+        Collections.sort(tmpList, new PropertyComparator());
+
         // Record last group used, so we know when to output a header.
         PropertyGroup lastGroup = null;
-        for (Property property : this) {
+        for (Property property : tmpList) {
             // new header ?
             PropertyGroup currGroup = property.getGroup();
             if (currGroup != lastGroup) {
                 // Add a new header
                 TextView header = (TextView) inflater.inflate(R.layout.row_property_group_heading, null);
-                header.setText(currGroup.getNameId());
+                header.setText(currGroup.getNameResourceId());
                 parent.addView(header);
             }
 
@@ -92,7 +94,7 @@ public class PropertyList extends ArrayList<Property> {
      * @throws ValidationException on error
      */
     public void validate() throws ValidationException {
-        for (Property p : this) {
+        for (Property p : mMap.values()) {
             p.validate();
         }
     }
@@ -102,34 +104,31 @@ public class PropertyList extends ArrayList<Property> {
      *
      * @author Philip Warner
      */
-    private static class PropertyComparator implements Comparator<Property> {
+    private static class PropertyComparator implements Comparator<Property>, Serializable {
 
-        @NonNull
-        private Context mContext;
-
-        PropertyComparator(final @NonNull Context context) {
-            mContext = context;
-        }
+        private static final long serialVersionUID = 2686026228883800535L;
 
         @Override
-        public int compare(final @NonNull Property lhs, final @NonNull Property rhs) {
+        public int compare(@NonNull final Property o1, @NonNull final Property o2) {
             // First compare their groups
-            int gCmp = lhs.getGroup().compareTo(rhs.getGroup());
+            int gCmp = o1.getGroup().compareTo(o2.getGroup());
             if (gCmp != 0) {
                 return gCmp;
             }
 
             // Same group, compare weights
-            if (lhs.getWeight() < rhs.getWeight()) {
+            if (o1.getWeight() < o2.getWeight()) {
                 return -1;
-            } else if (lhs.getWeight() > rhs.getWeight()) {
+            } else if (o1.getWeight() > o2.getWeight()) {
                 return 1;
             }
 
+            Context context = BookCatalogueApp.getAppContext();
+
             // Same weights, compare names
-            if (lhs.getNameResourceId() != rhs.getNameResourceId()) {
-                return mContext.getString(lhs.getNameResourceId())
-                        .compareTo(mContext.getString(rhs.getNameResourceId()));
+            if (o1.getNameResourceId() != o2.getNameResourceId()) {
+                return context.getString(o1.getNameResourceId())
+                        .compareTo(context.getString(o2.getNameResourceId()));
             } else {
                 return 0;
             }

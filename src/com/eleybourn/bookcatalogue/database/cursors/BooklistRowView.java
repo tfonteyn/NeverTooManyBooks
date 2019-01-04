@@ -23,19 +23,27 @@ package com.eleybourn.bookcatalogue.database.cursors;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
+import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.booklist.RowKinds;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.DATE_ACQUIRED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.DATE_ADDED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.DATE_PUBLISHED_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.DATE_READ_MONTH;
+import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.RATING;
 
 /**
  * CursorRow object for the BooklistCursor.
@@ -79,7 +87,7 @@ public class BooklistRowView extends BookRowViewBase {
      * @param cursor  Underlying Cursor
      * @param builder Underlying Builder
      */
-    public BooklistRowView(final @NonNull Cursor cursor, final @NonNull BooklistBuilder builder) {
+    public BooklistRowView(@NonNull final Cursor cursor, @NonNull final BooklistBuilder builder) {
         super(cursor);
         mBuilder = builder;
 
@@ -99,7 +107,7 @@ public class BooklistRowView extends BookRowViewBase {
      *
      * @return Requested thumbnail size
      */
-    private int computeThumbnailSize(final @NonNull Context context, final int extraFieldsInUse) {
+    private int computeThumbnailSize(@NonNull final Context context, final int extraFieldsInUse) {
         int maxSize;
 
         if ((extraFieldsInUse & BooklistStyle.EXTRAS_THUMBNAIL_LARGE) != 0) {
@@ -134,13 +142,13 @@ public class BooklistRowView extends BookRowViewBase {
      * @return Formatted string, or original string on any failure
      */
     @Nullable
-    private String formatRowGroup(final int level, final @Nullable String s) {
-        switch (mBuilder.getStyle().getGroupAt(level).getRowKind().kind) {
-            case RowKinds.ROW_KIND_DATE_ACQUIRED_MONTH:
-            case RowKinds.ROW_KIND_DATE_ADDED_MONTH:
-            case RowKinds.ROW_KIND_DATE_LAST_UPDATE_MONTH:
-            case RowKinds.ROW_KIND_DATE_PUBLISHED_MONTH:
-            case RowKinds.ROW_KIND_DATE_READ_MONTH: {
+    private String formatRowGroup(final int level, @Nullable final String s) {
+        switch (mBuilder.getStyle().getGroupKindAt(level)) {
+            case DATE_ACQUIRED_MONTH:
+            case DATE_ADDED_MONTH:
+            case DATE_LAST_UPDATE_MONTH:
+            case DATE_PUBLISHED_MONTH:
+            case DATE_READ_MONTH: {
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the name
@@ -152,7 +160,7 @@ public class BooklistRowView extends BookRowViewBase {
                 }
                 break;
             }
-            case RowKinds.ROW_KIND_RATING: {
+            case RATING: {
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the name
@@ -301,7 +309,7 @@ public class BooklistRowView extends BookRowViewBase {
     /**
      * Convenience function to retrieve column value.
      */
-    @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX)
+    @IntRange(from = 0, to = BooklistGroup.RowKind.ROW_KIND_MAX)
     public int getRowKind() {
         if (mRowKindCol < 0) {
             mRowKindCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BL_NODE_ROW_KIND.name);
@@ -345,7 +353,7 @@ public class BooklistRowView extends BookRowViewBase {
      */
     @Nullable
     public String getLevel2Data() {
-        if (mBuilder.getStyle().size() < 2) {
+        if (mBuilder.getStyle().groupCount() < 2) {
             return null;
         }
 

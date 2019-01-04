@@ -3,25 +3,23 @@ package com.eleybourn.bookcatalogue.searches;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.Fragment;
 import android.view.View;
 import android.widget.Button;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
-public class SearchAdminActivity extends BaseActivity {
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
 
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_SEARCH_SITES;
+public class SearchAdminActivity extends BaseActivity {
 
     /**
      * Optional: set to one of the {@link AdminSearchOrderFragment} tabs
@@ -45,7 +43,7 @@ public class SearchAdminActivity extends BaseActivity {
 
     @Override
     @CallSuper
-    protected void onCreate(final @Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.search_internet);
@@ -85,7 +83,7 @@ public class SearchAdminActivity extends BaseActivity {
         Tracker.exitOnCreate(this);
     }
 
-    private void initSingleTab(final @StringRes int titleId, final @NonNull ArrayList<SearchSites.Site> list) {
+    private void initSingleTab(@StringRes final int titleId, @NonNull final ArrayList<SearchSites.Site> list) {
         setTitle(titleId);
 
         Bundle args = new Bundle();
@@ -196,7 +194,7 @@ public class SearchAdminActivity extends BaseActivity {
 
     private class TabListener implements TabLayout.OnTabSelectedListener {
         @Override
-        public void onTabSelected(final @NonNull TabLayout.Tab tab) {
+        public void onTabSelected(@NonNull final TabLayout.Tab tab) {
             FragmentHolder fragmentHolder = (FragmentHolder) tab.getTag();
             //noinspection ConstantConditions
             getSupportFragmentManager()
@@ -214,7 +212,7 @@ public class SearchAdminActivity extends BaseActivity {
         }
     }
 
-    private class FragmentHolder {
+    private static class FragmentHolder {
         Fragment fragment;
         String tag;
     }

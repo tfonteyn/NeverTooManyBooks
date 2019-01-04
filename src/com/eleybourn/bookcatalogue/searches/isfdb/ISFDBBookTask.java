@@ -18,22 +18,22 @@ class ISFDBBookTask implements SimpleTaskQueue.SimpleTask {
     private final Bundle mBookData = new Bundle();
     private final boolean fetchThumbnail;
 
-    ISFDBBookTask(final @NonNull List<String> editionUrls,
+    ISFDBBookTask(@NonNull final List<String> editionUrls,
                   final boolean fetchThumbnail,
-                  final @NonNull ISFDBResultsListener callback) {
+                  @NonNull final ISFDBResultsListener callback) {
         this.callback = callback;
         this.editionUrls = editionUrls;
         this.fetchThumbnail = fetchThumbnail;
     }
 
     @Override
-    public void run(final @NonNull SimpleTaskQueue.SimpleTaskContext taskContext) throws SocketTimeoutException {
+    public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) throws SocketTimeoutException {
         ISFDBBook isfdbBook = new ISFDBBook(editionUrls);
         isfdbBook.fetch(mBookData, fetchThumbnail);
     }
 
     @Override
-    public void onFinish(final @Nullable Exception e) {
+    public void onFinish(@Nullable final Exception e) {
         callback.onGotISFDBBook(mBookData);
     }
 }

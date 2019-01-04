@@ -24,11 +24,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -46,6 +41,12 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
 /**
  * Activity to edit a list of authors provided in an ArrayList<Author> and return an updated list.
  *
@@ -53,9 +54,8 @@ import java.util.ArrayList;
  *
  * @author Philip Warner
  */
-public class EditAuthorListActivity extends EditObjectListActivity<Author> {
-
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_EDIT_AUTHORS;
+public class EditAuthorListActivity
+    extends EditObjectListActivity<Author> {
 
     /**
      * Constructor; pass the superclass the main and row based layouts to use.
@@ -66,14 +66,14 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
     @Override
     @CallSuper
-    protected void onCreate(final @Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(mBookTitle);
 
         // Setup AutoCompleteTextView for author name
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, mDb.getAuthorsFormattedName());
+            android.R.layout.simple_dropdown_item_1line, mDb.getAuthorsFormattedName());
         ((AutoCompleteTextView) this.findViewById(R.id.author)).setAdapter(adapter);
 
         getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -83,7 +83,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     /**
      * Do the work of the onClickListener for the 'Add' button.
      */
-    protected void onAdd(final @NonNull View target) {
+    protected void onAdd(@NonNull final View target) {
         AutoCompleteTextView authorField = findViewById(R.id.author);
         String authorName = authorField.getText().toString().trim();
         if (!authorName.isEmpty()) {
@@ -107,7 +107,7 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     }
 
     /** TOMF: TODO: almost duplicate code in {@link EditAuthorDialog} */
-    private void edit(final @NonNull Author author) {
+    private void edit(@NonNull final Author author) {
         // Build the base dialog
         final View root = EditAuthorListActivity.this.getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
 
@@ -119,9 +119,9 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         givenView.setText(author.givenNames);
 
         final AlertDialog dialog = new AlertDialog.Builder(EditAuthorListActivity.this)
-                .setView(root)
-                .setTitle(R.string.title_edit_author)
-                .create();
+            .setView(root)
+            .setTitle(R.string.title_edit_author)
+            .create();
 
         //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
@@ -150,7 +150,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         dialog.show();
     }
 
-    private void confirmEdit(final @NonNull Author from, final @NonNull Author to) {
+    private void confirmEdit(@NonNull final Author from,
+                             @NonNull final Author to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;
@@ -181,13 +182,14 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         String allBooks = getString(R.string.all_books);
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(getString(R.string.changed_author_how_apply, from.getSortName(), to.getSortName(), allBooks))
-                .setTitle(R.string.title_scope_of_change)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .create();
+            .setMessage(getString(R.string.changed_author_how_apply, from.getSortName(), to.getSortName(), allBooks))
+            .setTitle(R.string.title_scope_of_change)
+            .setIconAttribute(android.R.attr.alertDialogIcon)
+            .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book), new DialogInterface.OnClickListener() {
-            public void onClick(final @NonNull DialogInterface dialog, final int which) {
+            public void onClick(@NonNull final DialogInterface dialog,
+                                final int which) {
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
                 onListChanged();
@@ -196,7 +198,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks, new DialogInterface.OnClickListener() {
-            public void onClick(final @NonNull DialogInterface dialog, final int which) {
+            public void onClick(@NonNull final DialogInterface dialog,
+                                final int which) {
                 mDb.globalReplaceAuthor(from, to);
                 from.copyFrom(to);
                 Utils.pruneList(mDb, mList);
@@ -210,13 +213,14 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
 
     /**
      * Called when user clicks the 'Save' button.
+     *
      * @param data A newly created Intent to store output if necessary.
      *             Comes pre-populated with data.putExtra(mBKey, mList);
      *
-     * @return <tt>true</tt>if activity should exit, false to abort exit.
+     * @return <tt>true</tt> if activity should exit, <tt>false</tt> to abort exit.
      */
     @Override
-    protected boolean onSave(final @NonNull Intent data) {
+    protected boolean onSave(@NonNull final Intent data) {
         final AutoCompleteTextView view = findViewById(R.id.author);
         String str = view.getText().toString().trim();
         if (str.isEmpty()) {
@@ -225,32 +229,35 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
         }
 
         StandardDialogs.showConfirmUnsavedEditsDialog(this,
-                /* run when user clicks 'exit' */
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        view.setText("");
-                        findViewById(R.id.confirm).performClick();
-                    }
-                    /* if they click 'cancel', the dialog just closes without further actions */
-                });
+            /* run when user clicks 'exit' */
+            new Runnable() {
+                @Override
+                public void run() {
+                    view.setText("");
+                    findViewById(R.id.confirm).performClick();
+                }
+                /* if they click 'cancel', the dialog just closes without further actions */
+            });
         return false;
     }
 
-    protected SimpleListAdapter<Author> createListAdapter(final @LayoutRes int rowViewId, final @NonNull ArrayList<Author> list) {
-        return new AuthorListAdapter(this,rowViewId,list);
+    protected SimpleListAdapter<Author> createListAdapter(final @LayoutRes int rowViewId,
+                                                          @NonNull final ArrayList<Author> list) {
+        return new AuthorListAdapter(this, rowViewId, list);
     }
 
-    protected class AuthorListAdapter extends SimpleListAdapter<Author> {
+    protected class AuthorListAdapter
+        extends SimpleListAdapter<Author> {
 
-        AuthorListAdapter(final @NonNull Context context,
+        AuthorListAdapter(@NonNull final Context context,
                           final @LayoutRes int rowViewId,
-                          final @NonNull ArrayList<Author> items) {
+                          @NonNull final ArrayList<Author> items) {
             super(context, rowViewId, items);
         }
 
         @Override
-        protected void onGetView(final @NonNull View convertView, final @NonNull Author author) {
+        protected void onGetView(@NonNull final View convertView,
+                                 @NonNull final Author author) {
             Holder holder = ViewTagger.getTag(convertView);
             if (holder == null) {
                 // New view, so build the Holder
@@ -278,8 +285,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
          * edit the Author we clicked on
          */
         @Override
-        protected void onRowClick(final @NonNull View target,
-                                  final @NonNull Author author,
+        protected void onRowClick(@NonNull final View target,
+                                  @NonNull final Author author,
                                   final int position) {
             edit(author);
         }
@@ -297,7 +304,8 @@ public class EditAuthorListActivity extends EditObjectListActivity<Author> {
     /**
      * Holder pattern for each row.
      */
-    private class Holder {
+    private static class Holder {
+
         TextView row_author;
         TextView row_author_sort;
     }

@@ -7,31 +7,26 @@ import android.media.MediaPlayer;
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
-public class SoundManager {
-    private static final String TAG = "SoundManager.";
-    public static final String PREF_BEEP_IF_SCANNED_ISBN_INVALID = TAG + "BeepIfScannedIsbnInvalid";
-    public static final String PREF_BEEP_IF_SCANNED_ISBN_VALID = TAG + "BeepIfScannedIsbnValid";
-
+public final class SoundManager {
     private SoundManager() {
     }
 
-    public static void beepLow(final @NonNull Context context) {
-        if (BookCatalogueApp.getBooleanPreference(PREF_BEEP_IF_SCANNED_ISBN_INVALID, true)) {
+    public static void beepLow(@NonNull final Context context) {
+        if (Prefs.getBoolean(R.string.pk_scanning_beep_if_isbn_invalid, true)) {
             playFile(context, R.raw.beep_low);
         }
     }
 
-    public static void beepHigh(final @NonNull Context context) {
-        if (BookCatalogueApp.getBooleanPreference(PREF_BEEP_IF_SCANNED_ISBN_VALID, false)) {
+    public static void beepHigh(@NonNull final Context context) {
+        if (Prefs.getBoolean(R.string.pk_scanning_beep_if_isbn_valid, false)) {
             playFile(context, R.raw.beep_high);
         }
     }
 
-    private static void playFile(final @NonNull Context context, final @RawRes int resId) {
+    private static void playFile(@NonNull final Context context, final @RawRes int resId) {
         try {
             AssetFileDescriptor file = context.getResources().openRawResourceFd(resId);
             MediaPlayer player = new MediaPlayer();
@@ -39,8 +34,8 @@ public class SoundManager {
             // When the beep has finished playing, rewind to queue up another one.
             player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
-                public void onCompletion(final @NonNull MediaPlayer player) {
-                    player.release();
+                public void onCompletion(@NonNull final MediaPlayer mp) {
+                    mp.release();
                 }
             });
             player.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());

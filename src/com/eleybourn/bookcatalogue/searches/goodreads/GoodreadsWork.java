@@ -62,7 +62,7 @@ public class GoodreadsWork {
 	/**
 	 * Called in UI thread by background task when it has finished
 	 */
-	void handleTaskFinished(final @NonNull byte[] bytes) {
+	void handleTaskFinished(@NonNull final byte[] bytes) {
 		imageBytes = bytes;
 
 		final ImageView imageView = mImageView.get();
@@ -82,7 +82,7 @@ public class GoodreadsWork {
 	 * 
 	 * @param imageView		ImageView to display cover image
 	 */
-	public void fillImageView(final @NonNull SimpleTaskQueue queue, final @NonNull ImageView imageView) {
+	public void fillImageView(@NonNull final SimpleTaskQueue queue, @NonNull final ImageView imageView) {
 		synchronized (this) {
 			if (this.imageBytes == null) {
 				// Image not retrieved yet, so clear any existing image
@@ -95,7 +95,7 @@ public class GoodreadsWork {
 					try {
 						mTask = new GetImageTask(getBestUrl(), this);
 						queue.enqueue(mTask);
-					} catch (Exception e) {
+					} catch (RuntimeException e) {
 						Logger.error(e, "Failed to create task to get image from goodreads");
 					}
 				}

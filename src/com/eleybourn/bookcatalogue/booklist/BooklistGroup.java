@@ -22,66 +22,141 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.CallSuper;
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
+import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
-import com.eleybourn.bookcatalogue.properties.BooleanProperty;
-import com.eleybourn.bookcatalogue.properties.PropertyGroup;
-import com.eleybourn.bookcatalogue.properties.PropertyList;
+import com.eleybourn.bookcatalogue.utils.UniqueMap;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
+
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_FIRST_PUBLICATION_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_FIRST_PUBLICATION_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_LAST_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_YEAR;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_STATUS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
 
 /**
  * Class representing a single level in the booklist hierarchy.
  *
+ * There is a one-to-one mapping with the members of a {@link RowKind}
+ *
+ * {@link RowKind}
+ *
+ * Not Parcelable: we parcel the 'kind' of the groups in a style
+ * There is no need to parcel the actual group.
+ *
+ * HOWEVER: The {@link #mDomains} must be set at runtime each time but that is ok as
+ * they are only needed at list build time.
+ *
  * @author Philip Warner
  */
-public class BooklistGroup implements Serializable, Parcelable {
-    public static final Parcelable.Creator<BooklistGroup> CREATOR = new Parcelable.Creator<BooklistGroup>() {
-        @Override
-        public BooklistGroup createFromParcel(final @NonNull Parcel in) {
-            return new BooklistGroup(in);
-        }
+public class BooklistGroup implements Serializable,Parcelable {
 
-        @Override
-        public BooklistGroup[] newArray(final int size) {
-            return new BooklistGroup[size];
-        }
-    };
+    /** */
     private static final long serialVersionUID = 1012206875683862714L;
-
     /**
-     * keep for backwards Serializable support. So *MUST* be initialized correctly.
-     * But general coding should use the rowKind as replacement.
+     * the name of the Preference file (comes from the style that contains this group
      */
-    private int kind;
-
+    @Nullable
+    String uuid;
     /**
-     * The Row Kind of this group
-     *
-     * We can re-construct everything with just the actual {@link RowKinds.RowKind#kind}
-     * So Parcelable and Serializable only needs to think care of that int.
-     *
-     * Only the {@link #mDomains} will need to be (re-)set at runtime.
+     * the kind of row/group we represent, see {@link RowKind}
      */
-    private transient RowKinds.RowKind rowKind;
-
+    private final int kind;
     /**
      * The domains represented by this group.
      * Set at runtime by builder based on current group and outer groups
-     * */
+     */
     @Nullable
     private transient ArrayList<DomainDefinition> mDomains;
+
+    /**
+     * Constructor
+     */
+    private BooklistGroup(final @IntRange(from = 0, to = RowKind.ROW_KIND_MAX) int kind,
+                          @NonNull final String uuid) {
+        this.kind = kind;
+        this.uuid = uuid;
+        initPrefs();
+    }
+
+    protected BooklistGroup(@NonNull final Parcel in) {
+        kind = in.readInt();
+        uuid = in.readString();
+        mDomains = new ArrayList<>();
+        in.readList(mDomains, getClass().getClassLoader());
+        // now the prefs
+        initPrefs();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(kind);
+        dest.writeString(uuid);
+        dest.writeList(mDomains);
+        // now the prefs (none)
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<BooklistGroup> CREATOR = new Creator<BooklistGroup>() {
+        @Override
+        public BooklistGroup createFromParcel(Parcel source) {
+            return new BooklistGroup(source);
+        }
+
+        @Override
+        public BooklistGroup[] newArray(int size) {
+            return new BooklistGroup[size];
+        }
+    };
 
     /**
      * Create a new BooklistGroup of the specified kind, creating any specific subclasses as necessary.
@@ -89,14 +164,15 @@ public class BooklistGroup implements Serializable, Parcelable {
      * @param kind Kind of group to create
      */
     @NonNull
-    static BooklistGroup newInstance(final @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX) int kind) {
+    public static BooklistGroup newInstance(final @IntRange(from = 0, to = RowKind.ROW_KIND_MAX) int kind,
+                                            @NonNull final String uuid) {
         switch (kind) {
-            case RowKinds.ROW_KIND_AUTHOR:
-                return new BooklistAuthorGroup();
-            case RowKinds.ROW_KIND_SERIES:
-                return new BooklistSeriesGroup();
+            case RowKind.AUTHOR:
+                return new BooklistAuthorGroup(uuid);
+            case RowKind.SERIES:
+                return new BooklistSeriesGroup(uuid);
             default:
-                return new BooklistGroup(kind);
+                return new BooklistGroup(kind, uuid);
         }
     }
 
@@ -104,34 +180,32 @@ public class BooklistGroup implements Serializable, Parcelable {
      * Return a list of BooklistGroups, one for each defined RowKind
      */
     @NonNull
-    static List<BooklistGroup> getAllGroups() {
+    public static List<BooklistGroup> getAllGroups(@NonNull final BooklistStyle style) {
         List<BooklistGroup> list = new ArrayList<>();
         //skip BOOK KIND
-        for (int i = 1; i < RowKinds.size(); i++) {
-            list.add(newInstance(i));
+        for (int kind = 1; kind < RowKind.size(); kind++) {
+            list.add(newInstance(kind, style.uuid));
         }
         return list;
     }
 
-    /**
-     * Constructor
-     */
-    BooklistGroup(final @IntRange(from = 0, to = RowKinds.ROW_KIND_MAX) int kind) {
-        this.kind = kind;
-        rowKind = RowKinds.getRowKind(kind);
+    public int getKind() {
+        return kind;
     }
 
-    /**
-     * Constructor
-     */
-    BooklistGroup(final @NonNull Parcel in) {
-        this.kind = in.readInt();
-        rowKind = RowKinds.getRowKind(this.kind);
+    String getName() {
+        return RowKind.get(kind).getName();
     }
 
     @NonNull
-    public RowKinds.RowKind getRowKind() {
-        return rowKind;
+    DomainDefinition getDisplayDomain() {
+        return RowKind.get(kind).getDisplayDomain();
+    }
+
+    @NonNull
+    CompoundKey getCompoundKey() {
+        //noinspection ConstantConditions
+        return RowKind.get(kind).getCompoundKey();
     }
 
     /** Getter for group domains */
@@ -144,23 +218,33 @@ public class BooklistGroup implements Serializable, Parcelable {
         mDomains = domains;
     }
 
-    /**
-     * Get the Property objects that this group will contribute to a Style.
-     */
-    public void getStyleProperties(final @NonNull PropertyList /* in/out */ list) {
+    protected void initPrefs() {
     }
 
-    @Override
-    public void writeToParcel(final @NonNull Parcel dest, int flags) {
-        dest.writeInt(rowKind.kind);
+    /**
+     * Get the Preference objects that this group will contribute to a Style.
+     */
+    public Map<String, PPref> getStylePPrefs() {
+        return new LinkedHashMap<>();
+    }
+
+    /**
+     * Add the Preference objects that this group will contribute to a Style.
+     *
+     * @param screen to add the prefs to
+     */
+    public void addPreferences(@NonNull final PreferenceScreen screen) {
     }
 
     /**
      * Custom serialization support. The signature of this method should never be changed.
      *
+     * If we ever need to write objects here, don't forget to add a version field as first one.
+     *
      * @see Serializable
      */
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    private void writeObject(ObjectOutputStream out)
+            throws IOException {
         out.defaultWriteObject();
     }
 
@@ -169,30 +253,56 @@ public class BooklistGroup implements Serializable, Parcelable {
      *
      * @see Serializable
      */
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        rowKind = RowKinds.getRowKind(this.kind);
+        initPrefs();
     }
 
-    @SuppressWarnings("SameReturnValue")
+    /** make it easy to display the name in generic functions */
     @Override
-    public int describeContents() {
-        return 0;
+    public String toString() {
+        return getName();
     }
 
     /**
-     * Note to self: do not rename or move this class, deserialization will break.
+     * Note to self: do not rename or move this class, deserialization will break (why?)
      *
-     * Specialized BooklistGroup representing an Series group. Includes extra attributes based
+     * Specialized BooklistGroup representing a Series group. Includes extra attributes based
      * on preferences.
      *
      * @author Philip Warner
      */
     public static class BooklistSeriesGroup extends BooklistGroup implements Serializable, Parcelable {
+
+        private static final long serialVersionUID = 9023218506278704155L;
+        /** mAllSeries Parameter values and descriptions */
+        private static final String description = BookCatalogueApp.getResourceString(R.string.lbl_series);
+
+        /** Show book under each series it appears in? */
+        private transient PBoolean mAllSeries;
+
+        BooklistSeriesGroup(@NonNull final String uuid) {
+            super(RowKind.SERIES, uuid);
+        }
+
+        protected BooklistSeriesGroup(@NonNull final Parcel in) {
+            super(in);
+            initPrefs();
+            mAllSeries.set(uuid, in);
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            mAllSeries.writeToParcel(uuid, dest);
+        }
+
+
         public static final Creator<BooklistSeriesGroup> CREATOR = new Creator<BooklistSeriesGroup>() {
             @Override
-            public BooklistSeriesGroup createFromParcel(Parcel in) {
-                return new BooklistSeriesGroup(in);
+            public BooklistSeriesGroup createFromParcel(Parcel source) {
+                return new BooklistSeriesGroup(source);
             }
 
             @Override
@@ -201,69 +311,59 @@ public class BooklistGroup implements Serializable, Parcelable {
             }
         };
 
-        public static final String PREF_SHOW_ALL_SERIES = BooklistStyle.TAG + "Group.Show.AllSeries";
-
-        private static final long serialVersionUID = 9023218506278704155L;
-        /** mAllSeries Parameter values and descriptions */
-        private static final String description = BookCatalogueApp.getResourceString(R.string.lbl_series);
-
-        /** Show book under each series it appears in? */
-        private transient BooleanProperty mAllSeries;
-
-        BooklistSeriesGroup() {
-            super(RowKinds.ROW_KIND_SERIES);
-            initProperties();
-            mAllSeries.setValue(null);
-        }
-
-        BooklistSeriesGroup(Parcel in) {
-            super(in);
-            initProperties();
-            mAllSeries.readFromParcel(in);
-        }
-
-        @Override
-        public void writeToParcel(@NonNull Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            mAllSeries.writeToParcel(dest);
-        }
-
-        /**
-         * Create the properties objects; these are transient, so not created by deserialization,
-         * and need to be created in constructors as well.
-         */
-        private void initProperties() {
-            mAllSeries = new BooleanProperty(R.string.books_with_multiple_series,
-                    PropertyGroup.GRP_SERIES)
-                    .setPreferenceKey(PREF_SHOW_ALL_SERIES)
-                    .setHint(R.string.hint_series_book_may_appear_more_than_once)
-                    .setTrueLabel(R.string.books_with_multiple_show_book_under_each_1s, description)
-                    .setFalseLabel(R.string.books_with_multiple_show_book_under_primary_1s_only, description);
+        protected void initPrefs() {
+            mAllSeries = new PBoolean(R.string.pk_bob_books_under_multiple_series);
         }
 
         boolean showAllSeries() {
-            return mAllSeries.isTrue();
+            return mAllSeries.isTrue(uuid);
         }
 
         /**
-         * Get the Property objects that this group will contribute to a Style.
+         * Get the Preference objects that this group will contribute to a Style.
          */
         @Override
         @CallSuper
-        public void getStyleProperties(final @NonNull PropertyList list) {
-            super.getStyleProperties(list);
-            list.add(mAllSeries);
+        public Map<String, PPref> getStylePPrefs() {
+            Map<String, PPref> map = super.getStylePPrefs();
+            map.put(mAllSeries.getKey(), mAllSeries);
+            return map;
         }
 
+        /**
+         * Add the Preference objects that this group will contribute to a Style.
+         *
+         * TODO: could do this from xml instead I suppose.
+         */
+        @Override
+        public void addPreferences(@NonNull final PreferenceScreen screen) {
+            PreferenceCategory category = (PreferenceCategory) screen.findPreference(BookCatalogueApp.getResourceString(R.string.lbl_series));
+            if (category != null) {
+                category.setVisible(true);
+
+                SwitchPreference pShowAll = new SwitchPreference(screen.getContext());
+                pShowAll.setTitle(R.string.pt_bob_books_under_multiple_series);
+                pShowAll.setIcon(R.drawable.ic_functions);
+                pShowAll.setKey(BookCatalogueApp.getResourceString(R.string.pk_bob_books_under_multiple_series));
+                pShowAll.setDefaultValue(false);
+                pShowAll.setSummaryOn(BookCatalogueApp.getResourceString(R.string.pv_bob_books_under_multiple_show_book_under_each_1s, description));
+                pShowAll.setSummaryOff(BookCatalogueApp.getResourceString(R.string.pv_bob_books_under_multiple_show_under_primary_1s_only, description));
+                //pAllSeries.setHint(R.string.hint_series_book_may_appear_more_than_once);
+                category.addPreference(pShowAll);
+            }
+        }
         /**
          * Custom serialization support. The signature of this method should never be changed.
          *
          * @see Serializable
          */
-        private void writeObject(ObjectOutputStream out) throws IOException {
+        private void writeObject(ObjectOutputStream out)
+                throws IOException {
             out.defaultWriteObject();
-            // We use read/write Object so that NULL values are preserved
-            out.writeObject(mAllSeries.getValue());
+            // version must use writeObject
+            out.writeObject(BooklistStyle.realSerialVersion);
+
+            out.writeObject(mAllSeries.get(uuid));
         }
 
         /**
@@ -273,11 +373,19 @@ public class BooklistGroup implements Serializable, Parcelable {
          *
          * @see Serializable
          */
-        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        private void readObject(ObjectInputStream in)
+                throws IOException, ClassNotFoundException {
             in.defaultReadObject();
-            initProperties();
-            // We use read/write Object so that NULL values are preserved
-            mAllSeries.setValue((Boolean) in.readObject());
+            initPrefs();
+
+            Object object = in.readObject();
+            if (object == null || object instanceof Boolean) {
+                // pre v5.
+                mAllSeries.set(uuid, (Boolean) object);
+                return;
+            }
+            //long version = (Long)object;
+            mAllSeries.set(uuid, (Boolean) in.readObject());
         }
     }
 
@@ -290,10 +398,37 @@ public class BooklistGroup implements Serializable, Parcelable {
      * @author Philip Warner
      */
     public static class BooklistAuthorGroup extends BooklistGroup implements Serializable, Parcelable {
+
+        private static final long serialVersionUID = -1984868877792780113L;
+
+        private static final String description = BookCatalogueApp.getResourceString(R.string.lbl_author);
+
+        /** Support for 'Show All Authors of Book' property */
+        private transient PBoolean mAllAuthors;
+        /** Support for 'Show Given Name First' property */
+        private transient PBoolean mGivenNameFirst;
+
+        BooklistAuthorGroup(@NonNull final String uuid) {
+            super(RowKind.AUTHOR, uuid);
+        }
+
+        protected BooklistAuthorGroup(@NonNull final Parcel in) {
+            super(in);
+            mAllAuthors.set(uuid, in);
+            mGivenNameFirst.set(uuid, in);
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest, final int flags) {
+            super.writeToParcel(dest, flags);
+            mAllAuthors.writeToParcel(uuid, dest);
+            mGivenNameFirst.writeToParcel(uuid, dest);
+        }
+
         public static final Creator<BooklistAuthorGroup> CREATOR = new Creator<BooklistAuthorGroup>() {
             @Override
-            public BooklistAuthorGroup createFromParcel(Parcel in) {
-                return new BooklistAuthorGroup(in);
+            public BooklistAuthorGroup createFromParcel(Parcel source) {
+                return new BooklistAuthorGroup(source);
             }
 
             @Override
@@ -301,84 +436,75 @@ public class BooklistGroup implements Serializable, Parcelable {
                 return new BooklistAuthorGroup[size];
             }
         };
-        public static final String PREF_SHOW_ALL_AUTHORS = BooklistStyle.TAG + "Group.Show.AllAuthors";
-        public static final String PREF_DISPLAY_FIRST_THEN_LAST_NAMES = BooklistStyle.TAG + "Group.Show.AllAuthors.DisplayFirstThenLast";
-        private static final long serialVersionUID = -1984868877792780113L;
 
-        private static final String description = BookCatalogueApp.getResourceString(R.string.lbl_author);
-
-        /** Support for 'Show Given Name First' property */
-        private transient BooleanProperty mGivenNameFirst;
-        /** Support for 'Show All Authors of Book' property */
-        private transient BooleanProperty mAllAuthors;
-
-        BooklistAuthorGroup() {
-            super(RowKinds.ROW_KIND_AUTHOR);
-            initProperties();
-        }
-
-        BooklistAuthorGroup(final @NonNull Parcel in) {
-            super(in);
-            initProperties();
-            mAllAuthors.readFromParcel(in);
-            mGivenNameFirst.readFromParcel(in);
-        }
-
-        @Override
-        public void writeToParcel(final @NonNull Parcel dest, final int flags) {
-            super.writeToParcel(dest, flags);
-            mAllAuthors.writeToParcel(dest);
-            mGivenNameFirst.writeToParcel(dest);
-        }
-
-        /**
-         * Create the properties objects; these are transient, so not created by deserialization,
-         * and need to be created in constructors as well.
-         */
-        private void initProperties() {
-            mAllAuthors = new BooleanProperty(R.string.books_with_multiple_authors,
-                    PropertyGroup.GRP_AUTHOR)
-                    .setPreferenceKey(PREF_SHOW_ALL_AUTHORS)
-                    .setHint(R.string.hint_authors_book_may_appear_more_than_once)
-                    .setTrueLabel(R.string.books_with_multiple_show_book_under_each_1s, description)
-                    .setFalseLabel(R.string.books_with_multiple_show_book_under_primary_1s_only, description);
-
-            mGivenNameFirst = new BooleanProperty(R.string.blp_format_author_name,
-                    PropertyGroup.GRP_AUTHOR)
-                    .setPreferenceKey(PREF_DISPLAY_FIRST_THEN_LAST_NAMES)
-                    .setOptionLabels(R.string.blp_format_author_name_given_first,
-                            R.string.blp_format_author_name_family_first);
+        protected void initPrefs() {
+            mAllAuthors = new PBoolean(R.string.pk_bob_books_under_multiple_authors);
+            mGivenNameFirst = new PBoolean(R.string.pk_bob_format_author_name);
         }
 
         boolean showAllAuthors() {
-            return mAllAuthors.isTrue();
+            return mAllAuthors.isTrue(uuid);
         }
 
         boolean showGivenNameFirst() {
-            return mGivenNameFirst.isTrue();
+            return mGivenNameFirst.isTrue(uuid);
         }
 
         /**
-         * Get the Property objects that this group will contribute to a Style.
+         * Get the Preference objects that this group will contribute to a Style.
          */
         @Override
         @CallSuper
-        public void getStyleProperties(final @NonNull PropertyList /* in/out */ list) {
-            super.getStyleProperties(list);
-            list.add(mAllAuthors);
-            list.add(mGivenNameFirst);
+        public Map<String, PPref> getStylePPrefs() {
+            Map<String, PPref> map = super.getStylePPrefs();
+            map.put(mAllAuthors.getKey(), mAllAuthors);
+            map.put(mGivenNameFirst.getKey(), mGivenNameFirst);
+            return map;
         }
+        /**
+         * Add the Preference objects that this group will contribute to a Style.
+         *
+         * TODO: could do this from xml instead I suppose.
+         */
+        @Override
+        public void addPreferences(@NonNull final PreferenceScreen screen) {
+            PreferenceCategory category = (PreferenceCategory) screen.findPreference(BookCatalogueApp.getResourceString(R.string.lbl_author));
+            if (category != null) {
+                category.setVisible(true);
 
+                SwitchPreference pShowAll = new SwitchPreference(screen.getContext());
+                pShowAll.setTitle(R.string.pt_bob_books_under_multiple_authors);
+                pShowAll.setIcon(R.drawable.ic_functions);
+                pShowAll.setKey(BookCatalogueApp.getResourceString(R.string.pk_bob_books_under_multiple_authors));
+                pShowAll.setDefaultValue(false);
+                pShowAll.setSummaryOn(BookCatalogueApp.getResourceString(R.string.pv_bob_books_under_multiple_show_book_under_each_1s, description));
+                pShowAll.setSummaryOff(BookCatalogueApp.getResourceString(R.string.pv_bob_books_under_multiple_show_under_primary_1s_only, description));
+                //pAllAuthors.setHint(R.string.hint_authors_book_may_appear_more_than_once)
+                category.addPreference(pShowAll);
+
+                SwitchPreference pGivenNameFirst = new SwitchPreference(screen.getContext());
+                pGivenNameFirst.setTitle(R.string.pt_bob_format_author_name);
+                pShowAll.setIcon(R.drawable.ic_title);
+                pGivenNameFirst.setKey(BookCatalogueApp.getResourceString(R.string.pk_bob_format_author_name));
+                pGivenNameFirst.setDefaultValue(false);
+                pGivenNameFirst.setSummaryOn(R.string.pv_bob_format_author_name_given_first);
+                pGivenNameFirst.setSummaryOff(R.string.pv_bob_format_author_name_family_first);
+                category.addPreference(pGivenNameFirst);
+            }
+        }
         /**
          * Custom serialization support. The signature of this method should never be changed.
          *
          * @see Serializable
          */
-        private void writeObject(ObjectOutputStream out) throws IOException {
+        private void writeObject(ObjectOutputStream out)
+                throws IOException {
             out.defaultWriteObject();
-            // We use read/write Object so that NULL values are preserved
-            out.writeObject(mAllAuthors.getValue());
-            out.writeObject(mGivenNameFirst.getValue());
+            // version must use writeObject to be compat with original code
+            out.writeObject(BooklistStyle.realSerialVersion);
+
+            out.writeObject(mAllAuthors.get(uuid));
+            out.writeObject(mGivenNameFirst.get(uuid));
         }
 
         /**
@@ -388,12 +514,333 @@ public class BooklistGroup implements Serializable, Parcelable {
          *
          * @see Serializable
          */
-        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        private void readObject(ObjectInputStream in)
+                throws IOException, ClassNotFoundException {
             in.defaultReadObject();
-            initProperties();
-            // We use read/write Object so that NULL values are preserved
-            mAllAuthors.setValue((Boolean) in.readObject());
-            mGivenNameFirst.setValue((Boolean) in.readObject());
+            initPrefs();
+            Object object = in.readObject();
+            if (object == null || object instanceof Boolean) {
+                // pre v5.
+                mAllAuthors.set(uuid, (Boolean) object);
+                mGivenNameFirst.set(uuid, (Boolean) in.readObject());
+                return;
+            }
+            long version = (Long) object;
+            mAllAuthors.set(uuid, (Boolean) in.readObject());
+            mGivenNameFirst.set(uuid, (Boolean) in.readObject());
+        }
+    }
+
+    /**
+     * TOMF: add support for all? columns not handled yet. Added in CatalogueDBHelper: 2018-11-14
+     * DOM_BOOK_EDITION_BITMASK + " integer NOT NULL default 0"
+     *
+     * DOM_BOOK_PRICE_LISTED
+     * DOM_BOOK_PRICE_LISTED_CURRENCY + " text default ''"
+     * DOM_BOOK_PRICE_PAID + " text default ''"
+     * DOM_BOOK_PRICE_PAID_CURRENCY + " text default ''"
+     *
+     *
+     * Get a RowKind with the static method: {@link #get(int kind)}
+     *
+     * We create them all once at startup and keep them cached,
+     * so the RowKind class is for al intent basically static!
+     */
+    public static class RowKind {
+
+        // The code relies on BOOK being == 0
+        public static final int BOOK = 0;
+        public static final int AUTHOR = 1;
+        public static final int SERIES = 2;
+        public static final int GENRE = 3;
+        public static final int PUBLISHER = 4;
+        public static final int READ_STATUS = 5;
+        public static final int LOANED = 6;
+        public static final int DATE_PUBLISHED_YEAR = 7;
+        public static final int DATE_PUBLISHED_MONTH = 8;
+        public static final int TITLE_LETTER = 9;
+        public static final int DATE_ADDED_YEAR = 10;
+        public static final int DATE_ADDED_MONTH = 11;
+        public static final int DATE_ADDED_DAY = 12;
+        public static final int FORMAT = 13;
+        public static final int DATE_READ_YEAR = 14;
+        public static final int DATE_READ_MONTH = 15;
+        public static final int DATE_READ_DAY = 16;
+        public static final int LOCATION = 17;
+        public static final int LANGUAGE = 18;
+        public static final int DATE_LAST_UPDATE_YEAR = 19;
+        public static final int DATE_LAST_UPDATE_MONTH = 20;
+        public static final int DATE_LAST_UPDATE_DAY = 21;
+        public static final int RATING = 22;
+        public static final int BOOKSHELF = 23;
+        public static final int DATE_ACQUIRED_YEAR = 24;
+        public static final int DATE_ACQUIRED_MONTH = 25;
+        public static final int DATE_ACQUIRED_DAY = 26;
+        public static final int DATE_FIRST_PUBLICATION_YEAR = 27;
+        public static final int DATE_FIRST_PUBLICATION_MONTH = 28;
+
+        // NEWKIND: ROW_KIND_x
+        // the highest valid index of kinds  ALWAYS update after adding a row kind...
+        public static final int ROW_KIND_MAX = 28;
+
+        private static final Map<Integer, RowKind> mAllKinds = new UniqueMap<>();
+
+        static {
+            RowKind rowKind;
+
+            rowKind = new RowKind(R.string.lbl_book);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(AUTHOR, R.string.lbl_author, "a",
+                                  DOM_FK_AUTHOR_ID);
+            rowKind.setDisplayDomain(DOM_AUTHOR_FORMATTED);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(SERIES, R.string.lbl_series, "s",
+                                  DOM_FK_SERIES_ID);
+            rowKind.setDisplayDomain(DOM_SERIES_NAME);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            //all others will use the underlying domain as the displayDomain
+            rowKind = new RowKind(GENRE, R.string.lbl_genre, "g",
+                                  DOM_BOOK_GENRE);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(PUBLISHER, R.string.lbl_publisher, "p",
+                                  DOM_BOOK_PUBLISHER);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(READ_STATUS, R.string.read_amp_unread, "r",
+                                  DOM_READ_STATUS);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(LOANED, R.string.lbl_loaned, "l",
+                                  DOM_LOANED_TO);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_PUBLISHED_YEAR, R.string.lbl_publication_year, "yrp",
+                                  DOM_DATE_PUBLISHED_YEAR);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_PUBLISHED_MONTH, R.string.lbl_publication_month, "mnp",
+                                  DOM_DATE_PUBLISHED_MONTH);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(TITLE_LETTER, R.string.style_builtin_title_first_letter, "t",
+                                  DOM_TITLE_LETTER);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_ADDED_YEAR, R.string.lbl_added_year, "yra",
+                                  DOM_DATE_ADDED_YEAR);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_ADDED_MONTH, R.string.lbl_added_month, "mna",
+                                  DOM_DATE_ADDED_MONTH);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_ADDED_DAY, R.string.lbl_added_day, "dya",
+                                  DOM_DATE_ADDED_DAY);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(FORMAT, R.string.lbl_format, "fmt",
+                                  DOM_BOOK_FORMAT);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_READ_YEAR, R.string.lbl_read_year, "yrr",
+                                  DOM_DATE_READ_YEAR);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_READ_MONTH, R.string.lbl_read_month, "mnr",
+                                  DOM_DATE_READ_MONTH);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_READ_DAY, R.string.lbl_read_day, "dyr",
+                                  DOM_DATE_READ_DAY);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(LOCATION, R.string.lbl_location, "loc",
+                                  DOM_BOOK_LOCATION);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(LANGUAGE, R.string.lbl_language, "lang",
+                                  DOM_BOOK_LANGUAGE);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_LAST_UPDATE_YEAR, R.string.lbl_update_year, "yru",
+                                  DOM_DATE_LAST_UPDATE_YEAR);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_LAST_UPDATE_MONTH, R.string.lbl_update_month, "mnu",
+                                  DOM_DATE_UPDATE_MONTH);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_LAST_UPDATE_DAY, R.string.lbl_update_day, "dyu",
+                                  DOM_DATE_UPDATE_DAY);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(RATING, R.string.lbl_rating, "rat",
+                                  DOM_BOOK_RATING);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(BOOKSHELF, R.string.lbl_bookshelf, "shelf",
+                                  DOM_BOOKSHELF);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_ACQUIRED_YEAR, R.string.lbl_date_acquired_year, "yrac",
+                                  DOM_DATE_ACQUIRED_YEAR);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_ACQUIRED_MONTH, R.string.lbl_date_acquired_month, "mnac",
+                                  DOM_DATE_ACQUIRED_MONTH);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_ACQUIRED_DAY, R.string.lbl_date_acquired_day, "dyac",
+                                  DOM_DATE_ACQUIRED_DAY);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_FIRST_PUBLICATION_YEAR, R.string.lbl_first_publication_year, "yrfp",
+                                  DOM_DATE_FIRST_PUBLICATION_YEAR);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            rowKind = new RowKind(DATE_FIRST_PUBLICATION_MONTH, R.string.lbl_first_publication_month, "mnfp",
+                                  DOM_DATE_FIRST_PUBLICATION_MONTH);
+            mAllKinds.put(rowKind.kind, rowKind);
+
+            // NEWKIND: ROW_KIND_x
+
+            // Sanity check as our code relies on this
+            for (int kind = 0; kind < (ROW_KIND_MAX - 1); kind++) {
+                if (!mAllKinds.containsKey(kind)) {
+                    throw new IllegalStateException("Missing kind " + kind);
+                }
+            }
+            // Sanity check as our code relies on this (for loop starting at 1)
+            if (BOOK != 0) {
+                throw new IllegalStateException("BOOK was " + BOOK);
+            }
+        }
+
+        @IntRange(from = 0, to = RowKind.ROW_KIND_MAX)
+        public final int kind;
+
+        @StringRes
+        private final int mLabelId;
+
+        private CompoundKey mCompoundKey;
+
+        private DomainDefinition mDisplayDomain;
+
+        /**
+         * Just define a {@link #BOOK}.
+         * (honest? to defy lint...)
+         */
+        private RowKind(@StringRes final int labelId) {
+            this.kind = RowKind.BOOK;
+            mLabelId = labelId;
+        }
+
+        /**
+         * @param domains all underlying domains. The first element will be used as the displayDomain.
+         */
+        private RowKind(final @IntRange(from = 0, to = RowKind.ROW_KIND_MAX) int kind,
+                        @StringRes final int labelId,
+                        @NonNull final String prefix,
+                        @NonNull final DomainDefinition... domains) {
+            this.kind = kind;
+            this.mLabelId = labelId;
+            mCompoundKey = new CompoundKey(prefix, domains);
+            mDisplayDomain = domains[0];
+        }
+
+        /**
+         * Don't use {@link #ROW_KIND_MAX} for code. Use this method.
+         */
+        public static int size() {
+            return mAllKinds.size();
+        }
+
+        @NonNull
+        public static RowKind get(final @IntRange(from = 0, to = RowKind.ROW_KIND_MAX) int kind) {
+            return mAllKinds.get(kind);
+        }
+
+        @NonNull
+        public DomainDefinition getDisplayDomain() {
+            return mDisplayDomain;
+        }
+
+        void setDisplayDomain(@NonNull final DomainDefinition displayDomain) {
+            this.mDisplayDomain = displayDomain;
+        }
+
+        /**
+         * Compound key of this RowKind ({@link BooklistGroup}).
+         *
+         * The name will be of the form 'prefix/<n>' where 'prefix' if the prefix specific to the RowKind,
+         * and <n> the id of the row, eg. 's/18' for Series with id=18
+         */
+        @NonNull
+        CompoundKey getCompoundKey() {
+            //noinspection ConstantConditions
+            return mCompoundKey;
+        }
+
+        String getName() {
+            return BookCatalogueApp.getResourceString(mLabelId);
+        }
+
+        @Override
+        public String toString() {
+            return "RowKind{" +
+                    "name=" + getName() +
+                    '}';
+        }
+    }
+
+    /**
+     * Represents a collection of domains that make a unique key for a given {@link RowKind}.
+     *
+     * @author Philip Warner
+     */
+    static class CompoundKey implements Parcelable {
+
+        public static final Creator<CompoundKey> CREATOR = new Creator<CompoundKey>() {
+            @Override
+            public CompoundKey createFromParcel(Parcel source) {
+                return new CompoundKey(source);
+            }
+
+            @Override
+            public CompoundKey[] newArray(int size) {
+                return new CompoundKey[size];
+            }
+        };
+        /** Unique prefix used to represent a key in the hierarchy */
+        @NonNull
+        final String prefix;
+        /** List of domains in key */
+        final DomainDefinition[] domains;
+
+        CompoundKey(@NonNull final String prefix, @NonNull final DomainDefinition... domains) {
+            this.prefix = prefix;
+            this.domains = domains;
+        }
+
+        CompoundKey(@NonNull final Parcel in) {
+            prefix = in.readString();
+            domains = in.createTypedArray(DomainDefinition.CREATOR);
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest, final int flags) {
+            dest.writeString(prefix);
+            dest.writeTypedArray(domains, flags);
+        }
+
+        @SuppressWarnings("SameReturnValue")
+        @Override
+        public int describeContents() {
+            return 0;
         }
     }
 }

@@ -20,20 +20,21 @@
 
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
 
-/*
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
+/**
  * An XML handler for the Google Books return
  * Gets the total number of books found, and their id (which is a URL)
  *
  * An example response looks like;
+ * <pre>
  * <?xml version='1.0' encoding='UTF-8'?>
  * <feed xmlns='http://www.w3.org/2005/Atom' xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/' xmlns:gbs='http://schemas.google.com/books/2008' xmlns:dc='http://purl.org/dc/terms' xmlns:batch='http://schemas.google.com/gdata/batch' xmlns:gd='http://schemas.google.com/g/2005'>
  * 		<id>http://www.google.com/books/feeds/volumes</id>
@@ -89,40 +90,40 @@ import java.util.ArrayList;
  * 		<author>
  * 			<name>Google Books Search</name>
  * 			<uri>http://www.google.com</uri>
- *		</author>
- *		<generator version='beta'>Google Book Search data API</generator>
- *		<openSearch:totalResults>1</openSearch:totalResults>
- *		<openSearch:startIndex>1</openSearch:startIndex>
- *		<openSearch:itemsPerPage>1</openSearch:itemsPerPage>
- *		<entry>
- *			<id>http://www.google.com/books/feeds/volumes/lf2EMetoLugC</id>
- *			<updated>2010-03-01T07:27:49.000Z</updated>
- *			<category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
- *			<title type='text'>The Geeks' Guide to World Domination</title>
- *			<link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown' href='http://bks3.books.google.com/books?id=lf2EMetoLugC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;sig=ACfU3U1hcfy_NvWZbH46OzWwmQQCDV46lA&amp;source=gbs_gdata'/>
- *			<link rel='http://schemas.google.com/books/2008/info' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
- *			<link rel='http://schemas.google.com/books/2008/preview' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1&amp;cd=1&amp;source=gbs_gdata'/>
- *			<link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
- *			<link rel='alternate' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1'/>
- *			<link rel='self' type='application/atom+xml' href='http://www.google.com/books/feeds/volumes/lf2EMetoLugC'/>
- *			<gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
- *			<gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
- *			<gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
- *			<dc:creator>Garth Sundem</dc:creator>
- *			<dc:date>2009-03-10</dc:date>
+ * 		</author>
+ * 		<generator version='beta'>Google Book Search data API</generator>
+ * 		<openSearch:totalResults>1</openSearch:totalResults>
+ * 		<openSearch:startIndex>1</openSearch:startIndex>
+ * 		<openSearch:itemsPerPage>1</openSearch:itemsPerPage>
+ * 		<entry>
+ * 			<id>http://www.google.com/books/feeds/volumes/lf2EMetoLugC</id>
+ * 			<updated>2010-03-01T07:27:49.000Z</updated>
+ * 			<category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ * 			<title type='text'>The Geeks' Guide to World Domination</title>
+ * 			<link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown' href='http://bks3.books.google.com/books?id=lf2EMetoLugC&amp;printsec=frontcover&amp;img=1&amp;zoom=5&amp;sig=ACfU3U1hcfy_NvWZbH46OzWwmQQCDV46lA&amp;source=gbs_gdata'/>
+ * 			<link rel='http://schemas.google.com/books/2008/info' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ * 			<link rel='http://schemas.google.com/books/2008/preview' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1&amp;cd=1&amp;source=gbs_gdata'/>
+ * 			<link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
+ * 			<link rel='alternate' type='text/html' href='http://books.google.com/books?id=lf2EMetoLugC&amp;dq=ISBN9780307450340&amp;ie=ISO-8859-1'/>
+ * 			<link rel='self' type='application/atom+xml' href='http://www.google.com/books/feeds/volumes/lf2EMetoLugC'/>
+ * 			<gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
+ * 			<gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
+ * 			<gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
+ * 			<dc:creator>Garth Sundem</dc:creator>
+ * 			<dc:date>2009-03-10</dc:date>
  * 		    <dc:description>These days, from blah blah ....the Geek Wars have</dc:description>
- *			<dc:format>245 pages</dc:format>
- *			<dc:format>book</dc:format>
- *			<dc:identifier>lf2EMetoLugC</dc:identifier>
- *			<dc:identifier>ISBN:0307450341</dc:identifier>
- *			<dc:identifier>ISBN:9780307450340</dc:identifier>
- *			<dc:publisher>Three Rivers Pr</dc:publisher>
- *			<dc:subject>Humor</dc:subject>
- *			<dc:title>The Geeks' Guide to World Domination</dc:title>
- *			<dc:title>Be Afraid, Beautiful People</dc:title>
- *		</entry>
+ * 			<dc:format>245 pages</dc:format>
+ * 			<dc:format>book</dc:format>
+ * 			<dc:identifier>lf2EMetoLugC</dc:identifier>
+ * 			<dc:identifier>ISBN:0307450341</dc:identifier>
+ * 			<dc:identifier>ISBN:9780307450340</dc:identifier>
+ * 			<dc:publisher>Three Rivers Pr</dc:publisher>
+ * 			<dc:subject>Humor</dc:subject>
+ * 			<dc:title>The Geeks' Guide to World Domination</dc:title>
+ * 			<dc:title>Be Afraid, Beautiful People</dc:title>
+ * 		</entry>
  * </feed>
- *
+ * </pre>
  */
 class SearchGoogleBooksHandler extends DefaultHandler {
 
@@ -149,9 +150,10 @@ class SearchGoogleBooksHandler extends DefaultHandler {
 
     @Override
     @CallSuper
-    public void characters(final @NonNull char[] ch,
+    public void characters(@NonNull final char[] ch,
                            final int start,
-                           final int length) throws SAXException {
+                           final int length)
+            throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
     }
@@ -165,11 +167,12 @@ class SearchGoogleBooksHandler extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void startElement(final @NonNull String uri,
-                             final @NonNull String localName,
-                             final @NonNull String name,
-                             final @NonNull Attributes attributes) throws SAXException {
-        super.startElement(uri, localName, name, attributes);
+    public void startElement(@NonNull final String uri,
+                             @NonNull final String localName,
+                             @NonNull final String qName,
+                             @NonNull final Attributes attributes)
+            throws SAXException {
+        super.startElement(uri, localName, qName, attributes);
         if (!mEntryDone && localName.equalsIgnoreCase(XML_ENTRY)) {
             mInEntry = true;
         }
@@ -184,10 +187,11 @@ class SearchGoogleBooksHandler extends DefaultHandler {
      */
     @Override
     @CallSuper
-    public void endElement(final @NonNull String uri,
-                           final @NonNull String localName,
-                           final @NonNull String name) throws SAXException {
-        super.endElement(uri, localName, name);
+    public void endElement(@NonNull final String uri,
+                           @NonNull final String localName,
+                           @NonNull final String qName)
+            throws SAXException {
+        super.endElement(uri, localName, qName);
         if (localName.equalsIgnoreCase(XML_ENTRY)) {
             mInEntry = false;
             mEntryDone = true;

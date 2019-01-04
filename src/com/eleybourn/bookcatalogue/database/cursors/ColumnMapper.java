@@ -23,7 +23,7 @@ public class ColumnMapper {
     /**
      * @param domains a list of domains
      */
-    public ColumnMapper(final @NonNull Cursor cursor, final @NonNull DomainDefinition... domains) {
+    public ColumnMapper(@NonNull final Cursor cursor, @NonNull final DomainDefinition... domains) {
         mCursor = cursor;
         for (DomainDefinition domain : domains) {
             colIds.put(domain.name, mCursor.getColumnIndexOrThrow(domain.name));
@@ -36,9 +36,9 @@ public class ColumnMapper {
      *
      * @see TableDefinition#addDomain(DomainDefinition) we don't always register a full set !
      */
-    public ColumnMapper(final @NonNull Cursor cursor,
-                        final @NonNull TableDefinition table,
-                        final @Nullable DomainDefinition... domains) {
+    public ColumnMapper(@NonNull final Cursor cursor,
+                        @NonNull final TableDefinition table,
+                        @Nullable final DomainDefinition... domains) {
         mCursor = cursor;
         for (DomainDefinition domain : table.getDomains()) {
             colIds.put(domain.name, mCursor.getColumnIndexOrThrow(domain.name));
@@ -50,16 +50,16 @@ public class ColumnMapper {
         }
     }
 
-    public String getString(final @NonNull DomainDefinition domain) {
+    public String getString(@NonNull final DomainDefinition domain) {
         return mCursor.getString(colIds.get(domain.name));
     }
-    public boolean getBoolean(final @NonNull DomainDefinition domain) {
+    public boolean getBoolean(@NonNull final DomainDefinition domain) {
         return mCursor.getInt(colIds.get(domain.name)) == 1;
     }
-    public int getInt(final @NonNull DomainDefinition domain) {
+    public int getInt(@NonNull final DomainDefinition domain) {
         return mCursor.getInt(colIds.get(domain.name));
     }
-    public long getLong(final @NonNull DomainDefinition domain) {
+    public long getLong(@NonNull final DomainDefinition domain) {
         return mCursor.getLong(colIds.get(domain.name));
     }
     public byte[] getBlob(final DomainDefinition domain) {

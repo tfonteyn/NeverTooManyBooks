@@ -16,6 +16,11 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="IntListPreference">
+        <attr name="android:entries" />
+        <attr name="android:entryValues" />
+    </declare-styleable>
+
     <!-- ripped from:
     Android\sdk\platforms\android-27\data\res\drawable\gallery_item_background.xml
     which points to PNG files:

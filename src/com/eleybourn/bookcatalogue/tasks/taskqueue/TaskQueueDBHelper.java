@@ -151,7 +151,7 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
         Logger.info(this,"Creating database: " + db.getPath());
 
         for(int i = 0; i < mTables.length; i=i+2 ) {
-            db.execSQL("CREATE TABLE " + mTables[i] + "(" + mTables[i+1] + ")");
+            db.execSQL("CREATE TABLE " + mTables[i] + '(' + mTables[i+1] + ')');
         }
         // Turn on foreign key support so that CASCADE works.
         db.execSQL("PRAGMA foreign_keys = ON");
@@ -175,7 +175,7 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
 
             // Start definition using first field.
             StringBuilder sql = new StringBuilder("CREATE " + qualifier + " INDEX " + tbl + "_IX" + cnt + " ON " + tbl + "(\n");
-            sql.append(" ").append(defn[2]);
+            sql.append(' ').append(defn[2]);
             // Loop through remaining fields, if any
             for(int i = 3; i < defn.length; i++) {
                 sql.append(",\n").append(defn[i]);
@@ -190,7 +190,7 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
      * Called to upgrade DB.
      */
     @Override
-    public void onUpgrade(final @NonNull SQLiteDatabase db, final int oldVersion, final int newVersion) {
+    public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         Logger.info(this,"Upgrading database: " + db.getPath());
 
         int currVersion = oldVersion;

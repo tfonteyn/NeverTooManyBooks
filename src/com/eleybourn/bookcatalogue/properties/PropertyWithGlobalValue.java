@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.properties;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -46,9 +48,9 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
     /** Indicates that this instance is to use the global value instead of the local */
     private boolean mIsGlobal = false;
 
-    PropertyWithGlobalValue(final @NonNull PropertyGroup group,
-                            final @StringRes int nameResourceId,
-                            final @NonNull T defaultValue) {
+    PropertyWithGlobalValue(@NonNull final PropertyGroup group,
+                            @StringRes final int nameResourceId,
+                            @NonNull final T defaultValue) {
         super(nameResourceId, group, defaultValue);
     }
 
@@ -59,7 +61,7 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
     /** Children must implement accessor for the global value */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    protected abstract PropertyWithGlobalValue<T> setGlobalValue(final @NonNull T value);
+    protected abstract PropertyWithGlobalValue<T> setGlobalValue(@NonNull final T value);
 
     /**
      * Accessor for underlying value
@@ -103,7 +105,7 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
      * If this property is declared a global, also set the global value
      */
     @NonNull
-    public PropertyWithGlobalValue<T> setValue(final @Nullable T value) {
+    public PropertyWithGlobalValue<T> setValue(@Nullable final T value) {
         if (mIsGlobal) {
             Objects.requireNonNull(value);
             setGlobalValue(value);
@@ -132,15 +134,22 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
     }
 
     @NonNull
-    String getPreferenceKey() {
+    public String getPreferenceKey() {
         return Objects.requireNonNull(mPreferenceKey);
     }
 
     @NonNull
-    public Property<T> setPreferenceKey(final @NonNull String key) {
+    public Property<T> setPreferenceKey(@NonNull final String key) {
         mPreferenceKey = key;
         return this;
     }
+
+    @NonNull
+    public Property<T> setPreferenceKey(@StringRes final int key) {
+        mPreferenceKey = BookCatalogueApp.getResourceString(key);
+        return this;
+    }
+
     /** check if there is a preference key for persisting the value */
     public boolean hasGlobal() {
         return (mPreferenceKey != null && !mPreferenceKey.isEmpty());
@@ -149,7 +158,7 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
     /**
      * Utility to check if the passed value == the default value
      */
-    boolean isDefault(final @Nullable T value) {
+    boolean isDefault(@Nullable final T value) {
         if (hasGlobal() && !mIsGlobal)
             return (value == null);
 

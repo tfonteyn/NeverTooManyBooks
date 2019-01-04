@@ -21,15 +21,18 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Context;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 /**
  * Background task class to send all books in the database to Goodreads.
@@ -40,6 +43,7 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
  * @author Philip Warner
  */
 public class SendAllBooksTask extends SendBooksTask {
+
     private static final long serialVersionUID = -1933000305276643875L;
     /** Options indicating if it should only send UPDATED books to Goodreads; false == all books */
     private final boolean mUpdatesOnly;
@@ -63,16 +67,19 @@ public class SendAllBooksTask extends SendBooksTask {
      * Do the mean of the task. Called from within {@link #run}
      * Deal with restarts by using mLastId as starting point.
      */
-    protected boolean send(final @NonNull QueueManager queueManager,
-                           final @NonNull Context context) {
+    protected boolean send(@NonNull final QueueManager queueManager,
+                           @NonNull final Context context,
+                           @NonNull final GoodreadsManager grManager) {
 
-        try (BookCursor bookCursor = mDb.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
+        // Use the app context; the calling activity may go away
+        try (CatalogueDBAdapter db = new CatalogueDBAdapter(context.getApplicationContext());
+             BookCursor bookCursor = db.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
             final BookRowView bookCursorRow = bookCursor.getCursorRow();
             mTotalBooks = bookCursor.getCount() + mCount;
             boolean needsRetryReset = true;
             while (bookCursor.moveToNext()) {
                 // Try to export one book
-                if (!sendOneBook(queueManager, context, bookCursorRow)) {
+                if (!sendOneBook(queueManager, context, grManager, db, bookCursorRow)) {
                     // quit on error
                     return false;
                 }
@@ -80,7 +87,8 @@ public class SendAllBooksTask extends SendBooksTask {
                 // Update internal status
                 mCount++;
                 mLastId = bookCursor.getId();
-                // If we have done one successfully, reset the counter so a subsequent network error does not result in a long delay
+                // If we have done one successfully, reset the counter so a
+                // subsequent network error does not result in a long delay
                 if (needsRetryReset) {
                     needsRetryReset = false;
                     resetRetryCounter();
@@ -94,7 +102,9 @@ public class SendAllBooksTask extends SendBooksTask {
                 }
             }
         }
-        // Notify the user: '15 books processed: 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in Goodreads'
+
+        // Notify the user: '15 books processed:
+        // 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in Goodreads'
         BookCatalogueApp.showNotification(
                 context, context.getString(R.string.gr_title_send_book),
                 context.getString(R.string.gr_send_all_books_results, mCount, mSent, mNoIsbn, mNotFound));
@@ -109,7 +119,10 @@ public class SendAllBooksTask extends SendBooksTask {
     @Override
     @CallSuper
     public String getDescription() {
-        return super.getDescription() + " (" + BookCatalogueApp.getResourceString(R.string.x_of_y, mCount, mTotalBooks) + ")";
+        return super.getDescription() +
+                " (" +
+                BookCatalogueApp.getResourceString(R.string.x_of_y, mCount, mTotalBooks) +
+                ')';
     }
 
     @Override

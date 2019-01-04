@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ####################################################################################### -->
+    <!-- ========== Preferences / PropertyList ========== -->
+    <!-- ####################################################################################### -->
+
+    <!-- Preference VALUE -->
+    <string name="use_default_setting">Gebruik de standaard waarden</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_general">Algemeen</string>
+    <!-- Preference GROUP -->
+    <string name="pg_ui">Gebruikersinterface</string>
+    <!-- Preference GROUP -->
+    <string name="pg_thumbnails">Miniaturen</string>
+    <!-- Preference GROUP -->
+    <string name="pg_scanning">Scannen</string>
+    <!-- Preference GROUP -->
+    <string name="pg_booklist">Boeken Lijst</string>
+    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_groupings">Groeperingen</string>
+
+    <!-- ========== Global preferences ========== -->
+
+    <!-- Preference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
+    <string name="pt_bob_open_book_read_only">Open boek in alleen-lezen modus</string>
+
+    <!-- Preference - start the cropper with the cropper frame set to the whole image -->
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Standaard kader voor bijsnijden is hele afbeelding</string>
+
+    <!-- Preference - use an external app. (Intent) to handle cropping-->
+    <string name="pt_thumbnails_external_cropper">Gebruik een externe app voor bijsnijden afbeelding</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_valid">Beep als gescande ISBN geldig is</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_invalid">Beep als het gescande ISBN ongeldig is</string>
+
+    <!--Preference -->
+    <string name="pt_ui_messages_use">Informeren met</string>
+    <string-array name="pe_ui_messages_use">
+        <item translatable="false">Toast</item>
+        <item translatable="false">Snackbar</item>
+    </string-array>
+
+    <!-- Preference -->
+    <string name="pt_ui_theme">Thema</string>
+    <string-array name="pe_ui_theme">
+        <item>Donker</item>
+        <item>Licht</item>
+    </string-array>
+
+    <!-- Preference - Preferred interface Locale -->
+    <string name="pt_ui_language">Interface taal</string>
+
+    <!-- Preference - Degrees by which to rotate camera images automatically -->
+    <string name="pt_thumbnails_rotate_auto">met camera-opnames automatisch draaien</string>
+    <string-array name="pe_thumbnails_rotate_auto">
+        <item>Nee</item>
+        <item>Rechts draaien</item>
+        <item>Links draaien</item>
+        <item>180 graden draaien</item>
+    </string-array>
+
+    <!-- Preference - Compatibility / bug workaround for some devices -->
+    <string name="pt_thumbnail_cropper_layer_type">Cropper Layer Type</string>
+    <string name="pt_hint_layer_type">Leave this setting on \'Standaard waarde\' unless you experience crashes while cropping images. Try \'Software\' for safer but slower or force \'Hardware\' for less safe, but faster</string>
+    <string-array name="pe_thumbnails_cropper_layer_type">
+        <item>Standaard waarde</item>
+        <item>Hardware</item>
+        <item>Software</item>
+    </string-array>
+
+    <!-- Preference - the barcode scanner to use-->
+    <string name="pt_scanning_preferred_scanner">Voorkeur Scanner</string>
+    <string-array name="pe_scanning_preferred_scanner">
+        <item>Zxing Compatibele Scanner</item>
+        <item>Zxing Scanner</item>
+        <item>Pic2Shop Scanner</item>
+    </string-array>
+
+
+    <!-- ========== Book list preferences ========== -->
+
+    <!-- Preference - Book list state-related preferences -->
+    <string name="pt_bob_list_state">Boekenlijst status</string>
+    <string-array name="pe_bob_list_state">
+        <item>Boekenlijst uitgeklapt starten</item>
+        <item>Boekenlijst ingeklapt starten</item>
+        <item>Behoud boekenlijst status</item>
+    </string-array>
+
+    <!--  Preference to override the default method used to generate book lists as defined by API level -->
+    <string name="pt_bob_list_generation">Optie voor genereren boekenlijst</string>
+    <string-array name="pe_bob_list_generation">
+        <item>Gebruik automatisch de aanbevolen optie</item>
+        <item>Forceer volledige functionaliteit</item>
+        <item>Forceer uitgebreide compatibiliteitsmodus</item>
+        <item>Forceer compatibele modus</item>
+    </string-array>
+
+    <!-- Preference - Thumbnails are fetched in a background task -->
+    <string name="pt_bob_thumbnails_generating_mode">Aanmaken boekomslag miniaturen in een achtergrond taak</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Gebruik achtergrond deelproces (lijsten scrollen sneller, tonen afbeeldingen misschien vertraagd)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Genereer onmiddelijk (lijsten scrollen langzamer, afbeeldingen worden onmiddelijk getoond)</string>
+
+    <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
+    <string name="pt_bob_thumbnails_cache_resized">Cache herschaalde miniaturen</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Herschaal elke keer als ze nodig zijn (gebruikt minder opslagruimte, scrollen zal langzamer gaan)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Cache herschaalde miniaturen (gebruikt meer opslagruimte, scrollen van de lijst gaat sneller)</string>
+
+    <!-- ========== Book list style preferences ========== -->
+
+    <!-- Preference - Use scaled text and images -->
+    <string name="pt_bob_item_size">Grootte van boekenlijst elementen</string>
+    <string-array name="pe_bob_item_size">
+        <item>Normaal</item>
+        <item>Kleiner</item>
+        <item>Groter</item>
+    </string-array>
+
+    <!-- Preference - Determines what is show in book list header -->
+    <string name="pt_bob_header">Details in de koptekst</string>
+    <string-array name="pe_bob_header">
+        <item>Toon aantal boeken</item>
+        <item>Toon eerste niveau koptekst</item>
+    </string-array>
+
+    <!-- Preference - Show thumbnail image for each book -->
+    <string name="pt_bob_thumbnails_show">Toon Miniaturen</string>
+    <!-- Preference - Show large thumbnail if thumbnails are shown -->
+    <string name="pt_bob_thumbnails_show_large">Prefereer grote miniaturen</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_authors">Boeken met meerdere auteurs</string>
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_series">Boeken in meerdere series</string>
+
+    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Alleen onder primaire %1$s</string>
+    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Onder elke %1$s</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_format_author_name">Formaat van auteursnamen</string>
+    <string name="pv_bob_format_author_name_given_first">Voornaam eerst bijv. \'Gerard Reve\'</string>
+    <string name="pv_bob_format_author_name_family_first">Achternaam eerst bijv. \'Reve, Gerard\'</string>
+
+    <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
+    <string name="pt_bob_sort_author_name">Auteur namen sorteren</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_bob_extra_book_details">Extra boekdetails</string>
+
+    <!-- Preference - Booklist Filter -->
+    <string-array name="pe_bob_filter_read">
+        <item>@string/all_books</item>
+        <item>Gelezen boeken</item>
+        <item>Niet Gelezen boeken</item>
+    </string-array>
+
+    <!-- Preference - Booklist Filter -->
+    <string-array name="pe_bob_filter_signed">
+        <item>@string/all_books</item>
+        <item>Gesigneerd boeken</item>
+        <item>Niet Gesigneerd boeken</item>
+    </string-array>
+
+    <!-- Preference - Booklist Filter -->
+    <string-array name="pe_bob_filter_loaned">
+        <item>@string/all_books</item>
+        <item>Uitgeleende boeken</item>
+        <item>Niet Uitgeleende boeken</item>
+    </string-array>
+
+    <!-- Preference - Booklist Filter -->
+    <string-array name="pe_bob_filter_anthology">
+        <item>@string/all_books</item>
+        <item>Bloemlezing</item>
+        <item>Geen Bloemlezing</item>
+    </string-array>
+
+</resources>

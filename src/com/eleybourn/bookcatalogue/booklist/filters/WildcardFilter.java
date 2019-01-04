@@ -4,21 +4,31 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+/**
+ * an SQL WHERE clause  (column LIKE '%text%')
+ *
+ * FIXME: bad stopgap... use PreparedStatements instead !
+ */
 public class WildcardFilter implements Filter {
 
-    private TableDefinition table;
-    private DomainDefinition domain;
+    private final TableDefinition table;
+    private final DomainDefinition domain;
 
-    private String criteria;
+    private final String criteria;
 
-    public WildcardFilter(final TableDefinition table, final DomainDefinition domain, final String criteria) {
+    public WildcardFilter(@NonNull final TableDefinition table,
+                          @NonNull final DomainDefinition domain,
+                          @NonNull final String criteria) {
         this.table = table;
         this.domain = domain;
         this.criteria = criteria;
     }
 
     @Override
-    public String getExpression() {
-        return "(" + table.dot(domain) + " LIKE '%" + CatalogueDBAdapter.encodeString(criteria) + "%'" + ")";
+    public String getExpression(@Nullable final String uuid) {
+        return '(' + table.dot(domain) + " LIKE '%" + CatalogueDBAdapter.encodeString(criteria) + "%'" + ')';
     }
 }

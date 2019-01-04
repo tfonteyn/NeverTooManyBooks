@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -38,6 +37,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.SAXException;
@@ -155,20 +155,20 @@ public class LibraryThingManager {
     }
 
 
-    public static void showLtAlertIfNecessary(final @NonNull Context context,
+    public static void showLtAlertIfNecessary(@NonNull final Context context,
                                               final boolean required,
-                                              final @NonNull String prefSuffix) {
+                                              @NonNull final String prefSuffix) {
         LibraryThingManager ltm = new LibraryThingManager();
         if (!ltm.isAvailable()) {
             needLibraryThingAlert(context, required, prefSuffix);
         }
     }
 
-    public static void needLibraryThingAlert(final @NonNull Context context,
+    public static void needLibraryThingAlert(@NonNull final Context context,
                                              final boolean required,
-                                             final @NonNull String prefSuffix) {
+                                             @NonNull final String prefSuffix) {
 
-        final SharedPreferences prefs = BookCatalogueApp.getSharedPreferences();
+        final SharedPreferences prefs = Prefs.getPrefs();
 
         boolean showAlert;
         @StringRes
@@ -193,7 +193,7 @@ public class LibraryThingManager {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.btn_more_info),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         Intent intent = new Intent(context, LibraryThingAdminActivity.class);
                         context.startActivity(intent);
                         dialog.dismiss();
@@ -203,10 +203,8 @@ public class LibraryThingManager {
         if (!required) {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.btn_disable_message),
                     new DialogInterface.OnClickListener() {
-                        public void onClick(final @NonNull DialogInterface dialog, final int which) {
-                            SharedPreferences.Editor ed = prefs.edit();
-                            ed.putBoolean(prefName, true);
-                            ed.apply();
+                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                            prefs.edit().putBoolean(prefName, true).apply();
                             dialog.dismiss();
                         }
                     });
@@ -214,7 +212,7 @@ public class LibraryThingManager {
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -232,7 +230,7 @@ public class LibraryThingManager {
      * @return a list of isbn's of alternative editions of our original isbn
      */
     @NonNull
-    public static List<String> searchEditions(final @NonNull String isbn) {
+    public static List<String> searchEditions(@NonNull final String isbn) {
 
         // the resulting data we'll return
         List<String> editions = new ArrayList<>();
@@ -284,7 +282,7 @@ public class LibraryThingManager {
      * @return found/saved File, or null when none found (or any other failure)
      */
     @Nullable
-    public File getCoverImage(final @NonNull String isbn, final @NonNull ImageSizes size) {
+    public File getCoverImage(@NonNull final String isbn, @NonNull final ImageSizes size) {
 
         // sanity check
         if (!isAvailable()) {
@@ -316,7 +314,7 @@ public class LibraryThingManager {
         waitUntilRequestAllowed();
 
         // Fetch, then save it with a suffix
-        String fileSpec = ImageUtils.saveThumbnailFromUrl(url, FILENAME_SUFFIX + "_" + isbn + "_" + size);
+        String fileSpec = ImageUtils.saveThumbnailFromUrl(url, FILENAME_SUFFIX + '_' + isbn + '_' + size);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -332,8 +330,8 @@ public class LibraryThingManager {
      *
      * @throws IOException on failure to search
      */
-    void search(final @NonNull String isbn,
-                final @NonNull Bundle /* out */ bookData,
+    void search(@NonNull final String isbn,
+                @NonNull final Bundle /* out */ bookData,
                 final boolean fetchThumbnail) throws IOException {
 
         // sanity check
@@ -382,7 +380,7 @@ public class LibraryThingManager {
     /**
      * external users (to this class) should call this before doing any searches
      *
-     * @return <tt>true</tt>if there is a non-empty dev key
+     * @return <tt>true</tt> if there is a non-empty dev key
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isAvailable() {
@@ -398,7 +396,7 @@ public class LibraryThingManager {
      */
     @NonNull
     private String getDevKey() {
-        String key = BookCatalogueApp.getStringPreference(PREFS_DEV_KEY, null);
+        String key = Prefs.getString(PREFS_DEV_KEY, null);
         if (key != null && !key.isEmpty()) {
             return key.replaceAll("[\\r\\t\\n\\s]*", "");
         }

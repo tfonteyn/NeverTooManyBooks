@@ -96,7 +96,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         initStandardArgs(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -134,7 +134,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
      *
      * @param dateString SQL formatted date, may be null
      */
-    private void setDate(final @NonNull String dateString) {
+    private void setDate(@NonNull final String dateString) {
         Integer yyyy = null;
         Integer mm = null;
         Integer dd = null;
@@ -153,9 +153,9 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
     /**
      * Private helper, NOT a public accessor which would be violating the Fragment contract.
      */
-    private void setDate(final @Nullable Integer year,
-                         final @Nullable Integer month,
-                         final @Nullable Integer day) {
+    private void setDate(@Nullable final Integer year,
+                         @Nullable final Integer month,
+                         @Nullable final Integer day) {
         mYear = year;
         mMonth = month;
         mDay = day;
@@ -167,7 +167,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
 
     @Override
     @CallSuper
-    public void onSaveInstanceState(final @NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         if (mYear != null) {
             outState.putInt(BKEY_YEAR, mYear);
         }
@@ -202,13 +202,13 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
      */
     public interface OnPartialDatePickerResultsListener {
 
-        void onPartialDatePickerSave(final @NonNull PartialDatePickerDialogFragment dialog,
+        void onPartialDatePickerSave(@NonNull final PartialDatePickerDialogFragment dialog,
                                      final @IdRes int destinationFieldId,
-                                     final @Nullable Integer year,
-                                     final @Nullable Integer month,
-                                     final @Nullable Integer day);
+                                     @Nullable final Integer year,
+                                     @Nullable final Integer month,
+                                     @Nullable final Integer day);
 
-        void onPartialDatePickerCancel(final @NonNull PartialDatePickerDialogFragment dialog,
+        void onPartialDatePickerCancel(@NonNull final PartialDatePickerDialogFragment dialog,
                                        final @IdRes int destinationFieldId);
     }
 
@@ -245,7 +245,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
          *
          * @param activity Calling context
          */
-        PartialDatePickerDialog(final @NonNull Activity activity) {
+        PartialDatePickerDialog(@NonNull final Activity activity) {
             this(activity, null, null, null);
         }
 
@@ -258,10 +258,10 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
          * @param day      Starting day
          */
         @SuppressWarnings("SameParameterValue")
-        private PartialDatePickerDialog(final @NonNull Activity activity,
-                                        final @Nullable Integer year,
-                                        final @Nullable Integer month,
-                                        final @Nullable Integer day) {
+        private PartialDatePickerDialog(@NonNull final Activity activity,
+                                        @Nullable final Integer year,
+                                        @Nullable final Integer month,
+                                        @Nullable final Integer day) {
             super(activity);
 
             mActivity = activity;
@@ -319,13 +319,13 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                     new AdapterView.OnItemSelectedListener() {
 
                         @Override
-                        public void onItemSelected(final AdapterView<?> parentView, final View selectedItemView, final int position, final long id) {
+                        public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
                             int pos = mMonthSpinner.getSelectedItemPosition();
                             handleMonth(pos);
                         }
 
                         @Override
-                        public void onNothingSelected(final AdapterView<?> arg0) {
+                        public void onNothingSelected(final AdapterView<?> parent) {
                             handleMonth(null);
                         }
                     }
@@ -336,13 +336,13 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                     new AdapterView.OnItemSelectedListener() {
 
                         @Override
-                        public void onItemSelected(final AdapterView<?> parentView, final View selectedItemView, final int position, final long id) {
+                        public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
                             int pos = mDaySpinner.getSelectedItemPosition();
                             handleDay(pos);
                         }
 
                         @Override
-                        public void onNothingSelected(final AdapterView<?> arg0) {
+                        public void onNothingSelected(final AdapterView<?> parent) {
                             handleDay(null);
                         }
                     }
@@ -351,17 +351,17 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             // Handle all changes to the YEAR text
             mYearView.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void beforeTextChanged(final @NonNull CharSequence s,
+                public void beforeTextChanged(@NonNull final CharSequence s,
                                               final int start, final int count, final int after) {
                 }
 
                 @Override
-                public void onTextChanged(final @NonNull CharSequence s,
+                public void onTextChanged(@NonNull final CharSequence s,
                                           final int start, final int before, final int count) {
                 }
 
                 @Override
-                public void afterTextChanged(final @NonNull Editable s) {
+                public void afterTextChanged(@NonNull final Editable s) {
                     handleYear();
                 }
             });
@@ -375,7 +375,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                             if (mYear != null) {
                                 text = (++mYear).toString();
                             } else {
-                                text = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+                                text = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
                             }
                             mYearView.setText(text);
                         }
@@ -398,7 +398,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                                     mYearView.setText(text);
                                 }
                             } else {
-                                text = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+                                text = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
                                 mYearView.setText(text);
                             }
                         }
@@ -496,7 +496,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
          * @param month Month (or null)
          * @param day   Day (or null)
          */
-        public void setDate(final @Nullable Integer year, final @Nullable Integer month, final @Nullable Integer day) {
+        public void setDate(@Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
             mYear = year;
             mMonth = month;
             mDay = day;
@@ -586,7 +586,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
         /**
          * Handle changes to the MONTH field
          */
-        private void handleMonth(final @Nullable Integer pos) {
+        private void handleMonth(@Nullable final Integer pos) {
             // See if we got a valid month
             boolean isMonth = (pos != null && pos > 0);
 
@@ -608,7 +608,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
         /**
          * Handle changes to the DAY spinner
          */
-        private void handleDay(final @Nullable Integer pos) {
+        private void handleDay(@Nullable final Integer pos) {
             boolean isSelected = (pos != null && pos > 0);
             if (!isSelected) {
                 mDay = null;
@@ -672,7 +672,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
          *
          * @param root Root view
          */
-        private void reorderPickers(final @NonNull View root) {
+        private void reorderPickers(@NonNull final View root) {
             char[] order;
             try {
                 // This actually throws exception in some versions of Android, specifically when
@@ -680,7 +680,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                 // just use our default order in these cases.
                 // See Issue #712.
                 order = DateFormat.getDateFormatOrder(mActivity);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 return;
             }
 
@@ -716,7 +716,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             }
         }
 
-        public void setResultsListener(final @NonNull OnPartialDatePickerResultsListener listener) {
+        void setResultsListener(@NonNull final OnPartialDatePickerResultsListener listener) {
             mListener = listener;
         }
 
@@ -726,9 +726,9 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
          * @author pjw
          */
         protected interface OnPartialDatePickerResultsListener {
-            void onPartialDatePickerSave(final @Nullable Integer year,
-                                         final @Nullable Integer month,
-                                         final @Nullable Integer day);
+            void onPartialDatePickerSave(@Nullable final Integer year,
+                                         @Nullable final Integer month,
+                                         @Nullable final Integer day);
 
             void onPartialDatePickerCancel();
         }

@@ -49,18 +49,18 @@ public abstract class Property<T> {
      * when the screen is rotated (if they all have the same ID).
      */
     @NonNull
-    private static AtomicInteger mViewIdCounter = new AtomicInteger();
+    private static final AtomicInteger mViewIdCounter = new AtomicInteger();
 
     /**
      * Counter used to generate values for the {@link #mUniqueId} field.
      */
     @NonNull
-    private static AtomicInteger mUniqueIdCounter = new AtomicInteger();
+    private static final AtomicInteger mUniqueIdCounter = new AtomicInteger();
     private final int mUniqueId;
 
     /** Resource ID for displayed name of this property */
     @StringRes
-    private int mNameResourceId = 0;
+    private final int mNameResourceId;
     /** Underlying value */
     @Nullable
     T mValue = null;
@@ -81,9 +81,9 @@ public abstract class Property<T> {
      * @param group          PropertyGroup in which this property belongs
      * @param defaultValue   value to set as the default, used when the actual value is null.
      */
-    public Property(final @StringRes int nameResourceId,
-                    final @NonNull PropertyGroup group,
-                    final @NonNull T defaultValue) {
+    public Property(@StringRes final int nameResourceId,
+                    @NonNull final PropertyGroup group,
+                    @NonNull final T defaultValue) {
         mUniqueId = mUniqueIdCounter.incrementAndGet();
         mGroup = group;
         mNameResourceId = nameResourceId;
@@ -96,7 +96,7 @@ public abstract class Property<T> {
     }
 
     @NonNull
-    protected T getDefaultValue() {
+    public T getDefaultValue() {
         return mDefaultValue;
     }
 
@@ -104,13 +104,13 @@ public abstract class Property<T> {
      * Set the DefaultValue
      */
     @NonNull
-    public Property<T> setDefaultValue(final @NonNull T value) {
+    public Property<T> setDefaultValue(@NonNull final T value) {
         mDefaultValue = value;
         return this;
     }
 
     /** Utility to check if the passed value == the default value */
-    boolean isDefault(final @Nullable T value) {
+    boolean isDefault(@Nullable final T value) {
         return value != null && value.equals(mDefaultValue);
     }
 
@@ -139,13 +139,13 @@ public abstract class Property<T> {
     }
 
     @NonNull
-    public Property<T> setGroup(final @NonNull PropertyGroup group) {
+    public Property<T> setGroup(@NonNull final PropertyGroup group) {
         mGroup = group;
         return this;
     }
 
     @StringRes
-    protected int getNameResourceId() {
+    public int getNameResourceId() {
         return mNameResourceId;
     }
 
@@ -160,7 +160,7 @@ public abstract class Property<T> {
 
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Property<T> setHint(final @StringRes int hint) {
+    public Property<T> setHint(@StringRes final int hint) {
         mHint = hint;
         return this;
     }
@@ -183,20 +183,20 @@ public abstract class Property<T> {
 
     /** Accessor for underlying value */
     @NonNull
-    public Property<T> setValue(final @Nullable T value) {
+    public Property<T> setValue(@Nullable final T value) {
         this.mValue = value;
         return this;
     }
 
     /** Children must implement getView to return an editor for this object */
     @NonNull
-    public abstract View getView(final @NonNull LayoutInflater inflater);
+    public abstract View getView(@NonNull final LayoutInflater inflater);
 
     /** Exception used by validation code. */
     public static class ValidationException extends IllegalStateException {
         private static final long serialVersionUID = -1086124703257379812L;
 
-        ValidationException(final @NonNull String message) {
+        ValidationException(@NonNull final String message) {
             super(message);
         }
     }

@@ -20,20 +20,15 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
-import androidx.annotation.NonNull;
-
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
+import androidx.annotation.NonNull;
 
 /**
  * API call to get a Goodreads ID from an ISBN.
@@ -44,7 +39,8 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public class IsbnToId extends ApiHandler {
 
-    public IsbnToId(final @NonNull GoodreadsManager manager) {
+    public IsbnToId(@NonNull final GoodreadsManager manager) {
+
         super(manager);
     }
 
@@ -56,9 +52,11 @@ public class IsbnToId extends ApiHandler {
      *	    isbn: The ISBN of the book to lookup.
      *	    key: Developer key (required).
      */
-    public long isbnToId(final @NonNull String isbn) throws
-            OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
-            IOException, NotAuthorizedException, BookNotFoundException, NetworkException {
+    public long isbnToId(@NonNull final String isbn)
+            throws IOException,
+                   NotAuthorizedException,
+                   BookNotFoundException {
+
         HttpGet get = new HttpGet(GoodreadsManager.BASE_URL + "/book/isbn_to_id/" + isbn + "?key=" + mManager.getDevKey());
         String s = mManager.executeRaw(get);
         return Long.parseLong(s);

@@ -52,8 +52,6 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
     private static int mDateCol = -2;
     /** Column number of Exception column. */
     private static int mEventCol = -2;
-    /** Column number of TaskId column. */
-    private static int mTaskIdCol = -2;
 
     private final Map<Long, Boolean> mSelections = new Hashtable<>();
 
@@ -61,7 +59,7 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
     /**
      * Constructor, based on SQLiteCursor constructor
      */
-    EventsCursor(final @NonNull SQLiteCursorDriver driver, final @NonNull String editTable, final @NonNull SQLiteQuery query) {
+    EventsCursor(@NonNull final SQLiteCursorDriver driver, @NonNull final String editTable, @NonNull final SQLiteQuery query) {
         super(driver, editTable, query);
     }
 

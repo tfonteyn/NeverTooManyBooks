@@ -23,11 +23,6 @@ package com.eleybourn.bookcatalogue;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -62,6 +57,12 @@ import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBResultsListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab
  *
@@ -70,7 +71,9 @@ import java.util.List;
  * The {@link ISFDBResultsListener} should however be seen as temporary as this class should not
  * have to know about any specific search web site.
  */
-public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResultsListener {
+public class EditBookTOCFragment
+    extends BookBaseFragment
+    implements ISFDBResultsListener {
 
     public static final String TAG = "EditBookTOCFragment";
 
@@ -97,7 +100,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
-        return ((EditBookFragment)this.getParentFragment()).getBookManager();
+        return ((EditBookFragment) this.getParentFragment()).getBookManager();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -105,9 +108,9 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
     //<editor-fold desc="Fragment startup">
 
     @Override
-    public View onCreateView(final @NonNull LayoutInflater inflater,
-                             final @Nullable ViewGroup container,
-                             final @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_edit_book_toc, container, false);
     }
 
@@ -119,7 +122,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
      */
     @Override
     @CallSuper
-    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
@@ -130,7 +133,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
         // Author AutoCompleteTextView
         mAuthorTextView = getView().findViewById(R.id.add_author);
         ArrayAdapter<String> author_adapter = new ArrayAdapter<>(requireActivity(),
-                android.R.layout.simple_dropdown_item_1line, mDb.getAuthorsFormattedName());
+            android.R.layout.simple_dropdown_item_1line, mDb.getAuthorsFormattedName());
         mAuthorTextView.setAdapter(author_adapter);
 
         // author to use if mSingleAuthor is set to true
@@ -198,7 +201,10 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
         // clicking on a list entry, puts it in edit fields
         mListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+            public void onItemClick(final AdapterView<?> parent,
+                                    final View view,
+                                    final int position,
+                                    final long id) {
                 mEditPosition = position;
 
                 TOCEntry tocEntry = mList.get(position);
@@ -213,7 +219,8 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
 
     @Override
     @CallSuper
-    protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+    protected void onLoadFieldsFromBook(@NonNull final Book book,
+                                        final boolean setAllFrom) {
         Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
@@ -233,7 +240,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
 
     //<editor-fold desc="Populate">
 
-    private void populateSingleAuthorStatus(final @NonNull Book book) {
+    private void populateSingleAuthorStatus(@NonNull final Book book) {
         int bitmask = book.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
         boolean singleAuthor = (bitmask & DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS) == 0;
         mSingleAuthor.setChecked(singleAuthor);
@@ -249,7 +256,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
 
         // Now create a simple cursor adapter and set it to display
         ArrayAdapter<TOCEntry> adapter = new TOCListAdapterForEditing(requireActivity(),
-                R.layout.row_edit_toc_entry, mList);
+            R.layout.row_edit_toc_entry, mList);
         mListView.setAdapter(adapter);
     }
     //</editor-fold>
@@ -260,7 +267,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
 
     @Override
     @CallSuper
-    protected void onSaveFieldsToBook(final @NonNull Book book) {
+    protected void onSaveFieldsToBook(@NonNull final Book book) {
         Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
         super.onSaveFieldsToBook(book);
 
@@ -288,29 +295,30 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
 
 
     @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu, @NonNull final MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.menu_populate_toc)
-                .setIcon(R.drawable.ic_autorenew);
+            .setIcon(R.drawable.ic_autorenew);
         // don't call super.
     }
 
     /**
      * This will be called when a menu item is selected.
      *
-     * @param menuItem The item selected
+     * @param item The item selected
      *
      * @return <tt>true</tt> if handled
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(final @NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
                 StandardDialogs.showUserMessage(requireActivity(), R.string.progress_msg_connecting_to_web_site);
                 ISFDBManager.searchEditions(mIsbn, this);
                 return true;
         }
-        return super.onOptionsItemSelected(menuItem);
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -318,18 +326,18 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
      */
     @Override
     @CallSuper
-    public void onCreateContextMenu(final @NonNull ContextMenu menu,
-                                    final @NonNull View v,
-                                    final @NonNull ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull final ContextMenu menu,
+                                    @NonNull final View v,
+                                    @NonNull final ContextMenuInfo menuInfo) {
         menu.add(Menu.NONE, R.id.MENU_DELETE_TOC_ENTRY, 0, R.string.menu_delete_toc_entry)
-                .setIcon(R.drawable.ic_delete);
+            .setIcon(R.drawable.ic_delete);
 
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
     @Override
     @CallSuper
-    public boolean onContextItemSelected(final @NonNull MenuItem item) {
+    public boolean onContextItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_DELETE_TOC_ENTRY:
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -345,6 +353,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="ISFDB interface">
+
     /**
      * we got one or more editions from ISFDB
      * Store the url's locally as the user might want to try the next in line
@@ -352,7 +361,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
      * ENHANCE: add the url's to the options menu for retry. Remove from menu each time one is tried.
      */
     @Override
-    public void onGotISFDBEditions(final @NonNull List<String> editions) {
+    public void onGotISFDBEditions(@NonNull final List<String> editions) {
         mISFDBEditionUrls = editions;
         if (mISFDBEditionUrls.size() > 0) {
             ISFDBManager.search(mISFDBEditionUrls, this);
@@ -365,7 +374,7 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
      * @param bookData our book from ISFDB.
      */
     @Override
-    public void onGotISFDBBook(final @NonNull Bundle bookData) {
+    public void onGotISFDBBook(@NonNull final Bundle bookData) {
 
         // update the book with series information that was gathered from the TOC
         List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
@@ -408,51 +417,55 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
         content.setText(msg);
         // Not ideal but works
         content.setTextSize(14);
-        //API_UPGRADE 23 ?
+        //API 23 ?
         //content.setTextAppearance(android.R.style.TextAppearance_Small);
-        //API_UPGRADE 26 ?
+        //API 26 ?
         //content.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
 
         AlertDialog dialog = new AlertDialog.Builder(requireActivity())
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setView(content)
-                .create();
+            .setIconAttribute(android.R.attr.alertDialogIcon)
+            .setView(content)
+            .create();
 
         if (hasTOC) {
             final List<TOCEntry> finalTOCEntries = tocEntries;
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            commitISFDBData(tocBitMask, finalTOCEntries);
-                        }
-                    });
+                new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
+                        commitISFDBData(tocBitMask, finalTOCEntries);
+                    }
+                });
         }
 
         // if we found multiple editions, allow a re-try with the next inline
         if (mISFDBEditionUrls.size() > 1) {
             dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.retry),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            // remove the top one, and try again
-                            mISFDBEditionUrls.remove(0);
-                            ISFDBManager.search(mISFDBEditionUrls, EditBookTOCFragment.this);
-                        }
-                    });
+                new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
+                        // remove the top one, and try again
+                        mISFDBEditionUrls.remove(0);
+                        ISFDBManager.search(mISFDBEditionUrls, EditBookTOCFragment.this);
+                    }
+                });
         }
 
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                    }
-                });
+            new DialogInterface.OnClickListener() {
+                public void onClick(@NonNull final DialogInterface dialog,
+                                    final int which) {
+                    dialog.dismiss();
+                }
+            });
         dialog.show();
     }
 
     /**
      * The user approved, so add the TOC to the list on screen (still not saved to database)
      */
-    private void commitISFDBData(int tocBitMask, final @NonNull List<TOCEntry> tocEntries) {
+    private void commitISFDBData(int tocBitMask,
+                                 @NonNull final List<TOCEntry> tocEntries) {
         if (tocBitMask != 0) {
             getBookManager().getBook().putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, tocBitMask);
             populateSingleAuthorStatus(getBookManager().getBook());
@@ -470,11 +483,12 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
         return (T) mListView.getAdapter();
     }
 
-    private class TOCListAdapterForEditing extends TOCListAdapter {
+    private class TOCListAdapterForEditing
+        extends TOCListAdapter {
 
-        TOCListAdapterForEditing(final @NonNull Context context,
+        TOCListAdapterForEditing(@NonNull final Context context,
                                  @SuppressWarnings("SameParameterValue") final @LayoutRes int rowViewId,
-                                 final @NonNull ArrayList<TOCEntry> items) {
+                                 @NonNull final ArrayList<TOCEntry> items) {
             super(context, rowViewId, items);
         }
 
@@ -482,7 +496,9 @@ public class EditBookTOCFragment extends BookBaseFragment implements ISFDBResult
          * copies the selected entry into the edit fields + sets the confirm button to reflect a save (versus add)
          */
         @Override
-        public void onRowClick(final @NonNull View v, final @NonNull TOCEntry item, final int position) {
+        public void onRowClick(@NonNull final View target,
+                               @NonNull final TOCEntry item,
+                               final int position) {
             mPubDateTextView.setText(item.getFirstPublication());
             mTitleTextView.setText(item.getTitle());
             mAuthorTextView.setText(item.getAuthor().getDisplayName());

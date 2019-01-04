@@ -20,13 +20,9 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -37,9 +33,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * TODO: ReviewUpdateHandler WORK IN PROGRESS
@@ -48,17 +43,20 @@ import oauth.signpost.exception.OAuthMessageSignerException;
  */
 public class ReviewUpdateHandler extends ApiHandler {
 
-    public ReviewUpdateHandler(final @NonNull GoodreadsManager manager) {
+    public ReviewUpdateHandler(@NonNull final GoodreadsManager manager) {
+
         super(manager);
     }
 
     public void update(final long reviewId,
                        final boolean isRead,
-                       final @Nullable String readAt,
-                       final @Nullable String review,
+                       @Nullable final String readAt,
+                       @Nullable final String review,
                        final int rating)
-            throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, IOException,
-            NotAuthorizedException, BookNotFoundException, NetworkException {
+            throws IOException,
+                   NotAuthorizedException,
+                   BookNotFoundException {
+
         HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/review/" + reviewId + ".xml");
 
         //StringBuilder shelvesString = null;
@@ -92,7 +90,7 @@ public class ReviewUpdateHandler extends ApiHandler {
         }
 
         if (rating >= 0) {
-            parameters.add(new BasicNameValuePair("review[rating]", Integer.toString(rating)));
+            parameters.add(new BasicNameValuePair("review[rating]", String.valueOf(rating)));
         }
 
         post.setEntity(new UrlEncodedFormEntity(parameters, "UTF8"));

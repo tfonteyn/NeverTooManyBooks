@@ -42,7 +42,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -73,7 +72,6 @@ import java.util.concurrent.CountDownLatch;
  */
 public class CropImageActivity extends CropMonitoredActivity {
 
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_CROP_IMAGE;
     public static final String BKEY_OUTPUT_X = "outputX";
     public static final String BKEY_OUTPUT_Y = "outputY";
     public static final String REQUEST_KEY_SCALE = "scale";
@@ -92,7 +90,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     /** used to calculate free space on Shared Storage, 400kb per picture is a GUESS */
     private static final long ESTIMATED_PICTURE_SIZE = 400_000L;
 
-    private final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.JPEG; // only used with mOptionSaveUri
+    private final Bitmap.CompressFormat defaultCompressFormat = Bitmap.CompressFormat.JPEG; // only used with mOptionSaveUri
 
     /** These are various options can be specified in the intent. */
     @Nullable
@@ -282,7 +280,7 @@ public class CropImageActivity extends CropMonitoredActivity {
      */
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         // Do this first to avoid 'must be first errors'
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -349,12 +347,12 @@ public class CropImageActivity extends CropMonitoredActivity {
     }
 
     @NonNull
-    private Uri getImageUri(final @NonNull String path) {
+    private Uri getImageUri(@NonNull final String path) {
         return Uri.fromFile(new File(path));
     }
 
     @Nullable
-    private Bitmap getBitmap(final @NonNull String path) {
+    private Bitmap getBitmap(@NonNull final String path) {
         Uri uri = getImageUri(path);
         InputStream in;
         try {
@@ -408,7 +406,7 @@ public class CropImageActivity extends CropMonitoredActivity {
 
     private void onSaveClicked() {
         // TODO this code needs to change to use the decode/crop/encode single
-        // step api so that we don't require that the whole (possibly large)
+        // onProgress api so that we don't require that the whole (possibly large)
         // bitmap doesn't have to be read into memory
         if (mSaving) {
             return;
@@ -511,7 +509,7 @@ public class CropImageActivity extends CropMonitoredActivity {
         }
     }
 
-    private void saveOutput(final @NonNull Bitmap croppedImage) {
+    private void saveOutput(@NonNull final Bitmap croppedImage) {
         Bundle extras = new Bundle();
         if (mOptionSaveUri != null) {
             Intent intent = new Intent(mOptionSaveUri.toString());
@@ -519,7 +517,7 @@ public class CropImageActivity extends CropMonitoredActivity {
 
             try (OutputStream outputStream = getContentResolver().openOutputStream(mOptionSaveUri)) {
                 if (outputStream != null) {
-                    croppedImage.compress(COMPRESS_FORMAT, 75, outputStream);
+                    croppedImage.compress(defaultCompressFormat, 75, outputStream);
                 }
             } catch (IOException e) {
                 Logger.error(e);

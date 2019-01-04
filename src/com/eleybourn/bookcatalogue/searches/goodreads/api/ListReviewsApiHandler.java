@@ -22,32 +22,29 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter.BuilderContext;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter.XmlListener;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
+import androidx.annotation.NonNull;
 
 /**
  * Class to implement the reviews.list api call. It queries based on the passed parameters and returns
@@ -63,7 +60,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 
     /** Date format used for parsing 'last_update_date' */
     @SuppressLint("SimpleDateFormat")
-    static final SimpleDateFormat mUpdateDateFmt = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy");
+    private static final SimpleDateFormat mUpdateDateFmt = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy");
 
     /**
      * Listener to handle the contents of the date_updated field. We only
@@ -73,10 +70,12 @@ public class ListReviewsApiHandler extends ApiHandler {
     private final XmlListener mUpdatedListener = new XmlListener() {
         @Override
         public void onStart(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+
         }
 
         @Override
         public void onFinish(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+
             date2Sql(bc.getData(), ListReviewsFieldNames.UPDATED);
         }
     };
@@ -88,16 +87,20 @@ public class ListReviewsApiHandler extends ApiHandler {
     private final XmlListener mAddedListener = new XmlListener() {
         @Override
         public void onStart(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+
         }
 
         @Override
         public void onFinish(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+
             date2Sql(bc.getData(), ListReviewsFieldNames.ADDED);
         }
     };
     private SimpleXmlFilter mFilters;
 
-    public ListReviewsApiHandler(final @NonNull GoodreadsManager manager) throws NotAuthorizedException {
+    public ListReviewsApiHandler(@NonNull final GoodreadsManager manager)
+            throws NotAuthorizedException {
+
         super(manager);
         if (!manager.hasValidCredentials()) {
             throw new NotAuthorizedException();
@@ -266,8 +269,10 @@ public class ListReviewsApiHandler extends ApiHandler {
 
     @NonNull
     public Bundle run(final int page, final int perPage)
-            throws OAuthMessageSignerException, OAuthExpectationFailedException,
-            OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+            throws NotAuthorizedException,
+                   BookNotFoundException,
+                   IOException {
+
         @SuppressWarnings("UnusedAssignment")
         long t0 = System.currentTimeMillis();
 
@@ -286,7 +291,8 @@ public class ListReviewsApiHandler extends ApiHandler {
         Bundle results = mFilters.getData();
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this,"Found " + results.getLong(ListReviewsFieldNames.TOTAL) + " books in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info(this, "Found " + results.getLong(ListReviewsFieldNames.TOTAL) +
+                    " books in " + (System.currentTimeMillis() - t0) + "ms");
         }
 
         return results;
@@ -400,13 +406,14 @@ public class ListReviewsApiHandler extends ApiHandler {
                 .done();
     }
 
-    private void date2Sql(final @NonNull Bundle b, final @NonNull String key) {
+    private void date2Sql(@NonNull final Bundle b, @NonNull final String key) {
+
         if (b.containsKey(key)) {
             String date = b.getString(key);
             try {
                 Date d = mUpdateDateFmt.parse(date);
                 b.putString(key, DateUtils.utcSqlDateTime(d));
-            } catch (Exception e) {
+            } catch (ParseException e) {
                 b.remove(key);
             }
         }
@@ -422,6 +429,7 @@ public class ListReviewsApiHandler extends ApiHandler {
      * @author Philip Warner
      */
     public static final class ListReviewsFieldNames {
+
         public static final String START = "__start";
         public static final String END = "__end";
         public static final String TOTAL = "__total";
@@ -452,5 +460,9 @@ public class ListReviewsApiHandler extends ApiHandler {
         public static final String DB_RATING = DatabaseDefinitions.DOM_BOOK_RATING.name;
         public static final String DB_READ_START = DatabaseDefinitions.DOM_BOOK_READ_START.name;
         public static final String DB_READ_END = DatabaseDefinitions.DOM_BOOK_READ_END.name;
+
+        private ListReviewsFieldNames() {
+
+        }
     }
 }

@@ -121,8 +121,8 @@ public class SearchManager {
                  * If not, finish and send results back with {@link SearchManager#sendResults}
                  */
                 @Override
-                public void onTaskFinished(final @NonNull TaskManager manager,
-                                           final @NonNull ManagedTask task) {
+                public void onTaskFinished(@NonNull final TaskManager manager,
+                                           @NonNull final ManagedTask task) {
                     // display final message from task.
                     onUserMessage(task.getFinalMessage());
 
@@ -158,14 +158,14 @@ public class SearchManager {
                  * {@link TaskManager.TaskProgressMessage} ignored
                  */
                 @Override
-                public void onProgress(final int count, final int max, final @NonNull String message) {
+                public void onProgress(final int count, final int max, @NonNull final String message) {
                 }
 
                 /**
                  * {@link TaskManager.TaskUserMessage} ignored
                  */
                 @Override
-                public void onUserMessage(final @NonNull String message) {
+                public void onUserMessage(@NonNull final String message) {
                 }
 
             };
@@ -176,8 +176,8 @@ public class SearchManager {
      * @param taskManager           TaskManager to use
      * @param searchManagerListener to send results to
      */
-    public SearchManager(final @NonNull TaskManager taskManager,
-                         final @NonNull SearchManagerListener searchManagerListener) {
+    public SearchManager(@NonNull final TaskManager taskManager,
+                         @NonNull final SearchManagerListener searchManagerListener) {
 
         /* Controller instance for this specific SearchManager */
         SearchManagerController controller = new SearchManagerController() {
@@ -214,9 +214,9 @@ public class SearchManager {
      * @param fetchThumbnail whether to fetch thumbnails
      */
     public void search(final int searchFlags,
-                       final @NonNull String author,
-                       final @NonNull String title,
-                       final @NonNull String isbn,
+                       @NonNull final String author,
+                       @NonNull final String title,
+                       @NonNull final String isbn,
                        final boolean fetchThumbnail) {
         if ((searchFlags & SearchSites.Site.SEARCH_ALL) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
@@ -341,7 +341,7 @@ public class SearchManager {
      * @param key      Key of data
      * @param bookData Source Bundle
      */
-    private void accumulateStringData(final @NonNull String key, final @NonNull Bundle bookData) {
+    private void accumulateStringData(@NonNull final String key, @NonNull final Bundle bookData) {
         Object dataToAdd = bookData.get(key);
         if (dataToAdd == null || dataToAdd.toString().trim().isEmpty()) {
             return;
@@ -352,7 +352,7 @@ public class SearchManager {
             // just use it
             mBookData.putString(key, dataToAdd.toString());
             if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                Logger.info(this, "copied: key=" + key + ", value=`" + dataToAdd + "`");
+                Logger.info(this, "copied: key=" + key + ", value=`" + dataToAdd + '`');
             }
 
 //        } else if (UniqueId.BKEY_THUMBNAIL_FILE_SPEC_STRING_LIST.equals(key)) {
@@ -381,7 +381,7 @@ public class SearchManager {
      * If so, then check if the previous date was actually valid at all.
      * if not, use new date.
      */
-    private void accumulateDates(final @NonNull String key, final @NonNull Bundle bookData) {
+    private void accumulateDates(@NonNull final String key, @NonNull final Bundle bookData) {
         String currentDateHeld = mBookData.getString(key);
         String dataToAdd = bookData.getString(key);
         // for debug message only
@@ -422,8 +422,8 @@ public class SearchManager {
      * @param bookData Source bundle with a ParcelableArrayList for the key
      * @param <T>      type of items in the ArrayList
      */
-    private <T extends Parcelable> void accumulateParcelableArrayList(final @NonNull String key,
-                                                                      final @NonNull Bundle bookData) {
+    private <T extends Parcelable> void accumulateParcelableArrayList(@NonNull final String key,
+                                                                      @NonNull final Bundle bookData) {
         ArrayList<T> dataToAdd = bookData.getParcelableArrayList(key);
         if (dataToAdd == null || dataToAdd.isEmpty()) {
             return;
@@ -434,13 +434,13 @@ public class SearchManager {
             // just copy
             dest = dataToAdd;
             if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                Logger.info(this, "copied: key=" + key + ", value=`" + dataToAdd + "`");
+                Logger.info(this, "copied: key=" + key + ", value=`" + dataToAdd + '`');
             }
         } else {
             // append
             dest.addAll(dataToAdd);
             if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                Logger.info(this, "appended: key=" + key + ", value=`" + dataToAdd + "`");
+                Logger.info(this, "appended: key=" + key + ", value=`" + dataToAdd + '`');
             }
         }
         mBookData.putParcelableArrayList(key, dest);
@@ -525,10 +525,10 @@ public class SearchManager {
         // All done, Pass the data back
         mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<SearchManagerListener>() {
                     @Override
-                    public boolean deliver(final @NonNull SearchManagerListener listener) {
+                    public boolean deliver(@NonNull final SearchManagerListener listener) {
                         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                             Logger.info(SearchManager.this, "Delivering to SearchListener=" + listener +
-                                    "|title=`" + mBookData.getString(UniqueId.KEY_TITLE) + "`");
+                                    "|title=`" + mBookData.getString(UniqueId.KEY_TITLE) + '`');
                         }
                         return listener.onSearchFinished(mCancelledFlg, mBookData);
                     }
@@ -583,7 +583,7 @@ public class SearchManager {
      *
      * @param site to search
      */
-    private boolean startOneSearch(final @NonNull SearchSites.Site site) {
+    private boolean startOneSearch(@NonNull final SearchSites.Site site) {
         if (mCancelledFlg) {
             return false;
         }
@@ -615,7 +615,7 @@ public class SearchManager {
      *
      * @see TaskManager.TaskManagerListener#onTaskFinished
      */
-    private void handleSearchTaskFinished(final @NonNull ManagedSearchTask managedSearchTask) {
+    private void handleSearchTaskFinished(@NonNull final ManagedSearchTask managedSearchTask) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, "ManagedSearchTask `" + managedSearchTask.getName() + "` finished");
         }
@@ -688,6 +688,6 @@ public class SearchManager {
      * @author Philip Warner
      */
     public interface SearchManagerListener {
-        boolean onSearchFinished(final boolean wasCancelled, final @NonNull Bundle bookData);
+        boolean onSearchFinished(final boolean wasCancelled, @NonNull final Bundle bookData);
     }
 }

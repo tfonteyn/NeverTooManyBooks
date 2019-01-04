@@ -1,5 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+ define entities that can be used inside of other string (not possible with standard Android resources
+ e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
+ cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
+<!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
+
 <resources>
+    <!-- ========== not in use ========== -->
+
+
+    <!-- ========== in use ========== -->
+
     <string name="title_add_book">Dodaj książkę</string>
     <string name="menu_add_book">Dodaj książkę…</string>
     <string name="menu_delete_book">Usuń książkę</string>
@@ -53,7 +63,7 @@
     <string name="menu_edit_book_loan">Wypożycz książkę</string>
     <string name="error_unknown">Wystąpił nieznany błąd</string>
     <string name="lbl_notes">Notatki</string>
-    <string name="loaned_to">Ta książka została wypożyczona:</string>
+    <string name="loaned_to_long">Ta książka została wypożyczona:</string>
     <string name="loaned_to_nobody">Nikt</string>
     <string name="loan_to">Wypożycz książkę:</string>
     <string name="loan_returned">Zwrócona</string>
@@ -83,7 +93,7 @@
     <string name="lbl_is_anthology">Czy ta książka jest antologią?</string>
     <string name="menu_populate_toc">Automatycznie obsadź pozycje antologii(EKSPERYMENTALNIE)</string>
     <string name="error_automatic_toc_population_failed">Automatyczne obsadzanie pozycji antologii nie powiodło się</string>
-    <string name="anthology">Antologia</string>
+    <string name="lbl_anthology">Antologia</string>
     <string name="toc_confirm">Potwierdź, czy te pozycje antologii są (zasadniczo) poprawne</string>
     <string name="menu_cover_add_from_camera">Z aparatu…</string>
     <string name="title_cover">Okładka</string>
@@ -133,7 +143,7 @@
     <string name="warning_cover_not_set">Okładka nie jest ustawiona</string>
     <string name="warning_cover_corrupt">Okładka jest uszkodzona</string>
     <string name="title_cover_detail">Szczegóły okładki</string>
-    <string name="title_select_picture">Wybierz zdjęcie</string>
+    <string name="title_select_image">Wybierz zdjęcie</string>
     <string name="btn_set_authors">Przypisz autorów…</string>
     <string name="and_others">i inni</string>
     <string name="btn_set_series">Ustaw serię (tom)…</string>
@@ -196,7 +206,7 @@
     <string name="btn_disable_message">Wyłącz komunikat.</string>
     <string name="lt_reset_messages_info">Od czasu do czasu program może wyświetlać komunikaty z LibraryThing. Naciśnij przycisk poniżej, by przywrócić komunikaty, które były wyłączone.</string>
     <string name="btn_reset">Reset</string>
-    <string name="send_info_text">Naciśnij przycisk poniżej, by zebrać informacje o problemach i błędach i wysłać je do programistów. Zostanie wykonana kopia danych i logów. Jeśli nie chesz, by te dane były wysyłane, usuń je z przygotowanej wiadomości przed jej wysłaniem.</string>
+    <string name="debug_send_info_text">Naciśnij przycisk poniżej, by zebrać informacje o problemach i błędach i wysłać je do programistów. Zostanie wykonana kopia danych i logów. Jeśli nie chesz, by te dane były wysyłane, usuń je z przygotowanej wiadomości przed jej wysłaniem.</string>
     <string name="send_info">Wyślij</string>
     <string name="info_cleanup_files_text">Pliki pomocnicze możliwe do usunięcia zajmują %s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij \'Wyślij \' najpierw.</string>
     <string name="cleanup_files">Usuwanie plików</string>
@@ -209,8 +219,27 @@
     <string name="warning_cannot_edit_system">Nie możesz edytować danych systemowych</string>
     <string name="lt_incorrect_key">Weryfikacja klucza deweloperskiego LibraryThing się nie powiodła - jest niepoprawny lub nie masz połączenia z siecią</string>
     <string name="lt_correct_key">Twój klucz deweloperski LibraryThing jest poprawny.</string>
-    <string name="title_reorder">a|A|an|An|the|The</string>
+    <string name="lbl_x_pages">%1$s stron</string>
+    <string name="lbl_by_author">przez</string>
+    <string name="lbl_location_long">Lokalizacja książki</string>
+    <string name="lbl_publishing">"Publikacyjny "</string>
+    <string name="pg_general">Ogólne</string>
+    <string name="progress_msg_cleaning_database">Czyszczenie bazy danych…</string>
+    <string name="loaned_to_short">→</string>
+    <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
-    <string name="preferred_language_x">%1$s (%2$s)</string>
+    <string name="lbl_year">Rok</string>
+    <string name="gr_tq_legacy_task">Przestarzałe operacje</string>
+    <string name="lbl_update_year">Zaktualizuj rok</string>
+    <string name="lbl_update_month">Zaktualizuj miesiąc</string>
+    <string name="lbl_update_day">Dzień aktualizacji</string>
+    <string name="lbl_unread">"Nepřečtený "</string>
+    <string name="loan_book_available">Dostępny</string>
+    <string name="menu_add_style">Dodaj styl</string>
+    <string name="lbl_credentials">Kwalifikacje</string>
+    <string name="menu_customize_ellipsis">Dostosuj…</string>
+    <string name="menu_edit">Edytować…</string>
+    <string name="starting">Startowy</string>
 
 </resources>

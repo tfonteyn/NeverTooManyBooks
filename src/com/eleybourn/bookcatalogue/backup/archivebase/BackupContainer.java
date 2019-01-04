@@ -46,16 +46,22 @@ public interface BackupContainer {
     BackupWriter newWriter() throws IOException;
 
     /**
-     * @return the version of the underlying archiver
+     * @return the version of the underlying archiver used to write / required to read archives
      */
     @SuppressWarnings("SameReturnValue")
     int getVersion();
 
     /**
+     * @return the *minimum* version of the archive that the current reader can still handle.
+     */
+    @SuppressWarnings("SameReturnValue")
+    int canReadVersion();
+
+    /**
      * Checks if the current archive looks valid. Does not need to be
      * exhaustive. Do not call if an archive is being written.
      *
-     * @return <tt>true</tt>if valid
+     * @return <tt>true</tt> if valid
      */
     boolean isValid();
 }

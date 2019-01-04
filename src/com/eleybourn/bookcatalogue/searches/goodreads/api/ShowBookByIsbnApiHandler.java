@@ -21,12 +21,10 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
@@ -34,9 +32,7 @@ import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
+import androidx.annotation.NonNull;
 
 /**
  * Class to call the search.books api (using an ISBN).
@@ -46,7 +42,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
 
 
-    public ShowBookByIsbnApiHandler(final @NonNull GoodreadsManager manager) {
+    public ShowBookByIsbnApiHandler(@NonNull final GoodreadsManager manager) {
         // TODO: If goodreads fix signed book.show_by_isbn requests, change false to true...
         super(manager, true);
     }
@@ -57,9 +53,10 @@ public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
      * @return the array of GoodreadsWork objects.
      */
     @NonNull
-    public Bundle get(final @NonNull String isbn, final boolean fetchThumbnail) throws
-            OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException,
-            NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+    public Bundle get(@NonNull final String isbn, final boolean fetchThumbnail)
+            throws NotAuthorizedException,
+                   BookNotFoundException,
+                   IOException {
 
         if (!IsbnUtils.isValid(isbn)) {
             throw new RTE.IsbnInvalidException(isbn);

@@ -7,17 +7,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 /**
  * Class to handle details of specific scanner interfaces and return a
@@ -25,16 +26,12 @@ import java.util.Map;
  *
  * @author pjw
  */
-public class ScannerManager {
-    private static final String TAG = "ScannerManager.";
-
-    /** Preference key */
-    public static final String PREF_PREFERRED_SCANNER = TAG + "PreferredScanner";
+public final class ScannerManager {
 
     /** Unique IDs to associate with each supported scanner intent */
-    public static final int SCANNER_ZXING_COMPATIBLE = 1;
-    public static final int SCANNER_PIC2SHOP = 2;
-    public static final int SCANNER_ZXING = 3;
+    private static final int SCANNER_ZXING_COMPATIBLE = 0;
+    private static final int SCANNER_PIC2SHOP = 1;
+    private static final int SCANNER_ZXING = 2;
 
     /** Collection of ScannerFactory objects */
     @SuppressLint("UseSparseArrays")
@@ -53,8 +50,8 @@ public class ScannerManager {
             }
 
             @Override
-            public boolean isIntentAvailable(final @NonNull Context context) {
-                return ZxingScanner.isIntentAvailable(context,true);
+            public boolean isIntentAvailable(@NonNull final Context context) {
+                return ZxingScanner.isIntentAvailable(context, true);
             }
         });
 
@@ -67,7 +64,7 @@ public class ScannerManager {
             }
 
             @Override
-            public boolean isIntentAvailable(final @NonNull Context context) {
+            public boolean isIntentAvailable(@NonNull final Context context) {
                 return Pic2ShopScanner.isIntentAvailable(context);
             }
         });
@@ -81,10 +78,13 @@ public class ScannerManager {
             }
 
             @Override
-            public boolean isIntentAvailable(final @NonNull Context context) {
-                return ZxingScanner.isIntentAvailable(context,false);
+            public boolean isIntentAvailable(@NonNull final Context context) {
+                return ZxingScanner.isIntentAvailable(context, false);
             }
         });
+    }
+
+    private ScannerManager() {
     }
 
     /**
@@ -93,9 +93,9 @@ public class ScannerManager {
      * @return A Scanner, or null when none found
      */
     @Nullable
-    public static Scanner getScanner(final @NonNull Activity activity) {
+    public static Scanner getScanner(@NonNull final Activity activity) {
         // Find out what the user prefers if any
-        int prefScanner = BookCatalogueApp.getIntPreference(PREF_PREFERRED_SCANNER, SCANNER_ZXING_COMPATIBLE);
+        int prefScanner = Prefs.getInt(R.string.pk_scanning_preferred_scanner, SCANNER_ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
         ScannerFactory psf = myScannerFactories.get(prefScanner);
@@ -115,8 +115,10 @@ public class ScannerManager {
     /**
      * We don't have a scanner setup or it was bad. Prompt the user for installing one.
      */
-    public static void promptForScannerInstallAndFinish(final @NonNull Activity activity, final boolean noScanner) {
-        int messageId = (noScanner ? R.string.info_install_scanner : R.string.warning_bad_scanner);
+    public static void promptForScannerInstallAndFinish(@NonNull final Activity activity, final boolean noScanner) {
+        int messageId = (noScanner ?
+                R.string.info_install_scanner
+                : R.string.warning_bad_scanner);
 
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.title_install_scan)
@@ -130,7 +132,7 @@ public class ScannerManager {
                 "ZXing",
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
-                        installScanner(activity,"market://details?id=com.google.zxing.client.android");
+                        installScanner(activity, "market://details?id=com.google.zxing.client.android");
                     }
                 });
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
@@ -138,7 +140,7 @@ public class ScannerManager {
                 "pic2shop",
                 new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int which) {
-                        installScanner(activity,"market://details?id=com.visionsmarts.pic2shop");
+                        installScanner(activity, "market://details?id=com.visionsmarts.pic2shop");
                     }
                 });
 
@@ -154,7 +156,7 @@ public class ScannerManager {
         dialog.show();
     }
 
-    private static void installScanner(final @NonNull Activity activity, final @NonNull String uri) {
+    private static void installScanner(@NonNull final Activity activity, @NonNull final String uri) {
         try {
             Intent marketIntent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse(uri));
@@ -174,12 +176,13 @@ public class ScannerManager {
      * @author pjw
      */
     private interface ScannerFactory {
+
         /** Create a new scanner of the related type */
         @NonNull
         Scanner newInstance();
 
         /** Check if this scanner is available */
-        boolean isIntentAvailable(final @NonNull Context context);
+        boolean isIntentAvailable(@NonNull final Context context);
     }
 
 }

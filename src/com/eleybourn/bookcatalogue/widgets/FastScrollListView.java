@@ -50,7 +50,7 @@ public class FastScrollListView extends ListView {
     @Nullable
     private final OnScrollListener mOnScrollDispatcher = new OnScrollListener() {
         @Override
-        public void onScroll(final @NonNull AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
+        public void onScroll(@NonNull final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
             if (mScroller != null) {
                 mScroller.onScroll(firstVisibleItem, visibleItemCount, totalItemCount);
             }
@@ -60,7 +60,7 @@ public class FastScrollListView extends ListView {
         }
 
         @Override
-        public void onScrollStateChanged(final @NonNull AbsListView view, final int scrollState) {
+        public void onScrollStateChanged(@NonNull final AbsListView view, final int scrollState) {
             if (mOnScrollListener != null) {
                 mOnScrollListener.onScrollStateChanged(view, scrollState);
             }
@@ -71,15 +71,15 @@ public class FastScrollListView extends ListView {
         super.setOnScrollListener(mOnScrollDispatcher);
     }
 
-    public FastScrollListView(final @NonNull Context context) {
+    public FastScrollListView(@NonNull final Context context) {
         super(context);
     }
 
-    public FastScrollListView(final @NonNull Context context, final @NonNull AttributeSet attrs) {
+    public FastScrollListView(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public FastScrollListView(final @NonNull Context context, final @NonNull AttributeSet attrs, final int defStyle) {
+    public FastScrollListView(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -104,7 +104,7 @@ public class FastScrollListView extends ListView {
      */
     @Override
     @CallSuper
-    public boolean onInterceptTouchEvent(final @NonNull MotionEvent ev) {
+    public boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
         return mScroller != null && mScroller.onInterceptTouchEvent(ev) || super.onInterceptTouchEvent(ev);
 
     }
@@ -126,7 +126,7 @@ public class FastScrollListView extends ListView {
      */
     @Override
     @CallSuper
-    public boolean onTouchEvent(final @NonNull MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull final MotionEvent ev) {
         return mScroller != null && mScroller.onTouchEvent(ev) || super.onTouchEvent(ev);
 
     }
@@ -136,7 +136,7 @@ public class FastScrollListView extends ListView {
      */
     @Override
     @CallSuper
-    public void draw(final @NonNull Canvas canvas) {
+    public void draw(@NonNull final Canvas canvas) {
         super.draw(canvas);
         if (mScroller != null) {
             mScroller.draw(canvas);

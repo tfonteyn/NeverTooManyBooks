@@ -21,9 +21,6 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.database.AbstractCursor;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -35,6 +32,10 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map.Entry;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Yet Another Rabbit Burrow ("YARB" -- did I invent a new acronym?). What led to this?
@@ -72,6 +73,7 @@ import java.util.Map.Entry;
  * @author Philip Warner
  */
 public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupportProvider {
+
     /** Number of rows to return in each cursor. No tuning has been done to pick this number. */
     private final static int CURSOR_SIZE = 20;
     /** Size of MRU list. Not based on tuning; just set to more than 2*3+1. */
@@ -101,12 +103,13 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
      *
      * @param builder The BooklistBuilder that created the table to which this cursor refers
      */
-    BooklistPseudoCursor(final @NonNull BooklistBuilder builder) {
+    BooklistPseudoCursor(@NonNull final BooklistBuilder builder) {
         mBuilder = builder;
         mCursors = new Hashtable<>();
         mMruList = new int[MRU_LIST_SIZE];
-        for (int i = 0; i < MRU_LIST_SIZE; i++)
+        for (int i = 0; i < MRU_LIST_SIZE; i++) {
             mMruList[i] = -1;
+        }
 
         Tracker.handleEvent(this, Tracker.States.Running, "Created " + this);
     }
@@ -124,8 +127,9 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
      */
     @NonNull
     public BooklistRowView getCursorRow() {
-        if (mRowView == null)
+        if (mRowView == null) {
             mRowView = new BooklistRowView(this, mBuilder);
+        }
         return mRowView;
     }
 
@@ -143,8 +147,9 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
      */
     @Override
     public boolean onMove(final int oldPosition, final int newPosition) {
-        if (newPosition < 0 || newPosition >= getCount())
+        if (newPosition < 0 || newPosition >= getCount()) {
             return false;
+        }
         // Get the ID we use for the cursor at the new position
         Integer cursorId = newPosition / CURSOR_SIZE;
         // Determine the actual start position
@@ -169,8 +174,9 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
                 for (int i = 0; i < MRU_LIST_SIZE; i++) {
                     if (mMruList[i] == cursorId) {
                         // TODO (4.1+): Remove Sanity check for com.eleybourn.bookcatalogue.debug; should just 'break' from loop after setting oldPos
-                        if (oldPos >= 0)
+                        if (oldPos >= 0) {
                             throw new RuntimeException("Cursor appears twice in MRU list");
+                        }
                         oldPos = i;
                     }
                 }
@@ -238,7 +244,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
         // Purge them
         for (Integer i : toPurge) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
-                Logger.info(this,"Removing cursor at " + i);
+                Logger.info(this, "Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
             c.close();
@@ -248,7 +254,7 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
     /**
      * Check if the passed cursor ID is in the MRU list
      */
-    private boolean checkMru(final @NonNull Integer id) {
+    private boolean checkMru(@NonNull final Integer id) {
         for (int i : mMruList) {
             if (id == i) {
                 return true;
@@ -347,8 +353,9 @@ public class BooklistPseudoCursor extends AbstractCursor implements BooklistSupp
 
         mActiveCursor = null;
 
-        for (int i = 0; i < mMruList.length; i++)
+        for (int i = 0; i < mMruList.length; i++) {
             mMruList[i] = -1;
+        }
     }
 
     /**

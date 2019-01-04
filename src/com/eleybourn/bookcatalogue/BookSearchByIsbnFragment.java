@@ -4,12 +4,6 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.view.LayoutInflater;
@@ -28,6 +22,13 @@ import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.SoundManager;
 
 import java.util.Objects;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 
 // Try stopping the soft input keyboard to pop up at all cost when entering isbn....
 
@@ -61,34 +62,37 @@ import java.util.Objects;
 //  getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 
-public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
+public class BookSearchByIsbnFragment
+    extends BookSearchBaseFragment {
 
     private static final String BKEY_SCANNER_STARTED = "ScannerStarted";
 
-    protected boolean scanMode = false;
+    private static final int REQ_IMAGE_FROM_SCANNER = 0;
 
-    protected boolean mScannerStarted = false;
+    private boolean scanMode = false;
+
+    private boolean mScannerStarted = false;
     /**
      * Options to indicate the Activity should not 'finish()' because an alert is being displayed.
      * The alert will call finish().
      */
-    protected boolean mDisplayingAlert = false;
+    private boolean mDisplayingAlert = false;
 
     /** The preferred (or found) scanner */
     @Nullable
-    protected Scanner mScanner;
+    private Scanner mScanner;
     /** */
     @Nullable
-    protected EditText mIsbnView;
+    private EditText mIsbnView;
     @NonNull
-    protected String mIsbnSearchText = "";
+    private String mIsbnSearchText = "";
     @Nullable
     private CompoundButton mAllowAsinCb;
 
     @Override
-    public View onCreateView(final @NonNull LayoutInflater inflater,
-                             final @Nullable ViewGroup container,
-                             final @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
 
         //noinspection ConstantConditions
         scanMode = BookSearchActivity.BY_SCAN.equals(getArguments().getString(BookSearchActivity.REQUEST_BKEY_BY));
@@ -139,7 +143,7 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
                     // let's scan....
                     try {
                         startScannerActivity();
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                         // we had a scanner setup, but something went wrong starting it.
                         ScannerManager.promptForScannerInstallAndFinish(mActivity, false);
                         // Prevent our activity to finish.
@@ -218,7 +222,8 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
         //noinspection ConstantConditions
         mAllowAsinCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
                 if (isChecked) {
                     mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                     //noinspection ConstantConditions
@@ -243,7 +248,8 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
      * @param id   of key
      * @param text which the key will 'generate' upon being pressed.
      */
-    private void initKeypadButton(final @IdRes int id, final @NonNull String text) {
+    private void initKeypadButton(final @IdRes int id,
+                                  @NonNull final String text) {
         //noinspection ConstantConditions
         getView().findViewById(id).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -255,7 +261,7 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
     /**
      * Handle character insertion at cursor position in EditText
      */
-    private void handleIsbnKey(final @NonNull String key) {
+    private void handleIsbnKey(@NonNull final String key) {
         //noinspection ConstantConditions
         int start = mIsbnView.getSelectionStart();
         int end = mIsbnView.getSelectionEnd();
@@ -266,7 +272,7 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
     /**
      * Search with ISBN
      */
-    protected void prepareSearch() {
+    private void prepareSearch() {
         // sanity check
         if (mIsbnSearchText.isEmpty()) {
             return;
@@ -323,39 +329,44 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
      */
     private void isbnAlreadyPresent(final long existingId) {
         AlertDialog dialog = new AlertDialog.Builder(mActivity)
-                .setMessage(R.string.warning_duplicate_book_message)
-                .setTitle(R.string.title_duplicate_book)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .create();
+            .setMessage(R.string.warning_duplicate_book_message)
+            .setTitle(R.string.title_duplicate_book)
+            .setIconAttribute(android.R.attr.alertDialogIcon)
+            .create();
 
         // User wants to add regardless, doSearch get details and eventually doSearch to edit
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.btn_confirm_add),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        startSearch();
-                    }
-                });
+            new DialogInterface.OnClickListener() {
+                public void onClick(final DialogInterface dialog,
+                                    final int which) {
+                    startSearch();
+                }
+            });
 
         // User wants to review the existing book, doSearch to edit
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit_book),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        EditBookActivity.startActivityForResult(BookSearchByIsbnFragment.this, /* 9e2c0b04-8217-4b49-9937-96d160104265 */
-                                existingId, EditBookFragment.TAB_EDIT);
-                    }
-                });
+            new DialogInterface.OnClickListener() {
+                public void onClick(final DialogInterface dialog,
+                                    final int which) {
+                    Intent intent = new Intent(BookSearchByIsbnFragment.this.getContext(), EditBookActivity.class);
+                    intent.putExtra(UniqueId.KEY_ID, existingId);
+                    intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
+                    startActivityForResult(intent, REQ_BOOK_EDIT);
+                }
+            });
 
         // User aborts this isbn
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        // reset the now-discarded details
-                        mIsbnSearchText = "";
-                        if (scanMode) {
-                            startScannerActivity();
-                        }
+            new DialogInterface.OnClickListener() {
+                public void onClick(final DialogInterface dialog,
+                                    final int which) {
+                    // reset the now-discarded details
+                    mIsbnSearchText = "";
+                    if (scanMode) {
+                        startScannerActivity();
                     }
-                });
+                }
+            });
         dialog.show();
     }
 
@@ -391,14 +402,15 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
      * The details will get sent to {@link EditBookActivity}
      */
     @SuppressWarnings("SameReturnValue")
-    public boolean onSearchFinished(final boolean wasCancelled, final @NonNull Bundle bookData) {
+    public boolean onSearchFinished(final boolean wasCancelled,
+                                    @NonNull final Bundle bookData) {
         Tracker.handleEvent(this, Tracker.States.Running, "onSearchFinished|SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {
                 mActivity.getTaskManager().sendHeaderTaskProgressMessage(getString(R.string.progress_msg_adding_book));
                 Intent intent = new Intent(mActivity, EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* 341ace23-c2c8-42d6-a71e-909a3a19ba99 */
+                startActivityForResult(intent, REQ_BOOK_EDIT);
 
                 // Clear the data entry fields ready for the next one (scanMode has no view)
                 if (mIsbnView != null) {
@@ -429,13 +441,13 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
 
         if (!mScannerStarted) {
             mScannerStarted = true;
-            mScanner.startActivityForResult(mActivity, Scanner.REQUEST_CODE); /* 4f410d34-dc9c-4ee2-903e-79d69a328517, c2c28575-5327-40c6-827a-c7973bd24d12 */
+            mScanner.startActivityForResult(mActivity, REQ_IMAGE_FROM_SCANNER);
         }
     }
 
     @Override
     @CallSuper
-    public void onSaveInstanceState(final @NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this, outState);
 
         outState.putString(UniqueId.KEY_BOOK_ISBN, mIsbnSearchText);
@@ -447,10 +459,12 @@ public class BookSearchByIsbnFragment extends BookSearchBaseFragment {
 
     @Override
     @CallSuper
-    public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
-            case Scanner.REQUEST_CODE: {/* 4f410d34-dc9c-4ee2-903e-79d69a328517, c2c28575-5327-40c6-827a-c7973bd24d12*/
+            case REQ_IMAGE_FROM_SCANNER: {
                 mScannerStarted = false;
                 switch (resultCode) {
                     case Activity.RESULT_OK: {

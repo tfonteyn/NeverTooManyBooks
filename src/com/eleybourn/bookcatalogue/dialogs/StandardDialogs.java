@@ -28,6 +28,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
+
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.fragment.app.FragmentActivity;
 import androidx.appcompat.app.AlertDialog;
@@ -50,13 +52,16 @@ import java.util.List;
  * TODO: Snackbar: needs styling
  * TODO: Snackbar: uses getDecorView for now so it's always at the bottom of the screen.
  */
-public class StandardDialogs {
+public final class StandardDialogs {
+
+    private StandardDialogs() {
+    }
 
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
-    public static void showUserMessage(final @NonNull Activity activity, final @StringRes int message) {
-        if (0 == BookCatalogueApp.getIntPreference(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
+    public static void showUserMessage(@NonNull final Activity activity, @StringRes final int message) {
+        if (0 == Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
@@ -66,8 +71,8 @@ public class StandardDialogs {
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
-    public static void showUserMessage(final @NonNull Activity activity, final @NonNull String message) {
-        if (0 == BookCatalogueApp.getIntPreference(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
+    public static void showUserMessage(@NonNull final Activity activity, @NonNull final String message) {
+        if (0 == Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
@@ -85,7 +90,7 @@ public class StandardDialogs {
         Toast.makeText(BookCatalogueApp.getAppContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    public static void showUserMessage(final @StringRes int message) {
+    public static void showUserMessage(@StringRes final int message) {
         Toast.makeText(BookCatalogueApp.getAppContext(), message, Toast.LENGTH_LONG).show();
     }
     /* ========================================================================================== */
@@ -93,8 +98,8 @@ public class StandardDialogs {
     /**
      * Show a dialog asking if unsaved edits should be ignored. Finish activity if so.
      */
-    public static void showConfirmUnsavedEditsDialog(final @NonNull Activity activity,
-                                                     final @Nullable Runnable onConfirm) {
+    public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity,
+                                                     @Nullable final Runnable onConfirm) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.lbl_details_have_changed)
                 .setMessage(R.string.warning_unsaved_changes)
@@ -105,7 +110,7 @@ public class StandardDialogs {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(R.string.btn_confirm_exit),
                 new AlertDialog.OnClickListener() {
                     @Override
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
                         if (onConfirm != null) {
                             onConfirm.run();
@@ -119,7 +124,7 @@ public class StandardDialogs {
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL, activity.getString(R.string.btn_continue_editing),
                 new AlertDialog.OnClickListener() {
                     @Override
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -127,10 +132,10 @@ public class StandardDialogs {
         dialog.show();
     }
 
-    public static void deleteSeriesAlert(final @NonNull Context context,
-                                         final @NonNull CatalogueDBAdapter db,
-                                         final @NonNull Series series,
-                                         final @NonNull Runnable onDeleted) {
+    public static void deleteSeriesAlert(@NonNull final Context context,
+                                         @NonNull final CatalogueDBAdapter db,
+                                         @NonNull final Series series,
+                                         @NonNull final Runnable onDeleted) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage(String.format(context.getString(R.string.warning_really_delete_series), series.name))
@@ -140,7 +145,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         db.deleteSeries(series.id);
                         dialog.dismiss();
                         onDeleted.run();
@@ -149,7 +154,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -161,12 +166,12 @@ public class StandardDialogs {
      * @return the resource id for a string in case of error, 0 for ok
      */
     @StringRes
-    public static int deleteBookAlert(final @NonNull Context context,
-                                      final @NonNull CatalogueDBAdapter db,
+    public static int deleteBookAlert(@NonNull final Context context,
+                                      @NonNull final CatalogueDBAdapter db,
                                       final long bookId,
-                                      final @NonNull Runnable onDeleted) {
+                                      @NonNull final Runnable onDeleted) {
 
-        String UNKNOWN = "<" + BookCatalogueApp.getResourceString(R.string.unknown_uc) + ">";
+        String UNKNOWN = '<' + BookCatalogueApp.getResourceString(R.string.unknown_uc) + '>';
         List<Author> authorList = db.getBookAuthorList(bookId);
 
         // get the book title
@@ -192,7 +197,7 @@ public class StandardDialogs {
                 authors.append(", ").append(authorList.get(i).getDisplayName());
             }
             if (authorList.size() > 1) {
-                authors.append(" ").append(context.getString(R.string.list_and)).append(" ").append(authorList.get(authorList.size() - 1).getDisplayName());
+                authors.append(' ').append(context.getString(R.string.list_and)).append(' ').append(authorList.get(authorList.size() - 1).getDisplayName());
             }
         }
 
@@ -204,7 +209,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         db.deleteBook(bookId);
                         dialog.dismiss();
                         onDeleted.run();
@@ -213,7 +218,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -226,7 +231,7 @@ public class StandardDialogs {
      * Display a dialog warning the user that Goodreads authentication is required;
      * gives the options: 'request now', 'more info' or 'cancel'.
      */
-    public static void goodreadsAuthAlert(final @NonNull FragmentActivity context) {
+    public static void goodreadsAuthAlert(@NonNull final FragmentActivity context) {
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.gr_title_auth_access)
                 .setMessage(R.string.gr_action_cannot_be_completed)
@@ -235,7 +240,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
                         GoodreadsRegisterActivity.requestAuthorizationInBackground(context);
                     }
@@ -243,7 +248,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.btn_tell_me_more),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
                         Intent i = new Intent(context, GoodreadsRegisterActivity.class);
                         context.startActivity(i);
@@ -252,7 +257,7 @@ public class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final @NonNull DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -261,8 +266,8 @@ public class StandardDialogs {
 
     }
 
-    public static void confirmSaveDuplicateBook(final @NonNull Context context,
-                                                final @NonNull AlertDialogAction nextStep) {
+    public static void confirmSaveDuplicateBook(@NonNull final Context context,
+                                                @NonNull final AlertDialogAction nextStep) {
         /*
          * If it exists, show a dialog and use it to perform the
          * next action, according to the users choice.
@@ -290,9 +295,6 @@ public class StandardDialogs {
         dialog.show();
     }
 
-    /**
-     * TODO: nice idea, but underused.;  use this wherever AlertDialog is used
-     */
     public interface AlertDialogAction {
         void onPositive();
 
@@ -311,11 +313,11 @@ public class StandardDialogs {
      */
     public static class BasicDialog extends AppCompatDialog {
 
-        public BasicDialog(final @NonNull Context context) {
+        public BasicDialog(@NonNull final Context context) {
             this(context, ThemeUtils.getDialogThemeResId());
         }
 
-        public BasicDialog(final @NonNull Context context, @StyleRes final int theme) {
+        public BasicDialog(@NonNull final Context context, @StyleRes final int theme) {
             super(context, theme);
 
         }

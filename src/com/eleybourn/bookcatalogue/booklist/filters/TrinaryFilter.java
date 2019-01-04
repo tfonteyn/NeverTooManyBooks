@@ -22,29 +22,31 @@ public class TrinaryFilter extends ListOfIntegerValuesProperty implements Filter
     public static final int FILTER_NO = 0;
     public static final int FILTER_YES = 1;
 
+    @NonNull
     private TableDefinition table;
+    @NonNull
     private DomainDefinition domain;
 
     /**
      * @param list list with options. must be 4 elements, representing
      *             'true', 'false', 'null' and 'use default'
      */
-    public TrinaryFilter(final @StringRes int nameResourceId,
-                         final @NonNull PropertyGroup group,
-                         final @NonNull Integer defaultValue,
-                         final @NonNull @Size(4) ItemList<Integer> list) {
+    public TrinaryFilter(@StringRes final int nameResourceId,
+                         @NonNull final PropertyGroup group,
+                         @NonNull final Integer defaultValue,
+                         @NonNull final @Size(4) ItemList<Integer> list) {
         super(nameResourceId, group, defaultValue, list);
     }
 
     public void setDomain(final @SuppressWarnings("SameParameterValue") @NonNull TableDefinition table,
-                          final @NonNull DomainDefinition domain) {
+                          @NonNull final DomainDefinition domain) {
         this.table = table;
         this.domain = domain;
     }
 
     @Override
     @Nullable
-    public String getExpression() {
+    public String getExpression(@NonNull final String uuid) {
         switch (getResolvedValue()) {
             case FILTER_YES:
                 return table.dot(domain) + "=1";

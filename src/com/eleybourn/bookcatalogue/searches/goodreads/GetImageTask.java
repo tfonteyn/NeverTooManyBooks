@@ -52,7 +52,7 @@ public class GetImageTask implements SimpleTaskQueue.SimpleTask {
      *
      * @param url to retrieve.
      */
-    GetImageTask(final @NonNull String url, final @NonNull GoodreadsWork work) {
+    GetImageTask(@NonNull final String url, @NonNull final GoodreadsWork work) {
         mUrl = url;
         mWork = work;
     }
@@ -61,7 +61,7 @@ public class GetImageTask implements SimpleTaskQueue.SimpleTask {
      * Just get the URL
      */
     @Override
-    public void run(final @NonNull SimpleTaskContext taskContext) {
+    public void run(@NonNull final SimpleTaskContext taskContext) {
         mBytes = ImageUtils.getBytesFromUrl(mUrl);
     }
 
@@ -69,7 +69,7 @@ public class GetImageTask implements SimpleTaskQueue.SimpleTask {
      * Tell the GoodreadsWork about it.
      */
     @Override
-    public void onFinish(final @Nullable Exception e) {
+    public void onFinish(@Nullable final Exception e) {
         mWork.handleTaskFinished(mBytes);
     }
 

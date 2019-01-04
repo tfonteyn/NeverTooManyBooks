@@ -4,9 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -37,15 +34,21 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import java.util.ArrayList;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Class for representing read-only book details.
  */
-public class BookFragment extends BookBaseFragment implements BookManager {
+public class BookFragment
+    extends BookBaseFragment
+    implements BookManager {
 
     public static final String TAG = "BookFragment";
 
-    public static final String REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION = "FBLP";
-    public static final String REQUEST_BKEY_FLATTENED_BOOKLIST = "FBL";
+    static final String REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION = "FBLP";
+    static final String REQUEST_BKEY_FLATTENED_BOOKLIST = "FBL";
 
     private Book mBook;
     private CoverHandler mCoverHandler;
@@ -70,7 +73,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     }
 
     @Override
-    public void setBook(final @NonNull Book book) {
+    public void setBook(@NonNull final Book book) {
         mBook = book;
     }
 
@@ -89,9 +92,9 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     //<editor-fold desc="Fragment startup">
 
     @Override
-    public View onCreateView(final @NonNull LayoutInflater inflater,
-                             final @Nullable ViewGroup container,
-                             final @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_book_details, container, false);
     }
 
@@ -103,7 +106,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
      */
     @Override
     @CallSuper
-    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnActivityCreated(this, savedInstanceState);
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
@@ -122,10 +125,10 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     /**
      * Set the current visible book id
      */
-    public void setDefaultActivityResult() {
+    private void setDefaultActivityResult() {
         Intent data = new Intent();
         data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
-        mActivity.setResult(Activity.RESULT_OK, data); /* e63944b6-b63a-42b1-897a-a0e8e0dabf8a */
+        mActivity.setResult(Activity.RESULT_OK, data);
     }
 
     @Override
@@ -141,32 +144,34 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         mFields.add(R.id.title, UniqueId.KEY_TITLE);
         mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
         mFields.add(R.id.description, UniqueId.KEY_BOOK_DESCRIPTION)
-                .setShowHtml(true);
+               .setShowHtml(true);
         mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE);
         mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE)
-                .setFormatter(new Fields.LanguageFormatter());
+               .setFormatter(new Fields.LanguageFormatter());
         mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES)
-                .setFormatter(new Fields.FieldFormatter() {
-                    @NonNull
-                    @Override
-                    public String format(@NonNull final Field field, @Nullable final String source) {
-                        if (source != null && !source.isEmpty()) {
-                            return getString(R.string.lbl_x_pages, source);
-                        }
-                        return "";
-                    }
+               .setFormatter(new Fields.FieldFormatter() {
+                   @NonNull
+                   @Override
+                   public String format(@NonNull final Field field,
+                                        @Nullable final String source) {
+                       if (source != null && !source.isEmpty()) {
+                           return getString(R.string.lbl_x_pages, source);
+                       }
+                       return "";
+                   }
 
-                    @NonNull
-                    @Override
-                    public String extract(@NonNull final Field field, @NonNull final String source) {
-                        throw new UnsupportedOperationException();
-                    }
-                });
+                   @NonNull
+                   @Override
+                   public String extract(@NonNull final Field field,
+                                         @NonNull final String source) {
+                       throw new UnsupportedOperationException();
+                   }
+               });
         mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT);
         mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED)
-                .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)));
+               .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)));
         mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION)
-                .setFormatter(dateFormatter);
+               .setFormatter(dateFormatter);
 
         // defined, but handled manually
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR);
@@ -177,31 +182,31 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER);
         // not a field on the screen, but used in re-population of publisher.
         mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED)
-                .setFormatter(dateFormatter);
+               .setFormatter(dateFormatter);
 
         // defined, but handled manually
         Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL);
         mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
-                coverField, mFields.getField(R.id.isbn));
+            coverField, mFields.getField(R.id.isbn));
 
 
         // Personal fields
         mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
-                .setFormatter(dateFormatter);
+               .setFormatter(dateFormatter);
         mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID)
-                .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY)));
+               .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY)));
         mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
-                .setFormatter(new Fields.BookEditionsFormatter());
+               .setFormatter(new Fields.BookEditionsFormatter());
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED)
-                .setFormatter(new Fields.BinaryYesNoEmptyFormatter(this.requireContext()));
+               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(this.requireContext()));
         mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
         mFields.add(R.id.notes, UniqueId.KEY_BOOK_NOTES)
-                .setShowHtml(true);
+               .setShowHtml(true);
         mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
-                .setFormatter(dateFormatter);
+               .setFormatter(dateFormatter);
         mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END)
-                .setFormatter(dateFormatter);
+               .setFormatter(dateFormatter);
 
         // note the use of the accessor instead of a real column.
         mFields.add(R.id.read, Book.IS_READ, UniqueId.KEY_BOOK_READ);
@@ -238,7 +243,8 @@ public class BookFragment extends BookBaseFragment implements BookManager {
      */
     @Override
     @CallSuper
-    protected void onLoadFieldsFromBook(final @NonNull Book book, final boolean setAllFrom) {
+    protected void onLoadFieldsFromBook(@NonNull final Book book,
+                                        final boolean setAllFrom) {
         Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
@@ -283,8 +289,8 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     /**
      * If we are passed a flat book list, get it and validate it
      */
-    private void initBooklist(final @Nullable Bundle args,
-                              final @Nullable Bundle savedInstanceState) {
+    private void initBooklist(@Nullable final Bundle args,
+                              @Nullable final Bundle savedInstanceState) {
         if (args == null) {
             return;
         }
@@ -339,7 +345,10 @@ public class BookFragment extends BookBaseFragment implements BookManager {
             }
 
             @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            public boolean onFling(MotionEvent e1,
+                                   MotionEvent e2,
+                                   float velocityX,
+                                   float velocityY) {
                 if (mFlattenedBooklist == null) {
                     return false;
                 }
@@ -360,7 +369,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
                         // only reload if it's a new book
                         if (bookId != getBook().getBookId()) {
                             getBook().reload(mDb, bookId);
-                            populateFrame();
+                            populateFieldsFromBook();
                         }
                     }
                     return true;
@@ -374,7 +383,8 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         getView().setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
-            public boolean onTouch(final @NonNull View v, final @NonNull MotionEvent event) {
+            public boolean onTouch(@NonNull final View v,
+                                   @NonNull final MotionEvent event) {
                 return mGestureDetector.onTouchEvent(event);
             }
         });
@@ -383,14 +393,14 @@ public class BookFragment extends BookBaseFragment implements BookManager {
 
     //<editor-fold desc="Populate">
 
-    private void populateAuthorListField(final @NonNull Book book) {
+    private void populateAuthorListField(@NonNull final Book book) {
         ArrayList<Author> authors = book.getAuthorList();
         int authorsCount = authors.size();
         boolean visible = authorsCount != 0;
         if (visible) {
             StringBuilder builder = new StringBuilder();
             builder.append(getString(R.string.lbl_by_author));
-            builder.append(" ");
+            builder.append(' ');
             for (int i = 0; i < authorsCount; i++) {
                 builder.append(authors.get(i).getDisplayName());
                 if (i != authorsCount - 1) {
@@ -403,7 +413,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         getView().findViewById(R.id.author).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    protected void populateSeriesListField(final @NonNull Book book) {
+    void populateSeriesListField(@NonNull final Book book) {
         ArrayList<Series> list = book.getSeriesList();
         int seriesCount = list.size();
         boolean visible = seriesCount != 0 && mFields.getField(R.id.series).visible;
@@ -412,7 +422,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
             for (int i = 0; i < seriesCount; i++) {
                 builder.append(list.get(i).getDisplayName());
                 if (i != seriesCount - 1) {
-                    builder.append("\n");
+                    builder.append('\n');
                 }
             }
 
@@ -431,7 +441,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
      *
      * If all 4 are empty, the section header is hidden.
      */
-    private void populatePublishingSection(final @NonNull Book book) {
+    private void populatePublishingSection(@NonNull final Book book) {
 
         String datePublished = mFields.getField(R.id.date_published).format(book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
         boolean hasPublishDate = !datePublished.isEmpty();
@@ -442,7 +452,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         String result = "";
         if (hasPublisher && hasPublishDate) {
             // combine publisher and date into one field
-            result = publisher + " (" + datePublished + ")";
+            result = publisher + " (" + datePublished + ')';
         } else if (hasPublisher) {
             result = publisher;
         } else if (hasPublishDate) {
@@ -452,8 +462,8 @@ public class BookFragment extends BookBaseFragment implements BookManager {
 
         // hide header if no fields populated.
         if (result.isEmpty()
-                && !mFields.getField(R.id.price_listed).getValue().toString().isEmpty()
-                && !mFields.getField(R.id.first_publication).getValue().toString().isEmpty()) {
+            && !mFields.getField(R.id.price_listed).getValue().toString().isEmpty()
+            && !mFields.getField(R.id.first_publication).getValue().toString().isEmpty()) {
             //noinspection ConstantConditions
             getView().findViewById(R.id.lbl_publishing).setVisibility(View.GONE);
         }
@@ -471,53 +481,53 @@ public class BookFragment extends BookBaseFragment implements BookManager {
         mFields.getField(R.id.loaned_to).setValue(personLoanedTo);
 
         mFields.getField(R.id.loaned_to).getView()
-                .setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-                    /**
-                     * (yes, icons are not supported and won't show. Still leaving the setIcon calls in for now.)
-                     */
-                    @Override
-                    @CallSuper
-                    public void onCreateContextMenu(final @NonNull ContextMenu menu,
-                                                    final @NonNull View v,
-                                                    final @NonNull ContextMenu.ContextMenuInfo menuInfo) {
-                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0, R.string.loan_returned)
-                                .setIcon(R.drawable.ic_people);
-                    }
-                });
+               .setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                   /**
+                    * (yes, icons are not supported and won't show. Still leaving the setIcon calls in for now.)
+                    */
+                   @Override
+                   @CallSuper
+                   public void onCreateContextMenu(@NonNull final ContextMenu menu,
+                                                   @NonNull final View v,
+                                                   @NonNull final ContextMenu.ContextMenuInfo menuInfo) {
+                       menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0, R.string.loan_returned)
+                           .setIcon(R.drawable.ic_people);
+                   }
+               });
     }
 
     /**
      * Show or hide the Table Of Content section
      */
-    private void populateTOC(final @NonNull Book book) {
+    private void populateTOC(@NonNull final Book book) {
         //ENHANCE add to mFields?
         ArrayList<TOCEntry> list = book.getTOC();
 
         // only show if: field in use + it's flagged as an ant + the ant has titles
         boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK)
-                && book.getBoolean(Book.HAS_MULTIPLE_WORKS)
-                && !list.isEmpty();
+            && book.getBoolean(Book.HAS_MULTIPLE_WORKS)
+            && !list.isEmpty();
 
         if (visible) {
             //noinspection ConstantConditions
             final ListView contentSection = getView().findViewById(R.id.toc);
 
             ArrayAdapter<TOCEntry> adapter = new TOCListAdapter(mActivity,
-                    R.layout.row_toc_entry_with_author, list);
+                R.layout.row_toc_entry_with_author, list);
             contentSection.setAdapter(adapter);
 
             getView().findViewById(R.id.toc_button)
-                    .setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (contentSection.getVisibility() == View.VISIBLE) {
-                                contentSection.setVisibility(View.GONE);
-                            } else {
-                                contentSection.setVisibility(View.VISIBLE);
-                                ViewUtils.justifyListViewHeightBasedOnChildren(contentSection);
-                            }
-                        }
-                    });
+                     .setOnClickListener(new View.OnClickListener() {
+                         @Override
+                         public void onClick(View v) {
+                             if (contentSection.getVisibility() == View.VISIBLE) {
+                                 contentSection.setVisibility(View.GONE);
+                             } else {
+                                 contentSection.setVisibility(View.VISIBLE);
+                                 ViewUtils.justifyListViewHeightBasedOnChildren(contentSection);
+                             }
+                         }
+                     });
         }
 
         //noinspection ConstantConditions
@@ -532,7 +542,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     /**
      * Close the list object (frees statements) and if we are finishing, delete the temp table.
      *
-     * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
+     * This is an ESSENTIAL onProgress; for some reason, in Android 2.1 if these statements are not
      * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
      * the database being closed by the deeply dodgy auto-close code in Android.
      */
@@ -563,7 +573,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
      * @param book to save to
      */
     @Override
-    protected void onSaveFieldsToBook(final @NonNull Book book) {
+    protected void onSaveFieldsToBook(@NonNull final Book book) {
         Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
         // don't call super, Don't save!
         // and don't remove this method... or the super *would* do the save!
@@ -572,7 +582,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
 
     @Override
     @CallSuper
-    public void onSaveInstanceState(final @NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putLong(UniqueId.KEY_ID, getBook().getBookId());
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, getBook().getRawData());
         if (mFlattenedBooklist != null) {
@@ -588,7 +598,7 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     //<editor-fold desc="Menu handlers">
     @Override
     @CallSuper
-    public boolean onContextItemSelected(final @NonNull MenuItem item) {
+    public boolean onContextItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_LOAN_RETURNED:
                 Book book = getBook();
@@ -605,10 +615,11 @@ public class BookFragment extends BookBaseFragment implements BookManager {
      */
     @Override
     @CallSuper
-    public void onCreateOptionsMenu(final @NonNull Menu menu, final @NonNull MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit_book)
-                .setIcon(R.drawable.ic_mode_edit)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            .setIcon(R.drawable.ic_edit)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -616,30 +627,35 @@ public class BookFragment extends BookBaseFragment implements BookManager {
     /**
      * This will be called when a menu item is selected.
      *
-     * @param menuItem The item selected
+     * @param item The item selected
      *
      * @return <tt>true</tt> if handled
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(final @NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.MENU_BOOK_EDIT:
-                EditBookActivity.startActivityForResult(this,  /* a54a7e79-88c3-4b48-89df-711bb28935c5 */
-                        getBook().getBookId(), EditBookFragment.TAB_EDIT);
+                Intent intent = new Intent(this.getContext(), EditBookActivity.class);
+                intent.putExtra(UniqueId.KEY_ID, getBook().getBookId());
+                intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
+                startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
         }
-        return super.onOptionsItemSelected(menuItem);
+        return super.onOptionsItemSelected(item);
     }
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
 
     @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
-            case EditBookFragment.REQUEST_CODE: {
+            case UniqueId.REQ_BOOK_DUPLICATE:
+            case UniqueId.REQ_BOOK_EDIT: {
                 if (resultCode == Activity.RESULT_OK) {
                     getBook().reload(mDb);
                 }

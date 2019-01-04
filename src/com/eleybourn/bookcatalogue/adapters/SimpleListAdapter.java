@@ -91,7 +91,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 if (item != null) {
                     onRowClick(v, item, pos);
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 Logger.error(e);
             }
         }
@@ -108,7 +108,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                     remove(item);
                     onListChanged();
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 // TODO: Allow a specific exception to cancel the action
                 Logger.error(e);
             }
@@ -120,16 +120,16 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     private boolean mHasPosition = false;
     private boolean mHasDelete = false;
 
-    protected SimpleListAdapter(final @NonNull Context context,
+    protected SimpleListAdapter(@NonNull final Context context,
                                 final @LayoutRes int rowViewId,
-                                final @NonNull List<T> list) {
+                                @NonNull final List<T> list) {
         super(context, rowViewId, list);
         mRowViewId = rowViewId;
     }
 
     @NonNull
     @Override
-    public View getView(final int position, @Nullable View convertView, final @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
         final T item = this.getItem(position);
 
         // Get the view; if not defined, load it.
@@ -169,7 +169,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
                 TextView pt = convertView.findViewById(R.id.SLA_ROW_POSITION);
                 if (pt != null) {
                     mHasPosition = true;
-                    String text = Integer.toString(position + 1);
+                    String text = String.valueOf(position + 1);
                     pt.setText(text);
                 }
             }
@@ -186,7 +186,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
             // Ask the subclass to set other fields.
             try {
                 onGetView(convertView, item);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 Logger.error(e);
             }
 
@@ -226,7 +226,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     /**
      * Default implementation always returns true.
      *
-     * @return <tt>true</tt>if delete is allowed to happen
+     * @return <tt>true</tt> if delete is allowed to happen
      */
     protected boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
         return true;

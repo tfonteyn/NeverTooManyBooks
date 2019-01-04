@@ -58,12 +58,12 @@ public class BookRowViewBase {
     private int mGoodreadsBookIdCol = -2;
     private int mDateLastSyncedWithGoodreadsCol = -2;
 
-    protected BookRowViewBase(final @NonNull Cursor cursor) {
+    protected BookRowViewBase(@NonNull final Cursor cursor) {
         mCursor = cursor;
     }
 
     @Nullable
-    public String getString(final @NonNull String columnName) {
+    public String getString(@NonNull final String columnName) {
         final int position = mCursor.getColumnIndex(columnName);
         if (position < 0) {
             throw new DBExceptions.ColumnNotPresent(columnName);
@@ -74,7 +74,7 @@ public class BookRowViewBase {
     /**
      * Query underlying cursor for column index.
      */
-    public int getColumnIndex(final @NonNull String columnName) {
+    public int getColumnIndex(@NonNull final String columnName) {
         return mCursor.getColumnIndex(columnName);
     }
 

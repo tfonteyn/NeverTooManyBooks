@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.content.Intent;
-import androidx.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -30,10 +29,15 @@ import android.view.SubMenu;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
 
+import androidx.annotation.NonNull;
+
 /**
  * Handles re-usable menu items; both to create and to handle
  */
-public class MenuHandler {
+final class MenuHandler {
+
+    private MenuHandler() {
+    }
 
     /**
      * Add SubMenu for book creation.
@@ -42,23 +46,23 @@ public class MenuHandler {
      *
      * @param menu Root menu
      */
-    public static void addCreateBookSubMenu(final @NonNull Menu menu) {
+    static void addCreateBookSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
-                Menu.NONE,
-                BookCatalogueApp.getResourceString(R.string.menu_add_book));
+            Menu.NONE,
+            BookCatalogueApp.getResourceString(R.string.menu_add_book));
 
         subMenu.setIcon(R.drawable.ic_add)
-                .getItem()
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+               .getItem()
+               .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SCAN, Menu.NONE, R.string.menu_add_book_by_barcode_scan)
-                .setIcon(R.drawable.ic_add_a_photo);
+               .setIcon(R.drawable.ic_add_a_photo);
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN, Menu.NONE, R.string.menu_add_book_by_isbn)
-                .setIcon(R.drawable.ic_zoom_in);
+               .setIcon(R.drawable.ic_zoom_in);
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, Menu.NONE, R.string.search_internet)
-                .setIcon(R.drawable.ic_zoom_in);
+               .setIcon(R.drawable.ic_zoom_in);
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, Menu.NONE, R.string.menu_add_book_manually)
-                .setIcon(R.drawable.ic_add);
+               .setIcon(R.drawable.ic_add);
     }
 
     /**
@@ -69,30 +73,30 @@ public class MenuHandler {
      *
      * @return <tt>true</tt> if handled
      */
-    public static boolean handleBookSubMenu(final @NonNull Activity activity,
-                                            final @NonNull MenuItem menuItem) {
+    static boolean handleBookSubMenu(@NonNull final Activity activity,
+                                     @NonNull final MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_ADD_BY_SCAN: {
                 Intent intent = new Intent(activity, BookSearchActivity.class);
                 intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchActivity.BY_SCAN);
-                activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE); /* f1e0d846-852e-451b-9077-6daa5d94f37d */
+                activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_SEARCH);
                 return true;
             }
             case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN: {
                 Intent intent = new Intent(activity, BookSearchActivity.class);
                 intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchActivity.BY_ISBN);
-                activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE); /* 59fd9653-f033-40b5-bee8-f1dfa5b5be6b */
+                activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_SEARCH);
                 return true;
             }
             case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT: {
                 Intent intent = new Intent(activity, BookSearchActivity.class);
                 intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchActivity.BY_TEXT);
-                activity.startActivityForResult(intent, BookSearchActivity.REQUEST_CODE); /* 59fd9653-f033-40b5-bee8-f1dfa5b5be6b */
+                activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_SEARCH);
                 return true;
             }
             case R.id.MENU_BOOK_ADD_MANUALLY: {
                 Intent intent = new Intent(activity, EditBookActivity.class);
-                activity.startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* 88a6c414-2d3b-4637-9044-b7291b6b9100 */
+                activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_EDIT);
                 return true;
             }
         }
@@ -104,19 +108,19 @@ public class MenuHandler {
      *
      * @param menu Root menu
      */
-    public static void addAmazonSearchSubMenu(final @NonNull Menu menu) {
+    static void addAmazonSearchSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_AMAZON_SEARCH, R.id.SUBMENU_AMAZON_SEARCH,
-                Menu.NONE,
-                BookCatalogueApp.getResourceString(R.string.amazon_ellipsis));
+            Menu.NONE,
+            BookCatalogueApp.getResourceString(R.string.amazon_ellipsis));
 
         subMenu.setIcon(R.drawable.ic_search);
         // we use the group to make the entry visible/invisible, hence it's == the actual id.
         subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, Menu.NONE, R.string.menu_amazon_books_by_author)
-                .setIcon(R.drawable.ic_search);
+               .setIcon(R.drawable.ic_search);
         subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, Menu.NONE, R.string.menu_amazon_books_by_author_in_series)
-                .setIcon(R.drawable.ic_search);
+               .setIcon(R.drawable.ic_search);
         subMenu.add(R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.id.MENU_AMAZON_BOOKS_IN_SERIES, Menu.NONE, R.string.menu_amazon_books_in_series)
-                .setIcon(R.drawable.ic_search);
+               .setIcon(R.drawable.ic_search);
     }
 
     /**
@@ -128,9 +132,9 @@ public class MenuHandler {
      *
      * @return <tt>true</tt> if handled
      */
-    public static boolean handleAmazonSearchSubMenu(final @NonNull Activity activity,
-                                                    final @NonNull MenuItem menuItem,
-                                                    final @NonNull Book book) {
+    static boolean handleAmazonSearchSubMenu(@NonNull final Activity activity,
+                                             @NonNull final MenuItem menuItem,
+                                             @NonNull final Book book) {
         switch (menuItem.getItemId()) {
             case R.id.SUBMENU_AMAZON_SEARCH: {
                 Menu menu = menuItem.getSubMenu();
@@ -141,7 +145,7 @@ public class MenuHandler {
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, hasAuthor && hasSeries);
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
                 // let the small call flow go on, it will display the submenu
-               return false;
+                return false;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 AmazonUtils.openSearchPage(activity, book.getPrimaryAuthor(), null);

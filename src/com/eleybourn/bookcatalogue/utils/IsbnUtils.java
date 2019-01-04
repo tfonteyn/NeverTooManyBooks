@@ -31,14 +31,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class IsbnUtils {
+public final class IsbnUtils {
     private IsbnUtils() {
     }
 
     /**
      * Validate an ISBN
      */
-    public static boolean isValid(final @Nullable String isbn) {
+    public static boolean isValid(@Nullable final String isbn) {
         if (isbn == null || isbn.isEmpty()) {
             return false;
         }
@@ -57,7 +57,7 @@ public class IsbnUtils {
      * @return either the valid ISBN equivalent, or the input string if conversion failed.
      */
     @NonNull
-    public static String upc2isbn(final @NonNull String input) {
+    public static String upc2isbn(@NonNull final String input) {
         if (input.isEmpty()) {
             return input;
         }
@@ -75,7 +75,7 @@ public class IsbnUtils {
     /**
      * matches.... but not necessarily valid !
      */
-    public static boolean matches(final @Nullable String isbn1, final @Nullable String isbn2) {
+    public static boolean matches(@Nullable final String isbn1, @Nullable final String isbn2) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(IsbnUtils.class, "matches: " + isbn1 + " ?= " + isbn2);
         }
@@ -101,7 +101,7 @@ public class IsbnUtils {
      * If the isbn was invalid, simply returns the same
      */
     @NonNull
-    public static String isbn2isbn(final @NonNull String isbn) {
+    public static String isbn2isbn(@NonNull final String isbn) {
         try {
             ISBNNumber info = new ISBNNumber(isbn);
             if (info.is10()) {
@@ -226,7 +226,7 @@ public class IsbnUtils {
          *
          * @param s the isbn string, 10 or 13, or the old UPC
          */
-        ISBNNumber(final @NonNull String s) {
+        ISBNNumber(@NonNull final String s) {
             List<Integer> digits;
             // regular ISBN 10/13
             try {
@@ -258,7 +258,7 @@ public class IsbnUtils {
             return isValid(mDigits);
         }
 
-        private boolean isValid(final @Nullable List<Integer> digits) {
+        private boolean isValid(@Nullable final List<Integer> digits) {
             if (digits == null) {
                 return false;
             }
@@ -289,7 +289,7 @@ public class IsbnUtils {
          *
          * @return the ISBN number as a string (10 or 13)
          */
-        private String concat(final @NonNull List<Integer> digits) {
+        private String concat(@NonNull final List<Integer> digits) {
             StringBuilder sb = new StringBuilder();
             for (int d : digits) {
                 if (d == 10) {
@@ -366,7 +366,7 @@ public class IsbnUtils {
          *
          * @return 0 for valid, or the (10 - c) value, where (10 - getChecksum()) IS the checksum digit
          */
-        private int getChecksum(final @NonNull List<Integer> digits) throws NumberFormatException {
+        private int getChecksum(@NonNull final List<Integer> digits) throws NumberFormatException {
             int sum = 0;
             switch (digits.size()) {
                 case 10:
@@ -398,7 +398,7 @@ public class IsbnUtils {
          * @return list of digits
          */
         @NonNull
-        private List<Integer> isbnToDigits(final @NonNull String isbn) throws NumberFormatException {
+        private List<Integer> isbnToDigits(@NonNull final String isbn) throws NumberFormatException {
             // the digit '10' represented as 'X' in an isbn indicates we got to the end
             boolean foundX = false;
 
@@ -438,7 +438,7 @@ public class IsbnUtils {
          * @return list of digits or empty on failure
          */
         @NonNull
-        private List<Integer> upcToDigits(final @NonNull String upc) throws NumberFormatException {
+        private List<Integer> upcToDigits(@NonNull final String upc) throws NumberFormatException {
             String isbnPrefix = UPC_2_ISBN_PREFIX.get(upc.substring(0, 6));
             if (isbnPrefix == null) {
                 return new ArrayList<>();
@@ -458,7 +458,7 @@ public class IsbnUtils {
         /**
          * do a digit wise compare, even on invalid data!
          */
-        public boolean equals(final @NonNull ISBNNumber cmp) {
+        public boolean equals(@NonNull final ISBNNumber cmp) {
 
             if (!this.isValid() || !cmp.isValid()) {
                 // If either is invalid, require they simply match exactly
@@ -482,7 +482,7 @@ public class IsbnUtils {
         /**
          * simple check if all digits are the same
          */
-        private boolean digitsMatch(final int lenToCheck, int posFrom1, final @NonNull ISBNNumber dig2, int posFrom2) {
+        private boolean digitsMatch(final int lenToCheck, int posFrom1, @NonNull final ISBNNumber dig2, int posFrom2) {
             for (int i = 0; i < lenToCheck; i++) {
                 if (!this.mDigits.get(posFrom1++).equals(dig2.mDigits.get(posFrom2++))) {
                     return false;

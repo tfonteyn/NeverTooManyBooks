@@ -28,19 +28,19 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
 public class EditFormatDialog extends EditStringDialog {
-    public EditFormatDialog(final @NonNull Activity activity,
-                            final @NonNull CatalogueDBAdapter db,
-                            final @NonNull Runnable onChanged) {
+    public EditFormatDialog(@NonNull final Activity activity,
+                            @NonNull final CatalogueDBAdapter db,
+                            @NonNull final Runnable onChanged) {
         super(activity, db, android.R.layout.simple_dropdown_item_1line, db.getFormats(), onChanged);
     }
 
     @CallSuper
-    public void edit(final @NonNull String currentText) {
+    public void edit(@NonNull final String currentText) {
         super.edit(currentText, R.layout.dialog_edit_format, R.string.title_edit_format);
     }
 
     @Override
-    protected void confirmEdit(final @NonNull String from, final @NonNull String to) {
+    protected void confirmEdit(@NonNull final String from, @NonNull final String to) {
         // case sensitive equality
         if (from.equals(to)) {
             return;

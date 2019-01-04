@@ -1,8 +1,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.content.Context;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,20 +10,24 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+
 /**
  * code sharing between edit and showing anthology titles, editing extends this class
  */
-public class TOCListAdapter extends SimpleListAdapter<TOCEntry> {
+public class TOCListAdapter
+    extends SimpleListAdapter<TOCEntry> {
 
-    protected TOCListAdapter(final @NonNull Context context,
+    protected TOCListAdapter(@NonNull final Context context,
                              final @LayoutRes int rowViewId,
-                             final @NonNull ArrayList<TOCEntry> items) {
+                             @NonNull final ArrayList<TOCEntry> items) {
         super(context, rowViewId, items);
     }
 
     @Override
-    public void onGetView(final @NonNull View convertView,
-                          final @NonNull TOCEntry tocEntry) {
+    public void onGetView(@NonNull final View convertView,
+                          @NonNull final TOCEntry tocEntry) {
 
         Holder holder = ViewTagger.getTag(convertView);
         if (holder == null) {
@@ -58,7 +60,8 @@ public class TOCListAdapter extends SimpleListAdapter<TOCEntry> {
     /**
      * Holder pattern for each row.
      */
-    private class Holder {
+    private static class Holder {
+
         TextView title;
         TextView author;
         TextView firstPublication;

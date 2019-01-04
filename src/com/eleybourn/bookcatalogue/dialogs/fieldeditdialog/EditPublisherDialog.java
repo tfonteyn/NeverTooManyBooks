@@ -44,13 +44,13 @@ public class EditPublisherDialog {
     @NonNull
     private final Runnable mOnChanged;
 
-    public EditPublisherDialog(final @NonNull Activity activity, final @NonNull CatalogueDBAdapter db, final @NonNull Runnable onChanged) {
+    public EditPublisherDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
         mDb = db;
         mContext = activity;
         mOnChanged = onChanged;
     }
 
-    public void edit(final @NonNull Publisher publisher) {
+    public void edit(@NonNull final Publisher publisher) {
         // Build the base dialog
         final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
 
@@ -92,7 +92,7 @@ public class EditPublisherDialog {
     /**
      * ENHANCE: once {@link Publisher} use id's, use code from {@link EditSeriesDialog#confirmEdit}
      */
-    private void confirmEdit(final @NonNull Publisher from, final @NonNull Publisher to) {
+    private void confirmEdit(@NonNull final Publisher from, @NonNull final Publisher to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

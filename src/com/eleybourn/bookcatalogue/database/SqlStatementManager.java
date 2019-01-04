@@ -20,24 +20,28 @@
 
 package com.eleybourn.bookcatalogue.database;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Utility class to manage the construction and closure of persisted SQLiteStatement objects.
  *
+ * (As I understand it, the purpose is not the actual caching (Android does that anyhow) but
+ * the handling of properly closing statements).
+ *
  * @author Philip Warner
  */
-public class SqlStatementManager implements AutoCloseable {
+public class SqlStatementManager
+    implements AutoCloseable {
+
     @NonNull
     private final Hashtable<String, SynchronizedStatement> mStatements;
     @Nullable
@@ -47,47 +51,35 @@ public class SqlStatementManager implements AutoCloseable {
         this(null);
     }
 
-    public SqlStatementManager(final @Nullable SynchronizedDb db) {
+    public SqlStatementManager(@Nullable final SynchronizedDb db) {
         mSyncedDb = db;
         mStatements = new Hashtable<>();
     }
 
-    public SynchronizedStatement get(final @NonNull String name) {
+    public SynchronizedStatement get(@NonNull final String name) {
         return mStatements.get(name);
     }
 
     @NonNull
-    public SynchronizedStatement add(final @NonNull String name, final @NonNull String sql) {
-        Objects.requireNonNull(mSyncedDb,"Database not set when SqlStatementManager created");
+    public SynchronizedStatement add(@NonNull final String name,
+                                     @NonNull final String sql) {
+        Objects.requireNonNull(mSyncedDb,
+                               "Database not set when SqlStatementManager created");
         return add(mSyncedDb, name, sql);
     }
 
     @NonNull
-    public SynchronizedStatement add(final @NonNull SynchronizedDb db,
-                                     final @NonNull String name,
-                                     final @NonNull String sql) {
+    public SynchronizedStatement add(@NonNull final SynchronizedDb db,
+                                     @NonNull final String name,
+                                     @NonNull final String sql) {
         SynchronizedStatement stmt = db.compileStatement(sql);
         SynchronizedStatement old = mStatements.get(name);
         mStatements.put(name, stmt);
-        if (old != null)
+        if (old != null) {
             old.close();
+        }
         return stmt;
     }
-
-//    @NonNull
-//    public SynchronizedStatement addOrGet(final @NonNull String name, final @NonNull String sql) {
-//        Objects.requireNonNull(mSyncedDb, "Database not set when SqlStatementManager created");
-//        return addOrGet(mSyncedDb, name, sql);
-//    }
-//
-//    @NonNull
-//    private SynchronizedStatement addOrGet(final @NonNull  SynchronizedDb db, final @NonNull  String name, final @NonNull  String sql) {
-//        SynchronizedStatement stmt = mStatements.get(name);
-//        if (stmt == null) {
-//            stmt = add(db, name, sql);
-//        }
-//        return stmt;
-//    }
 
     /**
      * DEBUG help
@@ -95,17 +87,12 @@ public class SqlStatementManager implements AutoCloseable {
      * @return list of all the names of the managed statements
      */
     @NonNull
-    public List<String> getNames(){
-        List<String> list = new ArrayList<>();
-        Enumeration<String> all = mStatements.keys();
-        while (all.hasMoreElements()) {
-            list.add(all.nextElement());
-        }
-        return list;
+    public List<String> getNames() {
+        return new ArrayList<>(mStatements.keySet());
     }
 
     /**
-     * GoodreadsExceptions are caught and fully ignored.
+     * RuntimeException are caught and fully ignored.
      */
     @Override
     public void close() {
@@ -113,7 +100,7 @@ public class SqlStatementManager implements AutoCloseable {
             for (SynchronizedStatement s : mStatements.values()) {
                 try {
                     s.close();
-                } catch (Exception ignored) {
+                } catch (RuntimeException ignored) {
                 }
             }
             mStatements.clear();

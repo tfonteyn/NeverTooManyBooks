@@ -4,27 +4,23 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.properties.ListOfValuesProperty;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Static class. There is only ONE Locale *active* at any given time.
  */
-public class LocaleUtils {
-    /** Preferred interface Locale */
-    public static final String PREF_APP_LOCALE = "App.Locale";
+public final class LocaleUtils {
 
     /** The SharedPreferences name where we'll maintain our language to ISO3 mappings */
     private static final String LANGUAGE_MAP = "language2iso3";
@@ -77,9 +73,6 @@ public class LocaleUtils {
         LocaleUtils.CURRENCY_MAP.put("kr","DKK"); // Denmark Krone
         LocaleUtils.CURRENCY_MAP.put("Ft","HUF"); // Hungarian Forint
     }
-    /** List of supported locales */
-    @Nullable
-    private static List<String> mSupportedLocales = null;
 
     /** Cache the User-specified locale currently in use */
     private static Locale mCurrentLocale;
@@ -90,11 +83,19 @@ public class LocaleUtils {
 
     /* static constructor */
     static {
-        // preserver startup==system Locale
+        // preserve startup==system Locale
         mInitialLocale = Locale.getDefault();
 
         loadPreferred();
         mLastLocale = mCurrentLocale;
+    }
+
+    /**
+     * Dummy method to make sure static initialization is done. Needs to be
+     * called from main thread (usually at app startup).
+     */
+    @SuppressWarnings("EmptyMethod")
+    public static void init() {
     }
 
     private LocaleUtils() {
@@ -117,7 +118,7 @@ public class LocaleUtils {
      * @return Locale corresponding to passed name
      */
     @NonNull
-    private static Locale getLocaleFromCode(final @NonNull String name) {
+    private static Locale getLocaleFromCode(@NonNull final String name) {
         String[] parts;
         if (name.contains("_")) {
             parts = name.split("_");
@@ -150,7 +151,7 @@ public class LocaleUtils {
      * @return the ISO3 code, or if conversion failed, the input string
      */
     @NonNull
-    public static String getISO3Language(final @NonNull String displayName) {
+    public static String getISO3Language(@NonNull final String displayName) {
         String iso = getLanguageCache().getString(displayName, null);
         if (iso != null) {
             return iso;
@@ -164,17 +165,17 @@ public class LocaleUtils {
      * @return the display name for the language, or the input string if it was an invalid ISO3 code
      */
     @NonNull
-    public static String getDisplayName(final @NonNull String iso) {
+    public static String getDisplayName(@NonNull final String iso) {
         return new Locale(iso).getDisplayLanguage();
     }
 
     /**
      * Load the Locale setting from the users SharedPreference.
      *
-     * @return true if the Locale was changed
+     * @return <tt>true</tt> if the Locale was changed
      */
     public static boolean loadPreferred() {
-        String loc = BookCatalogueApp.getStringPreference(PREF_APP_LOCALE, null);
+        String loc = Prefs.getString(R.string.pk_ui_language, null);
         if (loc != null && !loc.isEmpty()) {
             mCurrentLocale = LocaleUtils.getLocaleFromCode(loc);
         } else {
@@ -197,7 +198,7 @@ public class LocaleUtils {
     public static void cacheLanguage(final String displayName, final String iso) {
         getLanguageCache().edit().putString(displayName, iso).apply();
         if (BuildConfig.DEBUG) {
-            Logger.info(LocaleUtils.class, "caching `" + displayName + "`=`" + iso + "`");
+            Logger.info(LocaleUtils.class, "caching `" + displayName + "`=`" + iso + '`');
         }
     }
 
@@ -208,7 +209,7 @@ public class LocaleUtils {
     /**
      * Apply the (potentially changed) current Locale.
      */
-    public static void apply(final @NonNull Resources res) {
+    public static void apply(@NonNull final Resources res) {
         if (res.getConfiguration().locale.equals(mCurrentLocale)) {
             return;
         }
@@ -225,69 +226,9 @@ public class LocaleUtils {
     }
 
     /**
-     * Get the list of supported locale names
-     *
-     * There are also: cs, pl but those are not complete.
-     * (2018-11-10: pt_BR was removed altogether as it was pure english)
-     *
-     * Original code had full "land_country string"
-     * "de_DE","en_AU","fr_FR","nl_NL","it_IT","el_GR","ru_RU","tr_TR"
-     *
-     * But this is artificially limiting, for example:
-     * "fr_FR" gets you the language French + all 'french' locale 'things'
-     * But french is spoken in other countries, which share the language, but not the locale 'things'
-     *
-     * By only specifying the language, we leave the pick of the country to the system locale.
-     *
-     * @return ArrayList of Locale codes
-     */
-    @NonNull
-    private static List<String> getSupportedLocales() {
-        if (mSupportedLocales == null) {
-            mSupportedLocales = new ArrayList<>();
-
-            mSupportedLocales.add("de");
-            mSupportedLocales.add("en");
-            mSupportedLocales.add("fr");
-            mSupportedLocales.add("nl");
-
-            mSupportedLocales.add("es");
-            mSupportedLocales.add("it");
-            mSupportedLocales.add("el");
-
-            mSupportedLocales.add("ru");
-            mSupportedLocales.add("tr");
-        }
-        return mSupportedLocales;
-    }
-
-    /**
-     * Format the list of locales (languages)
-     *
-     * @return List of preference items
-     */
-    @NonNull
-    public static ListOfValuesProperty.ItemList<String> getLocalesPreferencesListItems() {
-        ListOfValuesProperty.ItemList<String> items = new ListOfValuesProperty.ItemList<>();
-
-        Locale locale = getSystemLocal();
-        items.add("", R.string.preferred_language_x,
-                BookCatalogueApp.getResourceString(R.string.user_interface_system_locale),
-                locale.getDisplayLanguage());
-
-        for (String loc : getSupportedLocales()) {
-            locale = getLocaleFromCode(loc);
-            items.add(loc, R.string.preferred_language_x,
-                    locale.getDisplayLanguage(locale),
-                    locale.getDisplayLanguage());
-        }
-        return items;
-    }
-
-    /**
      * Test if the passed Locale is actually a 'real' Locale by checking ISO3 codes.
      */
-    public static boolean isValid(final @Nullable Locale locale) {
+    public static boolean isValid(@Nullable final Locale locale) {
         if (locale == null) {
             return false;
         }
@@ -303,7 +244,7 @@ public class LocaleUtils {
     /**
      * Generate language mappings (to a dedicated SharedPreferences) for a given locale
      */
-    public static void createLanguageMappingCache(final @NonNull Locale myLocale) {
+    public static void createLanguageMappingCache(@NonNull final Locale myLocale) {
         SharedPreferences prefs = getLanguageCache();
         // just return if already done for this locale.
         if (prefs.getBoolean(myLocale.getISO3Language(), false)) {

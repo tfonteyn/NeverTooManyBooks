@@ -126,7 +126,7 @@ public class DBCleaner {
     }
 
     /** int */
-    public void idNotZero(final @NonNull DomainDefinition column, final boolean dryRun) {
+    public void idNotZero(@NonNull final DomainDefinition column, final boolean dryRun) {
         String sql = "SELECT DISTINCT " + column +
                 " FROM " + TBL_BOOKS + " WHERE " + column + " <> 0";
         toLog(Tracker.States.Enter, sql);
@@ -135,8 +135,8 @@ public class DBCleaner {
     /**
      * string default ''
      */
-    public void nullString2empty(final @NonNull TableDefinition table,
-                                 final @NonNull DomainDefinition column,
+    public void nullString2empty(@NonNull final TableDefinition table,
+                                 @NonNull final DomainDefinition column,
                                  final boolean dryRun) {
         String sql = "SELECT DISTINCT " + column +
                 " FROM " + table + " WHERE " + column + "=NULL";
@@ -151,8 +151,8 @@ public class DBCleaner {
     /**
      * boolean: 0,1
      */
-    public void booleanCleanup(final @NonNull TableDefinition table,
-                               final @NonNull DomainDefinition column,
+    public void booleanCleanup(@NonNull final TableDefinition table,
+                               @NonNull final DomainDefinition column,
                                final boolean dryRun) {
         String sql = "SELECT DISTINCT " + column +
                 " FROM " + table + " WHERE " + column + " NOT IN ('0','1')";
@@ -165,13 +165,13 @@ public class DBCleaner {
         }
     }
 
-    public void toLog(final @NonNull Tracker.States state, final @NonNull String sql) {
+    public void toLog(@NonNull final Tracker.States state, @NonNull final String sql) {
         DbSync.SynchronizedCursor cursor = mSyncDb.rawQuery(sql, null);
         while (cursor.moveToNext()) {
             String field = cursor.getColumnName(0);
             String value = cursor.getString(0);
 
-            Logger.info(this, state + "|" + field + "=" + value);
+            Logger.info(this, state + "|" + field + '=' + value);
         }
         cursor.close();
     }

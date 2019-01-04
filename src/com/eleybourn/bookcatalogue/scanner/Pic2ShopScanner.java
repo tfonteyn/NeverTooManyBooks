@@ -10,8 +10,8 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import java.util.Arrays;
 
 /**
- * Based on the pic2shop client code at github, this object will start pic2shop and extract the data
- * from the resulting intent when the activity completes.
+ * Based on the pic2shop client code at github, this object will start pic2shop and
+ * extract the data from the resulting intent when the activity completes.
  *
  * https://github.com/VisionSmarts/pic2shop-client
  *
@@ -21,8 +21,9 @@ import java.util.Arrays;
  */
 public class Pic2ShopScanner implements Scanner {
     /**
-     * When a barcode is read, pic2shop returns Activity.RESULT_OK in {@link Activity#onActivityResult})
-     * of the activity which requested the scan using {@link #startActivityForResult}.
+     * When a barcode is read, pic2shop returns Activity.RESULT_OK in
+     * {@link Activity#onActivityResult}) of the activity which requested the scan using
+     * {@link #startActivityForResult}.
      * The barcode can be retrieved with intent.getStringExtra("BARCODE").
      *
      * If the user exits pic2shop by pressing Back before a barcode is read, the
@@ -35,21 +36,21 @@ public class Pic2ShopScanner implements Scanner {
     /**
      * Check if we have a valid intent available.
      *
-     * @return <tt>true</tt>if present
+     * @return <tt>true</tt> if present
      */
-    static boolean isIntentAvailable(final @NonNull Context context) {
+    static boolean isIntentAvailable(@NonNull final Context context) {
         return isFreeScannerAppInstalled(context) || isProScannerAppInstalled(context);
     }
 
-    private static boolean isFreeScannerAppInstalled(final @NonNull Context context) {
+    private static boolean isFreeScannerAppInstalled(@NonNull final Context context) {
         return isIntentAvailable(context, Free.ACTION);
     }
 
-    private static boolean isProScannerAppInstalled(final @NonNull Context context) {
+    private static boolean isProScannerAppInstalled(@NonNull final Context context) {
         return isIntentAvailable(context, Pro.ACTION);
     }
 
-    private static boolean isIntentAvailable(final @NonNull Context context, final @NonNull String action) {
+    private static boolean isIntentAvailable(@NonNull final Context context, @NonNull final String action) {
         Intent test = new Intent(action);
         return context.getPackageManager().resolveActivity(test, 0) != null;
     }
@@ -61,7 +62,7 @@ public class Pic2ShopScanner implements Scanner {
      * one of the intents is valid, or catch the resulting errors.
      */
     @Override
-    public void startActivityForResult(final @NonNull  Activity activity, final int requestCode) {
+    public void startActivityForResult(@NonNull final  Activity activity, final int requestCode) {
         Intent intent;
         if (isFreeScannerAppInstalled(activity)) {
             intent = new Intent(Free.ACTION);
@@ -77,7 +78,7 @@ public class Pic2ShopScanner implements Scanner {
      */
     @Override
     @NonNull
-    public String getBarcode(final @NonNull Intent data) {
+    public String getBarcode(@NonNull final Intent data) {
         String barcode = data.getStringExtra(BARCODE);
         // only for Pro:
         String barcodeFormat = data.getStringExtra(Pro.FORMAT);
@@ -112,15 +113,15 @@ public class Pic2ShopScanner implements Scanner {
         String FORMAT = "format";
     }
 
-//    public static void launchMarketToInstallFreeScannerApp(final @NonNull Context context) {
+//    public static void launchMarketToInstallFreeScannerApp(@NonNull final Context context) {
 //        launchMarketToInstallApp(context, Free.PACKAGE);
 //    }
 //
-//    public static void launchMarketToInstallProScannerApp(final @NonNull Context context) {
+//    public static void launchMarketToInstallProScannerApp(@NonNull final Context context) {
 //        launchMarketToInstallApp(context, Pro.PACKAGE);
 //    }
 
-//    private static void launchMarketToInstallApp(final @NonNull Context context, final @NonNull String packageName) {
+//    private static void launchMarketToInstallApp(@NonNull final Context context, @NonNull final String packageName) {
 //        try {
 //            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
 //            context.startActivity(intent);

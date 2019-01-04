@@ -21,14 +21,15 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.Objects;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 /**
  * This class will search the internet for book details based on either
@@ -43,9 +44,8 @@ import java.util.Objects;
  * For books, the ASIN is the same as the ISBN-10 number, but for all other products a new ASIN
  * is created when the item is uploaded to their catalogue.
  */
-public class BookSearchActivity extends BaseActivityWithTasks {
-
-    public static final int REQUEST_CODE = UniqueId.ACTIVITY_REQUEST_CODE_ADD_BOOK;
+public class BookSearchActivity
+    extends BaseActivityWithTasks {
 
     public static final String REQUEST_BKEY_BY = "by";
     public static final String BY_ISBN = "isbn";
@@ -59,7 +59,7 @@ public class BookSearchActivity extends BaseActivityWithTasks {
 
     @Override
     @CallSuper
-    protected void onCreate(final @Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -82,9 +82,9 @@ public class BookSearchActivity extends BaseActivityWithTasks {
         frag.setArguments(extras);
 
         getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.main_fragment, frag)
-                .commit();
+            .beginTransaction()
+            .replace(R.id.main_fragment, frag)
+            .commit();
 
         Tracker.exitOnCreate(this);
     }

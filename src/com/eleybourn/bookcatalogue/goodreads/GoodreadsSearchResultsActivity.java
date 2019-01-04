@@ -23,9 +23,6 @@ package com.eleybourn.bookcatalogue.goodreads;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,6 +47,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Search goodreads for a book and display the list of results.
  * Use background tasks to get thumbnails and update when retrieved.
@@ -73,7 +74,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -96,7 +97,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
     /**
      * Perform the search.
      */
-    private void doSearch(final @NonNull String criteria) {
+    private void doSearch(@NonNull final String criteria) {
         // Get the GR stuff we need
         GoodreadsManager grMgr = new GoodreadsManager();
         SearchBooksApiHandler searcher = new SearchBooksApiHandler(grMgr);
@@ -108,7 +109,8 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
         } catch (Exception e) {
             Logger.error(e, "Failed when searching Goodreads");
             StandardDialogs.showUserMessage(this,
-                    getString(R.string.gr_error_while_searching) + " " + getString(R.string.error_if_the_problem_persists));
+                    getString(R.string.gr_error_while_searching) + ' ' +
+                            getString(R.string.error_if_the_problem_persists));
             setResult(Activity.RESULT_CANCELED);
             finish();
             return;
@@ -133,13 +135,14 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
      *
      * @param view View that was clicked.
      */
-    private void doItemClick(final @NonNull View view) {
+    private void doItemClick(@NonNull final View view) {
         ListHolder holder = ViewTagger.getTag(view);
         Objects.requireNonNull(holder);
 
         // TODO: Implement edition lookup - requires access to work.editions API from GR
         Logger.debug("Not implemented: see " + holder.title + " by " + holder.author);
-        StandardDialogs.showUserMessage(this, "Not implemented: see " + holder.title + " by " + holder.author);
+        StandardDialogs.showUserMessage(this,
+                "Not implemented: see " + holder.title + " by " + holder.author);
         //Intent i = new Intent(this, GoodreadsW)
     }
 
@@ -161,24 +164,27 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
      *
      * @author Philip Warner
      */
-    private class ListHolder {
+    private static class ListHolder {
+
         @NonNull
         final ImageView cover;
         GoodreadsWork work;
         TextView title;
         TextView author;
 
-        ListHolder(final @NonNull ImageView cover) {
+        ListHolder(@NonNull final ImageView cover) {
             this.cover = cover;
         }
     }
 
     /**
-     * ArrayAdapter that uses holder pattern to display goodreads books and allows for background image retrieval.
+     * ArrayAdapter that uses holder pattern to display goodreads books and
+     * allows for background image retrieval.
      *
      * @author Philip Warner
      */
     private class ResultsAdapter extends ArrayAdapter<GoodreadsWork> {
+
         /** Used in building views when needed */
         @NonNull
         final LayoutInflater mInflater;
@@ -191,7 +197,7 @@ public class GoodreadsSearchResultsActivity extends BaseListActivity {
         }
 
         @NonNull
-        public View getView(final int position, @Nullable View convertView, final @NonNull ViewGroup parent) {
+        public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
             ListHolder holder;
             if (convertView == null) {
                 // Not recycling, get a new View and make the holder for it.

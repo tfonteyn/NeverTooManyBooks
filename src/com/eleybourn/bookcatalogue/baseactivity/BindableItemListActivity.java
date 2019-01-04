@@ -22,11 +22,6 @@ package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -41,10 +36,17 @@ import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+
 /**
  * @author pjw
  */
-abstract public class BindableItemListActivity extends BaseListActivity implements BindableItemBinder {
+public abstract class BindableItemListActivity extends BaseListActivity implements BindableItemBinder {
+
     /** Cursor of book IDs */
     private BindableItemCursor mBindableItems;
     /** Adapter for list */
@@ -59,11 +61,11 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
      * @return TaskNotesCursor to use
      */
     @NonNull
-    protected abstract BindableItemCursor getBindableItemCursor(final @Nullable Bundle savedInstanceState);
+    protected abstract BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState);
 
     @Override
     @CallSuper
-    protected void onCreate(final @Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
@@ -78,15 +80,15 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
 
         lv.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(final @NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
-                BindableItemListActivity.this.onListItemClick(parent, v, position, id);
+            public void onItemClick(@NonNull final AdapterView<?> parent, @NonNull final View view, final int position, final long id) {
+                BindableItemListActivity.this.onListItemClick(parent, view, position, id);
             }
         });
         lv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
             @Override
-            public boolean onItemLongClick(final @NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
-                return BindableItemListActivity.this.onListItemLongClick(parent, v, position, id);
+            public boolean onItemLongClick(@NonNull final AdapterView<?> parent, @NonNull final View view, final int position, final long id) {
+                return BindableItemListActivity.this.onListItemLongClick(parent, view, position, id);
             }
         });
         Tracker.exitOnCreate(this);
@@ -105,19 +107,19 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
             if (mBindableItems != null) {
                 mBindableItems.close();
             }
-        } catch (Exception ignore) {
+        } catch (RuntimeException ignore) {
         }
         super.onDestroy();
         Tracker.exitOnDestroy(this);
     }
 
-    protected void onListItemClick(final @NonNull AdapterView<?> parent, final @NonNull View v, final int position, final long id) {
+    protected void onListItemClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
     }
 
     @SuppressWarnings("SameReturnValue")
     @CallSuper
-    protected boolean onListItemLongClick(final @NonNull AdapterView<?> parent,
-                                          final @NonNull View v,
+    protected boolean onListItemLongClick(@NonNull final AdapterView<?> parent,
+                                          @NonNull final View v,
                                           final int position,
                                           final long id) {
         return false;
@@ -129,8 +131,8 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
      * @param title Title of Alert
      * @param items Items to display
      */
-    protected void showContextDialogue(@SuppressWarnings("SameParameterValue") final @StringRes int title,
-                                       final @NonNull List<ContextDialogItem> items) {
+    protected void showContextDialogue(@SuppressWarnings("SameParameterValue") @StringRes final int title,
+                                       @NonNull final List<ContextDialogItem> items) {
         if (items.size() > 0) {
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
             items.toArray(itemArray);
@@ -139,8 +141,8 @@ abstract public class BindableItemListActivity extends BaseListActivity implemen
                     .setTitle(title)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setItems(itemArray, new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int item) {
-                            itemArray[item].handler.run();
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            itemArray[which].handler.run();
                         }
                     }).create();
 

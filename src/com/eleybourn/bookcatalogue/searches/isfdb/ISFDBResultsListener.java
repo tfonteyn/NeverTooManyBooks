@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ISFDBResultsListener {
 
-    void onGotISFDBEditions(final @NonNull List<String> editions);
-    void onGotISFDBBook(final @NonNull Bundle bookData);
+    void onGotISFDBEditions(@NonNull final List<String> editions);
+    void onGotISFDBBook(@NonNull final Bundle bookData);
 
 }

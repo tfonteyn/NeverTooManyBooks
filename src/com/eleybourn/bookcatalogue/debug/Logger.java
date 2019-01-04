@@ -49,7 +49,7 @@ import java.util.Date;
  *  ENHANCE Remove Log.error! Replace with ACRA?
  *  ACRA.getErrorReporter().handleException(e);
  */
-public class Logger {
+public final class Logger {
 
     private static final String TAG = "BC_Logger";
 
@@ -78,8 +78,8 @@ public class Logger {
      *
      * For static callers
      */
-    public static void info(final @NonNull Class clazz, final String message) {
-        String msg = "INFO|" + clazz.getCanonicalName() + "|" + message;
+    public static void info(@NonNull final Class clazz, final String message) {
+        String msg = "INFO|" + clazz.getCanonicalName() + '|' + message;
         Log.e(TAG, msg);
         writeToErrorLog(msg);
     }
@@ -89,13 +89,13 @@ public class Logger {
      *
      * For instance callers
      */
-    public static void info(final @NonNull Object object, final String message) {
+    public static void info(@NonNull final Object object, final String message) {
         Class clazz = object.getClass();
         String msg;
         if (clazz.isAnonymousClass()) {
             msg = "INFO|AnonymousClass|" + message;
         } else {
-            msg = "INFO|" + clazz.getCanonicalName() + "|" + message;
+            msg = "INFO|" + clazz.getCanonicalName() + '|' + message;
         }
         Log.e(TAG, msg);
         writeToErrorLog(msg);
@@ -104,11 +104,11 @@ public class Logger {
     /**
      * Generates stacktrace
      */
-    public static void error(final @NonNull String message) {
-        error(new RuntimeException(), message);
+    public static void error(@NonNull final String message) {
+        error(new DebugStackTrace(), message);
     }
 
-    public static void error(final @NonNull Exception e) {
+    public static void error(@NonNull final Exception e) {
         error(e, "");
     }
 
@@ -117,8 +117,8 @@ public class Logger {
      *
      * Generates stacktrace
      */
-    public static void error(final @NonNull Error e) {
-        error(new RuntimeException(e), "");
+    public static void error(@NonNull final Error e) {
+        error(new DebugStackTrace(e), "");
     }
 
     /**
@@ -128,7 +128,7 @@ public class Logger {
      * @param e       The exception to log
      * @param message extra message
      */
-    public static void error(final @Nullable Exception e, final @NonNull String message) {
+    public static void error(@Nullable final Exception e, @NonNull final String message) {
         String now = DATE_FORMAT.format(new Date());
         String exMsg = null;
         StringWriter stacktrace = new StringWriter();
@@ -138,25 +138,28 @@ public class Logger {
             exMsg = e.getLocalizedMessage();
         }
 
-        String error = "ERROR|An Exception/Error Occurred @ " + now + "\n" +
-                (exMsg != null ? exMsg + "\n" : "") +
+        String error;
+        if (e instanceof DebugStackTrace) {
+            error = exMsg;
+        } else {
+            error = "ERROR|An Exception/Error Occurred @ " + now + '\n' +
+                (exMsg != null ? exMsg + '\n' : "") +
                 "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" +
-                message + "\n" +
-                stacktrace;
-
+                message + '\n';
+        }
         // Log the exception to the console in full when in debug, but only the message when deployed.
         // Either way, the exception will be in the physical logfile.
         if (/* always log */ BuildConfig.DEBUG) {
-            Log.e(TAG, error);
+            Log.e(TAG, error + stacktrace);
         } else {
             Log.e(TAG, message);
         }
 
-        writeToErrorLog(error);
+        writeToErrorLog(error + stacktrace);
         pw.close();
     }
 
-    private static void writeToErrorLog(final @NonNull String message) {
+    private static void writeToErrorLog(@NonNull final String message) {
         try {
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
             out.write(message);
@@ -186,5 +189,25 @@ public class Logger {
         } catch (Exception ignore) {
             // do nothing - we can't log an error in the error logger. (and we don't want to CF the app)
         }
+    }
+
+    private static class DebugStackTrace extends RuntimeException {
+
+        public DebugStackTrace() {
+        }
+
+        public DebugStackTrace(final String message) {
+            super(message);
+        }
+
+        public DebugStackTrace(final String message,
+                               final Throwable cause) {
+            super(message, cause);
+        }
+
+        public DebugStackTrace(final Throwable cause) {
+            super(cause);
+        }
+
     }
 }

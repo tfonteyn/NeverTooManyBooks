@@ -1,8 +1,9 @@
 package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -10,13 +11,13 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
  * When set to true, the global BuildConfig.DEBUG should still suppress them
  * Use something like this:
  *
- *    if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
- *          Logger.info("some debug info);
- *    }
+ * if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+ * Logger.info("some debug info);
+ * }
  *
- *    RELEASE: set all to false ! in case you forgot to '&&' with BuildConfig.DEBUG anywhere...
+ * RELEASE: set all to false ! in case you forgot to '&&' with BuildConfig.DEBUG anywhere...
  *
- *    The compiler should remove all code between dead if() blocks
+ * The compiler should remove all code between dead if() blocks
  */
 public final class DEBUG_SWITCHES {
 
@@ -35,6 +36,11 @@ public final class DEBUG_SWITCHES {
 
     /** enable timers for performance measurements */
     public static final boolean TIMERS = false;
+
+    /** {@link Prefs} */
+    public static final boolean PREFS = true;
+
+    public static final boolean DUMP_STYLE = true;
 
     /** dump the sql string to the log */
     public static final boolean SQL = false;
@@ -81,12 +87,12 @@ public final class DEBUG_SWITCHES {
     public static final boolean SIMPLE_TASKS = false;
 
     /** reading/writing a backup file */
-    public static final boolean BACKUP = false;
+    public static final boolean BACKUP = true;
 
     /** all things that can happen during startup only */
     public static final boolean STARTUP = false;
 
-    /** everything related to Dates/Timezone...*/
+    /** everything related to Dates/Timezone... */
     public static final boolean DATETIME = true;
 
     /** track the flow & values on startActivityForResult & onActivityResult */
@@ -103,4 +109,11 @@ public final class DEBUG_SWITCHES {
      * WARNING: can abort the function it's in.
      */
     public static final boolean DUMP_HTTP_RESPONSE = false;
+    /**
+     * The Temporary database tables wil be created as Standard if set to true.
+     */
+    public static final boolean TEMP_TABLES_ARE_STANDARD = true;
+
+    private DEBUG_SWITCHES() {
+    }
 }

@@ -81,7 +81,7 @@ class CropHighlightView {
     @ColorInt
     private int outlinePaintRectangle;
 
-    CropHighlightView(final @NonNull View imageView) {
+    CropHighlightView(@NonNull final View imageView) {
         mImageView = imageView;
     }
 
@@ -110,7 +110,7 @@ class CropHighlightView {
         mHidden = hidden;
     }
 
-    void draw(final @NonNull Canvas canvas) {
+    void draw(@NonNull final Canvas canvas) {
         if (mHidden) {
             return;
         }
@@ -199,7 +199,7 @@ class CropHighlightView {
         return mMode;
     }
 
-    public void setMode(final @NonNull ModifyMode mode) {
+    public void setMode(@NonNull final ModifyMode mode) {
         if (mode != mMode) {
             mMode = mode;
             mImageView.invalidate();
@@ -315,7 +315,7 @@ class CropHighlightView {
         mDrawRect = computeLayout();
         rect.union(mDrawRect);
         rect.inset(-10, -10);
-        mImageView.invalidate(rect);
+        mImageView.invalidate();
     }
 
     /** Grows the cropping rectangle by (dx, dy) in image space. */
@@ -395,9 +395,9 @@ class CropHighlightView {
         mDrawRect = computeLayout();
     }
 
-    public void setup(final @NonNull Matrix m,
-                      final @NonNull Rect imageRect,
-                      final @NonNull RectF cropRect,
+    public void setup(@NonNull final Matrix m,
+                      @NonNull final Rect imageRect,
+                      @NonNull final RectF cropRect,
                       final boolean circle,
                       boolean maintainAspectRatio) {
         if (circle) {

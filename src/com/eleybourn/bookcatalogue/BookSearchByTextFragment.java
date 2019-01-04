@@ -2,10 +2,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +18,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BookSearchByTextFragment extends BookSearchBaseFragment {
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 
-    /** A list of author names we have already searched for in this session */
+public class BookSearchByTextFragment
+    extends BookSearchBaseFragment {
+
+    /** A list of author names we have already searched for in this session. */
     @NonNull
     private final ArrayList<String> mAuthorNames = new ArrayList<>();
     /** */
@@ -38,9 +40,9 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
     private String mTitleSearchText = "";
 
     @Override
-    public View onCreateView(final @NonNull LayoutInflater inflater,
-                             final @Nullable ViewGroup container,
-                             final @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.booksearch_by_text, container, false);
     }
 
@@ -115,7 +117,7 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
      *
      * The results will arrive in {@link #onSearchFinished}
      */
-    protected void startSearch() {
+    private void startSearch() {
         // check if we have an active search, if so, quit.
         if (mSearchManagerId != 0) {
             return;
@@ -134,19 +136,20 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
     }
 
     /**
-     * results of search started by {@link #startSearch}
+     * results of search started by {@link #startSearch}.
      *
      * The details will get sent to {@link EditBookActivity}
      */
     @SuppressWarnings("SameReturnValue")
-    public boolean onSearchFinished(final boolean wasCancelled, final @NonNull Bundle bookData) {
+    public boolean onSearchFinished(final boolean wasCancelled,
+                                    @NonNull final Bundle bookData) {
         Tracker.handleEvent(this, Tracker.States.Running, "onSearchFinished|SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {
                 mActivity.getTaskManager().sendHeaderTaskProgressMessage(getString(R.string.progress_msg_adding_book));
                 Intent intent = new Intent(this.getContext(), EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                startActivityForResult(intent, EditBookActivity.REQUEST_CODE); /* 341ace23-c2c8-42d6-a71e-909a3a19ba99 */
+                startActivityForResult(intent, REQ_BOOK_EDIT);
 
                 // Clear the data entry fields ready for the next one
                 mAuthorView.setText("");
@@ -163,12 +166,14 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
 
     @Override
     @CallSuper
-    public void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         // for now nothing local.
 //        switch (requestCode) {
 //            default:
-                super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
 //                break;
 //        }
 
@@ -180,7 +185,7 @@ public class BookSearchByTextFragment extends BookSearchBaseFragment {
 
     @Override
     @CallSuper
-    public void onSaveInstanceState(final @NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this, outState);
 
         // Save the current search details as this may be called as a result of a rotate during an alert dialog.

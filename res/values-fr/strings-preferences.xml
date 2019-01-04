@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ####################################################################################### -->
+    <!-- ========== Preferences / PropertyList ========== -->
+    <!-- ####################################################################################### -->
+
+    <!-- Preference VALUE -->
+    <string name="use_default_setting">Utiliser les réglages par défaut</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_general">Général</string>
+    <!-- Preference GROUP -->
+    <string name="pg_ui">Interface utilisateur</string>
+    <!-- Preference GROUP -->
+    <string name="pg_thumbnails">Miniatures</string>
+    <!-- Preference GROUP -->
+    <string name="pg_scanning">Scan</string>
+    <!-- Preference GROUP -->
+    <string name="pg_booklist">Listes de livres</string>
+    <!-- Preference GROUP; booklist styles -->
+    <string name="pg_groupings">Groupes</string>
+
+    <!-- ========== Global preferences ========== -->
+
+    <!-- Preference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
+    <string name="pt_bob_open_book_read_only">Affichage en mode visualisation</string>
+
+    <!-- Preference - start the cropper with the cropper frame set to the whole image -->
+    <string name="pt_thumbnails_crop_frame_is_whole_image">Le cadre par défaut de l\'image à recadrer sera l\'image complète</string>
+
+    <!-- Preference - use an external app. (Intent) to handle cropping-->
+    <string name="pt_thumbnails_external_cropper">Recadrage d\'image avec un outil externe (expérimental)</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_valid">Beeper si l\'ISBN scanné est valide</string>
+
+    <!-- Preference -->
+    <string name="pt_scanning_beep_if_isbn_invalid">Beeper si l\'ISBN scanné est invalide</string>
+
+     <!--Preference -->
+    <string name="pt_ui_messages_use">Informer avec</string>
+    <string-array name="pe_ui_messages_use">
+        <item translatable="false">Toast</item>
+        <item translatable="false">Snackbar</item>
+    </string-array>
+
+    <!-- Preference -->
+    <string name="pt_ui_theme">Thema</string>
+    <string-array name="pe_ui_theme">
+        <item>Noir</item>
+        <item>Clair</item>
+    </string-array>
+
+    <!-- Preference - Preferred interface Locale -->
+    <string name="pt_ui_language">Langue préférée</string>
+
+    <!-- Preference - Degrees by which to rotate camera images automatically -->
+    <string name="pt_thumbnails_rotate_auto">Rotation automatique des photos</string>
+    <string-array name="pe_thumbnails_rotate_auto">
+        <item>Non</item>
+        <item>Faire tourner à droit</item>
+        <item>Faire tourner à gauche</item>
+        <item>Faire tourner à 180°</item>
+    </string-array>
+
+    <!-- Preference - Compatibility / bug workaround for some devices -->
+    <string name="pt_thumbnail_cropper_layer_type">Recadrage \'Layer Type\'</string>
+    <string name="pt_hint_layer_type">Laissez ce paramètre sur la valeur par défaut, sauf si vous rencontrez des problèmes lors du recadrage des images. Essayez \'Logiciel\' pour plus sûr mais plus lentement, ou forcez \'Matériel\' pour moins sûr, mais plus rapide.</string>
+    <string-array name="pe_thumbnails_cropper_layer_type">
+        <item>Valeur par défaut</item>
+        <item>Matériel</item>
+        <item>Logiciel</item>
+    </string-array>
+
+    <!-- Preference - the barcode scanner to use-->
+    <string name="pt_scanning_preferred_scanner">Scanner préféré</string>
+    <string-array name="pe_scanning_preferred_scanner">
+        <item>Scanner compatible Zxing</item>
+        <item>Scanner Zxing</item>
+        <item>Scanner Pic2Shop</item>
+    </string-array>
+
+
+    <!-- ========== Book list preferences ========== -->
+
+    <!-- Preference - Book list state-related preferences -->
+    <string name="pt_bob_list_state">État de la liste de livres</string>
+    <string-array name="pe_bob_list_state">
+        <item>Toujours démarrer avec une liste de livre étendue</item>
+        <item>Toujours démarrer avec une liste de livre réduite</item>
+        <item>Conserver l\'état de la liste de livres</item>
+    </string-array>
+
+    <!--  Preference to override the default method used to generate book lists as defined by API level -->
+    <string name="pt_bob_list_generation">Option de génération de la liste de livres</string>
+    <string-array name="pe_bob_list_generation">
+        <item>Recommandations automatiques</item>
+        <item>Mode « toutes options »</item>
+        <item>Mode compatibilité avancé</item>
+        <item>Mode de compatibilité forcée</item>
+    </string-array>
+
+    <!-- Preference - Thumbnails are fetched in a background task -->
+    <string name="pt_bob_thumbnails_generating_mode">Utiliser une tâche en arrière-plan pour récupérer les miniatures</string>
+    <string name="pe_bob_thumbnails_generating_mode_background">Utiliser un thread (défilement des listes plus rapide, affichage décalé des images)</string>
+    <string name="pe_bob_thumbnails_generating_mode_immediately">Générer immédiatement (défilement des listes plus lent, affichage immédiat des images)</string>
+
+    <!-- Preference - Thumbnails are cached in a database to avoid resizing all the time -->
+    <string name="pt_bob_thumbnails_cache_resized">Mettre les miniatures en cache</string>
+    <string name="pe_bob_thumbnails_cache_resized_each_time">Redimensionner à chaque fois que nécessaire (moins d\'espace nécessaire, défilement des listes plus lent)</string>
+    <string name="pe_bob_thumbnails_cache_resized_stored">Mettre les miniatures en cache (plus d\'espace nécessaire, défilement des listes plus rapide)</string>
+
+    <!-- ========== Book list style preferences ========== -->
+
+    <!-- Preference - Use scaled text and images -->
+    <string name="pt_bob_item_size">Taille des éléments de liste de livres</string>
+    <string-array name="pe_bob_item_size">
+        <item>Normal</item>
+        <item>Plus petit</item>
+        <item>Plus grand</item>
+    </string-array>
+
+    <!-- Preference - Determines what is show in book list header -->
+    <string name="pt_bob_header">Détails du résumé dans l\'en-tête</string>
+    <string-array name="pe_bob_header">
+        <item>Montrer le nombre de livres</item>
+        <item>Montrer l\'entête de 1er niveau</item>
+    </string-array>
+
+    <!-- Preference - Show thumbnail image for each book -->
+    <string name="pt_bob_thumbnails_show">Montrer les miniatures</string>
+    <!-- Preference - Show large thumbnail if thumbnails are shown -->
+    <string name="pt_bob_thumbnails_show_large">Preférer les grandes miniatures</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_authors">Livres d\'auteurs multiples</string>
+    <!-- Preference -->
+    <string name="pt_bob_books_under_multiple_series">Livres appartenant à des séries multiples</string>
+
+    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Sous %1$s principal(e) seulement</string>
+    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Sous chaque %1$s</string>
+
+    <!-- Preference -->
+    <string name="pt_bob_format_author_name">Format des noms d\'auteur</string>
+    <string name="pv_bob_format_author_name_given_first">Prénom en premier, par exemple « Bill Smith »</string>
+    <string name="pv_bob_format_author_name_family_first">Nom de famille en premier, par exemple « Smith, Bill »</string>
+
+    <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
+    <string name="pt_bob_sort_author_name">Trier les noms d\'auteur</string>
+
+    <!-- Preference GROUP -->
+    <string name="pg_bob_extra_book_details">Détails supplémentaires</string>
+</resources>

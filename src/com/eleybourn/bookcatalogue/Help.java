@@ -21,8 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,17 +29,20 @@ import android.widget.TextView;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 
 /**
  * This is the Help page.
  *
  * @author Evan Leybourn
  */
-public class Help extends BaseActivity {
+public class Help
+    extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
@@ -50,7 +51,7 @@ public class Help extends BaseActivity {
 
     @Override
     @CallSuper
-    public void onCreate(final @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
@@ -81,31 +82,26 @@ public class Help extends BaseActivity {
     }
 
     private void initCleanupButton() {
-        try {
-            final Button cleanupBtn = findViewById(R.id.cleanup_button);
-            final TextView cleanupTxt = findViewById(R.id.cleanup_text);
 
-            cleanupBtn.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    StorageUtils.purgeFiles(true);
-                    initCleanupButton();
-                }
-            });
+        final Button cleanupBtn = findViewById(R.id.cleanup_button);
+        final TextView cleanupTxt = findViewById(R.id.cleanup_text);
 
-            final float space = StorageUtils.purgeFiles(false);
-            if (space == 0) {
-                cleanupBtn.setVisibility(View.GONE);
-                cleanupTxt.setVisibility(View.GONE);
-            } else {
-                cleanupBtn.setVisibility(View.VISIBLE);
-                cleanupTxt.setVisibility(View.VISIBLE);
-                cleanupTxt.setText(getString(R.string.info_cleanup_files_text, Utils.formatFileSize(space)));
+        cleanupBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StorageUtils.purgeFiles(true);
+                initCleanupButton();
             }
-        } catch (Exception e) {
-            Logger.error(e);
+        });
+
+        final float space = StorageUtils.purgeFiles(false);
+        if (space == 0) {
+            cleanupBtn.setVisibility(View.GONE);
+            cleanupTxt.setVisibility(View.GONE);
+        } else {
+            cleanupBtn.setVisibility(View.VISIBLE);
+            cleanupTxt.setVisibility(View.VISIBLE);
+            cleanupTxt.setText(getString(R.string.info_cleanup_files_text, Utils.formatFileSize(space)));
         }
     }
-
-
 }

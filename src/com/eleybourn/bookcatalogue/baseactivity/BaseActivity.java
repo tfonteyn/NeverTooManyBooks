@@ -1,18 +1,8 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.eleybourn.bookcatalogue.About;
@@ -24,15 +14,26 @@ import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
 import com.eleybourn.bookcatalogue.Help;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.booklist.BooklistPreferredStylesActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
+import com.google.android.material.navigation.NavigationView;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 /**
- * Base class for all (most) Activity's
+ * Base class for all (most) Activity's.
  *
  * @author pjw
  */
@@ -41,16 +42,16 @@ abstract public class BaseActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener,
         CanBeDirty {
 
-    /** The side/navigation panel */
+    /** The side/navigation panel. */
     @Nullable
     private DrawerLayout mDrawerLayout;
     @Nullable
     private NavigationView mNavigationView;
 
-    /** when a locale or theme is changed, a restart of the activity is needed */
+    /** when a locale or theme is changed, a restart of the activity is needed. */
     private boolean mRestartActivityOnResume = false;
 
-    /** universal flag used to indicate something was changed and not saved (yet) */
+    /** universal flag used to indicate something was changed and not saved (yet). */
     private boolean mIsDirty = false;
 
     public boolean isDirty() {
@@ -67,7 +68,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
 
     @Override
     @CallSuper
-    protected void onCreate(final @Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         // call setTheme before super.onCreate
         setTheme(ThemeUtils.getThemeResId());
@@ -129,7 +130,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
         return mNavigationView;
     }
 
-    private void setNavigationView(final @Nullable NavigationView navigationView) {
+    private void setNavigationView(@Nullable final NavigationView navigationView) {
         mNavigationView = navigationView;
         if (mNavigationView != null) {
             mNavigationView.setNavigationItemSelectedListener(this);
@@ -144,28 +145,28 @@ abstract public class BaseActivity extends AppCompatActivity implements
 
     @Override
     @CallSuper
-    public boolean onNavigationItemSelected(final @NonNull MenuItem menuItem) {
+    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         closeNavigationDrawer();
 
         Intent intent;
-        switch (menuItem.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.nav_search: {
                 onSearchRequested();
                 return true;
             }
             case R.id.nav_manage_bookshelves: {
                 intent = new Intent(this, EditBookshelfListActivity.class);
-                startActivityForResult(intent, EditBookshelfListActivity.REQUEST_CODE); /* 41e84172-5833-4906-a891-8df302ecc190 */
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
                 break;
             }
             case R.id.nav_edit_list_styles: {
-                intent = new Intent(this, BooklistPreferredStylesActivity.class);
-                startActivityForResult(intent, BooklistPreferredStylesActivity.REQUEST_CODE); /* 13854efe-e8fd-447a-a195-47678c0d87e7 */
+                intent = new Intent(this, PreferredStylesActivity.class);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES);
                 return true;
             }
             case R.id.nav_admin: {
                 intent = new Intent(this, AdminActivity.class);
-                startActivityForResult(intent, AdminActivity.REQUEST_CODE); /* 7f46620d-7951-4637-8783-b410730cd460 */
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_ADMIN);
                 return true;
             }
             case R.id.nav_about: {
@@ -186,7 +187,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     /**
      * @param drawerLayout your custom one
      */
-    private void setDrawerLayout(final @Nullable DrawerLayout drawerLayout) {
+    private void setDrawerLayout(@Nullable final DrawerLayout drawerLayout) {
         this.mDrawerLayout = drawerLayout;
     }
 
@@ -199,7 +200,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
      */
     @Override
     @CallSuper
-    public boolean onOptionsItemSelected(final @NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             // Default handler for home icon
             case android.R.id.home: {
@@ -211,7 +212,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
                     }
                 }
                 // otherwise, home is an 'up' event.
-                setResult(Activity.RESULT_CANCELED);
                 finishIfClean();
                 return true;
             }
@@ -222,25 +222,27 @@ abstract public class BaseActivity extends AppCompatActivity implements
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, final @Nullable Intent data) {
+    protected void onActivityResult(final int requestCode,
+                                    final int resultCode,
+                                    @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
         // some activities MIGHT support the navigation panel, but are not (always) reacting to results,
         // or need to react. Some debug/reminder logging here
         switch (requestCode) {
-            case EditBookshelfListActivity.REQUEST_CODE:
+            case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this, "navigation panel EditBookshelfListActivity.REQUEST_CODE");
+                    Logger.info(this, "navigation panel REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
-            case BooklistPreferredStylesActivity.REQUEST_CODE:
+            case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this, "navigation panel BooklistPreferredStylesActivity.REQUEST_CODE");
+                    Logger.info(this, "navigation panel REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
                 }
                 return;
-            case AdminActivity.REQUEST_CODE:
+            case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this, "navigation panel AdminActivity.REQUEST_CODE");
+                    Logger.info(this, "navigation panel REQ_NAV_PANEL_ADMIN");
                 }
                 return;
 
@@ -262,7 +264,6 @@ abstract public class BaseActivity extends AppCompatActivity implements
     @Override
     @CallSuper
     public void onBackPressed() {
-        setResult(Activity.RESULT_CANCELED);
         finishIfClean();
     }
 
@@ -302,7 +303,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
             startActivity(getIntent());
         } else {
             // listen for changes
-            BookCatalogueApp.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+            Prefs.getPrefs().registerOnSharedPreferenceChangeListener(this);
         }
 
         Tracker.exitOnResume(this);
@@ -311,7 +312,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         // stop listening for changes
-        BookCatalogueApp.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        Prefs.getPrefs().unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
 
@@ -320,24 +321,20 @@ abstract public class BaseActivity extends AppCompatActivity implements
      */
     @Override
     @CallSuper
-    public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
-        switch (key) {
-            case ThemeUtils.PREF_APP_THEME: {
-                if (ThemeUtils.loadPreferred()) {
-                    this.setTheme(ThemeUtils.getThemeResId());
-                }
-                break;
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
+                                          @NonNull final String key) {
+
+        if (key.equals(BookCatalogueApp.getResourceString(R.string.pk_ui_theme))) {
+            if (ThemeUtils.loadPreferred()) {
+                this.setTheme(ThemeUtils.getThemeResId());
             }
-            case LocaleUtils.PREF_APP_LOCALE: {
-                // Trigger a restart of this activity in onResume, if the locale has changed.
-                LocaleUtils.loadPreferred();
-                if (LocaleUtils.loadPreferred()) {
-                    LocaleUtils.apply(getBaseContext().getResources());
 
-                    mRestartActivityOnResume = true;
-                }
-
-                break;
+        } else if (key.equals(BookCatalogueApp.getResourceString(R.string.pk_ui_language))) {
+            // Trigger a restart of this activity in onResume, if the locale has changed.
+            LocaleUtils.loadPreferred();
+            if (LocaleUtils.loadPreferred()) {
+                LocaleUtils.apply(getBaseContext().getResources());
+                mRestartActivityOnResume = true;
             }
         }
     }

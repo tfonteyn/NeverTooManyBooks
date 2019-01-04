@@ -13,9 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Checkable;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
@@ -36,7 +34,7 @@ public class ExportDialogFragment extends DialogFragment {
      * @return Created fragment
      */
     @NonNull
-    public static ExportDialogFragment newInstance(final @NonNull ExportSettings settings) {
+    public static ExportDialogFragment newInstance(@NonNull final ExportSettings settings) {
         final ExportDialogFragment frag = new ExportDialogFragment();
         final Bundle args = new Bundle();
         //noinspection ConstantConditions
@@ -50,7 +48,7 @@ public class ExportDialogFragment extends DialogFragment {
      */
     @Override
     @CallSuper
-    public void onAttach(final @NonNull Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
         if (!(context instanceof OnExportTypeSelectionDialogResultsListener)) {
             throw new RTE.MustImplementException(context, OnExportTypeSelectionDialogResultsListener.class);
@@ -62,7 +60,7 @@ public class ExportDialogFragment extends DialogFragment {
      */
     @NonNull
     @Override
-    public Dialog onCreateDialog(final @Nullable Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // savedInstanceState not used.
         Bundle args = getArguments();
         Objects.requireNonNull(args);
@@ -70,9 +68,6 @@ public class ExportDialogFragment extends DialogFragment {
 
         View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_options, null);
 
-        if (BuildConfig.DEBUG) {
-            root.findViewById(R.id.row__xml_tables).setVisibility(View.VISIBLE);
-        }
         root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,15 +86,11 @@ public class ExportDialogFragment extends DialogFragment {
             }
         });
 
-//        setRelatedView(root, R.id.books_check, R.id.row_all_books);
-//        setRelatedView(root, R.id.covers_check, R.id.row_covers);
-
-        TextView coverBlurb = root.findViewById(R.id.cover_images_blurb);
-        coverBlurb.setText(R.string.export_info_cover_images);
+        root.findViewById(R.id.xml_tables_check).setVisibility(View.VISIBLE);
 
         AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                 .setView(root)
-                .setTitle(R.string.backup_to_archive)
+                .setTitle(R.string.lbl_backup)
                 .setIcon(R.drawable.ic_warning)
                 .create();
         dialog.setCanceledOnTouchOutside(false);
@@ -108,7 +99,7 @@ public class ExportDialogFragment extends DialogFragment {
 
     private void updateOptions() {
         Dialog dialog = this.getDialog();
-        // what to export. All checked == ExportSettings.EXPORT_ALL
+        // what to export. All checked == ExportSettings.ALL
         if (((Checkable) dialog.findViewById(R.id.xml_tables_check)).isChecked()) {
             settings.what |= ExportSettings.XML_TABLES;
         }
@@ -135,7 +126,7 @@ public class ExportDialogFragment extends DialogFragment {
             try {
                 settings.what |= ExportSettings.EXPORT_SINCE;
                 settings.dateFrom = DateUtils.parseDate(v.getText().toString().trim());
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 //Snackbar.make(v, R.string.no_date, Snackbar.LENGTH_LONG).show();
                 StandardDialogs.showUserMessage(requireActivity(), R.string.no_date);
                 settings.what = ExportSettings.NOTHING;
@@ -149,7 +140,7 @@ public class ExportDialogFragment extends DialogFragment {
      * @param cbId  Checkable view id
      * @param relId Related view id
      */
-    private void setRelatedView(final @NonNull View root, final @IdRes int cbId, final @IdRes int relId) {
+    private void setRelatedView(@NonNull final View root, final @IdRes int cbId, final @IdRes int relId) {
         final Checkable cb = root.findViewById(cbId);
         final View rel = root.findViewById(relId);
         rel.setOnClickListener(new View.OnClickListener() {
@@ -164,6 +155,6 @@ public class ExportDialogFragment extends DialogFragment {
      * Listener interface to receive notifications when dialog is closed by any means.
      */
     public interface OnExportTypeSelectionDialogResultsListener {
-        void onExportTypeSelectionDialogResult(final @NonNull ExportSettings settings);
+        void onExportTypeSelectionDialogResult(@NonNull final ExportSettings settings);
     }
 }

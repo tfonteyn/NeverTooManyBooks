@@ -21,15 +21,13 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NetworkException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
@@ -37,18 +35,16 @@ import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-
+import androidx.annotation.NonNull;
 
 /**
- * Class to implement the reviews.list api call. It queries based on the passed parameters and returns
- * a single Bundle containing all results. The Bundle itself will contain other bundles: typically an
- * array of 'Review' bundles, each of which will contains arrays of 'author' bundles.
+ * Class to implement the reviews.list api call. It queries based on the passed parameters
+ * and returns a single Bundle containing all results. The Bundle itself will contain
+ * other bundles: typically an array of 'Review' bundles, each of which will contains
+ * arrays of 'author' bundles.
  *
- * Processing this data is up to the caller, but it is guaranteed to be type-safe if present, with the
- * exception of dates, which are collected as text strings.
+ * Processing this data is up to the caller, but it is guaranteed to be type-safe if present,
+ * With the exception of dates, which are collected as text strings.
  *
  * @author Philip Warner
  */
@@ -56,22 +52,26 @@ public class BookshelfListApiHandler extends ApiHandler {
 
     private SimpleXmlFilter mFilters;
 
-    public BookshelfListApiHandler(final @NonNull GoodreadsManager manager) {
+    public BookshelfListApiHandler(@NonNull final GoodreadsManager manager)
+            throws NotAuthorizedException {
         super(manager);
-        if (!manager.hasValidCredentials())
-            throw new RuntimeException("Goodreads credentials not valid");
+        if (!manager.hasValidCredentials()) {
+            throw new NotAuthorizedException();
+        }
         // Build the XML filters needed to get the data we're interested in.
         buildFilters();
     }
 
     @NonNull
     public Bundle run(final int page)
-            throws OAuthMessageSignerException, OAuthExpectationFailedException,
-            OAuthCommunicationException, NotAuthorizedException, BookNotFoundException, IOException, NetworkException {
+            throws NotAuthorizedException,
+                   BookNotFoundException,
+                   IOException {
         @SuppressWarnings("UnusedAssignment")
         long t0 = System.currentTimeMillis();
 
-        // Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns
+        // Sort by update_dte (descending) so sync is faster.
+        // Specify 'shelf=all' because it seems goodreads returns
         // the shelf that is selected in 'My Books' on the web interface by default.
         final String urlBase = GoodreadsManager.BASE_URL + "/shelf/list.xml?key=%1$s&page=%2$s&user_id=%3$s";
         final String url = String.format(urlBase, mManager.getDevKey(), page, mManager.getUserId());
@@ -93,7 +93,9 @@ public class BookshelfListApiHandler extends ApiHandler {
         Bundle results = mFilters.getData();
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this, "Found " + results.getLong(BookshelfListFieldNames.TOTAL) + " shelves in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info(this, "Found " +
+                    results.getLong(BookshelfListFieldNames.TOTAL) +
+                    " shelves in " + (System.currentTimeMillis() - t0) + "ms");
         }
 
         return results;
@@ -229,6 +231,7 @@ public class BookshelfListApiHandler extends ApiHandler {
      * @author Philip Warner
      */
     public static final class BookshelfListFieldNames {
+
         public static final String SHELVES = "shelves";
         public static final String START = "start";
         public static final String END = "end";
@@ -236,6 +239,9 @@ public class BookshelfListApiHandler extends ApiHandler {
         public static final String EXCLUSIVE = "exclusive";
         public static final String ID = "id";
         public static final String NAME = "name";
+
+        private BookshelfListFieldNames() {
+        }
     }
 
 //	/**

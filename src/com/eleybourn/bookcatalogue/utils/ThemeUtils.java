@@ -1,21 +1,16 @@
 package com.eleybourn.bookcatalogue.utils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.StyleRes;
-
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.properties.ListOfValuesProperty;
+
+import androidx.annotation.StyleRes;
 
 /**
  * Static class. There is only ONE Theme *active* at any given time.
  */
-public class ThemeUtils {
-    /** Preferred interface Theme */
-    public static final String PREF_APP_THEME = "App.Theme";
+public final class ThemeUtils {
     /**
      * NEWKIND: APP THEME
-     * Also add new themes in R.array.supported_themes,
+     * Also add new themes in {@link R.array#pv_ui_theme},
      * the string-array order must match the APP_THEMES order
      * The preferences choice will be build according to the string-array list/order.
      */
@@ -65,27 +60,12 @@ public class ThemeUtils {
     }
 
     /**
-     * Format the list of themes
-     *
-     * @return List of preference themes
-     */
-    @NonNull
-    public static ListOfValuesProperty.ItemList<Integer> getThemePreferencesListItems() {
-        ListOfValuesProperty.ItemList<Integer> items = new ListOfValuesProperty.ItemList<>();
-        String[] themeList = BookCatalogueApp.getResourceStringArray(R.array.user_interface_theme_supported);
-        for (int i = 0; i < themeList.length; i++) {
-            items.add(i, R.string.single_string, themeList[i]);
-        }
-        return items;
-    }
-
-    /**
      * Load the Theme setting from the users SharedPreference.
      *
-     * @return true if the theme was changed
+     * @return <tt>true</tt> if the theme was changed
      */
     public static boolean loadPreferred() {
-        mCurrentTheme = BookCatalogueApp.getIntPreference(PREF_APP_THEME, DEFAULT_THEME);
+        mCurrentTheme = Prefs.getInt(R.string.pk_ui_theme, DEFAULT_THEME);
         if (mCurrentTheme != mLastTheme) {
             mLastTheme = mCurrentTheme;
             return true;

@@ -22,12 +22,11 @@ package com.eleybourn.bookcatalogue.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -39,17 +38,21 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Class to hold book-related series data.
  *
  * @author Philip Warner
  */
-public class Series implements Parcelable, Utils.ItemWithIdFixup {
+public class Series
+    implements Parcelable, Utils.ItemWithIdFixup {
 
     public static final Creator<Series> CREATOR = new Creator<Series>() {
         @Override
-        public Series createFromParcel(Parcel in) {
-            return new Series(in);
+        public Series createFromParcel(Parcel source) {
+            return new Series(source);
         }
 
         @Override
@@ -58,20 +61,19 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
         }
     };
     private static final String SERIES_REGEX_SUFFIX =
-            BookCatalogueApp.getResourceString(R.string.series_number_prefixes)
-                    /*
-                     * Trim extraneous punctuation and whitespace from the titles and authors
-                     *
-                     * Original code had:
-                     *    "\\s*([0-9\\.\\-]+|[ivxlcm\\.\\-]+)\\s*$";
-                     *
-                     *    Android Studio:
-                     *    Reports character escapes that are replaceable with the unescaped character without a
-                     *    change in meaning. Note that inside the square brackets of a character class, many
-                     *    escapes are unnecessary that would be necessary outside of a character class.
-                     *    For example the regex [\.] is identical to [.]
-                     */
-                    + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
+        BookCatalogueApp.getResourceString(R.string.series_number_prefixes)
+            /*
+             * Trim extraneous punctuation and whitespace from the titles and authors
+             *
+             * Original code had:
+             *    "\\s*([0-9\\.\\-]+|[ivxlcm\\.\\-]+)\\s*$";
+             *
+             *    Android Studio:
+             *    Reports character escapes that are replaceable with the unescaped character without a
+             *    change in meaning. Note that inside the square brackets of a character class, many
+             *    escapes are unnecessary that would be necessary outside of a character class.
+             *    For example the regex [\.] is identical to [.]
+             */ + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
     private static final String SERIES_REGEX_1 = "^\\s*" + SERIES_REGEX_SUFFIX;
     private static final String SERIES_REGEX_2 = "(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX;
     /** Pattern used to recognize series numbers embedded in names */
@@ -95,7 +97,7 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
     /**
      * Constructor that will attempt to parse a single string into a Series name and number.
      */
-    public Series(final @NonNull String encodedName) {
+    public Series(@NonNull final String encodedName) {
         java.util.regex.Matcher m = PATTERN.matcher(encodedName);
         if (m.find()) {
             this.name = m.group(1).trim();
@@ -111,26 +113,37 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
      * @param name   of the series
      * @param number number of this book in the series
      */
-    public Series(final @NonNull String name, final @Nullable String number) {
+    public Series(@NonNull final String name,
+                  @Nullable final String number
+    ) {
         this(0L, name, false, number);
     }
 
     /**
      * @param name       of the series
-     * @param isComplete whether a Series is completed, i.e if the user has all he wants from this Series.
+     * @param isComplete whether a Series is completed, i.e if the user has all
+     *                   they want from this Series.
      * @param number     number of this book in the series
      */
-    public Series(final @NonNull String name, final boolean isComplete, final @Nullable String number) {
+    public Series(@NonNull final String name,
+                  final boolean isComplete,
+                  @Nullable final String number
+    ) {
         this(0L, name, isComplete, number);
     }
 
     /**
      * @param id         of the series
      * @param name       of the series
-     * @param isComplete whether a Series is completed, i.e if the user has all he wants from this Series.
+     * @param isComplete whether a Series is completed, i.e if the user has all
+     *                   they want from this Series.
      * @param number     number of this book in the series
      */
-    public Series(final long id, final @NonNull String name, final boolean isComplete, final @Nullable String number) {
+    public Series(final long id,
+                  @NonNull final String name,
+                  final boolean isComplete,
+                  @Nullable final String number
+    ) {
         this.id = id;
         this.name = name.trim();
         this.isComplete = isComplete;
@@ -150,14 +163,14 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
      * @param title Book title to parse
      */
     @Nullable
-    public static SeriesDetails findSeriesFromBookTitle(final @Nullable String title) {
+    public static SeriesDetails findSeriesFromBookTitle(@Nullable final String title) {
         if (title == null || title.isEmpty()) {
             return null;
         }
         SeriesDetails details = null;
-        int last = title.lastIndexOf("(");
+        int last = title.lastIndexOf('(');
         if (last >= 1) { // We want a title that does not START with a bracket!
-            int close = title.lastIndexOf(")");
+            int close = title.lastIndexOf(')');
             if (close > -1 && last < close) {
                 details = new SeriesDetails();
                 details.name = title.substring((last + 1), close);
@@ -189,7 +202,8 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
         }
 
         if (mSeriesPosCleanupPat == null) {
-            mSeriesPosCleanupPat = Pattern.compile(SERIES_REGEX_1, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+            mSeriesPosCleanupPat = Pattern.compile(SERIES_REGEX_1,
+                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         }
         if (mSeriesIntegerPat == null) {
             String numericExp = "^[0-9]+$";
@@ -213,7 +227,8 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Remove series from the list where the names are the same, but one entry has a null or empty position.
+     * Remove series from the list where the names are the same, but one entry has a
+     * null or empty position.
      * eg. the following list should be processed as indicated:
      *
      * fred(5)
@@ -223,7 +238,7 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
      * bill(1)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean pruneSeriesList(final @Nullable List<Series> list) {
+    public static boolean pruneSeriesList(@Nullable final List<Series> list) {
         Objects.requireNonNull(list);
 
         List<Series> toDelete = new ArrayList<>();
@@ -269,17 +284,10 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
 
     }
 
-    public boolean isComplete() {
-        return isComplete;
-    }
-
-    public void setComplete(final boolean complete) {
-        isComplete = complete;
-    }
-
     public static boolean setComplete(final CatalogueDBAdapter db,
                                       final long id,
-                                      final boolean isComplete) {
+                                      final boolean isComplete
+    ) {
         Series series = null;
         try {
             // load from database
@@ -287,9 +295,9 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
             Objects.requireNonNull(series);
             series.setComplete(isComplete);
             return (db.updateSeries(series) == 1);
-        } catch (Exception e) {
+        } catch (DBExceptions.UpdateException e) {
             // log but ignore
-            Logger.error(e,"failed to set Series id=" + id + " to complete=" + isComplete);
+            Logger.error(e, "failed to set Series id=" + id + " to complete=" + isComplete);
             // rollback
             if (series != null) {
                 series.setComplete(!isComplete);
@@ -298,8 +306,18 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
         }
     }
 
+    public boolean isComplete() {
+        return isComplete;
+    }
+
+    public void setComplete(final boolean complete) {
+        isComplete = complete;
+    }
+
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest,
+                              int flags
+    ) {
         dest.writeLong(id);
         dest.writeString(name);
         dest.writeByte((byte) (isComplete ? 1 : 0));
@@ -315,7 +333,7 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
     @NonNull
     public String getDisplayName() {
         if (number != null && !number.isEmpty()) {
-            return name + " (" + number + ")";
+            return name + " (" + number + ')';
         } else {
             return name;
         }
@@ -340,7 +358,7 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
     public String toString() {
         if (number != null && !number.isEmpty()) {
             // start with a space !
-            return name + " (" + number + ")";
+            return name + " (" + number + ')';
         } else {
             return name;
         }
@@ -351,7 +369,7 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
      *
      * @param source Series to copy
      */
-    public void copyFrom(final @NonNull Series source) {
+    public void copyFrom(@NonNull final Series source) {
         name = source.name;
         number = source.number;
         isComplete = source.isComplete;
@@ -359,7 +377,7 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
     }
 
     @Override
-    public long fixupId(final @NonNull CatalogueDBAdapter db) {
+    public long fixupId(@NonNull final CatalogueDBAdapter db) {
         this.id = db.getSeriesId(this);
         return this.id;
     }
@@ -383,20 +401,21 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
-    public boolean equals(final @Nullable Object o) {
-        if (this == o) {
+    public boolean equals(@Nullable final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Series that = (Series) o;
-        if (this.id == 0 || that.id == 0 || this.id == that.id) {
-            return Objects.equals(this.name, that.name)
-                    && (this.isComplete == that.isComplete)
-                    && Objects.equals(this.number, that.number);
+        Series that = (Series) obj;
+        if ((this.id != 0) && (that.id != 0) && (this.id != that.id)) {
+            return false;
         }
-        return false;
+        return Objects.equals(this.name, that.name)
+            && (this.isComplete == that.isComplete)
+            && Objects.equals(this.number, that.number);
+
     }
 
     @Override
@@ -411,6 +430,7 @@ public class Series implements Parcelable, Utils.ItemWithIdFixup {
      * @author Philip Warner
      */
     public static class SeriesDetails {
+
         public String name;
         @Nullable
         public String position = null;
