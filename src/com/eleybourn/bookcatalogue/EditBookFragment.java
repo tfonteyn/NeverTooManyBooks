@@ -30,9 +30,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -43,26 +49,21 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.io.File;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 /**
- * A tab host activity which holds the edit book tabs
+ * A tab host activity which holds the edit book tabs.
  * 1. Details
  * 2. Notes
  * 3. Anthology titles
  * 4. Loan Book -> ENHANCE: remove this from this activity into a DialogFragment
  */
 public class EditBookFragment
-    extends BookBaseFragment
-    implements BookManager {
+        extends BookBaseFragment
+        implements BookManager {
 
     public static final String TAG = "EditBookFragment";
 
     /**
-     * Tabs in order
+     * Tabs in order.
      */
     public static final String REQUEST_BKEY_TAB = "tab";
     public static final int TAB_EDIT = 0;
@@ -70,20 +71,23 @@ public class EditBookFragment
     public static final int TAB_EDIT_LOANS = 2;
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
-    /** the one and only book we're editing */
+    /** the one and only book we're editing. */
     private Book mBook;
 
-    /** cache our activity to avoid multiple requireActivity and casting */
+    /** cache our activity to avoid multiple requireActivity and casting. */
     private BaseActivity mActivity;
 
-    /** */
+    /** The tabs. */
     private TabLayout mTabLayout;
+    /** The TOC tab; is hidden/visible depending on the book. */
     @Nullable
     private TabLayout.Tab mAnthologyTab;
 
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="BookManager interface">
+
+    @Override
     @NonNull
     public BookManager getBookManager() {
         return this;
@@ -135,9 +139,11 @@ public class EditBookFragment
 
         //noinspection ConstantConditions
         Button confirmButton = getView().findViewById(R.id.confirm);
-        confirmButton.setText(isExistingBook ? R.string.btn_confirm_save_book : R.string.btn_confirm_add_book);
+        confirmButton.setText(isExistingBook ? R.string.btn_confirm_save_book
+                                             : R.string.btn_confirm_add_book);
+
         confirmButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            public void onClick(@NonNull final View v) {
                 doSave(new StandardDialogs.AlertDialogAction() {
                     @Override
                     public void onPositive() {
@@ -162,7 +168,7 @@ public class EditBookFragment
         });
 
         getView().findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            public void onClick(@NonNull final View v) {
                 doCancel();
             }
         });
@@ -187,7 +193,7 @@ public class EditBookFragment
     //<editor-fold desc="Populate">
 
     /**
-     * initial setup for editing
+     * initial setup for editing.
      */
     private void initTabs(final boolean isExistingBook,
                           @Nullable final Bundle savedInstanceState) {
@@ -201,7 +207,8 @@ public class EditBookFragment
         fragmentHolder = new FragmentHolder();
         fragmentHolder.fragment = new EditBookFieldsFragment();
         fragmentHolder.tag = EditBookFieldsFragment.TAG;
-        TabLayout.Tab tab = mTabLayout.newTab().setText(R.string.tab_lbl_details).setTag(fragmentHolder);
+        TabLayout.Tab tab = mTabLayout.newTab().setText(R.string.tab_lbl_details).setTag(
+                fragmentHolder);
         mTabLayout.addTab(tab);
 
         fragmentHolder = new FragmentHolder();
@@ -232,15 +239,21 @@ public class EditBookFragment
             case TAB_EDIT_NOTES:
                 showTab = tabWanted;
                 break;
+
             case TAB_EDIT_LOANS:
                 if (Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
                     showTab = tabWanted;
                 }
                 break;
+
             case TAB_EDIT_ANTHOLOGY:
                 if (Fields.isVisible(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK)) {
                     showTab = tabWanted;
                 }
+                break;
+
+            default:
+                Logger.error("Unknown tab=" + tabWanted);
                 break;
         }
 
@@ -251,9 +264,9 @@ public class EditBookFragment
         fragmentHolder = (FragmentHolder) ourTab.getTag();
         //noinspection ConstantConditions
         getChildFragmentManager()
-            .beginTransaction()
-            .replace(R.id.tab_fragment, fragmentHolder.fragment, fragmentHolder.tag)
-            .commit();
+                .beginTransaction()
+                .replace(R.id.tab_fragment, fragmentHolder.fragment, fragmentHolder.tag)
+                .commit();
 
         // finally hook up our listener.
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -262,9 +275,9 @@ public class EditBookFragment
                 FragmentHolder fragmentHolder = (FragmentHolder) tab.getTag();
                 //noinspection ConstantConditions
                 getChildFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.tab_fragment, fragmentHolder.fragment, fragmentHolder.tag)
-                    .commit();
+                        .beginTransaction()
+                        .replace(R.id.tab_fragment, fragmentHolder.fragment, fragmentHolder.tag)
+                        .commit();
             }
 
             @Override
@@ -278,7 +291,7 @@ public class EditBookFragment
     }
 
     /**
-     * add or remove the anthology tab
+     * add or remove the anthology tab.
      */
     public void addTOCTab(final boolean show) {
         if (show) {
@@ -312,7 +325,7 @@ public class EditBookFragment
 //    }
 
     /**
-     * the only thing on this level is the TAB we're on
+     * the only thing on this level is the TAB we're on.
      */
     @Override
     @CallSuper
@@ -332,13 +345,13 @@ public class EditBookFragment
     }
 
     /**
-     * Called when the user clicks 'save'
-     *
+     * Called when the user clicks 'save'.
+     * <p>
      * This will save a book into the database, by either updating or created a book.
-     *
+     * <p>
      * It will check if the book already exists (isbn search) if you are creating a book;
      * if so the user will be prompted to confirm.
-     *
+     * <p>
      * In all cases, once the book is added/created, or not, the appropriate method of the
      * passed nextStep parameter will be executed. Passing nextStep is necessary because
      * this method may return after displaying a dialogue.
@@ -348,17 +361,20 @@ public class EditBookFragment
     private void doSave(@NonNull final StandardDialogs.AlertDialogAction nextStep) {
         Book book = getBook();
 
-        // ask the currently displayed tab fragment to add it's fields; the others did when they went in hiding
+        // ask the currently displayed tab fragment to add it's fields; the others
+        // did when they went in hiding
         //ENHANCE: alternative method: see SearchAdminActivity. Decide later
         //noinspection ConstantConditions
-        DataEditor currentChildFragment = (DataEditor) getChildFragmentManager().findFragmentById(R.id.tab_fragment);
+        DataEditor currentChildFragment = (DataEditor) getChildFragmentManager()
+                .findFragmentById(R.id.tab_fragment);
         currentChildFragment.saveFieldsTo(book);
 
 
         // Ignore validation failures; but we still validate to get the current values.
         book.validate();
 //        if (!book.validate()) {
-//            StandardDialogs.sendTaskUserMessage(this, book.getValidationExceptionMessage(getResources()));
+//              StandardDialogs.sendTaskUserMessage(this,
+//               book.getValidationExceptionMessage(getResources()));
 //        }
 
         // However, there is some data that we really do require...
@@ -396,7 +412,7 @@ public class EditBookFragment
     }
 
     /**
-     * Save the collected book details
+     * Save the collected book details.
      */
     private void saveBook() {
         Book book = getBook();

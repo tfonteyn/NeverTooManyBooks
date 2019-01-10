@@ -24,17 +24,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
-
-import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.FragmentActivity;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
-import android.widget.Toast;
+import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -43,7 +41,9 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -60,22 +60,26 @@ public final class StandardDialogs {
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
-    public static void showUserMessage(@NonNull final Activity activity, @StringRes final int message) {
+    public static void showUserMessage(@NonNull final Activity activity,
+                                       @StringRes final int message) {
         if (0 == Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
-            Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(activity.getWindow().getDecorView(), message,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
     /**
      * Shielding the actual implementation of Toast/Snackbar or whatever is next.
      */
-    public static void showUserMessage(@NonNull final Activity activity, @NonNull final String message) {
+    public static void showUserMessage(@NonNull final Activity activity,
+                                       @NonNull final String message) {
         if (0 == Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
-            Snackbar.make(activity.getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(activity.getWindow().getDecorView(), message,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -83,10 +87,10 @@ public final class StandardDialogs {
      * Problem child: called from a task (thread) which has no activity/context at all.
      * Hardwired to use the application context.
      * *will* only be called from a UI thread.
-     *
+     * <p>
      * Does mean we can't use SnackBar
      */
-    public static void showUserMessage(final String message) {
+    public static void showUserMessage(@NonNull final String message) {
         Toast.makeText(BookCatalogueApp.getAppContext(), message, Toast.LENGTH_LONG).show();
     }
 
@@ -107,27 +111,31 @@ public final class StandardDialogs {
                 .setCancelable(false)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(R.string.btn_confirm_exit),
-                new AlertDialog.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                        if (onConfirm != null) {
-                            onConfirm.run();
-                        } else {
-                            activity.setResult(Activity.RESULT_CANCELED);
-                            activity.finish();
-                        }
-                    }
-                });
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                         activity.getString(R.string.btn_confirm_exit),
+                         new AlertDialog.OnClickListener() {
+                             @Override
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+                                 if (onConfirm != null) {
+                                     onConfirm.run();
+                                 } else {
+                                     activity.setResult(Activity.RESULT_CANCELED);
+                                     activity.finish();
+                                 }
+                             }
+                         });
 
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, activity.getString(R.string.btn_continue_editing),
-                new AlertDialog.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                    }
-                });
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+                         activity.getString(R.string.btn_continue_editing),
+                         new AlertDialog.OnClickListener() {
+                             @Override
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+                             }
+                         });
 
         dialog.show();
     }
@@ -138,26 +146,30 @@ public final class StandardDialogs {
                                          @NonNull final Runnable onDeleted) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage(String.format(context.getString(R.string.warning_really_delete_series), series.name))
+                .setMessage(String.format(context.getString(R.string.warning_really_delete_series),
+                                          series.name))
                 .setTitle(R.string.title_delete_series)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        db.deleteSeries(series.id);
-                        dialog.dismiss();
-                        onDeleted.run();
-                    }
-                });
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 db.deleteSeries(series.id);
+                                 dialog.dismiss();
+                                 onDeleted.run();
+                             }
+                         });
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                    }
-                });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                         context.getString(android.R.string.cancel),
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+                             }
+                         });
 
         dialog.show();
     }
@@ -197,39 +209,44 @@ public final class StandardDialogs {
                 authors.append(", ").append(authorList.get(i).getDisplayName());
             }
             if (authorList.size() > 1) {
-                authors.append(' ').append(context.getString(R.string.list_and)).append(' ').append(authorList.get(authorList.size() - 1).getDisplayName());
+                authors.append(' ').append(context.getString(R.string.list_and)).append(' ').append(
+                        authorList.get(authorList.size() - 1).getDisplayName());
             }
         }
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage((context.getString(R.string.warning_really_delete_book, title, authors)))
+                .setMessage(
+                        (context.getString(R.string.warning_really_delete_book, title, authors)))
                 .setTitle(R.string.menu_delete_book)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        db.deleteBook(bookId);
-                        dialog.dismiss();
-                        onDeleted.run();
-                    }
-                });
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 db.deleteBook(bookId);
+                                 dialog.dismiss();
+                                 onDeleted.run();
+                             }
+                         });
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                    }
-                });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                         context.getString(android.R.string.cancel),
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+                             }
+                         });
 
         dialog.show();
         return 0;
     }
 
     /**
-     * Display a dialog warning the user that Goodreads authentication is required;
-     * gives the options: 'request now', 'more info' or 'cancel'.
+     * Display a dialog warning the user that Goodreads authentication is required.
+     * Gives the options: 'request now', 'more info' or 'cancel'.
      */
     public static void goodreadsAuthAlert(@NonNull final FragmentActivity context) {
         final AlertDialog dialog = new AlertDialog.Builder(context)
@@ -239,28 +256,34 @@ public final class StandardDialogs {
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                        GoodreadsRegisterActivity.requestAuthorizationInBackground(context);
-                    }
-                });
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+                                 GoodreadsRegisterActivity.requestAuthorizationInBackground(
+                                         context);
+                             }
+                         });
 
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.btn_tell_me_more),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                        Intent i = new Intent(context, GoodreadsRegisterActivity.class);
-                        context.startActivity(i);
-                    }
-                });
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+                         context.getString(R.string.btn_tell_me_more),
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+                                 Intent i = new Intent(context, GoodreadsRegisterActivity.class);
+                                 context.startActivity(i);
+                             }
+                         });
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                    }
-                });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                         context.getString(android.R.string.cancel),
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+                             }
+                         });
 
         dialog.show();
 
@@ -279,23 +302,26 @@ public final class StandardDialogs {
                 .create();
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                context.getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        nextStep.onPositive();
-                    }
-                });
+                         context.getString(android.R.string.ok),
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(final DialogInterface dialog,
+                                                 final int which) {
+                                 nextStep.onPositive();
+                             }
+                         });
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                context.getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        nextStep.onNegative();
-                    }
-                });
+                         context.getString(android.R.string.cancel),
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(final DialogInterface dialog,
+                                                 final int which) {
+                                 nextStep.onNegative();
+                             }
+                         });
         dialog.show();
     }
 
     public interface AlertDialogAction {
+
         void onPositive();
 
         void onNeutral();
@@ -311,13 +337,15 @@ public final class StandardDialogs {
      * This class exists temporarily so we use AppCompatDialog in ONE place (here)
      * Gradually replacing the use.
      */
-    public static class BasicDialog extends AppCompatDialog {
+    public static class BasicDialog
+            extends AppCompatDialog {
 
         public BasicDialog(@NonNull final Context context) {
             this(context, ThemeUtils.getDialogThemeResId());
         }
 
-        public BasicDialog(@NonNull final Context context, @StyleRes final int theme) {
+        public BasicDialog(@NonNull final Context context,
+                           @StyleRes final int theme) {
             super(context, theme);
 
         }

@@ -10,28 +10,31 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-class ISFDBEditionsTask implements SimpleTaskQueue.SimpleTask {
+class ISFDBEditionsTask
+        implements SimpleTaskQueue.SimpleTask {
 
-    private List<String> editions;
-    private String isbn;
-    private ISFDBResultsListener callback;
+    private List<String> mEditions;
+    private final String mIsbn;
+    private final ISFDBResultsListener mCallback;
 
-    ISFDBEditionsTask(@NonNull final String isbn, ISFDBResultsListener callback) {
+    ISFDBEditionsTask(@NonNull final String isbn,
+                      @NonNull final ISFDBResultsListener callback) {
         if (!IsbnUtils.isValid(isbn)) {
             throw new RTE.IsbnInvalidException(isbn);
         }
-        this.isbn = isbn;
-        this.callback = callback;
+        mIsbn = isbn;
+        mCallback = callback;
     }
 
     @Override
-    public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) throws SocketTimeoutException {
-        Editions bookEditions = new Editions(isbn);
-        editions = bookEditions.fetch();
+    public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext)
+            throws SocketTimeoutException {
+        Editions bookEditions = new Editions(mIsbn);
+        mEditions = bookEditions.fetch();
     }
 
     @Override
     public void onFinish(@Nullable final Exception e) {
-        callback.onGotISFDBEditions(editions);
+        mCallback.onGotISFDBEditions(mEditions);
     }
 }

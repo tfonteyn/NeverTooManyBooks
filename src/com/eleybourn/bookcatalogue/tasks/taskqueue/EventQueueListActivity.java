@@ -23,13 +23,14 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
@@ -52,26 +53,25 @@ import java.util.List;
  *
  * @author Philip Warner
  */
-public class EventQueueListActivity extends BindableItemListActivity {
+public class EventQueueListActivity
+        extends BindableItemListActivity {
 
     /** Key to store optional task ID when activity is started */
     public static final String REQUEST_BKEY_TASK_ID = "EventQueueListActivity.TaskId";
-
-    /** DB connection */
-    private CatalogueDBAdapter mDb = null;
-    private BindableItemCursor mCursor;
-
     /**
      * Listener to handle Event add/change/delete.
      */
     private final OnEventChangeListener mOnEventChangeListener = new OnEventChangeListener() {
         @Override
-        public void onEventChange(@Nullable Event event, @NonNull EventActions action) {
+        public void onEventChange(@Nullable Event event,
+                                  @NonNull EventActions action) {
             //When any Event is added/changed/deleted, update the list. Lazy, yes.
             EventQueueListActivity.this.refreshData();
         }
     };
-
+    /** DB connection */
+    private CatalogueDBAdapter mDb = null;
+    private BindableItemCursor mCursor;
     /** Task ID, if provided in intent */
     private long mTaskId = 0;
 
@@ -100,13 +100,14 @@ public class EventQueueListActivity extends BindableItemListActivity {
         cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_events);
         cleanupBtn.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 QueueManager.getQueueManager().cleanupOldEvents();
             }
         });
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_background_task_events, null);
+            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_background_task_events,
+                                    null);
         }
         Tracker.exitOnCreate(this);
     }
@@ -129,19 +130,21 @@ public class EventQueueListActivity extends BindableItemListActivity {
     @Override
     public void onListItemClick(@NonNull final AdapterView<?> parent,
                                 @NonNull final View v,
-                                final int position, final long id) {
+                                final int position,
+                                final long id) {
         // get the event object
         final Event event = ViewTagger.getTag(v, R.id.TAG_EVENT);
 
         // If it owns a hint, display it
         if (event instanceof HintOwner) {
             // Show the hint if necessary; fall through to the runnable
-            HintManager.displayHint(this.getLayoutInflater(), ((HintOwner) event).getHint(), new Runnable() {
-                @Override
-                public void run() {
-                    doContextMenu(parent, v, position, id);
-                }
-            });
+            HintManager.displayHint(this.getLayoutInflater(), ((HintOwner) event).getHint(),
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            doContextMenu(parent, v, position, id);
+                                        }
+                                    });
         } else {
             // Just display context menu
             doContextMenu(parent, v, position, id);
@@ -150,7 +153,8 @@ public class EventQueueListActivity extends BindableItemListActivity {
 
     private void doContextMenu(@NonNull final AdapterView<?> parent,
                                @NonNull final View v,
-                               final int position, final long id) {
+                               final int position,
+                               final long id) {
         final Event event = ViewTagger.getTagOrThrow(v, R.id.TAG_EVENT);
         final List<ContextDialogItem> items = new ArrayList<>();
 

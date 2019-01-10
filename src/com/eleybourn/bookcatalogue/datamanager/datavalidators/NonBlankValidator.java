@@ -26,25 +26,30 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
- * Validator to require a non-blank field
+ * Validator to require a non-blank field.
  *
  * @author Philip Warner
  */
-public class NonBlankValidator implements DataValidator {
+public class NonBlankValidator
+        implements DataValidator {
 
     @Override
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data,
+                         @NonNull final Datum datum,
+                         final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
             return;
         }
-        if (crossValidating)
+        if (crossValidating) {
             return;
+        }
 
         String v = data.getString(datum).trim();
         if (v.isEmpty()) {
-            throw new ValidatorException(R.string.vldt_non_blank_required, new Object[]{datum.getKey()});
+            throw new ValidatorException(R.string.vldt_non_blank_required,
+                                         new Object[]{datum.getKey()});
         }
     }
 }

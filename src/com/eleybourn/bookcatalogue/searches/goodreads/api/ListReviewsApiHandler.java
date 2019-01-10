@@ -23,6 +23,8 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
@@ -44,23 +46,24 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import androidx.annotation.NonNull;
-
 /**
- * Class to implement the reviews.list api call. It queries based on the passed parameters and returns
- * a single Bundle containing all results. The Bundle itself will contain other bundles: typically an
- * array of 'Review' bundles, each of which will contains arrays of 'author' bundles.
- *
- * Processing this data is up to the caller, but it is guaranteed to be type-safe if present, with the
- * exception of dates, which are collected as text strings.
+ * Class to implement the reviews.list api call. It queries based on the passed parameters
+ * and returns a single Bundle containing all results.
+ * The Bundle itself will contain other bundles: typically an array of 'Review' bundles,
+ * each of which will contains arrays of 'author' bundles.
+ * <p>
+ * Processing this data is up to the caller, but it is guaranteed to be type-safe if present,
+ * with the exception of dates, which are collected as text strings.
  *
  * @author Philip Warner
  */
-public class ListReviewsApiHandler extends ApiHandler {
+public class ListReviewsApiHandler
+        extends ApiHandler {
 
-    /** Date format used for parsing 'last_update_date' */
+    /** Date format used for parsing 'last_update_date'. */
     @SuppressLint("SimpleDateFormat")
-    private static final SimpleDateFormat mUpdateDateFmt = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy");
+    private static final SimpleDateFormat mUpdateDateFmt
+            = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy");
 
     /**
      * Listener to handle the contents of the date_updated field. We only
@@ -69,16 +72,19 @@ public class ListReviewsApiHandler extends ApiHandler {
      */
     private final XmlListener mUpdatedListener = new XmlListener() {
         @Override
-        public void onStart(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+        public void onStart(@NonNull final BuilderContext bc,
+                            @NonNull final ElementContext c) {
 
         }
 
         @Override
-        public void onFinish(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+        public void onFinish(@NonNull final BuilderContext bc,
+                             @NonNull final ElementContext c) {
 
             date2Sql(bc.getData(), ListReviewsFieldNames.UPDATED);
         }
     };
+
     /**
      * Listener to handle the contents of the date_added field. We only
      * keep it if it is a valid date, and we store it in SQL format using
@@ -86,12 +92,14 @@ public class ListReviewsApiHandler extends ApiHandler {
      */
     private final XmlListener mAddedListener = new XmlListener() {
         @Override
-        public void onStart(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+        public void onStart(@NonNull final BuilderContext bc,
+                            @NonNull final ElementContext c) {
 
         }
 
         @Override
-        public void onFinish(@NonNull BuilderContext bc, @NonNull ElementContext c) {
+        public void onFinish(@NonNull final BuilderContext bc,
+                             @NonNull final ElementContext c) {
 
             date2Sql(bc.getData(), ListReviewsFieldNames.ADDED);
         }
@@ -268,7 +276,8 @@ public class ListReviewsApiHandler extends ApiHandler {
 	 */
 
     @NonNull
-    public Bundle run(final int page, final int perPage)
+    public Bundle run(final int page,
+                      final int perPage)
             throws NotAuthorizedException,
                    BookNotFoundException,
                    IOException {
@@ -276,10 +285,20 @@ public class ListReviewsApiHandler extends ApiHandler {
         @SuppressWarnings("UnusedAssignment")
         long t0 = System.currentTimeMillis();
 
-        // Sort by update_dte (descending) so sync is faster. Specify 'shelf=all' because it seems goodreads returns
-        // the shelf that is selected in 'My Books' on the web interface by default.
-        final String urlBase = GoodreadsManager.BASE_URL + "/review/list/%4$s.xml?key=%1$s&v=2&page=%2$s&per_page=%3$s&sort=date_updated&order=d&shelf=all";
-        final String url = String.format(urlBase, mManager.getDevKey(), page, perPage, mManager.getUserId());
+        // Sort by update_date (descending) so sync is faster.
+        // Specify 'shelf=all' because it seems goodreads returns the shelf that is selected
+        // in 'My Books' on the web interface by default.
+        final String urlBase = GoodreadsManager.BASE_URL + "/review/list/%4$s.xml?"
+                + "key=%1$s"
+                + "&v=2"
+                + "&page=%2$s"
+                + "&per_page=%3$s"
+                + "&sort=date_updated"
+                + "&order=d"
+                + "&shelf=all";
+
+        final String url = String.format(urlBase, mManager.getDevKey(), page, perPage,
+                                         mManager.getUserId());
         HttpGet get = new HttpGet(url);
 
         // Get a handler and run query.
@@ -287,12 +306,14 @@ public class ListReviewsApiHandler extends ApiHandler {
         // Even thought it's only a GET, it needs a signature.
         mManager.execute(get, handler, true);
 
-        // When we get here, the data has been collected but needs to be processed into standard form.
+        // When we get here, the data has been collected but needs to be processed
+        // into standard form.
         Bundle results = mFilters.getData();
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this, "Found " + results.getLong(ListReviewsFieldNames.TOTAL) +
-                    " books in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info(this, "Found "
+                    + results.getLong(ListReviewsFieldNames.TOTAL)
+                    + " books in " + (System.currentTimeMillis() - t0) + "ms");
         }
 
         return results;
@@ -391,9 +412,11 @@ public class ListReviewsApiHandler extends ApiHandler {
                 .stringBody(XML_READ_AT, ListReviewsFieldNames.DB_READ_END)
                 //			<date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
                 //.stringBody("date_added", ADDED)
-                .s(XML_DATE_ADDED).stringBody(ListReviewsFieldNames.ADDED).setListener(mAddedListener).pop()
+                .s(XML_DATE_ADDED).stringBody(ListReviewsFieldNames.ADDED).setListener(
+                mAddedListener).pop()
                 //			<date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>
-                .s(XML_DATE_UPDATED).stringBody(ListReviewsFieldNames.UPDATED).setListener(mUpdatedListener).pop()
+                .s(XML_DATE_UPDATED).stringBody(ListReviewsFieldNames.UPDATED).setListener(
+                mUpdatedListener).pop()
                 //			...
                 //			<body><![CDATA[]]></body>
                 .stringBody(XML_BODY, ListReviewsFieldNames.DB_NOTES).pop()
@@ -406,7 +429,8 @@ public class ListReviewsApiHandler extends ApiHandler {
                 .done();
     }
 
-    private void date2Sql(@NonNull final Bundle b, @NonNull final String key) {
+    private void date2Sql(@NonNull final Bundle b,
+                          @NonNull final String key) {
 
         if (b.containsKey(key)) {
             String date = b.getString(key);
@@ -421,7 +445,7 @@ public class ListReviewsApiHandler extends ApiHandler {
 
     /**
      * Field names we add to the bundle based on parsed XML data.
-     *
+     * <p>
      * We duplicate the CatalogueDBAdapter names (and give them a DB_ prefix) so
      * that (a) it is clear which fields are provided by this call, and (b) it is clear
      * which fields directly relate to DB fields.
@@ -462,7 +486,6 @@ public class ListReviewsApiHandler extends ApiHandler {
         public static final String DB_READ_END = DatabaseDefinitions.DOM_BOOK_READ_END.name;
 
         private ListReviewsFieldNames() {
-
         }
     }
 }

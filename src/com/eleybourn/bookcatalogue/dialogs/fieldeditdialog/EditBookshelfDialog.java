@@ -22,11 +22,12 @@ package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.view.View;
+import android.widget.EditText;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import android.view.View;
-import android.widget.EditText;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -35,10 +36,11 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 
 /**
  * Dialog to edit a single bookshelf.
- *
+ * <p>
  * Calling point is a List.
  */
 public class EditBookshelfDialog {
+
     @NonNull
     private final Activity mContext;
     @NonNull
@@ -56,7 +58,8 @@ public class EditBookshelfDialog {
 
     public void edit(@NonNull final Bookshelf bookshelf) {
         // Build the base dialog
-        final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_bookshelf, null);
+        final View root = mContext.getLayoutInflater()
+                                  .inflate(R.layout.dialog_edit_bookshelf, null);
 
         final EditText nameView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
@@ -70,7 +73,7 @@ public class EditBookshelfDialog {
         //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
                     StandardDialogs.showUserMessage(mContext, R.string.warning_required_name);
@@ -82,8 +85,11 @@ public class EditBookshelfDialog {
 
                 // adding a new Bookshelf, and trying to use an existing name?
                 if ((bookshelf.id == 0) && (existingShelf != null)) {
-                    StandardDialogs.showUserMessage(mContext,
-                            mContext.getString(R.string.warning_thing_already_exists, mContext.getString(R.string.lbl_bookshelf)));
+                    StandardDialogs.showUserMessage(
+                            mContext,
+                            mContext.getString(R.string.warning_thing_already_exists,
+                                               mContext.getString(
+                                                       R.string.lbl_bookshelf)));
                     return;
                 }
 
@@ -95,7 +101,7 @@ public class EditBookshelfDialog {
         //noinspection ConstantConditions
         root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 dialog.dismiss();
             }
         });
@@ -128,24 +134,27 @@ public class EditBookshelfDialog {
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, mContext.getString(R.string.btn_merge),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        dialog.dismiss();
+                         new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
 
-                        // move all books from bookshelf to existingShelf
-                        mDb.mergeBookshelves(bookshelf.id, existingShelf.id);
-                        mOnChanged.run();
-                    }
-                });
+                                 // move all books from bookshelf to existingShelf
+                                 mDb.mergeBookshelves(bookshelf.id, existingShelf.id);
+                                 mOnChanged.run();
+                             }
+                         });
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, mContext.getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                    }
-                });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                         mContext.getString(android.R.string.cancel),
+                         new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+                             }
+                         });
         dialog.show();
     }
 }

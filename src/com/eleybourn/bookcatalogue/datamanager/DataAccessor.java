@@ -20,16 +20,18 @@
 package com.eleybourn.bookcatalogue.datamanager;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 
 /**
- * Interface implemented for custom data access
+ * Interface implemented for custom data access.
  *
  * @author pjw
  */
 public interface DataAccessor {
+
     /**
-     * Get the specified {@link Datum} from the passed {@link DataManager} or {@link Bundle}
+     * Get the specified {@link Datum} from the passed {@link DataManager} or {@link Bundle}.
      */
     @NonNull
     Object get(@NonNull final DataManager data,
@@ -37,7 +39,7 @@ public interface DataAccessor {
                @NonNull final Bundle rawData);
 
     /**
-     * Set the specified {@link Datum} in the passed Bundle
+     * Set the specified {@link Datum} in the passed Bundle.
      */
     void set(@NonNull final DataManager data,
              @NonNull final Datum datum,
@@ -45,7 +47,7 @@ public interface DataAccessor {
              @NonNull final Object value);
 
     /**
-     *  Check if the specified {@link Datum} is present in the passed Bundle
+     * Check if the specified {@link Datum} is present in the passed Bundle.
      */
     boolean isPresent(@NonNull final DataManager data,
                       @NonNull final Datum datum,

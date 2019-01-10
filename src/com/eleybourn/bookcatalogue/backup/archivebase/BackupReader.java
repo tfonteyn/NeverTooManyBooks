@@ -19,31 +19,31 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 
 import java.io.Closeable;
 import java.io.IOException;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Public interface for any backup archive reader.
  *
  * @author pjw
  */
-public interface BackupReader extends Closeable {
+public interface BackupReader
+        extends Closeable {
 
     /**
      * Perform a restore of the database; a convenience method to loop through
      * all entities in the backup and restore them based on the entity type.
-     *
+     * <p>
      * See BackupReaderAbstract for a default implementation.
      *
      * @param listener Listener to receive progress information.
      *
      * @throws IOException on failure
-     *
      */
     void restore(@NonNull final ImportSettings settings,
                  @NonNull final BackupReaderListener listener)
@@ -51,7 +51,7 @@ public interface BackupReader extends Closeable {
 
     /**
      * Read the next ReaderEntity from the backup.
-     *
+     * <p>
      * Currently, backup files are read sequentially.
      *
      * @return The next entity, or null if at end
@@ -63,7 +63,7 @@ public interface BackupReader extends Closeable {
             throws IOException;
 
     /**
-     * Close the reader
+     * Close the reader.
      *
      * @throws IOException on failure
      */
@@ -92,7 +92,8 @@ public interface BackupReader extends Closeable {
         /**
          * Advance progress by 'delta'.
          */
-        void onProgressStep(@NonNull final String message, final int delta);
+        void onProgressStep(@NonNull final String message,
+                            final int delta);
 
         /**
          * Check if operation is cancelled.
@@ -100,5 +101,4 @@ public interface BackupReader extends Closeable {
         @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         boolean isCancelled();
     }
-
 }

@@ -22,15 +22,15 @@ package com.eleybourn.bookcatalogue.utils.xml;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Class layered on top of {@link XmlFilter} to implement a simple set of XML filters to extract
@@ -43,7 +43,7 @@ public class SimpleXmlFilter {
     @NonNull
     private static final XmlHandler mHandleStart = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             BuilderContext bc = (BuilderContext) context.userArg;
 
             if (bc.isArray()) {
@@ -102,7 +102,7 @@ public class SimpleXmlFilter {
     @NonNull
     private static final XmlHandler mTextHandler = new XmlHandler() {
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             final BuilderContext c = (BuilderContext) context.userArg;
             c.getData().putString(c.collectField, context.body.trim());
         }
@@ -112,7 +112,7 @@ public class SimpleXmlFilter {
     private static final XmlHandler mLongHandler = new XmlHandler() {
 
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             final BuilderContext bc = (BuilderContext) context.userArg;
             final String name = bc.collectField;
             try {
@@ -127,7 +127,7 @@ public class SimpleXmlFilter {
     private static final XmlHandler mDoubleHandler = new XmlHandler() {
 
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             final BuilderContext bc = (BuilderContext) context.userArg;
             final String name = bc.collectField;
             try {
@@ -142,7 +142,7 @@ public class SimpleXmlFilter {
     private static final XmlHandler mBooleanHandler = new XmlHandler() {
 
         @Override
-        public void process(@NonNull ElementContext context) {
+        public void process(@NonNull final ElementContext context) {
             final BuilderContext bc = (BuilderContext) context.userArg;
             final String name = bc.collectField;
             try {
@@ -178,8 +178,7 @@ public class SimpleXmlFilter {
             case "f":
                 return false;
             default:
-                long l = Long.parseLong(s);
-                return (l != 0);
+                return (Long.parseLong(s) != 0);
         }
     }
 
@@ -236,7 +235,7 @@ public class SimpleXmlFilter {
     }
 
     @NonNull
-    public SimpleXmlFilter setListener(XmlListener listener) {
+    public SimpleXmlFilter setListener(@NonNull final XmlListener listener) {
         BuilderContext c = mContexts.get(mContexts.size() - 1);
         c.listener = listener;
         return this;
@@ -265,7 +264,8 @@ public class SimpleXmlFilter {
 
     @SuppressWarnings("unused")
     @NonNull
-    SimpleXmlFilter booleanAttr(@NonNull final String key, @NonNull final String attrName) {
+    SimpleXmlFilter booleanAttr(@NonNull final String key,
+                                @NonNull final String attrName) {
         List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new BooleanAttrFilter(key, attrName));
         return this;
@@ -273,14 +273,16 @@ public class SimpleXmlFilter {
 
     @SuppressWarnings("unused")
     @NonNull
-    SimpleXmlFilter doubleAttr(@NonNull final String attrName, @NonNull final String key) {
+    SimpleXmlFilter doubleAttr(@NonNull final String attrName,
+                               @NonNull final String key) {
         List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new DoubleAttrFilter(key, attrName));
         return this;
     }
 
     @NonNull
-    public SimpleXmlFilter longAttr(@NonNull final String attrName, @NonNull final String key) {
+    public SimpleXmlFilter longAttr(@NonNull final String attrName,
+                                    @NonNull final String key) {
         List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new LongAttrFilter(key, attrName));
         return this;
@@ -288,19 +290,23 @@ public class SimpleXmlFilter {
 
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    public SimpleXmlFilter stringAttr(@NonNull final String attrName, @NonNull final String key) {
+    public SimpleXmlFilter stringAttr(@NonNull final String attrName,
+                                      @NonNull final String key) {
         List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new StringAttrFilter(key, attrName));
         return this;
     }
 
-    private void setCollector(@NonNull final String tag, @NonNull XmlHandler handler, @NonNull final String fieldName) {
+    private void setCollector(@NonNull final String tag,
+                              @NonNull XmlHandler handler,
+                              @NonNull final String fieldName) {
         s(tag);
         setCollector(handler, fieldName);
         pop();
     }
 
-    private void setCollector(@NonNull final XmlHandler handler, @NonNull final String fieldName) {
+    private void setCollector(@NonNull final XmlHandler handler,
+                              @NonNull final String fieldName) {
         BuilderContext c = mContexts.get(mContexts.size() - 1);
         c.collectField = fieldName;
         c.finishHandler = handler;
@@ -314,7 +320,8 @@ public class SimpleXmlFilter {
 
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    public SimpleXmlFilter booleanBody(@NonNull final String tag, @NonNull final String fieldName) {
+    public SimpleXmlFilter booleanBody(@NonNull final String tag,
+                                       @NonNull final String fieldName) {
         setCollector(tag, mBooleanHandler, fieldName);
         return this;
     }
@@ -328,7 +335,8 @@ public class SimpleXmlFilter {
 
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    public SimpleXmlFilter doubleBody(@NonNull final String tag, @NonNull final String fieldName) {
+    public SimpleXmlFilter doubleBody(@NonNull final String tag,
+                                      @NonNull final String fieldName) {
         setCollector(tag, mDoubleHandler, fieldName);
         return this;
     }
@@ -341,7 +349,8 @@ public class SimpleXmlFilter {
     }
 
     @NonNull
-    public SimpleXmlFilter longBody(@NonNull final String tag, @NonNull final String fieldName) {
+    public SimpleXmlFilter longBody(@NonNull final String tag,
+                                    @NonNull final String fieldName) {
         setCollector(tag, mLongHandler, fieldName);
         return this;
     }
@@ -353,7 +362,8 @@ public class SimpleXmlFilter {
     }
 
     @NonNull
-    public SimpleXmlFilter stringBody(@NonNull final String tag, @NonNull final String fieldName) {
+    public SimpleXmlFilter stringBody(@NonNull final String tag,
+                                      @NonNull final String fieldName) {
         setCollector(tag, mTextHandler, fieldName);
         return this;
     }
@@ -361,9 +371,11 @@ public class SimpleXmlFilter {
     public interface XmlListener {
 
         @SuppressWarnings("EmptyMethod")
-        void onStart(@NonNull final SimpleXmlFilter.BuilderContext bc, @NonNull final ElementContext c);
+        void onStart(@NonNull final SimpleXmlFilter.BuilderContext bc,
+                     @NonNull final ElementContext c);
 
-        void onFinish(@NonNull final SimpleXmlFilter.BuilderContext bc, @NonNull final ElementContext c);
+        void onFinish(@NonNull final SimpleXmlFilter.BuilderContext bc,
+                      @NonNull final ElementContext c);
     }
 
     public interface DataStoreProvider {
@@ -374,7 +386,8 @@ public class SimpleXmlFilter {
         Bundle getData();
     }
 
-    public static class BuilderContext implements DataStoreProvider {
+    public static class BuilderContext
+            implements DataStoreProvider {
 
         @NonNull
         public final DataStoreProvider parent;
@@ -471,7 +484,8 @@ public class SimpleXmlFilter {
         }
     }
 
-    public static class DataStore implements DataStoreProvider {
+    public static class DataStore
+            implements DataStoreProvider {
 
         @NonNull
         private final Bundle mData;
@@ -500,54 +514,68 @@ public class SimpleXmlFilter {
         @NonNull
         public final String key;
 
-        AttrFilter(@NonNull final String key, @NonNull final String name) {
+        AttrFilter(@NonNull final String key,
+                   @NonNull final String name) {
             this.name = name;
             this.key = key;
         }
 
-        protected abstract void put(@NonNull final BuilderContext context, @NonNull final String value);
+        protected abstract void put(@NonNull final BuilderContext context,
+                                    @NonNull final String value);
     }
 
-    private static class StringAttrFilter extends AttrFilter {
+    private static class StringAttrFilter
+            extends AttrFilter {
 
-        StringAttrFilter(@NonNull final String key, @NonNull final String name) {
+        StringAttrFilter(@NonNull final String key,
+                         @NonNull final String name) {
             super(key, name);
         }
 
-        public void put(@NonNull final BuilderContext context, @NonNull final String value) {
+        public void put(@NonNull final BuilderContext context,
+                        @NonNull final String value) {
             context.getData().putString(this.key, value);
         }
     }
 
-    private static class LongAttrFilter extends AttrFilter {
+    private static class LongAttrFilter
+            extends AttrFilter {
 
-        LongAttrFilter(@NonNull final String key, @NonNull final String name) {
+        LongAttrFilter(@NonNull final String key,
+                       @NonNull final String name) {
             super(key, name);
         }
 
-        public void put(@NonNull final BuilderContext context, @NonNull final String value) {
+        public void put(@NonNull final BuilderContext context,
+                        @NonNull final String value) {
             context.getData().putLong(this.key, Long.parseLong(value));
         }
     }
 
-    private static class DoubleAttrFilter extends AttrFilter {
+    private static class DoubleAttrFilter
+            extends AttrFilter {
 
-        DoubleAttrFilter(@NonNull final String key, @NonNull final String name) {
+        DoubleAttrFilter(@NonNull final String key,
+                         @NonNull final String name) {
             super(key, name);
         }
 
-        public void put(@NonNull final BuilderContext context, @NonNull final String value) {
+        public void put(@NonNull final BuilderContext context,
+                        @NonNull final String value) {
             context.getData().putDouble(this.key, Double.parseDouble(value));
         }
     }
 
-    private static class BooleanAttrFilter extends AttrFilter {
+    private static class BooleanAttrFilter
+            extends AttrFilter {
 
-        BooleanAttrFilter(@NonNull final String key, @NonNull final String name) {
+        BooleanAttrFilter(@NonNull final String key,
+                          @NonNull final String name) {
             super(key, name);
         }
 
-        public void put(@NonNull final BuilderContext context, @NonNull final String value) {
+        public void put(@NonNull final BuilderContext context,
+                        @NonNull final String value) {
             boolean b = textToBoolean(value.trim());
             context.getData().putBoolean(this.key, b);
         }

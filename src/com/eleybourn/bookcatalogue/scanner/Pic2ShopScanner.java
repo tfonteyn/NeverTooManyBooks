@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.scanner;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.utils.RTE;
@@ -12,20 +13,22 @@ import java.util.Arrays;
 /**
  * Based on the pic2shop client code at github, this object will start pic2shop and
  * extract the data from the resulting intent when the activity completes.
- *
+ * <p>
  * https://github.com/VisionSmarts/pic2shop-client
- *
+ * <p>
  * It also has a static method to check if the intent is present.
  *
  * @author pjw
  */
-public class Pic2ShopScanner implements Scanner {
+public class Pic2ShopScanner
+        implements Scanner {
+
     /**
      * When a barcode is read, pic2shop returns Activity.RESULT_OK in
      * {@link Activity#onActivityResult}) of the activity which requested the scan using
      * {@link #startActivityForResult}.
      * The barcode can be retrieved with intent.getStringExtra("BARCODE").
-     *
+     * <p>
      * If the user exits pic2shop by pressing Back before a barcode is read, the
      * result code will be Activity.RESULT_CANCELED in onActivityResult().
      */
@@ -50,19 +53,21 @@ public class Pic2ShopScanner implements Scanner {
         return isIntentAvailable(context, Pro.ACTION);
     }
 
-    private static boolean isIntentAvailable(@NonNull final Context context, @NonNull final String action) {
+    private static boolean isIntentAvailable(@NonNull final Context context,
+                                             @NonNull final String action) {
         Intent test = new Intent(action);
         return context.getPackageManager().resolveActivity(test, 0) != null;
     }
 
     /**
      * Start the activity with the passed request code.
-     *
+     * <p>
      * Note that we always send an intent; the caller should have checked that
      * one of the intents is valid, or catch the resulting errors.
      */
     @Override
-    public void startActivityForResult(@NonNull final  Activity activity, final int requestCode) {
+    public void startActivityForResult(@NonNull final Activity activity,
+                                       final int requestCode) {
         Intent intent;
         if (isFreeScannerAppInstalled(activity)) {
             intent = new Intent(Free.ACTION);
@@ -70,11 +75,11 @@ public class Pic2ShopScanner implements Scanner {
             intent = new Intent(Pro.ACTION);
             intent.putExtra(Pro.FORMATS, Pro.BARCODE_TYPES);
         }
-        activity.startActivityForResult(intent, requestCode); // 4f410d34-dc9c-4ee2-903e-79d69a328517
+        activity.startActivityForResult(intent, requestCode);
     }
 
     /**
-     * Extract the barcode from the result
+     * @return the barcode from the scan
      */
     @Override
     @NonNull
@@ -90,6 +95,7 @@ public class Pic2ShopScanner implements Scanner {
     }
 
     public interface Free {
+
         String PACKAGE = "com.visionsmarts.pic2shop";
         String ACTION = PACKAGE + ".SCAN";
     }
@@ -99,17 +105,18 @@ public class Pic2ShopScanner implements Scanner {
      * The Pro package does not implement all those.
      * The example code at github lists:
      * String[] ALL_BARCODE_TYPES = {"EAN13","EAN8","UPCE","ITF","CODE39","CODE128","CODABAR","QR"};
-     *
+     * <p>
      * of which only {"EAN13","UPCE"} are useful for ou purposes
      */
     public interface Pro {
+
         String PACKAGE = "com.visionsmarts.pic2shoppro";
         String ACTION = PACKAGE + ".SCAN";
-        // request Intent
-
-       String[] BARCODE_TYPES = {"EAN13","UPCE"};
-       String FORMATS = "formats";
-        // response Intent
+        /** request Intent:  barcode types wanted. */
+        String[] BARCODE_TYPES = {"EAN13", "UPCE"};
+        /** request Intent: formats wanted/accepted. */
+        String FORMATS = "formats";
+        /** response Intent: format returned. */
         String FORMAT = "format";
     }
 
@@ -121,9 +128,11 @@ public class Pic2ShopScanner implements Scanner {
 //        launchMarketToInstallApp(context, Pro.PACKAGE);
 //    }
 
-//    private static void launchMarketToInstallApp(@NonNull final Context context, @NonNull final String packageName) {
+//    private static void launchMarketToInstallApp(@NonNull final Context context,
+//                                                 @NonNull final String packageName) {
 //        try {
-//            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
+//            Intent intent = new Intent(Intent.ACTION_VIEW,
+//                                       Uri.parse("market://details?id=" + packageName));
 //            context.startActivity(intent);
 //        } catch (ActivityNotFoundException e) {
 //            Logger.error(e, "Google Play not installed.");

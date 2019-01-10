@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.searches.amazon;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -38,7 +39,7 @@ public final class AmazonManager {
 
     /**
      * This searches the amazon REST site based on a specific isbn.
-     * TOMF FIXME if we can ? Search proxies through theagiledirector.com due to amazon not supporting mobile devices
+     * FIXME: Search proxies through theagiledirector.com - amazon not supporting mobile devices
      *
      * @param isbn The ISBN to search for
      */
@@ -46,7 +47,8 @@ public final class AmazonManager {
                               @NonNull final String author,
                               @NonNull final String title,
                               @NonNull final Bundle /* out*/ bookData,
-                              final boolean fetchThumbnail) throws IOException {
+                              final boolean fetchThumbnail)
+            throws IOException {
 
         String urlText = "https://bc.theagiledirector.com/getRest_v3.php";
         if (!isbn.isEmpty()) {
@@ -61,7 +63,8 @@ public final class AmazonManager {
                 return;
             }
             //replace spaces in author/title with %20
-            urlText += "?author=" + author.replace(" ", "%20") + "&title=" + title.replace(" ", "%20");
+            urlText += "?author=" + author.replace(" ", "%20")
+                    + "&title=" + title.replace(" ", "%20");
         }
 
         // Setup the parser

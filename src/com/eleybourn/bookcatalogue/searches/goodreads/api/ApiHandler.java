@@ -20,14 +20,14 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 
-import androidx.annotation.NonNull;
-
 /**
  * Base class for all Goodreads API handler classes.
- *
+ * <p>
  * The job of an API handler is to implement a method to run the API (eg. 'search' in
  * {@link SearchBooksApiHandler} and to process the output.
  *

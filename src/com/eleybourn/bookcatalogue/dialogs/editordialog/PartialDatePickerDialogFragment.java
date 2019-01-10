@@ -23,11 +23,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -41,6 +36,12 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -50,20 +51,23 @@ import java.util.Objects;
 
 /**
  * TODO: as the Dialog is now an inner class, remove the listener between DialogFragment and Dialog.
- *
+ * <p>
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
  *
  * @author pjw
  */
-public class PartialDatePickerDialogFragment extends EditorDialogFragment<PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener> {
-    /** a standard sql style date string, must be correct */
+public class PartialDatePickerDialogFragment
+        extends
+        EditorDialogFragment<PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener> {
+
+    /** a standard sql style date string, must be correct. */
     public static final String BKEY_DATE = "date";
-    /** or the date split into components, which can partial */
+    /** or the date split into components, which can partial. */
     public static final String BKEY_YEAR = "year";
     public static final String BKEY_MONTH = "month";
     public static final String BKEY_DAY = "day";
     /**
-     * Object to handle changes
+     * Object to handle changes.
      */
     private final PartialDatePickerDialog.OnPartialDatePickerResultsListener mDialogListener =
             new PartialDatePickerDialog.OnPartialDatePickerResultsListener() {
@@ -72,18 +76,18 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                                                     final Integer day) {
                     getFragmentListener()
                             .onPartialDatePickerSave(PartialDatePickerDialogFragment.this,
-                                    mDestinationFieldId, year, month, day);
+                                                     mDestinationFieldId, year, month, day);
                 }
 
                 @Override
                 public void onPartialDatePickerCancel() {
                     getFragmentListener()
                             .onPartialDatePickerCancel(PartialDatePickerDialogFragment.this,
-                                    mDestinationFieldId);
+                                                       mDestinationFieldId);
                 }
             };
 
-    /** Currently displayed; null if empty/invalid */
+    /** Currently displayed; null if empty/invalid. */
     @Nullable
     private Integer mYear;
     @Nullable
@@ -92,7 +96,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
     private Integer mDay;
 
     /**
-     * Create the underlying dialog
+     * Create the underlying dialog.
      */
     @NonNull
     @Override
@@ -181,7 +185,8 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
     }
 
     /**
-     * Make sure data is saved in onPause() because onSaveInstanceState() will have lost the views
+     * Make sure data is saved in onPause() because onSaveInstanceState()
+     * will have lost the views.
      */
     @Override
     @CallSuper
@@ -203,45 +208,47 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
     public interface OnPartialDatePickerResultsListener {
 
         void onPartialDatePickerSave(@NonNull final PartialDatePickerDialogFragment dialog,
-                                     final @IdRes int destinationFieldId,
+                                     @IdRes final int destinationFieldId,
                                      @Nullable final Integer year,
                                      @Nullable final Integer month,
                                      @Nullable final Integer day);
 
         void onPartialDatePickerCancel(@NonNull final PartialDatePickerDialogFragment dialog,
-                                       final @IdRes int destinationFieldId);
+                                       @IdRes final int destinationFieldId);
     }
 
 
-    static class PartialDatePickerDialog extends AlertDialog {
+    static class PartialDatePickerDialog
+            extends AlertDialog {
+
         private static final String UNKNOWN_MONTH = "---";
         private static final String UNKNOWN_DAY = "--";
-        /** Calling context */
+        /** Calling context. */
         @NonNull
         private final Activity mActivity;
-        /** Local ref to month spinner */
+        /** Local ref to month spinner. */
         private final Spinner mMonthSpinner;
-        /** Local ref to day spinner */
+        /** Local ref to day spinner. */
         private final Spinner mDaySpinner;
-        /** Local ref to day spinner adapter */
+        /** Local ref to day spinner adapter. */
         @NonNull
         private final ArrayAdapter<String> mDayAdapter;
-        /** Local ref to year text view */
+        /** Local ref to year text view. */
         private final EditText mYearView;
-        /** Currently displayed year; null if empty/invalid */
+        /** Currently displayed year; null if empty/invalid. */
         @Nullable
         private Integer mYear;
-        /** Currently displayed month; null if empty/invalid */
+        /** Currently displayed month; null if empty/invalid. */
         @Nullable
         private Integer mMonth;
-        /** Currently displayed day; null if empty/invalid */
+        /** Currently displayed day; null if empty/invalid. */
         @Nullable
         private Integer mDay;
-        /** Listener to be called when date is set or dialog cancelled */
+        /** Listener to be called when date is set or dialog cancelled. */
         private OnPartialDatePickerResultsListener mListener;
 
         /**
-         * Constructor
+         * Constructor.
          *
          * @param activity Calling context
          */
@@ -250,7 +257,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
         }
 
         /**
-         * Constructor
+         * Constructor.
          *
          * @param activity Calling context
          * @param year     Starting year
@@ -272,8 +279,8 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
 
             // Get the layout
             LayoutInflater inf = this.getLayoutInflater();
-            @SuppressLint("InflateParams") // root==null as it's a dialog
-                    View root = inf.inflate(R.layout.dialog_partial_date_picker, null);
+            @SuppressLint("InflateParams")
+            View root = inf.inflate(R.layout.dialog_partial_date_picker, null);
 
             // Ensure components match current locale order
             reorderPickers(root);
@@ -287,7 +294,8 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             mDaySpinner = root.findViewById(R.id.day);
 
             // Create month spinner adapter
-            ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item);
+            ArrayAdapter<String> monthAdapter =
+                    new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item);
             monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             mMonthSpinner.setAdapter(monthAdapter);
 
@@ -300,8 +308,9 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             monthAdapter.add(UNKNOWN_MONTH);
             mDayAdapter.add(UNKNOWN_DAY);
 
-            // Make sure that the spinner can initially take any 'day' value. Otherwise, when a dialog is
-            // reconstructed after rotation, the 'day' field will not be restored by Android.
+            // Make sure that the spinner can initially take any 'day' value. Otherwise,
+            // when a dialog is reconstructed after rotation, the 'day' field will not be
+            // restored by Android.
             regenDaysOfMonth(31);
 
             // Get a calendar for locale-related info
@@ -319,13 +328,16 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                     new AdapterView.OnItemSelectedListener() {
 
                         @Override
-                        public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
+                        public void onItemSelected(@NonNull final AdapterView<?> parent,
+                                                   @NonNull final View view,
+                                                   final int position,
+                                                   final long id) {
                             int pos = mMonthSpinner.getSelectedItemPosition();
                             handleMonth(pos);
                         }
 
                         @Override
-                        public void onNothingSelected(final AdapterView<?> parent) {
+                        public void onNothingSelected(@NonNull final AdapterView<?> parent) {
                             handleMonth(null);
                         }
                     }
@@ -336,13 +348,16 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
                     new AdapterView.OnItemSelectedListener() {
 
                         @Override
-                        public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
+                        public void onItemSelected(@NonNull final AdapterView<?> parent,
+                                                   @NonNull final View view,
+                                                   final int position,
+                                                   final long id) {
                             int pos = mDaySpinner.getSelectedItemPosition();
                             handleDay(pos);
                         }
 
                         @Override
-                        public void onNothingSelected(final AdapterView<?> parent) {
+                        public void onNothingSelected(@NonNull final AdapterView<?> parent) {
                             handleDay(null);
                         }
                     }
@@ -352,12 +367,16 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             mYearView.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(@NonNull final CharSequence s,
-                                              final int start, final int count, final int after) {
+                                              final int start,
+                                              final int count,
+                                              final int after) {
                 }
 
                 @Override
                 public void onTextChanged(@NonNull final CharSequence s,
-                                          final int start, final int before, final int count) {
+                                          final int start,
+                                          final int before,
+                                          final int count) {
                 }
 
                 @Override
@@ -370,7 +389,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             root.findViewById(R.id.plus).setOnClickListener(
                     new View.OnClickListener() {
                         @Override
-                        public void onClick(final View v) {
+                        public void onClick(@NonNull final View v) {
                             String text;
                             if (mYear != null) {
                                 text = (++mYear).toString();
@@ -386,13 +405,15 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             root.findViewById(R.id.minus).setOnClickListener(
                     new View.OnClickListener() {
                         @Override
-                        public void onClick(final View v) {
+                        public void onClick(@NonNull final View v) {
                             String text;
                             if (mYear != null) {
-                                // We can't support negative years yet because of sorting issues and the fact that
-                                // the Calendar object bugs out with them. To fix the calendar object interface we
-                                // would need to translate -ve years to Epoch settings throughout the app. For now,
-                                // not many people have books written before 0AD, so it's a low priority.
+                                // We can't support negative years yet because of sorting
+                                // issues and the fact that the Calendar object bugs out
+                                // with them. To fix the calendar object interface we
+                                // would need to translate -ve years to Epoch settings
+                                // throughout the app. For now, not many people have books
+                                // written before 0AD, so it's a low priority.
                                 if (mYear > 0) {
                                     text = (--mYear).toString();
                                     mYearView.setText(text);
@@ -407,77 +428,87 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
 
             // Handle MONTH +
             root.findViewById(R.id.plusMonth)
-                    .setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(final View v) {
-                                    int pos = (mMonthSpinner.getSelectedItemPosition() + 1) % mMonthSpinner.getCount();
-                                    mMonthSpinner.setSelection(pos);
-                                }
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(@NonNull final View v) {
+                                int pos = (mMonthSpinner.getSelectedItemPosition() + 1)
+                                        % mMonthSpinner.getCount();
+                                mMonthSpinner.setSelection(pos);
                             }
-                    );
+                        }
+                );
 
             // Handle MONTH -
             root.findViewById(R.id.minusMonth)
-                    .setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(final View v) {
-                                    int pos = (mMonthSpinner.getSelectedItemPosition() - 1 + mMonthSpinner.getCount()) % mMonthSpinner.getCount();
-                                    mMonthSpinner.setSelection(pos);
-                                }
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(@NonNull final View v) {
+                                int pos = (mMonthSpinner.getSelectedItemPosition() - 1
+                                        + mMonthSpinner.getCount()) % mMonthSpinner.getCount();
+                                mMonthSpinner.setSelection(pos);
                             }
-                    );
+                        }
+                );
 
             // Handle DAY +
             root.findViewById(R.id.plusDay)
-                    .setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(final View v) {
-                                    int pos = (mDaySpinner.getSelectedItemPosition() + 1) % mDaySpinner.getCount();
-                                    mDaySpinner.setSelection(pos);
-                                }
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(@NonNull final View v) {
+                                int pos = (mDaySpinner.getSelectedItemPosition() + 1)
+                                        % mDaySpinner.getCount();
+                                mDaySpinner.setSelection(pos);
                             }
-                    );
+                        }
+                );
 
             // Handle DAY -
             root.findViewById(R.id.minusDay)
-                    .setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(final View v) {
-                                    int pos = (mDaySpinner.getSelectedItemPosition() - 1 + mDaySpinner.getCount()) % mDaySpinner.getCount();
-                                    mDaySpinner.setSelection(pos);
-                                }
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(@NonNull final View v) {
+                                int pos = (mDaySpinner.getSelectedItemPosition() - 1
+                                        + mDaySpinner.getCount()) % mDaySpinner.getCount();
+                                mDaySpinner.setSelection(pos);
                             }
-                    );
+                        }
+                );
 
             // Handle OK
             root.findViewById(R.id.confirm)
-                    .setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(final View v) {
-                                    // Ensure the date is 'hierarchically valid'; require year, if month is non-null, require month if day non-null
-                                    if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-                                        StandardDialogs.showUserMessage(mActivity, R.string.warning_if_day_set_month_and_year_must_be);
-                                    } else if (mMonth != null && mMonth > 0 && mYear == null) {
-                                        StandardDialogs.showUserMessage(mActivity, R.string.warning_if_month_set_year_must_be);
-                                    } else {
-                                        if (mListener != null) {
-                                            mListener.onPartialDatePickerSave(mYear, mMonth, mDay);
-                                        }
+                .setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(@NonNull final View v) {
+                                // Ensure the date is 'hierarchically valid';
+                                // require year, if month is non-null,
+                                // require month, if day non-null
+                                if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
+                                    StandardDialogs.showUserMessage(
+                                            mActivity,
+                                            R.string.warning_if_day_set_month_and_year_must_be);
+                                } else if (mMonth != null && mMonth > 0 && mYear == null) {
+                                    StandardDialogs.showUserMessage(
+                                            mActivity,
+                                            R.string.warning_if_month_set_year_must_be);
+                                } else {
+                                    if (mListener != null) {
+                                        mListener.onPartialDatePickerSave(mYear, mMonth, mDay);
                                     }
                                 }
                             }
-                    );
+                        }
+                );
 
             // Handle Cancel
             root.findViewById(R.id.cancel).setOnClickListener(
                     new View.OnClickListener() {
                         @Override
-                        public void onClick(final View v) {
+                        public void onClick(@NonNull final View v) {
                             if (mListener != null) {
                                 mListener.onPartialDatePickerCancel();
                             }
@@ -490,13 +521,15 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
         }
 
         /**
-         * Set the date to display
+         * Set the date to display.
          *
          * @param year  Year (or null)
          * @param month Month (or null)
          * @param day   Day (or null)
          */
-        public void setDate(@Nullable final Integer year, @Nullable final Integer month, @Nullable final Integer day) {
+        public void setDate(@Nullable final Integer year,
+                            @Nullable final Integer month,
+                            @Nullable final Integer day) {
             mYear = year;
             mMonth = month;
             mDay = day;
@@ -527,28 +560,18 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             } else {
                 mDaySpinner.setSelection(day);
             }
-
         }
 
-        /**
-         * Accessor
-         */
         @Nullable
         public Integer getYear() {
             return mYear;
         }
 
-        /**
-         * Accessor
-         */
         @Nullable
         public Integer getMonth() {
             return mMonth;
         }
 
-        /**
-         * Accessor
-         */
         @Nullable
         public Integer getDay() {
             return mDay;
@@ -572,19 +595,19 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
 
             // Handle the result
             //if (mYear == null) {
-            //	mMonthSpinner.setEnabled(false);
-            //	mDaySpinner.setEnabled(false);
+            //  mMonthSpinner.setEnabled(false);
+            //  mDaySpinner.setEnabled(false);
             //} else {
-            //	// Enable other spinners as appropriate
-            //	mMonthSpinner.setEnabled(true);
-            //	mDaySpinner.setEnabled(mMonthSpinner.getSelectedItemPosition() > 0);
-            //	regenDaysOfMonth(null);
+            //  // Enable other spinners as appropriate
+            //  mMonthSpinner.setEnabled(true);
+            //  mDaySpinner.setEnabled(mMonthSpinner.getSelectedItemPosition() > 0);
+            //  regenDaysOfMonth(null);
             //}
 
         }
 
         /**
-         * Handle changes to the MONTH field
+         * Handle changes to the MONTH field.
          */
         private void handleMonth(@Nullable final Integer pos) {
             // See if we got a valid month
@@ -593,7 +616,8 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
             // Seems reasonable to disable other spinners if year invalid, but it actually
             // not very friendly when entering data for new books.
             if (!isMonth) {
-                // If not, disable DAY spinner; we leave current value intact in case a valid month is set later
+                // If not, disable DAY spinner; we leave current value intact in
+                // case a valid month is set later
                 //mDaySpinner.setEnabled(false);
                 mMonth = null;
             } else {
@@ -606,7 +630,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
         }
 
         /**
-         * Handle changes to the DAY spinner
+         * Handle changes to the DAY spinner.
          */
         private void handleDay(@Nullable final Integer pos) {
             boolean isSelected = (pos != null && pos > 0);
@@ -618,7 +642,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
         }
 
         /**
-         * Depending on year/month selected, generate the DAYS spinner values
+         * Depending on year/month selected, generate the DAYS spinner values.
          */
         private void regenDaysOfMonth(@Nullable Integer totalDays) {
             // Save the current day in case the regen alters it
@@ -726,6 +750,7 @@ public class PartialDatePickerDialogFragment extends EditorDialogFragment<Partia
          * @author pjw
          */
         protected interface OnPartialDatePickerResultsListener {
+
             void onPartialDatePickerSave(@Nullable final Integer year,
                                          @Nullable final Integer month,
                                          @Nullable final Integer day);

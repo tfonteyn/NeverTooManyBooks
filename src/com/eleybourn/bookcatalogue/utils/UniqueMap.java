@@ -13,20 +13,20 @@ import java.util.HashMap;
  *
  * @author pjw
  */
-public class UniqueMap<K, V> extends HashMap<K, V> {
+public class UniqueMap<K, V>
+        extends HashMap<K, V> {
 
     private static final long serialVersionUID = 425468000396955263L;
 
     /**
      * @param key   Key for new value
      * @param value Data for new value
-     *
-     * @throws IllegalArgumentException if key already stored
      */
     @Override
     @NonNull
     @CallSuper
-    public V put(@NonNull final K key, @NonNull final V value) {
+    public V put(@NonNull final K key,
+                 @NonNull final V value) {
         if (super.put(key, value) != null) {
             throw new IllegalArgumentException("Map already contains key value" + key);
         }

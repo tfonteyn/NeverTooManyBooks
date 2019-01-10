@@ -50,11 +50,11 @@ Small notes in addition:
 * pedantic but I hope polite request:
   Single character variables names are best left to BASIC style from the 1980's
 
-* TODO tags used
-  - TODO
-  - FIXME
-  - ENHANCE
-  - API: like enhance, but specific for Android API level upgrades
+* TODO tags used; always followed with a colon
+  - TODO:
+  - FIXME:
+  - ENHANCE:
+  - API: like enhance, but specific for Android upgrades
   - TEST: work done, but needs proper testing
-  - RELEASE : things that must be checked before doing a public release
-  - NEWKIND : where a list of 'items' is processed -> where you can/should add 'items' to that list
+  - RELEASE: things that must be checked before doing a public release
+  - NEWKIND: where a list of 'items' is processed -> where you can/should add 'items' to that list

@@ -39,7 +39,7 @@ dependencies {
     implementation 'ch.acra:acra:4.11'
     // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.11.3'
-    //ENHANCE: apache http is removed from API 23
+    //ENHANCE: apache http is removed from API: 23
     implementation 'org.apache.httpcomponents:httpcore:4.4.10'
     implementation 'org.apache.httpcomponents:httpmime:4.5.6'
     //

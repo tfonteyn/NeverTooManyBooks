@@ -19,9 +19,9 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
  */
 public class BookRowViewBase {
 
-    /** Associated cursor object */
+    /** Associated cursor object. */
     @NonNull
-    protected final Cursor mCursor;
+    final Cursor mCursor;
 
     private int mIdCol = -2;
 
@@ -58,7 +58,7 @@ public class BookRowViewBase {
     private int mGoodreadsBookIdCol = -2;
     private int mDateLastSyncedWithGoodreadsCol = -2;
 
-    protected BookRowViewBase(@NonNull final Cursor cursor) {
+    BookRowViewBase(@NonNull final Cursor cursor) {
         mCursor = cursor;
     }
 

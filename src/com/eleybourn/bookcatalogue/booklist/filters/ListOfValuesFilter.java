@@ -1,19 +1,20 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.List;
 
-import androidx.annotation.NonNull;
-
 /**
  * an SQL WHERE clause  (column IN (a,b,c,...)
  *
  * @param <T> type the elements of the 'IN' list.
  */
-public class ListOfValuesFilter<T> implements Filter {
+public class ListOfValuesFilter<T>
+        implements Filter {
 
     @NonNull
     private final TableDefinition table;

@@ -23,18 +23,19 @@ package com.eleybourn.bookcatalogue.searches;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.UpdateFieldsFromInternetActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -53,13 +54,15 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * ManagedTask to update requested fields by doing a search.
- *
+ * <p>
  * NEWKIND must stay in sync with {@link UpdateFieldsFromInternetActivity}
  *
  * @author Philip Warner
  */
-public class UpdateFieldsFromInternetTask extends ManagedTask
+public class UpdateFieldsFromInternetTask
+        extends ManagedTask
         implements SearchManager.SearchManagerListener {
+
     /** The fields that the user requested to update */
     @NonNull
     private final UpdateFieldsFromInternetActivity.FieldUsages mRequestedFields;
@@ -126,7 +129,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
         mSearchSites = searchSites;
 
         mSearchManager = new SearchManager(mTaskManager, this);
-        mTaskManager.sendHeaderTaskProgressMessage(BookCatalogueApp.getResourceString(R.string.progress_msg_starting_search));
+        mTaskManager.sendHeaderTaskProgressMessage(
+                BookCatalogueApp.getResourceString(R.string.progress_msg_starting_search));
         getMessageSwitch().addListener(getSenderId(), listener, false);
     }
 
@@ -177,16 +181,19 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
      */
     public void setBookId(final long bookId) {
         //TODO: not really happy exposing the DOM's here, but it will do for now. Ideally the sql behind this becomes static and uses binds
-        mBookWhereClause = DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID) + '=' + bookId;
+        mBookWhereClause = DatabaseDefinitions.TBL_BOOKS.dot(
+                DatabaseDefinitions.DOM_PK_ID) + '=' + bookId;
     }
 
     @Override
-    public void runTask() throws InterruptedException {
+    public void runTask()
+            throws InterruptedException {
         int progressCounter = 0;
         // the 'order by' makes sure we update the 'oldest' book to 'newest'
         // So if we get interrupted, we can pick up the thread (arf...) again later.
         try (Cursor books = mDb.fetchBooksWhere(mBookWhereClause, null,
-                DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID))) {
+                                                DatabaseDefinitions.TBL_BOOKS.dot(
+                                                        DatabaseDefinitions.DOM_PK_ID))) {
 
             mTaskManager.setMaxProgress(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
@@ -204,9 +211,12 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                 // Get the book UUID
                 mCurrentUuid = mOriginalBookData.getString(UniqueId.KEY_BOOK_UUID);
                 // Get the extra data about the book
-                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mDb.getBookAuthorList(mCurrentBookId));
-                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mDb.getBookSeriesList(mCurrentBookId));
-                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, mDb.getTOCEntriesByBook(mCurrentBookId));
+                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
+                                                         mDb.getBookAuthorList(mCurrentBookId));
+                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
+                                                         mDb.getBookSeriesList(mCurrentBookId));
+                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY,
+                                                         mDb.getTOCEntriesByBook(mCurrentBookId));
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
 
@@ -220,7 +230,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                 // if no data required, skip to next book
                 if (mCurrentBookFieldUsages.size() == 0 || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
                     // Update progress appropriately
-                    mTaskManager.sendHeaderTaskProgressMessage(String.format(getString(R.string.progress_msg_skip_title), title));
+                    mTaskManager.sendHeaderTaskProgressMessage(
+                            String.format(getString(R.string.progress_msg_skip_title), title));
                     continue;
                 }
 
@@ -237,7 +248,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
 
                 // Start searching, then wait...
                 mSearchManager.search(mSearchSites, author, title, isbn,
-                        mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_HAVE_THUMBNAIL));
+                                      mCurrentBookFieldUsages.containsKey(
+                                              UniqueId.BKEY_HAVE_THUMBNAIL));
 
                 mSearchLock.lock();
                 try {
@@ -254,12 +266,16 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
 
             } //endWhile
         } finally {
-            // TOMF: do we need this here or can this be done when we send the final message ?? Tell our listener they can clear the progress message.
+            // TOMF: do we need this here or can this be done when we send the final message ??
+            // Tell our listener they can clear the progress message.
             mTaskManager.sendHeaderTaskProgressMessage(null);
             // Create the final message for them (user message, not a Progress message)
-            mFinalMessage = String.format(getString(R.string.progress_end_num_books_searched), "" + progressCounter);
+            mFinalMessage = String.format(getString(R.string.progress_end_num_books_searched),
+                                          "" + progressCounter);
             if (isCancelled()) {
-                mFinalMessage = String.format(BookCatalogueApp.getResourceString(R.string.progress_end_cancelled_info), mFinalMessage);
+                mFinalMessage = String.format(
+                        BookCatalogueApp.getResourceString(R.string.progress_end_cancelled_info),
+                        mFinalMessage);
                 Logger.info(this, " was cancelled");
             }
         }
@@ -295,7 +311,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                             case UniqueId.BKEY_AUTHOR_ARRAY:
                                 // We should never have a book without authors, but lets be paranoid
                                 if (mOriginalBookData.containsKey(usage.fieldId)) {
-                                    ArrayList<Author> list = mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+                                    ArrayList<Author> list = mOriginalBookData.getParcelableArrayList(
+                                            UniqueId.BKEY_AUTHOR_ARRAY);
                                     if (list == null || list.size() == 0) {
                                         fieldUsages.put(usage);
                                     }
@@ -304,7 +321,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
 
                             case UniqueId.BKEY_SERIES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.fieldId)) {
-                                    ArrayList<Series> list = mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                                    ArrayList<Series> list = mOriginalBookData.getParcelableArrayList(
+                                            UniqueId.BKEY_SERIES_ARRAY);
                                     if (list == null || list.size() == 0) {
                                         fieldUsages.put(usage);
                                     }
@@ -313,7 +331,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
 
                             case UniqueId.BKEY_TOC_TITLES_ARRAY:
                                 if (mOriginalBookData.containsKey(usage.fieldId)) {
-                                    ArrayList<TOCEntry> list = mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
+                                    ArrayList<TOCEntry> list = mOriginalBookData.getParcelableArrayList(
+                                            UniqueId.BKEY_TOC_TITLES_ARRAY);
                                     if (list == null || list.size() == 0) {
                                         fieldUsages.put(usage);
                                     }
@@ -348,7 +367,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
      * Called in the main thread for this object when the search for one book has completed.
      */
     @SuppressWarnings("SameReturnValue")
-    public boolean onSearchFinished(final boolean wasCancelled, @NonNull final Bundle bookData) {
+    public boolean onSearchFinished(final boolean wasCancelled,
+                                    @NonNull final Bundle bookData) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, " onSearchFinished|bookId=" + mCurrentBookId);
         }
@@ -359,12 +379,14 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
             cancelTask();
         } else if (bookData.size() == 0) {
             // tell the user if the search failed.
-            mTaskManager.sendTaskUserMessage(BookCatalogueApp.getResourceString(R.string.warning_unable_to_find_book));
+            mTaskManager.sendTaskUserMessage(
+                    BookCatalogueApp.getResourceString(R.string.warning_unable_to_find_book));
         }
 
         // Save the local data from the context so we can start a new search
         if (!isCancelled() && bookData.size() > 0) {
-            processSearchResults(mCurrentBookId, mCurrentUuid, mCurrentBookFieldUsages, bookData, mOriginalBookData);
+            processSearchResults(mCurrentBookId, mCurrentUuid, mCurrentBookFieldUsages, bookData,
+                                 mOriginalBookData);
         }
 
         /*
@@ -436,7 +458,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                             switch (usage.fieldId) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
                                     if (originalBookData.containsKey(usage.fieldId)) {
-                                        ArrayList<Author> list = originalBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+                                        ArrayList<Author> list = originalBookData.getParcelableArrayList(
+                                                UniqueId.BKEY_AUTHOR_ARRAY);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.fieldId);
                                         }
@@ -444,7 +467,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
                                     if (originalBookData.containsKey(usage.fieldId)) {
-                                        ArrayList<Series> list = originalBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                                        ArrayList<Series> list = originalBookData.getParcelableArrayList(
+                                                UniqueId.BKEY_SERIES_ARRAY);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.fieldId);
                                         }
@@ -452,7 +476,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                                     break;
                                 case UniqueId.BKEY_TOC_TITLES_ARRAY:
                                     if (originalBookData.containsKey(usage.fieldId)) {
-                                        ArrayList<TOCEntry> list = originalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
+                                        ArrayList<TOCEntry> list = originalBookData.getParcelableArrayList(
+                                                UniqueId.BKEY_TOC_TITLES_ARRAY);
                                         if (list != null && list.size() > 0) {
                                             newBookData.remove(usage.fieldId);
                                         }
@@ -472,17 +497,21 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
                             // Handle arrays (note: before you're clever, and collapse this to one... Android Studio hides the type in the <~> notation!
                             switch (usage.fieldId) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
-                                    UpdateFieldsFromInternetTask.<Author>combineArrays(usage.fieldId, originalBookData, newBookData);
+                                    UpdateFieldsFromInternetTask.<Author>combineArrays(
+                                            usage.fieldId, originalBookData, newBookData);
                                     break;
                                 case UniqueId.BKEY_SERIES_ARRAY:
-                                    UpdateFieldsFromInternetTask.<Series>combineArrays(usage.fieldId, originalBookData, newBookData);
+                                    UpdateFieldsFromInternetTask.<Series>combineArrays(
+                                            usage.fieldId, originalBookData, newBookData);
                                     break;
                                 case UniqueId.BKEY_TOC_TITLES_ARRAY:
-                                    UpdateFieldsFromInternetTask.<TOCEntry>combineArrays(usage.fieldId, originalBookData, newBookData);
+                                    UpdateFieldsFromInternetTask.<TOCEntry>combineArrays(
+                                            usage.fieldId, originalBookData, newBookData);
                                     break;
                                 default:
                                     // No idea how to handle this for non-arrays
-                                    throw new RTE.IllegalTypeException("Illegal usage '" + usage.usage + "' specified for field '" + usage.fieldId + '\'');
+                                    throw new RTE.IllegalTypeException(
+                                            "Illegal usage '" + usage.usage + "' specified for field '" + usage.fieldId + '\'');
                             }
                             break;
                     }
@@ -509,7 +538,8 @@ public class UpdateFieldsFromInternetTask extends ManagedTask
 
     @Override
     @CallSuper
-    protected void finalize() throws Throwable {
+    protected void finalize()
+            throws Throwable {
         cleanup();
         super.finalize();
     }

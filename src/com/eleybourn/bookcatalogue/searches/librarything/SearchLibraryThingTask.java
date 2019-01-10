@@ -5,8 +5,8 @@ import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.ManagedSearchTask;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 
 import java.io.IOException;
@@ -15,12 +15,17 @@ import java.net.UnknownHostException;
 
 
 /**
- * LibraryThing ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
- *
+ * LibraryThing ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}.
+ * <p>
  * We always contact LibraryThing because it is a good source of Series data and thumbnails.
  * But it does require an ISBN AND a developer key.
  */
-public class SearchLibraryThingTask extends ManagedSearchTask {
+public class SearchLibraryThingTask
+        extends ManagedSearchTask {
+
+    /** progress title. */
+    @StringRes
+    private static final int R_ID_SEARCHING = R.string.searching_library_thing;
 
     public SearchLibraryThingTask(@NonNull final String name,
                                   @NonNull final TaskManager manager) {
@@ -28,7 +33,7 @@ public class SearchLibraryThingTask extends ManagedSearchTask {
     }
 
     /**
-     * Return the global ID for this searcher
+     * @return the global ID for this searcher
      */
     @Override
     public int getSearchId() {
@@ -37,7 +42,7 @@ public class SearchLibraryThingTask extends ManagedSearchTask {
 
     @Override
     protected void runTask() {
-        @StringRes final int R_ID_SEARCHING = R.string.searching_library_thing;
+
         mTaskManager.sendTaskProgressMessage(this, R_ID_SEARCHING, 0);
 
         LibraryThingManager ltm = new LibraryThingManager();
@@ -53,7 +58,7 @@ public class SearchLibraryThingTask extends ManagedSearchTask {
                 checkForSeriesNameInTitle();
             }
         } catch (java.net.SocketTimeoutException e) {
-            Logger.info(this,e.getLocalizedMessage());
+            Logger.info(this, e.getLocalizedMessage());
             setFinalError(R_ID_SEARCHING, R.string.error_network_timeout);
         } catch (MalformedURLException | UnknownHostException e) {
             Logger.error(e);

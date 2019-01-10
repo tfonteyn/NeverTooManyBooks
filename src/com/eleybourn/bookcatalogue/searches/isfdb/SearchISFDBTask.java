@@ -14,10 +14,14 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
 /**
- *  ISFDB ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
- *
+ * ISFDB ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}.
  */
-public class SearchISFDBTask extends ManagedSearchTask {
+public class SearchISFDBTask
+        extends ManagedSearchTask {
+
+    /** progress title. */
+    @StringRes
+    private static final int R_ID_SEARCHING = R.string.searching_isfdb;
 
     public SearchISFDBTask(@NonNull final String name,
                            @NonNull final TaskManager manager) {
@@ -25,7 +29,7 @@ public class SearchISFDBTask extends ManagedSearchTask {
     }
 
     /**
-     * Return the global ID for this searcher
+     * @return the global ID for this searcher
      */
     @Override
     public int getSearchId() {
@@ -34,7 +38,7 @@ public class SearchISFDBTask extends ManagedSearchTask {
 
     @Override
     protected void runTask() {
-        @StringRes final int R_ID_SEARCHING = R.string.searching_isfdb;
+
         mTaskManager.sendTaskProgressMessage(this, R_ID_SEARCHING, 0);
 
         try {
@@ -45,7 +49,7 @@ public class SearchISFDBTask extends ManagedSearchTask {
                 checkForSeriesNameInTitle();
             }
         } catch (java.net.SocketTimeoutException e) {
-            Logger.info(this,e.getLocalizedMessage());
+            Logger.info(this, e.getLocalizedMessage());
             setFinalError(R_ID_SEARCHING, R.string.error_network_timeout);
         } catch (MalformedURLException | UnknownHostException e) {
             Logger.error(e);
@@ -58,7 +62,5 @@ public class SearchISFDBTask extends ManagedSearchTask {
             setFinalError(R_ID_SEARCHING, e);
         }
     }
-
-
 
 }

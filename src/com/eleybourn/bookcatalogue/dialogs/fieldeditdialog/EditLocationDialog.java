@@ -21,14 +21,19 @@
 package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 
-public class EditLocationDialog extends EditStringDialog {
-    public EditLocationDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+public class EditLocationDialog
+        extends EditStringDialog {
+
+    public EditLocationDialog(@NonNull final Activity activity,
+                              @NonNull final CatalogueDBAdapter db,
+                              @NonNull final Runnable onChanged) {
         super(activity, db, onChanged);
     }
 
@@ -38,7 +43,8 @@ public class EditLocationDialog extends EditStringDialog {
     }
 
     @Override
-    protected void confirmEdit(@NonNull final String from, @NonNull final String to) {
+    protected void confirmEdit(@NonNull final String from,
+                               @NonNull final String to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

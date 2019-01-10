@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
@@ -32,12 +33,13 @@ import java.util.Locale;
 
 /**
  * Edit the language field.
- *
+ * <p>
  * Will hardly ever be needed now that we have ISO3 code.
  * However, if a language was misspelled, auto-translation will fail, and manual edit *will*
  * be needed.
  */
-public class EditLanguageDialog extends EditStringDialog {
+public class EditLanguageDialog
+        extends EditStringDialog {
 
     public EditLanguageDialog(@NonNull final Activity activity,
                               @NonNull final CatalogueDBAdapter db,
@@ -58,7 +60,8 @@ public class EditLanguageDialog extends EditStringDialog {
     }
 
     @Override
-    protected void confirmEdit(@NonNull final String from, @NonNull final String to) {
+    protected void confirmEdit(@NonNull final String from,
+                               @NonNull final String to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

@@ -33,32 +33,34 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
  *
  * @author Philip Warner
  */
-public class GetImageTask implements SimpleTaskQueue.SimpleTask {
+public class GetImageTask
+        implements SimpleTaskQueue.SimpleTask {
 
-    /** URL of image to fetch */
+    /** URL of image to fetch. */
     @NonNull
     private final String mUrl;
-    /** Related work */
+    /** Related work. */
     @NonNull
     private final GoodreadsWork mWork;
     /**
      * Byte data of image. NOT a Bitmap because we fetch several and store them in the related
      * GoodreadsWork object and Bitmap objects are much larger than JPG objects.
      */
-    private byte[] mBytes = null;
+    private byte[] mBytes;
 
     /**
      * Constructor. Save the stuff we need.
      *
      * @param url to retrieve.
      */
-    GetImageTask(@NonNull final String url, @NonNull final GoodreadsWork work) {
+    GetImageTask(@NonNull final String url,
+                 @NonNull final GoodreadsWork work) {
         mUrl = url;
         mWork = work;
     }
 
     /**
-     * Just get the URL
+     * Just get the URL.
      */
     @Override
     public void run(@NonNull final SimpleTaskContext taskContext) {

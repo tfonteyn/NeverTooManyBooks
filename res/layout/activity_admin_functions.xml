@@ -91,7 +91,6 @@
             <TextView
                 android:id="@+id/lbl_export"
                 style="@style/row_option_label"
-                android:paddingTop="@dimen/padding_border_double"
                 android:drawableStart="@drawable/ic_save"
                 android:text="@string/lbl_export_to_csv" />
 

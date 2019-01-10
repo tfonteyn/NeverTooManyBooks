@@ -4,24 +4,29 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-
 /**
- * code sharing between edit and showing anthology titles, editing extends this class
+ * code sharing between edit and showing anthology titles, editing extends this class.
  */
 public class TOCListAdapter
-    extends SimpleListAdapter<TOCEntry> {
+        extends SimpleListAdapter<TOCEntry> {
 
-    protected TOCListAdapter(@NonNull final Context context,
-                             final @LayoutRes int rowViewId,
-                             @NonNull final ArrayList<TOCEntry> items) {
+    /**
+     * Constructor.
+     *
+     * @param items for the list view.
+     */
+    TOCListAdapter(@NonNull final Context context,
+                   @LayoutRes final int rowViewId,
+                   @NonNull final ArrayList<TOCEntry> items) {
         super(context, rowViewId, items);
     }
 
@@ -52,7 +57,8 @@ public class TOCListAdapter
                 holder.firstPublication.setVisibility(View.GONE);
             } else {
                 holder.firstPublication.setVisibility(View.VISIBLE);
-                holder.firstPublication.setText(getContext().getString(R.string.brackets, tocEntry.getFirstPublication()));
+                holder.firstPublication.setText(
+                        getContext().getString(R.string.brackets, tocEntry.getFirstPublication()));
             }
         }
     }

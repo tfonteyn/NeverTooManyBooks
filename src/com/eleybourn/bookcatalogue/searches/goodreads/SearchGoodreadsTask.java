@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions;
@@ -32,16 +35,18 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-
 /**
- /**
- *  Goodreads ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}
+ * /**
+ * Goodreads ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}.
  *
  * @author Philip Warner
  */
-public class SearchGoodreadsTask extends ManagedSearchTask {
+public class SearchGoodreadsTask
+        extends ManagedSearchTask {
+
+    /** progress title. */
+    @StringRes
+    private static final int R_ID_SEARCHING = R.string.searching_goodreads;
 
     public SearchGoodreadsTask(@NonNull final String name,
                                @NonNull final TaskManager manager) {
@@ -49,7 +54,7 @@ public class SearchGoodreadsTask extends ManagedSearchTask {
     }
 
     /**
-     * Get the global ID for the Goodreads search manager
+     * @return the global ID for the Goodreads search manager
      */
     @Override
     public int getSearchId() {
@@ -58,7 +63,7 @@ public class SearchGoodreadsTask extends ManagedSearchTask {
 
     @Override
     protected void runTask() {
-        @StringRes final int R_ID_SEARCHING = R.string.searching_goodreads;
+
         mTaskManager.sendTaskProgressMessage(this, R_ID_SEARCHING, 0);
 
         GoodreadsManager grMgr = new GoodreadsManager();
@@ -77,7 +82,7 @@ public class SearchGoodreadsTask extends ManagedSearchTask {
             setFinalError(R_ID_SEARCHING, R.string.gr_auth_failed);
 
         } catch (java.net.SocketTimeoutException e) {
-            Logger.info(this,e.getLocalizedMessage());
+            Logger.info(this, e.getLocalizedMessage());
             setFinalError(R_ID_SEARCHING, R.string.error_network_timeout);
         } catch (MalformedURLException | UnknownHostException e) {
             Logger.error(e);

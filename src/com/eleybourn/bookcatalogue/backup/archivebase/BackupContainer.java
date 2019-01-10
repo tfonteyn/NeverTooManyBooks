@@ -24,26 +24,33 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 
 /**
- * Interface provided by a backup archiver
+ * Interface provided by a backup archiver.
  *
  * @author pjw
  */
 public interface BackupContainer {
+
     /**
      * Get a BackupReader for the referenced archive.
      *
      * @return a new reader
+     *
+     * @throws IOException on failure
      */
     @NonNull
-    BackupReader newReader() throws IOException;
+    BackupReader newReader()
+            throws IOException;
 
     /**
      * Get a BackupWriter for the referenced archive.
      *
      * @return a new writer
+     *
+     * @throws IOException on failure
      */
     @NonNull
-    BackupWriter newWriter() throws IOException;
+    BackupWriter newWriter()
+            throws IOException;
 
     /**
      * @return the version of the underlying archiver used to write / required to read archives

@@ -22,15 +22,18 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
-
+/**
+ * The hosting activity for editing a book.
+ */
 public class EditBookActivity
-    extends BaseActivity {
+        extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
@@ -48,9 +51,9 @@ public class EditBookActivity
         frag.setArguments(extras);
 
         getSupportFragmentManager()
-            .beginTransaction()
-            .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
-            .commit();
+                .beginTransaction()
+                .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
+                .commit();
         Tracker.exitOnCreate(this);
     }
 

@@ -21,6 +21,9 @@ package com.eleybourn.bookcatalogue.backup.archivebase;
 
 import android.database.Cursor;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -44,9 +47,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Map;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 /**
  * Basic implementation of format-agnostic BackupWriter methods using
  * only a limited set of methods from the base interface.
@@ -54,7 +54,7 @@ import androidx.annotation.NonNull;
  * @author pjw
  */
 public abstract class BackupWriterAbstract
-    implements BackupWriter {
+        implements BackupWriter {
 
     @NonNull
     private final CatalogueDBAdapter mDb;
@@ -62,22 +62,22 @@ public abstract class BackupWriterAbstract
     private @NonNull
     ExportSettings mSettings;
 
-    private BackupReader.BackupReaderListener mProgressListener;
+    private BackupWriter.BackupWriterListener mProgressListener;
 
     protected BackupWriterAbstract() {
         mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
     }
 
     /**
-     * Do a full backup
+     * Do a full backup.
      *
      * @param settings what to backup
      * @param listener to send progress updates to
      */
     @Override
     public void backup(@NonNull final ExportSettings settings,
-                       @NonNull final BackupReader.BackupReaderListener listener)
-        throws IOException {
+                       @NonNull final BackupWriter.BackupWriterListener listener)
+            throws IOException {
         mSettings = settings;
         mProgressListener = listener;
 
@@ -87,10 +87,9 @@ public abstract class BackupWriterAbstract
         File tempBookCsvFile = null;
 
         BackupInfo.InfoUserValues infoValues = new BackupInfo.InfoUserValues();
-        // we *should* have preferences... we won't if we're cancelled before.
-        infoValues.hasPrefs = (mSettings.what & ExportSettings.PREFERENCES) != 0;
-        // we *should* have Styles... we won't if we're cancelled before.
         infoValues.hasStyles = (mSettings.what & ExportSettings.BOOK_LIST_STYLES) != 0;
+        infoValues.hasPrefs = (mSettings.what & ExportSettings.PREFERENCES) != 0;
+
 
         try {
             // If we are doing books, generate the CSV file, and set the number
@@ -123,11 +122,11 @@ public abstract class BackupWriterAbstract
             }
 
             if (!mProgressListener.isCancelled()
-                && (mSettings.what & ExportSettings.XML_TABLES) != 0) {
+                    && (mSettings.what & ExportSettings.XML_TABLES) != 0) {
                 doXmlTables();
             }
             if (!mProgressListener.isCancelled()
-                && (mSettings.what & ExportSettings.BOOK_CSV) != 0) {
+                    && (mSettings.what & ExportSettings.BOOK_CSV) != 0) {
                 try {
                     putBooks(tempBookCsvFile);
                 } finally {
@@ -135,16 +134,16 @@ public abstract class BackupWriterAbstract
                 }
             }
             if (!mProgressListener.isCancelled()
-                && (mSettings.what & ExportSettings.COVERS) != 0) {
+                    && (mSettings.what & ExportSettings.COVERS) != 0) {
                 doCovers(false);
             }
             if (!mProgressListener.isCancelled()
-                && (mSettings.what & ExportSettings.PREFERENCES) != 0) {
-                doPreferences();
+                    && (mSettings.what & ExportSettings.BOOK_LIST_STYLES) != 0) {
+                doStyles();
             }
             if (!mProgressListener.isCancelled()
-                && (mSettings.what & ExportSettings.BOOK_LIST_STYLES) != 0) {
-                doStyles();
+                    && (mSettings.what & ExportSettings.PREFERENCES) != 0) {
+                doPreferences();
             }
         } finally {
             mSettings.what = entitiesWritten;
@@ -160,12 +159,12 @@ public abstract class BackupWriterAbstract
     }
 
     private void doInfo(@NonNull final BackupInfo.InfoUserValues infoValues)
-        throws IOException {
+            throws IOException {
         mProgressListener.onProgressStep(null, 1);
 
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         final BufferedWriter out = new BufferedWriter(
-            new OutputStreamWriter(data, XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
+                new OutputStreamWriter(data, XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
 
         try (XmlExporter xmlExporter = new XmlExporter()) {
             xmlExporter.doBackupInfoBlock(out, new ForwardingListener(),
@@ -177,7 +176,7 @@ public abstract class BackupWriterAbstract
     }
 
     private void doXmlTables()
-        throws IOException {
+            throws IOException {
         // Get a temp file and set for delete
         final File tempXmlBackupFile = File.createTempFile("tmp_xml_", ".tmp");
         tempXmlBackupFile.deleteOnExit();
@@ -192,11 +191,11 @@ public abstract class BackupWriterAbstract
     }
 
     private void doPreferences()
-        throws IOException {
+            throws IOException {
         // Turn the preferences into an XML file in a byte array
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         final BufferedWriter out = new BufferedWriter(
-            new OutputStreamWriter(data, XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
+                new OutputStreamWriter(data, XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
 
         try (XmlExporter xmlExporter = new XmlExporter()) {
             xmlExporter.doPreferences(out, new ForwardingListener());
@@ -207,13 +206,13 @@ public abstract class BackupWriterAbstract
     }
 
     private void doStyles()
-        throws IOException {
+            throws IOException {
         Map<Long, BooklistStyle> bsMap = mDb.getBooklistStyles();
         if (!bsMap.isEmpty()) {
             // Turn the styles into an XML file in a byte array
             final ByteArrayOutputStream data = new ByteArrayOutputStream();
             final BufferedWriter out = new BufferedWriter(
-                new OutputStreamWriter(data, XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
+                    new OutputStreamWriter(data, XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
 
             try (XmlExporter xmlExporter = new XmlExporter()) {
                 xmlExporter.doStyles(out, new ForwardingListener());
@@ -231,7 +230,7 @@ public abstract class BackupWriterAbstract
      * @throws IOException on failure
      */
     private int doCovers(final boolean dryRun)
-        throws IOException {
+            throws IOException {
         long sinceTime = 0;
         if (mSettings.dateFrom != null && (mSettings.what & ExportSettings.EXPORT_SINCE) != 0) {
             sinceTime = mSettings.dateFrom.getTime();
@@ -250,7 +249,7 @@ public abstract class BackupWriterAbstract
                 File cover = StorageUtils.getCoverFile(uuid);
                 if (cover.exists()) {
                     if (cover.exists()
-                        && (mSettings.dateFrom == null || sinceTime < cover.lastModified())) {
+                            && (mSettings.dateFrom == null || sinceTime < cover.lastModified())) {
                         if (!dryRun) {
                             putFile(cover.getName(), cover);
                         }
@@ -275,7 +274,7 @@ public abstract class BackupWriterAbstract
         if (!dryRun) {
             Logger.info(this,
                         " Wrote " + ok + " Images, " + missing + " missing," +
-                            " and " + skipped + " skipped");
+                                " and " + skipped + " skipped");
         }
 
         return ok;
@@ -289,20 +288,20 @@ public abstract class BackupWriterAbstract
     @Override
     @CallSuper
     public void close()
-        throws IOException {
+            throws IOException {
         mDb.close();
     }
 
     /**
      * Listener for the '{@link com.eleybourn.bookcatalogue.backup.Exporter#doExport} method
      * that just passes on the progress to our own listener.
-     *
+     * <p>
      * It basically translates between 'delta' and 'absolute' positions for the progress counter
      */
     private class ForwardingListener
-        implements Exporter.ExportListener {
+            implements Exporter.ExportListener {
 
-        private int mLastPos = 0;
+        private int mLastPos;
 
         @Override
         public void setMax(final int max) {
@@ -310,7 +309,7 @@ public abstract class BackupWriterAbstract
         }
 
         @Override
-        public void onProgress(@NonNull String message,
+        public void onProgress(@NonNull final String message,
                                final int position) {
             // The progress is sent periodically and has jumps, so we calculate deltas
             mProgressListener.onProgressStep(message, position - mLastPos);

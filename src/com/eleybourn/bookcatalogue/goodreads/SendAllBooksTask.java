@@ -22,6 +22,9 @@ package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Context;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -31,32 +34,30 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 /**
  * Background task class to send all books in the database to Goodreads.
- *
+ * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  *
  * @author Philip Warner
  */
-public class SendAllBooksTask extends SendBooksTask {
+public class SendAllBooksTask
+        extends SendBooksTask {
 
     private static final long serialVersionUID = -1933000305276643875L;
-    /** Options indicating if it should only send UPDATED books to Goodreads; false == all books */
+    /** Options indicating if it should only send UPDATED books to Goodreads; false == all books. */
     private final boolean mUpdatesOnly;
 
-    /** Last book ID processed */
-    private long mLastId = 0;
-    /** Total count of books processed */
-    private int mCount = 0;
-    /** Total count of books that are in cursor */
-    private int mTotalBooks = 0;
+    /** Last book ID processed. */
+    private long mLastId;
+    /** Total count of books processed. */
+    private int mCount;
+    /** Total count of books that are in cursor. */
+    private int mTotalBooks;
 
     /**
-     * Constructor
+     * Constructor.
      */
     SendAllBooksTask(final boolean updatesOnly) {
         super(BookCatalogueApp.getResourceString(R.string.gr_title_send_book));
@@ -107,22 +108,21 @@ public class SendAllBooksTask extends SendBooksTask {
         // 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in Goodreads'
         BookCatalogueApp.showNotification(
                 context, context.getString(R.string.gr_title_send_book),
-                context.getString(R.string.gr_send_all_books_results, mCount, mSent, mNoIsbn, mNotFound));
+                context.getString(R.string.gr_send_all_books_results, mCount, mSent, mNoIsbn,
+                                  mNotFound));
 
         return true;
     }
 
     /**
-     * Make a more informative description
+     * Make a more informative description.
      */
     @NonNull
     @Override
     @CallSuper
     public String getDescription() {
-        return super.getDescription() +
-                " (" +
-                BookCatalogueApp.getResourceString(R.string.x_of_y, mCount, mTotalBooks) +
-                ')';
+        return super.getDescription() + " ("
+                + BookCatalogueApp.getResourceString(R.string.x_of_y, mCount, mTotalBooks) + ')';
     }
 
     @Override

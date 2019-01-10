@@ -19,21 +19,24 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
-import androidx.annotation.NonNull;
-
 /**
- * Validator that requires a blank field
+ * Validator that requires a blank field.
  *
  * @author Philip Warner
  */
-public class BlankValidator implements DataValidator {
+public class BlankValidator
+        implements DataValidator {
 
     @Override
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data,
+                         @NonNull final Datum datum,
+                         final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields

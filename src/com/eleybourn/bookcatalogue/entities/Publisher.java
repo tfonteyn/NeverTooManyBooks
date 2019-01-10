@@ -23,32 +23,34 @@ package com.eleybourn.bookcatalogue.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Class to hold Publisher data. Used in lists.
  *
- * ENHANCE Could just have used a String, but this way we're prepared for a dedicated table with the publishers
+ * ENHANCE: Could just have used a String, but this way we're prepared for a dedicated table with the publishers
  */
 public class Publisher
         implements Parcelable {
 
-    public static final Creator<Publisher> CREATOR = new Creator<Publisher>() {
-        @Override
-        public Publisher createFromParcel(@NonNull final Parcel source) {
-            return new Publisher(source);
-        }
+    /** {@link Parcelable}. */
+    public static final Creator<Publisher> CREATOR =
+            new Creator<Publisher>() {
+                @Override
+                public Publisher createFromParcel(@NonNull final Parcel source) {
+                    return new Publisher(source);
+                }
 
-        @Override
-        public Publisher[] newArray(final int size) {
-            return new Publisher[size];
-        }
-    };
+                @Override
+                public Publisher[] newArray(final int size) {
+                    return new Publisher[size];
+                }
+            };
     private static final char SEPARATOR = ',';
     public String name;
 
@@ -66,6 +68,7 @@ public class Publisher
         dest.writeString(name);
     }
 
+    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
@@ -112,7 +115,7 @@ public class Publisher
             return false;
         }
         Publisher that = (Publisher) obj;
-        //ENHANCE uncomment the 3 lines once(if) we start using ids
+        //ENHANCE: uncomment the 3 lines once(if) we start using ids
 //        if (this.id == 0 || that.id == 0 || this.id == that.id) {
         return Objects.equals(this.name, that.name);
 //        }

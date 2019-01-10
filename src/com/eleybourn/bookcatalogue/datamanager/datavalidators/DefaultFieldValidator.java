@@ -31,7 +31,9 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  *
  * @author Philip Warner
  */
-public class DefaultFieldValidator implements DataValidator {
+public class DefaultFieldValidator
+        implements DataValidator {
+
     @NonNull
     private final String mDefault;
 
@@ -43,7 +45,7 @@ public class DefaultFieldValidator implements DataValidator {
     }
 
     /**
-     * Constructor with default value
+     * Constructor with default value.
      *
      * @param defaultValue Default to apply
      */
@@ -53,7 +55,9 @@ public class DefaultFieldValidator implements DataValidator {
 
     @Override
     @CallSuper
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data,
+                         @NonNull final Datum datum,
+                         final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
@@ -61,8 +65,9 @@ public class DefaultFieldValidator implements DataValidator {
         }
 
         // Default validator does not cross-validate
-        if (crossValidating)
+        if (crossValidating) {
             return;
+        }
 
         Object value = data.get(datum);
         try {
@@ -70,7 +75,8 @@ public class DefaultFieldValidator implements DataValidator {
                 data.putString(datum, mDefault);
             }
         } catch (RuntimeException e) {
-            throw new ValidatorException(R.string.vldt_unable_to_get_value, new Object[]{datum.getKey()});
+            throw new ValidatorException(R.string.vldt_unable_to_get_value,
+                                         new Object[]{datum.getKey()});
         }
     }
 }

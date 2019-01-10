@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -28,30 +30,29 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-import androidx.annotation.NonNull;
-
 /**
  * Basic implementation of format-agnostic ReaderEntity methods using
  * only a limited set of methods from the base interface.
  *
  * @author pjw
  */
-public abstract class ReaderEntityAbstract implements ReaderEntity {
+public abstract class ReaderEntityAbstract
+        implements ReaderEntity {
 
-    /** UNICODE stream type for read/write text files */
+    /** UNICODE stream type for read/write text files. */
     public static final String UTF8 = "utf8";
 
-    /** Buffer size for buffered streams */
+    /** Buffer size for buffered streams. */
     protected static final int BUFFER_SIZE = 32768;
 
     @NonNull
     private final BackupEntityType mType;
 
-    public ReaderEntityAbstract(@NonNull final BackupEntityType mType) {
-        this.mType = mType;
+    public ReaderEntityAbstract(@NonNull final BackupEntityType type) {
+        this.mType = type;
     }
 
-    /** Get the type of this entity */
+    /** Get the type of this entity. */
     @NonNull
     @Override
     public BackupEntityType getType() {

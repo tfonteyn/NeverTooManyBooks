@@ -21,10 +21,11 @@
 package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -32,11 +33,12 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 
 /**
- *  Dialog to edit a single publisher.
- *
+ * Dialog to edit a single publisher.
+ * <p>
  * Calling point is a List.
  */
 public class EditPublisherDialog {
+
     @NonNull
     private final Activity mContext;
     @NonNull
@@ -44,7 +46,9 @@ public class EditPublisherDialog {
     @NonNull
     private final Runnable mOnChanged;
 
-    public EditPublisherDialog(@NonNull final Activity activity, @NonNull final CatalogueDBAdapter db, @NonNull final Runnable onChanged) {
+    public EditPublisherDialog(@NonNull final Activity activity,
+                               @NonNull final CatalogueDBAdapter db,
+                               @NonNull final Runnable onChanged) {
         mDb = db;
         mContext = activity;
         mOnChanged = onChanged;
@@ -52,7 +56,8 @@ public class EditPublisherDialog {
 
     public void edit(@NonNull final Publisher publisher) {
         // Build the base dialog
-        final View root = mContext.getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
+        final View root = mContext.getLayoutInflater()
+                                  .inflate(R.layout.dialog_edit_publisher,null);
 
         final EditText nameView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
@@ -66,7 +71,7 @@ public class EditPublisherDialog {
         //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
                     StandardDialogs.showUserMessage(mContext, R.string.warning_required_name);
@@ -81,7 +86,7 @@ public class EditPublisherDialog {
         //noinspection ConstantConditions
         root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 dialog.dismiss();
             }
         });
@@ -90,9 +95,10 @@ public class EditPublisherDialog {
     }
 
     /**
-     * ENHANCE: once {@link Publisher} use id's, use code from {@link EditSeriesDialog#confirmEdit}
+     * ENHANCE: once {@link Publisher} use id's, use code from {@link EditSeriesDialog#confirmEdit}.
      */
-    private void confirmEdit(@NonNull final Publisher from, @NonNull final Publisher to) {
+    private void confirmEdit(@NonNull final Publisher from,
+                             @NonNull final Publisher to) {
         // case sensitive equality
         if (to.equals(from)) {
             return;

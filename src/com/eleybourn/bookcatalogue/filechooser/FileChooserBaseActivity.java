@@ -21,14 +21,15 @@ package com.eleybourn.bookcatalogue.filechooser;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -48,26 +49,28 @@ import java.util.ArrayList;
  *
  * @author pjw
  */
-public abstract class FileChooserBaseActivity extends BaseActivity implements
+public abstract class FileChooserBaseActivity
+        extends BaseActivity
+        implements
         SimpleTaskQueueProgressDialogFragment.OnTaskFinishedListener,
         SimpleTaskQueueProgressDialogFragment.OnAllTasksFinishedListener,
         FileListerFragmentTask.FileListerListener,
         OnPathChangedListener {
 
-    /** Key for member of EXTRAS that specifies the mode of operation of this dialog */
+    /** Key for member of EXTRAS that specifies the mode of operation of this dialog. */
     public static final String BKEY_MODE = "mode";
     public static final String BVAL_MODE_SAVE = "saveAs";
     public static final String BVAL_MODE_OPEN = "open";
 
-    /** Options indicating nature of this activity */
-    private boolean mIsSave = false;
+    /** Options indicating nature of this activity. */
+    private boolean mIsSave;
 
     public boolean isSave() {
         return mIsSave;
     }
 
     /**
-     * Create the fragment we display
+     * Create the fragment we display.
      */
     @NonNull
     protected abstract FileChooserFragment getChooserFragment();
@@ -102,7 +105,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
         // Handle 'Cancel' button
         findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(final View v) {
+            public void onClick(@NonNull final View v) {
                 setResult(Activity.RESULT_CANCELED);
                 finish();
             }
@@ -115,7 +118,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
             confirm.setText(R.string.btn_confirm_save);
             confirm.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(final View v) {
+                public void onClick(@NonNull final View v) {
                     handleSave();
                 }
             });
@@ -124,7 +127,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
             confirm.setText(R.string.btn_confirm_open);
             confirm.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(final View v) {
+                public void onClick(@NonNull final View v) {
                     handleOpen();
                 }
             });
@@ -133,14 +136,14 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
     }
 
     /**
-     * Implemented by subclass to handle a click on the 'Open' button
+     * Implemented by subclass to handle a click on the 'Open' button.
      *
      * @param file Selected file
      */
     protected abstract void onOpen(@NonNull final File file);
 
     /**
-     * Implemented by subclass to handle a click on the 'Save' button
+     * Implemented by subclass to handle a click on the 'Save' button.
      *
      * @param file Selected file
      */
@@ -170,7 +173,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
         if (frag instanceof FileChooserFragment) {
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
-            if ((file.exists() && !file.isFile())) {
+            if (file.exists() && !file.isFile()) {
                 StandardDialogs.showUserMessage(this, R.string.warning_select_a_non_directory);
                 return;
             }
@@ -182,7 +185,8 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
      * Called by lister fragment to pass on the list of files.
      */
     @Override
-    public void onGotFileList(@NonNull final File root, @NonNull final ArrayList<FileDetails> list) {
+    public void onGotFileList(@NonNull final File root,
+                              @NonNull final ArrayList<FileDetails> list) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.browser_fragment);
         if (frag instanceof FileListerListener) {
             ((FileListerListener) frag).onGotFileList(root, list);
@@ -190,7 +194,7 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
     }
 
     /**
-     * Get an object for building an list of files in background.
+     * @return an object for building an list of files in background.
      */
     @NonNull
     protected abstract FileListerFragmentTask getFileLister(@NonNull final File root);
@@ -201,14 +205,16 @@ public abstract class FileChooserBaseActivity extends BaseActivity implements
      */
     @Override
     public void onPathChanged(@Nullable final File root) {
-        if (root == null || !root.isDirectory())
+        if (root == null || !root.isDirectory()) {
             return;
+        }
 
         // Create the background task
         FileListerFragmentTask lister = getFileLister(root);
 
         // Start the task
-        SimpleTaskQueueProgressDialogFragment.newInstance(this, R.string.progress_msg_searching_directory, lister, true, 0);
+        SimpleTaskQueueProgressDialogFragment
+                .newInstance(this, R.string.progress_msg_searching_directory, lister, true, 0);
 
     }
 }

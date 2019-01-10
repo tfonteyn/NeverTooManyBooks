@@ -14,23 +14,28 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-class Editions extends AbstractBase {
+class Editions
+        extends AbstractBase {
 
     private static final String EDITIONS_URL = "/cgi-bin/se.cgi?arg=%s&type=ISBN";
     private List<String> mEditions;
 
     /**
-     * We assume the isbn is already checked & valid!
+     * We assume the isbn is already checked & valid.
      */
     Editions(@NonNull final String isbn) {
         mPath = ISFDBManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
     }
 
     /**
-     * @return a list with native ISFDB book id's pointing to individual editions (with the same isbn)
+     * @return a list with native ISFDB book id's pointing to individual editions
+     * (with the same isbn)
+     *
+     * @throws SocketTimeoutException on timeout
      */
     @NonNull
-    long[] getBookIds() throws SocketTimeoutException {
+    long[] getBookIds()
+            throws SocketTimeoutException {
         if (mEditions == null) {
             fetch();
         }
@@ -43,13 +48,16 @@ class Editions extends AbstractBase {
     }
 
     /**
-     * Example return:  "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
-     *
+     * Example return:  "http://www.isfdb.org/cgi-bin/pl.cgi?230949".
+     * <p>
      * Fails silently, returning an empty list.
      *
      * @return a list with URLs pointing to individual editions (with the same isbn)
+     *
+     * @throws SocketTimeoutException on timeout
      */
-    List<String> fetch() throws SocketTimeoutException {
+    List<String> fetch()
+            throws SocketTimeoutException {
         if (mEditions == null) {
             mEditions = new ArrayList<>();
         }
@@ -72,11 +80,13 @@ class Editions extends AbstractBase {
         return mEditions;
     }
 
-    private void findEntries(@NonNull final Document doc, @NonNull final String... selectors) {
+    private void findEntries(@NonNull final Document doc,
+                             @NonNull final String... selectors) {
         for (String selector : selectors) {
             Elements entries = doc.select(selector);
             for (Element entry : entries) {
-                Element edLink = entry.select("a").first(); // first column has the book link
+                // first column has the book link
+                Element edLink = entry.select("a").first();
                 if (edLink != null) {
                     String url = edLink.attr("href");
                     if (url != null) {

@@ -41,19 +41,20 @@ import androidx.annotation.Nullable;
  */
 public class Datum {
 
-    /** Key of this datum */
+    /** Key of this datum. */
     @NonNull
     private final String mKey;
-    /** True if data should be visible */
+    /** True if data should be visible. */
     private final boolean mIsVisible;
-    /** Validator for this Datum */
+    /** Validator for this Datum. */
     @Nullable
     private DataValidator mValidator;
-    /** Accessor for this Datum (eg. the datum might be a bit in a bitmask field, or a composite read-only value */
+    /** Accessor for this Datum (eg. the datum might be a bit in a bitmask field,
+     *  or a composite read-only value. */
     private DataAccessor mAccessor;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param key     Key of this datum
      * @param visible True if data should be visible
@@ -65,7 +66,7 @@ public class Datum {
     }
 
     /**
-     * Translate the passed object to a Long value
+     * Translate the passed object to a Long value.
      *
      * @param o Object
      *
@@ -92,7 +93,7 @@ public class Datum {
     }
 
     /**
-     * Translate the passed object to a Double value
+     * Translate the passed object to a Double value.
      *
      * @param o Object
      *
@@ -115,7 +116,7 @@ public class Datum {
     }
 
     /**
-     * Format the passed bundle in a way that is convenient for display
+     * Format the passed bundle in a way that is convenient for display.
      *
      * @param bundle Bundle to format, strings will be trimmed before adding
      *
@@ -136,7 +137,7 @@ public class Datum {
     }
 
     /**
-     * Translate the passed Object to a String value
+     * Translate the passed Object to a String value.
      *
      * @param o Object
      *
@@ -149,7 +150,7 @@ public class Datum {
     }
 
     /**
-     * Utility function to convert a String to a boolean value
+     * Converts a String to a boolean value.
      *
      * @param s            String to convert
      * @param emptyIsFalse if true, null and empty string is handled as false
@@ -190,7 +191,7 @@ public class Datum {
     }
 
     /**
-     * Translate the passed Object to a boolean value
+     * Translate the passed Object to a boolean value.
      *
      * @param o Object
      *
@@ -241,7 +242,7 @@ public class Datum {
         return mValidator != null;
     }
 
-    /** Accessor */
+    /** Accessor. */
     @Nullable
     public DataAccessor getAccessor() {
         return mAccessor;
@@ -261,7 +262,7 @@ public class Datum {
     }
 
     /**
-     * Get the raw Object for this Datum
+     * Get the raw Object for this Datum.
      *
      * @param data   Parent DataManager
      * @param bundle Raw data bundle
@@ -533,7 +534,8 @@ public class Datum {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    <T extends Serializable> T getSerializable(@SuppressWarnings("unused") @NonNull final DataManager data,
+    <T extends Serializable> T getSerializable(@SuppressWarnings("unused")
+                                               @NonNull final DataManager data,
                                                @NonNull final Bundle bundle) {
         if (mAccessor == null) {
             return (T) bundle.getSerializable(mKey);

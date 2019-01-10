@@ -1,7 +1,7 @@
 /*
  * @copyright 2013 Philip Warner
  * @license GNU General Public License
- * 
+ *
  * This file is part of Book Catalogue.
  *
  * Book Catalogue is free software: you can redistribute it and/or modify
@@ -22,13 +22,15 @@ package com.eleybourn.bookcatalogue.datamanager;
 import androidx.annotation.NonNull;
 
 /**
- * Interface supported by an editor object
+ * Interface supported by an editor object.
  *
  * @author pjw
  */
 public interface DataEditor {
-	/** Save current data TO the passed DataManager */
-    <T extends DataManager>  void saveFieldsTo(@NonNull final T /* in/out */ dataManager);
-	/** Load current data FROM passed DataManager */
+
+    /** Save current data TO the passed DataManager. */
+    <T extends DataManager> void saveFieldsTo(@NonNull final T /* in/out */ dataManager);
+
+    /** Load current data FROM passed DataManager. */
     <T extends DataManager> void loadFieldsFrom(@NonNull final T /* in/out */ dataManager);
 }

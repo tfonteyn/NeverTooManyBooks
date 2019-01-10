@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -31,21 +33,20 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
 
-import androidx.annotation.NonNull;
-
 /**
  * Task to send a single books details to Goodreads.
- *
+ * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  *
  * @author Philip Warner
  */
-public class SendOneBookTask extends SendBooksTask {
+public class SendOneBookTask
+        extends SendBooksTask {
 
     private static final long serialVersionUID = 8585857100291691934L;
 
-    /** ID of book to send */
+    /** ID of book to send. */
     private final long mBookId;
 
     /**
@@ -59,7 +60,7 @@ public class SendOneBookTask extends SendBooksTask {
     }
 
     /**
-     * Perform the main task
+     * Perform the main task.
      */
     protected boolean send(@NonNull final QueueManager queueManager,
                            @NonNull final Context context,

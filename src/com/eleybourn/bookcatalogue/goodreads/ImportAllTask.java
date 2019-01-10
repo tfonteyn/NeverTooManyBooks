@@ -23,6 +23,10 @@ package com.eleybourn.bookcatalogue.goodreads;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -57,20 +61,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Import all a users 'reviews' from goodreads; a users 'reviews' consists of all the books that
  * they have placed on bookshelves, irrespective of whether they have rated or reviewed the book.
- *
+ * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  *
  * @author Philip Warner
  */
-public class ImportAllTask extends GoodreadsTask {
+public class ImportAllTask
+        extends GoodreadsTask {
 
     private static final long serialVersionUID = -3535324410982827612L;
     /**
@@ -79,26 +80,29 @@ public class ImportAllTask extends GoodreadsTask {
      * was chosen.
      */
     private static final int BOOKS_PER_PAGE = 50;
-    /** Date before which updates are irrelevant. Can be null, which implies all dates are included. */
+    /**
+     * Date before which updates are irrelevant.
+     * Can be null, which implies all dates are included.
+     */
     @Nullable
     private final String mUpdatesAfter;
     /** Options indicating this job is a sync job: on completion, it will start an export. */
     private final boolean mIsSync;
-    /** Current position in entire list of reviews */
+    /** Current position in entire list of reviews. */
     private int mPosition;
-    /** Total number of reviews user has */
+    /** Total number of reviews user has. */
     private int mTotalBooks;
-    /** Options indicating this is the first time *this* object instance has been called */
+    /** Options indicating this is the first time *this* object instance has been called. */
     private transient boolean mFirstCall = true;
-    /** Date at which this job started downloading first page */
+    /** Date at which this job started downloading first page. */
     @Nullable
-    private Date mStartDate = null;
-    /** Lookup table of bookshelves defined currently and their goodreads canonical names */
+    private Date mStartDate;
+    /** Lookup table of bookshelves defined currently and their goodreads canonical names. */
     @Nullable
-    private transient Map<String, String> mBookshelfLookup = null;
+    private transient Map<String, String> mBookshelfLookup;
 
     /**
-     * Constructor
+     * Constructor.
      */
     ImportAllTask(final boolean isSync) {
 
@@ -135,7 +139,8 @@ public class ImportAllTask extends GoodreadsTask {
             if (mIsSync) {
                 GoodreadsManager.setLastSyncDate(mStartDate);
                 QueueManager.getQueueManager()
-                        .enqueueTask(new SendAllBooksTask(true), QueueManager.QUEUE_MAIN);
+                            .enqueueTask(new SendAllBooksTask(true),
+                                         QueueManager.QUEUE_MAIN);
             }
             return ok;
         } catch (GoodreadsExceptions.NotAuthorizedException e) {
@@ -216,10 +221,10 @@ public class ImportAllTask extends GoodreadsTask {
                 processReview(db, review);
                 //SyncLock tx = db.startTransaction(true);
                 //try {
-                //	processReview(db, review);
-                //	db.setTransactionSuccessful();
+                //    processReview(db, review);
+                //    db.setTransactionSuccessful();
                 //} finally {
-                //	db.endTransaction(tx);
+                //    db.endTransaction(tx);
                 //}
 
                 // Update after each book. Mainly for a nice UI.
@@ -305,12 +310,13 @@ public class ImportAllTask extends GoodreadsTask {
             }
         }
 
-        return mBookshelfLookup.containsKey(grShelfName.toLowerCase()) ?
-                mBookshelfLookup.get(grShelfName.toLowerCase()) : grShelfName;
+        return mBookshelfLookup.containsKey(grShelfName.toLowerCase())
+               ? mBookshelfLookup.get(grShelfName.toLowerCase())
+               : grShelfName;
     }
 
     /**
-     * Extract a list of ISBNs from the bundle
+     * Extract a list of ISBNs from the bundle.
      */
     @NonNull
     private List<String> extractIsbnList(@NonNull final Bundle review) {
@@ -322,7 +328,7 @@ public class ImportAllTask extends GoodreadsTask {
     }
 
     /**
-     * Update the book using the GR data
+     * Update the book using the GR data.
      */
     private void updateBook(@NonNull final CatalogueDBAdapter db,
                             @NonNull final BookRowView bookCursorRow,
@@ -343,13 +349,13 @@ public class ImportAllTask extends GoodreadsTask {
         Book book = buildBundle(db, bookCursorRow, review);
 
         db.updateBook(bookCursorRow.getId(), book,
-                CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES
-                        | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                      CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES
+                              | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
         //db.setGoodreadsSyncDate(rv.getLongFromBundles());
     }
 
     /**
-     * Create a new book
+     * Create a new book.
      */
     private void insertBook(@NonNull final CatalogueDBAdapter db,
                             @NonNull final Bundle review) {
@@ -381,31 +387,31 @@ public class ImportAllTask extends GoodreadsTask {
         Book book = new Book();
 
         addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book,
-                ListReviewsFieldNames.DB_TITLE);
+                            ListReviewsFieldNames.DB_TITLE);
         addStringIfNonBlank(review, ListReviewsFieldNames.DB_DESCRIPTION,
-                book, ListReviewsFieldNames.DB_DESCRIPTION);
+                            book, ListReviewsFieldNames.DB_DESCRIPTION);
         addStringIfNonBlank(review, ListReviewsFieldNames.DB_FORMAT, book,
-                ListReviewsFieldNames.DB_FORMAT);
+                            ListReviewsFieldNames.DB_FORMAT);
         addStringIfNonBlank(review, ListReviewsFieldNames.DB_PUBLISHER,
-                book, ListReviewsFieldNames.DB_PUBLISHER);
+                            book, ListReviewsFieldNames.DB_PUBLISHER);
         addStringIfNonBlank(review, ListReviewsFieldNames.DB_TITLE, book,
-                ListReviewsFieldNames.DB_TITLE);
+                            ListReviewsFieldNames.DB_TITLE);
 
         // Do not sync Notes<->Review. We will add a 'Review' field later.
         //addStringIfNonBlank(review, ListReviewsFieldNames.DB_NOTES, book,
         // ListReviewsFieldNames.DB_NOTES);
 
         addLongIfPresent(review, ListReviewsFieldNames.GR_BOOK_ID, book,
-                DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
+                         DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
         addLongIfPresent(review, ListReviewsFieldNames.DB_PAGES, book,
-                ListReviewsFieldNames.DB_PAGES);
+                         ListReviewsFieldNames.DB_PAGES);
         addDateIfValid(review, ListReviewsFieldNames.DB_READ_START, book,
-                ListReviewsFieldNames.DB_READ_START);
+                       ListReviewsFieldNames.DB_READ_START);
 
         Double rating = addDoubleIfPresent(review, ListReviewsFieldNames.DB_RATING, book,
-                ListReviewsFieldNames.DB_RATING);
+                                           ListReviewsFieldNames.DB_RATING);
         String readEnd = addDateIfValid(review, ListReviewsFieldNames.DB_READ_END, book,
-                ListReviewsFieldNames.DB_READ_END);
+                                        ListReviewsFieldNames.DB_READ_END);
 
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
         // DO NOT overwrite existing data since it *may* be read even without these fields.
@@ -432,10 +438,10 @@ public class ImportAllTask extends GoodreadsTask {
 
         /* Build the pub date based on the components */
         String pubDate = GoodreadsManager.buildDate(review,
-                ListReviewsFieldNames.PUB_YEAR,
-                ListReviewsFieldNames.PUB_MONTH,
-                ListReviewsFieldNames.PUB_DAY,
-                null);
+                                                    ListReviewsFieldNames.PUB_YEAR,
+                                                    ListReviewsFieldNames.PUB_MONTH,
+                                                    ListReviewsFieldNames.PUB_DAY,
+                                                    null);
         if (pubDate != null && !pubDate.isEmpty()) {
             book.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, pubDate);
         }
@@ -466,7 +472,7 @@ public class ImportAllTask extends GoodreadsTask {
         if (bookCursorRow == null) {
             // Use the GR added date for new books
             addStringIfNonBlank(review, ListReviewsFieldNames.ADDED, book,
-                    DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
+                                DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
             // Also fetch thumbnail if add
             String thumbnail;
 
@@ -474,16 +480,19 @@ public class ImportAllTask extends GoodreadsTask {
             String smallImage = review.getString(ListReviewsFieldNames.SMALL_IMAGE);
             if (largeImage != null && !largeImage.toLowerCase().contains(UniqueId.BKEY_NO_COVER)) {
                 thumbnail = largeImage;
-            } else if (smallImage != null && !smallImage.toLowerCase().contains(UniqueId.BKEY_NO_COVER)) {
+            } else if (smallImage != null && !smallImage.toLowerCase().contains(
+                    UniqueId.BKEY_NO_COVER)) {
                 thumbnail = smallImage;
             } else {
                 thumbnail = null;
             }
 
             if (thumbnail != null) {
-                String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, GoodreadsUtils.FILENAME_SUFFIX);
+                String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail,
+                                                                  GoodreadsUtils.FILENAME_SUFFIX);
                 if (fileSpec != null) {
-                    ArrayList<String> imageList = book.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                    ArrayList<String> imageList = book.getStringArrayList(
+                            UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
                     imageList.add(fileSpec);
                     book.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
                 }
@@ -518,14 +527,16 @@ public class ImportAllTask extends GoodreadsTask {
          * Process any bookshelves
          */
         if (review.containsKey(ListReviewsFieldNames.SHELVES)) {
-            ArrayList<Bundle> shelves = review.getParcelableArrayList(ListReviewsFieldNames.SHELVES);
+            ArrayList<Bundle> shelves = review.getParcelableArrayList(
+                    ListReviewsFieldNames.SHELVES);
             if (shelves == null) {
                 Logger.error("shelves was null");
                 return book;
             }
             ArrayList<Bookshelf> bsList = new ArrayList<>();
             for (Bundle shelfBundle : shelves) {
-                String bookshelfName = translateBookshelf(db, shelfBundle.getString(ListReviewsFieldNames.SHELF));
+                String bookshelfName = translateBookshelf(db, shelfBundle.getString(
+                        ListReviewsFieldNames.SHELF));
                 if (bookshelfName != null && !bookshelfName.isEmpty()) {
                     bsList.add(new Bookshelf(bookshelfName));
                 }
@@ -536,14 +547,14 @@ public class ImportAllTask extends GoodreadsTask {
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that will most likely be set ahead of the GR update date
         String now = DateUtils.utcSqlDateTimeForToday();
-        book.putString(UniqueId.KEY_BOOK_GOODREADS_LAST_SYNC_DATE, now);
+        book.putString(UniqueId.KEY_BOOK_GR_LAST_SYNC_DATE, now);
         book.putString(UniqueId.KEY_LAST_UPDATE_DATE, now);
 
         return book;
     }
 
     /**
-     * Utility to copy a non-blank and valid date string to the book bundle; will
+     * Copy a non-blank and valid date string to the book bundle; will
      * attempt to translate as appropriate and will not add the date if it cannot
      * be parsed.
      *
@@ -575,7 +586,7 @@ public class ImportAllTask extends GoodreadsTask {
     }
 
     /**
-     * Utility to copy a non-blank string to the book bundle.
+     * Copy a non-blank string to the book bundle.
      */
     private void addStringIfNonBlank(@NonNull final Bundle source,
                                      @NonNull final String sourceKey,
@@ -591,7 +602,7 @@ public class ImportAllTask extends GoodreadsTask {
     }
 
     /**
-     * Utility to copy a Long value to the book bundle.
+     * Copy a Long value to the book bundle.
      */
     private void addLongIfPresent(@NonNull final Bundle source,
                                   @NonNull final String sourceKey,
@@ -605,13 +616,15 @@ public class ImportAllTask extends GoodreadsTask {
     }
 
     /**
-     * Utility to copy a Double value to the book bundle.
+     * Copy a Double value to the book bundle.
      */
     @Nullable
     private Double addDoubleIfPresent(@NonNull final Bundle source,
-                                      @SuppressWarnings("SameParameterValue") @NonNull final String sourceKey,
+                                      @SuppressWarnings("SameParameterValue")
+                                      @NonNull final String sourceKey,
                                       @NonNull final Book book,
-                                      @SuppressWarnings("SameParameterValue") @NonNull final String destKey) {
+                                      @SuppressWarnings("SameParameterValue")
+                                      @NonNull final String destKey) {
 
         if (source.containsKey(sourceKey)) {
             double val = source.getDouble(sourceKey);
@@ -623,7 +636,7 @@ public class ImportAllTask extends GoodreadsTask {
     }
 
     /**
-     * Make a more informative description
+     * Make a more informative description.
      */
     @Override
     @NonNull
@@ -632,7 +645,8 @@ public class ImportAllTask extends GoodreadsTask {
 
         String base = super.getDescription();
         if (mUpdatesAfter == null) {
-            return base + " (" + BookCatalogueApp.getResourceString(R.string.x_of_y, mPosition, mTotalBooks) + ')';
+            return base + " (" + BookCatalogueApp.getResourceString(R.string.x_of_y,
+                                                                    mPosition, mTotalBooks) + ')';
         } else {
             return base + " (" + mPosition + ')';
         }
@@ -649,7 +663,7 @@ public class ImportAllTask extends GoodreadsTask {
      *
      * @see Serializable
      */
-    private void writeObject(ObjectOutputStream out)
+    private void writeObject(@NonNull final ObjectOutputStream out)
             throws IOException {
 
         out.defaultWriteObject();
@@ -660,7 +674,7 @@ public class ImportAllTask extends GoodreadsTask {
      *
      * @see Serializable
      */
-    private void readObject(ObjectInputStream in)
+    private void readObject(@NonNull final ObjectInputStream in)
             throws IOException, ClassNotFoundException {
 
         in.defaultReadObject();

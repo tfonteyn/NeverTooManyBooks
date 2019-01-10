@@ -21,6 +21,11 @@ package com.eleybourn.bookcatalogue.backup;
 
 import android.content.SharedPreferences;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -45,13 +50,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Objects;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
-
 /**
- * Class for public static methods relating to backup/restore
+ * Class for public static methods relating to backup/restore.
  *
  * @author pjw
  */
@@ -84,7 +84,7 @@ public final class BackupManager {
         // Ensure the file key extension is what we want
         if (!BackupFileDetails.isArchive(settings.file)) {
             settings.file = new File(
-                settings.file.getAbsoluteFile() + BackupFileDetails.ARCHIVE_EXTENSION);
+                    settings.file.getAbsoluteFile() + BackupFileDetails.ARCHIVE_EXTENSION);
         }
 
         // we write to the temp file, and rename it upon success
@@ -92,13 +92,13 @@ public final class BackupManager {
 
         final FragmentTask task = new FragmentTaskAbstract() {
             private final String mBackupDate = DateUtils.utcSqlDateTimeForToday();
-            private boolean mSuccess = false;
+            private boolean mSuccess;
 
             @Override
             public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                             @NonNull final SimpleTaskContext taskContext
             )
-                throws Exception {
+                    throws Exception {
 
                 BackupContainer bkp = new TarBackupContainer(tempFile);
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
@@ -108,7 +108,7 @@ public final class BackupManager {
                 try (BackupWriter wrt = bkp.newWriter()) {
                     try {
                         // go go go...
-                        wrt.backup(settings, new BackupReaderListener() {
+                        wrt.backup(settings, new BackupWriter.BackupWriterListener() {
 
                             @Override
                             public void setMax(final int max) {
@@ -130,8 +130,9 @@ public final class BackupManager {
                     } catch (IOException | RuntimeException e) {
                         // add user-friendly message
                         throw new Exception(
-                            BookCatalogueApp.getResourceString(R.string.export_error_backup_failed),
-                            e);
+                                BookCatalogueApp.getResourceString(
+                                        R.string.export_error_backup_failed),
+                                e);
                     }
 
                     // All done. we handle the result here, still in the background.
@@ -139,7 +140,8 @@ public final class BackupManager {
                         // cancelled
                         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                             Logger.info(this,
-                                        "backup|cancelling|file=" + settings.file.getAbsolutePath());
+                                        "backup|cancelling|file=" +
+                                                settings.file.getAbsolutePath());
                         }
                         StorageUtils.deleteFile(tempFile);
                     } else {
@@ -150,8 +152,9 @@ public final class BackupManager {
 
                         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                             Logger.info(this,
-                                        "backup|finished|file=" + settings.file.getAbsolutePath() +
-                                            ", size = " + settings.file.length());
+                                        "backup|finished|file=" +
+                                                settings.file.getAbsolutePath() +
+                                                ", size = " + settings.file.length());
                         }
                     }
                 }
@@ -187,7 +190,7 @@ public final class BackupManager {
 
         // show progress dialog and start the task
         SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment
-            .newInstance(context, R.string.progress_msg_backing_up, task, false, taskId);
+                .newInstance(context, R.string.progress_msg_backing_up, task, false, taskId);
         frag.setNumberFormat(null);
     }
 
@@ -210,7 +213,7 @@ public final class BackupManager {
             public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                             @NonNull final SimpleTaskContext taskContext
             )
-                throws Exception {
+                    throws Exception {
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                     Logger.info(this,
                                 "restore|starting|file=" + settings.file.getAbsolutePath());
@@ -219,7 +222,7 @@ public final class BackupManager {
                     Objects.requireNonNull(reader);
                     reader.restore(settings, new BackupReaderListener() {
                         @Override
-                        public void setMax(int max) {
+                        public void setMax(final int max) {
                             fragment.setMax(max);
                         }
 
@@ -239,13 +242,13 @@ public final class BackupManager {
                 } catch (IOException e) {
                     // add user-friendly message
                     throw new Exception(
-                        BookCatalogueApp.getResourceString(R.string.error_import_failed), e);
+                            BookCatalogueApp.getResourceString(R.string.error_import_failed), e);
                 }
 
                 // all done. we handle the result here, still in the background.
                 Logger.info(BackupManager.class,
                             "restore|finishing|file=" + settings.file.getAbsolutePath() +
-                                ", size = " + settings.file.length());
+                                    ", size = " + settings.file.length());
             }
         };
 
@@ -254,9 +257,10 @@ public final class BackupManager {
 
         // show progress dialog and start the task
         SimpleTaskQueueProgressDialogFragment frag =
-            SimpleTaskQueueProgressDialogFragment.newInstance(context,
-                                                              R.string.progress_msg_importing, task,
-                                                              false, taskId);
+                SimpleTaskQueueProgressDialogFragment.newInstance(context,
+                                                                  R.string.progress_msg_importing,
+                                                                  task,
+                                                                  false, taskId);
         frag.setNumberFormat(null);
     }
 
@@ -271,7 +275,7 @@ public final class BackupManager {
      */
     @Nullable
     public static BackupReader readFrom(@NonNull final File file)
-        throws IOException {
+            throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException("Attempt to open non-existent backup file");
         }

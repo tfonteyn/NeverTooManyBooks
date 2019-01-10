@@ -11,6 +11,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">@dimen/padding_border</item>
         <item name="android:paddingTop">@dimen/padding_border_double</item>
+        <item name="android:paddingBottom">@dimen/padding_border</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
@@ -394,9 +395,10 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingStart">@dimen/padding_prefs_item</item>
-        <item name="android:paddingBottom">@dimen/padding_border_double</item>
-        <item name="android:drawablePadding">@dimen/padding_prefs_item</item>
+        <item name="android:paddingStart">@dimen/padding_border_quad</item>
+        <item name="android:paddingTop">@dimen/padding_border</item>
+        <item name="android:paddingBottom">@dimen/padding_border</item>
+        <item name="android:drawablePadding">@dimen/padding_border_quad</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
@@ -404,7 +406,7 @@
     <style name="row_option_checkable">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/padding_border_double</item>
+        <item name="android:paddingTop">@dimen/padding_border</item>
         <item name="android:paddingBottom">@dimen/padding_border</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
@@ -418,7 +420,7 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <!-- Option in the list is a property/preference which bring their own row view -->
+    <!-- Option in the list is a property which bring their own row view -->
     <style name="row_option_property">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

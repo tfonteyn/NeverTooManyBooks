@@ -32,11 +32,12 @@ import java.util.List;
 import java.util.Map;
 
 public final class IsbnUtils {
+
     private IsbnUtils() {
     }
 
     /**
-     * Validate an ISBN
+     * Validate an ISBN.
      */
     public static boolean isValid(@Nullable final String isbn) {
         if (isbn == null || isbn.isEmpty()) {
@@ -50,7 +51,7 @@ public final class IsbnUtils {
     }
 
     /**
-     * (try to) convert a UPC number to a real ISBN
+     * (try to) convert a UPC number to a real ISBN.
      *
      * @param input UPC, isbn. Can be blank
      *
@@ -73,9 +74,10 @@ public final class IsbnUtils {
     }
 
     /**
-     * matches.... but not necessarily valid !
+     * matches.... but not necessarily valid.
      */
-    public static boolean matches(@Nullable final String isbn1, @Nullable final String isbn2) {
+    public static boolean matches(@Nullable final String isbn1,
+                                  @Nullable final String isbn2) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(IsbnUtils.class, "matches: " + isbn1 + " ?= " + isbn2);
         }
@@ -88,16 +90,17 @@ public final class IsbnUtils {
 
         // Full check needed ...if either is invalid, we consider them different
         final ISBNNumber info1 = new ISBNNumber(isbn1);
-        if (!info1.isValid())
+        if (!info1.isValid()) {
             return false;
+        }
 
         ISBNNumber info2 = new ISBNNumber(isbn2);
         return info2.isValid() && info1.equals(info2);
     }
 
     /**
-     * Changes format from 10->13 or 13->10
-     *
+     * Changes format from 10->13 or 13->10.
+     * <p>
      * If the isbn was invalid, simply returns the same
      */
     @NonNull
@@ -117,8 +120,8 @@ public final class IsbnUtils {
     }
 
     /**
-     * Validate an ASIN
-     *
+     * Validate an ASIN.
+     * <p>
      * Amazon have apparently designed ASINs without (public) validation methods. All we can do
      * is check length and characters; the apparent rule is that it must be an ISBN10 or be a
      * 10 character string containing at least on non-numeric.
@@ -151,31 +154,35 @@ public final class IsbnUtils {
     }
 
     /**
-     * Validate an ISBN
+     * Validate an ISBN.
      * See http://en.wikipedia.org/wiki/International_Standard_Book_Number
      */
     private static class ISBNNumber {
+
         /**
          * https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside
-         *
-         * The extended barcode combined with the UPC vendor prefix can be used to reconstruct the ISBN.
+         * <p>
+         * The extended barcode combined with the UPC vendor prefix can be used to
+         * reconstruct the ISBN.
          * Example:
          * Del Rey edition of Larry Niven's _World of Ptavvs_,
          * which says it's "Ninth Printing: September 1982" on the copyright page.
          * There is no ISBN/EAN barcode on the inside cover.
          * The back cover has an extended UPC code "0 70999 00225 5 30054".
-         *
+         * <p>
          * "070999" in the first part of the UPC means that the ISBN starts with "0-345"
          * see https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map
          * making it a Ballantine book
          * That "00225" indicates the price
          * That gets us:
          * ISBN-10 is "0-345-30054-?"
-         * The ISBN check digit is omitted from the bar code but can be calculated; in this case it's 8
-         *
+         * The ISBN check digit is omitted from the bar code but can be calculated;
+         * in this case it's 8
+         * <p>
          * UPC Prefix -- ISBN Prefix mapping file (may not be complete)
          */
         private static final Map<String, String> UPC_2_ISBN_PREFIX = new HashMap<>();
+        private static final String UNABLE_TO_CONVERT_ERROR = "Unable to convert invalid ISBN";
 
         static {
             UPC_2_ISBN_PREFIX.put("014794", "08041");
@@ -216,11 +223,13 @@ public final class IsbnUtils {
             UPC_2_ISBN_PREFIX.put("099769", "0451");
         }
 
-        /** kept for faster conversion between 10/13 formats */
+        /** kept for faster conversion between 10/13 formats. */
         @SuppressWarnings("FieldMayBeFinal")
         private List<Integer> mDigits;
 
         /**
+         * Constructor.
+         * <p>
          * 0345330137
          * 0709990049 523 3013
          *
@@ -302,14 +311,15 @@ public final class IsbnUtils {
         }
 
         /**
-         * use the internal stored digits to construct a valid ISBN-10
+         * use the internal stored digits to construct a valid ISBN-10.
          *
          * @return a valid ISBN-10
          */
         @NonNull
-        String to10() throws NumberFormatException {
+        String to10()
+                throws NumberFormatException {
             if (!isValid()) {
-                throw new NumberFormatException("Unable to convert invalid ISBN");
+                throw new NumberFormatException(UNABLE_TO_CONVERT_ERROR);
             }
 
             // already in ISBN-10 format, just return
@@ -329,14 +339,15 @@ public final class IsbnUtils {
         }
 
         /**
-         * use the internal stored digits to construct a valid ISBN-13
+         * use the internal stored digits to construct a valid ISBN-13.
          *
          * @return a valid ISBN-13
          */
         @NonNull
-        String to13() throws NumberFormatException {
+        String to13()
+                throws NumberFormatException {
             if (!isValid()) {
-                throw new NumberFormatException("Unable to convert invalid ISBN");
+                throw new NumberFormatException(UNABLE_TO_CONVERT_ERROR);
             }
 
             // already in ISBN-13 format, just return
@@ -364,9 +375,11 @@ public final class IsbnUtils {
         /**
          * @param digits list with the digits, either 13 or 10
          *
-         * @return 0 for valid, or the (10 - c) value, where (10 - getChecksum()) IS the checksum digit
+         * @return 0 for valid, or the (10 - c) value,
+         * where (10 - getChecksum()) IS the checksum digit
          */
-        private int getChecksum(@NonNull final List<Integer> digits) throws NumberFormatException {
+        private int getChecksum(@NonNull final List<Integer> digits)
+                throws NumberFormatException {
             int sum = 0;
             switch (digits.size()) {
                 case 10:
@@ -393,12 +406,13 @@ public final class IsbnUtils {
 
 
         /**
-         * This method does NOT check if the actual digits form a valid ISBN
+         * This method does NOT check if the actual digits form a valid ISBN.
          *
          * @return list of digits
          */
         @NonNull
-        private List<Integer> isbnToDigits(@NonNull final String isbn) throws NumberFormatException {
+        private List<Integer> isbnToDigits(@NonNull final String isbn)
+                throws NumberFormatException {
             // the digit '10' represented as 'X' in an isbn indicates we got to the end
             boolean foundX = false;
 
@@ -409,18 +423,22 @@ public final class IsbnUtils {
                 int digit;
                 if (Character.isDigit(c)) {
                     if (foundX) {
-                        throw new NumberFormatException(); // X can only be at end of an ISBN10
+                        // X can only be at end of an ISBN10
+                        throw new NumberFormatException();
                     }
                     digit = Integer.parseInt(c.toString());
 
                 } else if (Character.toUpperCase(c) == 'X' && digits.size() == 9) {
                     if (foundX) {
-                        throw new NumberFormatException(); // X can only be at end of an ISBN10
+                        // X can only be at end of an ISBN10
+                        throw new NumberFormatException();
                     }
-                    digit = 10; // 'X'
+                    // 'X'
+                    digit = 10;
                     foundX = true;
                 } else {
-                    throw new NumberFormatException(); // Invalid character
+                    // Invalid character
+                    throw new NumberFormatException();
                 }
 
                 // Check if too long
@@ -433,20 +451,24 @@ public final class IsbnUtils {
         }
 
         /**
-         * @param upc UPC code, example: "070999 00225 530054", "00225" (price) and "5" will be discarded to construct the isbn
+         * @param upc UPC code, example: "070999 00225 530054", "00225" (price) and "5"
+         *            will be discarded to construct the isbn.
          *
          * @return list of digits or empty on failure
          */
         @NonNull
-        private List<Integer> upcToDigits(@NonNull final String upc) throws NumberFormatException {
+        private List<Integer> upcToDigits(@NonNull final String upc)
+                throws NumberFormatException {
             String isbnPrefix = UPC_2_ISBN_PREFIX.get(upc.substring(0, 6));
             if (isbnPrefix == null) {
                 return new ArrayList<>();
             }
 
             List<Integer> tmp = isbnToDigits(isbnPrefix + upc.substring(12));
-            tmp.add(10); // bogus
+            // add bogus checksum
+            tmp.add(10);
 
+            // calc and add real checksum
             int c = getChecksum(tmp);
             if (c != 0) {
                 c = 10 - c;
@@ -456,7 +478,7 @@ public final class IsbnUtils {
         }
 
         /**
-         * do a digit wise compare, even on invalid data!
+         * do a digit wise compare, even on invalid data.
          */
         public boolean equals(@NonNull final ISBNNumber cmp) {
 
@@ -480,9 +502,12 @@ public final class IsbnUtils {
         }
 
         /**
-         * simple check if all digits are the same
+         * simple check if all digits are the same.
          */
-        private boolean digitsMatch(final int lenToCheck, int posFrom1, @NonNull final ISBNNumber dig2, int posFrom2) {
+        private boolean digitsMatch(final int lenToCheck,
+                                    int posFrom1,
+                                    @NonNull final ISBNNumber dig2,
+                                    int posFrom2) {
             for (int i = 0; i < lenToCheck; i++) {
                 if (!this.mDigits.get(posFrom1++).equals(dig2.mDigits.get(posFrom2++))) {
                     return false;
@@ -490,6 +515,5 @@ public final class IsbnUtils {
             }
             return true;
         }
-
     }
 }

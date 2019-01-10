@@ -1,7 +1,9 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
 import android.app.Activity;
-import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
@@ -12,9 +14,6 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Partially implements a FragmentTask to build a list of files in the background.
@@ -42,20 +41,19 @@ public abstract class FileListerFragmentTask
     private ArrayList<FileDetails> mDirs;
 
     /**
-     * Constructor
+     * Constructor.
      */
     protected FileListerFragmentTask(@NonNull final File root) {
         mRoot = root;
     }
 
-    /** Return a FileFilter appropriate to the types of files being listed */
+    /** @return a FileFilter appropriate to the types of files being listed. */
     @NonNull
     protected abstract FileFilter getFilter();
 
     /** Turn an array of Files into an ArrayList of FileDetails. */
     @NonNull
-    protected abstract ArrayList<FileDetails> processList(@NonNull final Context context,
-                                                          @Nullable final File[] files);
+    protected abstract ArrayList<FileDetails> processList(@Nullable final File[] files);
 
     @Override
     public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
@@ -63,7 +61,7 @@ public abstract class FileListerFragmentTask
         // Get a file list
         File[] files = mRoot.listFiles(getFilter());
         // Filter/fill-in using the subclass
-        mDirs = processList(fragment.requireContext(), files);
+        mDirs = processList(files);
         // Sort it
         Collections.sort(mDirs, mComparator);
     }
@@ -80,8 +78,6 @@ public abstract class FileListerFragmentTask
 
     /**
      * Interface for the creating activity to allow the resulting list to be returned.
-     *
-     * @author pjw
      */
     public interface FileListerListener {
 

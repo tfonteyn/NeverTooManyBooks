@@ -20,19 +20,20 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
 /**
  * Collection of system-defined and user-defined Book List styles.
@@ -41,13 +42,13 @@ import androidx.annotation.StringRes;
  */
 public final class BooklistStyles {
 
-    /** Preference name for the current default style to use */
+    /** Preference name for the current default style to use. */
     public static final String PREF_BL_STYLE_CURRENT_DEFAULT = "BookList.Style.Current";
-    /** default style when none is set yet -1 -> R.string.style_builtin_author_series */
+    /** default style when none is set yet -1 -> R.string.style_builtin_author_series. */
     @StringRes
     private static final long DEFAULT_STYLE = -1;
-    /** initialised at first use */
-    private static Map<Long, BooklistStyle> mBuiltinStyles = null;
+    /** initialised at first use. */
+    private static Map<Long, BooklistStyle> mBuiltinStyles;
 
     private BooklistStyles() {
     }
@@ -57,76 +58,16 @@ public final class BooklistStyles {
     }
 
     /**
-     * Return all styles, with the preferred styles at the front of the list.
-     */
-    @NonNull
-    public static Map<Long, BooklistStyle> getStyles(@NonNull final CatalogueDBAdapter db,
-                                                     final boolean getAll) {
-
-        // Get all styles: user
-        LinkedHashMap<Long, BooklistStyle> allStyles = new LinkedHashMap<>(db.getBooklistStyles());
-        // Get all styles: builtin
-        allStyles.putAll(getBuiltinStyles());
-
-        // filter
-        Map<Long, BooklistStyle> styles = filterPreferredStyles(allStyles);
-
-        if (getAll) {
-            // Add missing styles to the end of the list
-            if (styles != allStyles) {
-                Set<Long> preferredStyleIds = getPreferredStyleIds();
-                for (BooklistStyle style : allStyles.values()) {
-                    if (!styles.containsKey(style.id)) {
-                        style.setPreferred(preferredStyleIds.contains(style.id));
-                        styles.put(style.id, style);
-                    }
-                }
-            }
-        }
-        return styles;
-    }
-
-    /**
-     * Get the ids of the preferred styles from user preferences.
-     *
-     * Contains id's for both builtin and user-defined.
-     */
-    @NonNull
-    private static Set<Long> getPreferredStyleIds() {
-        Set<Long> ids = new LinkedHashSet<>();
-        Set<String> itemStr = Prefs.getStringSet(BooklistStyle.PREF_BL_PREFERRED_STYLES, null);
-        if (itemStr != null && !itemStr.isEmpty()) {
-            for (String entry : itemStr) {
-                if (entry != null && !entry.isEmpty()) {
-                    ids.add(Long.parseLong(entry));
-                }
-            }
-        }
-        return ids;
-    }
-
-    /**
-     * Save the preferred style menu list
-     */
-    public static void savePreferredStyleIds(@NonNull final List<BooklistStyle> list) {
-        Set<String> items = new LinkedHashSet<>();
-        for (BooklistStyle style : list) {
-            if (style.isPreferred()) {
-                items.add(String.valueOf(style.getId()));
-            }
-        }
-        Prefs.getPrefs().edit().putStringSet(BooklistStyle.PREF_BL_PREFERRED_STYLES, items).apply();
-    }
-
-    /**
-     * Static method to get all defined styles
-     *
+     * Static method to get all defined styles.
+     * <p>
      * NOTE: Do NOT call this in static initialization of application.
      * This method requires the application context to be present.
-     *
+     * <p>
      * Note the hardcoded negative id's. These number should never be changed as they will
      * get stored in preferences and serialized. Take care not to add duplicates.
      * (maybe use statics instead of just the ints)
+     *
+     * @return a collection of all builtin styles.
      */
     @NonNull
     private static Map<Long, BooklistStyle> getBuiltinStyles() {
@@ -141,52 +82,52 @@ public final class BooklistStyles {
         style = new BooklistStyle(-1, R.string.style_builtin_author_series,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Unread
         style = new BooklistStyle(-2, R.string.style_builtin_unread,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
         style.setFilter(R.string.pk_bob_filter_read, false);
 
         // Compact
         style = new BooklistStyle(-3, R.string.style_builtin_compact,
                                   BooklistGroup.RowKind.AUTHOR);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
         style.setScaleSize(BooklistStyle.SCALE_SIZE_SMALLER);
         style.setShowThumbnails(false);
 
         // Title
         style = new BooklistStyle(-4, R.string.style_builtin_title_first_letter,
                                   BooklistGroup.RowKind.TITLE_LETTER);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Series
         style = new BooklistStyle(-5, R.string.style_builtin_series,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Genre
         style = new BooklistStyle(-6, R.string.style_builtin_genre,
                                   BooklistGroup.RowKind.GENRE,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Loaned
         style = new BooklistStyle(-7, R.string.style_builtin_loaned,
                                   BooklistGroup.RowKind.LOANED,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Read & Unread
         style = new BooklistStyle(-8, R.string.style_builtin_read_and_unread,
                                   BooklistGroup.RowKind.READ_STATUS,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Publication date
         style = new BooklistStyle(-9, R.string.style_builtin_publication_date,
@@ -194,7 +135,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.DATE_PUBLISHED_MONTH,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Added date
         style = new BooklistStyle(-10, R.string.style_builtin_added_date,
@@ -202,7 +143,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.DATE_ADDED_MONTH,
                                   BooklistGroup.RowKind.DATE_ADDED_DAY,
                                   BooklistGroup.RowKind.AUTHOR);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Acquired date
         style = new BooklistStyle(-11, R.string.style_builtin_acquired_date,
@@ -210,61 +151,61 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.DATE_ACQUIRED_MONTH,
                                   BooklistGroup.RowKind.DATE_ACQUIRED_DAY,
                                   BooklistGroup.RowKind.AUTHOR);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Author/Publication date
         style = new BooklistStyle(-12, R.string.style_builtin_author_year,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.DATE_PUBLISHED_YEAR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Format
         style = new BooklistStyle(-13, R.string.lbl_format,
                                   BooklistGroup.RowKind.FORMAT);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Read date
         style = new BooklistStyle(-14, R.string.style_builtin_read_date,
                                   BooklistGroup.RowKind.DATE_READ_YEAR,
                                   BooklistGroup.RowKind.DATE_READ_MONTH,
                                   BooklistGroup.RowKind.AUTHOR);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Location
         style = new BooklistStyle(-15, R.string.lbl_location,
                                   BooklistGroup.RowKind.LOCATION,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Location
         style = new BooklistStyle(-16, R.string.lbl_language,
                                   BooklistGroup.RowKind.LANGUAGE,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Rating
         style = new BooklistStyle(-17, R.string.lbl_rating,
                                   BooklistGroup.RowKind.RATING,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Bookshelf
         style = new BooklistStyle(-18, R.string.lbl_bookshelf,
                                   BooklistGroup.RowKind.BOOKSHELF,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
 
         // Update date
         style = new BooklistStyle(-19, R.string.style_builtin_update_date,
                                   BooklistGroup.RowKind.DATE_LAST_UPDATE_YEAR,
                                   BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH,
                                   BooklistGroup.RowKind.DATE_LAST_UPDATE_DAY);
-        mBuiltinStyles.put(style.id, style);
+        mBuiltinStyles.put(style.getId(), style);
         style.setShowAuthor(true);
 
         // NEWKIND: BooklistStyle. next is -20
@@ -273,36 +214,138 @@ public final class BooklistStyles {
     }
 
     /**
-     * @param allStyles a list of styles
+     * @param getAll if <tt>true</tt> then also return the non-preferred styles
      *
-     * @return list of preferred styles.
+     * @return all styles, with the preferred styles at the front of the list.
      */
     @NonNull
-    private static Map<Long, BooklistStyle> filterPreferredStyles(@NonNull final Map<Long, BooklistStyle> allStyles) {
-        Map<Long, BooklistStyle> styles = new LinkedHashMap<>();
+    public static Map<Long, BooklistStyle> getStyles(@NonNull final CatalogueDBAdapter db,
+                                                     final boolean getAll) {
 
-        Set<Long> preferredStyleIds = getPreferredStyleIds();
-        for (Long entry : preferredStyleIds) {
-            // Add any exiting style that is preferred
-            BooklistStyle style = allStyles.get(entry);
+        // Get all styles: user
+        Map<Long, BooklistStyle> allStyles = new LinkedHashMap<>(db.getBooklistStyles());
+        // Get all styles: builtin
+        allStyles.putAll(getBuiltinStyles());
+
+        // filter, so the list only shows the preferred ones.
+        Map<Long, BooklistStyle> styles = filterPreferredStyles(allStyles);
+
+        // but if we want all, add the missing styles to the end of the list
+        if (getAll) {
+            if (!styles.equals(allStyles)) {
+                for (BooklistStyle style : allStyles.values()) {
+                    if (!styles.containsKey(style.getId())) {
+                        styles.put(style.getId(), style);
+                    }
+                }
+            }
+        }
+        return styles;
+    }
+
+    /**
+     * @param allStyles a list of styles
+     *
+     * @return list of preferred styles, or the incoming list if none were preferred.
+     */
+    @NonNull
+    private static Map<Long, BooklistStyle> filterPreferredStyles(
+            @NonNull final Map<Long, BooklistStyle> allStyles) {
+
+        Map<Long, BooklistStyle> resultingStyles = new LinkedHashMap<>();
+
+        // first check the saved and ordered list
+        for (Long id : getPreferredStyleMenuOrder()) {
+            BooklistStyle style = allStyles.get(id);
             if (style != null) {
-                style.setPreferred(preferredStyleIds.contains(style.getId()));
-                styles.put(style.id, style);
+                // catch mismatches in any imported bad-data.
+                style.setPreferred(true);
+                // and add to results
+                resultingStyles.put(id, style);
+            }
+        }
+        // now check for styles marked preferred, but not in the menu list,
+        // again to catch mismatches in any imported bad-data.
+        for (BooklistStyle style : allStyles.values()) {
+            if (style.isPreferred() && !resultingStyles.containsKey(style.getId())) {
+                resultingStyles.put(style.getId(), style);
             }
         }
 
-
         // Return the ones we found.
-        if (styles.size() > 0) {
-            return styles;
+        if (resultingStyles.size() > 0) {
+            return resultingStyles;
         } else {
-            // If none found, return all.
+            // If none found, return what we were given.
             return allStyles;
         }
     }
 
     /**
+     * @return the ids of the preferred styles from user preferences.
+     */
+    @NonNull
+    private static List<Long> getPreferredStyleMenuOrder() {
+        List<Long> ids = new ArrayList<>();
+        String itemsStr = Prefs.getString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
+                                          null);
+
+        if (itemsStr != null && !itemsStr.isEmpty()) {
+            String[] entries = itemsStr.split(",");
+            for (String entry : entries) {
+                if (entry != null && !entry.isEmpty()) {
+                    ids.add(Long.parseLong(entry));
+                }
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * Internal single-point of writing the preferred styles menu order.
+     *
+     * @param list of style id's
+     */
+    private static void setPreferredStyleMenuOrder(@NonNull final List<Long> list) {
+        Prefs.getPrefs().edit().putString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
+                                          TextUtils.join(",", list)).apply();
+    }
+
+    /**
+     * Add a style (its id) to the menu list of preferred styles.
+     * Does not add if it's already there.
+     *
+     * @param style to add.
+     */
+    public static void addPreferredStyle(@NonNull final BooklistStyle style) {
+        List<Long> list = getPreferredStyleMenuOrder();
+        if (!list.contains(style.getId())) {
+            list.add(style.getId());
+            setPreferredStyleMenuOrder(list);
+        }
+    }
+
+    /**
+     * Save the preferred style menu list.
+     * <p>
+     * This list contains the id's for user-defined *AND* system-styles.
+     *
+     * @param styles full list of preferred styles to save 'in order'
+     */
+    public static void savePreferredStyleMenuOrder(@NonNull final List<BooklistStyle> styles) {
+        List<Long> list = new ArrayList<>();
+        for (BooklistStyle style : styles) {
+            if (style.isPreferred()) {
+                list.add(style.getId());
+            }
+        }
+        setPreferredStyleMenuOrder(list);
+    }
+
+    /**
      * Used in migration/import. Convert the style name to the id.
+     *
+     * @param name of the style
      *
      * @return internal id, or the default style id if not found.
      */

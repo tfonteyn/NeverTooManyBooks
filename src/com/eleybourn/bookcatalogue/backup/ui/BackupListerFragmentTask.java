@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.backup.ui;
 
-import android.content.Context;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
@@ -13,15 +14,13 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Object to provide a FileListerFragmentTask specific to archive files.
  *
  * @author pjw
  */
-public class BackupListerFragmentTask extends FileListerFragmentTask {
+public class BackupListerFragmentTask
+        extends FileListerFragmentTask {
 
     /**
      * Construct a file filter to select only directories and backup files.
@@ -34,12 +33,17 @@ public class BackupListerFragmentTask extends FileListerFragmentTask {
         }
     };
 
+    /**
+     * Constructor.
+     *
+     * @param root folder to list
+     */
     BackupListerFragmentTask(@NonNull final File root) {
         super(root);
     }
 
     /**
-     * Get the file filter we constructed.
+     * @return the file filter we constructed.
      */
     @NonNull
     protected FileFilter getFilter() {
@@ -47,11 +51,12 @@ public class BackupListerFragmentTask extends FileListerFragmentTask {
     }
 
     /**
-     * Process an array of Files into an ArrayList of BackupFileDetails.
+     * Process an array of Files.
+     *
+     * @return an ArrayList of BackupFileDetails.
      */
     @NonNull
-    protected ArrayList<FileDetails> processList(@NonNull final Context context,
-                                                 @Nullable final File[] files) {
+    protected ArrayList<FileDetails> processList(@Nullable final File[] files) {
         ArrayList<FileDetails> dirs = new ArrayList<>();
         if (files == null) {
             return dirs;

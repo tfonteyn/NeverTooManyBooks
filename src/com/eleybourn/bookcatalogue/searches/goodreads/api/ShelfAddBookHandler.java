@@ -21,6 +21,8 @@
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -37,22 +39,21 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-
 /**
  * Class to add a book to a shelf. In this case, we do not care about the data returned.
- *
+ * <p>
  * ENHANCE: Parse the result and store it against the bookshelf in the database.
  * Currently, this is not a simple thing to do because bookshelf naming rules in
  * goodreads are much more restrictive: no spaces, punctuation (at least).
- *
+ * <p>
  * Need to add the following to bookshelf table:
  * - gr_bookshelf_id
  * - (perhaps) gr_bookshelf_name
  *
  * @author Philip Warner
  */
-public class ShelfAddBookHandler extends ApiHandler {
+public class ShelfAddBookHandler
+        extends ApiHandler {
 
     private long mReviewId = 0;
     private final XmlHandler mHandleReviewId = new XmlHandler() {
@@ -87,7 +88,8 @@ public class ShelfAddBookHandler extends ApiHandler {
     /**
      * Add the passed book to the passed shelf
      */
-    public long add(@NonNull final String shelfName, final long grBookId)
+    public long add(@NonNull final String shelfName,
+                    final long grBookId)
             throws IOException,
                    NotAuthorizedException,
                    BookNotFoundException {
@@ -99,7 +101,8 @@ public class ShelfAddBookHandler extends ApiHandler {
      * Remove the passed book from the passed shelf
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long remove(@NonNull final String shelfName, final long grBookId)
+    public long remove(@NonNull final String shelfName,
+                       final long grBookId)
             throws IOException,
                    NotAuthorizedException,
                    BookNotFoundException {
@@ -110,7 +113,9 @@ public class ShelfAddBookHandler extends ApiHandler {
     /**
      * Do the main work; same API call for add & remove
      */
-    private long doCall(@NonNull final String shelfName, final long grBookId, final boolean isRemove)
+    private long doCall(@NonNull final String shelfName,
+                        final long grBookId,
+                        final boolean isRemove)
             throws IOException,
                    NotAuthorizedException,
                    BookNotFoundException {
@@ -150,6 +155,6 @@ public class ShelfAddBookHandler extends ApiHandler {
 		 */
         // We only care about review-id:
         XmlFilter.buildFilter(mRootFilter, XML_SHELF, XML_REVIEW_ID)
-                .setEndAction(mHandleReviewId);
+                 .setEndAction(mHandleReviewId);
     }
 }

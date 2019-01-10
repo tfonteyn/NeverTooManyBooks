@@ -25,6 +25,10 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -38,22 +42,21 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager.TaskManagerController;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager.TaskManagerListener;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * TODO: Remove this! Fragments makes BaseActivityWithTasks mostly redundant.
  *
- * Class used to manager a collection of background threads for a {@link BaseActivityWithTasks} subclass.
+ * Class used to manager a collection of background threads for a
+ * {@link BaseActivityWithTasks} subclass.
  *
  * Part of three components that make this easier:
  *
  * {@link ManagedTask}
- * Background task that is managed by TaskManager and uses TaskManager to coordinate display activities.
+ * Background task that is managed by TaskManager and uses TaskManager to coordinate
+ * display activities.
  *
  * {@link TaskManager}
- * handles the management of multiple tasks and passing messages with the help of a {@link MessageSwitch}
+ * handles the management of multiple tasks and passing messages with the help
+ * of a {@link MessageSwitch}
  *
  * {@link BaseActivityWithTasks}
  * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
@@ -61,21 +64,22 @@ import androidx.annotation.Nullable;
  *
  * @author Philip Warner
  */
-abstract public class BaseActivityWithTasks extends BaseActivity {
+public abstract class BaseActivityWithTasks
+        extends BaseActivity {
 
     private static final String BKEY_TASK_MANAGER_ID = "TaskManagerId";
     /** ID of associated TaskManager. */
-    private long mTaskManagerId = 0;
+    private long mTaskManagerId;
     /** ProgressDialog for this activity. */
     @Nullable
-    private ProgressDialog mProgressDialog = null;
+    private ProgressDialog mProgressDialog;
     /** Associated TaskManager. */
     @Nullable
-    private TaskManager mTaskManager = null;
+    private TaskManager mTaskManager;
     /** Max value for ProgressDialog. */
-    private int mProgressMax = 0;
+    private int mProgressMax;
     /** Current value for ProgressDialog. */
-    private int mProgressCount = 0;
+    private int mProgressCount;
     /** Message for ProgressDialog. */
     @NonNull
     private String mProgressMessage = "";
@@ -90,12 +94,14 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
          * @param task      task which is finishing.
          */
         @Override
-        public void onTaskFinished(@NonNull final TaskManager manager, @NonNull final ManagedTask task) {
+        public void onTaskFinished(@NonNull final TaskManager manager,
+                                   @NonNull final ManagedTask task) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(BaseActivityWithTasks.this,
-                        "|onTaskFinished|task=`" + task.getName());
+                            "|onTaskFinished|task=`" + task.getName());
             }
-            // Just pass this one on. This will allow sub classes to override the base method, and as such get informed.
+            // Just pass this one on. This will allow sub classes to override the base method,
+            // and as such get informed.
             BaseActivityWithTasks.this.onTaskFinished(task);
         }
 
@@ -103,14 +109,17 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
          * Display a progress message
          */
         @Override
-        public void onProgress(final int count, final int max, @NonNull final String message) {
+        public void onProgress(final int count,
+                               final int max,
+                               @NonNull final String message) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 @SuppressWarnings("UnusedAssignment")
-                String dbgMsg = "onProgress: " + count + '/' + max + ", '" + message.replace("\n", "\\n") + '\'';
+                String dbgMsg = "onProgress: " + count + '/' + max + ", '" +
+                        message.replace("\n", "\\n") + '\'';
                 Tracker.handleEvent(BaseActivityWithTasks.this, States.Running,
-                        "|onProgress|msg=" + dbgMsg);
+                                    "|onProgress|msg=" + dbgMsg);
                 Logger.info(BaseActivityWithTasks.this,
-                        "|onProgress|msg=" + dbgMsg);
+                            "|onProgress|msg=" + dbgMsg);
             }
 
             // Save the details
@@ -134,13 +143,13 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
         }
 
         /**
-         * Display an interactive message
+         * Display an interactive message.
          */
         @Override
         public void onUserMessage(@NonNull final String message) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(BaseActivityWithTasks.this,
-                        "|onUserMessage|msg=`" + message);
+                            "|onUserMessage|msg=`" + message);
             }
             StandardDialogs.showUserMessage(BaseActivityWithTasks.this, message);
         }
@@ -185,7 +194,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
                     mTaskManager = controller.getTaskManager();
                 } else {
                     Logger.error("Have ID(" + mTaskManagerId + ")," +
-                            " but can not find controller getting TaskManager");
+                                         " but can not find controller getting TaskManager");
                 }
             }
 
@@ -206,7 +215,8 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
         // Stop listening
         if (mTaskManagerId != 0) {
             TaskManager.getMessageSwitch().removeListener(mTaskManagerId, mTaskListener);
-            // If the Activity is finishing, tell the TaskManager to cancel all active tasks and not to accept new ones.
+            // If the Activity is finishing, tell the TaskManager to cancel all active
+            // tasks and not to accept new ones.
             if (isFinishing()) {
                 getTaskManager().cancelAllTasksAndStopListening();
             }
@@ -226,7 +236,8 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
             // Restore mTaskManager if present
             getTaskManager();
             // Listen
-            TaskManager.getMessageSwitch().addListener(mTaskManagerId, mTaskListener, true);
+            TaskManager.getMessageSwitch()
+                       .addListener(mTaskManagerId, mTaskListener, true);
         }
         Tracker.exitOnResume(this);
     }
@@ -244,7 +255,7 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     }
 
     /**
-     * Setup the ProgressDialog according to our needs
+     * Setup the ProgressDialog according to our needs.
      */
     private void initProgressDialog() {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
@@ -253,7 +264,8 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
 
         boolean wantInDeterminate = (mProgressMax == 0);
 
-        // if currently shown, but no longer a suitable type due to a change of mProgressMax, dismiss it.
+        // if currently shown, but no longer a suitable type due to a change of
+        // mProgressMax, dismiss it.
         if (mProgressDialog != null) {
             if ((!wantInDeterminate && mProgressDialog.isIndeterminate())
                     || (wantInDeterminate && !mProgressDialog.isIndeterminate())) {
@@ -286,11 +298,13 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     private void createProgressDialog(final boolean wantInDeterminate) {
         mProgressDialog = new ProgressDialog(BaseActivityWithTasks.this);
         mProgressDialog.setIndeterminate(wantInDeterminate);
-        mProgressDialog.setProgressStyle(wantInDeterminate ? ProgressDialog.STYLE_SPINNER : ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setProgressStyle(
+                wantInDeterminate ? ProgressDialog.STYLE_SPINNER : ProgressDialog.STYLE_HORIZONTAL);
 
-        mProgressDialog.setCanceledOnTouchOutside(false); // back button only
+        // allow back button only
+        mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.setOnCancelListener(new OnCancelListener() {
-            public void onCancel(DialogInterface dialog) {
+            public void onCancel(@NonNull final DialogInterface dialog) {
                 cancelAndUpdateProgress();
             }
         });
@@ -307,7 +321,8 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     }
 
     /**
-     * Cancel all tasks, and if the progress is showing, update it (it will check task manager status)
+     * Cancel all tasks, and if the progress is showing,
+     * update it (it will check task manager status).
      */
     private void cancelAndUpdateProgress() {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
@@ -324,11 +339,11 @@ abstract public class BaseActivityWithTasks extends BaseActivity {
     }
 
     /**
-     * Save the TaskManager ID for later retrieval
+     * Save the TaskManager ID for later retrieval.
      */
     @Override
     @CallSuper
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         if (mTaskManagerId != 0) {
             outState.putLong(BaseActivityWithTasks.BKEY_TASK_MANAGER_ID, mTaskManagerId);
         }

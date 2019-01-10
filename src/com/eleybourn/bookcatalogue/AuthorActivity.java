@@ -3,6 +3,9 @@ package com.eleybourn.bookcatalogue;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -12,16 +15,15 @@ import com.eleybourn.bookcatalogue.entities.TOCEntry;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
-
 /**
  * ENHANCE: add book list to each title, and make the clickable to goto the book.
  */
 public class AuthorActivity
-    extends BaseListActivity {
+        extends BaseListActivity {
 
+    /** the database. */
     private CatalogueDBAdapter mDb;
+    /** the list of TOC entries. */
     private ArrayList<TOCEntry> mList;
 
     @Override

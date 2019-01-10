@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -37,13 +38,13 @@ public class StringList<T> {
     public static final char MULTI_STRING_SEPARATOR = '|';
 
     @Nullable
-    private static StringList<Bookshelf> mBookshelfUtils = null;
+    private static StringList<Bookshelf> mBookshelfUtils;
     @Nullable
-    private static StringList<Author> mAuthorUtils = null;
+    private static StringList<Author> mAuthorUtils;
     @Nullable
-    private static StringList<Series> mSeriesUtils = null;
+    private static StringList<Series> mSeriesUtils;
     @Nullable
-    private static StringList<TOCEntry> mTOCUtils = null;
+    private static StringList<TOCEntry> mTOCUtils;
 
     private Factory<T> mFactory;
 
@@ -114,8 +115,8 @@ public class StringList<T> {
 
     /**
      * This is a static convenience method, to hand <String> as the type,
-     * avoiding to have a {@link Factory} produce a String
-     *
+     * avoiding to have a {@link Factory} produce a String.
+     * <p>
      * Decode a text list separated by '|'
      *
      * @param stringList String representing the list
@@ -129,8 +130,8 @@ public class StringList<T> {
 
     /**
      * This is a static convenience method, to hand <String> as the type.
-     * avoiding to have a {@link Factory} produce a String
-     *
+     * avoiding to have a {@link Factory} produce a String.
+     * <p>
      * Decode a text list separated by 'delim'
      *
      * @param delim      delimiter used in stringList
@@ -139,7 +140,8 @@ public class StringList<T> {
      * @return Array of strings(trimmed) resulting from list
      */
     @NonNull
-    public static ArrayList<String> decode(final char delim, @Nullable final String stringList) {
+    public static ArrayList<String> decode(final char delim,
+                                           @Nullable final String stringList) {
         StringBuilder ns = new StringBuilder();
         ArrayList<String> list = new ArrayList<>();
         if (stringList == null) {
@@ -193,6 +195,87 @@ public class StringList<T> {
     }
 
     /**
+     * @see #encodeListItem(char, String).
+     */
+    @NonNull
+    public static String encodeListItem(@NonNull final String s) {
+        return encodeListItem(MULTI_STRING_SEPARATOR, s);
+    }
+
+    /**
+     * Convert a string by 'escaping' all instances of: '|', '\', \r, \n.
+     * The escape char is '\'.
+     * <p>
+     * This is used to build text lists separated by the passed delimiter.
+     *
+     * @param delim The list delimiter to encode (if found).
+     * @param s     String to convert
+     *
+     * @return Converted string(trimmed)
+     */
+    @NonNull
+    public static String encodeListItem(final char delim,
+                                        @NonNull final String s) {
+        StringBuilder ns = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '\\':
+                    ns.append("\\\\");
+                    break;
+                case '\r':
+                    ns.append("\\r");
+                    break;
+                case '\n':
+                    ns.append("\\n");
+                    break;
+                default:
+                    if (c == delim) {
+                        ns.append('\\');
+                    }
+                    ns.append(c);
+            }
+        }
+        return ns.toString().trim();
+    }
+
+    /**
+     * Add the value to the collection if not present,
+     * otherwise append the value to the list.
+     *
+     * @param bundle to add to
+     * @param key    for value to add
+     * @param value  to add
+     */
+    public static void addOrAppend(@NonNull final Bundle bundle,
+                                   @Nullable final String key,
+                                   @NonNull final String value) {
+        String s = encodeListItem(value);
+        if (!bundle.containsKey(key) || bundle.getString(key, "").isEmpty()) {
+            bundle.putString(key, s);
+        } else {
+            String curr = bundle.getString(key);
+            bundle.putString(key, curr + MULTI_STRING_SEPARATOR + s);
+        }
+    }
+
+    /**
+     * Add the value to the list if the value is actually 'real'.
+     *
+     * @param list  to add to
+     * @param value to add
+     */
+    public static void addIfHasValue(@NonNull final List<String> list,
+                                     @Nullable String value) {
+        if (value != null) {
+            value = value.trim();
+            if (!value.isEmpty()) {
+                list.add(value);
+            }
+        }
+    }
+
+    /**
      * Decode a string list separated by '|' and encoded by {@link #encodeListItem(String)}.
      *
      * @param stringList String representing the list
@@ -200,12 +283,14 @@ public class StringList<T> {
      * @return Array of strings resulting from list
      */
     @NonNull
-    public ArrayList<T> decode(@Nullable final String stringList, final boolean allowBlank) {
+    public ArrayList<T> decode(@Nullable final String stringList,
+                               final boolean allowBlank) {
         return decode(MULTI_STRING_SEPARATOR, stringList, allowBlank);
     }
 
     /**
-     * Decode a string list separated by 'delim' and encoded by {@link #encodeListItem(char, String)}.
+     * Decode a string list separated by 'delim' and
+     * encoded by {@link #encodeListItem(char, String)}.
      *
      * @param stringList String representing the list
      *
@@ -213,7 +298,9 @@ public class StringList<T> {
      */
     @SuppressWarnings("SameParameterValue")
     @NonNull
-    public ArrayList<T> decode(final char delim, @Nullable final String stringList, final boolean allowBlank) {
+    public ArrayList<T> decode(final char delim,
+                               @Nullable final String stringList,
+                               final boolean allowBlank) {
         StringBuilder ns = new StringBuilder();
         ArrayList<T> list = new ArrayList<>();
         if (stringList == null) {
@@ -270,10 +357,12 @@ public class StringList<T> {
         return list;
     }
 
+    /* ------------------------------------------------------------------------------------------ */
+
     /**
-     * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n. The
-     * escape char is '\'.
-     *
+     * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n.
+     * The escape char is '\'.
+     * <p>
      * This is used to build text lists separated by 'delim'.
      *
      * @param list String to convert
@@ -288,8 +377,10 @@ public class StringList<T> {
     /**
      * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n.
      * The escape char is '\'.
-     *
+     * <p>
      * This is used to build text lists separated by 'delim'.
+     * <p>
+     * Note: if you don't need escaping, then use {@link android.text.TextUtils#join}
      *
      * @param list to convert, objects are converted to String with their toString() method.
      *
@@ -297,7 +388,8 @@ public class StringList<T> {
      */
     @SuppressWarnings({"SameParameterValue", "WeakerAccess"})
     @NonNull
-    public String encode(final char delim, @NonNull final List<T> list) {
+    public String encode(final char delim,
+                         @NonNull final List<T> list) {
         StringBuilder ns = new StringBuilder();
         Iterator<T> si = list.iterator();
         if (si.hasNext()) {
@@ -310,94 +402,13 @@ public class StringList<T> {
         return ns.toString();
     }
 
-    /**
-     * @see #encodeListItem(char, String)
-     */
-    @NonNull
-    public static String encodeListItem(@NonNull final String s) {
-        return encodeListItem(MULTI_STRING_SEPARATOR, s);
-    }
-
-    /**
-     * Convert a string by 'escaping' all instances of: '|', '\', \r, \n. The
-     * escape char is '\'.
-     *
-     * This is used to build text lists separated by the passed delimiter.
-     *
-     * @param delim The list delimiter to encode (if found).
-     * @param s     String to convert
-     *
-     * @return Converted string(trimmed)
-     */
-    @NonNull
-    public static String encodeListItem(final char delim, @NonNull final String s) {
-        StringBuilder ns = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            switch (c) {
-                case '\\':
-                    ns.append("\\\\");
-                    break;
-                case '\r':
-                    ns.append("\\r");
-                    break;
-                case '\n':
-                    ns.append("\\n");
-                    break;
-                default:
-                    if (c == delim) {
-                        ns.append('\\');
-                    }
-                    ns.append(c);
-            }
-        }
-        return ns.toString().trim();
-    }
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    /**
-     * Add the value to the collection if not present
-     * otherwise append the value to the list.
-     *
-     * @param bundle to add to
-     * @param key    for value to add
-     * @param value  to add
-     */
-    public static void addOrAppend(@NonNull final Bundle bundle,
-                                   @Nullable final String key,
-                                   @NonNull final String value) {
-        String s = encodeListItem(value);
-        if (!bundle.containsKey(key) || bundle.getString(key, "").isEmpty()) {
-            bundle.putString(key, s);
-        } else {
-            String curr = bundle.getString(key);
-            bundle.putString(key, curr + MULTI_STRING_SEPARATOR + s);
-        }
-    }
-
-    /**
-     * Add the value to the list if the value is actually 'real'
-     *
-     * @param list  to add to
-     * @param value to add
-     */
-    public static void addIfHasValue(@NonNull final List<String> list,
-                                     @Nullable String value) {
-        if (value != null) {
-            value = value.trim();
-            if (!value.isEmpty()) {
-                list.add(value);
-            }
-        }
-    }
-
     @NonNull
     private T get(@NonNull final String stringList) {
         return mFactory.get(stringList);
     }
 
     public interface Factory<T> {
+
         @NonNull
         T get(@NonNull final String stringList);
     }

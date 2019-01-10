@@ -28,6 +28,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentActivity;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -39,19 +45,14 @@ import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDial
 
 import java.io.IOException;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.fragment.app.FragmentActivity;
-
 /**
  * Activity to allow the user to authorize the application to access their Goodreads account and
  * to explain Goodreads.
  *
  * @author Philip Warner
  */
-public class GoodreadsRegisterActivity extends BaseActivity {
+public class GoodreadsRegisterActivity
+        extends BaseActivity {
 
     /**
      * Called by button click to start a non-UI-thread task to do the work.
@@ -59,10 +60,10 @@ public class GoodreadsRegisterActivity extends BaseActivity {
     public static void requestAuthorizationInBackground(@NonNull final FragmentActivity activity) {
         FragmentTask task = new SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract() {
             @StringRes
-            private int mMessage = 0;
+            private int mMessage;
 
             /**
-             * Call the static method to start the web page; this can take a few seconds
+             * Call the static method to start the web page; this can take a few seconds.
              */
             @Override
             public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
@@ -71,7 +72,7 @@ public class GoodreadsRegisterActivity extends BaseActivity {
             }
 
             /**
-             * Display any error message
+             * Display any error message.
              */
             @Override
             public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
@@ -84,11 +85,15 @@ public class GoodreadsRegisterActivity extends BaseActivity {
         };
 
         // Get the fragment to display task progress
-        SimpleTaskQueueProgressDialogFragment.newInstance(activity, R.string.progress_msg_connecting_to_web_site, task, true, 0);
+        SimpleTaskQueueProgressDialogFragment
+                .newInstance(activity, R.string.progress_msg_connecting_to_web_site,
+                             task, true, 0);
     }
 
     /**
      * Static method to request authorization from Goodreads.
+     *
+     * @return string resource id with failure message, 0 for success.
      */
     @StringRes
     private static int requestAuthorizationImmediate(@NonNull final Context context) {
@@ -121,41 +126,41 @@ public class GoodreadsRegisterActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.goodreads);
 
-        /* GR Reg Link */
+        // GR Reg Link
         TextView register = findViewById(R.id.goodreads_url);
         register.setText(GoodreadsManager.WEBSITE);
         register.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 String url = GoodreadsManager.WEBSITE;
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             }
         });
 
-        /* Auth button */
+        // Auth button
         findViewById(R.id.authorize).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 requestAuthorizationInBackground(GoodreadsRegisterActivity.this);
             }
         });
 
-        /* Forget credentials */
+        // Forget credentials
         View blurb = findViewById(R.id.forget_blurb);
-        View blurb_button = findViewById(R.id.btn_forget_credentials);
+        View blurbButton = findViewById(R.id.btn_forget_credentials);
         if (GoodreadsManager.hasCredentials()) {
             blurb.setVisibility(View.VISIBLE);
-            blurb_button.setVisibility(View.VISIBLE);
-            blurb_button.setOnClickListener(new OnClickListener() {
+            blurbButton.setVisibility(View.VISIBLE);
+            blurbButton.setOnClickListener(new OnClickListener() {
 
                 @Override
-                public void onClick(View v) {
+                public void onClick(@NonNull final View v) {
                     GoodreadsManager.forgetCredentials();
                 }
             });
         } else {
             blurb.setVisibility(View.GONE);
-            blurb_button.setVisibility(View.GONE);
+            blurbButton.setVisibility(View.GONE);
         }
         Tracker.exitOnCreate(this);
     }

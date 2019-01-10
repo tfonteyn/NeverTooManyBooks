@@ -24,12 +24,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.widget.EditText;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.EditText;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -49,7 +51,8 @@ import java.io.File;
  *
  * @author Philip Warner
  */
-public class LibraryThingAdminActivity extends BaseActivity {
+public class LibraryThingAdminActivity
+        extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
@@ -63,20 +66,22 @@ public class LibraryThingAdminActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.library_thing);
 
-        /* LT Reg Link */
+        /* LT Registration Link. */
         findViewById(R.id.register_url).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + '/'));
+            public void onClick(@NonNull final View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                                           Uri.parse(LibraryThingManager.getBaseURL() + '/'));
                 startActivity(intent);
             }
         });
 
-        /* DevKey Link */
+        /* DevKey Link. */
         findViewById(R.id.dev_key_url).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(LibraryThingManager.getBaseURL() + "/services/keys.php"));
+            public void onClick(@NonNull final View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
+                        LibraryThingManager.getBaseURL() + "/services/keys.php"));
                 startActivity(intent);
             }
         });
@@ -85,25 +90,27 @@ public class LibraryThingAdminActivity extends BaseActivity {
         String key = Prefs.getString(LibraryThingManager.PREFS_DEV_KEY, "");
         devKeyView.setText(key);
 
-        /* Save Button */
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 EditText devKeyView = findViewById(R.id.dev_key);
                 String devKey = devKeyView.getText().toString().trim();
                 Prefs.getPrefs().edit()
-                        .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
-                        .apply();
+                     .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
+                     .apply();
 
                 if (!devKey.isEmpty()) {
-                    FragmentTask task = new SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract() {
+                    FragmentTask task =
+                            new SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract() {
                         /**
-                         * Validate the key by getting a known cover
+                         * Validate the key by getting a known cover.
                          */
                         @Override
-                        public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @NonNull final SimpleTaskContext taskContext) {
+                        public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                                        @NonNull final SimpleTaskContext taskContext) {
                             LibraryThingManager ltm = new LibraryThingManager();
-                            File tmpFile = ltm.getCoverImage("0451451783", LibraryThingManager.ImageSizes.SMALL);
+                            File tmpFile = ltm.getCoverImage("0451451783",
+                                                             LibraryThingManager.ImageSizes.SMALL);
                             if (tmpFile != null) {
                                 tmpFile.deleteOnExit();
                                 long length = tmpFile.length();
@@ -119,33 +126,37 @@ public class LibraryThingAdminActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment, @Nullable final Exception e) {
+                        public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                                             @Nullable final Exception e) {
                         }
                     };
 
                     // Get the fragment to display task progress
-                    SimpleTaskQueueProgressDialogFragment.newInstance(LibraryThingAdminActivity.this, R.string.progress_msg_connecting_to_web_site, task, true, 0);
+                    SimpleTaskQueueProgressDialogFragment.newInstance(
+                            LibraryThingAdminActivity.this,
+                            R.string.progress_msg_connecting_to_web_site, task, true, 0);
 
                 }
             }
         });
 
-        /* Reset Button */
         findViewById(R.id.reset_messages).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 SharedPreferences prefs = Prefs.getPrefs();
                 SharedPreferences.Editor ed = prefs.edit();
                 for (String key : prefs.getAll().keySet()) {
-                    if (key.toLowerCase().startsWith(LibraryThingManager.PREFS_HIDE_ALERT.toLowerCase()))
+                    if (key.toLowerCase().startsWith(
+                            LibraryThingManager.PREFS_HIDE_ALERT.toLowerCase())) {
                         ed.remove(key);
+                    }
                 }
                 ed.apply();
             }
         });
 
         // hide soft keyboard at first
-        getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         Tracker.exitOnCreate(this);
     }

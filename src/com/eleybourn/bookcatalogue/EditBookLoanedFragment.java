@@ -33,12 +33,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.entities.BookManager;
-
-import java.util.ArrayList;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -48,30 +42,38 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.entities.BookManager;
+
+import java.util.ArrayList;
+
 /**
- * This class is called by {@link EditBookFragment} and displays the Loaned Tab
- *
+ * This class is called by {@link EditBookFragment} and displays the Loaned Tab.
+ * <p>
  * Users can select a book and, from this activity, select a friend to "loan" the book to.
  * * This will then be saved in the database.
- *
+ * <p>
  * So this fragment does NOT participate in
  * {@link #initFields()}
  * {@link #onLoadFieldsFromBook} and {@link #onSaveFieldsToBook}
  */
 public class EditBookLoanedFragment
-    extends BookBaseFragment {
+        extends BookBaseFragment {
 
     public static final String TAG = "EditBookLoanedFragment";
 
     private static final String[] PROJECTION = {
-        ContactsContract.Contacts._ID,
-        ContactsContract.Contacts.LOOKUP_KEY,
-        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
-    };
+            ContactsContract.Contacts._ID,
+            ContactsContract.Contacts.LOOKUP_KEY,
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
+            };
 
-    private TextView mLoanedTo;
+    private TextView mLoanedToView;
 
     /* ------------------------------------------------------------------------------------------ */
+    @Override
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
@@ -83,7 +85,7 @@ public class EditBookLoanedFragment
     //<editor-fold desc="Fragment startup">
 
 //    /**
-//     * Ensure activity supports interface
+//     * Ensure activity supports interface.
 //     */
 //    @Override
 //    @CallSuper
@@ -97,14 +99,17 @@ public class EditBookLoanedFragment
 //    }
 
     @Override
+    @NonNull
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book_loan_base, container, false);
+        return inflater.inflate(R.layout.fragment_edit_book_loan_base,
+                                container, false);
     }
 
     /**
-     * has no specific Arguments or savedInstanceState as all is done via
+     * Has no specific Arguments or savedInstanceState.
+     * All storage interaction is done via:
      * {@link BookManager#getBook()} on the hosting Activity
      * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
      * {@link #onSaveFieldsToBook(Book)} from base class onPause
@@ -146,16 +151,16 @@ public class EditBookLoanedFragment
     //<editor-fold desc="Populate">
 
     /**
-     * Display the loan to page. It is slightly different to the existing loan page
+     * Display the loan to page. It is slightly different to the existing loan page.
      */
     private void showLoanTo() {
         ViewGroup sv = loadFragmentIntoView(R.layout.fragment_edit_book_loan_to);
-        mLoanedTo = sv.findViewById(R.id.loaned_to);
+        mLoanedToView = sv.findViewById(R.id.loaned_to);
         setPhoneContactsAdapter();
 
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                String friend = mLoanedTo.getText().toString().trim();
+            public void onClick(@NonNull final View v) {
+                String friend = mLoanedToView.getText().toString().trim();
                 saveLoan(friend);
                 showLoaned(friend);
             }
@@ -163,17 +168,17 @@ public class EditBookLoanedFragment
     }
 
     /**
-     * Display the existing loan page. It is slightly different to the loan to page
+     * Display the existing loan page. It is slightly different to the loan to page.
      *
      * @param user The user the book was loaned to
      */
     private void showLoaned(@NonNull final String user) {
         ViewGroup sv = loadFragmentIntoView(R.layout.fragment_edit_book_loaned);
-        mLoanedTo = sv.findViewById(R.id.loaned_to);
-        mLoanedTo.setText(user);
+        mLoanedToView = sv.findViewById(R.id.loaned_to);
+        mLoanedToView.setText(user);
 
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            public void onClick(@NonNull final View v) {
                 removeLoan();
                 showLoanTo();
             }
@@ -181,7 +186,7 @@ public class EditBookLoanedFragment
     }
 
     @NonNull
-    private ViewGroup loadFragmentIntoView(final @LayoutRes int fragmentId) {
+    private ViewGroup loadFragmentIntoView(@LayoutRes final int fragmentId) {
         //noinspection ConstantConditions
         ViewGroup sv = getView().findViewById(R.id.root);
         sv.removeAllViews();
@@ -226,35 +231,47 @@ public class EditBookLoanedFragment
     }
 
     /**
-     * Auto complete list comes from your Contacts
+     * Auto complete list comes from your Contacts.
      */
     private void setPhoneContactsAdapter() {
         // check security
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_CONTACTS}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS);
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    new String[]{Manifest.permission.READ_CONTACTS},
+                    UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS);
             return;
         }
         // call secured method
         ArrayList<String> contacts = getPhoneContacts();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line, contacts);
-        ((AutoCompleteTextView) mLoanedTo).setAdapter(adapter);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireActivity(),
+                android.R.layout.simple_dropdown_item_1line,
+                contacts);
+        ((AutoCompleteTextView) mLoanedToView).setAdapter(adapter);
     }
 
     /**
      * Return a list of friends from your contact list.
      *
      * @return an ArrayList of names
+     *
+     * @throws SecurityException if we did not have the required permissions
      */
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     @NonNull
     private ArrayList<String> getPhoneContacts()
-        throws SecurityException {
+            throws SecurityException {
         ArrayList<String> list = new ArrayList<>();
         ContentResolver cr = requireActivity().getContentResolver();
-        try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION, null, null, null)) {
+        try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
+                                              null, null, null)) {
             if (contactsCursor != null) {
                 while (contactsCursor.moveToNext()) {
-                    String name = contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+                    String name = contactsCursor.getString(contactsCursor.getColumnIndex(
+                            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
                     list.add(name);
                 }
             }
@@ -274,24 +291,31 @@ public class EditBookLoanedFragment
      *
      * @param requestCode  The request code passed in {@link #requestPermissions(String[], int)}.
      * @param permissions  The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions
-     *                     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     * @param grantResults The grant results for the corresponding permissions which is either
+     *                     {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}.
+     *                     Never null.
      *
      * @see #requestPermissions(String[], int)
      */
     @Override
     @PermissionChecker.PermissionResult
     public void onRequestPermissionsResult(final int requestCode,
-                                           @NonNull final String permissions[],
+                                           @NonNull final String[] permissions,
                                            @NonNull final int[] grantResults) {
-        //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[] must be checked in parallel
+        //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[]
+        // must be checked in parallel
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     setPhoneContactsAdapter();
                 }
-            }
+                break;
+
+            default:
+                Logger.debug("unknown requestCode=" + requestCode);
+                break;
         }
     }
 }

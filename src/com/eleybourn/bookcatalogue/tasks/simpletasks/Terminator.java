@@ -19,15 +19,15 @@
  */
 package com.eleybourn.bookcatalogue.tasks.simpletasks;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Class to execute Runnable objects in a separate thread after a predetermined delay.
@@ -36,16 +36,19 @@ import androidx.annotation.Nullable;
  */
 public final class Terminator {
 
-    /** Task queue to get book lists in background */
-    private static final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("Terminator", 1);
-    /** Object used in synchronization */
-    private static final Object mWaitObject = new Object();
-    /** Queue of Event objects currently awaiting execution */
-    private static final PriorityQueue<Event> mEvents = new PriorityQueue<>(10, new EventComparator());
+    /** Task queue to get book lists in background. */
+    private static final SimpleTaskQueue TASK_QUEUE =
+            new SimpleTaskQueue("Terminator", 1);
+    /** Object used in synchronization. */
+    private static final Object LOCK = new Object();
+    /** Queue of Event objects currently awaiting execution. */
+    private static final PriorityQueue<Event> EVENTS =
+            new PriorityQueue<>(10, new EventComparator());
     /**
-     * Options indicating the main thread process is still running and waiting for a timer to elapse.
+     * Options indicating the main thread process is still running and waiting
+     * for a timer to elapse.
      */
-    private static boolean mIsRunning = false;
+    private static boolean mIsRunning;
 
     private Terminator() {
     }
@@ -64,55 +67,59 @@ public final class Terminator {
      * @param runnable Runnable to execute
      * @param delay    Delay in milliseconds before execution
      */
-    public static void enqueue(@NonNull final Runnable runnable, final long delay) {
+    public static void enqueue(@NonNull final Runnable runnable,
+                               final long delay) {
         // Compute actual time
         long time = System.currentTimeMillis() + delay;
         // Create Event and add to queue.
         Event event = new Event(runnable, time);
-        synchronized (mTaskQueue) {
-            mEvents.add(event);
+        synchronized (TASK_QUEUE) {
+            EVENTS.add(event);
             // Make sure task is actually running
             if (!mIsRunning) {
-                mTaskQueue.enqueue(new TerminatorTask());
+                TASK_QUEUE.enqueue(new TerminatorTask());
                 mIsRunning = true;
             } else {
                 // Wake up task in case this object has a shorter timer
-                synchronized (mWaitObject) {
-                    mWaitObject.notify();
+                synchronized (LOCK) {
+                    LOCK.notify();
                 }
             }
         }
     }
 
-    /** Details of the runnable to run */
+    /** Details of the runnable to run. */
     private static class Event {
+
         @NonNull
         public final Runnable runnable;
         final long time;
 
-        public Event(@NonNull final Runnable runnable, final long time) {
+        Event(@NonNull final Runnable runnable,
+              final long time) {
             this.runnable = runnable;
             this.time = time;
         }
     }
 
-    /** Comparator to ensure Event objects are returned in the correct order */
-    private static class EventComparator implements Comparator<Event>, Serializable {
+    /** Comparator to ensure Event objects are returned in the correct order. */
+    private static class EventComparator
+            implements Comparator<Event>, Serializable {
 
         private static final long serialVersionUID = 1835857521140326924L;
 
         @Override
-        public int compare(@NonNull Event o1, @NonNull Event o2) {
+        public int compare(@NonNull final Event o1,
+                           @NonNull final Event o2) {
             return Long.compare(o1.time, o2.time);
         }
     }
 
     /**
-     * Background task to process the queue and schedule appropriate delays
-     *
-     * @author pjw
+     * Background task to process the queue and schedule appropriate delays.
      */
-    private static class TerminatorTask implements SimpleTaskQueue.SimpleTask {
+    private static class TerminatorTask
+            implements SimpleTaskQueue.SimpleTask {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
@@ -121,9 +128,9 @@ public final class Terminator {
                 Event event;
                 long delay;
                 // Check when next task due
-                synchronized (mTaskQueue) {
+                synchronized (TASK_QUEUE) {
                     // Look for a task
-                    event = mEvents.peek();
+                    event = EVENTS.peek();
                     // none ? quit running task. Will be restarted if/when needed.
                     if (event == null) {
                         mIsRunning = false;
@@ -133,15 +140,15 @@ public final class Terminator {
                     delay = event.time - System.currentTimeMillis();
                     // If it's due now, then remove it from the queue.
                     if (delay <= 0) {
-                        mEvents.remove(event);
+                        EVENTS.remove(event);
                     }
                 }
 
                 if (delay > 0) {
                     // If we have nothing to run, wait for first
-                    synchronized (mWaitObject) {
+                    synchronized (LOCK) {
                         try {
-                            mWaitObject.wait(delay);
+                            LOCK.wait(delay);
                         } catch (InterruptedException e) {
                             Logger.error(e);
                         }
@@ -161,7 +168,7 @@ public final class Terminator {
         }
 
         @Override
-        public void onFinish(@Nullable Exception e) {
+        public void onFinish(@Nullable final Exception e) {
             Logger.info(this, "Terminator: I'll be back.");
             if (e != null) {
                 Logger.error(e);

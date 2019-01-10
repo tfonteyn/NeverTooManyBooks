@@ -83,32 +83,31 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE
 public class CsvExporter
     implements Exporter {
 
-    /** standard export file */
+    /** standard export file. */
     public static final String EXPORT_FILE_NAME = "export.csv";
-    /** standard temp export file, first we write here, then rename to csv */
+    /** standard temp export file, first we write here, then rename to csv. */
     static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
-    /** string-encoded - used in import/export, never change this string! */
+    /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_TOC = "anthology_titles";
-    /** string-encoded - used in import/export, never change this string! */
+    /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_SERIES = "series_details";
-    /** string-encoded - used in import/export, never change this string! */
+    /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_AUTHORS = "author_details";
     private static final String UTF8 = "utf8";
     private static final int BUFFER_SIZE = 32768;
-    /** pattern we look for to rename/keep older copies */
+    /** pattern we look for to rename/keep older copies. */
     private static final String EXPORT_CSV_FILES_PATTERN = "export.%s.csv";
 
-    /* The CSV file has columns with these names */
-    /** backup copies to keep */
+    /** backup copies to keep. */
     private static final int COPIES = 5;
     @NonNull
     private final CatalogueDBAdapter mDb;
     @NonNull
     private final ExportSettings mSettings;
     /**
-     * The order of the header MUST be the same as the order used to write the data (obvious eh?)
+     * The order of the header MUST be the same as the order used to write the data (obvious eh?).
      *
-     * The fields CSV_COLUMN_* are string encoded
+     * The fields CSV_COLUMN_* are {@link StringList} encoded
      */
     @SuppressWarnings("NonConstantFieldWithUpperCaseName")
     private final String EXPORT_FIELD_HEADERS =
@@ -122,7 +121,7 @@ public class CsvExporter
             '"' + DOM_BOOK_EDITION_BITMASK + "\"," +
             '"' + DOM_BOOK_RATING + "\"," +
             // this should be UniqueId.DOM_FK_BOOKSHELF_ID but it was misnamed originally
-            // but in fact, FIXME? it's not actually used during import anyway
+            // but in fact, FIXME: it's not actually used during import anyway
             '"' + "bookshelf_id\"," +
             '"' + DOM_BOOKSHELF + "\"," +
             '"' + DOM_BOOK_READ + "\"," +
@@ -157,7 +156,7 @@ public class CsvExporter
             '\n';
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param settings {@link ExportSettings#file} is not used, as we must support writing
      *                 to a stream. {@link ExportSettings#EXPORT_SINCE} and
@@ -220,12 +219,12 @@ public class CsvExporter
                 numberOfBooksExported++;
                 long bookId = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(DOM_PK_ID.name));
 
-                String author_stringList = StringList.getAuthorUtils().encode(
+                String authorStringList = StringList.getAuthorUtils().encode(
                     mDb.getBookAuthorList(bookId));
                 // Sanity check: ensure author is non-blank. This HAPPENS.
                 // Probably due to constraint failures.
-                if (author_stringList.trim().isEmpty()) {
-                    author_stringList = AUTHOR + ", " + UNKNOWN;
+                if (authorStringList.trim().isEmpty()) {
+                    authorStringList = AUTHOR + ", " + UNKNOWN;
                 }
 
                 String title = bookCursorRow.getTitle();
@@ -241,20 +240,20 @@ public class CsvExporter
                 // but we also want a list of the id's.
                 // so....
                 // the selected bookshelves: two CSV columns with CSV id's + CSV names
-                StringBuilder bookshelves_id_stringList = new StringBuilder();
-                StringBuilder bookshelves_name_stringList = new StringBuilder();
+                StringBuilder bookshelvesIdStringList = new StringBuilder();
+                StringBuilder bookshelvesNameStringList = new StringBuilder();
                 for (Bookshelf bookshelf : mDb.getBookshelvesByBookId(bookId)) {
-                    bookshelves_id_stringList
+                    bookshelvesIdStringList
                         .append(bookshelf.id)
                         .append(Bookshelf.SEPARATOR);
-                    bookshelves_name_stringList
+                    bookshelvesNameStringList
                         .append(StringList.encodeListItem(Bookshelf.SEPARATOR, bookshelf.name))
                         .append(Bookshelf.SEPARATOR);
                 }
 
                 row.setLength(0);
                 row.append(formatCell(bookId))
-                   .append(formatCell(author_stringList))
+                   .append(formatCell(authorStringList))
                    .append(formatCell(title))
                    .append(formatCell(bookCursorRow.getIsbn()))
                    .append(formatCell(bookCursorRow.getPublisherName()))
@@ -263,8 +262,8 @@ public class CsvExporter
                    .append(formatCell(bookCursorRow.getEditionBitMask()))
 
                    .append(formatCell(bookCursorRow.getRating()))
-                   .append(formatCell(bookshelves_id_stringList.toString()))
-                   .append(formatCell(bookshelves_name_stringList.toString()))
+                   .append(formatCell(bookshelvesIdStringList.toString()))
+                   .append(formatCell(bookshelvesNameStringList.toString()))
                    .append(formatCell(bookCursorRow.getRead()))
                    .append(formatCell(
                        StringList.getSeriesUtils().encode(mDb.getBookSeriesList(bookId))))
@@ -328,7 +327,7 @@ public class CsvExporter
     }
 
     /**
-     * At the end of a successful export, rename the temp file to {@link #EXPORT_FILE_NAME}
+     * At the end of a successful export, rename the temp file to {@link #EXPORT_FILE_NAME}.
      *
      * @param tempFile to rename
      */
@@ -357,7 +356,7 @@ public class CsvExporter
     }
 
     /**
-     * Double quote all "'s and remove all newlines
+     * Double quote all "'s and remove all newlines.
      *
      * @param cell to format
      *

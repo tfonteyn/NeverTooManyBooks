@@ -1,18 +1,18 @@
 package com.eleybourn.bookcatalogue.searches.librarything;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.List;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 /**
  * Parser Handler to collect the edition data.
- *
+ * <p>
  * http://www.librarything.com/api/thingISBN/<ISBN>
- *
+ * <p>
  * Typical request output:
  * <pre>
  *   <?xml version="1.0" encoding="utf-8"?>
@@ -28,9 +28,10 @@ import androidx.annotation.NonNull;
  *
  * @author Philip Warner
  */
-class SearchLibraryThingEditionHandler extends DefaultHandler {
+class SearchLibraryThingEditionHandler
+        extends DefaultHandler {
 
-    /** isbn tag in an editions xml response */
+    /** isbn tag in an editions xml response. */
     private static final String XML_ISBN = "isbn";
 
     private final StringBuilder mBuilder = new StringBuilder();
@@ -38,7 +39,7 @@ class SearchLibraryThingEditionHandler extends DefaultHandler {
     private final List<String> mEditions;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param editions the bundle to which we'll write the results
      */
@@ -48,7 +49,9 @@ class SearchLibraryThingEditionHandler extends DefaultHandler {
 
     @Override
     @CallSuper
-    public void characters(final char[] ch, final int start, final int length)
+    public void characters(final char[] ch,
+                           final int start,
+                           final int length)
             throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
@@ -56,7 +59,9 @@ class SearchLibraryThingEditionHandler extends DefaultHandler {
 
     @Override
     @CallSuper
-    public void endElement(final String uri, @NonNull final String localName, final String qName)
+    public void endElement(@NonNull final String uri,
+                           @NonNull final String localName,
+                           @NonNull final String qName)
             throws SAXException {
         super.endElement(uri, localName, qName);
 

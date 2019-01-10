@@ -43,7 +43,7 @@ public final class SerializationUtils {
     }
 
     /**
-     * Utility routine to convert a Serializable object to a byte array.
+     * Convert a Serializable object to a byte array.
      *
      * @param o Object to convert
      *
@@ -64,13 +64,14 @@ public final class SerializationUtils {
     }
 
     /**
-     * Deserialize the passed byte array
+     * Deserialize the passed byte array.
      *
      * @throws RTE.DeserializationException on failure
      */
     @SuppressWarnings("unchecked")
     @NonNull
-    public static <T> T deserializeObject(@NonNull final byte[] o) throws RTE.DeserializationException {
+    public static <T> T deserializeObject(@NonNull final byte[] o)
+            throws RTE.DeserializationException {
         try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(o))) {
             return (T) in.readObject();
         } catch (@NonNull ClassCastException | ClassNotFoundException | IOException e) {
@@ -83,7 +84,8 @@ public final class SerializationUtils {
      */
     @SuppressWarnings("unused")
     @NonNull
-    public static <T extends Serializable> T cloneObject(@NonNull final T o) throws RTE.DeserializationException {
+    public static <T extends Serializable> T cloneObject(@NonNull final T o)
+            throws RTE.DeserializationException {
         return deserializeObject(serializeObject(o));
     }
 

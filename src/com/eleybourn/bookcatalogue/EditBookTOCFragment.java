@@ -42,6 +42,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -57,23 +63,17 @@ import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBResultsListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-
 /**
- * This class is called by {@link EditBookFragment} and displays the Content Tab
- *
+ * This class is called by {@link EditBookFragment} and displays the Content Tab.
+ * <p>
  * Doesn't use {@link UpdateFieldsFromInternetTask}
  * as this would actually introduce the ManagedTask usage which we want to phase out.
  * The {@link ISFDBResultsListener} should however be seen as temporary as this class should not
  * have to know about any specific search web site.
  */
 public class EditBookTOCFragment
-    extends BookBaseFragment
-    implements ISFDBResultsListener {
+        extends BookBaseFragment
+        implements ISFDBResultsListener {
 
     public static final String TAG = "EditBookTOCFragment";
 
@@ -86,17 +86,18 @@ public class EditBookTOCFragment
     private CompoundButton mSingleAuthor;
 
     @Nullable
-    private Integer mEditPosition = null;
+    private Integer mEditPosition;
     private ArrayList<TOCEntry> mList;
     private ListView mListView;
 
     /**
-     * ISFDB editions (url's) of a book(isbn)
-     * We'll try them one by one if the user asks for a re-try
+     * ISFDB editions (url's) of a book(isbn).
+     * We'll try them one by one if the user asks for a re-try.
      */
     private List<String> mISFDBEditionUrls;
 
     /* ------------------------------------------------------------------------------------------ */
+    @Override
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
@@ -108,6 +109,7 @@ public class EditBookTOCFragment
     //<editor-fold desc="Fragment startup">
 
     @Override
+    @NonNull
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -115,7 +117,8 @@ public class EditBookTOCFragment
     }
 
     /**
-     * has no specific Arguments or savedInstanceState as all is done via
+     * Has no specific Arguments or savedInstanceState.
+     * All storage interaction is done via:
      * {@link BookManager#getBook()} on the hosting Activity
      * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
      * {@link #onSaveFieldsToBook(Book)} from base class onPause
@@ -132,9 +135,11 @@ public class EditBookTOCFragment
 
         // Author AutoCompleteTextView
         mAuthorTextView = getView().findViewById(R.id.add_author);
-        ArrayAdapter<String> author_adapter = new ArrayAdapter<>(requireActivity(),
-            android.R.layout.simple_dropdown_item_1line, mDb.getAuthorsFormattedName());
-        mAuthorTextView.setAdapter(author_adapter);
+        ArrayAdapter<String> authorAdapter =
+                new ArrayAdapter<>(requireActivity(),
+                                   android.R.layout.simple_dropdown_item_1line,
+                                   mDb.getAuthorsFormattedName());
+        mAuthorTextView.setAdapter(authorAdapter);
 
         // author to use if mSingleAuthor is set to true
         mBookAuthor = getBookManager().getBook().getString(UniqueId.KEY_AUTHOR_FORMATTED);
@@ -144,7 +149,7 @@ public class EditBookTOCFragment
 
         mAddButton = getView().findViewById(R.id.add_button);
         mAddButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            public void onClick(@NonNull final View v) {
                 String pubDate = mPubDateTextView.getText().toString().trim();
                 String title = mTitleTextView.getText().toString().trim();
                 String author = mAuthorTextView.getText().toString().trim();
@@ -190,7 +195,7 @@ public class EditBookTOCFragment
         //noinspection ConstantConditions
         mSingleAuthor = getView().findViewById(R.id.same_author);
         mSingleAuthor.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            public void onClick(@NonNull final View v) {
                 mAuthorTextView.setVisibility(mSingleAuthor.isChecked() ? View.GONE : View.VISIBLE);
             }
         });
@@ -248,7 +253,7 @@ public class EditBookTOCFragment
     }
 
     /**
-     * Populate the list view with the book content table
+     * Populate the list view with the book content table.
      */
     private void populateContentList() {
         // Get all of the rows from the database and create the item list
@@ -256,7 +261,8 @@ public class EditBookTOCFragment
 
         // Now create a simple cursor adapter and set it to display
         ArrayAdapter<TOCEntry> adapter = new TOCListAdapterForEditing(requireActivity(),
-            R.layout.row_edit_toc_entry, mList);
+                                                                      R.layout.row_edit_toc_entry,
+                                                                      mList);
         mListView.setAdapter(adapter);
     }
     //</editor-fold>
@@ -273,11 +279,11 @@ public class EditBookTOCFragment
 
         book.putTOC(mList);
 
-        // multiple authors is now automatically done during database access. The checkbox is only
-        // a visual aid for hiding/showing the author EditText.
+        // multiple authors is now automatically done during database access.
+        // The checkbox is only a visual aid for hiding/showing the author EditText.
         // So while this command is 'correct', it does not stop (and does not bother) the user
-        // setting it wrong. insert/update into the database will correctly set it by simply looking at
-        // at the toc itself
+        // setting it wrong. insert/update into the database will correctly set it by
+        // simply looking at the toc itself
         int type = DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_WORKS;
         if (!mSingleAuthor.isChecked()) {
             type |= DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS;
@@ -314,11 +320,15 @@ public class EditBookTOCFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
-                StandardDialogs.showUserMessage(requireActivity(), R.string.progress_msg_connecting_to_web_site);
+                StandardDialogs.showUserMessage(requireActivity(),
+                                                R.string.progress_msg_connecting_to_web_site);
                 ISFDBManager.searchEditions(mIsbn, this);
                 return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
         }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -345,8 +355,10 @@ public class EditBookTOCFragment
                 adapter.remove(adapter.getItem((int) info.id));
                 getBookManager().setDirty(true);
                 return true;
+
+            default:
+                return super.onContextItemSelected(item);
         }
-        return super.onContextItemSelected(item);
     }
     //</editor-fold>
 
@@ -355,10 +367,11 @@ public class EditBookTOCFragment
     //<editor-fold desc="ISFDB interface">
 
     /**
-     * we got one or more editions from ISFDB
+     * we got one or more editions from ISFDB.
      * Store the url's locally as the user might want to try the next in line
-     *
-     * ENHANCE: add the url's to the options menu for retry. Remove from menu each time one is tried.
+     * <p>
+     * ENHANCE: add the url's to the options menu for retry.
+     * Remove from menu each time one is tried.
      */
     @Override
     public void onGotISFDBEditions(@NonNull final List<String> editions) {
@@ -369,7 +382,7 @@ public class EditBookTOCFragment
     }
 
     /**
-     * we got a book
+     * we got a book.
      *
      * @param bookData our book from ISFDB.
      */
@@ -394,14 +407,16 @@ public class EditBookTOCFragment
         if (bookFirstPublication != null) {
             //Logger.info(this, " onGotISFDBBook: first pub=" + bookFirstPublication);
             if (getBookManager().getBook().getString(UniqueId.KEY_FIRST_PUBLICATION).isEmpty()) {
-                getBookManager().getBook().putString(UniqueId.KEY_FIRST_PUBLICATION, bookFirstPublication);
+                getBookManager().getBook().putString(UniqueId.KEY_FIRST_PUBLICATION,
+                                                     bookFirstPublication);
             }
         }
 
         // finally the TOC itself; not saved here but only put on display for the user to approve
         final int tocBitMask = bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
-        ArrayList<TOCEntry> tocEntries = bookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
-        boolean hasTOC = (tocEntries != null && !tocEntries.isEmpty());
+        ArrayList<TOCEntry> tocEntries = bookData.getParcelableArrayList(
+                UniqueId.BKEY_TOC_TITLES_ARRAY);
+        boolean hasTOC = tocEntries != null && !tocEntries.isEmpty();
 
         StringBuilder msg = new StringBuilder();
         if (hasTOC) {
@@ -417,54 +432,55 @@ public class EditBookTOCFragment
         content.setText(msg);
         // Not ideal but works
         content.setTextSize(14);
-        //API 23 ?
+        //API: 23 ?
         //content.setTextAppearance(android.R.style.TextAppearance_Small);
-        //API 26 ?
+        //API: 26 ?
         //content.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
 
         AlertDialog dialog = new AlertDialog.Builder(requireActivity())
-            .setIconAttribute(android.R.attr.alertDialogIcon)
-            .setView(content)
-            .create();
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setView(content)
+                .create();
 
         if (hasTOC) {
             final List<TOCEntry> finalTOCEntries = tocEntries;
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog,
-                                        final int which) {
-                        commitISFDBData(tocBitMask, finalTOCEntries);
-                    }
-                });
+                             new DialogInterface.OnClickListener() {
+                                 public void onClick(final DialogInterface dialog,
+                                                     final int which) {
+                                     commitISFDBData(tocBitMask, finalTOCEntries);
+                                 }
+                             });
         }
 
         // if we found multiple editions, allow a re-try with the next inline
         if (mISFDBEditionUrls.size() > 1) {
             dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.retry),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog,
-                                        final int which) {
-                        // remove the top one, and try again
-                        mISFDBEditionUrls.remove(0);
-                        ISFDBManager.search(mISFDBEditionUrls, EditBookTOCFragment.this);
-                    }
-                });
+                             new DialogInterface.OnClickListener() {
+                                 public void onClick(final DialogInterface dialog,
+                                                     final int which) {
+                                     // remove the top one, and try again
+                                     mISFDBEditionUrls.remove(0);
+                                     ISFDBManager.search(mISFDBEditionUrls,
+                                                         EditBookTOCFragment.this);
+                                 }
+                             });
         }
 
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-            new DialogInterface.OnClickListener() {
-                public void onClick(@NonNull final DialogInterface dialog,
-                                    final int which) {
-                    dialog.dismiss();
-                }
-            });
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+                             }
+                         });
         dialog.show();
     }
 
     /**
-     * The user approved, so add the TOC to the list on screen (still not saved to database)
+     * The user approved, so add the TOC to the list on screen (still not saved to database).
      */
-    private void commitISFDBData(int tocBitMask,
+    private void commitISFDBData(final int tocBitMask,
                                  @NonNull final List<TOCEntry> tocEntries) {
         if (tocBitMask != 0) {
             getBookManager().getBook().putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, tocBitMask);
@@ -484,16 +500,18 @@ public class EditBookTOCFragment
     }
 
     private class TOCListAdapterForEditing
-        extends TOCListAdapter {
+            extends TOCListAdapter {
 
         TOCListAdapterForEditing(@NonNull final Context context,
-                                 @SuppressWarnings("SameParameterValue") final @LayoutRes int rowViewId,
+                                 @SuppressWarnings("SameParameterValue")
+                                 @LayoutRes final int rowViewId,
                                  @NonNull final ArrayList<TOCEntry> items) {
             super(context, rowViewId, items);
         }
 
         /**
-         * copies the selected entry into the edit fields + sets the confirm button to reflect a save (versus add)
+         * copies the selected entry into the edit fields,
+         * and sets the confirm button to reflect a save (versus add).
          */
         @Override
         public void onRowClick(@NonNull final View target,

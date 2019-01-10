@@ -21,7 +21,9 @@
 package com.eleybourn.bookcatalogue.tasks;
 
 import android.graphics.Bitmap;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
@@ -31,24 +33,26 @@ import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskC
  * Background task to save a bitmap into the covers thumbnail database. Runs in background
  * because it involves compression and IO, and can be safely queued. Failures can be ignored
  * because it is just writing to a cache used solely for optimization.
- *
+ * <p>
  * This class also has its own static SimpleTaskQueue.
  *
  * @author Philip Warner
  */
-public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
+public final class ThumbnailCacheWriterTask
+        implements SimpleTaskQueue.SimpleTask {
 
     /**
      * Single-thread queue for writing data. There is no point in more than one thread since
      * the database will force serialization of the updates.
      */
-    private static final SimpleTaskQueue mQueue = new SimpleTaskQueue("ThumbnailCacheWriterTask", 1);
-    /** Indicates if Bitmap can be recycled when no longer needed */
+    private static final SimpleTaskQueue TASK_QUEUE =
+            new SimpleTaskQueue("ThumbnailCacheWriterTask", 1);
+    /** Indicates if Bitmap can be recycled when no longer needed. */
     private final boolean mCanRecycle;
 
-    /** Cache ID of this object */
+    /** Cache ID of this object. */
     private String mCacheId;
-    /** Bitmap to store */
+    /** Bitmap to store. */
     private Bitmap mBitmap;
 
     /**
@@ -75,18 +79,18 @@ public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
      * @param source     Raw bitmap to store
      * @param canRecycle Indicates bitmap should be recycled after use
      */
-    public static void writeToCache(@NonNull final String cacheId,
-                                    @NonNull final Bitmap source,
-                                    final boolean canRecycle) {
+    static void writeToCache(@NonNull final String cacheId,
+                             @NonNull final Bitmap source,
+                             final boolean canRecycle) {
         ThumbnailCacheWriterTask t = new ThumbnailCacheWriterTask(cacheId, source, canRecycle);
-        mQueue.enqueue(t);
+        TASK_QUEUE.enqueue(t);
     }
 
     /**
-     * Check if there is an active task in the queue.
+     * @return <tt>true</tt> if there is an active task in the queue.
      */
     public static boolean hasActiveTasks() {
-        return mQueue.hasActiveTasks();
+        return TASK_QUEUE.hasActiveTasks();
     }
 
     /**
@@ -111,6 +115,6 @@ public class ThumbnailCacheWriterTask implements SimpleTaskQueue.SimpleTask {
     }
 
     @Override
-    public void onFinish(Exception e) {
+    public void onFinish(@Nullable final Exception e) {
     }
 }

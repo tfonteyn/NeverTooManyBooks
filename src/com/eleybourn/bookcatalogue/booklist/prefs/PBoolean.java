@@ -2,30 +2,33 @@ package com.eleybourn.bookcatalogue.booklist.prefs;
 
 import android.content.SharedPreferences;
 
-import com.eleybourn.bookcatalogue.utils.Prefs;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.eleybourn.bookcatalogue.utils.Prefs;
+
 /**
- * A Boolean is stored as a Boolean
+ * A Boolean is stored as a Boolean.
  *
  * Used for {@link androidx.preference.SwitchPreference}
  */
-public class PBoolean extends PPrefBase<Boolean> {
+public class PBoolean
+        extends PPrefBase<Boolean> {
 
-    public PBoolean(@StringRes final int key) {
-        super(key, false);
+    public PBoolean(@StringRes final int key,
+                    @Nullable final String uuid) {
+        super(key, uuid, false);
     }
 
     public PBoolean(@StringRes final int key,
+                    @Nullable final String uuid,
                     @NonNull final Boolean defaultValue) {
-        super(key, defaultValue);
+        super(key, uuid, defaultValue);
     }
 
     @Override
-    public void set(@Nullable final String uuid, @Nullable final Boolean value) {
+    public void set(@Nullable final Boolean value) {
         if (uuid == null) {
             nonPersistedValue = value;
         } else if (value == null) {
@@ -36,7 +39,8 @@ public class PBoolean extends PPrefBase<Boolean> {
     }
 
     @Override
-    public void set(@NonNull final SharedPreferences.Editor ed, @NonNull final Boolean value) {
+    public void set(@NonNull final SharedPreferences.Editor ed,
+                    @NonNull final Boolean value) {
         if (value != null) {
             ed.putBoolean(getKey(), value);
         } else {
@@ -46,7 +50,7 @@ public class PBoolean extends PPrefBase<Boolean> {
 
     @NonNull
     @Override
-    public Boolean get(@Nullable final String uuid) {
+    public Boolean get() {
         if (uuid == null) {
             return nonPersistedValue != null ? nonPersistedValue : defaultValue;
         } else {
@@ -57,7 +61,7 @@ public class PBoolean extends PPrefBase<Boolean> {
     /**
      * syntax sugar...
      */
-    public boolean isTrue(@Nullable final String uuid) {
-        return get(uuid);
+    public boolean isTrue() {
+        return get();
     }
 }

@@ -8,6 +8,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -15,10 +19,6 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
 /**
  * Class to handle details of specific scanner interfaces and return a
@@ -28,17 +28,17 @@ import androidx.appcompat.app.AlertDialog;
  */
 public final class ScannerManager {
 
-    /** Unique IDs to associate with each supported scanner intent */
+    /** Unique IDs to associate with each supported scanner intent. */
     private static final int SCANNER_ZXING_COMPATIBLE = 0;
     private static final int SCANNER_PIC2SHOP = 1;
     private static final int SCANNER_ZXING = 2;
 
-    /** Collection of ScannerFactory objects */
+    /** Collection of ScannerFactory objects. */
     @SuppressLint("UseSparseArrays")
     private static final Map<Integer, ScannerFactory> myScannerFactories = new HashMap<>();
 
     /*
-     * Build the collection
+     * Build the collection.
      */
     static {
         // free and easy
@@ -95,7 +95,8 @@ public final class ScannerManager {
     @Nullable
     public static Scanner getScanner(@NonNull final Activity activity) {
         // Find out what the user prefers if any
-        int prefScanner = Prefs.getInt(R.string.pk_scanning_preferred_scanner, SCANNER_ZXING_COMPATIBLE);
+        int prefScanner = Prefs.getInt(R.string.pk_scanning_preferred_scanner,
+                                       SCANNER_ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
         ScannerFactory psf = myScannerFactories.get(prefScanner);
@@ -115,10 +116,10 @@ public final class ScannerManager {
     /**
      * We don't have a scanner setup or it was bad. Prompt the user for installing one.
      */
-    public static void promptForScannerInstallAndFinish(@NonNull final Activity activity, final boolean noScanner) {
-        int messageId = (noScanner ?
-                R.string.info_install_scanner
-                : R.string.warning_bad_scanner);
+    public static void promptForScannerInstallAndFinish(@NonNull final Activity activity,
+                                                        final boolean noScanner) {
+        int messageId = (noScanner ? R.string.info_install_scanner
+                                   : R.string.warning_bad_scanner);
 
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.title_install_scan)
@@ -127,26 +128,34 @@ public final class ScannerManager {
                 .create();
 
         // we use POS and NEG for scanner choice. If we ever support 3, redo this lazy hack.
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
+        dialog.setButton(
+                AlertDialog.BUTTON_POSITIVE,
                 /* text hardcoded as a it is a product name */
                 "ZXing",
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        installScanner(activity, "market://details?id=com.google.zxing.client.android");
+                    public void onClick(@NonNull final DialogInterface dialog,
+                                        final int which) {
+                        installScanner(activity,
+                                "market://details?id=com.google.zxing.client.android");
                     }
                 });
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
+        dialog.setButton(
+                AlertDialog.BUTTON_NEGATIVE,
                 /* text hardcoded as a it is a product name */
                 "pic2shop",
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        installScanner(activity, "market://details?id=com.visionsmarts.pic2shop");
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
+                        installScanner(activity,
+                                "market://details?id=com.visionsmarts.pic2shop");
                     }
                 });
 
-        dialog.setButton(AlertDialog.BUTTON_NEUTRAL, activity.getString(android.R.string.cancel),
+        dialog.setButton(
+                AlertDialog.BUTTON_NEUTRAL, activity.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
                         //do nothing
                         activity.setResult(Activity.RESULT_CANCELED);
                         activity.finish();
@@ -156,15 +165,15 @@ public final class ScannerManager {
         dialog.show();
     }
 
-    private static void installScanner(@NonNull final Activity activity, @NonNull final String uri) {
+    private static void installScanner(@NonNull final Activity activity,
+                                       @NonNull final String uri) {
         try {
             Intent marketIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(uri));
+                                             Uri.parse(uri));
             activity.startActivity(marketIntent);
             activity.setResult(Activity.RESULT_CANCELED);
             activity.finish();
         } catch (ActivityNotFoundException e) {
-            // Google Play (market) not installed
             StandardDialogs.showUserMessage(activity, R.string.error_google_play_missing);
             Logger.error(e);
         }
@@ -177,11 +186,11 @@ public final class ScannerManager {
      */
     private interface ScannerFactory {
 
-        /** Create a new scanner of the related type */
+        /** Create a new scanner of the related type. */
         @NonNull
         Scanner newInstance();
 
-        /** Check if this scanner is available */
+        /** Check if this scanner is available. */
         boolean isIntentAvailable(@NonNull final Context context);
     }
 

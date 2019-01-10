@@ -27,6 +27,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -36,24 +40,22 @@ import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
-
 /**
  * Activity to handle searching Goodreads for books that did not automatically convert.
  * These are typically books with no ISBN.
- *
+ * <p>
  * The search criteria is setup to contain the book author, title and ISBN.
  * The user can edit these, search Goodreads, and then review the results.
- *
+ * <p>
  * See {@link SendBookEvents} where the use of this activity is commented out.
  *
  * @author Philip Warner
  */
-public class GoodreadsSearchCriteriaActivity extends BaseActivity {
+public class GoodreadsSearchCriteriaActivity
+        extends BaseActivity {
 
     private CatalogueDBAdapter mDb;
-    private long mBookId = 0;
+    private long mBookId;
 
     private TextView mCriteriaView;
 
@@ -88,27 +90,26 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
             try (BookCursor cursor = mDb.fetchBookById(mBookId)) {
                 if (!cursor.moveToFirst()) {
-                    StandardDialogs.showUserMessage(this, R.string.warning_book_no_longer_exists);
+                    StandardDialogs.showUserMessage(this,
+                                                    R.string.warning_book_no_longer_exists);
                     setResult(Activity.RESULT_CANCELED);
                     finish();
                     return;
                 }
                 final BookRowView bookCursorRow = cursor.getCursorRow();
-                {
-                    String s = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();
-                    ((TextView) findViewById(R.id.author)).setText(s);
-                    criteria.append(s).append(' ');
-                }
-                {
-                    String s = bookCursorRow.getTitle();
-                    ((TextView) findViewById(R.id.title)).setText(s);
-                    criteria.append(s).append(' ');
-                }
-                {
-                    String s = bookCursorRow.getIsbn();
-                    ((TextView) findViewById(R.id.isbn)).setText(s);
-                    criteria.append(s).append(' ');
-                }
+                String s;
+
+                s = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();
+                ((TextView) findViewById(R.id.author)).setText(s);
+                criteria.append(s).append(' ');
+
+                s = bookCursorRow.getTitle();
+                ((TextView) findViewById(R.id.title)).setText(s);
+                criteria.append(s).append(' ');
+
+                s = bookCursorRow.getIsbn();
+                ((TextView) findViewById(R.id.isbn)).setText(s);
+                criteria.append(s).append(' ');
             }
 
             mCriteriaView.setText(criteria.toString().trim());
@@ -119,7 +120,7 @@ public class GoodreadsSearchCriteriaActivity extends BaseActivity {
 
         findViewById(R.id.search).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 doSearch();
             }
         });

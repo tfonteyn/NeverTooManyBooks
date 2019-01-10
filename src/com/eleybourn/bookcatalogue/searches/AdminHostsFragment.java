@@ -1,14 +1,15 @@
 package com.eleybourn.bookcatalogue.searches;
 
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -16,7 +17,8 @@ import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 
-public class AdminHostsFragment extends Fragment {
+public class AdminHostsFragment
+        extends Fragment {
 
     public static final String TAG = "AdminHostsFragment";
 

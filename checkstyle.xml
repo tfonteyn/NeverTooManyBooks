@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE module PUBLIC
+    "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+    "https://checkstyle.org/dtds/configuration_1_3.dtd"><!--
+    'should' match: https://source.android.com/setup/contribute/code-style
+    
+    copied from: https://gist.github.com/shareme/4197561 
+-->
+<module name="Checker">
+    <property name="severity" value="warning" />
+    <module name="TreeWalker">
+        <property name="tabWidth" value="4" />
+
+        <!--Annotations-->
+        <module name="AnnotationLocation" />
+        <!--<module name="AnnotationOnSameLine" />-->
+        <module name="AnnotationUseStyle" />
+        <module name="MissingDeprecated" />
+        <module name="MissingOverride" />
+        <module name="PackageAnnotation" />
+        <module name="SuppressWarnings" />
+        <!--<module name="SuppressWarningsHolder" />-->
+
+        <!--Block Checks-->
+        <module name="AvoidNestedBlocks" />
+        <module name="EmptyBlock" />
+        <module name="EmptyCatchBlock" />
+        <module name="LeftCurly" />
+        <module name="NeedBraces" />
+        <module name="RightCurly" />
+
+        <!--Class Design-->
+        <!--<module name="DesignForExtension" />-->
+        <module name="FinalClass" />
+        <module name="HideUtilityClassConstructor" />
+        <module name="InnerTypeLast" />
+        <module name="InterfaceIsType" />
+        <module name="MutableException" />
+        <module name="OneTopLevelClass" />
+        <module name="ThrowsCount">
+            <property name="max" value="6" />
+        </module>
+        <module name="VisibilityModifier" />
+
+        <!--Coding-->
+        <module name="ArrayTrailingComma" />
+        <module name="AvoidInlineConditionals" />
+        <module name="DefaultComesLast" />
+        <module name="EmptyStatement" />
+        <module name="EqualsAvoidNull" />
+        <module name="EqualsHashCode" />
+        <module name="ExplicitInitialization" />
+        <module name="FallThrough" />
+        <!--<module name="FinalLocalVariable" />-->
+        <module name="HiddenField" />
+        <module name="IllegalCatch" />
+        <module name="IllegalInstantiation" />
+        <module name="IllegalThrows" />
+        <module name="IllegalToken" />
+        <module name="IllegalType" />
+        <module name="InnerAssignment" />
+        <module name="MagicNumber" />
+        <!--<module name="MissingCtor" />-->
+        <module name="MissingSwitchDefault" />
+        <module name="ModifiedControlVariable" />
+        <module name="MultipleStringLiterals" />
+        <module name="MultipleVariableDeclarations" />
+        <module name="NoFinalizer" />
+        <module name="OneStatementPerLine" />
+        <module name="OverloadMethodsDeclarationOrder" />
+        <module name="ParameterAssignment" />
+        <module name="ReturnCount">
+            <property name="max" value="3" />
+            <property name="maxForVoid" value="5" />
+        </module>
+        <module name="SimplifyBooleanExpression" />
+        <module name="SimplifyBooleanReturn" />
+        <module name="StringLiteralEquality" />
+        <module name="SuperClone" />
+        <module name="SuperFinalize" />
+        <module name="UnnecessaryParentheses" />
+
+        <!--Headers-->
+
+        <!--Imports-->
+        <module name="AvoidStarImport" />
+        <module name="AvoidStaticImport" />
+        <module name="IllegalImport" />
+        <module name="RedundantImport" />
+        <module name="UnusedImports" />
+
+        <!-- Javadoc Comments -->
+        <module name="JavadocMethod">
+            <property name="validateThrows" value="true" />
+        </module>
+        <module name="JavadocType" />
+        <module name="JavadocStyle" />
+        <module name="JavadocVariable" />
+
+        <!--Metrics-->
+
+        <!--Miscellaneous-->
+        <module name="ArrayTypeStyle" />
+        <module name="CommentsIndentation" />
+        <module name="FinalParameters" />
+        <!-- Useful, but cannot use 'align' of parameters etc when enabled -->
+        <!--<module name="Indentation" />-->
+        <module name="TodoComment" />
+        <module name="TrailingComment" />
+        <module name="UpperEll" />
+
+        <!--Modifiers-->
+        <module name="ModifierOrder" />
+        <module name="RedundantModifier" />
+
+        <!-- Naming Conventions -->
+        <!--<module name="AbstractClassName" />-->
+        <!--<module name="CatchParameterName" />-->
+        <!--<module name="ClassTypeParameterName" />-->
+        <module name="ConstantName" />
+        <!--<module name="InterfaceTypeParameterName" />-->
+        <module name="LocalFinalVariableName" />
+        <module name="LocalVariableName" />
+        <module name="MemberName" />
+        <module name="MethodName" />
+        <module name="MethodTypeParameterName" />
+        <module name="PackageName" />
+        <module name="ParameterName" />
+        <module name="StaticVariableName" />
+        <module name="TypeName" />
+
+        <!--Regexp-->
+
+        <!--Size Violations-->
+        <module name="AnonInnerLength">
+            <property name="max" value="30" />
+        </module>
+        <module name="LineLength">
+            <property name="max" value="100" />
+        </module>
+        <module name="MethodCount" />
+        <module name="MethodLength" />
+        <module name="OuterTypeNumber" />
+        <module name="ParameterNumber" />
+
+        <!--Whitespace-->
+        <module name="EmptyForIteratorPad" />
+        <module name="GenericWhitespace" />
+        <module name="MethodParamPad" />
+        <module name="NoLineWrap" />
+        <module name="NoWhitespaceAfter" />
+        <module name="NoWhitespaceBefore" />
+        <module name="OperatorWrap" />
+        <module name="ParenPad" />
+        <module name="SeparatorWrap">
+            <property name="tokens" value="DOT"/>
+            <property name="option" value="nl"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="tokens" value="COMMA"/>
+            <property name="option" value="eol"/>
+        </module>
+        <module name="SingleSpaceSeparator" />
+        <module name="TypecastParenPad" />
+        <module name="WhitespaceAfter" />
+        <module name="WhitespaceAround" />
+
+
+    </module>
+
+    <!-- Checks that each Java package has a package-info.java file -->
+    <module name="JavadocPackage" />
+    <!-- Require files to end with newline characters -->
+    <module name="NewlineAtEndOfFile" />
+    <!-- Checks for long source files. (default 2000 lines) -->
+    <module name="FileLength" />
+    <!-- Checks that there are no tab characters -->
+    <module name="FileTabCharacter" />
+    <!-- A check for detecting single lines that match a supplied regular expression. -->
+    <module name="RegexpSingleline">
+        <property name="severity" value="ignore" />
+        <property name="format" value="\s+$" />
+        <property name="message" value="Line has trailing spaces." />
+    </module>
+</module>

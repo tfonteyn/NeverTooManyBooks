@@ -26,10 +26,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Checkable;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.datamanager.datavalidators.ValidatorException;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
@@ -41,30 +45,28 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
- * This class is called by {@link EditBookFragment} and displays the Notes Tab
+ * This class is called by {@link EditBookFragment} and displays the Notes Tab.
  */
 public class EditBookNotesFragment
-    extends BookBaseFragment
-    implements
-    CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Integer>,
-    PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
+        extends BookBaseFragment
+        implements
+        CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Integer>,
+        PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
 
     public static final String TAG = "EditBookNotesFragment";
 
     /**
-     * Field drop down lists
-     * Lists in database so far, we cache them for performance but only load them when really needed
+     * Field drop down lists.
+     * Lists in database so far, we cache them for performance but only load
+     * them when really needed.
      */
     private List<String> mLocations;
     private List<String> mPricePaidCurrencies;
 
     /* ------------------------------------------------------------------------------------------ */
+
+    @Override
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
@@ -76,6 +78,7 @@ public class EditBookNotesFragment
     //<editor-fold desc="Fragment startup">
 
     @Override
+    @NonNull
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -83,7 +86,8 @@ public class EditBookNotesFragment
     }
 
     /**
-     * has no specific Arguments or savedInstanceState as all is done via
+     * Has no specific Arguments or savedInstanceState.
+     * All storage interaction is done via:
      * {@link BookManager#getBook()} on the hosting Activity
      * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
      * {@link #onSaveFieldsToBook(Book)} from base class onPause
@@ -94,14 +98,8 @@ public class EditBookNotesFragment
         Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
-        try {
-            //noinspection ConstantConditions
-            ViewUtils.fixFocusSettings(getView());
-        } catch (RuntimeException e) {
-            // Log, but ignore. This is a non-critical feature that prevents crashes when the
-            // 'next' key is pressed and some views have been hidden.
-            Logger.error(e);
-        }
+        ViewUtils.fixFocusSettings(getView());
+
         Tracker.exitOnActivityCreated(this);
     }
 
@@ -112,14 +110,15 @@ public class EditBookNotesFragment
         // multiple use
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
         // ENHANCE: Add a partial date validator. Or not.
-        //FieldValidator blankOrDateValidator = new Fields.OrValidator(new Fields.BlankValidator(), new Fields.DateValidator());
+        //FieldValidator blankOrDateValidator = new Fields.OrValidator(
+        //     new Fields.BlankValidator(), new Fields.DateValidator());
 
         Field field;
 
         mFields.add(R.id.read, UniqueId.KEY_BOOK_READ)
                .getView().setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View v) {
+            public void onClick(@NonNull final View v) {
                 // when user sets 'read', also set the read-end date to today (unless set before)
                 Checkable cb = (Checkable) v;
                 if (cb.isChecked()) {
@@ -135,23 +134,25 @@ public class EditBookNotesFragment
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
 
         mFields.add(R.id.notes, UniqueId.KEY_BOOK_NOTES);
-        //ENHANCE?: initTextFieldEditor(R.id.notes, R.string.lbl_notes, R.id.btn_notes, true);
+        //ENHANCE: initTextFieldEditor(R.id.notes, R.string.lbl_notes, R.id.btn_notes, true);
 
         mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID);
         field = mFields.add(R.id.price_paid_currency, UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY);
-        initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency, getPricePaidCurrencyCodes());
+        initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency,
+                        getPricePaidCurrencyCodes());
 
         field = mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
         initValuePicker(field, R.string.lbl_location, R.id.btn_location, getLocations());
 
         field = mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
                        .setFormatter(new Fields.BookEditionsFormatter());
-        initCheckListEditor(TAG, field, R.string.lbl_edition, new CheckListEditorListGetter<Integer>() {
-            @Override
-            public ArrayList<CheckListItem<Integer>> getList() {
-                return getBookManager().getBook().getEditableEditionList();
-            }
-        });
+        initCheckListEditor(TAG, field, R.string.lbl_edition,
+                            new CheckListEditorListGetter<Integer>() {
+                                @Override
+                                public ArrayList<CheckListItem<Integer>> getList() {
+                                    return getBookManager().getBook().getEditableEditionList();
+                                }
+                            });
 
         field = mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
                        .setFormatter(dateFormatter);
@@ -170,7 +171,7 @@ public class EditBookNotesFragment
 
             public void validate(@NonNull final Fields fields,
                                  @NonNull final Bundle values)
-                throws ValidatorException {
+                    throws ValidatorException {
                 String start = values.getString(UniqueId.KEY_BOOK_READ_START);
                 if (start == null || start.isEmpty()) {
                     return;
@@ -180,7 +181,8 @@ public class EditBookNotesFragment
                     return;
                 }
                 if (start.compareToIgnoreCase(end) > 0) {
-                    throw new ValidatorException(R.string.vldt_read_start_after_end, new Object[]{});
+                    throw new ValidatorException(R.string.vldt_read_start_after_end,
+                                                 new Object[]{});
                 }
             }
         });
@@ -215,7 +217,7 @@ public class EditBookNotesFragment
     }
 
     /**
-     * Overriding to get extra debug
+     * Overriding to get extra debug.
      */
     @Override
     protected void onSaveFieldsToBook(@NonNull final Book book) {
@@ -238,13 +240,14 @@ public class EditBookNotesFragment
         if (destinationFieldId == R.id.edition) {
             ArrayList<Integer> result = new Book.EditionCheckListItem().extractList(list);
             getBookManager().getBook().putEditions(result);
-            mFields.getField(destinationFieldId).setValue(getBookManager().getBook().getString(UniqueId.KEY_BOOK_EDITION_BITMASK));
+            mFields.getField(destinationFieldId).setValue(
+                    getBookManager().getBook().getString(UniqueId.KEY_BOOK_EDITION_BITMASK));
         }
     }
 
     @Override
     public void onCheckListEditorCancel(@NonNull final CheckListEditorDialogFragment dialog,
-                                        final @IdRes int destinationFieldId) {
+                                        @IdRes final int destinationFieldId) {
         dialog.dismiss();
     }
 
@@ -295,6 +298,4 @@ public class EditBookNotesFragment
         return mPricePaidCurrencies;
     }
     //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 }

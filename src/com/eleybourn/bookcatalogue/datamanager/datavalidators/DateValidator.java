@@ -19,32 +19,42 @@
  */
 package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
+import java.util.Date;
 
 /**
- * Validator to apply a default value and validate as a Date
+ * Validator to apply a default value and validate as a Date.
  *
  * @author Philip Warner
  */
-public class DateValidator extends DefaultFieldValidator {
+public class DateValidator
+        extends DefaultFieldValidator {
 
     public DateValidator() {
         super();
     }
 
+    /**
+     * Constructor with default value.
+     *
+     * @param defaultValue Default to apply
+     */
     public DateValidator(@NonNull final String defaultValue) {
         super(defaultValue);
     }
 
     @Override
     @CallSuper
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data,
+                         @NonNull final Datum datum,
+                         final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
@@ -56,7 +66,7 @@ public class DateValidator extends DefaultFieldValidator {
 
         super.validate(data, datum, false);
 
-        java.util.Date d = DateUtils.parseDate(data.getString(datum));
+        Date d = DateUtils.parseDate(data.getString(datum));
         if (d != null) {
             data.putString(datum, DateUtils.utcSqlDateTime(d));
             return;

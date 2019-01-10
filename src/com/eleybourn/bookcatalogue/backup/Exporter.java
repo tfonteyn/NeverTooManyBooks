@@ -19,10 +19,10 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
-
-import androidx.annotation.NonNull;
 
 /**
  * Interface definition for an exporter.
@@ -54,12 +54,12 @@ public interface Exporter {
     interface ExportListener {
 
         /**
-         * @param max value (can be estimated) for the progress counter
+         * @param max value (can be estimated) for the progress counter.
          */
         void setMax(final int max);
 
         /**
-         * report progress in absolute position
+         * report progress in absolute position.
          */
         void onProgress(@NonNull final String message,
                         final int position);

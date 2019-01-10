@@ -3,13 +3,13 @@ package com.eleybourn.bookcatalogue.database.definitions;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Class to store domain name and definition.
@@ -18,19 +18,23 @@ import androidx.annotation.Nullable;
  *
  * @author Philip Warner
  */
-public class DomainDefinition implements Parcelable, Serializable {
+public class DomainDefinition
+        implements Parcelable, Serializable {
 
-    public static final Creator<DomainDefinition> CREATOR = new Creator<DomainDefinition>() {
-        @Override
-        public DomainDefinition createFromParcel(@NonNull final Parcel source) {
-            return new DomainDefinition(source);
-        }
+    /** {@link Parcelable}. */
+    public static final Creator<DomainDefinition> CREATOR =
+            new Creator<DomainDefinition>() {
+                @Override
+                public DomainDefinition createFromParcel(@NonNull final Parcel source) {
+                    return new DomainDefinition(source);
+                }
 
-        @Override
-        public DomainDefinition[] newArray(final int size) {
-            return new DomainDefinition[size];
-        }
-    };
+                @Override
+                public DomainDefinition[] newArray(final int size) {
+                    return new DomainDefinition[size];
+                }
+            };
+
     private static final long serialVersionUID = 3635761831854862723L;
     @NonNull
     public final String name;
@@ -55,8 +59,8 @@ public class DomainDefinition implements Parcelable, Serializable {
     /**
      * Simple column without constraints
      *
-     * @param name    column name
-     * @param type    column type (text, int, float, ...)
+     * @param name column name
+     * @param type column type (text, int, float, ...)
      */
     public DomainDefinition(@NonNull final String name,
                             @NonNull final String type) {
@@ -147,14 +151,17 @@ public class DomainDefinition implements Parcelable, Serializable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest,
+                              int flags) {
         dest.writeString(name);
         dest.writeString(type);
         dest.writeList(constraints);
     }
 
+    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
+
     public int describeContents() {
         return 0;
     }

@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.searches.googlebooks;
 
 import android.net.ParseException;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -23,9 +24,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-// ENHANCE: Get editions via: http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
-
+/**
+ * ENHANCE: Get editions via.
+ * http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
+ */
 public final class GoogleBooksManager {
+
     private static final String TAG = "GoogleBooks.";
 
     private static final String PREFS_HOST_URL = TAG + "hostUrl";
@@ -44,13 +48,12 @@ public final class GoogleBooksManager {
     }
 
     /**
-     *
      * @param isbn for book cover to find
      *
      * @return found/saved File, or null when none found (or any other failure)
      */
     @Nullable
-    static public File getCoverImage(@NonNull final String isbn) {
+    public static File getCoverImage(@NonNull final String isbn) {
         // sanity check
         if (!IsbnUtils.isValid(isbn)) {
             return null;
@@ -61,26 +64,26 @@ public final class GoogleBooksManager {
             // no specific API, just go search the book
             search(isbn, "", "", bookData, true);
 
-            ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+            ArrayList<String> imageList =
+                    bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
             if (imageList != null && !imageList.isEmpty()) {
                 File found = new File(imageList.get(0));
                 File coverFile = new File(found.getAbsolutePath() + '_' + isbn);
                 StorageUtils.renameFile(found, coverFile);
                 return coverFile;
-            } else {
-                return null;
             }
         } catch (IOException e) {
             Logger.error(e, "Error getting thumbnail from Google");
-            return null;
         }
+        return null;
     }
 
     public static void search(@NonNull final String isbn,
                               @NonNull final String author,
                               @NonNull final String title,
                               @NonNull final Bundle /* out */ book,
-                              final boolean fetchThumbnail) throws IOException {
+                              final boolean fetchThumbnail)
+            throws IOException {
 
         String urlText = getBaseURL() + "/books/feeds/volumes";
         if (!isbn.isEmpty()) {
@@ -95,13 +98,16 @@ public final class GoogleBooksManager {
                 return;
             }
             //replace spaces in author/title with %20
-            urlText += "?q=" + "intitle%3A" + title.replace(" ", "%20") + "%2Binauthor%3A" + author.replace(" ", "%20") + "";
+            urlText += "?q=" + "intitle%3A" + title.replace(" ", "%20")
+                    + "%2Binauthor%3A" + author.replace(" ", "%20");
         }
 
-        // Setup the parser; the handler can return multiple books. The entry handler takes care of them
+        // Setup the parser; the handler can return multiple books.
+        // The entry handler takes care of them
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SearchGoogleBooksHandler handler = new SearchGoogleBooksHandler();
-        SearchGoogleBooksEntryHandler entryHandler = new SearchGoogleBooksEntryHandler(book, fetchThumbnail);
+        SearchGoogleBooksEntryHandler entryHandler =
+                new SearchGoogleBooksEntryHandler(book, fetchThumbnail);
 
         try {
             URL url = new URL(urlText);
@@ -118,7 +124,7 @@ public final class GoogleBooksManager {
             }
 
             // only catch exceptions related to the parsing, others will be caught by the caller.
-        } catch (ParserConfigurationException | ParseException |SAXException e) {
+        } catch (ParserConfigurationException | ParseException | SAXException e) {
             Logger.error(e);
         }
     }

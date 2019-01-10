@@ -27,6 +27,9 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -36,34 +39,34 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import java.util.Date;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
- * Class to encapsulate the INFO block from an archive
+ * Class to encapsulate the INFO block from an archive.
  *
  * @author pjw
  */
-public class BackupInfo implements Parcelable {
+public class BackupInfo
+        implements Parcelable {
 
-    public static final Creator<BackupInfo> CREATOR = new Creator<BackupInfo>() {
-        @Override
-        public BackupInfo createFromParcel(@NonNull final Parcel source) {
-            return new BackupInfo(source);
-        }
+    /** {@link Parcelable}. */
+    public static final Creator<BackupInfo> CREATOR =
+            new Creator<BackupInfo>() {
+                @Override
+                public BackupInfo createFromParcel(@NonNull final Parcel source) {
+                    return new BackupInfo(source);
+                }
 
-        @Override
-        public BackupInfo[] newArray(int size) {
-            return new BackupInfo[size];
-        }
-    };
+                @Override
+                public BackupInfo[] newArray(final int size) {
+                    return new BackupInfo[size];
+                }
+            };
     /**
-     * version of archiver used to write this archive
+     * version of archiver used to write this archive.
      */
     private static final String INFO_ARCHIVER_VERSION = "ArchVersion";
     /**
-     * version of archiver needed to read this archive
-     *
+     * version of archiver needed to read this archive.
+     * <p>
      * Obsolete since v200: now always set to the same as the writer.
      * No support for reading new archives by older versions.
      * It would basically mean writing out 2 (or more) copies of the same data
@@ -91,7 +94,7 @@ public class BackupInfo implements Parcelable {
      */
     private static final String INFO_DATABASE_VERSION = "DatabaseVersionCode";
 
-    /** Bundle retrieved from the archive for this instance */
+    /** Bundle retrieved from the archive for this instance. */
     @NonNull
     private final Bundle mBundle;
 
@@ -111,6 +114,7 @@ public class BackupInfo implements Parcelable {
      * Static method to create an INFO block based on the current environment.
      *
      * @param container The container being used (we want the version)
+     * @param values    information to populate the info block
      *
      * @return a new BackupInfo object
      */
@@ -140,7 +144,7 @@ public class BackupInfo implements Parcelable {
             PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(), 0);
             infoBundle.putString(INFO_APPPACKAGE, appInfo.packageName);
             infoBundle.putString(INFO_APPVERSIONNAME, appInfo.versionName);
-            // versionCode deprecated and new method in API 28, till then ignore...
+            // versionCode deprecated and new method in API: 28, till then ignore...
             infoBundle.putInt(INFO_APPVERSIONCODE, appInfo.versionCode);
         } catch (PackageManager.NameNotFoundException ignore) {
         }
@@ -148,10 +152,13 @@ public class BackupInfo implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
         dest.writeBundle(mBundle);
     }
 
+    /** {@link Parcelable}. */
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
@@ -241,7 +248,7 @@ public class BackupInfo implements Parcelable {
     }
 
     /**
-     * Check if the archive has books (with or without an exact number)
+     * Check if the archive has books (with or without an exact number).
      *
      * @return <tt>true</tt> if books are present
      */
@@ -265,7 +272,7 @@ public class BackupInfo implements Parcelable {
     }
 
     /**
-     * Check if the archive has covers (with or without an exact number)
+     * Check if the archive has covers (with or without an exact number).
      *
      * @return <tt>true</tt> if covers are present
      */
@@ -298,15 +305,15 @@ public class BackupInfo implements Parcelable {
         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
             Logger.info(this, mBundle.toString());
         }
-        // extremely simple check: we assume that if one field is present, the rest will be there...
-        return (mBundle.containsKey(INFO_ARCHIVER_VERSION));
+        // extremely simple check: we assume that if one field is present, the rest will be there.
+        return mBundle.containsKey(INFO_ARCHIVER_VERSION);
     }
 
     /**
      * A set of variables to use when creating a new info block.
      * This is cleaner then adding new arguments to the actual {@link #newInstance} method.
      */
-    public static class InfoUserValues {
+    static class InfoUserValues {
 
         int bookCount;
         int coverCount;

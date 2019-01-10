@@ -22,13 +22,14 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -38,7 +39,9 @@ import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
 
-public class LegacyTask extends Task {
+public class LegacyTask
+        extends Task {
+
     private static final long serialVersionUID = 3596858518802582316L;
 
     private static final int TEXT_FIELD_1 = 1;
@@ -87,7 +90,8 @@ public class LegacyTask extends Task {
         ((TextView) view.findViewById(TEXT_FIELD_1))
                 .setText("Legacy Task Placeholder for Task #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
-                .setText("This task is obsolete and can not be recovered. It is probably advisable to delete it.");
+                .setText(
+                        "This task is obsolete and can not be recovered. It is probably advisable to delete it.");
     }
 
     public byte[] getOriginal() {
@@ -103,12 +107,14 @@ public class LegacyTask extends Task {
                                     @NonNull final List<ContextDialogItem> items,
                                     @NonNull final CatalogueDBAdapter db) {
 
-        items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task), new Runnable() {
-            @Override
-            public void run() {
-                QueueManager.getQueueManager().deleteTask(LegacyTask.this.getId());
-            }
-        }));
+        items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task),
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                QueueManager.getQueueManager().deleteTask(
+                                                        LegacyTask.this.getId());
+                                            }
+                                        }));
 
     }
 

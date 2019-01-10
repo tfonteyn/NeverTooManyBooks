@@ -2,6 +2,8 @@ package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -12,21 +14,21 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
-
 /**
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  */
-public abstract class SendBooksTask extends GoodreadsTask {
+public abstract class SendBooksTask
+        extends GoodreadsTask {
 
     private static final long serialVersionUID = -8519158637447641604L;
-    /** Number of books with no ISBN */
-    int mNoIsbn = 0;
-    /** Number of books that had ISBN but could not be found */
-    int mNotFound = 0;
-    /** Number of books successfully sent */
-    int mSent = 0;
+    private static final int FIVE_MINUTES = 300;
+    /** Number of books with no ISBN. */
+    int mNoIsbn;
+    /** Number of books that had ISBN but could not be found. */
+    int mNotFound;
+    /** Number of books successfully sent. */
+    int mSent;
 
     SendBooksTask(@NonNull final String description) {
         super(description);
@@ -44,7 +46,7 @@ public abstract class SendBooksTask extends GoodreadsTask {
 
         // ENHANCE: Work out a way of checking if GR site is up
         //if (!Utils.hostIsAvailable(context, "www.goodreads.com")) {
-        //	throw new IOException();
+        //  throw new IOException();
         //}
 
         if (Utils.isNetworkAvailable(context)) {
@@ -57,8 +59,8 @@ public abstract class SendBooksTask extends GoodreadsTask {
             }
         } else {
             // Only wait 5 minutes max on network errors.
-            if (getRetryDelay() > 300) {
-                setRetryDelay(300);
+            if (getRetryDelay() > FIVE_MINUTES) {
+                setRetryDelay(FIVE_MINUTES);
             }
             Logger.error("network not available");
         }
@@ -69,12 +71,12 @@ public abstract class SendBooksTask extends GoodreadsTask {
     /**
      * @return <tt>false</tt> to requeue, <tt>true</tt> for success
      */
-    abstract protected boolean send(@NonNull final QueueManager queueManager,
+    protected abstract boolean send(@NonNull final QueueManager queueManager,
                                     @NonNull final Context context,
                                     @NonNull final GoodreadsManager grManager);
 
     /**
-     * Try to export one book
+     * Try to export one book.
      *
      * @return <tt>false</tt> on failure, <tt>true</tt> on success
      */
@@ -97,35 +99,34 @@ public abstract class SendBooksTask extends GoodreadsTask {
 
         // Handle the result
         switch (disposition) {
-            case sent: {
+            case sent:
                 // Record the change
                 db.setGoodreadsSyncDate(bookCursorRow.getId());
                 mSent++;
                 break;
-            }
-            case noIsbn: {
+
+            case noIsbn:
                 storeEvent(new SendBookEvents.GrNoIsbnEvent(context, bookCursorRow.getId()));
                 mNoIsbn++;
                 break;
-            }
-            case notFound: {
+
+            case notFound:
                 storeEvent(new SendBookEvents.GrNoMatchEvent(context, bookCursorRow.getId()));
                 mNotFound++;
                 break;
-            }
-            case error: {
+
+            case error:
                 this.setException(exportException);
                 queueManager.updateTask(this);
                 return false;
-            }
-            case networkError: {
+
+            case networkError:
                 // Only wait 5 minutes on network errors.
-                if (getRetryDelay() > 300) {
-                    setRetryDelay(300);
+                if (getRetryDelay() > FIVE_MINUTES) {
+                    setRetryDelay(FIVE_MINUTES);
                 }
                 queueManager.updateTask(this);
                 return false;
-            }
         }
         return true;
     }

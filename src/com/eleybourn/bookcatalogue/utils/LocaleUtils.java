@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -14,74 +17,70 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Static class. There is only ONE Locale *active* at any given time.
  */
 public final class LocaleUtils {
 
-    /** The SharedPreferences name where we'll maintain our language to ISO3 mappings */
+    /** The SharedPreferences name where we'll maintain our language to ISO3 mappings. */
     private static final String LANGUAGE_MAP = "language2iso3";
 
-    /** The locale used at startup; so that we can revert to system locale if we want to */
+    /** The locale used at startup; so that we can revert to system locale if we want to. */
     private static final Locale mInitialLocale;
 
     /**
-     * A Map to translate currency symbols to their official ISO3 code
-     *
+     * A Map to translate currency symbols to their official ISO3 code.
+     * <p>
      * ENHANCE: surely this can be done more intelligently ?
      */
-    private static final Map<String,String> CURRENCY_MAP = new HashMap<>();
+    private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
+    /** Cache the User-specified locale currently in use. */
+    private static Locale mCurrentLocale;
+    /** Last/previous locale used; cached so we can check if it has genuinely changed. */
+    @NonNull
+    private static Locale mLastLocale;
+
     static {
         // key in map should always be lowercase
-        LocaleUtils.CURRENCY_MAP.put("","");
-        LocaleUtils.CURRENCY_MAP.put("€","EUR");
+        LocaleUtils.CURRENCY_MAP.put("", "");
+        LocaleUtils.CURRENCY_MAP.put("€", "EUR");
         /*
         English
         https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language
          */
-        LocaleUtils.CURRENCY_MAP.put("a$","AUD"); // Australian Dollar
-        LocaleUtils.CURRENCY_MAP.put("nz$","NZD"); // New Zealand Dollar
-        LocaleUtils.CURRENCY_MAP.put("£","GBP"); // British Pound
-        LocaleUtils.CURRENCY_MAP.put("$","USD"); // Trump Disney's
+        LocaleUtils.CURRENCY_MAP.put("a$", "AUD"); // Australian Dollar
+        LocaleUtils.CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
+        LocaleUtils.CURRENCY_MAP.put("£", "GBP"); // British Pound
+        LocaleUtils.CURRENCY_MAP.put("$", "USD"); // Trump Disney's
 
-        LocaleUtils.CURRENCY_MAP.put("c$","CAD"); // Canadian Dollar
-        LocaleUtils.CURRENCY_MAP.put("ir£","IEP"); // Irish Punt
-        LocaleUtils.CURRENCY_MAP.put("s$","SGD"); // Singapore dollar
+        LocaleUtils.CURRENCY_MAP.put("c$", "CAD"); // Canadian Dollar
+        LocaleUtils.CURRENCY_MAP.put("ir£", "IEP"); // Irish Punt
+        LocaleUtils.CURRENCY_MAP.put("s$", "SGD"); // Singapore dollar
 
         // supported locales (including pre-euro)
 
-        LocaleUtils.CURRENCY_MAP.put("br","RUB"); // Russian Rouble
-        LocaleUtils.CURRENCY_MAP.put("zł","PLN"); // Polish Zloty
-        LocaleUtils.CURRENCY_MAP.put("kč","CZK "); // Czech Koruna
-        LocaleUtils.CURRENCY_MAP.put("kc","CZK "); // Czech Koruna
-        LocaleUtils.CURRENCY_MAP.put("dm","DEM"); //german marks
-        LocaleUtils.CURRENCY_MAP.put("ƒ","NLG"); // Dutch Guilder
-        LocaleUtils.CURRENCY_MAP.put("fr","BEF"); // Belgian Franc
-        LocaleUtils.CURRENCY_MAP.put("fr.","BEF"); // Belgian Franc
-        LocaleUtils.CURRENCY_MAP.put("f","FRF"); // French Franc
-        LocaleUtils.CURRENCY_MAP.put("ff","FRF"); // French Franc
-        LocaleUtils.CURRENCY_MAP.put("pta","ESP"); // Spanish Peseta
-        LocaleUtils.CURRENCY_MAP.put("L","ITL"); // Italian Lira
-        LocaleUtils.CURRENCY_MAP.put("Δρ","GRD"); // Greek Drachma
-        LocaleUtils.CURRENCY_MAP.put("₺","TRY "); // Turkish Lira
+        LocaleUtils.CURRENCY_MAP.put("br", "RUB"); // Russian Rouble
+        LocaleUtils.CURRENCY_MAP.put("zł", "PLN"); // Polish Zloty
+        LocaleUtils.CURRENCY_MAP.put("kč", "CZK "); // Czech Koruna
+        LocaleUtils.CURRENCY_MAP.put("kc", "CZK "); // Czech Koruna
+        LocaleUtils.CURRENCY_MAP.put("dm", "DEM"); //german marks
+        LocaleUtils.CURRENCY_MAP.put("ƒ", "NLG"); // Dutch Guilder
+        LocaleUtils.CURRENCY_MAP.put("fr", "BEF"); // Belgian Franc
+        LocaleUtils.CURRENCY_MAP.put("fr.", "BEF"); // Belgian Franc
+        LocaleUtils.CURRENCY_MAP.put("f", "FRF"); // French Franc
+        LocaleUtils.CURRENCY_MAP.put("ff", "FRF"); // French Franc
+        LocaleUtils.CURRENCY_MAP.put("pta", "ESP"); // Spanish Peseta
+        LocaleUtils.CURRENCY_MAP.put("L", "ITL"); // Italian Lira
+        LocaleUtils.CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
+        LocaleUtils.CURRENCY_MAP.put("₺", "TRY "); // Turkish Lira
 
         // some others as seen on ISFDB site
-        LocaleUtils.CURRENCY_MAP.put("r$","BRL"); // Brazilian Real
-        LocaleUtils.CURRENCY_MAP.put("kr","DKK"); // Denmark Krone
-        LocaleUtils.CURRENCY_MAP.put("Ft","HUF"); // Hungarian Forint
+        LocaleUtils.CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
+        LocaleUtils.CURRENCY_MAP.put("kr", "DKK"); // Denmark Krone
+        LocaleUtils.CURRENCY_MAP.put("Ft", "HUF"); // Hungarian Forint
     }
 
-    /** Cache the User-specified locale currently in use */
-    private static Locale mCurrentLocale;
-
-    /** Last/previous locale used; cached so we can check if it has genuinely changed */
-    @NonNull
-    private static Locale mLastLocale;
-
-    /* static constructor */
+    /* static constructor. */
     static {
         // preserve startup==system Locale
         mInitialLocale = Locale.getDefault();
@@ -90,19 +89,19 @@ public final class LocaleUtils {
         mLastLocale = mCurrentLocale;
     }
 
+    private LocaleUtils() {
+    }
+
     /**
-     * Dummy method to make sure static initialization is done. Needs to be
-     * called from main thread (usually at app startup).
+     * Dummy method to make sure static initialization is done.
+     * Needs to be called from main thread (usually at app startup).
      */
     @SuppressWarnings("EmptyMethod")
     public static void init() {
     }
 
-    private LocaleUtils() {
-    }
-
     /**
-     * get the actual system Locale as it was when we started
+     * @return the actual system Locale as it was when we started
      */
     @NonNull
     public static Locale getSystemLocal() {
@@ -110,8 +109,7 @@ public final class LocaleUtils {
     }
 
     /**
-     * There seems to be something fishy in creating locales from full names (like en_AU),
-     * so we split it and process it manually.
+     * Creates a Locale from a concatenated locale string.
      *
      * @param name Locale name (eg. 'en_AU')
      *
@@ -162,7 +160,8 @@ public final class LocaleUtils {
     /**
      * translate the Language ISO3 code to the display name.
      *
-     * @return the display name for the language, or the input string if it was an invalid ISO3 code
+     * @return the display name for the language,
+     * or the input string if it was an invalid ISO3 code
      */
     @NonNull
     public static String getDisplayName(@NonNull final String iso) {
@@ -182,7 +181,7 @@ public final class LocaleUtils {
             mCurrentLocale = mInitialLocale;
         }
 
-        if ((!mCurrentLocale.equals(mLastLocale))) {
+        if (!mCurrentLocale.equals(mLastLocale)) {
             mLastLocale = mCurrentLocale;
             return true;
         }
@@ -190,20 +189,23 @@ public final class LocaleUtils {
     }
 
     /**
-     * Write a key-value pair to our mapping file (a separate SharedPreferences file)
+     * Write a key-value pair to our mapping file (a separate SharedPreferences file).
      *
      * @param displayName key
      * @param iso         value
      */
-    public static void cacheLanguage(final String displayName, final String iso) {
+    public static void cacheLanguage(final String displayName,
+                                     final String iso) {
         getLanguageCache().edit().putString(displayName, iso).apply();
         if (BuildConfig.DEBUG) {
-            Logger.info(LocaleUtils.class, "caching `" + displayName + "`=`" + iso + '`');
+            Logger.info(LocaleUtils.class,
+                        "caching `" + displayName + "`=`" + iso + '`');
         }
     }
 
     private static SharedPreferences getLanguageCache() {
-        return BookCatalogueApp.getAppContext().getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
+        return BookCatalogueApp.getAppContext()
+                               .getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
     /**
@@ -242,7 +244,7 @@ public final class LocaleUtils {
     }
 
     /**
-     * Generate language mappings (to a dedicated SharedPreferences) for a given locale
+     * Generate language mappings (to a dedicated SharedPreferences) for a given locale.
      */
     public static void createLanguageMappingCache(@NonNull final Locale myLocale) {
         SharedPreferences prefs = getLanguageCache();
@@ -260,8 +262,7 @@ public final class LocaleUtils {
         editor.apply();
     }
 
-    public static String currencyToISO(@NonNull String datum) {
-        datum = datum.trim().toLowerCase();
-        return CURRENCY_MAP.get(datum);
+    public static String currencyToISO(@NonNull final String datum) {
+        return CURRENCY_MAP.get(datum.trim().toLowerCase());
     }
 }

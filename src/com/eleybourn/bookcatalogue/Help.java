@@ -27,14 +27,15 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 
 /**
  * This is the Help page.
@@ -42,7 +43,7 @@ import androidx.annotation.Nullable;
  * @author Evan Leybourn
  */
 public class Help
-    extends BaseActivity {
+        extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
@@ -59,12 +60,13 @@ public class Help
         TextView view;
 
         view = findViewById(R.id.help_page);
-        view.setText(Utils.linkifyHtml(getString(R.string.url_help, getString(R.string.about_help_click_here))));
+        view.setText(Utils.linkifyHtml(
+                getString(R.string.url_help, getString(R.string.about_help_click_here))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         findViewById(R.id.send_info).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 DebugReport.sendDebugInfo(Help.this);
             }
         });
@@ -88,7 +90,7 @@ public class Help
 
         cleanupBtn.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 StorageUtils.purgeFiles(true);
                 initCleanupButton();
             }
@@ -101,7 +103,8 @@ public class Help
         } else {
             cleanupBtn.setVisibility(View.VISIBLE);
             cleanupTxt.setVisibility(View.VISIBLE);
-            cleanupTxt.setText(getString(R.string.info_cleanup_files_text, Utils.formatFileSize(space)));
+            cleanupTxt.setText(
+                    getString(R.string.info_cleanup_files_text, Utils.formatFileSize(space)));
         }
     }
 }

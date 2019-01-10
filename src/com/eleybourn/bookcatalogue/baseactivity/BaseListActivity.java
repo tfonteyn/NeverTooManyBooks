@@ -13,18 +13,18 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 
 import java.util.Objects;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
- * This has now become a copy from {@link ListActivity} but extending {@link BaseActivity}
+ * This has now become a copy from {@link ListActivity} but extending {@link BaseActivity}.
  *
  * You must have a layout with the file name
  * res/layout/list_activity.xml
@@ -68,7 +68,9 @@ import androidx.annotation.Nullable;
  * </LinearLayout>
  * </pre>
  */
-public abstract class BaseListActivity extends BaseActivity implements
+public abstract class BaseListActivity
+        extends BaseActivity
+        implements
         AdapterView.OnItemClickListener,
         SelectOneDialog.hasListViewContextMenu {
 
@@ -81,7 +83,7 @@ public abstract class BaseListActivity extends BaseActivity implements
             mListView.focusableViewAvailable(mListView);
         }
     };
-    private boolean mFinishedStart = false;
+    private boolean mFinishedStart;
 
     @Override
     protected int getLayoutId() {
@@ -110,8 +112,7 @@ public abstract class BaseListActivity extends BaseActivity implements
     }
 
     /**
-     * Updates the screen state (current list and other views) when the
-     * content changes.
+     * Updates the screen state (current list and other views) when the content changes.
      *
      * @see Activity#onContentChanged()
      */
@@ -120,7 +121,9 @@ public abstract class BaseListActivity extends BaseActivity implements
     public void onContentChanged() {
         super.onContentChanged();
         mListView = findViewById(android.R.id.list);
-        Objects.requireNonNull(mListView, "Layout must have a ListView whose id attribute is '@android:id/list'");
+        Objects.requireNonNull(mListView,
+                               "Layout must have a ListView whose id" +
+                                       " attribute is '@android:id/list'");
 
         View emptyView = findViewById(android.R.id.empty);
         if (emptyView != null) {
@@ -136,7 +139,7 @@ public abstract class BaseListActivity extends BaseActivity implements
     }
 
     /**
-     * Listen for clicks on items in our list
+     * Listen for clicks on items in our list.
      *
      * {@link #onContentChanged} enables 'this' as the listener for our ListView
      *
@@ -147,11 +150,14 @@ public abstract class BaseListActivity extends BaseActivity implements
      * @param id       The row id of the item that was clicked.
      */
     @Override
-    public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+    public void onItemClick(final AdapterView<?> parent,
+                            final View view,
+                            final int position,
+                            final long id) {
     }
 
     /**
-     * Set the currently selected list item to the specified position with the adapter's data
+     * Set the currently selected list item to the specified position with the adapter's data.
      */
     @SuppressWarnings("unused")
     public void setSelection(final int position) {
@@ -200,7 +206,7 @@ public abstract class BaseListActivity extends BaseActivity implements
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
      */
     @Override
     public void initListViewContextMenuListener(@NonNull final Context context) {
@@ -208,7 +214,9 @@ public abstract class BaseListActivity extends BaseActivity implements
 
 //        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 //            @Override
-//            public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+//            public boolean onItemLongClick(@NonNull final AdapterView<?> parent,
+//                                           @NonNull final View view,
+//                                           final int position, final long id) {
 //
 //                // SET THE MENU TITLE
 //                String menuTitle = mList.get(position).getTitle();
@@ -216,10 +224,12 @@ public abstract class BaseListActivity extends BaseActivity implements
 //                // legal trick to get an instance of Menu.
 //                mListViewContextMenu = new PopupMenu(context, null).getMenu();
 //                // custom menuInfo
-//                SelectOneDialog.SimpleDialogMenuInfo menuInfo = new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
+//                SelectOneDialog.SimpleDialogMenuInfo menuInfo =
+//                    new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
 //
 //                // POPULATE THE MENU
-//                mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete_something)
+//                mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0,
+//                                         R.string.menu_delete_something)
 //                        .setIcon(R.drawable.ic_delete);
 //
 //                // display
@@ -230,7 +240,7 @@ public abstract class BaseListActivity extends BaseActivity implements
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
      *
      * Replaces: {@link #onCreateContextMenu(ContextMenu, View, ContextMenu.ContextMenuInfo)}
      */
@@ -239,16 +249,20 @@ public abstract class BaseListActivity extends BaseActivity implements
                                                   @NonNull final View view,
                                                   @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
         if (menu.size() > 0) {
-            SelectOneDialog.showContextMenuDialog(getLayoutInflater(), menuInfo, menu,
+            SelectOneDialog.showContextMenuDialog(
+                    getLayoutInflater(), menuInfo, menu,
                     new SelectOneDialog.SimpleDialogOnClickListener() {
                         @Override
                         public void onClick(@NonNull final SelectOneDialog.SimpleDialogItem item) {
                             MenuItem menuItem = ((SelectOneDialog.SimpleDialogMenuItem) item).getMenuItem();
                             if (menuItem.hasSubMenu()) {
                                 menuInfo.title = menuItem.getTitle().toString();
-                                onCreateListViewContextMenu(menuItem.getSubMenu(), view, menuInfo);
+                                onCreateListViewContextMenu(
+                                        menuItem.getSubMenu(), view,
+                                        menuInfo);
                             } else {
-                                onListViewContextItemSelected(menuItem, menuInfo);
+                                onListViewContextItemSelected(
+                                        menuItem, menuInfo);
                             }
                         }
                     });
@@ -256,7 +270,7 @@ public abstract class BaseListActivity extends BaseActivity implements
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
      */
     @SuppressWarnings("UnusedReturnValue")
     @Override

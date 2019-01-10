@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.searches;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.searches.amazon.SearchAmazonTask;
@@ -19,7 +20,7 @@ import java.util.List;
 
 /**
  * Split of from {@link SearchManager} to avoid the static init of "SearchManager#TaskSwitch"
- *
+ * <p>
  * Static class; Holds various lists with {@link Site} 's for use by the {@link SearchManager}
  */
 public final class SearchSites {
@@ -129,20 +130,24 @@ public final class SearchSites {
     }
 
     /**
-     * NEWKIND: search web site configuration
+     * NEWKIND: search web site configuration.
      */
-    public static class Site implements Parcelable {
-        public static final Creator<Site> CREATOR = new Creator<Site>() {
-            @Override
-            public Site createFromParcel(@NonNull final Parcel source) {
-                return new Site(source);
-            }
+    public static class Site
+            implements Parcelable {
 
-            @Override
-            public Site[] newArray(final int size) {
-                return new Site[size];
-            }
-        };
+        /** {@link Parcelable}. */
+        public static final Creator<Site> CREATOR =
+                new Creator<Site>() {
+                    @Override
+                    public Site createFromParcel(@NonNull final Parcel source) {
+                        return new Site(source);
+                    }
+
+                    @Override
+                    public Site[] newArray(final int size) {
+                        return new Site[size];
+                    }
+                };
         /** search source to use */
         public static final int SEARCH_GOOGLE = 1;
         /** search source to use */
@@ -154,7 +159,8 @@ public final class SearchSites {
         /** search source to use */
         public static final int SEARCH_ISFDB = 1 << 4;
         /** Mask including all search sources */
-        public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON | SEARCH_LIBRARY_THING | SEARCH_GOODREADS | SEARCH_ISFDB;
+        public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON
+                | SEARCH_LIBRARY_THING | SEARCH_GOODREADS | SEARCH_ISFDB;
 
         /** Internal id, bitmask based, not stored in prefs */
         public final int id;
@@ -175,7 +181,9 @@ public final class SearchSites {
          * @param priority the search priority order
          */
         @SuppressWarnings("SameParameterValue")
-        Site(final int id, @NonNull final String name, final int priority) {
+        Site(final int id,
+             @NonNull final String name,
+             final int priority) {
             this.id = id;
             this.name = name;
             this.priority = priority;
@@ -195,7 +203,10 @@ public final class SearchSites {
          * @param reliability the search reliability order
          */
         @SuppressWarnings("SameParameterValue")
-        Site(final int id, @NonNull final String name, final int priority, final int reliability) {
+        Site(final int id,
+             @NonNull final String name,
+             final int priority,
+             final int reliability) {
             this.id = id;
             this.name = name;
             this.priority = priority;
@@ -217,10 +228,11 @@ public final class SearchSites {
         }
 
         /**
-         * Reminder: this is IPC.. so don't save prefs!
+         * Reminder: this is IPC.. so don't save prefs.
          */
         @Override
-        public void writeToParcel(@NonNull final Parcel dest, final int flags) {
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
             dest.writeInt(id);
             dest.writeString(name);
             dest.writeByte((byte) (enabled ? 1 : 0));
@@ -243,13 +255,15 @@ public final class SearchSites {
             editor.putInt(TAG + '.' + name + ".reliability", reliability);
         }
 
+        /** {@link Parcelable}. */
+        @SuppressWarnings("SameReturnValue")
         @Override
         public int describeContents() {
             return 0;
         }
 
         /**
-         * NEWKIND: search web site configuration
+         * NEWKIND: search web site configuration.
          */
         ManagedSearchTask getTask(@NonNull final TaskManager manager) {
             switch (id) {

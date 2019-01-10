@@ -32,6 +32,10 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.EditBookFragment;
@@ -53,16 +57,12 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-
 /**
  * Class to define all book-related events that may be stored in the QueueManager.
  *
  * @author Philip Warner
  */
-class SendBookEvents {
+final class SendBookEvents {
 
     private SendBookEvents() {
     }
@@ -72,31 +72,32 @@ class SendBookEvents {
      *
      * @author Philip Warner
      */
-    private static class GrSendBookEvent extends Event {
-
-        private static final long serialVersionUID = 8056090158313083738L;
-
-        final long mBookId;
+    private static class GrSendBookEvent
+            extends Event {
 
         /**
-         * Method to retry sending a book to goodreads.
+         * Retry sending a book to goodreads.
          */
         @Nullable
         static final OnClickListener mRetryButtonListener = new OnClickListener() {
             @Override
-            public void onClick(@NonNull View v) {
+            public void onClick(@NonNull final View v) {
                 BookEventHolder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_BOOK_EVENT_HOLDER);
                 holder.event.retry();
             }
         };
+        private static final long serialVersionUID = 8056090158313083738L;
+        private final long mBookId;
 
         /**
-         * Constructor
+         * Constructor.
          *
          * @param bookId    ID of related book.
          * @param messageId Description of this event.
          */
-        GrSendBookEvent(@NonNull final Context context, final long bookId, @StringRes final int messageId) {
+        GrSendBookEvent(@NonNull final Context context,
+                        final long bookId,
+                        @StringRes final int messageId) {
             super(context.getResources().getString(messageId));
             mBookId = bookId;
         }
@@ -161,8 +162,8 @@ class SendBookEvents {
                              @NonNull final CatalogueDBAdapter db) {
             final EventsCursor eventsCursor = (EventsCursor) cursor;
 
-            // Update event info binding; the Views in the holder are unchanged, but when it is reused
-            // the Event and ID will change.
+            // Update event info binding; the Views in the holder are unchanged,
+            // but when it is reused the Event and ID will change.
             BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
             holder.event = this;
             holder.rowId = eventsCursor.getId();
@@ -184,11 +185,12 @@ class SendBookEvents {
             }
 
             holder.title.setText(title);
-            holder.author.setText(String.format(context.getString(R.string.lbl_by_authors), author));
+            holder.author.setText(
+                    String.format(context.getString(R.string.lbl_by_authors), author));
             holder.error.setText(this.getDescription());
 
             String date = String.format(context.getString(R.string.gr_tq_occurred_at),
-                    DateUtils.toPrettyDateTime(eventsCursor.getEventDate()));
+                                        DateUtils.toPrettyDateTime(eventsCursor.getEventDate()));
             holder.date.setText(date);
 
             holder.retry.setVisibility(View.GONE);
@@ -196,8 +198,10 @@ class SendBookEvents {
             holder.button.setChecked(eventsCursor.getIsSelected());
             holder.button.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 @Override
-                public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
-                    BookEventHolder holder = ViewTagger.getTagOrThrow(buttonView, R.id.TAG_BOOK_EVENT_HOLDER);
+                public void onCheckedChanged(@NonNull final CompoundButton buttonView,
+                                             final boolean isChecked) {
+                    BookEventHolder holder = ViewTagger.getTagOrThrow(buttonView,
+                                                                      R.id.TAG_BOOK_EVENT_HOLDER);
                     eventsCursor.setIsSelected(holder.rowId, isChecked);
                 }
             });
@@ -221,7 +225,8 @@ class SendBookEvents {
         }
 
         /**
-         * Add ContextDialogItems relevant for the specific book the selected View is associated with.
+         * Add ContextDialogItems relevant for the specific book the selected View is
+         * associated with.
          * Subclass can override this and add items at end/start or just replace these completely.
          */
         @Override
@@ -234,57 +239,77 @@ class SendBookEvents {
                                         @NonNull final CatalogueDBAdapter db) {
 
             // EDIT BOOK
-            items.add(new ContextDialogItem(context.getString(R.string.menu_edit_book), new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        GrSendBookEvent event = ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
-                        Intent intent = new Intent(context, EditBookActivity.class);
-                        intent.putExtra(UniqueId.KEY_ID, event.getBookId());
-                        intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
-                        context.startActivity(intent);
-                    } catch (RuntimeException ignore) {
-                        // not a book event?
-                    }
-                }
-            }));
+            items.add(new ContextDialogItem(
+                    context.getString(R.string.menu_edit_book),
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                GrSendBookEvent event =
+                                        ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
+                                Intent intent = new Intent(context, EditBookActivity.class);
+                                intent.putExtra(UniqueId.KEY_ID, event.getBookId());
+                                intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB,
+                                                EditBookFragment.TAB_EDIT);
+                                context.startActivity(intent);
+                            } catch (RuntimeException ignore) {
+                                // not a book event?
+                            }
+                        }
+                    }));
 
-            // ENHANCE Reinstate goodreads search when goodreads work.editions API is available
-            //// SEARCH GOODREADS
-//            items.add(new ContextDialogItem(context.getString(R.string.gr_search_goodreads), new Runnable() {
-//            	@Override
-//            	public void run() {
-//            		BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
-//            		Intent intent = new Intent(context, GoodreadsSearchCriteriaActivity.class);
-//            		intent.putExtra(GoodreadsSearchCriteriaActivity.REQUEST_BKEY_BOOK_ID, holder.event.getBookId());
-//            		context.startActivity(intent);
-//            	}}));
+            // ENHANCE: Reinstate goodreads search when goodreads work.editions API is available
+//            // SEARCH GOODREADS
+//            items.add(new ContextDialogItem(
+//                    context.getString(R.string.gr_search_goodreads),
+//                    new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            BookEventHolder holder =
+//                                    ViewTagger.getTagOrThrow(view,
+//                                                             R.id.TAG_BOOK_EVENT_HOLDER);
+//                            Intent intent = new Intent(context,
+//                                                       GoodreadsSearchCriteriaActivity.class);
+//                            intent.putExtra(
+//                                    GoodreadsSearchCriteriaActivity.REQUEST_BKEY_BOOK_ID,
+//                                    holder.event.getBookId());
+//                            context.startActivity(intent);
+//                        }
+//                    }));
 
             // DELETE EVENT
-            items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event), new Runnable() {
-                @Override
-                public void run() {
-                    QueueManager.getQueueManager().deleteEvent(id);
-                }
-            }));
+            items.add(
+                    new ContextDialogItem(
+                            context.getString(R.string.gr_tq_menu_delete_event),
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    QueueManager.getQueueManager().deleteEvent(id);
+                                }
+                            }));
 
             // RETRY EVENT
             try (BookCursor bookCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
                 final BookRowView bookCursorRow = bookCursor.getCursorRow();
                 if (bookCursor.moveToFirst()) {
                     if (!bookCursorRow.getIsbn().isEmpty()) {
-                        items.add(new ContextDialogItem(context.getString(R.string.retry), new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    GrSendBookEvent event = ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
-                                    event.retry();
-                                    QueueManager.getQueueManager().deleteEvent(id);
-                                } catch (RuntimeException ignore) {
-                                    // not a book event?
-                                }
-                            }
-                        }));
+                        items.add(
+                                new ContextDialogItem(
+                                        context.getString(R.string.retry),
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    GrSendBookEvent event =
+                                                            ViewTagger.getTagOrThrow(
+                                                                    view, R.id.TAG_EVENT);
+                                                    event.retry();
+                                                    QueueManager.getQueueManager().deleteEvent(id);
+                                                } catch (RuntimeException ignore) {
+                                                    // not a book event?
+                                                }
+                                            }
+                                        }));
                     }
                 }
             }
@@ -292,8 +317,6 @@ class SendBookEvents {
 
         /**
          * Class to implement the 'holder' model for view we create.
-         *
-         * @author Philip Warner
          */
         static class BookEventHolder {
 
@@ -310,15 +333,16 @@ class SendBookEvents {
     }
 
     /**
-     * Exception indicating the book's ISBN could not be found at Goodreads
-     *
-     * @author Philip Warner
+     * Exception indicating the book's ISBN could not be found at Goodreads.
      */
-    public static class GrNoMatchEvent extends GrSendBookEvent implements HintOwner {
+    public static class GrNoMatchEvent
+            extends GrSendBookEvent
+            implements HintOwner {
 
         private static final long serialVersionUID = -7684121345325648066L;
 
-        GrNoMatchEvent(@NonNull final Context context, final long bookId) {
+        GrNoMatchEvent(@NonNull final Context context,
+                       final long bookId) {
             super(context, bookId, R.string.warning_no_matching_book_found);
         }
 
@@ -330,15 +354,16 @@ class SendBookEvents {
     }
 
     /**
-     * Exception indicating the book's ISBN was blank
-     *
-     * @author Philip Warner
+     * Exception indicating the book's ISBN was blank.
      */
-    public static class GrNoIsbnEvent extends GrSendBookEvent implements HintOwner {
+    public static class GrNoIsbnEvent
+            extends GrSendBookEvent
+            implements HintOwner {
 
         private static final long serialVersionUID = 7260496259505914311L;
 
-        GrNoIsbnEvent(@NonNull final Context context, final long bookId) {
+        GrNoIsbnEvent(@NonNull final Context context,
+                      final long bookId) {
             super(context, bookId, R.string.warning_no_isbn_stored_for_book);
         }
 

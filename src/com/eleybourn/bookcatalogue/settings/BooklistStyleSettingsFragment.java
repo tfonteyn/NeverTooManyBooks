@@ -6,6 +6,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceScreen;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -17,25 +22,24 @@ import com.eleybourn.bookcatalogue.dialogs.HintManager;
 
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceScreen;
-
+/**
+ * Settings editor for a Style.
+ */
 public class BooklistStyleSettingsFragment
-    extends BaseSettingsFragment
-    implements
-    SharedPreferences.OnSharedPreferenceChangeListener {
+        extends BaseSettingsFragment
+        implements
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
-    /** Parameter used to pass data to this activity */
+    /** Parameter used to pass data to this activity. */
     public static final String REQUEST_BKEY_STYLE = "Style";
+    /** Request code for calling the Activity to edit the Groups of the style. */
     private static final int REQ_EDIT_GROUPS = 0;
-    /** Style we are editing */
+    /** Style we are editing. */
     private BooklistStyle mStyle;
 
     @Override
-    public void onCreatePreferences(final Bundle savedInstanceState,
-                                    final String rootKey) {
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
 
         mStyle = getArguments().getParcelable(REQUEST_BKEY_STYLE);
         Objects.requireNonNull(mStyle);
@@ -43,14 +47,16 @@ public class BooklistStyleSettingsFragment
             Logger.info(this, "after de-parceling\n" + mStyle);
         }
 
-        getPreferenceManager().setSharedPreferencesName(mStyle.uuid);
+        getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
 
         setPreferencesFromResource(R.xml.preferences_book_style, rootKey);
         PreferenceScreen screen = getPreferenceScreen();
 
-        // this is weird... the docs show how to use a SimpleSummaryProvider, but the class is not present (for now?)
+        // this is weird... the docs show how to use a SimpleSummaryProvider,
+        // but the class is not present (for now?)
         // so we do it manually in our base class.
-//        EditTextPreference np = (EditTextPreference) screen.findPreference(BookCatalogueApp.getResourceString(R.string.name));
+//        EditTextPreference np = (EditTextPreference) screen
+//              .findPreference(BookCatalogueApp.getResourceString(R.string.name));
 //        np.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
         // add the preferences from all groups:
@@ -59,12 +65,12 @@ public class BooklistStyleSettingsFragment
         }
 
         // Set the title (not the screen title)
-        if (mStyle.id == 0) {
+        if (mStyle.getId() == 0) {
             getActivity().setTitle(
-                getString(R.string.title_clone_style_colon_name, mStyle.getDisplayName()));
+                    getString(R.string.title_clone_style_colon_name, mStyle.getDisplayName()));
         } else {
             getActivity().setTitle(
-                getString(R.string.title_edit_style_colon_name, mStyle.getDisplayName()));
+                    getString(R.string.title_edit_style_colon_name, mStyle.getDisplayName()));
         }
         // Display hint if required
         if (savedInstanceState == null) {
@@ -79,10 +85,10 @@ public class BooklistStyleSettingsFragment
 
         // set the default response
         Intent data = new Intent();
-        data.putExtra(UniqueId.KEY_ID, mStyle.id);
+        data.putExtra(UniqueId.KEY_ID, mStyle.getId());
         data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
-        requireActivity().setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity,
-                                    data);  /* fadd7b9a-7eaf-4af9-90ce-6ffb7b93afe6 */
+        requireActivity()
+                .setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity, data);
     }
 
     /**
@@ -96,21 +102,21 @@ public class BooklistStyleSettingsFragment
     }
 
     /**
-     * Update the summary with the group name(s)
-     *
+     * Update the summary with the group name(s).
+     * <p>
      * Adds an onClick to edit the groups for this style.
      * The groups are a PreferenceScreen of their own, here 'faked' with a new activity.
      */
     private void setupBooklistGroups() {
         Preference preference = findPreference(
-            BookCatalogueApp.getResourceString(R.string.pg_groupings));
+                BookCatalogueApp.getResourceString(R.string.pg_groupings));
         if (preference != null) {
             preference.setSummary(mStyle.getGroupListDisplayNames());
 
             preference.getIntent().putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
             preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
-                public boolean onPreferenceClick(Preference preference) {
+                public boolean onPreferenceClick(@NonNull final Preference preference) {
                     startActivityForResult(preference.getIntent(), REQ_EDIT_GROUPS);
                     return true;
                 }

@@ -48,6 +48,14 @@ import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler.BooklistChangeListener;
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
@@ -81,62 +89,68 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
  *
  * @author Philip Warner
  */
 public class BooksOnBookshelf
-    extends BaseListActivity
-    implements
-    BooklistChangeListener,
-    SharedPreferences.OnSharedPreferenceChangeListener {
+        extends BaseListActivity
+        implements
+        BooklistChangeListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
-     * Preference name - the bookshelf to load next time we startup
+     * Preference name - the bookshelf to load next time we startup.
      * Storing the name and not the id. If you export/import... the id will be different.
      */
-    public final static String PREF_BOB_CURRENT_BOOKSHELF = "BooksOnBookshelf.CurrentBookshelf";
+    public static final String PREF_BOB_CURRENT_BOOKSHELF = "BooksOnBookshelf.CurrentBookshelf";
     /**
-     * Preference name - the style to use specific to a bookshelf
+     * Preference name - the style to use specific to a bookshelf.
      * Storing the name and not the id. If you export/import... the id will be different.
      */
-    public final static String PREF_BOB_CURRENT_BOOKSHELF_STYLE = "BooksOnBookshelf.ListStyle." /* + name of shelf */;
-    /** Preference name - Saved position of last top row */
-    public final static String PREF_BOB_TOP_ROW = "BooksOnBookshelf.TopRow";
-    /** Preference name - Saved position of last top row offset from view top */
-    public final static String PREF_BOB_TOP_ROW_OFFSET = "BooksOnBookshelf.TopRowOffset";
+    public static final String PREF_BOB_CURRENT_BOOKSHELF_STYLE =
+            "BooksOnBookshelf.ListStyle." /* + name of shelf */;
+    /** Preference name - Saved position of last top row. */
+    public static final String PREF_BOB_TOP_ROW = "BooksOnBookshelf.TopRow";
+    /** Preference name - Saved position of last top row offset from view top. */
+    public static final String PREF_BOB_TOP_ROW_OFFSET = "BooksOnBookshelf.TopRowOffset";
     static final int REQ_BOOK_EDIT = 1;
     static final int REQ_BOOK_SEARCH = 2;
     private static final int REQ_BOOK_VIEW = 0;
     private static final int REQ_ADVANCED_LOCAL_SEARCH = 10;
-    /** Task queue to get book lists in background */
+    /** Task queue to get book lists in background. */
     private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("BoB-GetBookListTask", 1);
 
-    /** Options indicating activity has been destroyed. Used for background tasks */
-    private boolean mIsDead = false;
-    /** Options to indicate that a list has been successfully loaded -- affects the way we save state */
-    private boolean mListHasBeenLoaded = false;
+    /**
+     * Options indicating activity has been destroyed.
+     * Used for background tasks.
+     */
+    private boolean mIsDead;
+    /**
+     * Options to indicate that a list has been successfully loaded.
+     * Affects the way we save state
+     */
+    private boolean mListHasBeenLoaded;
 
-    /** ProgressDialog used to display "Getting books...". Needed here so we can dismiss it on close. */
+    /**
+     * ProgressDialog used to display "Getting books...".
+     * Needed here so we can dismiss it on close.
+     */
     @Nullable
-    private ProgressDialog mListDialog = null;
+    private ProgressDialog mListDialog;
 
-    /** A book ID used for keeping/updating current list position, eg. when a book is viewed/edited. */
-    private long mCurrentPositionedBookId = 0;
-    /** Currently selected list style */
-    private BooklistStyle mCurrentStyle = null;
-    /** Currently selected bookshelf */
+    /**
+     * A book ID used for keeping/updating current list position,
+     * eg. when a book is viewed/edited.
+     */
+    private long mCurrentPositionedBookId;
+    /** Currently selected list style. */
+    private BooklistStyle mCurrentStyle;
+    /** Currently selected bookshelf. */
     private Bookshelf mCurrentBookshelf;
 
-    /** Text to use in search query */
+    /** Text to use in search query. */
     @Nullable
     private String mSearchText = "";
     @Nullable
@@ -146,35 +160,35 @@ public class BooksOnBookshelf
 
     /** List of bookId's to display. The result of a search. EXPERIMENTAL */
     @Nullable
-    private List<Integer> mSearchBookIdList = null;
+    private List<Integer> mSearchBookIdList;
 
     /** Used by onScroll to detect when the top row has actually changed. */
     private int mLastTop = -1;
-    /** Saved position of last top row */
-    private int mTopRow = 0;
+    /** Saved position of last top row. */
+    private int mTopRow;
     /**
-     * Saved position of last top row offset from view top
-     *
+     * Saved position of last top row offset from view top.
+     * <p>
      * {@link ListView#setSelectionFromTop(int position, int y)} :
      * * @param y The distance from the top edge of the ListView (plus padding) that the
      * *        item will be positioned.
      */
-    private int mTopRowOffset = 0;
+    private int mTopRowOffset;
 
-    /** Database connection */
+    /** Database connection. */
     private CatalogueDBAdapter mDb;
-    /** Handler to manage all Views on the list */
+    /** Handler to manage all Views on the list. */
     private BooksMultiTypeListHandler mListHandler;
-    /** Current displayed list cursor */
+    /** Current displayed list cursor. */
     private BooklistPseudoCursor mListCursor;
-    /** Multi-type adapter to manage list connection to cursor */
+    /** Multi-type adapter to manage list connection to cursor. */
     private MultiTypeListCursorAdapter mAdapter;
-    /** Preferred booklist state in next rebuild */
+    /** Preferred booklist state in next rebuild. */
     private int mRebuildState;
-    /** Total number of books in current list */
-    private int mTotalBooks = 0;
-    /** Total number of unique books in current list */
-    private int mUniqueBooks = 0;
+    /** Total number of books in current list. */
+    private int mTotalBooks;
+    /** Total number of unique books in current list. */
+    private int mUniqueBooks;
 
     private Spinner mBookshelfSpinner;
     private ArrayAdapter<String> mBookshelfAdapter;
@@ -234,8 +248,8 @@ public class BooksOnBookshelf
 //            FloatingActionButton floatingAddButton = findViewById(R.id.floatingAddButton);
 //            floatingAddButton.setOnClickListener(new View.OnClickListener() {
 //                @Override
-//                public void onClick(View view) {
-//                    Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+//                public void onClick(@NonNull final View v) {
+//                    Snackbar.make(v, "Here's a Snackbar", Snackbar.LENGTH_LONG)
 //                            .setAction("Action", null).show();
 //                }
 //            });
@@ -261,17 +275,17 @@ public class BooksOnBookshelf
     }
 
     /**
-     * get the preferred bookshelf
+     * get the preferred bookshelf.
      */
     private Bookshelf getPreferredBookshelf() {
-        String bookshelf_name = Prefs.getString(PREF_BOB_CURRENT_BOOKSHELF, null);
+        String bookshelfName = Prefs.getString(PREF_BOB_CURRENT_BOOKSHELF, null);
         Bookshelf bookshelf;
-        if (bookshelf_name == null || bookshelf_name.isEmpty()) {
+        if (bookshelfName == null || bookshelfName.isEmpty()) {
             // pref not set, start with initial shelf
             bookshelf = new Bookshelf(Bookshelf.DEFAULT_ID, getString(R.string.initial_bookshelf));
         } else {
             // try to get the id of the preferred shelf
-            bookshelf = mDb.getBookshelfByName(bookshelf_name);
+            bookshelf = mDb.getBookshelfByName(bookshelfName);
             if (bookshelf == null) {
                 // shelf must have been deleted, switch to 'all book'
                 bookshelf = new Bookshelf(Bookshelf.ALL_BOOKS, getString(R.string.all_books));
@@ -311,15 +325,15 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Save position when paused
+     * Save position when paused.
      */
     @Override
     @CallSuper
     public void onPause() {
         Tracker.enterOnPause(this);
         if ((mSearchText == null || mSearchText.isEmpty())
-            && (mAuthorSearchText == null || mAuthorSearchText.isEmpty())
-            && (mTitleSearchText == null || mTitleSearchText.isEmpty())) {
+                && (mAuthorSearchText == null || mAuthorSearchText.isEmpty())
+                && (mTitleSearchText == null || mTitleSearchText.isEmpty())) {
             savePosition();
         }
 
@@ -343,17 +357,9 @@ public class BooksOnBookshelf
         mIsDead = true;
         mTaskQueue.terminate();
 
-        try {
-            if (mListCursor != null) {
-                try {
-                    mListCursor.getBuilder().close();
-                } catch (RuntimeException e) {
-                    Logger.error(e);
-                }
-                mListCursor.close();
-            }
-        } catch (RuntimeException e) {
-            Logger.error(e);
+        if (mListCursor != null) {
+            mListCursor.getBuilder().close();
+            mListCursor.close();
         }
 
         if (mDb != null) {
@@ -367,7 +373,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * * {@link BaseListActivity} enables 'this' as the listener for our ListView
+     * * {@link BaseListActivity} enables 'this' as the listener for our ListView.
      */
     @Override
     public void onItemClick(final AdapterView<?> parent,
@@ -412,7 +418,7 @@ public class BooksOnBookshelf
                 // ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542
                 if (mListCursor.getCursorRow().getLevel() == 1) {
                     mListCursor.getBuilder().toggleExpandNode(
-                        mListCursor.getCursorRow().getAbsolutePosition());
+                            mListCursor.getCursorRow().getAbsolutePosition());
                     mListCursor.requery();
                     mAdapter.notifyDataSetChanged();
                 }
@@ -421,8 +427,8 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
-     *
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
+     * <p>
      * Called by {@link BaseListActivity#onCreate}
      */
     @Override
@@ -441,7 +447,7 @@ public class BooksOnBookshelf
                 mListViewContextMenu = new PopupMenu(context, null).getMenu();
                 // custom menuInfo
                 SelectOneDialog.SimpleDialogMenuInfo menuInfo =
-                    new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
+                        new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, position);
                 // populate the menu
                 mListHandler.prepareListViewContextMenu(mListViewContextMenu,
                                                         mListCursor.getCursorRow());
@@ -453,7 +459,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
      */
     @Override
     public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
@@ -494,8 +500,7 @@ public class BooksOnBookshelf
 
 
     /**
-     * This will be called when a menu item is selected. A large switch
-     * statement to call the appropriate functions (or other activities)
+     * This will be called when a menu item is selected.
      *
      * @param item The item selected
      *
@@ -509,11 +514,11 @@ public class BooksOnBookshelf
             case R.id.MENU_SORT:
                 HintManager.displayHint(this.getLayoutInflater(),
                                         R.string.hint_booklist_style_menu, new Runnable() {
-                        @Override
-                        public void run() {
-                            doSortMenu(false);
-                        }
-                    });
+                            @Override
+                            public void run() {
+                                doSortMenu(false);
+                            }
+                        });
                 return true;
 
             case R.id.MENU_EXPAND: {
@@ -538,9 +543,11 @@ public class BooksOnBookshelf
                 }
                 return true;
             }
-        }
 
-        return MenuHandler.handleBookSubMenu(this, item) || super.onOptionsItemSelected(item);
+            default:
+                return MenuHandler.handleBookSubMenu(this, item) || super.onOptionsItemSelected(
+                        item);
+        }
     }
 
     /**
@@ -574,7 +581,14 @@ public class BooksOnBookshelf
                         initBookList(false);
                         break;
                     }
+
+                    default:
+                        if (resultCode != Activity.RESULT_CANCELED) {
+                            Logger.debug("unknown resultCode=" + resultCode);
+                        }
+                        break;
                 }
+                break;
             }
             case REQ_BOOK_SEARCH: {
                 if (resultCode == Activity.RESULT_OK) {
@@ -597,7 +611,7 @@ public class BooksOnBookshelf
                     Objects.requireNonNull(data);
                     mSearchText = initSearchField(data.getStringExtra(UniqueId.BKEY_SEARCH_TEXT));
                     mAuthorSearchText = initSearchField(
-                        data.getStringExtra(UniqueId.BKEY_SEARCH_AUTHOR));
+                            data.getStringExtra(UniqueId.BKEY_SEARCH_AUTHOR));
                     mTitleSearchText = initSearchField(data.getStringExtra(UniqueId.KEY_TITLE));
                     mSearchBookIdList = data.getIntegerArrayListExtra(UniqueId.BKEY_BOOK_ID_LIST);
                     initBookList(true);
@@ -631,11 +645,12 @@ public class BooksOnBookshelf
                                 populateBookShelfSpinner();
                             }
                         } else if ((options & ImportSettings.BOOK_LIST_STYLES) != 0) {
-                            // did not import preferences, but did import styles (is that actually possible right now ?)
+                            // did not import preferences, but did import styles
+                            // (is that actually possible right now ?)
                             refreshCurrentStyle();
                         }
                     } else if ((data != null) && data.hasExtra(
-                        UniqueId.BKEY_EXPORT_RESULT_OPTIONS)) {
+                            UniqueId.BKEY_EXPORT_RESULT_OPTIONS)) {
                         // BackupAndRestoreActivity: {/* da0cd4d6-baca-46ad-a010-4d91263a9c5f */
                         int options = data.getIntExtra(UniqueId.BKEY_EXPORT_RESULT_OPTIONS,
                                                        ExportSettings.NOTHING);
@@ -647,23 +662,25 @@ public class BooksOnBookshelf
 //                        // SearchAdminActivity: /* 293bcc32-6af7-4beb-a4e0-4db2f239cf9f */
 //                    }
                 }
+                break;
             }
 
-            // from BaseActivity Nav Panel or from sort menu dialog TODO: more complicated then it should be....
+            // from BaseActivity Nav Panel or from sort menu dialog
+            // TODO: more complicated then it should be....
             case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES: {
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING:
-                    case UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity: {
+                    case UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity:
                         // no data
                         refreshCurrentStyle();
                         savePosition();
                         initBookList(true);
                         break;
-                    }
-                    case UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity: {
+
+                    case UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity:
                         Objects.requireNonNull(data);
                         BooklistStyle style = data.getParcelableExtra(
-                            BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE);
+                                BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE);
                         // can be null if a style was deleted.
                         if (style != null) {
                             mCurrentStyle = style;
@@ -673,7 +690,12 @@ public class BooksOnBookshelf
                         savePosition();
                         initBookList(true);
                         break;
-                    }
+
+                    default:
+                        if (resultCode != Activity.RESULT_CANCELED) {
+                            Logger.debug("unknown resultCode=" + resultCode);
+                        }
+                        break;
                 }
                 break;
             }
@@ -686,7 +708,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Display the passed cursor in the ListView
+     * Display the passed cursor in the ListView.
      *
      * @param newList    New cursor to use
      * @param targetRows if set, change the position to targetRow.
@@ -731,14 +753,11 @@ public class BooksOnBookshelf
 
         // Restore saved position
         final int count = mListCursor.getCount();
-        try {
-            if (mTopRow >= count) {
-                mTopRow = count - 1;
-                listView.setSelection(mTopRow);
-            } else {
-                listView.setSelectionFromTop(mTopRow, mTopRowOffset);
-            }
-        } catch (RuntimeException ignored) {
+        if (mTopRow >= count) {
+            mTopRow = count - 1;
+            listView.setSelection(mTopRow);
+        } else {
+            listView.setSelectionFromTop(mTopRow, mTopRowOffset);
         }
 
         // If a target position array is set, then queue a runnable to set the position
@@ -765,40 +784,40 @@ public class BooksOnBookshelf
         }
 
         // Update the header details
-        if (count > 0 && (showHeaderFlags &
-            (BooklistStyle.SUMMARY_SHOW_LEVEL_1 ^ BooklistStyle.SUMMARY_SHOW_LEVEL_2)) != 0) {
+        if (count > 0 && (showHeaderFlags
+                & (BooklistStyle.SUMMARY_SHOW_LEVEL_1 ^ BooklistStyle.SUMMARY_SHOW_LEVEL_2)) != 0) {
             updateListHeader(holder, mTopRow, hasLevel1, hasLevel2, showHeaderFlags);
         }
 
         // Define a scroller to update header detail when top row changes
         listView.setOnScrollListener(
-            new OnScrollListener() {
-                @Override
-                public void onScroll(@NonNull final AbsListView view,
-                                     final int firstVisibleItem,
-                                     final int visibleItemCount,
-                                     final int totalItemCount) {
-                    // TODO: Investigate why BooklistPseudoCursor causes a scroll even when it is closed!
-                    // Need to check isDead because BooklistPseudoCursor misbehaves when activity
-                    // terminates and closes cursor
-                    if (mLastTop != firstVisibleItem && !mIsDead && (showHeaderFlags != 0)) {
-                        Holder holder = ViewTagger.getTagOrThrow(view);
-                        updateListHeader(holder, firstVisibleItem, hasLevel1, hasLevel2,
-                                         showHeaderFlags);
+                new OnScrollListener() {
+                    @Override
+                    public void onScroll(@NonNull final AbsListView view,
+                                         final int firstVisibleItem,
+                                         final int visibleItemCount,
+                                         final int totalItemCount) {
+                        // TODO: why causes BooklistPseudoCursor a scroll even when it is closed!
+                        // Need to check isDead because BooklistPseudoCursor misbehaves when
+                        // activity terminates and closes cursor
+                        if (mLastTop != firstVisibleItem && !mIsDead && (showHeaderFlags != 0)) {
+                            Holder holder = ViewTagger.getTagOrThrow(view);
+                            updateListHeader(holder, firstVisibleItem, hasLevel1, hasLevel2,
+                                             showHeaderFlags);
+                        }
+                    }
+
+                    @Override
+                    public void onScrollStateChanged(@NonNull final AbsListView view,
+                                                     final int scrollState) {
                     }
                 }
-
-                @Override
-                public void onScrollStateChanged(final AbsListView view,
-                                                 final int scrollState) {
-                }
-            }
         );
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             //TODO: move this to the bookshelf spinner ? more space in there
-            actionBar.setSubtitle(mCurrentStyle == null ? "" : mCurrentStyle.getDisplayName());
+            actionBar.setSubtitle(mCurrentStyle != null ? mCurrentStyle.getDisplayName() : "");
         }
 
         // Close old list
@@ -818,14 +837,13 @@ public class BooksOnBookshelf
         if ((showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
             if (mUniqueBooks != mTotalBooks) {
                 bookCounts.setText(getString(R.string.brackets,
-                                             this.getString(
-                                                 R.string.displaying_n_books_in_m_entries,
-                                                 mUniqueBooks, mTotalBooks)));
+                                             getString(R.string.displaying_n_books_in_m_entries,
+                                                       mUniqueBooks, mTotalBooks)));
             } else {
                 bookCounts.setText(getString(R.string.brackets,
-                                             this.getResources().getQuantityString(
-                                                 R.plurals.displaying_n_books, mUniqueBooks,
-                                                 mUniqueBooks)));
+                                             getResources().getQuantityString(
+                                                     R.plurals.displaying_n_books,
+                                                     mUniqueBooks, mUniqueBooks)));
             }
             bookCounts.setVisibility(View.VISIBLE);
         } else {
@@ -836,7 +854,7 @@ public class BooksOnBookshelf
     /**
      * Queue a runnable to set the position once we know how many items appear in a typical
      * view and we can tell if it is already in the view.
-     *
+     * <p>
      * called from {@link #displayList}
      */
     private void fixPositionWhenDrawn(@NonNull final ListView lv,
@@ -881,10 +899,12 @@ public class BooksOnBookshelf
                     // - edit a book near bottom of list
                     // - turn phone to landscape
                     // - save the book (don't cancel)
-                    // Book will be off bottom of screen without the smoothScroll in the second Runnable.
+                    // Book will be off bottom of screen without the smoothScroll in the
+                    // second Runnable.
                     //
                     lv.setSelectionFromTop(best.listPosition, 0);
-                    // Code below does not behave as expected. Results in items often being near bottom.
+                    // Code below does not behave as expected.
+                    // Results in items often being near bottom.
                     //lv.setSelectionFromTop(best.listPosition, lv.getHeight() / 2);
 
                     // Without this call some positioning may be off by one row (see above).
@@ -913,19 +933,18 @@ public class BooksOnBookshelf
      * @param topItem   Top row
      * @param hasLevel1 flag indicating level 1 is present
      * @param hasLevel2 flag indicating level 2 is present
+     * @param flags     bitmask with flags from {@link BooklistStyle#SUMMARY_SHOW_ALL}
      */
     private void updateListHeader(@NonNull final Holder holder,
-                                  int topItem,
+                                  @IntRange(from = 0)
+                                  final int topItem,
                                   final boolean hasLevel1,
                                   final boolean hasLevel2,
                                   final int flags) {
-        if (topItem < 0) {
-            topItem = 0;
-        }
 
-        mLastTop = topItem;
+        mLastTop = topItem >= 0 ? topItem : 0;
         if (hasLevel1 && (flags & BooklistStyle.SUMMARY_SHOW_LEVEL_1) != 0) {
-            if (mListCursor.moveToPosition(topItem)) {
+            if (mListCursor.moveToPosition(mLastTop)) {
                 String text = mListCursor.getCursorRow().getLevel1Data();
                 holder.level1Text.setText(text);
                 if (hasLevel2 && (flags & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0) {
@@ -938,9 +957,9 @@ public class BooksOnBookshelf
 
     /**
      * Save current position information, including view nodes that are expanded.
-     *
+     * <p>
      * ENHANCE: Handle positions a little better when books are deleted.
-     *
+     * <p>
      * Deleting a book by 'n' authors from the last author in list results in the list decreasing
      * in length by, potentially, n*2 items. The current code will return to the old position
      * in the list after such an operation...which will be too far down.
@@ -982,8 +1001,8 @@ public class BooksOnBookshelf
         } else {
             searchTextView.setVisibility(View.VISIBLE);
             searchTextView.setText(
-                getString(R.string.name_colon_value, getString(R.string.search_with_text),
-                          searchText));
+                    getString(R.string.name_colon_value, getString(R.string.search_with_text),
+                              searchText));
         }
 
         return searchText;
@@ -995,7 +1014,7 @@ public class BooksOnBookshelf
         HintManager.displayHint(this.getLayoutInflater(),
                                 R.string.hint_book_list, null);
         if (StartupActivity.getShowAmazonHint()
-            && HintManager.shouldBeShown(R.string.hint_amazon_links_blurb)) {
+                && HintManager.shouldBeShown(R.string.hint_amazon_links_blurb)) {
             HintManager.displayHint(this.getLayoutInflater(),
                                     R.string.hint_amazon_links_blurb, null,
                                     getString(R.string.menu_amazon_books_by_author),
@@ -1007,7 +1026,7 @@ public class BooksOnBookshelf
 
     /**
      * Setup the bookshelf spinner.
-     *
+     * <p>
      * The spinner listener will set the style associated with the newly selected Bookshelf
      * and call {@link #initBookList}.
      */
@@ -1033,11 +1052,11 @@ public class BooksOnBookshelf
                     return;
                 }
 
-                String new_bookshelf = mBookshelfAdapter.getItem(position);
-                if (new_bookshelf != null && !new_bookshelf.equalsIgnoreCase(
-                    mCurrentBookshelf.name)) {
+                String bookshelf = mBookshelfAdapter.getItem(position);
+                if (bookshelf != null && !bookshelf.equalsIgnoreCase(
+                        mCurrentBookshelf.name)) {
                     // make the new shelf the current, and get it's preferred style
-                    mCurrentBookshelf = mDb.getBookshelfByName(new_bookshelf);
+                    mCurrentBookshelf = mDb.getBookshelfByName(bookshelf);
                     if (mCurrentBookshelf == null) {
                         // shelf must have been deleted, switch to 'all book'
                         mCurrentBookshelf = new Bookshelf(Bookshelf.ALL_BOOKS,
@@ -1059,7 +1078,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Populate the BookShelf list in the Spinner and switch to the preferred bookshelf/style
+     * Populate the BookShelf list in the Spinner and switch to the preferred bookshelf/style.
      */
     private void populateBookShelfSpinner() {
         mBookshelfAdapter.clear();
@@ -1107,8 +1126,9 @@ public class BooksOnBookshelf
     }
 
     /**
-     * FIXME: check  {@link BooklistChangeListener} flags and try avoid full rebuild? but the 'false' rebuild is broken anyhow.
-     *
+     * FIXME: check  {@link BooklistChangeListener} flags and try avoid full rebuild?
+     * but the 'false' rebuild is broken anyhow.
+     * <p>
      * Called if global changes were made that (potentially) affect the whole list.
      *
      * @param extraFieldsInUse a bitmask with the Extra fields being used (visible) in the current
@@ -1117,7 +1137,7 @@ public class BooksOnBookshelf
      */
     @Override
     public void onBooklistChange(final int extraFieldsInUse,
-                                 int fieldsChanged) {
+                                 final int fieldsChanged) {
         //Something changed. Just regenerate the list.
         if (fieldsChanged != 0) {
             savePosition();
@@ -1154,7 +1174,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * get the dedicated style for our bookshelf
+     * get the dedicated style for our bookshelf.
      *
      * @param bookshelf for which we want the style
      * @param styles    all styles
@@ -1199,13 +1219,13 @@ public class BooksOnBookshelf
      */
     private void doSortMenu(final boolean showAll) {
         LayoutInflater inf = this.getLayoutInflater();
-        @SuppressLint("InflateParams") // root==null as it's a dialog
-            View dialogView = inf.inflate(R.layout.booklist_style_menu, null);
+        @SuppressLint("InflateParams")
+        View dialogView = inf.inflate(R.layout.booklist_style_menu, null);
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setTitle(R.string.title_select_style)
-            .create();
+                .setView(dialogView)
+                .setTitle(R.string.title_select_style)
+                .create();
         dialog.show();
 
         // first section is a list of the styles
@@ -1217,17 +1237,18 @@ public class BooksOnBookshelf
 
         // second section are options to do 'more things then listed'
         ViewGroup menu = dialogView.findViewById(R.id.menu);
-        int moreOrLess = showAll ? R.string.menu_show_fewer_ellipsis : R.string.menu_show_more_ellipsis;
+        int moreOrLess = showAll ? R.string.menu_show_fewer_ellipsis
+                                 : R.string.menu_show_more_ellipsis;
         addStyleTextMenuItem(menu, inf, moreOrLess, new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 dialog.dismiss();
                 doSortMenu(!showAll);
             }
         });
         addStyleTextMenuItem(menu, inf, R.string.menu_customize_ellipsis, new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 dialog.dismiss();
                 Intent intent = new Intent(BooksOnBookshelf.this,
                                            PreferredStylesActivity.class);
@@ -1252,7 +1273,7 @@ public class BooksOnBookshelf
 
         btn.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 onStyleSelected(style.getId());
                 dialog.dismiss();
             }
@@ -1260,14 +1281,14 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Add a text box to the sort options dialogue.
+     * Add a text box to the sort options dialog.
      */
     private void addStyleTextMenuItem(@NonNull final ViewGroup parent,
                                       @NonNull final LayoutInflater inf,
                                       @StringRes final int stringId,
                                       @NonNull final OnClickListener listener) {
-        @SuppressLint("InflateParams") // root==null as it's a dialog
-            TextView textView = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);
+        @SuppressLint("InflateParams")
+        TextView textView = (TextView) inf.inflate(R.layout.booklist_style_menu_text, null);
 
         Typeface tf = textView.getTypeface();
         textView.setTypeface(tf, Typeface.ITALIC);
@@ -1304,7 +1325,8 @@ public class BooksOnBookshelf
             ListView lv = getListView();
             mTopRow = lv.getFirstVisiblePosition();
             View v = lv.getChildAt(0);
-            mTopRowOffset = v == null ? 0 : v.getTop();
+            mTopRowOffset = (v == null) ? 0
+                                        : v.getTop();
         } catch (RuntimeException ignored) {
         }
 
@@ -1345,7 +1367,7 @@ public class BooksOnBookshelf
      * Queue a rebuild of the underlying cursor and data.
      *
      * @param isFullRebuild Indicates whole table structure needs rebuild,
-     *                     versus just do a reselect of underlying data
+     *                      versus just do a reselect of underlying data
      */
     private void initBookList(final boolean isFullRebuild) {
 
@@ -1370,20 +1392,20 @@ public class BooksOnBookshelf
                                               getString(R.string.progress_msg_getting_books),
                                               true,
                                               true, new OnCancelListener() {
-                    @Override
-                    public void onCancel(@NonNull DialogInterface dialog) {
-                        // Cancelling the list cancels the activity.
-                        BooksOnBookshelf.this.finish();
-                        dialog.dismiss();
-                        mListDialog = null;
-                    }
-                });
+                        @Override
+                        public void onCancel(@NonNull final DialogInterface dialog) {
+                            // Cancelling the list cancels the activity.
+                            BooksOnBookshelf.this.finish();
+                            dialog.dismiss();
+                            mListDialog = null;
+                        }
+                    });
         }
     }
 
     @Override
-    public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences,
-                                          final String key) {
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
+                                          @NonNull final String key) {
         // this will likely not happen while we're actively listening.
         if (PREF_BOB_CURRENT_BOOKSHELF.equals(key)) {
             Bookshelf newBookshelf = getPreferredBookshelf();
@@ -1401,23 +1423,27 @@ public class BooksOnBookshelf
      * @author Philip Warner
      */
     private class GetBookListTask
-        implements SimpleTaskQueue.SimpleTask {
+            implements SimpleTaskQueue.SimpleTask {
 
-        /** Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data */
+        /**
+         * Indicates whole table structure needs rebuild,
+         * versus just do a reselect of underlying data.
+         */
         private final boolean isFullRebuild;
-        /** the builder */
+        /** the builder. */
         @NonNull
         private final BooklistBuilder bookListBuilder;
-        /** Resulting Cursor */
-        private BooklistPseudoCursor tempList = null;
-        /** used to determine new cursor position */
+        /** Resulting Cursor. */
+        private BooklistPseudoCursor tempList;
+        /** used to determine new cursor position. */
         @Nullable
-        private ArrayList<BookRowInfo> targetRows = null;
+        private ArrayList<BookRowInfo> targetRows;
 
         /**
          * Constructor.
          *
-         * @param isFullRebuild Indicates whole table structure needs rebuild, vs. just do a reselect of underlying data
+         * @param isFullRebuild Indicates whole table structure needs rebuild,
+         *                      versus just do a reselect of underlying data
          */
         GetBookListTask(final boolean isFullRebuild,
                         final long currentBookshelfId,
@@ -1431,7 +1457,8 @@ public class BooksOnBookshelf
             }
             this.isFullRebuild = isFullRebuild;
 
-            // If not a full rebuild then just use the current builder to re-query the underlying data
+            // If not a full rebuild then just use the current builder to re-query
+            // the underlying data
             //noinspection ConstantConditions
             if (mListCursor != null && !this.isFullRebuild) {
                 bookListBuilder = mListCursor.getBuilder();
@@ -1489,28 +1516,29 @@ public class BooksOnBookshelf
                             for (BookRowInfo rowInfo : targetRows) {
                                 if (!rowInfo.visible) {
                                     bookListBuilder.ensureAbsolutePositionVisible(
-                                        rowInfo.absolutePosition);
+                                            rowInfo.absolutePosition);
                                 }
                             }
                             // Recalculate all positions
                             for (BookRowInfo rowInfo : targetRows) {
                                 rowInfo.listPosition = bookListBuilder.getPosition(
-                                    rowInfo.absolutePosition);
+                                        rowInfo.absolutePosition);
                             }
                         }
-//						// Find the nearest row to the recorded 'top' row.
-//						int targetRow = bookRows[0];
-//						int minDist = Math.abs(mTopRow - b.getPosition(targetRow));
-//						for(int i=1; i < bookRows.length; i++) {
-//							int pos = b.getPosition(bookRows[i]);
-//							int dist = Math.abs(mTopRow - pos);
-//							if (dist < minDist)
-//								targetRow = bookRows[i];
-//						}
-//						// Make sure the target row is visible/expanded.
-//						b.ensureAbsolutePositionVisible(targetRow);
-//						// Now find the position it will occupy in the view
-//						mTargetPos = b.getPosition(targetRow);
+                        // Find the nearest row to the recorded 'top' row.
+//                        int targetRow = bookRows[0];
+//                        int minDist = Math.abs(mTopRow - b.getPosition(targetRow));
+//                        for (int i = 1; i < bookRows.length; i++) {
+//                            int pos = b.getPosition(bookRows[i]);
+//                            int dist = Math.abs(mTopRow - pos);
+//                            if (dist < minDist) {
+//                                targetRow = bookRows[i];
+//                            }
+//                        }
+//                        // Make sure the target row is visible/expanded.
+//                        b.ensureAbsolutePositionVisible(targetRow);
+//                        // Now find the position it will occupy in the view
+//                        mTargetPos = b.getPosition(targetRow);
                     }
                 } else {
                     targetRows = null;
@@ -1562,7 +1590,8 @@ public class BooksOnBookshelf
                     Logger.info(this, " Position: " + (t2 - t1));
                     Logger.info(this, " Select: " + (t3 - t2));
                     Logger.info(this,
-                                " Count(" + count + "): " + (t4 - t3) + '/' + (t5 - t4) + '/' + (t6 - t5));
+                                " Count(" + count + "): " + (t4 - t3) +
+                                        '/' + (t5 - t4) + '/' + (t6 - t5));
                     Logger.info(this, " ====== ");
                     Logger.info(this, " Total: " + (t6 - t0));
                 }
@@ -1573,23 +1602,19 @@ public class BooksOnBookshelf
                 if (taskContext.isTerminating()) {
                     // onFinish() will not be called, and we can discard our work...
                     if (tempList != null && tempList != mListCursor) {
-                        if (mListCursor == null || tempList.getBuilder() != mListCursor.getBuilder()) {
-                            try {
-                                tempList.getBuilder().close();
-                            } catch (RuntimeException ignore) {
-                            }
+                        if (mListCursor == null
+                                || (tempList.getBuilder() != mListCursor.getBuilder())) {
+                            tempList.getBuilder().close();
                         }
-                        try {
-                            tempList.close();
-                        } catch (RuntimeException ignore) {
-                        }
+                        tempList.close();
+
                     }
                 }
             }
         }
 
         @Override
-        public void onFinish(Exception e) {
+        public void onFinish(@Nullable final Exception e) {
             // If activity dead, just do a local cleanup and exit.
             if (mIsDead) {
                 tempList.close();

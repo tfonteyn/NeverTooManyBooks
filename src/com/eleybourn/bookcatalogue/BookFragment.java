@@ -16,6 +16,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -34,16 +38,12 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import java.util.ArrayList;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Class for representing read-only book details.
  */
 public class BookFragment
-    extends BookBaseFragment
-    implements BookManager {
+        extends BookBaseFragment
+        implements BookManager {
 
     public static final String TAG = "BookFragment";
 
@@ -55,12 +55,14 @@ public class BookFragment
 
     private BaseActivity mActivity;
 
-    private FlattenedBooklist mFlattenedBooklist = null;
+    private FlattenedBooklist mFlattenedBooklist;
     private GestureDetector mGestureDetector;
 
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="BookManager interface">
+
+    @Override
     @NonNull
     public BookManager getBookManager() {
         return this;
@@ -99,7 +101,8 @@ public class BookFragment
     }
 
     /**
-     * has no specific Arguments or savedInstanceState as all is done via
+     * Has no specific Arguments or savedInstanceState.
+     * All storage interaction is done via:
      * {@link BookManager#getBook()}
      * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
      * {@link #onSaveFieldsToBook(Book)} from base class onPause
@@ -116,14 +119,16 @@ public class BookFragment
         initBooklist(getArguments(), savedInstanceState);
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(mActivity.getLayoutInflater(), R.string.hint_view_only_help, null);
+            HintManager.displayHint(mActivity.getLayoutInflater(),
+                                    R.string.hint_view_only_help,
+                                    null);
         }
 
         Tracker.exitOnActivityCreated(this);
     }
 
     /**
-     * Set the current visible book id
+     * Set the current visible book id.
      */
     private void setDefaultActivityResult() {
         Intent data = new Intent();
@@ -169,7 +174,8 @@ public class BookFragment
                });
         mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT);
         mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED)
-               .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)));
+               .setFormatter(new Fields.PriceFormatter(
+                       getBook().getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)));
         mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION)
                .setFormatter(dateFormatter);
 
@@ -187,14 +193,15 @@ public class BookFragment
         // defined, but handled manually
         Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL);
         mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
-            coverField, mFields.getField(R.id.isbn));
+                                         coverField, mFields.getField(R.id.isbn));
 
 
         // Personal fields
         mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
                .setFormatter(dateFormatter);
         mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID)
-               .setFormatter(new Fields.PriceFormatter(getBook().getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY)));
+               .setFormatter(new Fields.PriceFormatter(
+                       getBook().getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY)));
         mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
                .setFormatter(new Fields.BookEditionsFormatter());
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED)
@@ -230,7 +237,7 @@ public class BookFragment
         if (bookId != 0) {
             getBook().reload(mDb, bookId);
         }
-        // this will kick of the process that triggers onLoadFieldsFromBook
+        // this will kick of the process that triggers onLoadFieldsFromBook.
         super.onResume();
         Tracker.exitOnResume(this);
     }
@@ -239,7 +246,8 @@ public class BookFragment
      * At this point we're told to load our local (to the fragment) fields from the Book.
      *
      * @param book       to load from
-     * @param setAllFrom flag indicating {@link Fields#setAllFrom(DataManager)} has already been called or not
+     * @param setAllFrom flag indicating {@link Fields#setAllFrom(DataManager)}
+     *                   has already been called or not
      */
     @Override
     @CallSuper
@@ -256,7 +264,8 @@ public class BookFragment
         mCoverHandler.populateCoverView(ts.small, ts.standard);
 
         // handle 'text' DoNotFetch fields
-        mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(book.getBookshelfList()));
+        mFields.getField(R.id.bookshelves).setValue(
+                Bookshelf.toDisplayString(book.getBookshelfList()));
         populateLoanedToField(book.getBookId());
 
         // handle composite fields
@@ -287,7 +296,7 @@ public class BookFragment
     //<editor-fold desc="Init the flat booklist & fling handler">
 
     /**
-     * If we are passed a flat book list, get it and validate it
+     * If we are passed a flat book list, get it and validate it.
      */
     private void initBooklist(@Nullable final Bundle args,
                               @Nullable final Bundle savedInstanceState) {
@@ -312,7 +321,8 @@ public class BookFragment
         }
 
         // ok, we absolutely have a list, get the position we need to be on.
-        int pos = BundleUtils.getIntFromBundles(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, savedInstanceState, args);
+        int pos = BundleUtils.getIntFromBundles(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION,
+                                                savedInstanceState, args);
 
         mFlattenedBooklist.moveTo(pos);
         // the book might have moved around. So see if we can find it.
@@ -330,55 +340,7 @@ public class BookFragment
         }
 
         // finally, enable the listener for flings
-        initGestureDetector();
-    }
-
-    /**
-     * Listener to handle 'fling' events; we could handle others but need to be
-     * careful about possible clicks and scrolling.
-     */
-    private void initGestureDetector() {
-        mGestureDetector = new GestureDetector(this.getContext(), new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDown(MotionEvent e) {
-                return true;
-            }
-
-            @Override
-            public boolean onFling(MotionEvent e1,
-                                   MotionEvent e2,
-                                   float velocityX,
-                                   float velocityY) {
-                if (mFlattenedBooklist == null) {
-                    return false;
-                }
-
-                // Make sure we have considerably more X-velocity than Y-velocity;
-                // otherwise it might be a scroll.
-                if (Math.abs(velocityX / velocityY) > 2) {
-                    boolean moved;
-                    // Work out which way to move, and do it.
-                    if (velocityX > 0) {
-                        moved = mFlattenedBooklist.movePrev();
-                    } else {
-                        moved = mFlattenedBooklist.moveNext();
-                    }
-
-                    if (moved) {
-                        long bookId = mFlattenedBooklist.getBookId();
-                        // only reload if it's a new book
-                        if (bookId != getBook().getBookId()) {
-                            getBook().reload(mDb, bookId);
-                            populateFieldsFromBook();
-                        }
-                    }
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-
+        mGestureDetector = new GestureDetector(this.getContext(), new FlingHandler());
         //noinspection ConstantConditions
         getView().setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("ClickableViewAccessibility")
@@ -416,7 +378,7 @@ public class BookFragment
     void populateSeriesListField(@NonNull final Book book) {
         ArrayList<Series> list = book.getSeriesList();
         int seriesCount = list.size();
-        boolean visible = seriesCount != 0 && mFields.getField(R.id.series).visible;
+        boolean visible = seriesCount != 0 && mFields.getField(R.id.series).isVisible();
         if (visible) {
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < seriesCount; i++) {
@@ -435,15 +397,16 @@ public class BookFragment
 
     /**
      * Formats 'Publishing' section
-     *
+     * <p>
      * 'publisher' and 'date published' are combined
      * 'first published' and 'list price' are previously handled automatically
-     *
+     * <p>
      * If all 4 are empty, the section header is hidden.
      */
     private void populatePublishingSection(@NonNull final Book book) {
 
-        String datePublished = mFields.getField(R.id.date_published).format(book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
+        String datePublished = mFields.getField(R.id.date_published).format(
+                book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
         boolean hasPublishDate = !datePublished.isEmpty();
 
         String publisher = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
@@ -462,8 +425,8 @@ public class BookFragment
 
         // hide header if no fields populated.
         if (result.isEmpty()
-            && !mFields.getField(R.id.price_listed).getValue().toString().isEmpty()
-            && !mFields.getField(R.id.first_publication).getValue().toString().isEmpty()) {
+                && !mFields.getField(R.id.price_listed).getValue().toString().isEmpty()
+                && !mFields.getField(R.id.first_publication).getValue().toString().isEmpty()) {
             //noinspection ConstantConditions
             getView().findViewById(R.id.lbl_publishing).setVisibility(View.GONE);
         }
@@ -477,13 +440,19 @@ public class BookFragment
      */
     private void populateLoanedToField(final long bookId) {
         String personLoanedTo = mDb.getLoanByBookId(bookId);
-        personLoanedTo = (personLoanedTo == null ? "" : getString(R.string.loan_book_details_readonly_loaned_to, personLoanedTo));
+        if (personLoanedTo != null) {
+            personLoanedTo = getString(R.string.loan_book_details_readonly_loaned_to,
+                                       personLoanedTo);
+        } else {
+            personLoanedTo = "";
+        }
         mFields.getField(R.id.loaned_to).setValue(personLoanedTo);
 
         mFields.getField(R.id.loaned_to).getView()
                .setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                    /**
-                    * (yes, icons are not supported and won't show. Still leaving the setIcon calls in for now.)
+                    * (yes, icons are not supported and won't show.
+                    * Still leaving the setIcon calls in for now.)
                     */
                    @Override
                    @CallSuper
@@ -497,29 +466,30 @@ public class BookFragment
     }
 
     /**
-     * Show or hide the Table Of Content section
+     * Show or hide the Table Of Content section.
      */
     private void populateTOC(@NonNull final Book book) {
-        //ENHANCE add to mFields?
+        //ENHANCE: add to mFields?
         ArrayList<TOCEntry> list = book.getTOC();
 
         // only show if: field in use + it's flagged as an ant + the ant has titles
         boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK)
-            && book.getBoolean(Book.HAS_MULTIPLE_WORKS)
-            && !list.isEmpty();
+                && book.getBoolean(Book.HAS_MULTIPLE_WORKS)
+                && !list.isEmpty();
 
         if (visible) {
             //noinspection ConstantConditions
             final ListView contentSection = getView().findViewById(R.id.toc);
 
             ArrayAdapter<TOCEntry> adapter = new TOCListAdapter(mActivity,
-                R.layout.row_toc_entry_with_author, list);
+                                                                R.layout.row_toc_entry_with_author,
+                                                                list);
             contentSection.setAdapter(adapter);
 
             getView().findViewById(R.id.toc_button)
                      .setOnClickListener(new View.OnClickListener() {
                          @Override
-                         public void onClick(View v) {
+                         public void onClick(@NonNull final View v) {
                              if (contentSection.getVisibility() == View.VISIBLE) {
                                  contentSection.setVisibility(View.GONE);
                              } else {
@@ -541,7 +511,7 @@ public class BookFragment
 
     /**
      * Close the list object (frees statements) and if we are finishing, delete the temp table.
-     *
+     * <p>
      * This is an ESSENTIAL onProgress; for some reason, in Android 2.1 if these statements are not
      * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
      * the database being closed by the deeply dodgy auto-close code in Android.
@@ -586,7 +556,8 @@ public class BookFragment
         outState.putLong(UniqueId.KEY_ID, getBook().getBookId());
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, getBook().getRawData());
         if (mFlattenedBooklist != null) {
-            outState.putInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, (int) mFlattenedBooklist.getPosition());
+            outState.putInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION,
+                            (int) mFlattenedBooklist.getPosition());
         }
         super.onSaveInstanceState(outState);
     }
@@ -604,8 +575,10 @@ public class BookFragment
                 Book book = getBook();
                 mDb.deleteLoan(book.getBookId(), false);
                 return true;
+
+            default:
+                return super.onContextItemSelected(item);
         }
-        return super.onContextItemSelected(item);
     }
 
     /**
@@ -641,8 +614,11 @@ public class BookFragment
                 intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+
     }
     //</editor-fold>
 
@@ -655,12 +631,12 @@ public class BookFragment
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case UniqueId.REQ_BOOK_DUPLICATE:
-            case UniqueId.REQ_BOOK_EDIT: {
+            case UniqueId.REQ_BOOK_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
                     getBook().reload(mDb);
                 }
                 break;
-            }
+
             default:
                 // handle any cover image request codes
                 if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
@@ -672,17 +648,50 @@ public class BookFragment
         Tracker.exitOnActivityResult(this);
     }
 
-//    /**
-//     * We override the dispatcher because the ScrollView will consume all events otherwise.
-//     */
-//    @Override
-//    @CallSuper
-//    public boolean dispatchTouchEvent(MotionEvent event) {
-//        if (mGestureDetector != null && mGestureDetector.onTouchEvent(event)) {
-//            return true;
-//        }
-//        super.dispatchTouchEvent(event);
-//
-//        return true;
-//    }
+    /**
+     * Listener to handle 'fling' events; we could handle others but need to be
+     * careful about possible clicks and scrolling.
+     */
+    private class FlingHandler
+            extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(final MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        public boolean onFling(@NonNull final MotionEvent e1,
+                               @NonNull final MotionEvent e2,
+                               final float velocityX,
+                               final float velocityY) {
+            if (mFlattenedBooklist == null) {
+                return false;
+            }
+
+            // Make sure we have considerably more X-velocity than Y-velocity;
+            // otherwise it might be a scroll.
+            if (Math.abs(velocityX / velocityY) > 2) {
+                boolean moved;
+                // Work out which way to move, and do it.
+                if (velocityX > 0) {
+                    moved = mFlattenedBooklist.movePrev();
+                } else {
+                    moved = mFlattenedBooklist.moveNext();
+                }
+
+                if (moved) {
+                    long bookId = mFlattenedBooklist.getBookId();
+                    // only reload if it's a new book
+                    if (bookId != getBook().getBookId()) {
+                        getBook().reload(mDb, bookId);
+                        populateFieldsFromBook();
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
 }

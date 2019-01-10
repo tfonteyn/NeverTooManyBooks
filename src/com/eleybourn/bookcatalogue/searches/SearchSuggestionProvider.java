@@ -24,6 +24,7 @@ import android.content.ContentProvider;
 import android.content.SearchRecentSuggestionsProvider;
 import android.database.Cursor;
 import android.net.Uri;
+
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -32,15 +33,16 @@ import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 /**
  * @author evan
  */
-public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
+public class SearchSuggestionProvider
+        extends SearchRecentSuggestionsProvider {
 
     /**
      * can't use getContext, because setupSuggestions() MUST be called from the constructor,
      * at which point getContext == null
      * alternative is hardcoding the package name of course
-     *
+     * <p>
      * Matches the Manifest entry:
-     *
+     * <p>
      * android:authorities="${packageName}.SearchSuggestionProvider"
      */
     private final static String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName() +
@@ -59,7 +61,11 @@ public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
      * deferred until needed. Hence creating it on the fly
      */
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(Uri uri,
+                        String[] projection,
+                        String selection,
+                        String[] selectionArgs,
+                        String sortOrder) {
         if (selectionArgs[0].isEmpty()) {
             return null;
         }
@@ -71,7 +77,6 @@ public class SearchSuggestionProvider extends SearchRecentSuggestionsProvider {
     }
 
     /**
-     *
      * There does not seem to be a way to cleanup resources (here, our db) in a {@link ContentProvider}
      * Added/Leaving this method here as a reminder
      */

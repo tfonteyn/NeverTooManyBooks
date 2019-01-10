@@ -1,11 +1,11 @@
 package com.eleybourn.bookcatalogue.backup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.File;
 import java.util.Date;
 import java.util.Objects;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class ExportSettings {
 
@@ -24,31 +24,36 @@ public class ExportSettings {
 
     /* Options value to indicate ALL things should be exported */
     public static final int ALL =
-        PREFERENCES
-            | BOOK_LIST_STYLES
-            | COVERS
-            | BOOK_CSV
-            | XML_TABLES;
+            PREFERENCES
+                    | BOOK_LIST_STYLES
+                    | COVERS
+                    | BOOK_CSV
+                    | XML_TABLES;
 
-    /*
-     * Options to indicate new books or books with more recent update_date fields should be exported
+    /**
+     * Options to indicate new books or books with more recent update_date
+     * fields should be exported.
      *
      * 0: all books
-     * 1: books added/updated since {@link #dateFrom}. If the latter is null, then since last backup.
+     * 1: books added/updated since {@link #dateFrom}. If latter is null, then since last backup.
      */
-    public static final int EXPORT_SINCE = 1 << 16; // 1: 'since';  '0': ALL
+    public static final int EXPORT_SINCE = 1 << 16;
+
+    /**
+     * Nothing to backup.
+     */
     public static final int NOTHING = 0;
 
     /**
-     * all defined flags
+     * all defined flags.
      */
     public static final int MASK = ALL | EXPORT_SINCE;
 
-    /** file to export to */
+    /** file to export to. */
     @Nullable
     public File file;
     /**
-     * bitmask for the options
+     * bitmask for the options.
      */
     public int what = NOTHING;
 
@@ -56,13 +61,13 @@ public class ExportSettings {
      * EXPORT_SINCE.
      */
     @Nullable
-    public Date dateFrom = null;
+    public Date dateFrom;
 
     public ExportSettings() {
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param file to export to
      */
@@ -83,9 +88,9 @@ public class ExportSettings {
     @Override
     public String toString() {
         return "ExportSettings{" +
-            "file=" + file +
-            ", what=0%" + Integer.toBinaryString(what) +
-            ", dateFrom=" + dateFrom +
-            '}';
+                "file=" + file +
+                ", what=0%" + Integer.toBinaryString(what) +
+                ", dateFrom=" + dateFrom +
+                '}';
     }
 }

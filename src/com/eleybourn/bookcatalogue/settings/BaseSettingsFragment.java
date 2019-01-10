@@ -4,11 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.debug.Logger;
-
-import java.util.Map;
-import java.util.Set;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.preference.EditTextPreference;
@@ -18,12 +13,19 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
+
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Base settings page.
- *
+ * <p>
  * Uses OnSharedPreferenceChangeListener to dynamically update the summary for each preference.
  */
-public abstract class BaseSettingsFragment extends PreferenceFragmentCompat implements
+public abstract class BaseSettingsFragment
+        extends PreferenceFragmentCompat
+        implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
@@ -33,8 +35,10 @@ public abstract class BaseSettingsFragment extends PreferenceFragmentCompat impl
                              @NonNull final String destination,
                              final boolean clearSource) {
         Context context = getPreferenceManager().getContext();
-        SharedPreferences sourcePrefs = context.getSharedPreferences(source, Context.MODE_PRIVATE);
-        SharedPreferences destinationPrefs = context.getSharedPreferences(destination, Context.MODE_PRIVATE);
+        SharedPreferences sourcePrefs =
+                context.getSharedPreferences(source, Context.MODE_PRIVATE);
+        SharedPreferences destinationPrefs =
+                context.getSharedPreferences(destination, Context.MODE_PRIVATE);
 
         SharedPreferences.Editor ed = destinationPrefs.edit();
         Map<String, ?> all = sourcePrefs.getAll();
@@ -80,7 +84,7 @@ public abstract class BaseSettingsFragment extends PreferenceFragmentCompat impl
     }
 
     /**
-     * Get the current string value for a single Preference.
+     * @return the current string value for a single Preference.
      */
     @NonNull
     CharSequence getSummary(@NonNull final Preference preference) {
@@ -143,12 +147,14 @@ public abstract class BaseSettingsFragment extends PreferenceFragmentCompat impl
     @Override
     public void onResume() {
         super.onResume();
-        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences()
+                             .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onPause() {
-        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences()
+                             .unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
 }

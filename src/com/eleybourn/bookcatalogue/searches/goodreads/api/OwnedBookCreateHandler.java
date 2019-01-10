@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -37,16 +40,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 /**
  * TODO: OwnedBookCreateHandler WORK IN PROGRESS
  *
  * @author Philip Warner
  */
 @SuppressWarnings("unused")
-public class OwnedBookCreateHandler extends ApiHandler {
+public class OwnedBookCreateHandler
+        extends ApiHandler {
 
     //public enum ConditionCode {
     //	BRAND_NEW, LIKE_NEW, VERY_GOOD, GOOD, ACCEPTABLE, POOR
@@ -68,7 +69,8 @@ public class OwnedBookCreateHandler extends ApiHandler {
      *	    owned_book[condition_description]: description of book's condition
      *	    owned_book[available_for_swap]: true or false, if book is available for swap
      */
-    public void create(@NonNull final String isbn, @NonNull final List<String> shelves)
+    public void create(@NonNull final String isbn,
+                       @NonNull final List<String> shelves)
             throws IOException,
                    NotAuthorizedException,
                    BookNotFoundException {
@@ -97,7 +99,8 @@ public class OwnedBookCreateHandler extends ApiHandler {
         }
     }
 
-    public void create(@NonNull final String isbn, @NonNull final String shelf)
+    public void create(@NonNull final String isbn,
+                       @NonNull final String shelf)
             throws IOException,
                    NotAuthorizedException,
                    BookNotFoundException {
@@ -130,7 +133,8 @@ public class OwnedBookCreateHandler extends ApiHandler {
      * </owned-book>
      * </pre>
      */
-    private static class OwnedBookCreateParser extends DefaultHandler {
+    private static class OwnedBookCreateParser
+            extends DefaultHandler {
 
         private static final String XML_BOOK_ID = "book-id";
         private static final String XML_OWNED_BOOK_ID = "id";
@@ -143,7 +147,9 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
         @Override
         @CallSuper
-        public void characters(@NonNull final char[] ch, final int start, final int length)
+        public void characters(@NonNull final char[] ch,
+                               final int start,
+                               final int length)
                 throws SAXException {
             super.characters(ch, start, length);
             mBuilder.append(ch, start, length);
@@ -163,7 +169,10 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
         @Override
         @CallSuper
-        public void startElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String qName, @NonNull final Attributes attributes)
+        public void startElement(@NonNull final String uri,
+                                 @NonNull final String localName,
+                                 @NonNull final String qName,
+                                 @NonNull final Attributes attributes)
                 throws SAXException {
             super.startElement(uri, localName, qName, attributes);
 
@@ -174,7 +183,9 @@ public class OwnedBookCreateHandler extends ApiHandler {
 
         @Override
         @CallSuper
-        public void endElement(@NonNull final String uri, @NonNull final String localName, @NonNull final String qName)
+        public void endElement(@NonNull final String uri,
+                               @NonNull final String localName,
+                               @NonNull final String qName)
                 throws SAXException, NumberFormatException {
             super.endElement(uri, localName, qName);
 

@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -35,20 +37,19 @@ import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
-
 /**
  * Class to implement the reviews.list api call. It queries based on the passed parameters
  * and returns a single Bundle containing all results. The Bundle itself will contain
  * other bundles: typically an array of 'Review' bundles, each of which will contains
  * arrays of 'author' bundles.
- *
+ * <p>
  * Processing this data is up to the caller, but it is guaranteed to be type-safe if present,
  * With the exception of dates, which are collected as text strings.
  *
  * @author Philip Warner
  */
-public class BookshelfListApiHandler extends ApiHandler {
+public class BookshelfListApiHandler
+        extends ApiHandler {
 
     private SimpleXmlFilter mFilters;
 
@@ -73,7 +74,9 @@ public class BookshelfListApiHandler extends ApiHandler {
         // Sort by update_dte (descending) so sync is faster.
         // Specify 'shelf=all' because it seems goodreads returns
         // the shelf that is selected in 'My Books' on the web interface by default.
-        final String urlBase = GoodreadsManager.BASE_URL + "/shelf/list.xml?key=%1$s&page=%2$s&user_id=%3$s";
+        final String urlBase = GoodreadsManager.BASE_URL
+                + "/shelf/list.xml?key=%1$s&page=%2$s&user_id=%3$s";
+
         final String url = String.format(urlBase, mManager.getDevKey(), page, mManager.getUserId());
         HttpGet get = new HttpGet(url);
 
@@ -89,13 +92,14 @@ public class BookshelfListApiHandler extends ApiHandler {
         // Even thought it's only a GET, it needs a signature.
         mManager.execute(get, handler, true);
 
-        // When we get here, the data has been collected but needs to be processed into standard form.
+        // When we get here, the data has been collected but needs to be processed
+        // into standard form.
         Bundle results = mFilters.getData();
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this, "Found " +
-                    results.getLong(BookshelfListFieldNames.TOTAL) +
-                    " shelves in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info(this, "Found "
+                    + results.getLong(BookshelfListFieldNames.TOTAL)
+                    + " shelves in " + (System.currentTimeMillis() - t0) + "ms");
         }
 
         return results;
@@ -110,10 +114,10 @@ public class BookshelfListApiHandler extends ApiHandler {
         mFilters
                 //<GoodreadsResponse>
                 .s(XML_GOODREADS_RESPONSE)
-                //	<Request>
-                //		...
-                //	</Request>
-                //	<reviews start="3" end="4" total="933">
+                //  <Request>
+                //      ...
+                //  </Request>
+                //  <reviews start="3" end="4" total="933">
                 //  <shelves start='1' end='29' total='29'>
                 .s(XML_SHELVES).isArray(BookshelfListFieldNames.SHELVES)
                 .longAttr(XML_START, BookshelfListFieldNames.START)
@@ -122,19 +126,19 @@ public class BookshelfListApiHandler extends ApiHandler {
 
                 //  <user_shelf>
                 .s(XML_USER_SHELF).isArrayItem()
-                //	  <exclusive_flag type='boolean'>false</exclusive_flag>
+                //      <exclusive_flag type='boolean'>false</exclusive_flag>
                 .booleanBody(XML_EXCLUSIVE_FLAG, BookshelfListFieldNames.EXCLUSIVE)
 
-                //	  <id type='integer'>26567684</id>
+                //      <id type='integer'>26567684</id>
                 .longBody(XML_ID, BookshelfListFieldNames.ID)
                 .stringBody(XML_NAME, BookshelfListFieldNames.NAME)
                 .pop()
                 .done();
     }
 
-	/*
+    /*
 	 * Typical result:
-
+	 * <pre>
 		<GoodreadsResponse>
 		  <Request>
 		    <authentication>true</authentication>
@@ -156,7 +160,7 @@ public class BookshelfListApiHandler extends ApiHandler {
 				  <sort></sort>
 				  <sticky type='boolean' nil='true'></sticky>
 		      </user_shelf>
-		
+
 		      <user_shelf>
 				  <book_count type='integer'>0</book_count>
 				  <description nil='true'></description>
@@ -171,7 +175,7 @@ public class BookshelfListApiHandler extends ApiHandler {
 				  <sort nil='true'></sort>
 				  <sticky type='boolean' nil='true'></sticky>
 		      </user_shelf>
-		
+
 		      <user_shelf>
 				  <book_count type='integer'>381</book_count>
 				  <description nil='true'></description>
@@ -186,7 +190,7 @@ public class BookshelfListApiHandler extends ApiHandler {
 				  <sort>position</sort>
 				  <sticky type='boolean' nil='true'></sticky>
 		      </user_shelf>
-		
+
 		      <user_shelf>
 				  <book_count type='integer'>5</book_count>
 				  <description nil='true'></description>
@@ -201,7 +205,7 @@ public class BookshelfListApiHandler extends ApiHandler {
 				  <sort nil='true'></sort>
 				  <sticky type='boolean' nil='true'></sticky>
 		      </user_shelf>
-		
+
 		      <user_shelf>
 				  <book_count type='integer'>6</book_count>
 				  <description nil='true'></description>
@@ -218,12 +222,12 @@ public class BookshelfListApiHandler extends ApiHandler {
 		      </user_shelf>
 		  </shelves>
 		</GoodreadsResponse>
-
+</pre>
 	 */
 
     /**
      * Field names we add to the bundle based on parsed XML data.
-     *
+     * <p>
      * We duplicate the CatalogueDBAdapter names (and give them a DB_ prefix) so
      * that (a) it is clear which fields are provided by this call, and (b) it is clear
      * which fields directly relate to DB fields.

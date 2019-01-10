@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -33,25 +35,27 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
 
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
-
 /**
  * Simple class to run in background and verify Goodreads credentials then
  * display a notification based on the result.
- *
+ * <p>
  * This task is run as the last part of the Goodreads auth process.
- *
+ * <p>
  * Runs in background because it can take several seconds.
- *
+ * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  *
  * @author Philip Warner
  */
-public class GoodreadsAuthorizationResultCheckTask extends GoodreadsTask {
+public class GoodreadsAuthorizationResultCheckTask
+        extends GoodreadsTask {
 
     private static final long serialVersionUID = -5502292652351148420L;
 
+    /**
+     * Constructor sets the task description.
+     */
     GoodreadsAuthorizationResultCheckTask() {
 
         super(BookCatalogueApp.getResourceString(R.string.gr_auth_check));
@@ -72,23 +76,25 @@ public class GoodreadsAuthorizationResultCheckTask extends GoodreadsTask {
                 Logger.info(this, "hasValidCredentials==true");
 
                 BookCatalogueApp.showNotification(context, context.getString(R.string.authorized),
-                        context.getString(R.string.gr_auth_successful));
+                                                  context.getString(R.string.gr_auth_successful));
             } else {
                 Logger.info(this, "hasValidCredentials==false");
-                BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
-                        context.getString(R.string.gr_auth_failed));
+                BookCatalogueApp.showNotification(context,
+                                                  context.getString(R.string.not_authorized),
+                                                  context.getString(R.string.gr_auth_failed));
             }
         } catch (NotAuthorizedException e) {
             Logger.error(e);
             BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
-                    context.getString(R.string.gr_auth_failed));
+                                              context.getString(R.string.gr_auth_failed));
         } catch (IOException e) {
             Logger.error(e);
-            BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
-                    context.getString(R.string.gr_auth_error)
-                            + ' ' + context.getString(R.string.error_if_the_problem_persists));
+            BookCatalogueApp.showNotification(
+                    context,
+                    context.getString(R.string.not_authorized),
+                    context.getString(R.string.gr_auth_error) + ' '
+                            + context.getString(R.string.error_if_the_problem_persists));
         }
-
         return true;
     }
 
@@ -97,5 +103,6 @@ public class GoodreadsAuthorizationResultCheckTask extends GoodreadsTask {
 
         return Task.CAT_GOODREADS_AUTH_RESULT;
     }
+
 
 }

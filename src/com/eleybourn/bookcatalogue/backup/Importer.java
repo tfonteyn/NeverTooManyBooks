@@ -19,16 +19,21 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+/**
+ * Interface definition for an importer.
+ *
+ * @author pjw
+ */
 public interface Importer {
 
     /**
-     * Import from an InputStream. It's up to the implementation to decide what to import
+     * Import from an InputStream. It's up to the implementation to decide what to import.
      *
      * @param importStream Stream for reading data
      * @param coverFinder  (Optional) object to find a file on the local device
@@ -42,24 +47,22 @@ public interface Importer {
     int doImport(@NonNull final InputStream importStream,
                  @Nullable final CoverFinder coverFinder,
                  @NonNull final ImportListener listener)
-        throws IOException;
+            throws IOException;
 
     /**
      * Interface for finding a cover file on the local device if missing from
      * bookCatalogue directory.
-     *
+     * <p>
      * Legacy of the "import from a directory" model. Used by the CSV importer.
-     *
-     * @author pjw
      */
     interface CoverFinder {
 
         void copyOrRenameCoverFile(@NonNull final String uuidFromFile)
-            throws IOException;
+                throws IOException;
 
         void copyOrRenameCoverFile(final long srcId,
                                    @NonNull final String uuidFromBook)
-            throws IOException;
+                throws IOException;
     }
 
     /**
@@ -73,11 +76,17 @@ public interface Importer {
         void setMax(final int max);
 
         /**
-         * report progress in absolute position
+         * Report progress in absolute position.
+         *
+         * @param message  to display
+         * @param position absolute position for the progress counter
          */
         void onProgress(@NonNull final String message,
                         final int position);
 
+        /**
+         * @return <tt>true</tt> if we are cancelled.
+         */
         boolean isCancelled();
     }
 }

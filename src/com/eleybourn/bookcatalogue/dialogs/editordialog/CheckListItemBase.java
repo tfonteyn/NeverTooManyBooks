@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -15,33 +16,39 @@ import java.util.List;
  *
  * @param <T> type of encapsulated item
  */
-public abstract class CheckListItemBase<T> implements CheckListItem<T>, Parcelable {
-    private boolean selected;
+public abstract class CheckListItemBase<T>
+        implements CheckListItem<T>, Parcelable {
+
     protected T item;
+    private boolean mSelected;
 
     protected CheckListItemBase() {
     }
 
-    protected CheckListItemBase(@NonNull final T item, final boolean selected) {
+    protected CheckListItemBase(@NonNull final T item,
+                                final boolean selected) {
         this.item = item;
-        this.selected = selected;
+        mSelected = selected;
     }
 
     /**
-     * Subclass must handle the {@link #item}
+     * Subclass must handle the {@link #item}.
      */
-    protected CheckListItemBase(Parcel in) {
-        selected = in.readByte() != 0;
+    protected CheckListItemBase(@NonNull final Parcel in) {
+        mSelected = in.readByte() != 0;
     }
 
     /**
-     * Subclass must handle the {@link #item}
+     * Subclass must handle the {@link #item}.
      */
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte((byte) (selected ? 1 : 0));
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeByte((byte) (mSelected ? 1 : 0));
     }
 
+    /** {@link Parcelable}. */
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
@@ -53,27 +60,27 @@ public abstract class CheckListItemBase<T> implements CheckListItem<T>, Parcelab
         return item;
     }
 
-    /** label to use in a {@link CheckListEditorDialogFragment.CheckListEditorDialog} */
+    /** label to use in a {@link CheckListEditorDialogFragment.CheckListEditorDialog}. */
     @Override
     public String getLabel() {
         throw new java.lang.UnsupportedOperationException("must be overridden");
     }
 
     @Override
-    public boolean getSelected() {
-        return selected;
+    public boolean isSelected() {
+        return mSelected;
     }
 
     @Override
     public void setSelected(final boolean selected) {
-        this.selected = selected;
+        this.mSelected = selected;
     }
 
     @NonNull
     public ArrayList<T> extractList(@NonNull final List<CheckListItem<T>> list) {
         ArrayList<T> result = new ArrayList<>();
         for (CheckListItem<T> entry : list) {
-            if (entry.getSelected()) {
+            if (entry.isSelected()) {
                 result.add(entry.getItem());
             }
         }

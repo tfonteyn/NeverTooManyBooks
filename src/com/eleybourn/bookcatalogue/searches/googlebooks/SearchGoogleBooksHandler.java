@@ -20,19 +20,19 @@
 
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 /**
- * An XML handler for the Google Books return
+ * An XML handler for the Google Books return.
  * Gets the total number of books found, and their id (which is a URL)
- *
+ * <p>
  * An example response looks like;
  * <pre>
  * <?xml version='1.0' encoding='UTF-8'?>
@@ -125,9 +125,10 @@ import androidx.annotation.NonNull;
  * </feed>
  * </pre>
  */
-class SearchGoogleBooksHandler extends DefaultHandler {
+class SearchGoogleBooksHandler
+        extends DefaultHandler {
 
-    /** Words in XML */
+    /** Words in XML. */
     private static final String XML_ID = "id";
     private static final String XML_ENTRY = "entry";
 
@@ -135,11 +136,11 @@ class SearchGoogleBooksHandler extends DefaultHandler {
     @NonNull
     private final ArrayList<String> url = new ArrayList<>();
 
-    private boolean mInEntry = false;
-    private boolean mEntryDone = false;
+    private boolean mInEntry;
+    private boolean mEntryDone;
 
     /**
-     * Return the id of the first book found
+     * Return the id of the first book found.
      *
      * @return The book url list (to be passed to the entry handler), can be empty.
      */
@@ -159,11 +160,8 @@ class SearchGoogleBooksHandler extends DefaultHandler {
     }
 
     /**
-     * (non-Javadoc)
-     *
-     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-     *
-     * Start each XML element. Specifically identify when we are in the item element and set the appropriate flag.
+     * Start each XML element. Specifically identify when we are in the item
+     * element and set the appropriate flag.
      */
     @Override
     @CallSuper
@@ -179,10 +177,6 @@ class SearchGoogleBooksHandler extends DefaultHandler {
     }
 
     /**
-     * (non-Javadoc)
-     *
-     * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
-     *
      * Populate the results Bundle for each appropriate element.
      */
     @Override

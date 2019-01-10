@@ -34,6 +34,16 @@ import android.os.Handler;
 import android.text.Html;
 import android.util.Log;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
+
 import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -54,70 +64,59 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.PermissionChecker;
-
 /**
- * Single Activity to be the 'Main' activity for the app. It does app-startup stuff which is initially
- * to start the 'real' main activity.
+ * Single Activity to be the 'Main' activity for the app.
+ * It does app-startup stuff which is initially to start the 'real' main activity.
  *
  * @author Philip Warner
  */
 public class StartupActivity
-    extends AppCompatActivity {
+        extends AppCompatActivity {
 
     /** the 'LastVersion' e.g. the version which was installed before the current one. */
-    public final static String PREF_STARTUP_LAST_VERSION = "Startup.LastVersion";
-    /** Number of times the app has been started */
+    public static final String PREF_STARTUP_LAST_VERSION = "Startup.LastVersion";
+    /** Number of times the app has been started. */
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     public static final String PREFS_STARTUP_COUNTDOWN = "Startup.StartCountdown";
-    /** Number of app startup's between offers to backup */
-    private static final int PROMPT_WAIT_BACKUP = 5;
-    /** Number of app startup's between displaying the Amazon hint */
-    private static final int PROMPT_WAIT_AMAZON = 7;
-
-    /** Options to indicate FTS rebuild is required at startup */
+    /** Options to indicate FTS rebuild is required at startup. */
     public static final String PREF_STARTUP_FTS_REBUILD_REQUIRED = "Startup.FtsRebuildRequired";
-
-    /** Indicates the upgrade message has been shown */
-    private static boolean mUpgradeMessageShown = false;
-    /** Options set to true on first call */
+    /** Number of app startup's between offers to backup. */
+    private static final int PROMPT_WAIT_BACKUP = 5;
+    /** Number of app startup's between displaying the Amazon hint. */
+    private static final int PROMPT_WAIT_AMAZON = 7;
+    /** Indicates the upgrade message has been shown. */
+    private static boolean mUpgradeMessageShown;
+    /** Options set to true on first call. */
     private static boolean mIsReallyStartup = true;
-    /** Options indicating Amazon hint could be shown */
-    private static boolean mShowAmazonHint = false;
+    /** Options indicating Amazon hint could be shown. */
+    private static boolean mShowAmazonHint;
     private static WeakReference<StartupActivity> mStartupActivity = null;
-    /** Handler to post run'ables to UI thread */
+    /** Handler to post run'ables to UI thread. */
     private final Handler mHandler = new Handler();
-    /** Queue for executing startup tasks, if any */
+    /** Queue for executing startup tasks, if any. */
     @Nullable
-    private SimpleTaskQueue mTaskQueue = null;
+    private SimpleTaskQueue mTaskQueue;
     /**
-     * Progress Dialog for startup tasks
-     * API 26 this is a global requirement: ProgressDialog is deprecated
+     * Progress Dialog for startup tasks.
+     * <p>
+     * API: 26 this is a global requirement: ProgressDialog is deprecated
      * https://developer.android.com/reference/android/app/ProgressDialog
      * Suggested: ProgressBar or Notification.
      * Alternative maybe: SnackBar (recommended replacement for Toast)
      */
     @Nullable
     @Deprecated
-    private ProgressDialog mProgress = null;
+    private ProgressDialog mProgress;
 
-    /** Options indicating a backup is required after startup */
-    private boolean mBackupRequired = false;
-    /** UI thread */
+    /** Options indicating a backup is required after startup. */
+    private boolean mBackupRequired;
+    /** UI thread. */
     private Thread mUiThread;
     /** stage the startup is at. */
-    private int mStartupStage = 0;
+    private int mStartupStage;
 
-    /** Set the flag to indicate an FTS rebuild is required */
+    /** Set the flag to indicate an FTS rebuild is required. */
     public static void scheduleFtsRebuild() {
         Prefs.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
     }
@@ -159,38 +158,46 @@ public class StartupActivity
     }
 
     private void initStorage() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS);
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS);
             return;
         }
         StorageUtils.initSharedDirectories();
         startNextStage();
     }
 
-    /** determines the order of startup stages */
+    /**
+     * determines the order of startup stages.
+     */
     private void startNextStage() {
         // onCreate being stage 0
         mStartupStage++;
         Logger.info(this, "Starting stage " + mStartupStage);
 
         switch (mStartupStage) {
-            case 1: {
-                // Create a progress dialog; we may not use it...but we need it to be created in the UI thread.
+            case 1:
+                // Create a progress dialog; we may not use it...
+                // but we need it to be created in the UI thread.
                 mProgress = ProgressDialog.show(this,
-                    getString(R.string.lbl_application_startup),
-                    getString(R.string.progress_msg_starting_up),
-                    true,
-                    true, new OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialog) {
-                            // Cancelling the list cancels the activity.
-                            StartupActivity.this.finish();
-                        }
-                    });
+                                                getString(R.string.lbl_application_startup),
+                                                getString(R.string.progress_msg_starting_up),
+                                                true,
+                                                true, new OnCancelListener() {
+                            @Override
+                            public void onCancel(@NonNull final DialogInterface dialog) {
+                                // Cancelling the list cancels the activity.
+                                StartupActivity.this.finish();
+                            }
+                        });
                 startTasks();
                 break;
-            }
-            case 2: {
+
+            case 2:
                 // Get rid of the progress dialog
                 if (mProgress != null) {
                     mProgress.dismiss();
@@ -198,13 +205,17 @@ public class StartupActivity
                 }
                 checkForUpgrades();
                 break;
-            }
+
             case 3:
                 backupRequired();
                 break;
+
             case 4:
                 gotoMainScreen();
                 break;
+
+            default:
+                throw new IllegalStateException();
         }
     }
 
@@ -259,7 +270,8 @@ public class StartupActivity
 
         // If we are in the UI thread, update the progress.
         if (Thread.currentThread().equals(mUiThread)) {
-            // There is a small chance that this message could be set to display *after* the activity is finished,
+            // There is a small chance that this message could be set to display
+            // *after* the activity is finished,
             // so we check and we also trap, log and ignore errors.
             // See http://code.google.com/p/android/issues/detail?id=3953
             if (!isFinishing()) {
@@ -289,7 +301,7 @@ public class StartupActivity
      * onCreate() completes, so a race condition is not possible. Equally well, tasks should only
      * be queued in onCreate().
      */
-    private void taskCompleted(@NonNull SimpleTaskQueue.SimpleTask task) {
+    private void taskCompleted(@NonNull final SimpleTaskQueue.SimpleTask task) {
         if (DEBUG_SWITCHES.STARTUP && BuildConfig.DEBUG) {
             Logger.info(task, "Task Completed");
         }
@@ -339,19 +351,19 @@ public class StartupActivity
         }
 
         AlertDialog dialog = new AlertDialog.Builder(this)
-            .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
-            .setTitle(R.string.about_lbl_upgrade)
-            .setIcon(R.drawable.ic_info_outline)
-            .create();
+                .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
+                .setTitle(R.string.about_lbl_upgrade)
+                .setIcon(R.drawable.ic_info_outline)
+                .create();
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-            new DialogInterface.OnClickListener() {
-                public void onClick(final DialogInterface dialog,
-                                    final int which) {
-                    UpgradeMessageManager.setUpgradeAcknowledged();
-                    startNextStage();
-                }
-            });
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(final DialogInterface dialog,
+                                                 final int which) {
+                                 UpgradeMessageManager.setUpgradeAcknowledged();
+                                 startNextStage();
+                             }
+                         });
         dialog.show();
         mUpgradeMessageShown = true;
     }
@@ -361,31 +373,31 @@ public class StartupActivity
 
         if (proposeBackup()) {
             AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(R.string.backup_request)
-                .setTitle(R.string.lbl_backup_dialog)
-                .setIcon(R.drawable.ic_help_outline)
-                .create();
+                    .setMessage(R.string.backup_request)
+                    .setTitle(R.string.lbl_backup_dialog)
+                    .setIcon(R.drawable.ic_help_outline)
+                    .create();
 
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                getString(android.R.string.cancel)
-                , new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        dialog.dismiss();
-                    }
-                });
+                             getString(android.R.string.cancel),
+                             new DialogInterface.OnClickListener() {
+                                 public void onClick(@NonNull final DialogInterface dialog,
+                                                     final int which) {
+                                     dialog.dismiss();
+                                 }
+                             });
             dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                getString(android.R.string.ok),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        mBackupRequired = true;
-                        dialog.dismiss();
-                    }
-                });
+                             getString(android.R.string.ok),
+                             new DialogInterface.OnClickListener() {
+                                 public void onClick(@NonNull final DialogInterface dialog,
+                                                     final int which) {
+                                     mBackupRequired = true;
+                                     dialog.dismiss();
+                                 }
+                             });
             dialog.setOnDismissListener(new OnDismissListener() {
                 @Override
-                public void onDismiss(DialogInterface dialog) {
+                public void onDismiss(@NonNull final DialogInterface dialog) {
                     startNextStage();
                 }
             });
@@ -419,7 +431,7 @@ public class StartupActivity
     }
 
     /**
-     * Last onProgress
+     * Last onProgress.
      */
     private void gotoMainScreen() {
         Intent intent = new Intent(this, BooksOnBookshelf.class);
@@ -427,7 +439,8 @@ public class StartupActivity
 
         if (mBackupRequired) {
             Intent backupIntent = new Intent(this, BackupAndRestoreActivity.class);
-            backupIntent.putExtra(BackupAndRestoreActivity.BKEY_MODE, BackupAndRestoreActivity.BVAL_MODE_SAVE);
+            backupIntent.putExtra(BackupAndRestoreActivity.BKEY_MODE,
+                                  BackupAndRestoreActivity.BVAL_MODE_SAVE);
             startActivity(backupIntent);
         }
 
@@ -457,28 +470,37 @@ public class StartupActivity
      *
      * @param requestCode  The request code passed in {@link #requestPermissions(String[], int)}.
      * @param permissions  The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions
-     *                     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     * @param grantResults The grant results for the corresponding permissions which is either
+     *                     {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}.
+     *                     Never null.
      *
      * @see #requestPermissions(String[], int)
      */
     @Override
     @PermissionChecker.PermissionResult
     public void onRequestPermissionsResult(final int requestCode,
-                                           @NonNull final String permissions[],
+                                           @NonNull final String[] permissions,
                                            @NonNull final int[] grantResults) {
-        //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[] must be checked in parallel
+        //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[]
+        // must be checked in parallel
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS:
+                if (grantResults.length > 0
+                        && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     initStorage();
                 } else {
-                    // we can't work without Shared Storage, so die; can't use Logger as we don't have a log file!
-                    Log.e("StartupActivity", "No Shared Storage permissions granted, quiting");
+                    // we can't work without Shared Storage, so die; can't use Logger
+                    // as we don't have a log file!
+                    Log.e("StartupActivity",
+                          "No Shared Storage permissions granted, quiting");
                     finishAndRemoveTask();
                 }
-            }
+                break;
+
+            default:
+                Logger.debug("unknown requestCode=" + requestCode);
+                break;
         }
     }
 
@@ -488,7 +510,7 @@ public class StartupActivity
      * Only build once per Locale.
      */
     public class BuildLanguageMappingsTask
-        implements SimpleTaskQueue.SimpleTask {
+            implements SimpleTaskQueue.SimpleTask {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
@@ -503,7 +525,7 @@ public class StartupActivity
         }
 
         @Override
-        public void onFinish(Exception e) {
+        public void onFinish(@Nullable final Exception e) {
         }
     }
 
@@ -512,7 +534,7 @@ public class StartupActivity
      * Data cleaning. This is done each startup. TODO: is that needed ?
      */
     public class DBCleanerTask
-        implements SimpleTaskQueue.SimpleTask {
+            implements SimpleTaskQueue.SimpleTask {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
@@ -541,7 +563,7 @@ public class StartupActivity
         }
 
         @Override
-        public void onFinish(Exception e) {
+        public void onFinish(@Nullable final Exception e) {
         }
     }
 
@@ -551,26 +573,31 @@ public class StartupActivity
      * @author Philip Warner
      */
     public class RebuildFtsTask
-        implements SimpleTaskQueue.SimpleTask {
+            implements SimpleTaskQueue.SimpleTask {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
-            // Get a DB to make sure the FTS rebuild flag is set appropriately, do not close the database!
+            // Get a DB to make sure the FTS rebuild flag is set appropriately,
+            // do not close the database!
             CatalogueDBAdapter db = taskContext.getDb();
             if (Prefs.getBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
                 updateProgress(R.string.progress_msg_rebuilding_search_index);
                 db.rebuildFts();
-                Prefs.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, false).apply();
+                Prefs.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED,
+                                                   false).apply();
             }
         }
 
         @Override
-        public void onFinish(Exception e) {
+        public void onFinish(@Nullable final Exception e) {
         }
     }
 
+    /**
+     * Run 'analyse' on our databases.
+     */
     public class AnalyzeDbTask
-        implements SimpleTaskQueue.SimpleTask {
+            implements SimpleTaskQueue.SimpleTask {
 
         @Override
         public void run(@NonNull final SimpleTaskContext taskContext) {
@@ -587,12 +614,13 @@ public class StartupActivity
 
             if (Prefs.getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
                 UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
-                Prefs.getPrefs().edit().remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED).apply();
+                Prefs.getPrefs().edit().remove(
+                        UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED).apply();
             }
         }
 
         @Override
-        public void onFinish(Exception e) {
+        public void onFinish(@Nullable final Exception e) {
         }
 
     }

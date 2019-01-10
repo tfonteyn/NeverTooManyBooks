@@ -195,6 +195,9 @@
     <string name="pk_bob_style_name" translatable="false">BookList.Style.Name</string>
     <string name="pk_bob_groups" translatable="false">BookList.Style.Groups</string>
 
+    <!-- Preference - Show this style in the 'preferred styles' list/menu -->
+    <string name="pt_bob_preferred_style">Preferred</string>
+    <string name="pk_bob_preferred_style" translatable="false">BookList.Style.Preferred</string>
 
     <!-- Preference - Use scaled text and images (not boolean, as we might add more size-options -->
     <string name="pt_bob_item_size">Size of book list items</string>

@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.utils.xml;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.xml.sax.Attributes;
 
 import java.util.ArrayList;
@@ -29,44 +32,41 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * A class to help parsing Sax Xml output. For goodreads XML output, 90% of the XML can be
  * thrown away but we do need to ensure we get the tags from the right context. The XmlFilter
  * objects build a tree of filters and XmlHandler objects that make this process more manageable.
- *
+ * <p>
  * See SearchBooksApiHandler for an example of usage.
  *
  * @author Philip Warner
  */
 public class XmlFilter {
 
-    /** The tag for this specific filter */
+    /** The tag for this specific filter. */
     @NonNull
     private final String mTagName;
 
-    /** A HashMap to ensure that there are no more than one sub-filter per tag at a given level */
+    /** A HashMap to ensure that there are no more than one sub-filter per tag at a given level. */
     private final Map<String, XmlFilter> mSubFilterHash = new HashMap<>();
 
-    /** List of sub-filters for this filter */
+    /** List of sub-filters for this filter. */
     private final ArrayList<XmlFilter> mSubFilters = new ArrayList<>();
 
-    /** Action to perform, if any, when the associated tag is started */
+    /** Action to perform, if any, when the associated tag is started. */
     @Nullable
-    private XmlHandler mStartAction = null;
-    /** Optional parameter put in context before action is called */
-    private Object mStartArg = null;
+    private XmlHandler mStartAction;
+    /** Optional parameter put in context before action is called. */
+    private Object mStartArg;
 
-    /** Action to perform, if any, when the associated tag is finished */
+    /** Action to perform, if any, when the associated tag is finished. */
     @Nullable
-    private XmlHandler mEndAction = null;
-    /** Optional parameter put in context before action is called */
-    private Object mEndArg = null;
+    private XmlHandler mEndAction;
+    /** Optional parameter put in context before action is called. */
+    private Object mEndArg;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param pattern The tag that this filter handles
      */
@@ -75,7 +75,7 @@ public class XmlFilter {
     }
 
     /**
-     * Static method to add a filter to a passed tree and return the matching XmlFilter
+     * Static method to add a filter to a passed tree and return the matching XmlFilter.
      *
      * @param root    Root XmlFilter object.
      * @param filters Names of tags to add to tree, if not present.
@@ -92,7 +92,7 @@ public class XmlFilter {
     }
 
     /**
-     * Static method to add a filter to a passed tree and return the matching XmlFilter
+     * Static method to add a filter to a passed tree and return the matching XmlFilter.
      *
      * @param root    Root XmlFilter object.
      * @param filters Names of tags to add to tree, if not present.
@@ -124,7 +124,8 @@ public class XmlFilter {
                                          final int depth,
                                          @NonNull final Iterator<String> iterator) {
         //if (!root.matches(filters[depth]))
-        //	throw new RuntimeException("Filter at depth=" + depth + " does not match first filter parameter");
+        //    throw new RuntimeException("Filter at depth=" + depth +
+        //                               " does not match first filter parameter");
 
         final String curr = iterator.next();
         XmlFilter sub = root.getSubFilter(curr);
@@ -142,7 +143,7 @@ public class XmlFilter {
     }
 
     /**
-     * Check if this filter matches the passed XML tag
+     * Check if this filter matches the passed XML tag.
      *
      * @param tag Tag name
      *
@@ -166,7 +167,7 @@ public class XmlFilter {
      *
      * @param name XML tag name
      *
-     * @return Matching filter, or NULL
+     * @return Matching filter, or null if none present
      */
     @Nullable
     private XmlFilter getSubFilter(@Nullable final String name) {
@@ -199,7 +200,7 @@ public class XmlFilter {
     }
 
     /**
-     * Get the tag that this filter will match
+     * @return the tag that this filter will match
      */
     @NonNull
     private String getTagName() {
@@ -268,7 +269,7 @@ public class XmlFilter {
         mSubFilters.add(filter);
     }
 
-    /** Interface definition for filter handlers */
+    /** Interface definition for filter handlers. */
     public interface XmlHandler {
 
         void process(@NonNull final ElementContext context);
@@ -276,37 +277,37 @@ public class XmlFilter {
 
     /**
      * Class used to define the context of a specific tag.
-     *
+     * <p>
      * The 'body' element will only be set when the tag end is handled.
      *
      * @author Philip Warner
      */
     public static class ElementContext {
 
-        /** the short name of the tag */
+        /** the short name of the tag. */
         public final String localName;
-        /** Attributes on this tag */
+        /** Attributes on this tag. */
         public final Attributes attributes;
-        /** not used for now */
+        /** not used for now. */
         private final String uri;
-        /** not used for now */
+        /** not used for now. */
         private final String qName;
-        /** the inner-tag text */
+        /** the inner-tag text. */
         private final String text;
-        /** */
+        /** the body/text between start and end of the tag. */
         public String body;
 
-        /** filter on this tag */
+        /** filter on this tag. */
         public XmlFilter filter;
 
         /**
          * the user argument fed into the {@link XmlFilter#setStartAction(XmlHandler, Object)}
-         * and {@link XmlFilter#setEndAction(XmlHandler, Object)}
+         * and {@link XmlFilter#setEndAction(XmlHandler, Object)}.
          */
         public Object userArg;
 
         /**
-         * @param filter to use for this tag
+         * @param filter to use for this tag.
          */
         public ElementContext(@NonNull final XmlFilter filter) {
             this.filter = filter;
@@ -319,7 +320,7 @@ public class XmlFilter {
         }
 
         /**
-         * Same arguments coming from the SAX Handler + the current inter-tag text
+         * Same arguments coming from the SAX Handler + the current inter-tag text.
          *
          * @param uri        The Namespace URI, or the empty string if the
          *                   element has no Namespace URI or if Namespace
@@ -347,6 +348,7 @@ public class XmlFilter {
             this.text = text;
         }
 
+        @NonNull
         public String getText() {
             return text;
         }

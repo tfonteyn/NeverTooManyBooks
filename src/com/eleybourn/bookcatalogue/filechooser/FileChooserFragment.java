@@ -32,9 +32,15 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter.ViewProvider;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter.LayoutProvider;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask.FileListerListener;
@@ -43,11 +49,6 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
-
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 /**
  * Fragment to display a simple directory/file browser.
@@ -64,19 +65,15 @@ public class FileChooserFragment
     private static final String BKEY_LIST = "list";
 
     private File mRootPath;
-
-    private EditText mFilenameField;
-    private TextView mPathField;
-
     private final OnClickListener onPathUpClickListener = new OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull final View v) {
             String parent = mRootPath.getParent();
             if (parent == null) {
                 //Snackbar.make(this.getView(),
                 // R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
-                StandardDialogs
-                        .showUserMessage(requireActivity(), R.string.warning_no_parent_directory_found);
+                StandardDialogs.showUserMessage(requireActivity(),
+                                                R.string.warning_no_parent_directory_found);
                 return;
             }
             mRootPath = new File(parent);
@@ -84,12 +81,14 @@ public class FileChooserFragment
             tellActivityPathChanged();
         }
     };
+    private EditText mFilenameField;
+    private TextView mPathField;
 
-    // Create an empty one in case we are rotated before generated.
+    /** Create an empty one in case we are rotated before generated. */
     @Nullable
     private ArrayList<FileDetails> mList = new ArrayList<>();
 
-    /** Create a new chooser fragment */
+    /** Create a new chooser fragment. */
     @NonNull
     public static FileChooserFragment newInstance(@NonNull final File root,
                                                   @NonNull final String fileName) {
@@ -111,7 +110,7 @@ public class FileChooserFragment
     }
 
     /**
-     * Ensure activity supports interface
+     * Ensure activity supports interface.
      */
     @Override
     @CallSuper
@@ -140,8 +139,8 @@ public class FileChooserFragment
         mPathField = getView().findViewById(R.id.path);
 
         if (savedInstanceState != null) {
-            mRootPath = new File(Objects
-                    .requireNonNull(savedInstanceState.getString(BKEY_ROOT_PATH)));
+            mRootPath =
+                    new File(Objects.requireNonNull(savedInstanceState.getString(BKEY_ROOT_PATH)));
             ArrayList<FileDetails> list = savedInstanceState.getParcelableArrayList(BKEY_LIST);
             Objects.requireNonNull(list);
             onGotFileList(mRootPath, list);
@@ -170,7 +169,7 @@ public class FileChooserFragment
     }
 
     /**
-     * Save our root path and list
+     * Save our root path and list.
      */
     @Override
     @CallSuper
@@ -181,19 +180,16 @@ public class FileChooserFragment
     }
 
     /**
-     * Accessor
-     *
-     * @return File
+     * @return the selected file
      */
     @NonNull
-    public File getSelectedFile() {
-        return new File(mRootPath.getAbsolutePath() + File.separator + mFilenameField.getText()
-                                                                                     .toString()
-                                                                                     .trim());
+    File getSelectedFile() {
+        return new File(mRootPath.getAbsolutePath() +
+                                File.separator + mFilenameField.getText().toString().trim());
     }
 
     /**
-     * Display the list
+     * Display the list.
      *
      * @param root Root directory
      * @param list List of FileDetails
@@ -223,28 +219,29 @@ public class FileChooserFragment
     }
 
     /**
-     * Interface for details of files in current directory
+     * Interface for details of files in current directory.
      */
     public interface FileDetails
-            extends ViewProvider, Parcelable {
+            extends LayoutProvider, Parcelable {
 
-        /** Get the underlying File object */
+        /** Get the underlying File object. */
         @NonNull
         File getFile();
 
         /**
          * Called to fill in the details of this object in the View provided
-         * by the ViewProvider implementation
+         * by the LayoutProvider implementation.
          */
         void onGetView(@NonNull final View convertView,
                        @NonNull final Context context);
     }
 
     /**
-     * List Adapter for FileDetails objects
-     *
-     * {@link FileDetails} can provide the view using {@link ViewProvider#getViewId}
-     * and {@link ViewProvider#onGetView}
+     * List Adapter for FileDetails objects.
+     * <p>
+     * {@link FileDetails} can provide the view using
+     * {@link SimpleListAdapter.LayoutProvider#getLayoutId}
+     * and {@link LayoutProvider#onGetView}
      */
     protected class FileDetailsAdapter
             extends ArrayAdapter<FileDetails> {
@@ -263,7 +260,7 @@ public class FileChooserFragment
             final FileDetails item = this.getItem(position);
             if (convertView == null) {
                 //noinspection ConstantConditions
-                convertView = LayoutInflater.from(getContext()).inflate(item.getViewId(), null);
+                convertView = LayoutInflater.from(getContext()).inflate(item.getLayoutId(), null);
             }
 
             //noinspection ConstantConditions
@@ -272,7 +269,7 @@ public class FileChooserFragment
             // Put the name of the file into the filename field when clicked.
             convertView.setOnClickListener(new OnClickListener() {
                 @Override
-                public void onClick(final View v) {
+                public void onClick(@NonNull final View v) {
                     if (item.getFile().isDirectory()) {
                         mRootPath = item.getFile();
                         tellActivityPathChanged();

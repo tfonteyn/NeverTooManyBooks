@@ -30,6 +30,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.PopupMenu;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -42,19 +46,15 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.util.ArrayList;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
- *
+ * <p>
  * refit with extends {@link EditObjectListActivity} ? => no point,
  * we don't want/need a {@link TouchListView}
  */
 public class EditBookshelfListActivity
-    extends BaseListActivity {
+        extends BaseListActivity {
 
     private CatalogueDBAdapter mDb;
     private ArrayList<Bookshelf> mList;
@@ -78,12 +78,13 @@ public class EditBookshelfListActivity
 
     private void populateList() {
         mList = mDb.getBookshelves();
-        ArrayAdapter<Bookshelf> adapter = new ArrayAdapter<>(this, R.layout.row_bookshelf, R.id.row_bookshelves, mList);
+        ArrayAdapter<Bookshelf> adapter = new ArrayAdapter<>(this, R.layout.row_bookshelf,
+                                                             R.id.row_bookshelves, mList);
         setListAdapter(adapter);
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
      */
     @Override
     public void initListViewContextMenuListener(@NonNull final Context context) {
@@ -98,11 +99,13 @@ public class EditBookshelfListActivity
                 // legal trick to get an instance of Menu.
                 mListViewContextMenu = new PopupMenu(context, null).getMenu();
                 // custom menuInfo
-                SelectOneDialog.SimpleDialogMenuInfo menuInfo = new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
+                SelectOneDialog.SimpleDialogMenuInfo menuInfo =
+                        new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, position);
                 // populate the menu
                 mListViewContextMenu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit_bookshelf)
                                     .setIcon(R.drawable.ic_edit);
-                mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0, R.string.menu_delete_bookshelf)
+                mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0,
+                                         R.string.menu_delete_bookshelf)
                                     .setIcon(R.drawable.ic_delete);
                 // display
                 onCreateListViewContextMenu(mListViewContextMenu, view, menuInfo);
@@ -112,30 +115,33 @@ public class EditBookshelfListActivity
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
      */
     @Override
     public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
                                                  @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+
+        Bookshelf bookshelf = mList.get(menuInfo.position);
         switch (menuItem.getItemId()) {
-            case R.id.MENU_EDIT: {
-                Bookshelf bookshelf = mList.get(menuInfo.position);
+            case R.id.MENU_EDIT:
                 doEditDialog(bookshelf);
                 return true;
-            }
-            case R.id.MENU_DELETE: {
-                Bookshelf bookshelf = mList.get(menuInfo.position);
+
+            case R.id.MENU_DELETE:
                 if (bookshelf.id != 1) {
                     mDb.deleteBookshelf(bookshelf.id);
                     populateList();
                 } else {
-                    //TODO: why not ? as long as we make sure there is another one left.. e.g. count > 2, then you can delete '1'
+                    //TODO: why not ? as long as we make sure there is another one left..
+                    // e.g. count > 2, then you can delete '1'
                     StandardDialogs.showUserMessage(this, R.string.warning_cannot_delete_1st_bs);
                 }
                 return true;
-            }
+
+
+            default:
+                return false;
         }
-        return false;
     }
 
     /**
@@ -161,17 +167,18 @@ public class EditBookshelfListActivity
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.MENU_INSERT: {
+            case R.id.MENU_INSERT:
                 doEditDialog(new Bookshelf(""));
                 return true;
-            }
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
-     * Listen for clicks on items in our list
-     *
+     * Listen for clicks on items in our list.
+     * <p>
      * {@link BaseListActivity} enables 'this' as the listener
      */
     @Override
@@ -183,6 +190,9 @@ public class EditBookshelfListActivity
         doEditDialog(bookshelf);
     }
 
+    /**
+     * @param bookshelf to edit
+     */
     private void doEditDialog(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialog d = new EditBookshelfDialog(this, mDb, new Runnable() {
             @Override

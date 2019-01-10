@@ -678,7 +678,7 @@
     <string name="menu_set_incomplete">Contrassegna come incompleto</string>
     <string name="error_search_configuration">Errore di configurazione Web. Apri la pagina di amministrazione e verifica le impostazioni nelle pagine di ricerca.</string>
     <string name="tab_lbl_search_site_order">Ordine</string>
-    <string name="search_with_text">Ricerca</string>
+    <string name="search_with_text">Ricerca: %1$s</string>
     <string name="btn_options">Opzioni</string>
     <string name="lbl_price_paid">Pagato</string>
     <string name="lbl_first_publication">Prima pubblicazione</string>

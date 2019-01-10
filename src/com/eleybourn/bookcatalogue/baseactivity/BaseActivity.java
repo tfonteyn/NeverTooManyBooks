@@ -5,6 +5,15 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.eleybourn.bookcatalogue.About;
 import com.eleybourn.bookcatalogue.AdminActivity;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -23,21 +32,14 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 import com.google.android.material.navigation.NavigationView;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 /**
  * Base class for all (most) Activity's.
  *
  * @author pjw
  */
-abstract public class BaseActivity extends AppCompatActivity implements
+public abstract class BaseActivity
+        extends AppCompatActivity
+        implements
         NavigationView.OnNavigationItemSelectedListener,
         SharedPreferences.OnSharedPreferenceChangeListener,
         CanBeDirty {
@@ -49,10 +51,10 @@ abstract public class BaseActivity extends AppCompatActivity implements
     private NavigationView mNavigationView;
 
     /** when a locale or theme is changed, a restart of the activity is needed. */
-    private boolean mRestartActivityOnResume = false;
+    private boolean mRestartActivityOnResume;
 
     /** universal flag used to indicate something was changed and not saved (yet). */
-    private boolean mIsDirty = false;
+    private boolean mIsDirty;
 
     public boolean isDirty() {
         return mIsDirty;
@@ -150,38 +152,38 @@ abstract public class BaseActivity extends AppCompatActivity implements
 
         Intent intent;
         switch (item.getItemId()) {
-            case R.id.nav_search: {
+            case R.id.nav_search:
                 onSearchRequested();
                 return true;
-            }
-            case R.id.nav_manage_bookshelves: {
+
+            case R.id.nav_manage_bookshelves:
                 intent = new Intent(this, EditBookshelfListActivity.class);
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
-                break;
-            }
-            case R.id.nav_edit_list_styles: {
+                return true;
+
+            case R.id.nav_edit_list_styles:
                 intent = new Intent(this, PreferredStylesActivity.class);
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES);
                 return true;
-            }
-            case R.id.nav_admin: {
+
+            case R.id.nav_admin:
                 intent = new Intent(this, AdminActivity.class);
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_ADMIN);
                 return true;
-            }
-            case R.id.nav_about: {
+
+            case R.id.nav_about:
                 intent = new Intent(this, About.class);
                 startActivity(intent);
                 return true;
-            }
-            case R.id.nav_help: {
+
+            case R.id.nav_help:
                 intent = new Intent(this, Help.class);
                 startActivity(intent);
                 return true;
-            }
-        }
 
-        return false;
+            default:
+                return false;
+        }
     }
 
     /**
@@ -203,7 +205,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             // Default handler for home icon
-            case android.R.id.home: {
+            case android.R.id.home:
                 // the home icon is only a hamburger at the top level
                 if (isTaskRoot()) {
                     if (mDrawerLayout != null) {
@@ -214,10 +216,10 @@ abstract public class BaseActivity extends AppCompatActivity implements
                 // otherwise, home is an 'up' event.
                 finishIfClean();
                 return true;
-            }
-        }
 
-        return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -227,29 +229,35 @@ abstract public class BaseActivity extends AppCompatActivity implements
                                     @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
-        // some activities MIGHT support the navigation panel, but are not (always) reacting to results,
-        // or need to react. Some debug/reminder logging here
+        // some activities MIGHT support the navigation panel, but are not (always)
+        // reacting to results, or need to react. Some debug/reminder logging here
         switch (requestCode) {
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this, "navigation panel REQ_NAV_PANEL_EDIT_BOOKSHELVES");
+                    Logger.info(this,
+                                "navigation panel REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
             case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this, "navigation panel REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
+                    Logger.info(this,
+                                "navigation panel REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
                 }
                 return;
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this, "navigation panel REQ_NAV_PANEL_ADMIN");
+                    Logger.info(this,
+                                "navigation panel REQ_NAV_PANEL_ADMIN");
                 }
                 return;
 
             default:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    // lowest level of our Activities, see if we missed anything that we should not miss.
-                    Logger.info(this, "BaseActivity|onActivityResult|NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                    // lowest level of our Activities, see if we missed anything
+                    // that we should not miss.
+                    Logger.info(this, "onActivityResult|NOT HANDLED:" +
+                            " requestCode=" + requestCode + ',' +
+                            " resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
 
@@ -259,7 +267,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     }
 
     /**
-     * When the user clicks 'back/up', check if we're clean to leave
+     * When the user clicks 'back/up', check if we're clean to leave.
      */
     @Override
     @CallSuper
@@ -268,18 +276,18 @@ abstract public class BaseActivity extends AppCompatActivity implements
     }
 
     /**
-     * Check if edits need saving, and finish the activity if not
+     * Check if edits need saving, and finish the activity if not.
      */
     public void finishIfClean() {
         if (isDirty()) {
-            StandardDialogs.showConfirmUnsavedEditsDialog(this,
+            StandardDialogs.showConfirmUnsavedEditsDialog(
+                    this,
                     /* run if user clicks 'exit' */
                     new Runnable() {
                         @Override
                         public void run() {
                             finish();
                         }
-                        /* if they click 'cancel', the dialog just closes without further actions */
                     });
         } else {
             finish();
@@ -287,7 +295,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     }
 
     /**
-     * When resuming, restart activity if needed
+     * When resuming, restart activity if needed.
      */
     @Override
     @CallSuper
@@ -317,7 +325,7 @@ abstract public class BaseActivity extends AppCompatActivity implements
     }
 
     /**
-     * Apply preference changes
+     * Apply preference changes.
      */
     @Override
     @CallSuper

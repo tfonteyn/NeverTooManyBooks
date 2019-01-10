@@ -30,6 +30,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
@@ -39,12 +45,6 @@ import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.util.ArrayList;
-
-import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * ENHANCE: Ultimately, this should become a Fragment.
@@ -88,40 +88,41 @@ import androidx.annotation.Nullable;
  *
  * @author Philip Warner
  */
-abstract public class EditObjectListActivity<T extends Parcelable> extends BaseListActivity
+public abstract class EditObjectListActivity<T extends Parcelable>
+        extends BaseListActivity
         implements TouchListView.OnDropListener {
 
-    /** The key to use in the Bundle to get the array */
+    /** The key to use in the Bundle to get the array. */
     @Nullable
     private final String mBKey;
-    /** The resource ID for the base view */
+    /** The resource ID for the base view. */
     @LayoutRes
     private final int mBaseViewId;
-    /** The resource ID for the row view */
+    /** The resource ID for the row view. */
     @LayoutRes
     private final int mRowViewId;
 
     /**
-     * Handle 'Cancel'
+     * Handle 'Cancel'.
      */
     private final OnClickListener mCancelListener = new OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull final View v) {
             if (onCancel()) {
                 finish();
             }
         }
     };
-    /** the rows */
-    protected ArrayList<T> mList = null;
+    /** the rows. */
+    protected ArrayList<T> mList;
     /**
-     * Handle 'Save'
+     * Handle 'Save'.
      *
      * TEST: setResult(Activity.RESULT_OK although we might not have made any.
      */
     private final OnClickListener mSaveListener = new OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull final View v) {
             Intent data = new Intent();
             data.putExtra(mBKey, mList);
             if (onSave(data)) {
@@ -131,11 +132,11 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     };
     protected SimpleListAdapter<T> mListAdapter;
     /**
-     * Handle 'Add'
+     * Handle 'Add'.
      */
     private final OnClickListener mOnAddListener = new OnClickListener() {
         @Override
-        public void onClick(@NonNull View v) {
+        public void onClick(@NonNull final View v) {
             onAdd(v);
             onListChanged();
         }
@@ -147,14 +148,14 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     protected long mRowId = 0;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param baseViewId Resource id of base view
      * @param rowViewId  Resource id of row view
      * @param bkey       The key to use in the Bundle to get the list
      */
-    protected EditObjectListActivity(final @LayoutRes int baseViewId,
-                                     final @LayoutRes int rowViewId,
+    protected EditObjectListActivity(@LayoutRes final int baseViewId,
+                                     @LayoutRes final int rowViewId,
                                      @Nullable final String bkey) {
         mBaseViewId = baseViewId;
         mRowViewId = rowViewId;
@@ -207,11 +208,13 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      * 4. throw FATAL error
      */
     @NonNull
-    private ArrayList<T> getList(@NonNull final String key, @Nullable final Bundle savedInstanceState) {
+    private ArrayList<T> getList(@NonNull final String key,
+                                 @Nullable final Bundle savedInstanceState) {
         ArrayList<T> list = null;
 
         if (key != null) {
-            list = BundleUtils.getParcelableArrayList(key, savedInstanceState, getIntent().getExtras());
+            list = BundleUtils.getParcelableArrayList(key, savedInstanceState,
+                                                      getIntent().getExtras());
         }
         if (list != null) {
             return list;
@@ -231,11 +234,11 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     }
 
     /**
-     * Replace the current list
+     * Replace the current list.
      */
     protected void setList(@NonNull final ArrayList<T> newList) {
         View listView = getListView().getChildAt(0);
-        final int savedTop = listView == null ? 0 : listView.getTop();
+        final int savedTop = listView != null ? listView.getTop() : 0;
         final int savedRow = getListView().getFirstVisiblePosition();
 
         mList = newList;
@@ -251,9 +254,9 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     }
 
     /**
-     * get the specific list adapter from the child class
+     * get the specific list adapter from the child class.
      */
-    abstract protected SimpleListAdapter<T> createListAdapter(final @LayoutRes int rowViewId,
+    protected abstract SimpleListAdapter<T> createListAdapter(@LayoutRes final int rowViewId,
                                                               @NonNull final ArrayList<T> list);
 
     /**
@@ -270,7 +273,8 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      */
     @Override
     @CallSuper
-    public void onDrop(final int fromPosition, final int toPosition) {
+    public void onDrop(final int fromPosition,
+                       final int toPosition) {
         // Check if nothing to do; also avoids the nasty case where list size == 1
         if (fromPosition == toPosition) {
             return;
@@ -284,8 +288,12 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
 
         final ListView listView = getListView();
         final int firstVisiblePosition = listView.getFirstVisiblePosition();
-        final int newFirst = (toPosition > fromPosition && fromPosition < firstVisiblePosition) ?
-                (firstVisiblePosition - 1) : firstVisiblePosition;
+        final int newFirst;
+        if (toPosition > fromPosition && fromPosition < firstVisiblePosition) {
+            newFirst = firstVisiblePosition - 1;
+        } else {
+            newFirst = firstVisiblePosition;
+        }
 
         View firstView = listView.getChildAt(0);
         final int offset = firstView.getTop();
@@ -328,10 +336,7 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      * @return <tt>true</tt> if activity should exit, <tt>false</tt> to abort exit.
      */
     protected boolean onSave(@NonNull final Intent data) {
-        setResult(Activity.RESULT_OK, data); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
-                 dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17
-                 13854efe-e8fd-447a-a195-47678c0d87e7 */
-
+        setResult(Activity.RESULT_OK, data);
         return true;
     }
 
@@ -345,9 +350,7 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
      */
     @SuppressWarnings("SameReturnValue")
     protected boolean onCancel() {
-        setResult(Activity.RESULT_CANCELED); /* bca659b6-dfb9-4a97-b651-5b05ad102400,
-                dd74343a-50ff-4ce9-a2e4-a75f7bcf9e36, 3f210502-91ab-4b11-b165-605e09bb0c17,
-                13854efe-e8fd-447a-a195-47678c0d87e7 */
+        setResult(Activity.RESULT_CANCELED);
         return true;
     }
 
@@ -363,12 +366,13 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     }
 
     /**
-     * Utility routine to setup a listener for the specified view id if such id exist.
+     * Setup a listener for the specified view id if such id exist.
      *
      * @param viewId   Resource ID
      * @param listener Listener
      */
-    private void setOnClickListener(final @IdRes int viewId, @NonNull final OnClickListener listener) {
+    private void setOnClickListener(@IdRes final int viewId,
+                                    @NonNull final OnClickListener listener) {
         View view = findViewById(viewId);
         if (view != null) {
             view.setOnClickListener(listener);
@@ -376,12 +380,14 @@ abstract public class EditObjectListActivity<T extends Parcelable> extends BaseL
     }
 
     /**
-     * Utility routine to set a TextView to a string, or hide it.
+     * Set a TextView to a string, or hide it.
      *
      * @param viewId View ID
      * @param value  String to set
      */
-    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue") final @IdRes int viewId, @Nullable final String value) {
+    protected void setTextOrHideView(@SuppressWarnings("SameParameterValue")
+                                     @IdRes final int viewId,
+                                     @Nullable final String value) {
         TextView textView = this.findViewById(viewId);
         if (textView == null) {
             return;

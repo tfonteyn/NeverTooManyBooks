@@ -30,23 +30,30 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  *
  * @author Philip Warner
  */
-public class OrValidator extends MetaValidator implements DataValidator {
+public class OrValidator
+        extends MetaValidator
+        implements DataValidator {
 
     private static final long serialVersionUID = -467862551216306038L;
 
-    public OrValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2) {
+    public OrValidator(@NonNull final DataValidator v1,
+                       @NonNull final DataValidator v2) {
         super(v1, v2);
     }
 
-    public OrValidator(@NonNull final DataValidator v1, @NonNull final DataValidator v2, @NonNull final DataValidator v3) {
+    public OrValidator(@NonNull final DataValidator v1,
+                       @NonNull final DataValidator v2,
+                       @NonNull final DataValidator v3) {
         super(v1, v2, v3);
     }
 
     @Override
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data,
+                         @NonNull final Datum datum,
+                         final boolean crossValidating)
             throws ValidatorException {
-       ValidatorException lastException = null;
-       for (DataValidator v : this) {
+        ValidatorException lastException = null;
+        for (DataValidator v : this) {
             try {
                 v.validate(data, datum, crossValidating);
                 return;
@@ -57,9 +64,10 @@ public class OrValidator extends MetaValidator implements DataValidator {
                 // Do nothing...try next validator
             }
         }
-        if (lastException != null)
+        if (lastException != null) {
             throw lastException;
-        else
+        } else {
             throw new ValidatorException(R.string.vldt_failed, new Object[]{datum.getKey()});
+        }
     }
 }

@@ -1,4 +1,4 @@
-TOMF ENHANCE New anthology stuff:
+TOMF ENHANCE: New anthology stuff:
  * to think about:
  * - when to delete entries in ANTHOLOGY ? when last book is gone or keep them, for adding to new books / wish list
  * - consider a purge based on book for orphan TOCEntry (a purge based on Author is already done)
@@ -12,24 +12,24 @@ Review database stuff
  * - catch NotFoundException (or not?)
  * - bind variables versus string concat
 
-ENHANCE database using 'lower()' in WHERE and ORDER BY clauses.
+ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
  * Performance? Better 'Collation' setting?'. LIKE operator ?
  * check indexes for using all lower case, then eliminate the lower() for all that uses those indexes.
  * force table creation to use NOCASE ? but what about current LOCALIZED then ?
 
-ENHANCE finish FTS searching {@link com.eleybourn.bookcatalogue.searches.AdvancedLocalSearchActivity}
+ENHANCE: finish FTS searching {@link com.eleybourn.bookcatalogue.searches.AdvancedLocalSearchActivity}
  * and {@link #searchFts(String, String, String)}
 
 TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
 
-ENHANCE instead of string encoding of lists, at the very least use ArrayList<String>;
+ENHANCE: instead of string encoding of lists, at the very least use ArrayList<String>;
 only do the multi-string encoding/decoding at CSV level
 
 ENHANCE: XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!
  * con: fools / fields will be bigger due to labels/tags / not easy to get 'others' to create import files
 
-TODO: remove the Apache http client; it's removed from API 23.
+TODO: remove the Apache http client; it's removed from API: 23.
 
 Issues checked: 800 down to 677 (inc)
 

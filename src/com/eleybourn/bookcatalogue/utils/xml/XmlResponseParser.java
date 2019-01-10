@@ -20,6 +20,11 @@
 
 package com.eleybourn.bookcatalogue.utils.xml;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
 
@@ -29,23 +34,22 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 /**
- * Base class for parsing the output any web request that returns an XML response. NOTE: this does
- * not include general web page parsing since they often do not conform to XML formatting standards.
- *
- * This class is used with the XmlFilter class to call user-defined code at specific points in
- * an XML file.
+ * Base class for parsing the output any web request that returns an XML response.
+ * NOTE: this does not include general web page parsing since they often do not conform
+ * to XML formatting standards.
+ * <p>
+ * This class is used with the {@link XmlFilter} class to call user-defined code at
+ * specific points in an XML file.
  *
  * @author Philip Warner
  */
-public class XmlResponseParser extends DefaultHandler {
+public class XmlResponseParser
+        extends DefaultHandler {
 
-    /** Temporary storage for inter-tag text */
+    /** Temporary storage for inter-tag text. */
     private final StringBuilder mBuilder = new StringBuilder();
-    /** Stack of parsed tags giving context to the XML parser */
+    /** Stack of parsed tags giving context to the XML parser. */
     private final ArrayList<ElementContext> mParents = new ArrayList<>();
 
     /**
@@ -60,11 +64,13 @@ public class XmlResponseParser extends DefaultHandler {
     }
 
     /**
-     * Gather inter-tag text
+     * Gather inter-tag text.
      */
     @Override
     @CallSuper
-    public void characters(@NonNull final char[] ch, final int start, final int length)
+    public void characters(@NonNull final char[] ch,
+                           final int start,
+                           final int length)
             throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
@@ -82,9 +88,12 @@ public class XmlResponseParser extends DefaultHandler {
             throws SAXException {
         super.startElement(uri, localName, qName, attributes);
 
-        Logger.info(this, "startElement|localName=`" + localName + "`");
+        if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
+            Logger.info(this, "startElement|localName=`" + localName + '`');
+        }
         // Create a new context for this new tag saving the current inter-tag text for later
-        ElementContext tag = new ElementContext(uri, localName, qName, attributes, mBuilder.toString());
+        ElementContext tag = new ElementContext(uri, localName, qName, attributes,
+                                                mBuilder.toString());
 
         // Get the current element
         ElementContext enclosingTag = mParents.get(mParents.size() - 1);
@@ -107,7 +116,7 @@ public class XmlResponseParser extends DefaultHandler {
     }
 
     /**
-     * Handle the end of the current tag
+     * Handle the end of the current tag.
      */
     @Override
     @CallSuper
@@ -122,11 +131,14 @@ public class XmlResponseParser extends DefaultHandler {
 
         // Minor paranoia. Make sure name matches. Total waste of time, right?
         if (!localName.equals(tag.localName)) {
-            throw new IllegalStateException("End element '" + localName + "' does not match start element '" + tag.localName + '\'');
+            throw new IllegalStateException(
+                    "End element '" + localName + "' does not match start element"
+                            + " '" + tag.localName + '\'');
         }
 
         // Save the text that appeared inside this tag (but not inside inner tags)
-        tag.body = mBuilder.toString();
+        //2019-01-06: trim to remove whitespace
+        tag.body = mBuilder.toString().trim();
 
         // If there is an active filter in this context, then tell it the tag is finished.
         if (tag.filter != null) {

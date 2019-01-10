@@ -22,34 +22,38 @@ package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.Objects;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 /**
  * This class will search the internet for book details based on either
  * a manually provided ISBN, or a scanned ISBN.
  * Alternatively, it will search based on Author/Title.
- *
+ * <p>
  * ISBN stands for International Standard Book Number.
  * Every book is assigned a unique ISBN-10 and ISBN-13 when published.
- *
+ * <p>
  * ASIN stands for Amazon Standard Identification Number.
  * Every product on Amazon has its own ASIN, a unique code used to identify it.
  * For books, the ASIN is the same as the ISBN-10 number, but for all other products a new ASIN
  * is created when the item is uploaded to their catalogue.
  */
 public class BookSearchActivity
-    extends BaseActivityWithTasks {
+        extends BaseActivityWithTasks {
 
+    /** 'by' what criteria to search. */
     public static final String REQUEST_BKEY_BY = "by";
+    /** option for 'by'. */
     public static final String BY_ISBN = "isbn";
+    /** option for 'by'. */
     public static final String BY_TEXT = "text";
+    /** option for 'by'. */
     public static final String BY_SCAN = "scan";
 
     @Override
@@ -82,9 +86,9 @@ public class BookSearchActivity
         frag.setArguments(extras);
 
         getSupportFragmentManager()
-            .beginTransaction()
-            .replace(R.id.main_fragment, frag)
-            .commit();
+                .beginTransaction()
+                .replace(R.id.main_fragment, frag)
+                .commit();
 
         Tracker.exitOnCreate(this);
     }

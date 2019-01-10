@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.tasks.managedtasks;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -42,46 +43,48 @@ import java.util.concurrent.atomic.AtomicLong;
  * Switchboard class for disconnecting listener instances from task instances. Maintains
  * separate lists and each 'sender' queue maintains a last-message for re-transmission
  * when a listener instance (re)connects.
- *
+ * <p>
  * Usage:
- *
+ * <p>
  * A sender (typically a background task, thread or thread manager) registers itself and is
  * assigned a unique ID. The creator of the sender uses the ID as the key for later retrieval.
- *
+ * <p>
  * The listener must have access to the unique ID and use that to register themselves.
- *
+ * <p>
  * The listener should call {@link #addListener}, {@link #removeListener}
  * or {@link #getController} as necessary.
- *
- * ENHANCE: Allow fixed sender IDs to ensure uniqueness and/or allow multiple senders for specific IDs
+ * <p>
+ * ENHANCE: Allow fixed sender IDs to ensure uniqueness / allow multiple senders for specific IDs
  *
  * @param <T> The Class (a listener interface) of message that this switchboard sends
- *
  * @param <U> The Class of controller object made available to listeners.
  *            The controller gives access to the sender.
  *
  * @author pjw
  */
 public class MessageSwitch<T, U> {
-    /** Handler object for posting to main thread and for testing if running on UI thread */
+
+    /** Handler object for posting to main thread and for testing if running on UI thread. */
     private static final Handler mHandler = new Handler();
-    /** ID counter for unique sender IDs; set > 0 to allow for possible future static senders **/
+    /** ID counter for unique sender IDs; set > 0 to allow for possible future static senders. */
     @NonNull
     private static final AtomicLong mSenderIdCounter = new AtomicLong(1024L);
 
-    /** List of message sources */
+    /** List of message sources. */
     @SuppressLint("UseSparseArrays")
-    private final Map<Long, MessageSender<U>> mSenders = Collections.synchronizedMap(new HashMap<Long, MessageSender<U>>());
+    private final Map<Long, MessageSender<U>> mSenders = Collections.synchronizedMap(
+            new HashMap<Long, MessageSender<U>>());
 
-    /** List of all messages in the message queue, both messages and replies */
+    /** List of all messages in the message queue, both messages and replies. */
     private final LinkedBlockingQueue<RoutingSlip> mMessageQueue = new LinkedBlockingQueue<>();
 
-    /** List of message listener queues */
+    /** List of message listener queues. */
     @SuppressLint("UseSparseArrays")
-    private final Map<Long, MessageListeners> mListeners = Collections.synchronizedMap(new HashMap<Long, MessageListeners>());
+    private final Map<Long, MessageListeners> mListeners = Collections.synchronizedMap(
+            new HashMap<Long, MessageListeners>());
 
     /**
-     * Register a new sender and it's controller object;
+     * Register a new sender and it's controller object.
      *
      * @return the unique ID for this sender
      */
@@ -93,13 +96,15 @@ public class MessageSwitch<T, U> {
     }
 
     /**
-     * Add a listener for the specified sender ID
+     * Add a listener for the specified sender ID.
      *
      * @param senderId    ID of sender to which the listener listens
      * @param listener    Listener object
      * @param deliverLast If true, send the last message (if any) to this listener
      */
-    public void addListener(@NonNull final Long senderId, @NonNull final T listener, final boolean deliverLast) {
+    public void addListener(@NonNull final Long senderId,
+                            @NonNull final T listener,
+                            final boolean deliverLast) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, "addListener|" + listener + "|senderId=" + senderId);
         }
@@ -121,12 +126,16 @@ public class MessageSwitch<T, U> {
                 // Do it on the UI thread.
                 if (mHandler.getLooper().getThread() == Thread.currentThread()) {
                     if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                        Logger.info(this, "|UI thread|delivering to listener: " + listener + "|msg=" + routingSlip.message.toString());
+                        Logger.info(this,
+                                    "|UI thread|delivering to listener: " +
+                                            listener + "|msg=" + routingSlip.message.toString());
                     }
                     routingSlip.message.deliver(listener);
                 } else {
                     if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                        Logger.info(this, "|post runnable|delivering to listener: " + listener + "|msg=" + routingSlip.message.toString());
+                        Logger.info(this,
+                                    "|post runnable|delivering to listener: " +
+                                            listener + "|msg=" + routingSlip.message.toString());
                     }
                     mHandler.post(new Runnable() {
                         @Override
@@ -139,27 +148,34 @@ public class MessageSwitch<T, U> {
         }
     }
 
-    /** Remove the specified listener from the specified queue */
-    public void removeListener(@NonNull final Long senderId, @NonNull final T listener) {
+    /**
+     * Remove the specified listener from the specified queue.
+     */
+    public void removeListener(@NonNull final Long senderId,
+                               @NonNull final T listener) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "|removeListener|senderId=" + senderId + '|' + listener);
+            Logger.info(this, "|removeListener|senderId=" +
+                    senderId + '|' + listener);
         }
         synchronized (mListeners) {
             MessageListeners queue = mListeners.get(senderId);
-            if (queue != null)
+            if (queue != null) {
                 queue.remove(listener);
+            }
         }
     }
 
     /**
-     * Send a message to a queue
+     * Send a message to a queue.
      *
      * @param senderId Queue ID
      * @param message  Message to send
      */
-    public void send(@NonNull final Long senderId, @NonNull final Message<T> message) {
+    public void send(@NonNull final Long senderId,
+                     @NonNull final Message<T> message) {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-            Logger.info(this, "|sending to senderId=" + senderId + "|message: " + message);
+            Logger.info(this, "|sending to senderId=" +
+                    senderId + "|message: " + message);
         }
         // Create a routing slip
         RoutingSlip m = new MessageRoutingSlip(senderId, message);
@@ -173,7 +189,7 @@ public class MessageSwitch<T, U> {
 
 
     /**
-     * Get the controller object associated with a sender ID
+     * Get the controller object associated with a sender ID.
      *
      * @param senderId ID of sender
      *
@@ -189,7 +205,9 @@ public class MessageSwitch<T, U> {
         }
     }
 
-    /** Remove a sender and it's queue */
+    /**
+     * Remove a sender and it's queue.
+     */
     private void removeSender(@NonNull final MessageSender<U> s) {
         synchronized (mSenders) {
             mSenders.remove(s.getId());
@@ -198,7 +216,7 @@ public class MessageSwitch<T, U> {
 
     /**
      * If in UI thread, then process the queue, otherwise post a new runnable
-     * to process the queued messages
+     * to process the queued messages.
      */
     private void startProcessingMessages() {
         if (mHandler.getLooper().getThread() == Thread.currentThread()) {
@@ -214,22 +232,28 @@ public class MessageSwitch<T, U> {
         }
     }
 
-    /** Process the queued messages */
+    /**
+     * Process the queued messages.
+     */
     private void processMessages() {
         RoutingSlip m;
         do {
             synchronized (mMessageQueue) {
                 m = mMessageQueue.poll();
             }
-            if (m == null)
+            if (m == null) {
                 break;
+            }
 
             m.deliver();
         } while (true);
     }
 
-    /** Interface that must be implemented by any message that will be sent via send() */
+    /**
+     * Interface that must be implemented by any message that will be sent via send().
+     */
     public interface Message<T> {
+
         /**
          * Method to deliver a message.
          *
@@ -243,13 +267,15 @@ public class MessageSwitch<T, U> {
     }
 
     /**
-     * Interface for all messages sent to listeners
+     * Interface for all messages sent to listeners.
      *
      * @param <U> Arbitrary class that will be responsible for the message
      *
      * @author pjw
      */
-    private interface MessageSender<U> extends AutoCloseable {
+    private interface MessageSender<U>
+            extends AutoCloseable {
+
         Long getId();
 
         @Override
@@ -259,18 +285,25 @@ public class MessageSwitch<T, U> {
         U getController();
     }
 
-    /** Interface implemented by all routing slips objects */
+    /**
+     * Interface implemented by all routing slips objects.
+     */
     private interface RoutingSlip {
+
         void deliver();
     }
 
-    /** Class used to hold a list of listener objects */
-    private class MessageListeners implements Iterable<T> {
-        /** Weak refs to all listeners */
+    /**
+     * Class used to hold a list of listener objects.
+     */
+    private class MessageListeners
+            implements Iterable<T> {
+
+        /** Weak refs to all listeners. */
         private final List<WeakReference<T>> mList = new ArrayList<>();
-        /** Last message sent */
+        /** Last message sent. */
         @Nullable
-        private MessageRoutingSlip mLastMessage = null;
+        private MessageRoutingSlip mLastMessage;
 
         @Nullable
         MessageRoutingSlip getLastMessage() {
@@ -281,7 +314,7 @@ public class MessageSwitch<T, U> {
             mLastMessage = m;
         }
 
-        /** Add a listener to this queue */
+        /** Add a listener to this queue. */
         public void add(@NonNull final T listener) {
             synchronized (mList) {
                 mList.add(new WeakReference<>(listener));
@@ -289,7 +322,7 @@ public class MessageSwitch<T, U> {
         }
 
         /**
-         * Remove a listener from this queue; also removes dead references
+         * Remove a listener from this queue; also removes dead references.
          *
          * @param listener Listener to be removed
          */
@@ -305,17 +338,19 @@ public class MessageSwitch<T, U> {
                     }
                 }
                 // Remove all listeners we found
-                for (WeakReference<T> w : toRemove)
+                for (WeakReference<T> w : toRemove) {
                     mList.remove(w);
+                }
             }
         }
 
         /**
-         * Return an iterator to a *copy* of the valid underlying elements. This means that
-         * callers can make changes to the underlying list with impunity, and more importantly
-         * they can iterate over type T, rather than a bunch of weak references to T.
-         *
-         * Side-effect: removes invalid listeners
+         * Return an iterator to a *copy* of the valid underlying elements.
+         * This means that callers can make changes to the underlying list with impunity,
+         * and more importantly they can iterate over type T, rather than a bunch of weak
+         * references to T.
+         * <p>
+         * Side-effect: removes invalid listeners.
          */
         @NonNull
         @Override
@@ -328,44 +363,50 @@ public class MessageSwitch<T, U> {
                     if (listener != null) {
                         list.add(listener);
                     } else {
-                        if (toRemove == null)
+                        if (toRemove == null) {
                             toRemove = new ArrayList<>();
+                        }
                         toRemove.add(w);
                     }
                 }
-                if (toRemove != null)
-                    for (WeakReference<T> w : toRemove)
+                if (toRemove != null) {
+                    for (WeakReference<T> w : toRemove) {
                         mList.remove(w);
+                    }
+                }
             }
             return list.iterator();
         }
 
         //private final ReentrantLock mPopLock = new ReentrantLock();
         //ReentrantLock getLock() {
-        //	return mPopLock;
+        //  return mPopLock;
         //}
     }
 
-    /** RoutingSlip to deliver a Message object to all associated listeners */
-    private class MessageRoutingSlip implements RoutingSlip {
-        /** Destination queue (sender ID) */
+    /**
+     * RoutingSlip to deliver a Message object to all associated listeners.
+     */
+    private class MessageRoutingSlip
+            implements RoutingSlip {
+
+        /** Destination queue (sender ID). */
         @NonNull
         final Long destination;
-        /** Message to deliver */
+        /** Message to deliver. */
         @NonNull
         final Message<T> message;
 
-        /** Constructor */
-        MessageRoutingSlip(@NonNull final Long destination, @NonNull final Message<T> message) {
+        /** Constructor. */
+        MessageRoutingSlip(@NonNull final Long destination,
+                           @NonNull final Message<T> message) {
             this.destination = destination;
             this.message = message;
         }
 
-        /** Deliver message to all members of queue of sender */
+        /** Deliver message to all members of queue of sender. */
         @Override
         public void deliver() {
-            //Tracker.handleEvent(this, Tracker.States.Enter, "deliver");
-
             // Iterator for iterating queue
             Iterator<T> queueIterator = null;
 
@@ -385,9 +426,10 @@ public class MessageSwitch<T, U> {
                 while (queueIterator.hasNext()) {
                     T listener = queueIterator.next();
                     try {
-                        //Tracker.handleEvent(this, Tracker.States.Running, "deliver|msq=" + message.toString());
                         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                            Logger.info(this, "|queueIterator|listener=" + listener + "|msg=" + message.toString());
+                            Logger.info(this,
+                                        "|queueIterator|listener=" +
+                                                listener + "|msg=" + message.toString());
                         }
                         if (message.deliver(listener)) {
                             handled = true;
@@ -405,14 +447,19 @@ public class MessageSwitch<T, U> {
         }
     }
 
-    /** Implementation of Message sender object */
-    private class MessageSenderImpl implements MessageSender<U> {
-        // mId will be used as a key in maps, while 'long' would work, let's be consistent and use Long.
+    /**
+     * Implementation of Message sender object.
+     */
+    private class MessageSenderImpl
+            implements MessageSender<U> {
+
+        // mId will be used as a key in maps, while 'long' would work,
+        // let's be consistent and use Long.
         private final Long mId = mSenderIdCounter.incrementAndGet();
         @NonNull
         private final U mController;
 
-        /** Constructor */
+        /** Constructor. */
         MessageSenderImpl(@NonNull final U controller) {
             mController = controller;
         }
@@ -428,7 +475,7 @@ public class MessageSwitch<T, U> {
             return mController;
         }
 
-        /** Close and delete this sender */
+        /** Close and delete this sender. */
         @Override
         public void close() {
             synchronized (mSenders) {

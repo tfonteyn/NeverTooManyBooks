@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.googlebooks;
 
 import android.os.Bundle;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
@@ -38,7 +39,8 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.util.ArrayList;
 
 /**
- * An XML handler for the Google Books entry return
+ * An XML handler for the Google Books entry return.
+ *
  * <pre>
  * <?xml version='1.0' encoding='UTF-8'?>
  * <entry xmlns='http://www.w3.org/2005/Atom'
@@ -49,12 +51,17 @@ import java.util.ArrayList;
  *
  *   <id>http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ</id>
  *   <updated>2010-02-28T10:49:24.000Z</updated>
- *   <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/books/2008#volume'/>
+ *   <category scheme='http://schemas.google.com/g/2005#kind'
+ *   term='http://schemas.google.com/books/2008#volume'/>
  *   <title type='text'>The trigger</title>
- *   <link rel='http://schemas.google.com/books/2008/info' type='text/html' href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
- *   <link rel='http://schemas.google.com/books/2008/annotation' type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
- *   <link rel='alternate' type='text/html' href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1'/>
- *   <link rel='self' type='application/atom+xml' href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
+ *   <link rel='http://schemas.google.com/books/2008/info' type='text/html'
+ *   href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ *   <link rel='http://schemas.google.com/books/2008/annotation'
+ *   type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *   <link rel='alternate' type='text/html'
+ *   href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1'/>
+ *   <link rel='self' type='application/atom+xml'
+ *   href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
  *   <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
  *   <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
  *   <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
@@ -123,13 +130,14 @@ import java.util.ArrayList;
  * </entry>
  * </pre>
  */
-class SearchGoogleBooksEntryHandler extends DefaultHandler {
+class SearchGoogleBooksEntryHandler
+        extends DefaultHandler {
 
-    /** file suffix for cover files */
+    /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_GB";
 
-    /** XML tags we look for */
-//	private static final String ID = "id";
+    /** XML tags we look for. */
+//  private static final String ID = "id";
     private static final String XML_AUTHOR = "creator";
     private static final String XML_TITLE = "title";
     private static final String XML_ISBN = "identifier";
@@ -140,29 +148,31 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     private static final String XML_GENRE = "subject";
     private static final String XML_DESCRIPTION = "description";
     private static final String XML_LANGUAGE = "language";
-    /** flag if we should fetch a thumbnail */
+    /** flag if we should fetch a thumbnail. */
     private static boolean mFetchThumbnail;
-    /** Bundle to save results in */
+    /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
-    /** accumulate all authors for this book */
+    /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
-    /** XML content */
+    /** XML content. */
     private final StringBuilder mBuilder = new StringBuilder();
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bookData       Bundle to save results in
      * @param fetchThumbnail true if we need to get a thumbnail
      */
-    SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData, final boolean fetchThumbnail) {
+    SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
+                                  final boolean fetchThumbnail) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
     }
 
-    private void addIfNotPresent(@NonNull final String key, @NonNull final String value) {
+    private void addIfNotPresent(@NonNull final String key,
+                                 @NonNull final String value) {
         String test = mBookData.getString(key);
         if (test == null || test.isEmpty()) {
             mBookData.putString(key, value);
@@ -173,123 +183,123 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     @CallSuper
     public void characters(@NonNull final char[] ch,
                            final int start,
-                           final int length) throws SAXException {
+                           final int length)
+            throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
     }
 
     /**
-     * (non-Javadoc)
-     *
-     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-     *
-     * Start each XML element. Specifically identify when we are in the item element and set the appropriate flag.
+     * Start each XML element. Specifically identify when we are in the item
+     * element and set the appropriate flag.
      */
     @Override
     @CallSuper
     public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
                              @NonNull final String qName,
-                             @NonNull final Attributes attributes) throws SAXException {
+                             @NonNull final Attributes attributes)
+            throws SAXException {
         super.startElement(uri, localName, qName, attributes);
 
         // the url is an attribute of the xml element; not the content
         if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
-            if (("http://schemas.google.com/books/2008/thumbnail").equals(attributes.getValue("", "rel"))) {
+            if ("http://schemas.google.com/books/2008/thumbnail"
+                    .equals(attributes.getValue("", "rel"))) {
+
                 String thumbnail = attributes.getValue("", "href");
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, FILENAME_SUFFIX);
                 if (fileSpec != null) {
-                    ArrayList<String> imageList = mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                    ArrayList<String> imageList =
+                            mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
                     if (imageList == null) {
                         imageList = new ArrayList<>();
                     }
                     imageList.add(fileSpec);
-                    mBookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
+                    mBookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY,
+                                                 imageList);
                 }
             }
         }
     }
 
     /**
-     * (non-Javadoc)
-     *
-     * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
-     *
      * Populate the results Bundle for each appropriate element.
      */
     @Override
     @CallSuper
     public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
-                           @NonNull final String qName) throws SAXException {
+                           @NonNull final String qName)
+            throws SAXException {
         super.endElement(uri, localName, qName);
 
         switch (localName.toLowerCase()) {
-            case XML_TITLE: {
+            case XML_TITLE:
                 // there can be multiple listed, but only one 'primary'
                 addIfNotPresent(UniqueId.KEY_TITLE, mBuilder.toString());
                 break;
-            }
-            case XML_ISBN: {
-                String tmp = mBuilder.toString();
-                if (tmp.indexOf("ISBN:") == 0) {
-                    tmp = tmp.substring(5);
+
+            case XML_ISBN:
+                String tmpIsbn = mBuilder.toString();
+                if (tmpIsbn.indexOf("ISBN:") == 0) {
+                    tmpIsbn = tmpIsbn.substring(5);
                     String isbn = mBookData.getString(UniqueId.KEY_BOOK_ISBN);
                     // store the 'longest' isbn
-                    if (isbn == null || tmp.length() > isbn.length()) {
-                        mBookData.putString(UniqueId.KEY_BOOK_ISBN, tmp);
+                    if (isbn == null || tmpIsbn.length() > isbn.length()) {
+                        mBookData.putString(UniqueId.KEY_BOOK_ISBN, tmpIsbn);
                     }
                 }
                 break;
-            }
-            case XML_LANGUAGE: {
+
+            case XML_LANGUAGE:
                 // the language field can be empty, so check before.
                 String iso3code = mBuilder.toString();
                 if (!iso3code.isEmpty()) {
                     addIfNotPresent(UniqueId.KEY_BOOK_LANGUAGE, iso3code);
                 }
                 break;
-            }
-            case XML_AUTHOR: {
+
+            case XML_AUTHOR:
                 mAuthors.add(new Author(mBuilder.toString()));
                 break;
-            }
-            case XML_PUBLISHER: {
+
+            case XML_PUBLISHER:
                 addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER, mBuilder.toString());
                 break;
-            }
-            case XML_DATE_PUBLISHED: {
+
+            case XML_DATE_PUBLISHED:
                 addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED, mBuilder.toString());
                 break;
-            }
-            case XML_FORMAT: {
+
+            case XML_FORMAT:
                 /*
                  * 		<dc:format>Dimensions 13.2x20.1x2.0 cm</dc:format>
                  * 		<dc:format>288 pages</dc:format>
                  * 		<dc:format>book</dc:format>
                  */
-                String tmp = mBuilder.toString();
-                int index = tmp.indexOf(" pages");
+                String tmpFormat = mBuilder.toString();
+                int index = tmpFormat.indexOf(" pages");
                 if (index > -1) {
-                    tmp = tmp.substring(0, index).trim();
-                    mBookData.putString(UniqueId.KEY_BOOK_PAGES, tmp);
+                    mBookData.putString(UniqueId.KEY_BOOK_PAGES,
+                                        tmpFormat.substring(0, index).trim());
                 }
                 break;
-            }
-            case XML_GENRE: {
-                //ENHANCE: only the 'last' genre is taken, but a book/genre needs to be restructured to have a separate 'genres' table
+
+            case XML_GENRE:
+                //ENHANCE: only the 'last' genre is used, add a 'genre' table and link up?
                 mBookData.putString(UniqueId.KEY_BOOK_GENRE, mBuilder.toString());
                 break;
-            }
-            case XML_DESCRIPTION: {
+
+            case XML_DESCRIPTION:
                 addIfNotPresent(UniqueId.KEY_BOOK_DESCRIPTION, mBuilder.toString());
                 break;
-            }
 
             default:
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                     // see what we are missing.
-                    Logger.info(this, "Skipping: " + localName + "->'" + mBuilder + '\'');
+                    Logger.info(this,
+                                "Skipping: " + localName + "->'" + mBuilder + '\'');
                 }
 
         }
@@ -303,10 +313,11 @@ class SearchGoogleBooksEntryHandler extends DefaultHandler {
     }
 
     /**
-     * Store the accumulated data in the results
+     * Store the accumulated data in the results.
      */
     @Override
-    public void endDocument() throws SAXException {
+    public void endDocument()
+            throws SAXException {
         super.endDocument();
 
         mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);

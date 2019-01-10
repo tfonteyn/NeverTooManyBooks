@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -43,13 +44,16 @@ import java.util.List;
 
 /**
  * Base class for tasks. This builds and populates simple View objects to display the task.
- *
+ * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  *
  * @author Philip Warner
  */
-public abstract class GoodreadsTask extends Task implements Serializable {
+public abstract class GoodreadsTask
+        extends Task
+        implements Serializable {
+
     private static final long serialVersionUID = -5985866222873741455L;
 
     private static final String STATUS_COMPLETE = "S";
@@ -123,9 +127,9 @@ public abstract class GoodreadsTask extends Task implements Serializable {
                 statusText = context.getString(R.string.gr_tq_queued);
                 holder.retry_info.setText(
                         context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
-                                this.getRetries(),
-                                this.getRetryLimit(),
-                                DateUtils.toPrettyDateTime(tasksCursor.getRetryDate())));
+                                          this.getRetries(),
+                                          this.getRetryLimit(),
+                                          DateUtils.toPrettyDateTime(tasksCursor.getRetryDate())));
                 holder.retry_info.setVisibility(View.VISIBLE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
@@ -142,14 +146,16 @@ public abstract class GoodreadsTask extends Task implements Serializable {
         Exception e = this.getException();
         if (e != null) {
             holder.error.setVisibility(View.VISIBLE);
-            holder.error.setText(BookCatalogueApp.getResourceString(R.string.gr_tq_last_error_e, e.getLocalizedMessage()));
+            holder.error.setText(BookCatalogueApp.getResourceString(R.string.gr_tq_last_error_e,
+                                                                    e.getLocalizedMessage()));
         } else {
             holder.error.setVisibility(View.GONE);
         }
         //"Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
         holder.job_info.setText(BookCatalogueApp.getResourceString(R.string.gr_tq_generic_task_info,
-                this.getId(),
-                DateUtils.toPrettyDateTime(tasksCursor.getQueuedDate())));
+                                                                   this.getId(),
+                                                                   DateUtils.toPrettyDateTime(
+                                                                           tasksCursor.getQueuedDate())));
         //view.requestLayout();
     }
 
@@ -166,12 +172,13 @@ public abstract class GoodreadsTask extends Task implements Serializable {
                                     @NonNull final List<ContextDialogItem> items,
                                     @NonNull final CatalogueDBAdapter db) {
 
-        items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task), new Runnable() {
-                    @Override
-                    public void run() {
-                        QueueManager.getQueueManager().deleteTask(id);
-                    }
-                })
+        items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task),
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                QueueManager.getQueueManager().deleteTask(id);
+                                            }
+                                        })
         );
     }
 
@@ -181,6 +188,7 @@ public abstract class GoodreadsTask extends Task implements Serializable {
      * @author Philip Warner
      */
     public static class TaskHolder {
+
         TextView description;
         TextView state;
         TextView retry_info;

@@ -33,17 +33,19 @@ import android.widget.CheckedTextView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.eleybourn.bookcatalogue.BooksOnBookshelf;
+import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -53,48 +55,29 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
- * Activity to edit the list of styles
+ * Activity to edit the list of styles.
  * - enable/disable their presence in the styles menu.
  * - Individual context menus allow cloning/editing/deleting of styles.
  *
- * Started from:
- * - {@link BooksOnBookshelf} sort-menu dialog box
- * - {@link BaseActivity}  nav panel
- *
- * Starts
- * - {@link EditBooklistStyleActivity}
- * Consumes + forwards
- * - UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity
- * --> setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity, data);
- *
- * onChanged:
- * - setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity, null)
- *
- * onDelete
- * - setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING, null);
- *
  * @author Philip Warner
  */
-public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyle>
+public class PreferredStylesActivity
+        extends EditObjectListActivity<BooklistStyle>
         implements SelectOneDialog.hasListViewContextMenu,
-        AdapterView.OnItemLongClickListener {
+                   AdapterView.OnItemLongClickListener {
 
     private static final int REQ_EDIT_STYLE = 0;
 
-    /** The row being edited. Set when an individual style is edited */
+    /** The row being edited. Set when an individual style is edited. */
     private int mEditedRow;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public PreferredStylesActivity() {
-        super(R.layout.activity_booklist_styles_edit_list, R.layout.row_edit_booklist_style_groups, null);
+        super(R.layout.activity_booklist_styles_edit_list, R.layout.row_edit_booklist_style_groups,
+              null);
     }
 
     @Override
@@ -111,7 +94,7 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
 
         if (savedInstanceState == null) {
             HintManager.displayHint(this.getLayoutInflater(),
-                    R.string.hint_booklist_styles_editor, null);
+                                    R.string.hint_booklist_styles_editor, null);
         }
 
         Tracker.exitOnCreate(this);
@@ -131,8 +114,8 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
      * otherwise the click will only work on the 'blank' bits of the row.
      */
     @Override
-    public boolean onItemLongClick(final AdapterView<?> parent,
-                                   final View view,
+    public boolean onItemLongClick(@NonNull final AdapterView<?> parent,
+                                   @NonNull final View view,
                                    final int position,
                                    final long id) {
         BooklistStyle style = mListAdapter.getItem(position);
@@ -143,19 +126,22 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
         mListViewContextMenu = new PopupMenu(this, null).getMenu();
         // custom menuInfo
         SelectOneDialog.SimpleDialogMenuInfo menuInfo =
-                new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
+                new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, position);
         // populate the menu
         if (style.isUserDefined()) {
-            mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_DELETE, 0, R.string.menu_delete_style)
-                    .setIcon(R.drawable.ic_delete);
-            mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_EDIT, 0, R.string.menu_edit_booklist_style)
-                    .setIcon(R.drawable.ic_edit);
+            mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_DELETE, 0,
+                                     R.string.menu_delete_style)
+                                .setIcon(R.drawable.ic_delete);
+            mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_EDIT, 0,
+                                     R.string.menu_edit_booklist_style)
+                                .setIcon(R.drawable.ic_edit);
         }
         mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_CLONE, 0, R.string.menu_clone_style)
-                .setIcon(R.drawable.ic_content_copy);
+                            .setIcon(R.drawable.ic_content_copy);
 
         // display the menu
-        PreferredStylesActivity.this.onCreateListViewContextMenu(mListViewContextMenu, view, menuInfo);
+        PreferredStylesActivity.this
+                .onCreateListViewContextMenu(mListViewContextMenu, view, menuInfo);
         return true;
     }
 
@@ -171,25 +157,27 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
 
         BooklistStyle style = mList.get(menuInfo.position);
         switch (menuItem.getItemId()) {
-            case R.id.MENU_STYLE_DELETE: {
+            case R.id.MENU_STYLE_DELETE:
                 style.delete(mDb);
                 handleStyleChange(null);
                 setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
                 return true;
-            }
-            case R.id.MENU_STYLE_EDIT: {
+
+            case R.id.MENU_STYLE_EDIT:
                 if (!style.isUserDefined()) {
                     style = style.getClone(mDb);
                 }
                 editStyle(style);
                 return true;
-            }
-            case R.id.MENU_STYLE_CLONE: {
+
+            case R.id.MENU_STYLE_CLONE:
                 editStyle(style.getClone(mDb));
                 return true;
-            }
+
+            default:
+                return false;
+
         }
-        return false;
     }
 
     /**
@@ -211,23 +199,27 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
     protected void onListChanged() {
         super.onListChanged();
         // we save the order after each change.
-        BooklistStyles.savePreferredStyleIds(mList);
+        BooklistStyles.savePreferredStyleMenuOrder(mList);
         setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity);
     }
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    protected void onActivityResult(final int requestCode,
+                                    final int resultCode,
+                                    @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case REQ_EDIT_STYLE: {
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity: {
                         Objects.requireNonNull(data);
-                        BooklistStyle style = data.getParcelableExtra(BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE);
+                        BooklistStyle style = data.getParcelableExtra(
+                                BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE);
                         handleStyleChange(style);
                         // need to send up the chain as-is
-                        setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity, data);
+                        setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity,
+                                  data);
                         break;
                     }
                     default:
@@ -258,7 +250,7 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
                 style.setPreferred(true);
             } else {
                 BooklistStyle origStyle = mList.get(mEditedRow);
-                if (origStyle.id != style.id) {
+                if (origStyle.getId() != style.getId()) {
                     if (!origStyle.isUserDefined()) {
                         // Working on a clone of a builtin style
                         if (origStyle.isPreferred()) {
@@ -283,7 +275,7 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
             }
             if (style != null) {
                 // now update the db.
-                if (style.id == 0) {
+                if (style.getId() == 0) {
                     mDb.insertBooklistStyle(style);
                 } else {
                     mDb.updateBooklistStyle(style);
@@ -300,17 +292,16 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
         }
     }
 
-    protected SimpleListAdapter<BooklistStyle> createListAdapter(final @LayoutRes int rowViewId,
+    protected SimpleListAdapter<BooklistStyle> createListAdapter(@LayoutRes final int rowViewId,
                                                                  @NonNull final ArrayList<BooklistStyle> list) {
         return new BooklistStyleListAdapter(this, rowViewId, list);
     }
 
     /**
-     * Holder pattern object for list items
-     *
-     * @author Philip Warner
+     * Holder pattern object for list items.
      */
     private static class Holder {
+
         BooklistStyle style;
         CheckedTextView checkable;
         TextView name;
@@ -319,16 +310,18 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
         TextView kind;
     }
 
-    private class BooklistStyleListAdapter extends SimpleListAdapter<BooklistStyle> {
+    private class BooklistStyleListAdapter
+            extends SimpleListAdapter<BooklistStyle> {
 
         BooklistStyleListAdapter(@NonNull final Context context,
-                                 final @LayoutRes int rowViewId,
+                                 @LayoutRes final int rowViewId,
                                  @NonNull final ArrayList<BooklistStyle> items) {
             super(context, rowViewId, items);
         }
 
         @Override
-        public void onGetView(@NonNull final View convertView, @NonNull final BooklistStyle item) {
+        public void onGetView(@NonNull final View convertView,
+                              @NonNull final BooklistStyle item) {
             Holder holder = ViewTagger.getTag(convertView);
             if (holder == null) {
                 // New view, so build the Holder
@@ -344,7 +337,7 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
                 // Handle clicks on the CheckedTextView
                 holder.checkable.setOnClickListener(new OnClickListener() {
                     @Override
-                    public void onClick(@NonNull View v) {
+                    public void onClick(@NonNull final View v) {
                         Holder h = ViewTagger.getTagOrThrow(v);
                         boolean newStatus = !h.style.isPreferred();
                         h.style.setPreferred(newStatus);
@@ -368,7 +361,7 @@ public class PreferredStylesActivity extends EditObjectListActivity<BooklistStyl
         }
 
         /**
-         * Delegate to ListView host
+         * Delegate to ListView host.
          */
         @Override
         public void onListChanged() {

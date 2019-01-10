@@ -27,11 +27,12 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
- * Validator to apply a default value and validate as Float
+ * Validator to apply a default value and validate as Float.
  *
  * @author Philip Warner
  */
-public class FloatValidator extends DefaultFieldValidator {
+public class FloatValidator
+        extends DefaultFieldValidator {
 
     public FloatValidator(@NonNull final String defaultValue) {
         super(defaultValue);
@@ -39,14 +40,17 @@ public class FloatValidator extends DefaultFieldValidator {
 
     @Override
     @CallSuper
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data,
+                         @NonNull final Datum datum,
+                         final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
             return;
         }
-        if (crossValidating)
+        if (crossValidating) {
             return;
+        }
 
         super.validate(data, datum, false);
         try {
@@ -63,7 +67,8 @@ public class FloatValidator extends DefaultFieldValidator {
             }
             data.putFloat(datum, value);
         } catch (NumberFormatException e) {
-            throw new ValidatorException(R.string.vldt_real_expected, new Object[]{datum.getKey()});
+            throw new ValidatorException(R.string.vldt_real_expected,
+                                         new Object[]{datum.getKey()});
         }
     }
 }

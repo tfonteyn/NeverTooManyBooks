@@ -23,6 +23,9 @@ package com.eleybourn.bookcatalogue.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -33,28 +36,27 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Class to hold author data. Used in lists and import/export.
  *
  * @author Philip Warner
  */
 public class Author
-    implements Parcelable, Utils.ItemWithIdFixup {
+        implements Parcelable, Utils.ItemWithIdFixup {
 
-    public static final Creator<Author> CREATOR = new Creator<Author>() {
-        @Override
-        public Author createFromParcel(@NonNull final Parcel source) {
-            return new Author(source);
-        }
+    /** {@link Parcelable}. */
+    public static final Creator<Author> CREATOR =
+            new Creator<Author>() {
+                @Override
+                public Author createFromParcel(@NonNull final Parcel source) {
+                    return new Author(source);
+                }
 
-        @Override
-        public Author[] newArray(final int size) {
-            return new Author[size];
-        }
-    };
+                @Override
+                public Author[] newArray(final int size) {
+                    return new Author[size];
+                }
+            };
 
     private static final char SEPARATOR = ',';
     /**
@@ -67,7 +69,7 @@ public class Author
      */
     private static final Pattern FAMILY_NAME_PREFIX = Pattern.compile("[LlDd]e|[Vv][oa]n");
     /**
-     * ENHANCE author name suffixes; needs internationalisation ? probably not.
+     * ENHANCE: author name suffixes; needs internationalisation ? probably not.
      *
      * j/s lower or upper case
      *
@@ -89,11 +91,14 @@ public class Author
      * "Dr. Asimov" -> titles... pre or suffixed
      */
     private static final Pattern FAMILY_NAME_SUFFIX = Pattern
-        .compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
+            .compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
     public long id;
-    public String familyName;
-    public String givenNames;
-    public boolean isComplete;
+    /** Family name(s). */
+    private String mFamilyName;
+    /** Given name(s). */
+    private String mGivenNames;
+    /** whether we have all we want from this Author. */
+    private boolean mIsComplete;
 
     /**
      * Constructor that will attempt to parse a single string into an author name.
@@ -142,22 +147,21 @@ public class Author
                   final boolean isComplete
     ) {
         this.id = id;
-        this.familyName = familyName.trim();
-        this.givenNames = givenNames.trim();
-        this.isComplete = isComplete;
+        mFamilyName = familyName.trim();
+        mGivenNames = givenNames.trim();
+        mIsComplete = isComplete;
     }
 
     protected Author(@NonNull final Parcel in) {
         id = in.readLong();
-        familyName = in.readString();
-        givenNames = in.readString();
-        isComplete = in.readByte() != 0;
+        mFamilyName = in.readString();
+        mGivenNames = in.readString();
+        mIsComplete = in.readByte() != 0;
     }
 
     public static boolean setComplete(@NonNull final CatalogueDBAdapter db,
                                       final long id,
-                                      final boolean isComplete
-    ) {
+                                      final boolean isComplete) {
         Author author = null;
         try {
             // load from database
@@ -167,7 +171,8 @@ public class Author
             return (db.updateAuthor(author) == 1);
         } catch (DBExceptions.UpdateException e) {
             // log but ignore
-            Logger.error(e, "failed to set Author id=" + id + " to complete=" + isComplete);
+            Logger.error(e, "failed to set Author id=" + id +
+                    " to complete=" + isComplete);
             // rollback
             if (author != null) {
                 author.setComplete(!isComplete);
@@ -177,11 +182,11 @@ public class Author
     }
 
     public boolean isComplete() {
-        return isComplete;
+        return mIsComplete;
     }
 
     public void setComplete(final boolean complete) {
-        isComplete = complete;
+        mIsComplete = complete;
     }
 
     @Override
@@ -189,11 +194,12 @@ public class Author
                               final int flags
     ) {
         dest.writeLong(id);
-        dest.writeString(familyName);
-        dest.writeString(givenNames);
-        dest.writeByte((byte) (isComplete ? 1 : 0));
+        dest.writeString(mFamilyName);
+        dest.writeString(mGivenNames);
+        dest.writeByte((byte) (mIsComplete ? 1 : 0));
     }
 
+    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
@@ -201,7 +207,7 @@ public class Author
     }
 
     /**
-     * This will parse a string into a family/given name pair
+     * This will parse a string into a family/given name pair.
      * The name can be in either "family, given" or "given family" format.
      *
      * Special rules, see {@link #FAMILY_NAME_PREFIX} and {@link #FAMILY_NAME_SUFFIX}
@@ -220,8 +226,8 @@ public class Author
             Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(behindComma);
             if (!matchSuffix.find()) {
                 // not a suffix, assume the names are already formatted.
-                familyName = beforeComma;
-                givenNames = behindComma;
+                mFamilyName = beforeComma;
+                mGivenNames = behindComma;
                 return;
             } else {
                 // concatenate without the comma. Further processing will take care of the suffix.
@@ -233,12 +239,12 @@ public class Author
         // two easy cases
         switch (names.length) {
             case 1:
-                familyName = names[0];
-                givenNames = "";
+                mFamilyName = names[0];
+                mGivenNames = "";
                 return;
             case 2:
-                familyName = names[1];
-                givenNames = names[0];
+                mFamilyName = names[1];
+                mGivenNames = names[0];
                 return;
         }
 
@@ -272,8 +278,16 @@ public class Author
             buildGivenNames.append(names[i]).append(' ');
         }
 
-        familyName = buildFamilyName.toString().trim();
-        givenNames = buildGivenNames.toString().trim();
+        mFamilyName = buildFamilyName.toString().trim();
+        mGivenNames = buildGivenNames.toString().trim();
+    }
+
+    public String getFamilyName() {
+        return mFamilyName;
+    }
+
+    public String getGivenNames() {
+        return mGivenNames;
     }
 
     /**
@@ -283,24 +297,24 @@ public class Author
      */
     @NonNull
     public String getDisplayName() {
-        if (givenNames != null && !givenNames.isEmpty()) {
-            return givenNames + ' ' + familyName;
+        if (mGivenNames != null && !mGivenNames.isEmpty()) {
+            return mGivenNames + ' ' + mFamilyName;
         } else {
-            return familyName;
+            return mFamilyName;
         }
     }
 
     /**
-     * Return the name in a sortable form (eg. 'Asimov, Isaac')
+     * Return the name in a sortable form (eg. 'Asimov, Isaac').
      *
      * @return formatted name
      */
     @NonNull
     public String getSortName() {
-        if (givenNames != null && !givenNames.isEmpty()) {
-            return familyName + ", " + givenNames;
+        if (mGivenNames != null && !mGivenNames.isEmpty()) {
+            return mFamilyName + ", " + mGivenNames;
         } else {
-            return familyName;
+            return mFamilyName;
         }
     }
 
@@ -316,8 +330,8 @@ public class Author
     public String toString() {
         // Always use givenNames even if blanks because we need to KNOW they are blank.
         // There is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
-        return StringList.encodeListItem(SEPARATOR, familyName) + SEPARATOR + ' ' + StringList
-            .encodeListItem(SEPARATOR, givenNames);
+        return StringList.encodeListItem(SEPARATOR, mFamilyName) + SEPARATOR + ' ' + StringList
+                .encodeListItem(SEPARATOR, mGivenNames);
     }
 
     /**
@@ -326,15 +340,15 @@ public class Author
      * @param source Author to copy
      */
     public void copyFrom(@NonNull final Author source) {
-        familyName = source.familyName;
-        givenNames = source.givenNames;
-        isComplete = source.isComplete;
+        mFamilyName = source.mFamilyName;
+        mGivenNames = source.mGivenNames;
+        mIsComplete = source.mIsComplete;
         id = source.id;
     }
 
     @Override
     public long fixupId(@NonNull final CatalogueDBAdapter db) {
-        this.id = db.getAuthorIdByName(this.familyName, this.givenNames);
+        this.id = db.getAuthorIdByName(this.mFamilyName, this.mGivenNames);
         return this.id;
     }
 
@@ -347,7 +361,7 @@ public class Author
     }
 
     /**
-     * Two are the same if:
+     * Equality.
      *
      * - it's the same Object duh..
      * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
@@ -368,13 +382,19 @@ public class Author
             return false;
         }
 
-        return Objects.equals(this.familyName, that.familyName)
-            && Objects.equals(this.givenNames, that.givenNames)
-            && (this.isComplete == that.isComplete);
+        return Objects.equals(this.mFamilyName, that.mFamilyName)
+                && Objects.equals(this.mGivenNames, that.mGivenNames)
+                && (this.mIsComplete == that.mIsComplete);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, familyName, givenNames);
+        return Objects.hash(id, mFamilyName, mGivenNames);
+    }
+
+    public void copy(final Author that) {
+        this.mFamilyName = that.getFamilyName();
+        this.mGivenNames = that.getGivenNames();
+        this.mIsComplete = that.isComplete();
     }
 }

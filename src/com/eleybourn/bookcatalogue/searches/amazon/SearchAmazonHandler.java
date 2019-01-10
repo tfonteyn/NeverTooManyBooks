@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches.amazon;
 
 import android.os.Bundle;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
@@ -41,8 +42,8 @@ import java.util.ArrayList;
 import java.util.Currency;
 
 /**
- * An XML handler for the Amazon return
- *
+ * An XML handler for the Amazon return.
+ * <p>
  * An example response looks like;
  * <pre>
  * <ItemSearchResponse xmlns="http://webservices.amazon.com/AWSECommerceService/2005-10-05">
@@ -183,12 +184,14 @@ import java.util.Currency;
  *
  * @author evan
  */
-public class SearchAmazonHandler extends DefaultHandler {
+public class SearchAmazonHandler
+        extends DefaultHandler {
 
-    /** file suffix for cover files */
+    /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_AM";
 
-    /** XML tags we look for. They are mixed-case, hence we use .equalsIgnoreCase and not a switch */
+    /** XML tags we look for.
+     *  They are mixed-case, hence we use .equalsIgnoreCase and not a switch */
 //    private static final String XML_ID = "id";
 //    private static final String XML_TOTAL_RESULTS = "TotalResults";
     private static final String XML_ENTRY = "Item";
@@ -213,17 +216,17 @@ public class SearchAmazonHandler extends DefaultHandler {
     private static final String XML_CURRENCY_CODE = "CurrencyCode";
     private static final String XML_AMOUNT = "Amount";
 
-    /** flag if we should fetch a thumbnail */
+    /** flag if we should fetch a thumbnail. */
     private static boolean mFetchThumbnail;
-    /** Bundle to save results in */
+    /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
-    /** accumulate all authors for this book */
+    /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
-    /** XML content */
+    /** XML content. */
     private final StringBuilder mBuilder = new StringBuilder();
-    /** mCurrencyCode + mCurrencyAmount will form the list-price */
+    /** mCurrencyCode + mCurrencyAmount will form the list-price. */
     @NonNull
     private String mCurrencyCode = "";
     @NonNull
@@ -231,7 +234,7 @@ public class SearchAmazonHandler extends DefaultHandler {
 
     @NonNull
     private String mThumbnailUrl = "";
-    /** max size found, -1 for no images found */
+    /** max size found, -1 for no images found. */
     private int mThumbnailSize = -1;
 
     /*
@@ -241,37 +244,38 @@ public class SearchAmazonHandler extends DefaultHandler {
      */
 
     /**
-     * XML_LANGUAGE
+     * XML_LANGUAGE.
      */
-    private boolean mInLanguage = false;
+    private boolean mInLanguage;
 
     /**
-     * XML_LIST_PRICE
+     * XML_LIST_PRICE.
      * Not shown in the example XML, but contains two sub-elements we use:
      * * CurrencyCode
      * * Amount
      */
-    private boolean mInListPrice = false;
+    private boolean mInListPrice;
 
     /**
-     * XML_THUMBNAIL
+     * XML_THUMBNAIL.
      * There are multiple, we try to get the largest available
      * * SmallImage
      * * MediumImage
      * * LargeImage
      */
-    private boolean mInImage = false;
+    private boolean mInImage;
 
-    /** starting an entry */
-    private boolean mInEntry = false;
-    /** and finishing an entry */
-    private boolean mEntryDone = false;
+    /** starting an entry. */
+    private boolean mInEntry;
+    /** and finishing an entry. */
+    private boolean mEntryDone;
 
     /**
      * @param bookData       Bundle to save results in
      * @param fetchThumbnail true if we need to get a thumbnail
      */
-    SearchAmazonHandler(@NonNull final Bundle bookData, final boolean fetchThumbnail) {
+    SearchAmazonHandler(@NonNull final Bundle bookData,
+                        final boolean fetchThumbnail) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
     }
@@ -288,34 +292,37 @@ public class SearchAmazonHandler extends DefaultHandler {
             // move the decimal point 'digits' up
             double price = ((double) Integer.parseInt(mCurrencyAmount)) / Math.pow(10, decDigits);
             // and format with 'digits' decimal places
-            BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED, String.format("%." + decDigits + 'f', price));
-            BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, mCurrencyCode);
+            BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED,
+                                        String.format("%." + decDigits + 'f', price));
+            BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
+                                        mCurrencyCode);
         } catch (NumberFormatException ignore) {
         }
     }
 
     @Override
     @CallSuper
-    public void characters(final char[] ch, final int start, final int length) throws SAXException {
+    public void characters(final char[] ch,
+                           final int start,
+                           final int length)
+            throws SAXException {
         super.characters(ch, start, length);
         mBuilder.append(ch, start, length);
     }
 
     /**
-     * (non-Javadoc)
-     *
-     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-     *
-     * Start each XML element. Specifically identify when we are in the item element and set the appropriate flag.
-     *
+     * Start each XML element. Specifically identify when we are in the item
+     * element and set the appropriate flag.
+     * <p>
      * Also identify the biggest thumbnail available.
      */
     @Override
     @CallSuper
-    public void startElement(final String uri,
+    public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
-                             final String qName,
-                             final Attributes attributes) throws SAXException {
+                             @NonNull final String qName,
+                             @NonNull final Attributes attributes)
+            throws SAXException {
         super.startElement(uri, localName, qName, attributes);
 
         if (!mEntryDone && localName.equalsIgnoreCase(XML_ENTRY)) {
@@ -346,20 +353,17 @@ public class SearchAmazonHandler extends DefaultHandler {
     }
 
     /**
-     * (non-Javadoc)
-     *
-     * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
-     *
      * Populate the results Bundle for each appropriate element.
-     *
+     * <p>
      * Also download the thumbnail and store in a tmp location
      * @see #endDocument() where we handle the thumbnail.
      */
     @Override
     @CallSuper
-    public void endElement(final String uri,
+    public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
-                           final String qName) throws SAXException {
+                           @NonNull final String qName)
+            throws SAXException {
         super.endElement(uri, localName, qName);
 
         if (mInImage && localName.equalsIgnoreCase(XML_THUMBNAIL)) {
@@ -384,26 +388,33 @@ public class SearchAmazonHandler extends DefaultHandler {
                 BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PUBLISHER)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PUBLISHER, mBuilder.toString());
+                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PUBLISHER,
+                                            mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DATE_PUBLISHED, mBuilder.toString());
+                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DATE_PUBLISHED,
+                                            mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PAGES)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PAGES, mBuilder.toString());
+                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PAGES,
+                                            mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DESCRIPTION)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DESCRIPTION, mBuilder.toString());
+                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DESCRIPTION,
+                                            mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_BINDING)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_FORMAT, mBuilder.toString());
+                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_FORMAT,
+                                            mBuilder.toString());
 
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 // the language is a 'DisplayName'
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_LANGUAGE, LocaleUtils.getISO3Language(mBuilder.toString()));
+                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_LANGUAGE,
+                                            LocaleUtils.getISO3Language(mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
                 mCurrencyAmount = mBuilder.toString();
+
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_CURRENCY_CODE)) {
                 mCurrencyCode = mBuilder.toString();
 
@@ -420,7 +431,8 @@ public class SearchAmazonHandler extends DefaultHandler {
             } else {
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                     // see what we are missing.
-                    Logger.info(this, "Skipping: " + localName + "->'" + mBuilder + '\'');
+                    Logger.info(this, "Skipping: "
+                            + localName + "->'" + mBuilder + '\'');
                 }
             }
         } //else if (localName.equalsIgnoreCase(XML_TOTAL_RESULTS)){
@@ -436,7 +448,7 @@ public class SearchAmazonHandler extends DefaultHandler {
     }
 
     /**
-     * Store the accumulated data in the results
+     * Store the accumulated data in the results.
      */
     @Override
     @CallSuper
@@ -444,7 +456,8 @@ public class SearchAmazonHandler extends DefaultHandler {
         if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
             String fileSpec = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, FILENAME_SUFFIX);
             if (fileSpec != null) {
-                ArrayList<String> imageList = mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                ArrayList<String> imageList =
+                        mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }

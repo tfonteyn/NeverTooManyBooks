@@ -24,57 +24,61 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
  * TODO: as the Dialog is now an inner class, remove the listener between DialogFragment and Dialog.
- *
+ * <p>
  * DialogFragment to edit a specific text field.
  *
  * @author pjw
  */
-public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener> {
+public class TextFieldEditorDialogFragment
+        extends
+        EditorDialogFragment<TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener> {
+
     /* Dialog text/message */
     public static final String BKEY_TEXT = "text";
     public static final String BKEY_MULTI_LINE = "multiLine";
 
     /**
-     * Object to handle changes
+     * Object to handle changes.
      */
     private final TextFieldEditorDialog.OnTextFieldEditorResultsListener mEditListener =
             new TextFieldEditorDialog.OnTextFieldEditorResultsListener() {
                 @Override
                 public void onTextFieldEditorSave(@NonNull final String newText) {
-                     getFragmentListener()
+                    getFragmentListener()
                             .onTextFieldEditorSave(TextFieldEditorDialogFragment.this,
-                                    mDestinationFieldId, newText);
+                                                   mDestinationFieldId, newText);
                 }
 
                 @Override
                 public void onTextFieldEditorCancel() {
                     getFragmentListener()
                             .onTextFieldEditorCancel(TextFieldEditorDialogFragment.this,
-                                    mDestinationFieldId);
+                                                     mDestinationFieldId);
                 }
             };
 
-    /** Currently displayed; null if empty/invalid */
+    /** Currently displayed; null if empty/invalid. */
     @Nullable
     private String mText;
-    private boolean mMultiLine = false;
+    private boolean mMultiLine;
 
     /**
-     * Create the underlying dialog
+     * Create the underlying dialog.
      */
     @NonNull
     @Override
@@ -113,7 +117,7 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
     }
 
     /**
-     * Make sure data is saved in onPause() because onSaveInstanceState will have lost the views
+     * Make sure data is saved in onPause() because onSaveInstanceState will have lost the views.
      */
     @Override
     @CallSuper
@@ -133,6 +137,7 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
      * @author pjw
      */
     public interface OnTextFieldEditorResultsListener {
+
         void onTextFieldEditorSave(@NonNull final TextFieldEditorDialogFragment dialog,
                                    final int destinationFieldId,
                                    @NonNull final String newText);
@@ -142,18 +147,21 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
     }
 
 
-    static class TextFieldEditorDialog extends AlertDialog {
-        /** View which displays the text */
+    static class TextFieldEditorDialog
+            extends AlertDialog {
+
+        /** View which displays the text. */
         private final EditText mTextView;
-        /** Listener for dialog exit/save/cancel */
+        /** Listener for dialog exit/save/cancel. */
         private OnTextFieldEditorResultsListener mListener;
 
         /**
-         * Constructor
+         * Constructor.
          *
          * @param context Calling context
          */
-        TextFieldEditorDialog(@NonNull final Context context, final boolean multiLine) {
+        TextFieldEditorDialog(@NonNull final Context context,
+                              final boolean multiLine) {
             super(context);
 
             // Get the layout
@@ -176,7 +184,7 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
             root.findViewById(R.id.confirm).setOnClickListener(
                     new View.OnClickListener() {
                         @Override
-                        public void onClick(final View view) {
+                        public void onClick(@NonNull final View v) {
                             mListener.onTextFieldEditorSave(getText());
                         }
                     }
@@ -187,7 +195,7 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
             root.findViewById(R.id.cancel).setOnClickListener(
                     new View.OnClickListener() {
                         @Override
-                        public void onClick(final View view) {
+                        public void onClick(@NonNull final View v) {
                             mListener.onTextFieldEditorCancel();
                         }
                     }
@@ -210,30 +218,28 @@ public class TextFieldEditorDialogFragment extends EditorDialogFragment<TextFiel
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
 
-        /** Set the listener */
+        /** Set the listener. */
         void setResultsListener(@NonNull final OnTextFieldEditorResultsListener listener) {
             mListener = listener;
-        }
-
-        /** Set the current text */
-        public void setText(@Nullable final String text) {
-            mTextView.setText(text);
         }
 
         public String getText() {
             return mTextView.getText().toString().trim();
         }
 
+        /** Set the current text. */
+        public void setText(@Nullable final String text) {
+            mTextView.setText(text);
+        }
+
         /**
          * Listener to receive notifications when dialog is closed by any means.
-         *
-         * @author pjw
          */
         protected interface OnTextFieldEditorResultsListener {
+
             void onTextFieldEditorSave(@NonNull final String newText);
 
             void onTextFieldEditorCancel();
         }
-
     }
 }

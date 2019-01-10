@@ -32,7 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Utility class to manage the construction and closure of persisted SQLiteStatement objects.
+ * Manages the construction and closure of persisted SQLiteStatement objects.
  *
  * (As I understand it, the purpose is not the actual caching (Android does that anyhow) but
  * the handling of properly closing statements).

@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
@@ -31,34 +34,17 @@ import org.apache.http.client.methods.HttpPost;
 
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * API handler for the authUser call. Just gets the current user details.
  *
  * @author Philip Warner
  */
-public class AuthUserApiHandler extends ApiHandler {
+public class AuthUserApiHandler
+        extends ApiHandler {
 
-    private long mUserId = 0;
-
-    private final XmlHandler mHandleUserStart = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mUserId = Long.parseLong(context.attributes.getValue("", "id"));
-        }
-    };
-
+    private long mUserId;
     @Nullable
-    private String mUsername = null;
-
-    private final XmlHandler mHandleUsernameEnd = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mUsername = context.body;
-        }
-    };
+    private String mUsername;
 
     /**
      * Constructor. Setup the filters.
@@ -93,7 +79,7 @@ public class AuthUserApiHandler extends ApiHandler {
     }
 
     /**
-     * Typical response:
+     * Typical response.
      *
      * <pre>
      *   <GoodreadsResponse>
@@ -104,14 +90,29 @@ public class AuthUserApiHandler extends ApiHandler {
      *     </Request>
      *     <user id="5129458">
      *       <name><![CDATA[Grunthos]]></name>
-     *       <link><![CDATA[http://www.goodreads.com/user/show/5129458-grunthos?utm_medium=api]]></link>
+     *       <link>
+     *           <![CDATA[http://www.goodreads.com/user/show/5129458-grunthos?utm_medium=api]]>
+     *       </link>
      *     </user>
      *   </GoodreadsResponse>
      * </pre>
      */
     private void buildFilters() {
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER).setStartAction(mHandleUserStart);
-        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER, XML_NAME).setEndAction(mHandleUsernameEnd);
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER)
+                 .setStartAction(new XmlHandler() {
+                     @Override
+                     public void process(@NonNull final ElementContext context) {
+                         mUserId = Long.parseLong(context.attributes.getValue("", XML_ID));
+                     }
+                 });
+
+        XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER, XML_NAME)
+                 .setEndAction(new XmlHandler() {
+                     @Override
+                     public void process(@NonNull final ElementContext context) {
+                         mUsername = context.body;
+                     }
+                 });
     }
 
     @Nullable

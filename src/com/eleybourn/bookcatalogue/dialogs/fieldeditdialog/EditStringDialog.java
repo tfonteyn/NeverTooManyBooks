@@ -1,14 +1,15 @@
 package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -17,16 +18,17 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import java.util.List;
 
 abstract class EditStringDialog {
+
     @NonNull
     protected final CatalogueDBAdapter mDb;
     @NonNull
-    protected final Runnable mOnChanged;
+    final Runnable mOnChanged;
     @NonNull
     private final Activity mActivity;
     private ArrayAdapter<String> mAdapter;
 
     /**
-     * EditText
+     * EditText.
      */
     EditStringDialog(@NonNull final Activity activity,
                      @NonNull final CatalogueDBAdapter db,
@@ -43,7 +45,7 @@ abstract class EditStringDialog {
      */
     EditStringDialog(@NonNull final Activity activity,
                      @NonNull final CatalogueDBAdapter db,
-                     @SuppressWarnings("SameParameterValue") final @LayoutRes int adapterResId,
+                     @SuppressWarnings("SameParameterValue") @LayoutRes final int adapterResId,
                      @NonNull final List<String> list,
                      @NonNull final Runnable onChanged) {
         this.mActivity = activity;
@@ -53,13 +55,12 @@ abstract class EditStringDialog {
     }
 
     /**
-     *
-     * @param currentText   to edit
-     * @param layout        dialog content view layout
-     * @param title         dialog title
+     * @param currentText to edit
+     * @param layout      dialog content view layout
+     * @param title       dialog title
      */
     protected void edit(@NonNull final String currentText,
-                        final @LayoutRes int layout,
+                        @LayoutRes final int layout,
                         @StringRes final int title) {
         // Build the base dialog
         final View root = mActivity.getLayoutInflater().inflate(layout, null);
@@ -79,7 +80,7 @@ abstract class EditStringDialog {
         //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 String newText = editView.getText().toString().trim();
                 if (newText.isEmpty()) {
                     StandardDialogs.showUserMessage(mActivity, R.string.warning_required_name);
@@ -93,12 +94,13 @@ abstract class EditStringDialog {
         //noinspection ConstantConditions
         root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 dialog.dismiss();
             }
         });
         dialog.show();
     }
 
-    abstract protected void confirmEdit(@NonNull final String from, @NonNull final String to);
+    protected abstract void confirmEdit(@NonNull final String from,
+                                        @NonNull final String to);
 }

@@ -1,5 +1,5 @@
 /*
- * @copyright 2013 Philip Warner
+ * @copyright 2013 Philip Warner.
  * @license GNU General Public License
  *
  * This file is part of Book Catalogue.
@@ -19,31 +19,32 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Public interface for any backup archive writer.
  *
  * @author pjw
  */
-public interface BackupWriter extends Closeable {
+public interface BackupWriter
+        extends Closeable {
 
     /**
      * Perform a backup of the database.
-     *
+     * <p>
      * See BackupWriterAbstract for a default implementation.
      *
      * @throws IOException on failure
      */
     void backup(@NonNull final ExportSettings settings,
-                @NonNull final BackupReader.BackupReaderListener listener)
+                @NonNull final BackupWriter.BackupWriterListener listener)
             throws IOException;
 
     /**
@@ -84,7 +85,8 @@ public interface BackupWriter extends Closeable {
      *
      * @throws IOException on failure
      */
-    void putFile(@NonNull final String name, @NonNull final File file)
+    void putFile(@NonNull final String name,
+                 @NonNull final File file)
             throws IOException;
 
     /**
@@ -114,7 +116,7 @@ public interface BackupWriter extends Closeable {
 
     /**
      * Interface for processes doing a backup operation; allows for progress indications
-     * and saves some useful context
+     * and saves some useful context.
      *
      * @author pjw
      */
@@ -128,7 +130,8 @@ public interface BackupWriter extends Closeable {
         /**
          * Advance progress by 'delta'
          */
-        void onProgress(@Nullable final String message, final int delta);
+        void onProgressStep(@Nullable final String message,
+                            final int delta);
 
         /**
          * Check if operation is cancelled

@@ -19,6 +19,8 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
 
 import java.io.File;
@@ -27,8 +29,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 
-import androidx.annotation.NonNull;
-
 /**
  * Interface provided by every entity read from a backup file.
  *
@@ -36,33 +36,33 @@ import androidx.annotation.NonNull;
  */
 public interface ReaderEntity {
 
-    /** Get the original "file name" (archive entry name) of the object */
+    /** Get the original "file name" (archive entry name) of the object. */
     @NonNull
     String getName();
 
-    /** Get the type of this entity */
+    /** Get the type of this entity. */
     @NonNull
     BackupEntityType getType();
 
-    /** Modified date from archive entry */
+    /** Modified date from archive entry. */
     @NonNull
     Date getDateModified();
 
 
-    /** get the stream to read the entity */
+    /** get the stream to read the entity. */
     @NonNull
     InputStream getStream();
 
-    /** Save the data to a directory, using the original file name */
+    /** Save the data to a directory, using the original file name. */
     void saveToDirectory(@NonNull final File dir)
             throws IOException;
 
-    /** Read the data as a Serializable object */
+    /** Read the data as a Serializable object. */
     @NonNull
     <T extends Serializable> T getSerializable()
             throws IOException, DeserializationException;
 
-    /** Supported entity types */
+    /** Supported entity types. */
     enum BackupEntityType {
         Books,
         Info,

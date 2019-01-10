@@ -23,12 +23,13 @@ package com.eleybourn.bookcatalogue.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -37,14 +38,17 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.widgets.FastScroller;
 
 /**
- * Cursor adapter for flattened multi-typed ListViews. Simplifies the implementation of such lists.
- *
- * Users of this class need to implement MultiTypeListHandler to manage the creation and display of
- * each view.
+ * Cursor adapter for flattened multi-typed ListViews.
+ * Simplifies the implementation of such lists.
+ * <p>
+ * Users of this class need to implement MultiTypeListHandler to manage the creation
+ * and display of each view.
  *
  * @author Philip Warner
  */
-public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScroller.SectionIndexerV2 {
+public class MultiTypeListCursorAdapter
+        extends CursorAdapter
+        implements FastScroller.SectionIndexerV2 {
 
     @NonNull
     private final LayoutInflater mInflater;
@@ -64,7 +68,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
      * NOT USED. Should never be called. Die if it is.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(@NonNull final View view,
+                         @NonNull final Context context,
+                         @NonNull final Cursor cursor) {
         throw new UnsupportedOperationException();
     }
 
@@ -73,7 +79,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
      */
     @NonNull
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+    public View newView(@NonNull final Context context,
+                        @NonNull final Cursor cursor,
+                        @NonNull final ViewGroup parent) {
         throw new UnsupportedOperationException();
     }
 
@@ -88,9 +96,11 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         // NOTE: It DOES NOT fix the error; just gathers more debug info
         //
         if (listCursor.isClosed()) {
-            throw new IllegalStateException("Attempt to get type of item on closed cursor (" + listCursor + ')');
+            throw new IllegalStateException(
+                    "Attempt to get type of item on closed cursor (" + listCursor + ')');
         } else if (position >= listCursor.getCount()) {
-            throw new IllegalStateException("Attempt to get type of item beyond end of cursor (" + listCursor + ')');
+            throw new IllegalStateException(
+                    "Attempt to get type of item beyond end of cursor (" + listCursor + ')');
         } else {
             listCursor.moveToPosition(position);
             return mListHandler.getItemViewType(listCursor);
@@ -104,7 +114,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
 
     @NonNull
     @Override
-    public View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {
+    public View getView(final int position,
+                        final View convertView,
+                        @NonNull final ViewGroup parent) {
         Cursor listCursor = this.getCursor();
         listCursor.moveToPosition(position);
 
@@ -112,9 +124,9 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
     }
 
     /**
-     * this method gets called by {@link FastScroller}
-     *
-     * actual text coming from {@link MultiTypeListHandler#getSectionText(Cursor)}}
+     * this method gets called by {@link FastScroller}.
+     * <p>
+     * actual text coming from {@link MultiTypeListHandler#getSectionText(Cursor)}}.
      */
     @Override
     @Nullable
@@ -131,7 +143,8 @@ public class MultiTypeListCursorAdapter extends CursorAdapter implements FastScr
         listCursor.moveToPosition(savedPos);
 
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
-            Logger.info(this, " MultiTypeListCursorAdapter.getSectionTextForPosition");
+            Logger.info(this,
+                        " MultiTypeListCursorAdapter.getSectionTextForPosition");
             for (String s : section) {
                 Logger.info(this, " Section: " + s);
             }

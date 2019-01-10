@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -53,28 +54,32 @@ import java.util.Set;
  * @author pjw
  */
 public class DataManager {
+
     // Generic validators; if field-specific defaults are needed, create a new one.
     protected static final DataValidator integerValidator = new IntegerValidator("0");
     protected static final DataValidator nonBlankValidator = new NonBlankValidator();
-    protected static final DataValidator blankOrIntegerValidator = new OrValidator(new BlankValidator(),
+    protected static final DataValidator blankOrIntegerValidator = new OrValidator(
+            new BlankValidator(),
             new IntegerValidator("0"));
-    protected static final DataValidator blankOrFloatValidator = new OrValidator(new BlankValidator(),
+    protected static final DataValidator blankOrFloatValidator = new OrValidator(
+            new BlankValidator(),
             new FloatValidator("0.00"));
 
-    // DataValidator blankOrDateValidator = new OrValidator(new BlankValidator(), new DateValidator());
+    // DataValidator blankOrDateValidator =
+    //     new OrValidator(new BlankValidator(), new DateValidator());
 
-    /** Raw data storage */
+    /** Raw data storage. */
     protected final Bundle mBundle = new Bundle();
-    /** Storage for the data-related code */
+    /** Storage for the data-related code. */
     private final DatumHash mData = new DatumHash();
 
-    /** The last validator exception caught by this object */
+    /** The last validator exception caught by this object. */
     private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final List<DataCrossValidator> mCrossValidators = new ArrayList<>();
 
     /**
-     * Erase everything in this instance
+     * Erase everything in this instance.
      */
     public void clear() {
         mBundle.clear();
@@ -84,7 +89,7 @@ public class DataManager {
     }
 
     /**
-     * Add a validator for the specified {@link Datum}
+     * Add a validator for the specified {@link Datum}.
      *
      * @param key       Key to the {@link Datum}
      * @param validator Validator
@@ -93,13 +98,14 @@ public class DataManager {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    protected DataManager addValidator(@NonNull final String key, @NonNull final DataValidator validator) {
+    protected DataManager addValidator(@NonNull final String key,
+                                       @NonNull final DataValidator validator) {
         mData.get(key).addValidator(validator);
         return this;
     }
 
     /**
-     * Add an {@link DataAccessor} for the specified {@link Datum}
+     * Add an {@link DataAccessor} for the specified {@link Datum}.
      *
      * @param key      Key to the {@link Datum}
      * @param accessor Accessor
@@ -108,13 +114,14 @@ public class DataManager {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    protected DataManager addAccessor(@NonNull final String key, @NonNull final DataAccessor accessor) {
+    protected DataManager addAccessor(@NonNull final String key,
+                                      @NonNull final DataAccessor accessor) {
         mData.get(key).addAccessor(accessor);
         return this;
     }
 
     /**
-     * Get the data object specified by the passed key
+     * Get the data object specified by the passed key.
      *
      * @param key Key of data object
      *
@@ -126,7 +133,7 @@ public class DataManager {
     }
 
     /**
-     * Get the data object specified by the passed {@link Datum}
+     * Get the data object specified by the passed {@link Datum}.
      *
      * @return Data object
      */
@@ -135,114 +142,124 @@ public class DataManager {
         return datum.get(this, mBundle);
     }
 
-    /** Retrieve a boolean value */
+    /** Retrieve a boolean value. */
     public boolean getBoolean(@NonNull final String key) {
         return mData.get(key).getBoolean(this, mBundle);
     }
 
-    /** Store a boolean value */
+    /** Store a boolean value. */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putBoolean(@NonNull final String key, final boolean value) {
+    public DataManager putBoolean(@NonNull final String key,
+                                  final boolean value) {
         mData.get(key).putBoolean(this, mBundle, value);
         return this;
     }
 
-    /** Store a boolean value */
+    /** Store a boolean value. */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putBoolean(@NonNull final Datum datum, final boolean value) {
+    public DataManager putBoolean(@NonNull final Datum datum,
+                                  final boolean value) {
         datum.putBoolean(this, mBundle, value);
         return this;
     }
 
-    /** Get a double value */
+    /** Get a double value. */
     @SuppressWarnings("unused")
     public double getDouble(@NonNull final String key) {
         return mData.get(key).getDouble(this, mBundle);
     }
 
-    /** Store a double value */
+    /** Store a double value. */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putDouble(@NonNull final String key, final double value) {
+    public DataManager putDouble(@NonNull final String key,
+                                 final double value) {
         mData.get(key).putDouble(this, mBundle, value);
         return this;
     }
 
-    /** Store a double value */
+    /** Store a double value. */
     @SuppressWarnings("unused")
     @NonNull
-    public DataManager putDouble(@NonNull final Datum datum, final double value) {
+    public DataManager putDouble(@NonNull final Datum datum,
+                                 final double value) {
         datum.putDouble(this, mBundle, value);
         return this;
     }
 
-    /** Get a float value */
+    /** Get a float value. */
     @SuppressWarnings("unused")
     public float getFloat(@NonNull final String key) {
         return mData.get(key).getFloat(this, mBundle);
     }
 
-    /** Store a float value */
+    /** Store a float value. */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putFloat(@NonNull final String key, final float value) {
+    public DataManager putFloat(@NonNull final String key,
+                                final float value) {
         mData.get(key).putFloat(this, mBundle, value);
         return this;
     }
 
-    /** Store a float value */
+    /** Store a float value. */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putFloat(@NonNull final Datum datum, final float value) {
+    public DataManager putFloat(@NonNull final Datum datum,
+                                final float value) {
         datum.putFloat(this, mBundle, value);
         return this;
     }
 
-    /** Get an int value */
+    /** Get an int value. */
     public int getInt(@NonNull final String key) {
         return mData.get(key).getInt(this, mBundle);
     }
 
-    /** Store an int value */
+    /** Store an int value. */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putInt(@NonNull final String key, final int value) {
+    public DataManager putInt(@NonNull final String key,
+                              final int value) {
         mData.get(key).putInt(this, mBundle, value);
         return this;
     }
 
-    /** Store an int value */
+    /** Store an int value. */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putInt(@NonNull final Datum datum, final int value) {
+    public DataManager putInt(@NonNull final Datum datum,
+                              final int value) {
         datum.putInt(this, mBundle, value);
         return this;
     }
 
-    /** Get a long value */
+    /** Get a long value. */
     public long getLong(@NonNull final String key) {
         return mData.get(key).getLong(this, mBundle);
     }
 
-    /** Store a long value */
+    /** Store a long value. */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putLong(@NonNull final String key, final long value) {
+    public DataManager putLong(@NonNull final String key,
+                               final long value) {
         mData.get(key).putLong(this, mBundle, value);
         return this;
     }
 
-    /** Store a long value */
+    /** Store a long value. */
     @NonNull
-    public DataManager putLong(@NonNull final Datum datum, final long value) {
+    public DataManager putLong(@NonNull final Datum datum,
+                               final long value) {
         datum.putLong(this, mBundle, value);
         return this;
     }
 
     /**
-     * Get a String value
+     * Get a String value.
      *
      * @return Value of the data, can be empty, but never null
      */
@@ -252,7 +269,7 @@ public class DataManager {
     }
 
     /**
-     * Get a String value
+     * Get a String value.
      *
      * @return Value of the data, can be empty, but never null
      */
@@ -261,17 +278,19 @@ public class DataManager {
         return datum.getString(this, mBundle);
     }
 
-    /** Store a String value */
+    /** Store a String value. */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putString(@NonNull final String key, @NonNull final String value) {
+    public DataManager putString(@NonNull final String key,
+                                 @NonNull final String value) {
         mData.get(key).putString(this, mBundle, value);
         return this;
     }
 
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putString(@NonNull final Datum datum, @NonNull final String value) {
+    public DataManager putString(@NonNull final Datum datum,
+                                 @NonNull final String value) {
         datum.putString(this, mBundle, value);
         return this;
     }
@@ -298,12 +317,12 @@ public class DataManager {
             } else if (value instanceof Boolean) {
                 putBoolean(key, (Boolean) value);
             } else if (value instanceof ArrayList) {
-                this.putParcelableArrayList(key, (ArrayList)value);
+                this.putParcelableArrayList(key, (ArrayList) value);
             } else if (value instanceof Serializable) {
                 this.putSerializable(key, (Serializable) value);
             } else {
                 // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
-                Logger.debug("key=`" + key + "`, value=" + value );
+                Logger.debug("key=`" + key + "`, value=" + value);
                 if (value != null) {
                     putString(key, value.toString());
                 }
@@ -368,9 +387,12 @@ public class DataManager {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putSerializable(@NonNull final String key, @NonNull final Serializable value) {
+    public DataManager putSerializable(@NonNull final String key,
+                                       @NonNull final Serializable value) {
         if (BuildConfig.DEBUG) {
-            Logger.debug("putSerializable, key=" + key + " , type=" + value.getClass().getCanonicalName());
+            Logger.debug(
+                    "putSerializable, key=" + key +
+                            " , type=" + value.getClass().getCanonicalName());
         }
         mData.get(key).putSerializable(mBundle, value);
         return this;
@@ -398,11 +420,11 @@ public class DataManager {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public <T extends Parcelable> DataManager putParcelableArrayList(@NonNull final String key, @NonNull final ArrayList<T> value) {
+    public <T extends Parcelable> DataManager putParcelableArrayList(@NonNull final String key,
+                                                                     @NonNull final ArrayList<T> value) {
         mData.get(key).putParcelableArrayList(this, mBundle, value);
         return this;
     }
-
 
     /**
      * Get the ArrayList<String> from the collection.
@@ -426,7 +448,8 @@ public class DataManager {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public DataManager putStringArrayList(@NonNull final String key, @NonNull final ArrayList<String> value) {
+    public DataManager putStringArrayList(@NonNull final String key,
+                                          @NonNull final ArrayList<String> value) {
         mData.get(key).putStringArrayList(this, mBundle, value);
         return this;
     }
@@ -435,7 +458,7 @@ public class DataManager {
      * Loop through and apply validators, generating a Bundle collection as a by-product.
      * The Bundle collection is then used in cross-validation as a second pass, and finally
      * passed to each defined cross-validator.
-     *
+     * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
      *
      * @return <tt>true</tt> if all validation passed.
@@ -447,12 +470,14 @@ public class DataManager {
         mValidationExceptions.clear();
 
         // First, just validate individual fields with the cross-val flag set false
-        if (!validate(false))
+        if (!validate(false)) {
             isOk = false;
+        }
 
         // Now re-run with cross-val set to true.
-        if (!validate(true))
+        if (!validate(true)) {
             isOk = false;
+        }
 
         // Finally run the local cross-validation
         for (DataCrossValidator v : mCrossValidators) {
@@ -467,8 +492,8 @@ public class DataManager {
     }
 
     /**
-     * Internal utility routine to perform one loop validating all fields.
-     *
+     * Perform a loop validating all fields.
+     * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
      *
      * @param crossValidating Options indicating if this is a cross validation pass.
@@ -505,7 +530,7 @@ public class DataManager {
     }
 
     /**
-     * Remove the specified key from this collection
+     * Remove the specified key from this collection.
      *
      * @param key Key of data to remove.
      *
@@ -519,7 +544,7 @@ public class DataManager {
     }
 
     /**
-     * @return the current set of data
+     * @return the current set of data.
      */
     @NonNull
     public Set<String> keySet() {
@@ -527,30 +552,33 @@ public class DataManager {
     }
 
     /**
-     * Retrieve the text message associated with the validation exceptions (if any)
+     * Retrieve the text message associated with the validation exceptions (if any).
      *
      * @return res The resource manager to use when looking up strings.
      */
     @NonNull
     public String getValidationExceptionMessage(@NonNull final Resources res) {
-        if (mValidationExceptions.size() == 0)
+        if (mValidationExceptions.size() == 0) {
             return "No error";
-        else {
+        } else {
             StringBuilder message = new StringBuilder();
             Iterator<ValidatorException> iterator = mValidationExceptions.iterator();
             int cnt = 1;
-            if (iterator.hasNext())
-                message.append('(').append(cnt).append(") ").append(iterator.next().getFormattedMessage(res));
+            if (iterator.hasNext()) {
+                message.append('(').append(cnt).append(") ").append(
+                        iterator.next().getFormattedMessage(res));
+            }
             while (iterator.hasNext()) {
                 cnt++;
-                message.append(" (").append(cnt).append(") ").append(iterator.next().getFormattedMessage(res)).append('\n');
+                message.append(" (").append(cnt).append(") ").append(
+                        iterator.next().getFormattedMessage(res)).append('\n');
             }
             return message.toString();
         }
     }
 
     /**
-     * Format the passed bundle in a way that is convenient for display
+     * Format the passed bundle in a way that is convenient for display.
      *
      * @return Formatted string
      */
@@ -561,9 +589,10 @@ public class DataManager {
     }
 
     /**
-     * Append a string to a {@link StringList} value in this collection
+     * Append a string to a {@link StringList} value in this collection.
      */
-    public void appendOrAdd(@NonNull final String key, @NonNull final String value) {
+    public void appendOrAdd(@NonNull final String key,
+                            @NonNull final String value) {
         String s = StringList.encodeListItem(value);
         if (!containsKey(key) || getString(key).isEmpty()) {
             putString(key, s);
@@ -574,11 +603,13 @@ public class DataManager {
     }
 
     /**
-     * Class to manage the collection of {@link Datum} objects for this DataManager
+     * Class to manage the collection of {@link Datum} objects for this DataManager.
      *
      * @author pjw
      */
-    private static class DatumHash extends Hashtable<String, Datum> {
+    private static class DatumHash
+            extends Hashtable<String, Datum> {
+
         private static final long serialVersionUID = -650159534364183779L;
 
         /**

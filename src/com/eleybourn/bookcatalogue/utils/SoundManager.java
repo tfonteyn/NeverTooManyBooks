@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 
@@ -11,6 +12,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 public final class SoundManager {
+
     private SoundManager() {
     }
 
@@ -26,7 +28,8 @@ public final class SoundManager {
         }
     }
 
-    private static void playFile(@NonNull final Context context, final @RawRes int resId) {
+    private static void playFile(@NonNull final Context context,
+                                 final @RawRes int resId) {
         try {
             AssetFileDescriptor file = context.getResources().openRawResourceFd(resId);
             MediaPlayer player = new MediaPlayer();

@@ -23,6 +23,9 @@ package com.eleybourn.bookcatalogue.entities;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -38,42 +41,43 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Class to hold book-related series data.
  *
  * @author Philip Warner
  */
 public class Series
-    implements Parcelable, Utils.ItemWithIdFixup {
+        implements Parcelable, Utils.ItemWithIdFixup {
 
-    public static final Creator<Series> CREATOR = new Creator<Series>() {
-        @Override
-        public Series createFromParcel(Parcel source) {
-            return new Series(source);
-        }
+    /** {@link Parcelable}. */
+    public static final Creator<Series> CREATOR =
+            new Creator<Series>() {
+                @Override
+                public Series createFromParcel(@NonNull final Parcel source) {
+                    return new Series(source);
+                }
 
-        @Override
-        public Series[] newArray(int size) {
-            return new Series[size];
-        }
-    };
+                @Override
+                public Series[] newArray(final int size) {
+                    return new Series[size];
+                }
+            };
+
+    /**
+     * Trim extraneous punctuation and whitespace from the titles and authors
+     *
+     * Original code had:
+     * "\\s*([0-9\\.\\-]+|[ivxlcm\\.\\-]+)\\s*$";
+     *
+     * Android Studio:
+     * Reports character escapes that are replaceable with the unescaped character without a
+     * change in meaning. Note that inside the square brackets of a character class, many
+     * escapes are unnecessary that would be necessary outside of a character class.
+     * For example the regex [\.] is identical to [.]
+     */
     private static final String SERIES_REGEX_SUFFIX =
-        BookCatalogueApp.getResourceString(R.string.series_number_prefixes)
-            /*
-             * Trim extraneous punctuation and whitespace from the titles and authors
-             *
-             * Original code had:
-             *    "\\s*([0-9\\.\\-]+|[ivxlcm\\.\\-]+)\\s*$";
-             *
-             *    Android Studio:
-             *    Reports character escapes that are replaceable with the unescaped character without a
-             *    change in meaning. Note that inside the square brackets of a character class, many
-             *    escapes are unnecessary that would be necessary outside of a character class.
-             *    For example the regex [\.] is identical to [.]
-             */ + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
+            BookCatalogueApp.getResourceString(R.string.series_number_prefixes)
+                    + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
     private static final String SERIES_REGEX_1 = "^\\s*" + SERIES_REGEX_SUFFIX;
     private static final String SERIES_REGEX_2 = "(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX;
     /** Pattern used to recognize series numbers embedded in names */
@@ -176,7 +180,8 @@ public class Series
                 details.name = title.substring((last + 1), close);
                 details.startChar = last;
                 if (mSeriesPat == null) {
-                    mSeriesPat = Pattern.compile(SERIES_REGEX_2, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+                    mSeriesPat = Pattern.compile(SERIES_REGEX_2,
+                                                 Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
                 }
                 Matcher matcher = mSeriesPat.matcher(details.name);
                 if (matcher.find()) {
@@ -203,7 +208,7 @@ public class Series
 
         if (mSeriesPosCleanupPat == null) {
             mSeriesPosCleanupPat = Pattern.compile(SERIES_REGEX_1,
-                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+                                                   Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         }
         if (mSeriesIntegerPat == null) {
             String numericExp = "^[0-9]+$";
@@ -265,7 +270,8 @@ public class Series
                         toDelete.add(orig);
                     } else {
                         // Both have numbers. See if they are the same.
-                        if (s.number.trim().toLowerCase().equals(orig.number.trim().toLowerCase())) {
+                        if (s.number.trim().toLowerCase().equals(
+                                orig.number.trim().toLowerCase())) {
                             // Same exact series, delete this one
                             toDelete.add(s);
                         } //else {
@@ -324,6 +330,7 @@ public class Series
         dest.writeString(number);
     }
 
+    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
@@ -413,8 +420,8 @@ public class Series
             return false;
         }
         return Objects.equals(this.name, that.name)
-            && (this.isComplete == that.isComplete)
-            && Objects.equals(this.number, that.number);
+                && (this.isComplete == that.isComplete)
+                && Objects.equals(this.number, that.number);
 
     }
 

@@ -19,13 +19,13 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.io.IOException;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Class to find covers for an importer when the import is reading from a local directory.
@@ -35,13 +35,19 @@ import androidx.annotation.Nullable;
  * @author pjw
  */
 public class LocalCoverFinder
-    implements Importer.CoverFinder {
+        implements Importer.CoverFinder {
 
-    /** The root path to search for files */
+    /** The root path to search for files. */
     @NonNull
     private final String mSrc;
+    /** indicates the cover files are not in the 'covers' directory, so will need to be copied. */
     private final boolean mIsForeign;
 
+    /**
+     * Constructor.
+     *
+     * @param srcPath the path where to look for cover files.
+     */
     public LocalCoverFinder(@NonNull final String srcPath) {
         mSrc = srcPath;
         mIsForeign = !mSrc.equals(StorageUtils.getSharedStorage().getAbsolutePath());
@@ -50,7 +56,7 @@ public class LocalCoverFinder
     /**
      * Entry point for the CSV importer.
      *
-     * @param srcId used to find a cover file
+     * @param srcId        used to find a cover file
      * @param uuidFromBook of the book
      *
      * @throws IOException on any failure
@@ -58,7 +64,7 @@ public class LocalCoverFinder
     @Override
     public void copyOrRenameCoverFile(final long srcId,
                                       @NonNull final String uuidFromBook)
-        throws IOException {
+            throws IOException {
 
         if (srcId != 0) {
             if (mIsForeign) {
@@ -95,7 +101,7 @@ public class LocalCoverFinder
      */
     @Override
     public void copyOrRenameCoverFile(@NonNull final String uuidFromFile)
-        throws IOException {
+            throws IOException {
         // Only copy UUID files if they are foreign...since they already exists, otherwise.
         if (mIsForeign) {
             File source = findExternalCover(uuidFromFile);
@@ -114,9 +120,8 @@ public class LocalCoverFinder
             source = new File(mSrc + File.separator + name + ".png");
         }
 
-        // Nothing to copy?
+        // Anything to copy?
         return source.exists() ? source : null;
-
     }
 
     /**
@@ -145,21 +150,26 @@ public class LocalCoverFinder
     /**
      * Copy a specified source file into the default cover location for a new file.
      * DO NO Overwrite EXISTING FILES.
+     *
+     * @param source  file to copy
+     * @param newUuid the uuid to use for the destination file name
+     *
+     * @throws IOException on failure
      */
-    private void copyFileToCoverImageIfMissing(@Nullable final File orig,
+    private void copyFileToCoverImageIfMissing(@Nullable final File source,
                                                @NonNull final String newUuid)
-        throws IOException {
+            throws IOException {
         // Nothing to copy?
-        if (orig == null || !orig.exists() || orig.length() == 0) {
+        if (source == null || !source.exists() || source.length() == 0) {
             return;
         }
 
         // Check for ANY current image
-        final File newFile = getCoverFile(newUuid);
-        if (newFile.exists()) {
+        final File dest = getCoverFile(newUuid);
+        if (dest.exists()) {
             return;
         }
 
-        StorageUtils.copyFile(orig, newFile);
+        StorageUtils.copyFile(source, dest);
     }
 }

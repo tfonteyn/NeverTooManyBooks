@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -33,15 +36,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * TODO: ReviewUpdateHandler WORK IN PROGRESS
  *
  * @author Philip Warner
  */
-public class ReviewUpdateHandler extends ApiHandler {
+public class ReviewUpdateHandler
+        extends ApiHandler {
 
     public ReviewUpdateHandler(@NonNull final GoodreadsManager manager) {
 

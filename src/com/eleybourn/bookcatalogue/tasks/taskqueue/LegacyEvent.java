@@ -22,13 +22,14 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
@@ -42,7 +43,8 @@ import java.util.List;
  *
  * @author Philip Warner
  */
-public class LegacyEvent extends Event {
+public class LegacyEvent
+        extends Event {
 
     private static final long serialVersionUID = -8518718598973561219L;
     private static final int TEXT_FIELD_1 = 1;
@@ -62,7 +64,9 @@ public class LegacyEvent extends Event {
                                 @NonNull final ViewGroup parent) {
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams margins = new LinearLayout.LayoutParams(ViewGroup.MarginLayoutParams.MATCH_PARENT, ViewGroup.MarginLayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams margins = new LinearLayout.LayoutParams(
+                ViewGroup.MarginLayoutParams.MATCH_PARENT,
+                ViewGroup.MarginLayoutParams.WRAP_CONTENT);
 
         TextView tv = new TextView(context);
         tv.setId(TEXT_FIELD_1);
@@ -84,7 +88,8 @@ public class LegacyEvent extends Event {
         ((TextView) view.findViewById(TEXT_FIELD_1))
                 .setText("Legacy Event Placeholder for Event #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
-                .setText("This event is obsolete and can not be recovered. It is probably advisable to delete it.");
+                .setText(
+                        "This event is obsolete and can not be recovered. It is probably advisable to delete it.");
     }
 
     public byte[] getOriginal() {
@@ -100,12 +105,14 @@ public class LegacyEvent extends Event {
                                     @NonNull final List<ContextDialogItem> items,
                                     @NonNull final CatalogueDBAdapter db) {
 
-        items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event), new Runnable() {
-            @Override
-            public void run() {
-                QueueManager.getQueueManager().deleteEvent(LegacyEvent.this.getId());
-            }
-        }));
+        items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                QueueManager.getQueueManager().deleteEvent(
+                                                        LegacyEvent.this.getId());
+                                            }
+                                        }));
 
     }
 }

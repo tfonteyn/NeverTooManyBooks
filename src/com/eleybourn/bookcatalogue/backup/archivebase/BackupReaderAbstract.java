@@ -21,6 +21,9 @@ package com.eleybourn.bookcatalogue.backup.archivebase;
 
 import android.content.Context;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -40,9 +43,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 /**
  * Basic implementation of format-agnostic BackupReader methods using
  * only a limited set of methods from the base interface.
@@ -50,15 +50,25 @@ import androidx.annotation.NonNull;
  * @author pjw
  */
 public abstract class BackupReaderAbstract
-    implements BackupReader {
+        implements BackupReader {
 
     @NonNull
     private final CatalogueDBAdapter mDb;
-
+    /** progress message. */
     private final String processPreferences;
+    /** progress message. */
     private final String processCover;
+    /** progress message. */
     private final String processBooklistStyles;
+    /** progress and cancellation listener. */
+    private BackupReader.BackupReaderListener mProgressListener;
+    /** what and how to import. */
+    private @NonNull
+    ImportSettings mSettings;
 
+    /**
+     * Constructor.
+     */
     protected BackupReaderAbstract() {
         Context context = BookCatalogueApp.getAppContext();
         mDb = new CatalogueDBAdapter(context);
@@ -77,7 +87,10 @@ public abstract class BackupReaderAbstract
     public void restore(@NonNull final ImportSettings settings,
                         @NonNull final BackupReaderListener listener
     )
-        throws IOException {
+            throws IOException {
+
+        mSettings = settings;
+        mProgressListener = listener;
 
         // keep track of what we read from the archive
         int entitiesRead = ImportSettings.NOTHING;
@@ -97,91 +110,91 @@ public abstract class BackupReaderAbstract
                 estimatedSteps *= 2;
             }
 
-            listener.setMax(estimatedSteps);
+            mProgressListener.setMax(estimatedSteps);
 
             // Get first entity (this will be the entity AFTER the INFO entities)
             ReaderEntity entity = nextEntity();
 
             // process each entry based on type, unless we are cancelled, as in Nikita
-            while (entity != null && !listener.isCancelled()) {
+            while (entity != null && !mProgressListener.isCancelled()) {
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                     Logger.info(this, "reading|entity=" + entity.getName());
                 }
                 switch (entity.getType()) {
-                    case Cover: {
-                        if ((settings.what & ImportSettings.COVERS) != 0) {
-                            restoreCover(entity, settings, listener);
+                    case Cover:
+                        if ((mSettings.what & ImportSettings.COVERS) != 0) {
+                            restoreCover(entity);
                             coverCount++;
                             // entitiesRead set when all done
                         }
                         break;
-                    }
-                    case Books: {
-                        if ((settings.what & ImportSettings.BOOK_CSV) != 0) {
+
+                    case Books:
+                        if ((mSettings.what & ImportSettings.BOOK_CSV) != 0) {
                             // a CSV file with all book data
-                            restoreBooks(entity, settings, listener);
+                            restoreBooks(entity);
                             entitiesRead |= ImportSettings.BOOK_CSV;
                         }
                         break;
-                    }
-                    case Preferences: {
+
+                    case Preferences:
                         // current format
-                        if ((settings.what & ImportSettings.PREFERENCES) != 0) {
-                            listener.onProgressStep(processPreferences, 1);
+                        if ((mSettings.what & ImportSettings.PREFERENCES) != 0) {
+                            mProgressListener.onProgressStep(processPreferences, 1);
                             try (XmlImporter importer = new XmlImporter()) {
 
-                                importer.doPreferences(entity, Prefs.getPrefs());
+                                importer.doPreferences(entity, new ForwardingListener(),
+                                                       Prefs.getPrefs());
                             }
                             entitiesRead |= ImportSettings.PREFERENCES;
                         }
                         break;
-                    }
 
-                    case BooklistStyles: {
+
+                    case BooklistStyles:
                         // current format
-                        if ((settings.what & ImportSettings.BOOK_LIST_STYLES) != 0) {
-                            listener.onProgressStep(processBooklistStyles, 1);
+                        if ((mSettings.what & ImportSettings.BOOK_LIST_STYLES) != 0) {
+                            mProgressListener.onProgressStep(processBooklistStyles, 1);
                             try (XmlImporter importer = new XmlImporter()) {
-                                importer.doEntity(entity);
+                                importer.doEntity(entity, new ForwardingListener());
                             }
                             entitiesRead |= ImportSettings.BOOK_LIST_STYLES;
                         }
                         break;
-                    }
-                    case XML: {
+
+                    case XML:
                         // skip, future extension
                         break;
-                    }
 
-                    case PreferencesPreV200: {
+
+                    case PreferencesPreV200:
                         // pre-v200 format
-                        if ((settings.what & ImportSettings.PREFERENCES) != 0) {
-                            listener.onProgressStep(processPreferences, 1);
+                        if ((mSettings.what & ImportSettings.PREFERENCES) != 0) {
+                            mProgressListener.onProgressStep(processPreferences, 1);
                             // read them into the 'old' prefs. Migration is done at a later stage.
                             try (XmlImporter importer = new XmlImporter()) {
-                                importer.doPreferences(entity, Prefs.getPrefs("bookCatalogue"));
+                                importer.doPreferences(entity, new ForwardingListener(),
+                                                       Prefs.getPrefs("bookCatalogue"));
                             }
                             entitiesRead |= ImportSettings.PREFERENCES;
                         }
                         break;
-                    }
-                    case BooklistStylesPreV200: {
+
+                    case BooklistStylesPreV200:
                         // pre-v200 format
-                        if ((settings.what & ImportSettings.BOOK_LIST_STYLES) != 0) {
-                            restorePreV200Style(entity, listener);
+                        if ((mSettings.what & ImportSettings.BOOK_LIST_STYLES) != 0) {
+                            restorePreV200Style(entity);
                             entitiesRead |= ImportSettings.BOOK_LIST_STYLES;
                         }
                         break;
-                    }
-                    case Database: {
+
+                    case Database:
                         // don't restore from archive; we're using the CSV file
                         break;
-                    }
 
-                    case Info: {
+                    case Info:
                         // skip, already handled, should in fact not be seen.
                         break;
-                    }
                 }
                 entity = nextEntity();
             }
@@ -190,7 +203,7 @@ public abstract class BackupReaderAbstract
                 entitiesRead |= ImportSettings.COVERS;
             }
             // report what we actually imported
-            settings.what = entitiesRead;
+            mSettings.what = entitiesRead;
 
             if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                 Logger.info(this, "imported covers#=" + coverCount);
@@ -206,29 +219,27 @@ public abstract class BackupReaderAbstract
     /**
      * Restore the books from the export file.
      *
+     * @param entity to restore
+     *
      * @throws IOException on failure
      */
-    private void restoreBooks(@NonNull final ReaderEntity entity,
-                              @NonNull final ImportSettings settings,
-                              @NonNull final BackupReaderListener listener
-    )
-        throws IOException {
+    private void restoreBooks(@NonNull final ReaderEntity entity)
+            throws IOException {
         // Listener for the 'doImport' function that just passes on the progress to our own listener
         Importer.ImportListener importListener = new Importer.ImportListener() {
-            private int mLastPos = 0;
+            private int mLastPos;
 
             @Override
             public void onProgress(@NonNull final String message,
-                                   final int position
-            ) {
+                                   final int position) {
                 // The progress is sent periodically and has jumps, so we calculate deltas
-                listener.onProgressStep(message, position - mLastPos);
+                mProgressListener.onProgressStep(message, position - mLastPos);
                 mLastPos = position;
             }
 
             @Override
             public boolean isCancelled() {
-                return listener.isCancelled();
+                return mProgressListener.isCancelled();
             }
 
             @Override
@@ -238,7 +249,7 @@ public abstract class BackupReaderAbstract
         };
 
         // Now do the import
-        try (CsvImporter importer = new CsvImporter(settings)) {
+        try (CsvImporter importer = new CsvImporter(mSettings)) {
             importer.doImport(entity.getStream(), null, importListener);
         }
     }
@@ -246,20 +257,19 @@ public abstract class BackupReaderAbstract
     /**
      * Restore a cover file.
      *
+     * @param cover to restore
+     *
      * @throws IOException on failure
      */
-    private void restoreCover(@NonNull final ReaderEntity cover,
-                              @NonNull final ImportSettings settings,
-                              @NonNull final BackupReaderListener listener
-    )
-        throws IOException {
-        listener.onProgressStep(processCover, 1);
+    private void restoreCover(@NonNull final ReaderEntity cover)
+            throws IOException {
+        mProgressListener.onProgressStep(processCover, 1);
 
         // see if we have this file already
         final File currentCover = StorageUtils.getRawCoverFile(cover.getName());
         final Date covDate = cover.getDateModified();
 
-        if ((settings.what & ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
+        if ((mSettings.what & ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
             if (currentCover.exists()) {
                 Date currFileDate = new Date(currentCover.lastModified());
                 if (currFileDate.compareTo(covDate) >= 0) {
@@ -276,13 +286,14 @@ public abstract class BackupReaderAbstract
     /**
      * Restore a serialized (pre-v200 archive) booklist style.
      *
+     * @param entity to restore
+     *
      * @throws IOException on failure
      */
-    private void restorePreV200Style(@NonNull final ReaderEntity entity,
-                                     @NonNull final BackupReaderListener listener)
-        throws IOException {
+    private void restorePreV200Style(@NonNull final ReaderEntity entity)
+            throws IOException {
 
-        listener.onProgressStep(processBooklistStyles, 1);
+        mProgressListener.onProgressStep(processBooklistStyles, 1);
         BooklistStyle booklistStyle = null;
         try {
             // deserialization will take care of writing the v200+ SharedPreference file
@@ -304,7 +315,47 @@ public abstract class BackupReaderAbstract
     @Override
     @CallSuper
     public void close()
-        throws IOException {
+            throws IOException {
         mDb.close();
+    }
+
+    /**
+     * Listener for the '{@link com.eleybourn.bookcatalogue.backup.Exporter#doExport} method
+     * that just passes on the progress to our own listener.
+     * <p>
+     * It basically translates between 'delta' and 'absolute' positions for the progress counter
+     */
+    private class ForwardingListener
+            implements Importer.ImportListener {
+
+        private int mLastPos;
+
+        /**
+         *
+         * @param max value (can be estimated) for the progress counter
+         */
+        @Override
+        public void setMax(final int max) {
+            mProgressListener.setMax(max);
+        }
+
+        /**
+         *
+         * @param message  to display
+         * @param position absolute position for the progress counter
+         */
+        @Override
+        public void onProgress(@NonNull final String message,
+                               final int position) {
+            // The progress is sent periodically and has jumps, so we calculate deltas
+            mProgressListener.onProgressStep(message, position - mLastPos);
+            mLastPos = position;
+        }
+
+
+        @Override
+        public boolean isCancelled() {
+            return mProgressListener.isCancelled();
+        }
     }
 }

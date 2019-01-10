@@ -1,18 +1,19 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * an SQL WHERE clause  (column LIKE '%text%')
- *
+ * <p>
  * FIXME: bad stopgap... use PreparedStatements instead !
  */
-public class WildcardFilter implements Filter {
+public class WildcardFilter
+        implements Filter {
 
     private final TableDefinition table;
     private final DomainDefinition domain;
@@ -29,6 +30,7 @@ public class WildcardFilter implements Filter {
 
     @Override
     public String getExpression(@Nullable final String uuid) {
-        return '(' + table.dot(domain) + " LIKE '%" + CatalogueDBAdapter.encodeString(criteria) + "%'" + ')';
+        return '(' + table.dot(domain) +
+                " LIKE '%" + CatalogueDBAdapter.encodeString(criteria) + "%'" + ')';
     }
 }

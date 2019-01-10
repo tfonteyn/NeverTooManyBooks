@@ -2,13 +2,20 @@ package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
 import android.os.Parcelable;
 
-public interface CheckListItem<T>  extends Parcelable {
-    /** the item we're encapsulating */
+/**
+ *
+ * @param <T> type of item in the checklist
+ */
+public interface CheckListItem<T>
+        extends Parcelable {
+
+    /** the item we're encapsulating. */
     T getItem();
 
-    /** label to use in a {@link CheckListEditorDialogFragment.CheckListEditorDialog} */
+    /** label to use in a {@link CheckListEditorDialogFragment.CheckListEditorDialog}. */
     String getLabel();
 
+    boolean isSelected();
+
     void setSelected(final boolean selected);
-    boolean getSelected();
 }

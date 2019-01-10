@@ -20,25 +20,29 @@
 package com.eleybourn.bookcatalogue.datamanager.datavalidators;
 
 import android.content.res.Resources;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 /**
  * Exception class for all validation errors. String ID and args are stored for later retrieval.
- *
- * The messages will be shown to the user, hence the need for a String resource
+ * <p>
+ * The messages will be shown to the user, hence the need for a String resource.
  *
  * @author Philip Warner
  */
-public class ValidatorException extends RuntimeException {
+public class ValidatorException
+        extends RuntimeException {
+
     private static final long serialVersionUID = -726920065494753160L;
     @StringRes
     private final int mStringId;
-    /** Args to pass to format function */
+    /** Args to pass to format function. */
     @NonNull
     private final Object[] mArgs;
 
-    public ValidatorException(@StringRes final int stringId, @NonNull final Object[] args) {
+    public ValidatorException(@StringRes final int stringId,
+                              @NonNull final Object[] args) {
         mStringId = stringId;
         mArgs = args;
     }

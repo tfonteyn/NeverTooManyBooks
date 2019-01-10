@@ -1,22 +1,28 @@
 package com.eleybourn.bookcatalogue.datamanager;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 
-public class BitmaskDataAccessor implements DataAccessor {
-    private final String key;
-    private final int bit;
+public class BitmaskDataAccessor
+        implements DataAccessor {
 
-    public BitmaskDataAccessor(@NonNull final String key, final int bit) {
-        this.key = key;
-        this.bit = bit;
+    private final String mKey;
+    private final int mBit;
+
+    public BitmaskDataAccessor(@NonNull final String key,
+                               final int bit) {
+        mKey = key;
+        mBit = bit;
     }
 
     @NonNull
     @Override
-    public Boolean get(@NonNull final DataManager data, @NonNull final Datum datum, @NonNull final Bundle rawData) {
-        Integer bitmask = data.getInt(key);
-        return (bitmask & bit) != 0;
+    public Boolean get(@NonNull final DataManager data,
+                       @NonNull final Datum datum,
+                       @NonNull final Bundle rawData) {
+        Integer bitmask = data.getInt(mKey);
+        return (bitmask & mBit) != 0;
     }
 
     @Override
@@ -24,14 +30,14 @@ public class BitmaskDataAccessor implements DataAccessor {
                     @NonNull final Datum datum,
                     @NonNull final Bundle rawData,
                     @NonNull final Object value) {
-        Integer bitmask = data.getInt(key);
+        Integer bitmask = data.getInt(mKey);
         // Parse the string the CheckBox returns us (0 or 1)
         if (Datum.toBoolean(value)) {
-            bitmask |= bit;
+            bitmask |= mBit;
         } else {
-            bitmask &= ~bit;
+            bitmask &= ~mBit;
         }
-        data.putInt(key, bitmask);
+        data.putInt(mKey, bitmask);
 
     }
 
@@ -39,6 +45,6 @@ public class BitmaskDataAccessor implements DataAccessor {
     public boolean isPresent(@NonNull final DataManager data,
                              @NonNull final Datum datum,
                              @NonNull final Bundle rawData) {
-        return rawData.containsKey(key);
+        return rawData.containsKey(mKey);
     }
 }

@@ -5,12 +5,13 @@ import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -31,12 +32,14 @@ import java.util.ArrayList;
 
 public final class ImageUtils {
 
+    private static final int BUFFER_SIZE = 65536;
+
     private ImageUtils() {
     }
 
     /**
      * Shrinks the image in the passed file to the specified dimensions.
-     *
+     * <p>
      * If the view is non-null, the image is placed in the view.
      *
      * @return The bitmap, or null
@@ -60,17 +63,17 @@ public final class ImageUtils {
 
     /**
      * Shrinks the passed image file spec into the specified dimensions.
-     *
+     * <p>
      * If the view is non-null, the image is placed in the view.
      *
      * @return The bitmap, or null
      */
     @Nullable
-    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
-                                                @NonNull final String fileSpec,
-                                                final int maxWidth,
-                                                final int maxHeight,
-                                                final boolean exact) {
+    private static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
+                                                 @NonNull final String fileSpec,
+                                                 final int maxWidth,
+                                                 final int maxHeight,
+                                                 final boolean exact) {
 
         // Read the file to get file size
         final BitmapFactory.Options opt = new BitmapFactory.Options();
@@ -95,20 +98,23 @@ public final class ImageUtils {
         final float heightRatio = (float) maxHeight / opt.outHeight;
 
         // Work out SCALE so that it fits exactly
-        float ratio = widthRatio < heightRatio ? widthRatio : heightRatio;
+        float ratio = (widthRatio < heightRatio) ? widthRatio : heightRatio;
 
         // Note that inSampleSize seems to ALWAYS be forced to a power of 2, no matter what we
         // specify, so we just work with powers of 2.
-        final int idealSampleSize = (int) Math.ceil(1 / ratio); // This is the sample size we want to use
+        final int idealSampleSize = (int) Math.ceil(1 / ratio);
         // Get the nearest *bigger* power of 2.
-        final int samplePow2 = (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
+        final int samplePow2 =
+                (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
             Logger.info(ImageUtils.class, "fetchFileIntoImageView:\n" +
                     " filename = " + fileSpec + '\n' +
                     "  exact       = " + exact + '\n' +
-                    "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth + ", widthRatio   = " + widthRatio + '\n' +
-                    "  maxHeight   = " + maxHeight + ", opt.outHeight= " + opt.outHeight + ",  heightRatio = " + heightRatio + '\n' +
+                    "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth +
+                    ", widthRatio   = " + widthRatio + '\n' +
+                    "  maxHeight   = " + maxHeight + ", opt.outHeight= " + opt.outHeight +
+                    ",  heightRatio = " + heightRatio + '\n' +
                     "  ratio            = " + ratio + '\n' +
                     "  idealSampleSize  = " + idealSampleSize + '\n' +
                     "  samplePow2       = " + samplePow2);
@@ -117,7 +123,8 @@ public final class ImageUtils {
         final Bitmap bm;
         try {
             if (exact) {
-                // Create one bigger than needed and SCALE it; this is an attempt to improve quality.
+                // Create one bigger than needed and SCALE it;
+                // this is an attempt to improve quality.
                 opt.inSampleSize = samplePow2 / 2;
                 if (opt.inSampleSize < 1) {
                     opt.inSampleSize = 1;
@@ -126,7 +133,8 @@ public final class ImageUtils {
                 final Bitmap tmpBm = BitmapFactory.decodeFile(fileSpec, opt);
                 if (tmpBm == null) {
                     // We ran out of memory, most likely
-                    // TODO: Need a way to try loading images after GC(). Otherwise, covers in cover browser will stay blank.
+                    // TODO: Need a way to try loading images after GC().
+                    // Otherwise, covers in cover browser will stay blank.
                     Logger.error("Unexpectedly failed to decode bitmap; memory exhausted?");
                     return null;
                 }
@@ -153,7 +161,8 @@ public final class ImageUtils {
         }
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(ImageUtils.class, "bm.width = " + bm.getWidth() + ", bm.height = " + bm.getHeight());
+            Logger.info(ImageUtils.class,
+                        "bm.width = " + bm.getWidth() + ", bm.height = " + bm.getHeight());
         }
 
         // Set ImageView and return bitmap
@@ -165,8 +174,9 @@ public final class ImageUtils {
     }
 
     /**
-     * Called in the UI thread, will either use a cached cover OR start a background task to create and load it.
-     *
+     * Called in the UI thread, will either use a cached cover OR start a background task
+     * to create and load it.
+     * <p>
      * If a cached image is used a background task is still started to check the file date vs
      * the cache date. If the cached image date is < the file, it is rebuilt.
      *
@@ -194,11 +204,15 @@ public final class ImageUtils {
 
         boolean cacheWasChecked = false;
 
-        /* If we want to check the cache, AND we don't have cache building happening, then check it. */
+        // If we want to check the cache, AND we don't have cache building happening,
+        // then check it.
         if (checkCache && destView != null
-                && !GetThumbnailTask.hasActiveTasks() && !ThumbnailCacheWriterTask.hasActiveTasks()) {
+                && !GetThumbnailTask.hasActiveTasks()
+                && !ThumbnailCacheWriterTask.hasActiveTasks()) {
             try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
-                final Bitmap bm = coversDBAdapter.fetchCachedImageIntoImageView(destView, coverFile, uuid, maxWidth, maxHeight);
+                final Bitmap bm = coversDBAdapter.fetchCachedImageIntoImageView(destView, coverFile,
+                                                                                uuid, maxWidth,
+                                                                                maxHeight);
                 if (bm != null) {
                     return bm;
                 }
@@ -206,19 +220,21 @@ public final class ImageUtils {
             cacheWasChecked = true;
         }
 
-        // If we get here, the image is not in the cache but the original exists. See if we can queue it.
+        // If we get here, the image is not in the cache but the original exists.
+        // See if we can queue it.
         if (allowBackground && destView != null) {
             destView.setImageBitmap(null);
             GetThumbnailTask.getThumbnail(uuid, destView, maxWidth, maxHeight, cacheWasChecked);
             return null;
         }
 
-        // File is not in cache, original exists, we are in the background task (or not allowed to queue request)
+        // File is not in cache, original exists, we are in the background task
+        // (or not allowed to queue request)
         return fetchFileIntoImageView(destView, coverFile.getPath(), maxWidth, maxHeight, exact);
     }
 
     /**
-     * Given a URL, get an image and save to a file
+     * Given a URL, get an image and save to a file.
      *
      * @param urlText Image file URL
      * @param name    for the file.
@@ -226,7 +242,8 @@ public final class ImageUtils {
      * @return Downloaded fileSpec, or null on failure
      */
     @Nullable
-    public static String saveThumbnailFromUrl(@NonNull final String urlText, @NonNull final String name) {
+    public static String saveThumbnailFromUrl(@NonNull final String urlText,
+                                              @NonNull final String name) {
         boolean success = false;
         final File file = StorageUtils.getTempCoverFile(name);
         try (InputStream in = Utils.getInputStreamWithTerminator(new URL(urlText))) {
@@ -239,7 +256,7 @@ public final class ImageUtils {
             Logger.error(e);
         }
 
-        return (success ? file.getAbsolutePath() : null);
+        return success ? file.getAbsolutePath() : null;
     }
 
     /**
@@ -258,7 +275,7 @@ public final class ImageUtils {
             if (in != null) {
                 out = new ByteArrayOutputStream();
                 // Save the output to a byte output stream
-                byte[] buffer = new byte[65536];
+                byte[] buffer = new byte[BUFFER_SIZE];
                 int len;
                 while ((len = in.read(buffer)) >= 0) {
                     out.write(buffer, 0, len);
@@ -300,10 +317,13 @@ public final class ImageUtils {
             return null;
         }
 
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, new BitmapFactory.Options());
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length,
+                                                      new BitmapFactory.Options());
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(ImageUtils.class, "Array " + bytes.length + " bytes, bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
+            Logger.info(ImageUtils.class,
+                        "Array " + bytes.length + " bytes, bitmap " +
+                                bitmap.getHeight() + 'x' + bitmap.getWidth());
         }
         return bitmap;
     }
@@ -319,7 +339,8 @@ public final class ImageUtils {
             return;
         }
 
-        ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+        ArrayList<String> imageList = bookData.getStringArrayList(
+                UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
         if (imageList == null || imageList.isEmpty()) {
             return;
         }
@@ -370,7 +391,8 @@ public final class ImageUtils {
     /**
      * Show large thumbnail in dialog. Closed by click on image area.
      */
-    public static void showZoomedThumb(@NonNull final Activity activity, @Nullable final File thumbFile) {
+    public static void showZoomedThumb(@NonNull final Activity activity,
+                                       @Nullable final File thumbFile) {
 
         final ThumbSize thumbSizes = getThumbSizes(activity);
 
@@ -388,7 +410,8 @@ public final class ImageUtils {
             } else {
 //                final Dialog dialog = new AlertDialog.Builder(activity, R.style.zoomedCoverImage)
 //                        .create();
-                final Dialog dialog = new StandardDialogs.BasicDialog(activity, R.style.zoomedCoverImage);
+                final Dialog dialog = new StandardDialogs.BasicDialog(activity,
+                                                                      R.style.zoomedCoverImage);
 
                 final ImageView cover = new ImageView(activity);
                 fetchFileIntoImageView(cover, thumbFile, thumbSizes.large, thumbSizes.large, true);
@@ -396,12 +419,13 @@ public final class ImageUtils {
                 cover.setBackgroundResource(R.drawable.border);
                 cover.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(@NonNull final View v) {
                         dialog.dismiss();
                     }
                 });
 
-                final ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                final ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 dialog.setContentView(cover, lp);
                 dialog.show();
             }
@@ -421,23 +445,54 @@ public final class ImageUtils {
     }
 
     /**
-     * NEWKIND: if we need more sizes, add a field here and set it in {@link #getThumbSizes}
+     * This function will load the thumbnail bitmap with a guaranteed maximum size; it
+     * prevents OutOfMemory exceptions on large files and reduces memory usage in lists.
+     * It can also SCALE images to the exact requested size.
      *
+     * @param destView  The ImageView to load with the bitmap or an appropriate icon
+     * @param uuid      The id of the book
+     * @param maxWidth  Maximum desired width of the image
+     * @param maxHeight Maximum desired height of the image
+     * @param exact     if true, the image will be proportionally scaled to fit box.
+     *
+     * @return The scaled bitmap for the file, or null if no file or bad file.
+     */
+    @Nullable
+    public static Bitmap fetchThumbnailIntoImageView(@Nullable final ImageView destView,
+                                                     @NonNull final String uuid,
+                                                     final int maxWidth,
+                                                     final int maxHeight,
+                                                     final boolean exact) {
+        try {
+            return fetchFileIntoImageView(destView, StorageUtils.getCoverFile(uuid),
+                                          maxWidth, maxHeight, exact);
+        } catch (IllegalArgumentException e) {
+            Logger.error(e);
+            return null;
+        }
+    }
+
+    /**
+     * NEWKIND: if we need more sizes, add a field here and set it in {@link #getThumbSizes}.
+     * <p>
      * small:  Minimum of THUMBNAIL_MAX_SIZE_SMALL and 1/3rd of largest screen dimension
      * standard: Minimum of THUMBNAIL_MAX_SIZE_STANDARD and 2/3rd of largest screen dimension
      * large:  Minimum of THUMBNAIL_MAX_SIZE_LARGE and largest screen dimension.
      */
     public static class ThumbSize {
-        // Target size of a thumbnail
-        private static final int MAX_SIZE_SMALL = 256; // on the Edit Screens
-        private static final int MAX_SIZE_STANDARD = 512; // on the View Screens
-        private static final int MAX_SIZE_LARGE = 1024; // in zoomed mode
+
+        /** Target size of a thumbnail - on the Edit Screens. */
+        private static final int MAX_SIZE_SMALL = 256;
+        /** on the View Screens. */
+        private static final int MAX_SIZE_STANDARD = 512;
+        /** in zoomed mode. */
+        private static final int MAX_SIZE_LARGE = 1024;
 
         public final int small;
         public final int standard;
         public final int large;
 
-        public ThumbSize(@NonNull final Activity activity) {
+        ThumbSize(@NonNull final Activity activity) {
             DisplayMetrics metrics = getDisplayMetrics(activity);
             int maxMetric = Math.max(metrics.widthPixels, metrics.heightPixels);
             small = Math.min(MAX_SIZE_SMALL, maxMetric / 3);
@@ -445,29 +500,4 @@ public final class ImageUtils {
             large = Math.min(MAX_SIZE_LARGE, maxMetric);
         }
     }
-
-
-//    /**
-//     * This function will load the thumbnail bitmap with a guaranteed maximum size; it
-//     * prevents OutOfMemory exceptions on large files and reduces memory usage in lists.
-//     * It can also SCALE images to the exact requested size.
-//     *
-//     * @param destView  The ImageView to load with the bitmap or an appropriate icon
-//     * @param uuid      The id of the book
-//     * @param maxWidth  Maximum desired width of the image
-//     * @param maxHeight Maximum desired height of the image
-//     * @param exact     if true, the image will be proportionally scaled to fit box.
-//     *
-//     * @return The scaled bitmap for the file, or null if no file or bad file.
-//     */
-//    @Nullable
-//    public static Bitmap fetchThumbnailIntoImageView(@Nullable final ImageView destView, @NonNull final String uuid,
-//                                                     final int maxWidth, final int maxHeight, final boolean exact) {
-//        try {
-//            return fetchFileIntoImageView(destView, StorageUtils.getCoverFile(uuid), maxWidth, maxHeight, exact);
-//        } catch (IllegalArgumentException e) {
-//            Logger.error(e);
-//            return null;
-//        }
-//    }
 }

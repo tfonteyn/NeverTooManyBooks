@@ -21,12 +21,13 @@ package com.eleybourn.bookcatalogue.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class to represent a single title within an TOC(Anthology)
+ * Class to represent a single title within an TOC(Anthology).
  *
  * Note:
  * these are always insert/update'd ONLY when a book is insert/update'd
@@ -43,10 +44,24 @@ import java.util.regex.Pattern;
  * as the update will simply insert in-order and auto increment position.
  * Retrieving by bookId is always done ordered by position.
  *
- *
  * @author pjw
  */
-public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
+public class TOCEntry
+        implements Parcelable, Utils.ItemWithIdFixup {
+
+    /** {@link Parcelable}. */
+    public static final Creator<TOCEntry> CREATOR =
+            new Creator<TOCEntry>() {
+                @Override
+                public TOCEntry createFromParcel(@NonNull final Parcel source) {
+                    return new TOCEntry(source);
+                }
+
+                @Override
+                public TOCEntry[] newArray(final int size) {
+                    return new TOCEntry[size];
+                }
+            };
     /**
      * import/export etc...
      *
@@ -56,17 +71,16 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     private static final char TITLE_AUTHOR_DELIM = '*';
 
     /**
+     * Find the publication year in a string like "some title (1960)".
+     *
+     * The pattern finds (1960), group 1 will then contain the pure 1960.
+     *
      * Used by:
      * - ISFDB import of anthology titles
      * - export/import
-     *
-     * find the publication year in a string like "some title (1960)"
-     *
-     * pattern finds (1960), group 1 will then contain the pure 1960
      */
     private static final Pattern YEAR_FROM_STRING = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
-
-    private long id = 0;
+    private long id;
     private Author mAuthor;
     private String mTitle;
     @NonNull
@@ -80,7 +94,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param author Author of title
      * @param title  Title
@@ -93,58 +107,49 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
         mFirstPublicationDate = publicationDate;
     }
 
-    protected TOCEntry(Parcel in) {
+    protected TOCEntry(@NonNull final Parcel in) {
         id = in.readLong();
         mAuthor = in.readParcelable(getClass().getClassLoader());
         mTitle = in.readString();
         mFirstPublicationDate = in.readString();
     }
 
+    /**
+     * Helper to check if all titles in a list have the same author.
+     */
+    public static boolean hasMultipleAuthors(@NonNull final List<TOCEntry> results) {
+        // check if its all the same author or not
+        boolean singleAuthor = true;
+        if (results.size() > 1) {
+            Author author = results.get(0).getAuthor();
+            for (TOCEntry t : results) { // yes, we check 0 twice.. oh well.
+                singleAuthor = author.equals(t.getAuthor());
+                if (!singleAuthor) {
+                    break;
+                }
+            }
+        }
+        return !singleAuthor;
+    }
+
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
         dest.writeLong(id);
         dest.writeParcelable(mAuthor, flags);
         dest.writeString(mTitle);
         dest.writeString(mFirstPublicationDate);
     }
 
+    /** {@link Parcelable}. */
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
     }
 
-    public static final Creator<TOCEntry> CREATOR = new Creator<TOCEntry>() {
-        @Override
-        public TOCEntry createFromParcel(Parcel source) {
-            return new TOCEntry(source);
-        }
-
-        @Override
-        public TOCEntry[] newArray(int size) {
-            return new TOCEntry[size];
-        }
-    };
-
     /**
-     * Helper to check if all titles in a list have the same author.
-     */
-    public static boolean isSingleAuthor(@NonNull final List<TOCEntry> results) {
-        // check if its all the same author or not
-        boolean sameAuthor = true;
-        if (results.size() > 1) {
-            Author author = results.get(0).getAuthor();
-            for (TOCEntry t : results) { // yes, we check 0 twice.. oh well.
-                sameAuthor = author.equals(t.getAuthor());
-                if (!sameAuthor) {
-                    break;
-                }
-            }
-        }
-        return sameAuthor;
-    }
-
-    /**
-     * Support for decoding from a text file
+     * Support for decoding from a text file.
      */
     private void fromString(@NonNull final String encodedString) {
         // V82: Giants In The Sky * Blish, James
@@ -154,7 +159,8 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
         mAuthor = new Author(list.get(1));
         String title = list.get(0);
 
-        //TOMF FIXME: fine for now, but should be made foolproof for full dates (via DateUtils) instead of just the 4 digit year
+        //FIXME: fine for now, but should be made foolproof for full dates
+        // (via DateUtils) instead of just the 4 digit year
         Matcher matcher = TOCEntry.YEAR_FROM_STRING.matcher(title);
         if (matcher.find()) {
             mFirstPublicationDate = matcher.group(1);
@@ -166,7 +172,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Support for encoding to a text file
+     * Support for encoding to a text file.
      *
      * @return the object encoded as a String.
      *
@@ -185,7 +191,8 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
         } else {
             yearStr = "";
         }
-        return StringList.encodeListItem(SEPARATOR, mTitle) + yearStr + ' ' + TITLE_AUTHOR_DELIM + ' ' + mAuthor;
+        return StringList.encodeListItem(SEPARATOR, mTitle) +
+                yearStr + ' ' + TITLE_AUTHOR_DELIM + ' ' + mAuthor;
     }
 
     @NonNull
@@ -217,7 +224,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
 
     @Override
     public long fixupId(@NonNull final CatalogueDBAdapter db) {
-        this.mAuthor.id = db.getAuthorIdByName(mAuthor.familyName, mAuthor.givenNames);
+        mAuthor.id = db.getAuthorIdByName(mAuthor.getFamilyName(), mAuthor.getGivenNames());
         this.id = db.getTOCEntryId(mAuthor.id, mTitle);
         return this.id;
     }
@@ -231,7 +238,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     }
 
     /**
-     * Two are the same if:
+     * Equality.
      *
      * - it's the same Object duh..
      * - one or both of them is 'new' (e.g. id == 0) but all their fields are equal
@@ -263,8 +270,7 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
     }
 
 
-
-    //ENHANCE use enum for ANTHOLOGY_BITMASK
+    //ENHANCE: use enum for ANTHOLOGY_BITMASK
     public enum Type {
         no, singleAuthor, multipleAuthors;
 
@@ -276,8 +282,10 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
                     return 0x01;
                 case multipleAuthors:
                     return 0x11;
+                //noinspection UnnecessaryDefault
+                default:
+                    return 0x00;
             }
-            return 0x00;
         }
 
         public Type get(final int bitmask) {
@@ -286,7 +294,9 @@ public class TOCEntry implements Parcelable, Utils.ItemWithIdFixup {
                     return no;
                 case 0x01:
                     return singleAuthor;
-                case 0x10: // cover legacy mistakes?
+
+                // cover legacy bad data.
+                case 0x10:
                 case 0x11:
                     return multipleAuthors;
                 default:

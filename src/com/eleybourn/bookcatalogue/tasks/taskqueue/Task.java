@@ -29,25 +29,25 @@ import java.io.Serializable;
 
 /**
  * Abstract base class for all Tasks.
- *
+ * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
- *
+ * <p>
  * When run, it will have access to the Application context, and can use that to interact with the UI.
- *
+ * <p>
  * It it important to note that the run(...) method is NOT called in the main thread.
  * Access to the main thread is provided by ...
  *
  * @author Philip Warner
  */
-public abstract class Task implements Serializable, BindableItemCursorAdapter.BindableItem {
+public abstract class Task
+        implements Serializable, BindableItemCursorAdapter.BindableItem {
 
-    static final int CAT_LEGACY = 0;
     public static final int CAT_GOODREADS_AUTH_RESULT = 2;
     public static final int CAT_GOODREADS_IMPORT_ALL = 3;
     public static final int CAT_GOODREADS_EXPORT_ALL = 4;
     public static final int CAT_GOODREADS_EXPORT_ONE = 5;
-
+    static final int CAT_LEGACY = 0;
     private static final long serialVersionUID = -1735892871810069L;
     private final int mRetryLimit = 17;
     @NonNull
@@ -71,7 +71,7 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
 
     /**
      * Return an application-defined category for the task; a default of 0 is provided.
-     *
+     * <p>
      * The category can be used to lookup queued tasks based on category, for example to
      * allow an application to ensure only one job of a particular category is queued, or
      * to retrieve all jobs of a particular category.
@@ -86,6 +86,7 @@ public abstract class Task implements Serializable, BindableItemCursorAdapter.Bi
     public TaskState getState() {
         return mState;
     }
+
     public void setState(@NonNull final TaskState state) {
         mState = state;
     }

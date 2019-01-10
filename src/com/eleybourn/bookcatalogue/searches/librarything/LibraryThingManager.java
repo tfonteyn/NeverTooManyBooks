@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -54,21 +55,21 @@ import javax.xml.parsers.SAXParserFactory;
 
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
- *
+ * <p>
  * The basic URLs are:
- *
+ * <p>
  * Covers via ISBN: http://covers.librarything.com/devkey/<DEVKEY>/large/isbn/<ISBN>
- *
- *
+ * <p>
+ * <p>
  * REST api: http://www.librarything.com/services/rest/documentation/1.1/
- *
+ * <p>
  * Details via ISBN: http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&apikey=<DEVKEY>&isbn=<ISBN>
- *
+ * <p>
  * xml see {@link #search} header
- *
+ * <p>
  * ENHANCE: extend the use of LibraryThing:
  * - Lookup title using keywords: http://www.librarything.com/api/thingTitle/hand oberon
- *
+ * <p>
  * - consider scraping html for covers: http://www.librarything.com/work/18998/covers
  * with 18998 being the 'work' identifier.
  * * selector:
@@ -79,30 +80,37 @@ import javax.xml.parsers.SAXParserFactory;
  * @author Philip Warner
  */
 public class LibraryThingManager {
+
     private static final String TAG = "LibraryThing.";
 
-    /** Name of preference that contains the dev key for the user */
+    /** Name of preference that contains the dev key for the user. */
     public static final String PREFS_DEV_KEY = TAG + "dev_key";
 
-    /** Name of preference that controls display of alert about LibraryThing */
+    /** Name of preference that controls display of alert about LibraryThing. */
     public static final String PREFS_HIDE_ALERT = TAG + "hide_alert.";
 
-    /** file suffix for cover files */
+    /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_LT";
 
-    /** base urls */
+    /** base urls. */
     private static final String BASE_URL = "https://www.librarything.com";
     private static final String BASE_URL_COVERS = "https://covers.librarything.com";
-    /** book details urls */
-    private static final String DETAIL_URL = BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
-    /** fetches all isbn's from editions related to the requested isbn */
-    private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%s";
-    /** cover size specific urls */
-    private static final String COVER_URL_LARGE = BASE_URL_COVERS + "/devkey/%1$s/large/isbn/%2$s";
-    private static final String COVER_URL_MEDIUM = BASE_URL_COVERS + "/devkey/%1$s/medium/isbn/%2$s";
-    private static final String COVER_URL_SMALL = BASE_URL_COVERS + "/devkey/%1$s/small/isbn/%2$s";
+    /** book details urls. */
+    private static final String DETAIL_URL =
+            BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
 
-    /** to control access to mLastRequestTime, we synchronize on this final Object */
+    /** fetches all isbn's from editions related to the requested isbn. */
+    private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%s";
+
+    /** cover size specific urls. */
+    private static final String COVER_URL_LARGE =
+            BASE_URL_COVERS + "/devkey/%1$s/large/isbn/%2$s";
+    private static final String COVER_URL_MEDIUM =
+            BASE_URL_COVERS + "/devkey/%1$s/medium/isbn/%2$s";
+    private static final String COVER_URL_SMALL =
+            BASE_URL_COVERS + "/devkey/%1$s/small/isbn/%2$s";
+
+    /** to control access to mLastRequestTime, we synchronize on this final Object. */
     @NonNull
     private static final Object LAST_REQUEST_TIME_LOCK = new Object();
     /**
@@ -123,10 +131,10 @@ public class LibraryThingManager {
     /**
      * Use mLastRequestTime to determine how long until the next request is allowed; and
      * update mLastRequestTime this needs to be synchronized across threads.
-     *
+     * <p>
      * Note that as a result of this approach mLastRequestTime may in fact be
      * in the future; callers to this routine effectively allocate time slots.
-     *
+     * <p>
      * This method will sleep() until it can make a request; if ten threads call this
      * simultaneously, one will return immediately, one will return 1 second later, another
      * two seconds etc.
@@ -173,7 +181,7 @@ public class LibraryThingManager {
         boolean showAlert;
         @StringRes
         int msgId;
-        final String prefName = PREFS_HIDE_ALERT  + prefSuffix;
+        final String prefName = PREFS_HIDE_ALERT + prefSuffix;
         if (required) {
             msgId = R.string.lt_required_info;
             showAlert = true;
@@ -182,8 +190,9 @@ public class LibraryThingManager {
             showAlert = !prefs.getBoolean(prefName, false);
         }
 
-        if (!showAlert)
+        if (!showAlert) {
             return;
+        }
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage(msgId)
@@ -191,9 +200,11 @@ public class LibraryThingManager {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.btn_more_info),
+        dialog.setButton(
+                DialogInterface.BUTTON_POSITIVE, context.getString(R.string.btn_more_info),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog,
+                                        final int which) {
                         Intent intent = new Intent(context, LibraryThingAdminActivity.class);
                         context.startActivity(intent);
                         dialog.dismiss();
@@ -201,18 +212,24 @@ public class LibraryThingManager {
                 });
 
         if (!required) {
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, context.getString(R.string.btn_disable_message),
+            dialog.setButton(
+                    DialogInterface.BUTTON_NEUTRAL,
+                    context.getString(R.string.btn_disable_message),
                     new DialogInterface.OnClickListener() {
-                        public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                        public void onClick(@NonNull final DialogInterface dialog,
+                                            final int which) {
                             prefs.edit().putBoolean(prefName, true).apply();
                             dialog.dismiss();
                         }
                     });
         }
 
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
+        dialog.setButton(
+                DialogInterface.BUTTON_NEGATIVE,
+                context.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog,
+                                        final int which) {
                         dialog.dismiss();
                     }
                 });
@@ -222,7 +239,7 @@ public class LibraryThingManager {
 
     /**
      * Search for edition data.
-     *
+     * <p>
      * No dev-key needed for this call.
      *
      * @param isbn to lookup. Must be a valid ISBN
@@ -243,7 +260,7 @@ public class LibraryThingManager {
         // add the original isbn, as there might be more images at the time this search is done.
         editions.add(isbn);
         if (DEBUG_SWITCHES.LIBRARY_THING_MANAGER && BuildConfig.DEBUG) {
-            Logger.info(LibraryThingManager.class,"searchEditions|isbn=" + isbn);
+            Logger.info(LibraryThingManager.class, "searchEditions|isbn=" + isbn);
         }
 
         // Base path for an Editions search
@@ -263,18 +280,18 @@ public class LibraryThingManager {
             parser.parse(Utils.getInputStreamWithTerminator(url), handler);
 
             // Don't bother catching general exceptions, they will be caught by the caller.
-        } catch (ParserConfigurationException | SAXException | IOException  e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             Logger.error(e);
         }
 
         if (DEBUG_SWITCHES.LIBRARY_THING_MANAGER && BuildConfig.DEBUG) {
-            Logger.info(LibraryThingManager.class,"searchEditions|editions=" + editions);
+            Logger.info(LibraryThingManager.class, "searchEditions|editions=" + editions);
         }
         return editions;
     }
 
     /**
-     * dev-key needed for this call
+     * dev-key needed for this call.
      *
      * @param isbn to lookup. Must be a valid ISBN
      * @param size the LT {@link ImageSizes} size to get
@@ -282,7 +299,8 @@ public class LibraryThingManager {
      * @return found/saved File, or null when none found (or any other failure)
      */
     @Nullable
-    public File getCoverImage(@NonNull final String isbn, @NonNull final ImageSizes size) {
+    public File getCoverImage(@NonNull final String isbn,
+                              @NonNull final ImageSizes size) {
 
         // sanity check
         if (!isAvailable()) {
@@ -314,7 +332,8 @@ public class LibraryThingManager {
         waitUntilRequestAllowed();
 
         // Fetch, then save it with a suffix
-        String fileSpec = ImageUtils.saveThumbnailFromUrl(url, FILENAME_SUFFIX + '_' + isbn + '_' + size);
+        String fileSpec = ImageUtils
+                .saveThumbnailFromUrl(url, FILENAME_SUFFIX + '_' + isbn + '_' + size);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -323,16 +342,17 @@ public class LibraryThingManager {
     }
 
     /**
-     * dev-key needed for this call
+     * dev-key needed for this call.
      *
-     * @param isbn to lookup. Must be a valid ISBN
+     * @param isbn     to lookup. Must be a valid ISBN
      * @param bookData Bundle to save results in
      *
      * @throws IOException on failure to search
      */
     void search(@NonNull final String isbn,
                 @NonNull final Bundle /* out */ bookData,
-                final boolean fetchThumbnail) throws IOException {
+                final boolean fetchThumbnail)
+            throws IOException {
 
         // sanity check
         if (!isAvailable()) {
@@ -367,7 +387,8 @@ public class LibraryThingManager {
         if (fetchThumbnail) {
             File file = getCoverImage(isbn, ImageSizes.LARGE);
             if (file != null) {
-                ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                ArrayList<String> imageList = bookData.getStringArrayList(
+                        UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
@@ -378,7 +399,7 @@ public class LibraryThingManager {
     }
 
     /**
-     * external users (to this class) should call this before doing any searches
+     * external users (to this class) should call this before doing any searches.
      *
      * @return <tt>true</tt> if there is a non-empty dev key
      */
@@ -403,9 +424,11 @@ public class LibraryThingManager {
         return "";
     }
 
-    // Sizes of thumbnails
+    /** Sizes of thumbnails. */
     public enum ImageSizes {
-        SMALL, MEDIUM, LARGE
+        SMALL,
+        MEDIUM,
+        LARGE
     }
 
 }

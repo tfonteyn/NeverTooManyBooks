@@ -19,6 +19,9 @@
  */
 package com.eleybourn.bookcatalogue.backup.tararchive;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriterAbstract;
 
@@ -32,15 +35,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 /**
- * Implementation of TAR-specific writer functions
+ * Implementation of TAR-specific writer functions.
  *
  * @author pjw
  */
-public class TarBackupWriter extends BackupWriterAbstract {
+public class TarBackupWriter
+        extends BackupWriterAbstract {
 
     @NonNull
     private final TarBackupContainer mContainer;
@@ -48,7 +49,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
     private final TarArchiveOutputStream mOutput;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param container Parent
      */
@@ -98,13 +99,14 @@ public class TarBackupWriter extends BackupWriterAbstract {
     }
 
     /**
-     * Write a generic file to the archive
+     * Write a generic file to the archive.
      *
      * @param name of the entry in the archive
      * @param file actual file to store in the archive
      */
     @Override
-    public void putFile(@NonNull final String name, @NonNull final File file)
+    public void putFile(@NonNull final String name,
+                        @NonNull final File file)
             throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry(new File(name));
         entry.setModTime(file.lastModified());
@@ -115,7 +117,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
     }
 
     /**
-     * Write a generic byte array to the archive
+     * Write a generic byte array to the archive.
      *
      * @param name  of the entry in the archive
      * @param bytes bytes to write
@@ -131,7 +133,7 @@ public class TarBackupWriter extends BackupWriterAbstract {
     }
 
     /**
-     * Utility routine to send the contents of a stream to the current archive entry
+     * Sends the contents of a stream to the current archive entry.
      *
      * @param in Stream to be written to the archive; will be closed when done
      */

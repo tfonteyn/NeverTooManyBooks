@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
+
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
@@ -44,7 +45,9 @@ import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_
  *
  * @author Philip Warner
  */
-public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
+public class EventsCursor
+        extends SQLiteCursor
+        implements BindableItemCursor {
 
     /** Column number of ID column. */
     private static int mIdCol = -2;
@@ -59,7 +62,9 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
     /**
      * Constructor, based on SQLiteCursor constructor
      */
-    EventsCursor(@NonNull final SQLiteCursorDriver driver, @NonNull final String editTable, @NonNull final SQLiteQuery query) {
+    EventsCursor(@NonNull final SQLiteCursorDriver driver,
+                 @NonNull final String editTable,
+                 @NonNull final SQLiteQuery query) {
         super(driver, editTable, query);
     }
 
@@ -130,7 +135,8 @@ public class EventsCursor extends SQLiteCursor implements BindableItemCursor {
         }
     }
 
-    public void setIsSelected(final long id, final boolean selected) {
+    public void setIsSelected(final long id,
+                              final boolean selected) {
         mSelections.put(id, selected);
     }
 

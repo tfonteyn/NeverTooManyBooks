@@ -27,6 +27,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteQuery;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -34,8 +36,6 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
 import java.util.Date;
-
-import androidx.annotation.NonNull;
 
 import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_CATEGORY;
 import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_EVENT_COUNT;
@@ -57,8 +57,8 @@ import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.TBL_
  * @author Philip Warner
  */
 public class TasksCursor
-    extends SQLiteCursor
-    implements BindableItemCursor {
+        extends SQLiteCursor
+        implements BindableItemCursor {
 
     /** Static Factory object to create the custom cursor */
     private static final CursorFactory mFactory = new CursorFactory() {
@@ -72,24 +72,24 @@ public class TasksCursor
     };
 
     private static final String mFailedTasksQuery = "SELECT *, "
-        + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
-        + " FROM " + TBL_TASK + " t "
-        + " WHERE " + DOM_STATUS_CODE + " = 'F' %1$s ORDER BY " + DOM_ID + " DESC";
+            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+            + " FROM " + TBL_TASK + " t "
+            + " WHERE " + DOM_STATUS_CODE + " = 'F' %1$s ORDER BY " + DOM_ID + " DESC";
 
     private static final String mAllTasksQuery = "SELECT *, "
-        + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
-        + " FROM " + TBL_TASK + " t WHERE 1 = 1 %1$s"
-        + " ORDER BY " + DOM_ID + " DESC";
+            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+            + " FROM " + TBL_TASK + " t WHERE 1 = 1 %1$s"
+            + " ORDER BY " + DOM_ID + " DESC";
 
     private static final String mActiveTasksQuery = "SELECT *, "
-        + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
-        + " FROM " + TBL_TASK + " t "
-        + " WHERE Not " + DOM_STATUS_CODE + " In ('S','F') %1$s ORDER BY " + DOM_ID + " DESC";
+            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+            + " FROM " + TBL_TASK + " t "
+            + " WHERE Not " + DOM_STATUS_CODE + " In ('S','F') %1$s ORDER BY " + DOM_ID + " DESC";
 
     private static final String mQueuedTasksQuery = "SELECT *, "
-        + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
-        + " FROM " + TBL_TASK + " t "
-        + " WHERE " + DOM_STATUS_CODE + " = 'Q' %1$s ORDER BY " + DOM_ID + " DESC";
+            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
+            + " FROM " + TBL_TASK + " t "
+            + " WHERE " + DOM_STATUS_CODE + " = 'Q' %1$s ORDER BY " + DOM_ID + " DESC";
     /** Column number of ID column. */
     private static int mIdCol = -1;
 
@@ -244,7 +244,7 @@ public class TasksCursor
      * @throws RTE.DeserializationException f
      */
     public Exception getException()
-        throws RTE.DeserializationException {
+            throws RTE.DeserializationException {
         if (mExceptionCol == -1) {
             mExceptionCol = this.getColumnIndex(DOM_EXCEPTION);
         }

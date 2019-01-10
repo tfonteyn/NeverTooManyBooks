@@ -100,21 +100,19 @@ public abstract class Property<T> {
         return mDefaultValue;
     }
 
-    /**
-     * Set the DefaultValue
-     */
+
     @NonNull
     public Property<T> setDefaultValue(@NonNull final T value) {
         mDefaultValue = value;
         return this;
     }
 
-    /** Utility to check if the passed value == the default value */
+    /** @return <tt>true</tt> if the passed value == the default value */
     boolean isDefault(@Nullable final T value) {
         return value != null && value.equals(mDefaultValue);
     }
 
-    /** Utility to check if the current value == the default value */
+    /** @return <tt>true</tt> if the current value == the default value */
     boolean isDefault() {
         return mValue != null && mValue.equals(mDefaultValue);
     }

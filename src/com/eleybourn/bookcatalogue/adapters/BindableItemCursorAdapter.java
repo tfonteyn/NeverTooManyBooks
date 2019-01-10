@@ -28,6 +28,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
@@ -36,11 +40,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-public class BindableItemCursorAdapter extends CursorAdapter {
+public class BindableItemCursorAdapter
+        extends CursorAdapter {
 
     /** A local Inflater for convenience. */
     @NonNull
@@ -57,8 +58,8 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     /** The item type returned by the last call of {@link #getItemViewType}. */
     private int mLastItemViewType = -1;
     /** The Event used in the last call of {@link #getItemViewType}. */
-    private BindableItem mLastItemViewTypeEvent = null;
-    private int mItemTypeCount = 0;
+    private BindableItem mLastItemViewTypeEvent;
+    private int mItemTypeCount;
 
     /**
      * Constructor; calls superclass and allocates an Inflater for later use.
@@ -110,7 +111,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
     /**
      * Uses the actual class name of the Event object to dynamically allocate layout numbers,
      * and returns the layout number corresponding to the Event at the specified position.
-     *
+     * <p>
      * The values are cached in member variables because the usual process is to call
      * getView() almost directly after calling getItemViewType().
      *
@@ -166,7 +167,9 @@ public class BindableItemCursorAdapter extends CursorAdapter {
 
     @Nullable
     @Override
-    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
+    public View getView(final int position,
+                        @Nullable View convertView,
+                        @NonNull final ViewGroup parent) {
         BindableItemCursor cursor = (BindableItemCursor) this.getCursor();
         cursor.moveToPosition(position);
 
@@ -219,7 +222,7 @@ public class BindableItemCursorAdapter extends CursorAdapter {
 
         /**
          * Get a new View object suitable for displaying this type of event.
-         *
+         * <p>
          * NOTE: A single event subclass should NOT RETURN MORE THAN ONE TYPE OF VIEW. If it needs
          * to do this, create a new Event subclass or use a more complex view.
          *

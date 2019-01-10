@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.searches;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
@@ -34,7 +35,9 @@ import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.ArrayList;
 
-abstract public class ManagedSearchTask extends ManagedTask {
+abstract public class ManagedSearchTask
+        extends ManagedTask {
+
     protected static boolean mFetchThumbnail;
     protected String mAuthor;
     protected String mTitle;
@@ -42,9 +45,9 @@ abstract public class ManagedSearchTask extends ManagedTask {
 
     /**
      * Accumulated book info.
-     *
+     * <p>
      * The Bundle will contain String or {@link StringList} based entries by default
-     *
+     * <p>
      * NEWKIND: if you add a new Search task that adds non-string based data, {@link SearchManager#accumulateData(int)} must be able to handle it.
      */
     @NonNull
@@ -108,7 +111,8 @@ abstract public class ManagedSearchTask extends ManagedTask {
         if (bookTitle != null) {
             SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
             if (details != null && !details.name.isEmpty()) {
-                ArrayList<Series> list = mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                ArrayList<Series> list = mBookData.getParcelableArrayList(
+                        UniqueId.BKEY_SERIES_ARRAY);
                 if (list == null) {
                     list = new ArrayList<>();
                 }
@@ -126,7 +130,8 @@ abstract public class ManagedSearchTask extends ManagedTask {
     /**
      * Show an unexpected exception message after task finish
      */
-    protected void setFinalError(@StringRes final int id, @NonNull final Exception e) {
+    protected void setFinalError(@StringRes final int id,
+                                 @NonNull final Exception e) {
         String s;
         try {
             s = e.getLocalizedMessage();
@@ -139,13 +144,15 @@ abstract public class ManagedSearchTask extends ManagedTask {
     /**
      * Show a 'known' error after task finish, without the dreaded exception message
      */
-    protected void setFinalError(@StringRes final int id, @StringRes final int error) {
-       mFinalMessage = String.format(getString(R.string.error_search_exception), getString(id), error);
+    protected void setFinalError(@StringRes final int id,
+                                 @StringRes final int error) {
+        mFinalMessage = String.format(getString(R.string.error_search_exception), getString(id),
+                                      error);
     }
 
     /**
      * Accessor, so when thread has finished, data can be retrieved.
-     *
+     * <p>
      * The Bundle will contain String or {@link StringList} based entries by default
      */
     @NonNull

@@ -2,22 +2,26 @@ package com.eleybourn.bookcatalogue.settings;
 
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+/**
+ * Hosting activity for Preference editing.
+ */
+public class SettingsActivity
+        extends BaseActivity {
 
-public class SettingsActivity extends BaseActivity {
-
-    /** {@link GlobalSettingsFragment} */
+    /** {@link GlobalSettingsFragment}. */
     public static final int FRAGMENT_GLOBAL_SETTINGS = 0;
 
-    /** {@link FieldVisibilitySettingsFragment} */
+    /** {@link FieldVisibilitySettingsFragment}. */
     public static final int FRAGMENT_FIELD_VISIBILITY = 1;
 
-    /** {@link GlobalSettingsFragment} */
+    /** {@link GlobalSettingsFragment}. */
     public static final int FRAGMENT_BOOKLIST_SETTINGS = 2;
 
     @Override
@@ -30,7 +34,8 @@ public class SettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            int fragmentId = getIntent().getIntExtra(UniqueId.FRAGMENT_ID, FRAGMENT_GLOBAL_SETTINGS);
+            int fragmentId = getIntent()
+                    .getIntExtra(UniqueId.FRAGMENT_ID, FRAGMENT_GLOBAL_SETTINGS);
             Fragment frag;
             switch (fragmentId) {
                 case FRAGMENT_GLOBAL_SETTINGS:

@@ -20,11 +20,12 @@
 
 package com.eleybourn.bookcatalogue.utils;
 
+import android.util.SparseArray;
+import android.view.View;
+
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.SparseArray;
-import android.view.View;
 
 import java.util.Objects;
 
@@ -32,29 +33,30 @@ import java.util.Objects;
  * Using View.setTag(int, Object) causes a memory leak if the tag refers, by a strong reference
  * chain, to the view itself (ie. it uses the 'Holder' pattern).
  * This bug is documented here:
- *
+ * <p>
  * http://code.google.com/p/android/issues/detail?id=18273
- *
+ * <p>
  * TODO: above bug was fixed in Android 4
- *
+ * <p>
  * It seems that an 'interesting' design choice was made to use the view itself as a weak key
  * to the into another collection, which then causes the views to never be GC'd.
- *
+ * <p>
  * The work-around is to *not* use strong refs, or use setTag(Object).
  * But we use multiple tags.
- *
+ * <p>
  * So this class implements setTag(int, Object) in a non-leaky fashion and is designed
  * to be stored in the tag of a view.
  *
  * @author Philip Warner
  */
-public class ViewTagger {
-    /** Stores a basic tag referred to without an ID */
+public final class ViewTagger {
+
+    /** Stores a basic tag referred to without an ID. */
     @Nullable
-    private Object mBareTag = null;
-    /** and/or, store multiple id'd tags in the array */
+    private Object mBareTag;
+    /** and/or, store multiple id'd tags in the array. */
     @Nullable
-    private SparseArray<Object> mTags = null;
+    private SparseArray<Object> mTags;
 
     private ViewTagger() {
     }
@@ -69,7 +71,8 @@ public class ViewTagger {
      * @return ViewTagger object
      */
     @Nullable
-    private static ViewTagger getTagger(@NonNull final View view, final boolean autoCreate) {
+    private static ViewTagger getTagger(@NonNull final View view,
+                                        final boolean autoCreate) {
         // See if we have one already
         Object tag = view.getTag();
         if (tag == null) {
@@ -93,9 +96,9 @@ public class ViewTagger {
      * Static method to get the bare tag from the view.
      * Use this method if the tag *could* be there
      *
-     * @see #getTagOrThrow(View)
-     *
      * @param view View from which to retrieve tag
+     *
+     * @see #getTagOrThrow(View)
      */
     @Nullable
     public static <T> T getTag(@NonNull final View view) {
@@ -111,9 +114,9 @@ public class ViewTagger {
      * Static method to get the bare tag from the view.
      * Use this method if the tag *should* be there
      *
-     * @see #getTag(View)
-     *
      * @param view View from which to retrieve tag
+     *
+     * @see #getTag(View)
      */
     @NonNull
     public static <T> T getTagOrThrow(@NonNull final View view) {
@@ -122,7 +125,7 @@ public class ViewTagger {
     }
 
     /**
-     * Static method to get the tag matching the ID from the view
+     * Static method to get the tag matching the ID from the view.
      * Use this method if the tag *could* be there
      *
      * @param view View from which to retrieve tag
@@ -131,12 +134,12 @@ public class ViewTagger {
      * @return Object with specified tag, or null if not found
      *
      * @throws NullPointerException if the tagger was null
-     *
      * @see #getTagOrThrow(View, int)
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T> T getTag(@NonNull final View view, final @IdRes int key) {
+    public static <T> T getTag(@NonNull final View view,
+                               @IdRes final int key) {
         ViewTagger tagger = getTagger(view, false);
         Objects.requireNonNull(tagger, "view has no tagger");
         return (T) tagger.get(key);
@@ -152,40 +155,43 @@ public class ViewTagger {
      * @return Object with specified tag, never null
      *
      * @throws NullPointerException if the tag was null
-     *
      * @see #getTag(View, int)
      */
     @SuppressWarnings("unchecked")
     @NonNull
-    public static <T> T getTagOrThrow(@NonNull final View view, final @IdRes int key) {
+    public static <T> T getTagOrThrow(@NonNull final View view,
+                                      @IdRes final int key) {
         return (T) Objects.requireNonNull(getTag(view, key), "tag " + key + " was null");
     }
 
     /**
-     * Static method to set the bare tag on the view
+     * Static method to set the bare tag on the view.
      *
      * @param view  View from which to retrieve tag
      * @param value Object to store at specified tag
      */
-    public static void setTag(@NonNull final View view, @Nullable final Object value) {
+    public static void setTag(@NonNull final View view,
+                              @Nullable final Object value) {
         //noinspection ConstantConditions
         getTagger(view, true).set(value);
     }
 
     /**
-     * Static method to set the tag matching the ID on the view
+     * Static method to set the tag matching the ID on the view.
      *
      * @param view  View from which to retrieve tag
      * @param key   Key of tag to store
      * @param value Object to store at specified tag
      */
-    public static void setTag(@NonNull final View view, final @IdRes int key, @Nullable final Object value) {
+    public static void setTag(@NonNull final View view,
+                              @IdRes final int key,
+                              @Nullable final Object value) {
         //noinspection ConstantConditions
         getTagger(view, true).set(key, value);
     }
 
     /**
-     * Instance method to set the bare tag
+     * Set the bare tag.
      *
      * @param value Value of id-less tag
      */
@@ -194,12 +200,13 @@ public class ViewTagger {
     }
 
     /**
-     * Instance method to set the specified tag value
+     * Set the specified tag value.
      *
      * @param key   Key of new tag
      * @param value Object to store at specified tag
      */
-    private void set(final @IdRes int key, @Nullable final Object value) {
+    private void set(@IdRes final int key,
+                     @Nullable final Object value) {
         synchronized (this) {
             if (mTags == null) {
                 mTags = new SparseArray<>();
@@ -209,7 +216,7 @@ public class ViewTagger {
     }
 
     /**
-     * Instance method to get the bare tag
+     * Get the bare tag.
      *
      * @return The bare tag object
      */
@@ -219,7 +226,7 @@ public class ViewTagger {
     }
 
     /**
-     * Instance method to get the specified tag
+     * Get the specified tag.
      *
      * @param key Key of object to retrieve
      *

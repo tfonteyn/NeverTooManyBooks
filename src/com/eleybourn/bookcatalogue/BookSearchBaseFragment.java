@@ -9,6 +9,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -21,42 +26,40 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.Objects;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 public abstract class BookSearchBaseFragment
-    extends Fragment
-    implements SearchManager.SearchManagerListener {
+        extends Fragment
+        implements SearchManager.SearchManagerListener {
 
     static final int REQ_BOOK_EDIT = 0;
-    /** optionally limit the sites to search on. By default uses {@link SearchSites.Site#SEARCH_ALL} */
+    /**
+     * Optionally limit the sites to search on.
+     * By default uses {@link SearchSites.Site#SEARCH_ALL}
+     */
     private static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
-    /** stores an active search id, or 0 when none active */
+    /** stores an active search id, or 0 when none active. */
     private static final String BKEY_SEARCH_MANAGER_ID = "SearchManagerId";
-    /** the last book data (intent) we got from a successful EditBook */
+    /** the last book data (intent) we got from a successful EditBook. */
     private static final String BKEY_LAST_BOOK_INTENT = "LastBookIntent";
     private static final int REQ_PREFERRED_SEARCH_SITES = 10;
 
     protected BookSearchActivity mActivity;
 
-    /** Database instance */
+    /** Database instance. */
     protected CatalogueDBAdapter mDb;
     /** Objects managing current search. */
-    long mSearchManagerId = 0;
+    long mSearchManagerId;
     /** The last Intent returned as a result of creating a book. */
     @Nullable
-    Intent mLastBookData = null;
-    /** sites to search on. Can be overridden by the user (option menu) */
+    Intent mLastBookData;
+    /** sites to search on. Can be overridden by the user (option menu). */
     private int mSearchSites = SearchSites.Site.SEARCH_ALL;
 
     /**
      * Called to do initial creation of a fragment.  This is called after
      * {@link #onAttach(Activity)} and before
      * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     *
-     * <p>Note that this can be called while the fragment's activity is
+     * <p>
+     * Note that this can be called while the fragment's activity is
      * still in the process of being created.  As such, you can not rely
      * on things like the activity's content view hierarchy being initialized
      * at this point.  If you want to do work once the activity itself is
@@ -93,7 +96,8 @@ public abstract class BookSearchBaseFragment
         if (savedInstanceState != null) {
             mSearchManagerId = savedInstanceState.getLong(BKEY_SEARCH_MANAGER_ID);
             /* optional, use ALL if not there */
-            mSearchSites = savedInstanceState.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
+            mSearchSites = savedInstanceState.getInt(REQUEST_BKEY_SEARCH_SITES,
+                                                     SearchSites.Site.SEARCH_ALL);
         } else {
             Bundle args = getArguments();
             //noinspection ConstantConditions
@@ -135,15 +139,19 @@ public abstract class BookSearchBaseFragment
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(this.requireContext(), SearchAdminActivity.class);
-                intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB, SearchAdminActivity.TAB_SEARCH_ORDER);
-                startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES); /* 1b923299-d966-4ed5-8230-c5a7c491053b */
+                intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
+                                SearchAdminActivity.TAB_SEARCH_ORDER);
+                startActivityForResult(intent,
+                                       REQ_PREFERRED_SEARCH_SITES);
                 return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
-     * (re)connect with the {@link SearchManager} by starting to listen to its messages
+     * (re)connect with the {@link SearchManager} by starting to listen to its messages.
      */
     @Override
     @CallSuper
@@ -151,15 +159,17 @@ public abstract class BookSearchBaseFragment
         Tracker.enterOnResume(this);
         super.onResume();
         if (mSearchManagerId != 0) {
-            SearchManager.getMessageSwitch().addListener(mSearchManagerId, this, true);
+            SearchManager.getMessageSwitch()
+                         .addListener(mSearchManagerId, this, true);
         }
         Tracker.exitOnResume(this);
     }
 
     /**
      * Start the actual search with the {@link SearchManager} in the background.
-     *
-     * The results will arrive in {@link SearchManager.SearchManagerListener#onSearchFinished(boolean, Bundle)}
+     * <p>
+     * The results will arrive in
+     * {@link SearchManager.SearchManagerListener#onSearchFinished(boolean, Bundle)}
      *
      * @return <tt>true</tt> if search was started.
      */
@@ -170,23 +180,26 @@ public abstract class BookSearchBaseFragment
 
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, "startSearch" +
-                "|isbn=" + isbnSearchText +
-                "|author=" + authorSearchText +
-                "|title=" + titleSearchText);
+                    "|isbn=" + isbnSearchText +
+                    "|author=" + authorSearchText +
+                    "|title=" + titleSearchText);
         }
 
         /* Get the book */
         try {
             // Start the lookup in a background search task.
-            final SearchManager searchManager = new SearchManager(mActivity.getTaskManager(), this);
+            final SearchManager searchManager =
+                    new SearchManager(mActivity.getTaskManager(), this);
             mSearchManagerId = searchManager.getId();
 
-            Tracker.handleEvent(this, Tracker.States.Running, "Created SearchManager=" + mSearchManagerId);
+            Tracker.handleEvent(this, Tracker.States.Running,
+                                "Created SearchManager=" + mSearchManagerId);
 
-            mActivity.getTaskManager().sendHeaderTaskProgressMessage(getString(R.string.progress_msg_searching));
+            mActivity.getTaskManager().sendHeaderTaskProgressMessage(
+                    getString(R.string.progress_msg_searching));
             // kick of the searches
             searchManager.search(mSearchSites, authorSearchText, titleSearchText,
-                isbnSearchText, true);
+                                 isbnSearchText, true);
             return true;
 
         } catch (RuntimeException e) {
@@ -199,7 +212,7 @@ public abstract class BookSearchBaseFragment
     }
 
     /**
-     * Cut us loose from the {@link SearchManager} by stopping listening to its messages
+     * Cut us loose from the {@link SearchManager} by stopping listening to its messages.
      */
     @Override
     @CallSuper
@@ -234,7 +247,8 @@ public abstract class BookSearchBaseFragment
             case REQ_PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES, mSearchSites);
+                    mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
+                                                    mSearchSites);
                 }
                 break;
             }
@@ -254,7 +268,8 @@ public abstract class BookSearchBaseFragment
             default:
                 // lowest level of our Fragment, see if we missed anything
                 Logger.info(this,
-                    "BookSearchBaseFragment|onActivityResult|NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                            "BookSearchBaseFragment|onActivityResult|NOT HANDLED:" +
+                                    " requestCode=" + requestCode + ", resultCode=" + resultCode);
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }

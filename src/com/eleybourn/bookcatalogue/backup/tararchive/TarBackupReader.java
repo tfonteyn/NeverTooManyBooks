@@ -19,6 +19,10 @@
  */
 package com.eleybourn.bookcatalogue.backup.tararchive;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReaderAbstract;
 import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity;
@@ -36,35 +40,31 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
- * Implementation of TAR-specific reader functions
+ * Implementation of TAR-specific reader functions.
  *
  * @author pjw
  */
 public class TarBackupReader
-    extends BackupReaderAbstract {
+        extends BackupReaderAbstract {
 
-    /** The data stream for the archive */
+    /** The data stream for the archive. */
     @NonNull
     private final TarArchiveInputStream mInput;
-    /** The INFO data read from the start of the archive */
+    /** The INFO data read from the start of the archive. */
     @NonNull
     private final BackupInfo mInfo;
-    /** Used to allow 'peeking' at the input stream */
+    /** Used to allow 'peeking' at the input stream. */
     @Nullable
     private ReaderEntity mPushedEntity;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param container Parent
      */
     TarBackupReader(@NonNull final TarBackupContainer container)
-        throws IOException {
+            throws IOException {
         super();
 
         // Open the file and create the archive stream
@@ -99,7 +99,7 @@ public class TarBackupReader
     @Override
     @Nullable
     public ReaderEntity nextEntity()
-        throws IOException {
+            throws IOException {
 
         if (mPushedEntity != null) {
             ReaderEntity e = mPushedEntity;
@@ -133,11 +133,11 @@ public class TarBackupReader
             return BackupEntityType.Cover;
 
         } else if (TarBackupContainer.INFO_FILE.equalsIgnoreCase(name)
-            || TarBackupContainer.INFO_PATTERN.matcher(name).find()) {
+                || TarBackupContainer.INFO_PATTERN.matcher(name).find()) {
             return BackupEntityType.Info;
 
         } else if (TarBackupContainer.BOOKS_FILE.equalsIgnoreCase(name)
-            || TarBackupContainer.BOOKS_PATTERN.matcher(name).find()) {
+                || TarBackupContainer.BOOKS_PATTERN.matcher(name).find()) {
             return BackupEntityType.Books;
 
         } else if (TarBackupContainer.PREFERENCES.equalsIgnoreCase(name)) {
@@ -169,7 +169,7 @@ public class TarBackupReader
     }
 
     /**
-     * Accessor used by TarEntityReader to get access to the stream data
+     * Accessor used by TarEntityReader to get access to the stream data.
      */
     @NonNull
     protected TarArchiveInputStream getInput() {
@@ -185,7 +185,7 @@ public class TarBackupReader
     @Override
     @CallSuper
     public void close()
-        throws IOException {
+            throws IOException {
         super.close();
         mInput.close();
     }
@@ -196,7 +196,7 @@ public class TarBackupReader
      * @author pjw
      */
     public static class TarBackupReaderEntity
-        extends ReaderEntityAbstract {
+            extends ReaderEntityAbstract {
 
         @NonNull
         private final TarBackupReader mReader;
@@ -204,7 +204,7 @@ public class TarBackupReader
         private final TarArchiveEntry mEntry;
 
         /**
-         * Constructor
+         * Constructor.
          *
          * @param type   Type of item
          * @param reader Parent
@@ -218,21 +218,27 @@ public class TarBackupReader
             mEntry = entry;
         }
 
-        /** Get the original "file name" of the object */
+        /**
+         * @return the original "file name" of the object.
+         */
         @NonNull
         @Override
         public String getName() {
             return mEntry.getName();
         }
 
-        /** Modified date from archive entry */
+        /**
+         * @return the 'modified' date from archive entry
+         */
         @NonNull
         @Override
         public Date getDateModified() {
             return mEntry.getLastModifiedDate();
         }
 
-        /** get the stream to read the entity */
+        /**
+         * @return the stream to read the entity
+         */
         @NonNull
         @Override
         public InputStream getStream() {

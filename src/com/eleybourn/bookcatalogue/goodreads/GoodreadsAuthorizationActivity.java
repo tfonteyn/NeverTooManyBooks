@@ -24,29 +24,30 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
-
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer,
  * it does not seem to be possible to get them to work from web browser callbacks. So, we just
  * do the necessary processing here and exit.
- *
+ * <p>
  * {@link GoodreadsManager#AUTHORIZATION_CALLBACK}
- *
+ * <p>
  * the filters in the manifest will bring us here
  * "com.eleybourn.bookcatalogue://goodreadsauth"
  * Intent.ACTION_VIEW
  *
  * @author Philip Warner
  */
-public class GoodreadsAuthorizationActivity extends BaseActivity {
+public class GoodreadsAuthorizationActivity
+        extends BaseActivity {
 
     @Override
     @CallSuper
@@ -57,7 +58,9 @@ public class GoodreadsAuthorizationActivity extends BaseActivity {
         // Get the payload and make sure it is what we expect
         Intent intent = this.getIntent();
         Uri uri = intent.getData();
-        if (uri != null) {// && uri.toString().startsWith("BookCatalogue")) {
+
+        //if (uri != null) && uri.toString().startsWith("BookCatalogue")) {
+        if (uri != null) {
             // Goodreads does not set the verifier...but we may as well check for it.
             // The verifier was added in API version 1.0A, and Goodreads seems to
             // implement 1.0.
@@ -65,7 +68,8 @@ public class GoodreadsAuthorizationActivity extends BaseActivity {
             //String verifier = uri.getQueryParameter("oauth_verifier");
 
             // Handle the auth response by passing it off to a background task to check.
-            GoodreadsAuthorizationResultCheckTask task = new GoodreadsAuthorizationResultCheckTask();
+            GoodreadsAuthorizationResultCheckTask task =
+                    new GoodreadsAuthorizationResultCheckTask();
             QueueManager.getQueueManager().enqueueTask(task, QueueManager.QUEUE_SMALL_JOBS);
         }
 
@@ -78,5 +82,4 @@ public class GoodreadsAuthorizationActivity extends BaseActivity {
 
         Tracker.exitOnCreate(this);
     }
-
 }

@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
@@ -30,28 +31,24 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.Hashtable;
 import java.util.Map;
+
 /**
  * Standard Android class to handle database open/creation.upgrade.
  *
  * @author Philip Warner
  */
-public class TaskQueueDBHelper extends SQLiteOpenHelper {
-
-    /** File name for database */
-    private static final String DATABASE_NAME = "net.philipwarner.taskqueue.database.db";
-    /** TODO: Update on new release */
-    private static final int DATABASE_VERSION = 2;
-
-    // Domain names for fields in tables. Yes, I mix nomenclatures.
+public class TaskQueueDBHelper
+        extends SQLiteOpenHelper {
 
     static final String DOM_ID = "_id"; // Needs to start with '_' so CursorAdapter understands its an ID
     static final String DOM_CATEGORY = "category";
+
+    // Domain names for fields in tables. Yes, I mix nomenclatures.
     static final String DOM_EXCEPTION = "exception";
     static final String DOM_FAILURE_REASON = "failure_reason";
     static final String DOM_NAME = "name";
     static final String DOM_EVENT = "event";
     static final String DOM_EVENT_COUNT = "event_count";
-
     static final String DOM_EVENT_DATE = "event_date";
     static final String DOM_QUEUE_ID = "queue_id";
     static final String DOM_QUEUED_DATE = "queued_date";
@@ -61,15 +58,6 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
     static final String DOM_STATUS_CODE = "status_code";
     static final String DOM_TASK = "task";
     static final String DOM_TASK_ID = "task_id";
-    private static final String DOM_VALUE = "value";
-
-    private static final String TBL_CONFIG = "config";
-
-    private static final String TBL_CONFIG_DEFN = DOM_ID + " integer primary key autoincrement," +
-            DOM_NAME + " text not null," +
-            DOM_VALUE + "blob not null";
-
-
     // Queue definition. In a future version, implement LIFO and FIFO queues (we just do FIFO in
     // version 1). Also implement 'strict' queues, where a 'strict' FIFO queue requires that
     // all entries SUCCEED in order.
@@ -78,13 +66,23 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
     // queues. Most jobs can run independently, but some require specific predecessors.
     //
     static final String TBL_QUEUE = "queue";
-    private static final String TBL_QUEUE_DEFN = DOM_ID + " integer primary key autoincrement,\n"
-            + DOM_NAME + " text";
-    private static final String[] TBL_QUEUE_IX1 = new String[] { TBL_QUEUE, "UNIQUE", DOM_ID };
-    private static final String[] TBL_QUEUE_IX2 = new String[] { TBL_QUEUE, "UNIQUE", DOM_NAME};
-
     // Scheduled task definition.
     static final String TBL_TASK = "task";
+    // Event table definition.
+    static final String TBL_EVENT = "event";
+    /** File name for database */
+    private static final String DATABASE_NAME = "net.philipwarner.taskqueue.database.db";
+    /** TODO: Update on new release */
+    private static final int DATABASE_VERSION = 2;
+    private static final String DOM_VALUE = "value";
+    private static final String TBL_CONFIG = "config";
+    private static final String TBL_CONFIG_DEFN = DOM_ID + " integer primary key autoincrement," +
+            DOM_NAME + " text not null," +
+            DOM_VALUE + "blob not null";
+    private static final String TBL_QUEUE_DEFN = DOM_ID + " integer primary key autoincrement,\n"
+            + DOM_NAME + " text";
+    private static final String[] TBL_QUEUE_IX1 = new String[]{TBL_QUEUE, "UNIQUE", DOM_ID};
+    private static final String[] TBL_QUEUE_IX2 = new String[]{TBL_QUEUE, "UNIQUE", DOM_NAME};
     private static final String TBL_TASK_DEFN = DOM_ID + " integer primary key autoincrement,\n"
             + DOM_QUEUE_ID + " integer not null references " + TBL_QUEUE + ",\n"
             + DOM_QUEUED_DATE + " datetime default current_timestamp,\n"
@@ -96,32 +94,27 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
             + DOM_FAILURE_REASON + " text,\n"
             + DOM_EXCEPTION + " blob,\n"
             + DOM_TASK + " blob not null";
-
-    private static final String[] TBL_TASK_IX1 = new String[] { TBL_TASK, "UNIQUE", DOM_ID };
-    private static final String[] TBL_TASK_IX2 = new String[] { TBL_TASK, "", DOM_STATUS_CODE, DOM_QUEUE_ID, DOM_RETRY_DATE};
-    private static final String[] TBL_TASK_IX3 = new String[] { TBL_TASK, "", DOM_STATUS_CODE, DOM_QUEUE_ID, DOM_RETRY_DATE, DOM_PRIORITY};
-
-    // Event table definition.
-    static final String TBL_EVENT = "event";
+    private static final String[] TBL_TASK_IX1 = new String[]{TBL_TASK, "UNIQUE", DOM_ID};
+    private static final String[] TBL_TASK_IX2 = new String[]{TBL_TASK, "", DOM_STATUS_CODE, DOM_QUEUE_ID, DOM_RETRY_DATE};
+    private static final String[] TBL_TASK_IX3 = new String[]{TBL_TASK, "", DOM_STATUS_CODE, DOM_QUEUE_ID, DOM_RETRY_DATE, DOM_PRIORITY};
     private static final String TBL_EVENT_DEFN = DOM_ID + " integer primary key autoincrement,\n"
             + DOM_TASK_ID + " integer references " + TBL_TASK + ",\n"
             + DOM_EVENT + " blob not null,\n"
-            + DOM_EVENT_DATE + " datetime default current_timestamp"
-            ;
+            + DOM_EVENT_DATE + " datetime default current_timestamp";
 
-    private static final String[] TBL_EVENTS_IX1 = new String[] { TBL_EVENT, "UNIQUE", DOM_ID };
-    private static final String[] TBL_EVENTS_IX2 = new String[] { TBL_EVENT, "UNIQUE", DOM_EVENT_DATE, DOM_ID };
-    private static final String[] TBL_EVENTS_IX3 = new String[] { TBL_EVENT, "", DOM_TASK_ID, DOM_ID };
+    private static final String[] TBL_EVENTS_IX1 = new String[]{TBL_EVENT, "UNIQUE", DOM_ID};
+    private static final String[] TBL_EVENTS_IX2 = new String[]{TBL_EVENT, "UNIQUE", DOM_EVENT_DATE, DOM_ID};
+    private static final String[] TBL_EVENTS_IX3 = new String[]{TBL_EVENT, "", DOM_TASK_ID, DOM_ID};
 
     // Collection of all table definitions
-    private static final String[] mTables = new String[] {
+    private static final String[] mTables = new String[]{
             TBL_CONFIG, TBL_CONFIG_DEFN,
             TBL_QUEUE, TBL_QUEUE_DEFN,
             TBL_TASK, TBL_TASK_DEFN,
             TBL_EVENT, TBL_EVENT_DEFN,
-    };
+            };
 
-    private static final String[][] mIndices = new String[][] {
+    private static final String[][] mIndices = new String[][]{
             TBL_QUEUE_IX1,
             TBL_QUEUE_IX2,
             TBL_TASK_IX1,
@@ -130,7 +123,7 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
             TBL_EVENTS_IX1,
             TBL_EVENTS_IX2,
             TBL_EVENTS_IX3,
-    };
+            };
 
     /**
      * Constructor. Call superclass using locally defined name & version.
@@ -148,18 +141,18 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
     @Override
     @CallSuper
     public void onCreate(@NonNull SQLiteDatabase db) {
-        Logger.info(this,"Creating database: " + db.getPath());
+        Logger.info(this, "Creating database: " + db.getPath());
 
-        for(int i = 0; i < mTables.length; i=i+2 ) {
-            db.execSQL("CREATE TABLE " + mTables[i] + '(' + mTables[i+1] + ')');
+        for (int i = 0; i < mTables.length; i = i + 2) {
+            db.execSQL("CREATE TABLE " + mTables[i] + '(' + mTables[i + 1] + ')');
         }
         // Turn on foreign key support so that CASCADE works.
         db.execSQL("PRAGMA foreign_keys = ON");
 
         // We have one counter per table to manage index numeric suffixes.
-        Map<String,Integer> counters = new Hashtable<>();
+        Map<String, Integer> counters = new Hashtable<>();
         // Loop through definitions.
-        for(String[] defn : mIndices) {
+        for (String[] defn : mIndices) {
             // Get prefix fields
             final String tbl = defn[0];
             final String qualifier = defn[1];
@@ -174,10 +167,11 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
             counters.put(tbl, cnt);
 
             // Start definition using first field.
-            StringBuilder sql = new StringBuilder("CREATE " + qualifier + " INDEX " + tbl + "_IX" + cnt + " ON " + tbl + "(\n");
+            StringBuilder sql = new StringBuilder(
+                    "CREATE " + qualifier + " INDEX " + tbl + "_IX" + cnt + " ON " + tbl + "(\n");
             sql.append(' ').append(defn[2]);
             // Loop through remaining fields, if any
-            for(int i = 3; i < defn.length; i++) {
+            for (int i = 3; i < defn.length; i++) {
                 sql.append(",\n").append(defn[i]);
             }
             sql.append(");\n");
@@ -190,8 +184,10 @@ public class TaskQueueDBHelper extends SQLiteOpenHelper {
      * Called to upgrade DB.
      */
     @Override
-    public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
-        Logger.info(this,"Upgrading database: " + db.getPath());
+    public void onUpgrade(@NonNull final SQLiteDatabase db,
+                          final int oldVersion,
+                          final int newVersion) {
+        Logger.info(this, "Upgrading database: " + db.getPath());
 
         int currVersion = oldVersion;
 

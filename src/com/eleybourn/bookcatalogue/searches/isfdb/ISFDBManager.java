@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.searches.isfdb;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -23,13 +24,13 @@ public final class ISFDBManager {
 
     private static final String PREFS_HOST_URL = TAG + "hostUrl";
     /**
-     * task queue for the searching/parsing of content (ant titles)
+     * task queue for the searching/parsing of content (ant titles).
      * specifically used for direct search calls from {@link EditBookTOCFragment}
-     *
+     * <p>
      * Not used for 'small' search
      */
     @Nullable
-    private static SimpleTaskQueue taskQueue = null;
+    private static SimpleTaskQueue taskQueue;
 
     private ISFDBManager() {
     }
@@ -45,38 +46,40 @@ public final class ISFDBManager {
     }
 
     /**
+     * ENHANCE: For now, always returns the image from the first edition found.
      *
-     * @param isbn for book cover to find. ENHANCE? For now, always returns the image from the first edition found!
+     * @param isbn for book cover to find.
      *
      * @return found & saved File, or null when none
      */
     @Nullable
-    static public File getCoverImage(@NonNull final String isbn) {
+    public static File getCoverImage(@NonNull final String isbn) {
         Bundle bookData = new Bundle();
         try {
             // no specific API, just go search the book
             search(isbn, "", "", bookData, true);
 
-            ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+            ArrayList<String> imageList =
+                    bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
             if (imageList != null && !imageList.isEmpty()) {
                 File found = new File(imageList.get(0));
                 File coverFile = new File(found.getAbsolutePath() + '_' + isbn);
                 StorageUtils.renameFile(found, coverFile);
                 return coverFile;
-            } else {
-                return null;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             Logger.error(e, "Error getting thumbnail from ISFDB");
-            return null;
         }
+
+        return null;
     }
 
     public static void search(@NonNull final String isbn,
                               @NonNull final String author,
                               @NonNull final String title,
                               @NonNull final Bundle /* out */ bookData,
-                              final boolean fetchThumbnail) throws IOException {
+                              final boolean fetchThumbnail)
+            throws IOException {
         if (IsbnUtils.isValid(isbn)) {
             List<String> editions = new Editions(isbn).fetch();
             if (editions.size() > 0) {
@@ -95,14 +98,15 @@ public final class ISFDBManager {
         //TODO: only let IOExceptions out (except RTE's)
     }
 
-
     /**
-     * FIXME Need to redo this by using the SearchISFDBTask really but do this *after* migrating away from ManagedTask
-     *
-     * specifically used by {@link EditBookTOCFragment}
+     * FIXME: Need to redo this by using the SearchISFDBTask really but do this *after* migrating
+     * away from ManagedTask.
+     * <p>
+     * specifically used by {@link EditBookTOCFragment}.
      * First onProgress, get all editions for the ISBN
      */
-    public static void searchEditions(@NonNull final String isbn, @NonNull final ISFDBResultsListener listener) {
+    public static void searchEditions(@NonNull final String isbn,
+                                      @NonNull final ISFDBResultsListener listener) {
         // Setup the background fetcher
         if (taskQueue == null) {
             taskQueue = new SimpleTaskQueue("ISFDB-toc-search-tasks");
@@ -111,11 +115,13 @@ public final class ISFDBManager {
     }
 
     /**
-     * specifically used by {@link EditBookTOCFragment}
-     * First onProgress, get all editions for the ISBN via {@link #searchEditions(String, ISFDBResultsListener)}
+     * specifically used by {@link EditBookTOCFragment}.
+     * First onProgress, get all editions for the ISBN via
+     * {@link #searchEditions(String, ISFDBResultsListener)}
      * That will then call this one
      */
-    public static void search(@NonNull final List<String> editionUrls, @NonNull final ISFDBResultsListener listener) {
+    public static void search(@NonNull final List<String> editionUrls,
+                              @NonNull final ISFDBResultsListener listener) {
         // Setup the background fetcher
         if (taskQueue == null) {
             taskQueue = new SimpleTaskQueue("ISFDB-toc-search-tasks");

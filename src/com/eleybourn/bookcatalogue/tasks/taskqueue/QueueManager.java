@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -41,17 +42,13 @@ import java.util.Map;
 
 /**
  * Class to handle service-level aspects of the queues.
- *
+ * <p>
  * Each defined queue results in a fresh Queue object being created in its own thread;
  * the QueueManager creates these. Queue objects last until there are no entries left in the queue.
  *
  * @author Philip Warner
  */
 public class QueueManager {
-
-    private static final String INTERNAL = "__internal";
-    private static final String MESSAGE = "message";
-    private static final String TOAST = "toast";
 
     /*
      * Queues we need:
@@ -60,7 +57,9 @@ public class QueueManager {
      */
     public static final String QUEUE_MAIN = "main";
     public static final String QUEUE_SMALL_JOBS = "small_jobs";
-
+    private static final String INTERNAL = "__internal";
+    private static final String MESSAGE = "message";
+    private static final String TOAST = "toast";
     /**
      * Static reference to the active QueueManager - singleton
      */
@@ -174,7 +173,8 @@ public class QueueManager {
         }
     }
 
-    void notifyTaskChange(@Nullable final Task task, @NonNull final TaskActions action) {
+    void notifyTaskChange(@Nullable final Task task,
+                          @NonNull final TaskActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnTaskChangeListener>> list;
         synchronized (mTaskChangeListeners) {
@@ -202,7 +202,8 @@ public class QueueManager {
         }
     }
 
-    private void notifyEventChange(@Nullable final Event event, @NonNull final EventActions action) {
+    private void notifyEventChange(@Nullable final Event event,
+                                   @NonNull final EventActions action) {
         // Make a copy of the list so we can cull dead elements from the original
         List<WeakReference<OnEventChangeListener>> list;
         synchronized (mEventChangeListeners) {
@@ -346,7 +347,8 @@ public class QueueManager {
      * @param t Related task
      * @param e Exception (usually subclassed)
      */
-    void storeTaskEvent(@NonNull final Task t, @NonNull final Event e) {
+    void storeTaskEvent(@NonNull final Task t,
+                        @NonNull final Event e) {
         mDb.storeTaskEvent(t, e);
         this.notifyEventChange(e, EventActions.created);
     }
@@ -457,7 +459,6 @@ public class QueueManager {
 
     /**
      * Delete Task records more than 7 days old.
-     *
      */
     void cleanupOldTasks() {
         mDb.cleanupOldTasks();
@@ -469,11 +470,11 @@ public class QueueManager {
 
     /**
      * Get a new Event object capable of representing a non-deserializable Event object.
-     *
+     * <p>
      * This method is used when deserialization fails, most likely as a result of changes
      * to the underlying serialized class.
      *
-     * @param original	original serialization source
+     * @param original original serialization source
      */
     @NonNull
     LegacyEvent newLegacyEvent(byte[] original) {
@@ -483,7 +484,7 @@ public class QueueManager {
     /**
      * Get a new Task object capable of representing a non-deserializable Task object.
      *
-     * @param original	original serialization source
+     * @param original original serialization source
      */
     @NonNull
     LegacyTask newLegacyTask(byte[] original) {
@@ -493,7 +494,8 @@ public class QueueManager {
     /**
      * Handler for internal UI thread messages.
      */
-    private static class MessageHandler extends Handler {
+    private static class MessageHandler
+            extends Handler {
 
         @NonNull
         private final WeakReference<QueueManager> mQueueManager;

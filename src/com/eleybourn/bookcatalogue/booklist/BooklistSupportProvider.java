@@ -32,6 +32,7 @@ import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
  * @author Philip Warner
  */
 public interface BooklistSupportProvider {
+
     @NonNull
     BooklistRowView getCursorRow();
 

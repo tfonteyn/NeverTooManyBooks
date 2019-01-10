@@ -35,6 +35,14 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.Fragment;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
@@ -62,17 +70,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
-import androidx.fragment.app.Fragment;
-
 /**
- * Based class for {@link BookFragment} and all fragments that appear in {@link EditBookActivity}
- *
+ * Based class for {@link BookFragment} and all fragments that appear in {@link EditBookActivity}.
+ * <p>
  * Full list:
  * {@link BookFragment}
  * {@link EditBookFieldsFragment}
@@ -83,19 +83,18 @@ import androidx.fragment.app.Fragment;
  * @author pjw
  */
 public abstract class BookBaseFragment
-    extends Fragment
-    implements DataEditor {
+        extends Fragment
+        implements DataEditor {
 
     private static final int REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET = 100;
-
-    /** */
-    protected Fields mFields;
-    /** Database instance */
+    /** Database instance. */
     protected CatalogueDBAdapter mDb;
-    /** A link to the Activity, cached to avoid requireActivity() all over the place */
+    /** */
+    Fields mFields;
+    /** A link to the Activity, cached to avoid requireActivity() all over the place. */
     private BaseActivity mActivity;
 
-    protected void setActivityTitle(@NonNull final Book book) {
+    private void setActivityTitle(@NonNull final Book book) {
         ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
             if (book.getBookId() > 0) {
@@ -111,13 +110,17 @@ public abstract class BookBaseFragment
     }
 
     /* ------------------------------------------------------------------------------------------ */
-    abstract protected BookManager getBookManager();
+
+    /**
+     * @return the BookManager which is the only way to get/set Book properties.
+     */
+    protected abstract BookManager getBookManager();
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment startup">
 
 //    /**
-//     * Ensure activity supports interface
+//     * Ensure activity supports interface.
 //     */
 //    @Override
 //    @CallSuper
@@ -126,7 +129,7 @@ public abstract class BookBaseFragment
 //    }
 
     /**
-     * Called to do initial creation of a fragment.  This is called after
+     * Called to do initial creation of a fragment. This is called after
      * {@link #onAttach(Activity)} and before
      * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      *
@@ -155,12 +158,14 @@ public abstract class BookBaseFragment
 
 //    @Nullable
 //    @Override
-//    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+//    public View onCreateView(@NonNull final LayoutInflater inflater,
+//                             @Nullable final ViewGroup container,
+//                             @Nullable final Bundle savedInstanceState) {
 //        return super.onCreateView(inflater, container, savedInstanceState);
 //    }
 
     /**
-     * If we (the Fragment) is a {@link BookManager} then load the {@link Book}
+     * If we (the Fragment) is a {@link BookManager} then load the {@link Book}.
      */
     @Override
     @CallSuper
@@ -177,8 +182,10 @@ public abstract class BookBaseFragment
 
         if (this instanceof BookManager) {
             // load the Book from (in order) savedInstanceState; arg; database; or a new book
-            long bookId = BundleUtils.getLongFromBundles(UniqueId.KEY_ID, savedInstanceState, args);
-            Bundle bookData = BundleUtils.getBundleFromBundles(UniqueId.BKEY_BOOK_DATA, savedInstanceState, args);
+            long bookId = BundleUtils.getLongFromBundles(UniqueId.KEY_ID,
+                                                         savedInstanceState, args);
+            Bundle bookData = BundleUtils.getBundleFromBundles(UniqueId.BKEY_BOOK_DATA,
+                                                               savedInstanceState, args);
             Book book = Book.getBook(mDb, bookId, bookData);
             getBookManager().setBook(book);
         }
@@ -188,13 +195,13 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * Add any {@link Field} we need to {@link Fields}
-     *
+     * Add any {@link Field} we need to {@link Fields}.
+     * <p>
      * Set corresponding validators/formatters (if any)
      * Set onClickListener etc...
-     *
+     * <p>
      * Note this is NOT where we set values.
-     *
+     * <p>
      * Override as needed, but call super FIRST
      */
     @CallSuper
@@ -203,7 +210,7 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * Here we trigger the Fragment to load it's Fields from the Book
+     * Here we trigger the Fragment to load it's Fields from the Book.
      */
     @Override
     @CallSuper
@@ -216,9 +223,9 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * Populate all Fields with the data from the Book
+     * Populate all Fields with the data from the Book.
      */
-    protected void populateFieldsFromBook() {
+    void populateFieldsFromBook() {
         // load the book, while disabling the AfterFieldChangeListener
         mFields.setAfterFieldChangeListener(null);
         Book book = getBookManager().getBook();
@@ -227,7 +234,7 @@ public abstract class BookBaseFragment
             private static final long serialVersionUID = -4893882810164263510L;
 
             @Override
-            public void afterFieldChange(@NonNull Field field,
+            public void afterFieldChange(@NonNull final Field field,
                                          @Nullable final String newValue) {
                 getBookManager().setDirty(true);
             }
@@ -235,9 +242,9 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * This is 'final' because we want inheritors to implement {@link #onLoadFieldsFromBook}
-     *
-     * Load the data while preserving the isDirty() status
+     * This is 'final' because we want inheritors to implement {@link #onLoadFieldsFromBook}.
+     * <p>
+     * Load the data while preserving the isDirty() status.
      */
     @Override
     public final <T extends DataManager> void loadFieldsFrom(@NonNull final T dataManager) {
@@ -249,15 +256,16 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * Default implementation of code to load the Book object
-     * Override as needed, calling super as the first onProgress
-     *
+     * Default implementation of code to load the Book object.
+     * Override as needed, calling super as the first onProgress.
+     * <p>
      * This is where you should populate all the fields with the values coming from the book.
      * This base class manages all the actual fields, but 'special' fields can/should be handled
      * in overrides.
      *
      * @param book       to load from
-     * @param setAllFrom flag indicating {@link Fields#setAllFrom(DataManager)} has already been called or not
+     * @param setAllFrom flag indicating {@link Fields#setAllFrom(DataManager)}
+     *                   has already been called or not
      */
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,
@@ -276,7 +284,7 @@ public abstract class BookBaseFragment
     //<editor-fold desc="Fragment shutdown">
 
     /**
-     * Here we trigger the Fragment to save it's Fields to the Book
+     * Here we trigger the Fragment to save it's Fields to the Book.
      */
     @Override
     @CallSuper
@@ -290,7 +298,7 @@ public abstract class BookBaseFragment
 
     /**
      * This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}
-     * (just for consistency with the load process)
+     * (just for consistency with the load process).
      */
     @Override
     public final <T extends DataManager> void saveFieldsTo(@NonNull final T dataManager) {
@@ -300,8 +308,8 @@ public abstract class BookBaseFragment
     /**
      * Default implementation of code to save existing data to the Book object.
      * We simply copy all {@link Field} into the {@link DataManager} e.g. the {@link Book}
-     *
-     * Override as needed, calling super if needed
+     * <p>
+     * Override as needed, calling super if needed.
      */
     protected void onSaveFieldsToBook(@NonNull final Book book) {
         Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
@@ -339,7 +347,8 @@ public abstract class BookBaseFragment
             .setIcon(R.drawable.ic_delete);
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate_book)
             .setIcon(R.drawable.ic_content_copy);
-        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.menu_internet_update_fields)
+        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0,
+                 R.string.menu_internet_update_fields)
             .setIcon(R.drawable.ic_search);
         /* TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books. */
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
@@ -355,7 +364,7 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * Set visibility of menu items as appropriate
+     * Set visibility of menu items as appropriate.
      *
      * @see #setHasOptionsMenu
      * @see #onCreateOptionsMenu
@@ -390,40 +399,46 @@ public abstract class BookBaseFragment
         final Book book = getBookManager().getBook();
 
         switch (item.getItemId()) {
-
-            case R.id.MENU_BOOK_DELETE: {
+            case R.id.MENU_BOOK_DELETE:
                 @StringRes
-                int errorMsgId = StandardDialogs.deleteBookAlert(mActivity, mDb, book.getBookId(), new Runnable() {
-                    @Override
-                    public void run() {
-                        mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
-                        mActivity.finish();
-                    }
-                });
+                int errorMsgId = StandardDialogs.deleteBookAlert(
+                        mActivity, mDb, book.getBookId(),
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mActivity.setResult(
+                                        UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+                                mActivity.finish();
+                            }
+                        });
                 if (errorMsgId != 0) {
                     StandardDialogs.showUserMessage(mActivity, errorMsgId);
                 }
                 return true;
-            }
-            case R.id.MENU_BOOK_DUPLICATE: {
+
+            case R.id.MENU_BOOK_DUPLICATE:
                 Intent intent = new Intent(mActivity, EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
-                startActivityForResult(intent, UniqueId.REQ_BOOK_DUPLICATE); /* result handled by hosting Activity */
+                startActivityForResult(intent, UniqueId.REQ_BOOK_DUPLICATE);
                 return true;
-            }
-            case R.id.MENU_BOOK_UPDATE_FROM_INTERNET: {
-                Intent intent = new Intent(requireActivity(), UpdateFieldsFromInternetActivity.class);
-                intent.putExtra(UniqueId.KEY_ID, book.getBookId());
-                intent.putExtra(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE));
-                intent.putExtra(UniqueId.KEY_AUTHOR_FORMATTED, book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
-                startActivityForResult(intent, REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET);
+
+            case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
+                Intent intentUpdateFields = new Intent(requireActivity(),
+                                                       UpdateFieldsFromInternetActivity.class);
+                intentUpdateFields.putExtra(UniqueId.KEY_ID, book.getBookId());
+                intentUpdateFields.putExtra(UniqueId.KEY_TITLE,
+                                            book.getString(UniqueId.KEY_TITLE));
+                intentUpdateFields.putExtra(UniqueId.KEY_AUTHOR_FORMATTED,
+                                            book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
+                startActivityForResult(intentUpdateFields, REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET);
                 return true;
-            }
-            case R.id.MENU_SHARE: {
-                startActivity(Intent.createChooser(book.getShareBookIntent(mActivity), getString(R.string.share)));
+
+            case R.id.MENU_SHARE:
+                startActivity(Intent.createChooser(book.getShareBookIntent(mActivity),
+                                                   getString(R.string.share)));
                 return true;
-            }
-            case R.id.MENU_BOOK_READ: {
+
+            case R.id.MENU_BOOK_READ:
                 // toggle 'read' status
                 boolean isRead = (0 != book.getInt(UniqueId.KEY_BOOK_READ));
                 if (book.setRead(mDb, !isRead)) {
@@ -431,14 +446,13 @@ public abstract class BookBaseFragment
                     mFields.getField(R.id.read).setValue(isRead ? "0" : "1");
                 }
                 return true;
-            }
-        }
 
-        if (MenuHandler.handleAmazonSearchSubMenu(mActivity, item, book)) {
-            return true;
+            default:
+                if (MenuHandler.handleAmazonSearchSubMenu(mActivity, item, book)) {
+                    return true;
+                }
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     //</editor-fold>
@@ -457,33 +471,35 @@ public abstract class BookBaseFragment
      * @param fieldButtonId field/button to bind the OnClickListener to (can be same as fieldId)
      * @param list          list of strings to choose from.
      */
-    protected void initValuePicker(@NonNull final Field field,
-                                   @StringRes final int dialogTitleId,
-                                   final @IdRes int fieldButtonId,
-                                   @NonNull final List<String> list) {
+    void initValuePicker(@NonNull final Field field,
+                         @StringRes final int dialogTitleId,
+                         @IdRes final int fieldButtonId,
+                         @NonNull final List<String> list) {
         // only bother when visible
-        if (!field.visible) {
+        if (!field.isVisible()) {
             return;
         }
 
         // Get the list to use in the AutoCompleteTextView
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireActivity(),
-            android.R.layout.simple_dropdown_item_1line, list);
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line,
+                                   list);
         mFields.setAdapter(field.id, adapter);
 
         // Get the drop-down button for the list and setup dialog
         //noinspection ConstantConditions
         getView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                SelectOneDialog.selectObjectDialog(requireActivity().getLayoutInflater(),
-                    getString(dialogTitleId), field, list,
-                    new SelectOneDialog.SimpleDialogOnClickListener() {
-                        @Override
-                        public void onClick(@NonNull final SelectOneDialog.SimpleDialogItem item) {
-                            field.setValue(item.toString());
-                        }
-                    });
+            public void onClick(@NonNull final View v) {
+                SelectOneDialog.selectObjectDialog(
+                        requireActivity().getLayoutInflater(),
+                        getString(dialogTitleId), field, list,
+                        new SelectOneDialog.SimpleDialogOnClickListener() {
+                            @Override
+                            public void onClick(@NonNull final SelectOneDialog.SimpleDialogItem item) {
+                                field.setValue(item.toString());
+                            }
+                        });
             }
         });
     }
@@ -498,26 +514,27 @@ public abstract class BookBaseFragment
      * @param multiLine     true if the dialog box should offer a multi-line input.
      */
     @SuppressWarnings("SameParameterValue")
-    protected void initTextFieldEditor(@NonNull final String callerTag,
-                                       @NonNull final Field field,
-                                       @StringRes final int dialogTitleId,
-                                       final @IdRes int fieldButtonId,
-                                       final boolean multiLine) {
+    void initTextFieldEditor(@NonNull final String callerTag,
+                             @NonNull final Field field,
+                             @StringRes final int dialogTitleId,
+                             @IdRes final int fieldButtonId,
+                             final boolean multiLine) {
         // only bother when visible
-        if (!field.visible) {
+        if (!field.isVisible()) {
             return;
         }
 
         //noinspection ConstantConditions
         getView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View v) {
+            public void onClick(@NonNull final View v) {
                 TextFieldEditorDialogFragment frag = new TextFieldEditorDialogFragment();
                 Bundle args = new Bundle();
                 args.putString(UniqueId.BKEY_CALLER_ID, callerTag);
                 args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
                 args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
-                args.putString(TextFieldEditorDialogFragment.BKEY_TEXT, field.getValue().toString());
+                args.putString(TextFieldEditorDialogFragment.BKEY_TEXT,
+                               field.getValue().toString());
                 args.putBoolean(TextFieldEditorDialogFragment.BKEY_MULTI_LINE, multiLine);
                 frag.setArguments(args);
                 frag.show(requireFragmentManager(), null);
@@ -531,17 +548,17 @@ public abstract class BookBaseFragment
      * @param dialogTitleId title of the dialog box.
      * @param todayIfNone   if true, and if the field was empty, pre-populate with today's date
      */
-    protected void initPartialDatePicker(@NonNull final String callerTag,
-                                         @NonNull final Field field,
-                                         @StringRes final int dialogTitleId,
-                                         final boolean todayIfNone) {
+    void initPartialDatePicker(@NonNull final String callerTag,
+                               @NonNull final Field field,
+                               @StringRes final int dialogTitleId,
+                               final boolean todayIfNone) {
         // only bother when visible
-        if (!field.visible) {
+        if (!field.isVisible()) {
             return;
         }
 
         field.getView().setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            public void onClick(@NonNull final View v) {
                 Object value = field.getValue();
                 String date;
                 if (todayIfNone && value.toString().isEmpty()) {
@@ -573,24 +590,25 @@ public abstract class BookBaseFragment
      * @param listGetter    {@link CheckListEditorListGetter<T>} interface to get the *current* list
      * @param <T>           type of the {@link CheckListItem}
      */
-    protected <T> void initCheckListEditor(@NonNull final String callerTag,
-                                           @NonNull final Field field,
-                                           @StringRes final int dialogTitleId,
-                                           @NonNull final CheckListEditorListGetter<T> listGetter) {
+    <T> void initCheckListEditor(@NonNull final String callerTag,
+                                 @NonNull final Field field,
+                                 @StringRes final int dialogTitleId,
+                                 @NonNull final CheckListEditorListGetter<T> listGetter) {
         // only bother when visible
-        if (!field.visible) {
+        if (!field.isVisible()) {
             return;
         }
 
         field.getView().setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View v) {
+            public void onClick(@NonNull final View v) {
                 CheckListEditorDialogFragment<T> frag = new CheckListEditorDialogFragment<>();
                 Bundle args = new Bundle();
                 args.putString(UniqueId.BKEY_CALLER_ID, callerTag);
                 args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
                 args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
-                args.putParcelableArrayList(CheckListEditorDialogFragment.BKEY_CHECK_LIST, listGetter.getList());
+                args.putParcelableArrayList(CheckListEditorDialogFragment.BKEY_CHECK_LIST,
+                                            listGetter.getList());
                 frag.setArguments(args);
                 frag.show(requireFragmentManager(), null);
             }
@@ -608,28 +626,32 @@ public abstract class BookBaseFragment
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
         switch (requestCode) {
-            case REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET: {
+            case REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);
                     if (bookId > 0) {
-                        // replace current book with the updated one, no attempt is made to merge if in edit mode.
+                        // replace current book with the updated one,
+                        // no attempt is made to merge if in edit mode.
                         Book book = Book.getBook(mDb, bookId);
                         getBookManager().setBook(book);
                         loadFieldsFrom(book);
                     } else {
-                        boolean wasCancelled = data.getBooleanExtra(UniqueId.BKEY_CANCELED, false);
+                        boolean wasCancelled =
+                                data.getBooleanExtra(UniqueId.BKEY_CANCELED, false);
                         Logger.info(this, "wasCancelled= " + wasCancelled);
                     }
                 }
                 break;
-            }
-            default: {
+
+            default:
                 // lowest level of our Fragment, see if we missed anything
-                Logger.info(this, "BookBaseFragment|onActivityResult|NOT HANDLED: requestCode=" + requestCode + ", resultCode=" + resultCode);
+                Logger.info(this,
+                            "BookBaseFragment|onActivityResult|NOT HANDLED:"
+                                    + " requestCode=" + requestCode + ", resultCode=" + resultCode);
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
-            }
+
         }
 
         Tracker.exitOnActivityResult(this);
@@ -638,16 +660,18 @@ public abstract class BookBaseFragment
     /**
      * Hides unused fields if they have no useful data.
      * Should normally be called at the *end* of {@link #onLoadFieldsFromBook}
-     *
+     * <p>
      * Authors & Title are always visible as they are required fields.
-     *
+     * <p>
      * Series is done in:
      * {@link EditBookFieldsFragment#populateSeriesListField}
      * {@link BookFragment#populateSeriesListField}
-     *
+     * <p>
      * Special fields not checked here:
      * - toc
      * - read status
+     *
+     * @param hideIfEmpty set to <tt>true</tt> when displaying; <tt>false</tt> when editing.
      *
      * @see FieldVisibilitySettingsFragment
      */
@@ -659,7 +683,8 @@ public abstract class BookBaseFragment
         showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn, R.id.lbl_isbn);
         showHideField(hideIfEmpty, R.id.description, R.id.lbl_description);
         showHideField(hideIfEmpty, R.id.publisher, R.id.row_publisher, R.id.lbl_publishing);
-        showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published, R.id.lbl_publishing);
+        showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published,
+                      R.id.lbl_publishing);
         showHideField(hideIfEmpty, R.id.first_publication, R.id.row_first_publication);
         showHideField(hideIfEmpty, R.id.pages, R.id.row_pages, R.id.lbl_pages);
         showHideField(hideIfEmpty, R.id.price_listed, R.id.row_price_listed, R.id.lbl_price_listed);
@@ -692,17 +717,18 @@ public abstract class BookBaseFragment
      * Text fields:
      * Hide text field if it does not have any useful data.
      * Don't show a field if it is already hidden (assumed by user preference)
-     *
+     * <p>
      * ImageView:
      * use the visibility status of the ImageView to show/hide the relatedFields
      *
      * @param hideIfEmpty   hide if empty
      * @param fieldId       layout resource id of the field
-     * @param relatedFields list of fields whose visibility will also be set based on the first field
+     * @param relatedFields list of fields whose visibility will also be set based
+     *                      on the first field
      */
     private void showHideField(final boolean hideIfEmpty,
-                               final @IdRes int fieldId,
-                               @NonNull final @IdRes int... relatedFields) {
+                               @IdRes final int fieldId,
+                               @NonNull @IdRes final int... relatedFields) {
         //noinspection ConstantConditions
         final View view = getView().findViewById(fieldId);
         if (view != null) {
@@ -712,8 +738,7 @@ public abstract class BookBaseFragment
                     // Determine if we should hide it
                     if (!(view instanceof ImageView)) {
                         final String value = mFields.getField(fieldId).getValue().toString();
-                        final boolean hasValue = value != null && !value.isEmpty();
-                        visibility = hasValue ? View.VISIBLE : View.GONE;
+                        visibility = (value != null && !value.isEmpty()) ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
                     }
                 }
@@ -730,8 +755,8 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * used to load the {@link CheckListEditorDialogFragment} with the *current* list
-     * e.g. not the state of the list at init time
+     * Loads the {@link CheckListEditorDialogFragment} with the *current* list,
+     * e.g. not the state of the list at init time.
      */
     public interface CheckListEditorListGetter<T> {
 
@@ -744,10 +769,10 @@ public abstract class BookBaseFragment
         }
 
         /**
-         * Gets the total number of rows from the adapter, then use that to set the ListView to the
-         * full height so all rows are visible (no scrolling)
-         *
-         * Does nothing if the adapter is null, or if the view is not visible
+         * Gets the total number of rows from the adapter, then use that to set
+         * the ListView to the full height so all rows are visible (no scrolling).
+         * <p>
+         * Does nothing if the adapter is null, or if the view is not visible.
          */
         static void justifyListViewHeightBasedOnChildren(@NonNull final ListView listView) {
             ListAdapter adapter = listView.getAdapter();
@@ -763,76 +788,84 @@ public abstract class BookBaseFragment
             }
 
             ViewGroup.LayoutParams layoutParams = listView.getLayoutParams();
-            layoutParams.height = totalHeight + (listView.getDividerHeight() * (adapter.getCount()));
+            layoutParams.height = totalHeight
+                    + (listView.getDividerHeight() * (adapter.getCount()));
             listView.setLayoutParams(layoutParams);
             listView.requestLayout();
         }
 
         /**
-         * Ensure that next up/down/left/right View is visible for all sub-views of the passed view.
+         * Ensure that next up/down/left/right View is visible for all
+         * sub-views of the passed view.
          */
         static void fixFocusSettings(@NonNull final View root) {
-            final INextView getDown = new INextView() {
-                @Override
-                public int getNext(@NonNull final View v) {
-                    return v.getNextFocusDownId();
-                }
+            try {
+                final INextView getDown = new INextView() {
+                    @Override
+                    public int getNext(@NonNull final View v) {
+                        return v.getNextFocusDownId();
+                    }
 
-                @Override
-                public void setNext(@NonNull final View v,
-                                    final @IdRes int id) {
-                    v.setNextFocusDownId(id);
-                }
-            };
-            final INextView getUp = new INextView() {
-                @Override
-                public int getNext(@NonNull final View v) {
-                    return v.getNextFocusUpId();
-                }
+                    @Override
+                    public void setNext(@NonNull final View v,
+                                        @IdRes final int id) {
+                        v.setNextFocusDownId(id);
+                    }
+                };
+                final INextView getUp = new INextView() {
+                    @Override
+                    public int getNext(@NonNull final View v) {
+                        return v.getNextFocusUpId();
+                    }
 
-                @Override
-                public void setNext(@NonNull final View v,
-                                    final @IdRes int id) {
-                    v.setNextFocusUpId(id);
-                }
-            };
-            final INextView getLeft = new INextView() {
-                @Override
-                public int getNext(@NonNull final View v) {
-                    return v.getNextFocusLeftId();
-                }
+                    @Override
+                    public void setNext(@NonNull final View v,
+                                        @IdRes final int id) {
+                        v.setNextFocusUpId(id);
+                    }
+                };
+                final INextView getLeft = new INextView() {
+                    @Override
+                    public int getNext(@NonNull final View v) {
+                        return v.getNextFocusLeftId();
+                    }
 
-                @Override
-                public void setNext(@NonNull final View v,
-                                    final @IdRes int id) {
-                    v.setNextFocusLeftId(id);
-                }
-            };
-            final INextView getRight = new INextView() {
-                @Override
-                public int getNext(@NonNull final View v) {
-                    return v.getNextFocusRightId();
-                }
+                    @Override
+                    public void setNext(@NonNull final View v,
+                                        @IdRes final int id) {
+                        v.setNextFocusLeftId(id);
+                    }
+                };
+                final INextView getRight = new INextView() {
+                    @Override
+                    public int getNext(@NonNull final View v) {
+                        return v.getNextFocusRightId();
+                    }
 
-                @Override
-                public void setNext(@NonNull final View v,
-                                    final @IdRes int id) {
-                    v.setNextFocusRightId(id);
-                }
-            };
+                    @Override
+                    public void setNext(@NonNull final View v,
+                                        @IdRes final int id) {
+                        v.setNextFocusRightId(id);
+                    }
+                };
 
-            @SuppressLint("UseSparseArrays")
-            Map<Integer, View> vh = new HashMap<>();
-            getViews(root, vh);
+                @SuppressLint("UseSparseArrays")
+                Map<Integer, View> vh = new HashMap<>();
+                getViews(root, vh);
 
-            for (Map.Entry<Integer, View> ve : vh.entrySet()) {
-                final View v = ve.getValue();
-                if (v.getVisibility() == View.VISIBLE) {
-                    fixNextView(vh, v, getDown);
-                    fixNextView(vh, v, getUp);
-                    fixNextView(vh, v, getLeft);
-                    fixNextView(vh, v, getRight);
+                for (Map.Entry<Integer, View> ve : vh.entrySet()) {
+                    final View v = ve.getValue();
+                    if (v.getVisibility() == View.VISIBLE) {
+                        fixNextView(vh, v, getDown);
+                        fixNextView(vh, v, getUp);
+                        fixNextView(vh, v, getLeft);
+                        fixNextView(vh, v, getRight);
+                    }
                 }
+            } catch (RuntimeException e) {
+                // Log, but ignore. This is a non-critical feature that prevents crashes
+                // when the 'next' key is pressed and some views have been hidden.
+                Logger.error(e);
             }
         }
 
@@ -882,7 +915,7 @@ public abstract class BookBaseFragment
         }
 
         /**
-         * Passed a parent view, add it and all children view (if any) to the passed collection
+         * Passed a parent view, add it and all children view (if any) to the passed collection.
          *
          * @param parent Parent View
          * @param list   Collection
@@ -890,8 +923,8 @@ public abstract class BookBaseFragment
         private static void getViews(@NonNull final View parent,
                                      @NonNull final Map<Integer, View> list) {
             // Get the view ID and add it to collection if not already present.
-            final @IdRes
-            int id = parent.getId();
+            @IdRes
+            final int id = parent.getId();
             if (id != View.NO_ID && !list.containsKey(id)) {
                 list.put(id, parent);
             }
@@ -906,7 +939,7 @@ public abstract class BookBaseFragment
         }
 
         /**
-         * Debug utility to dump an entire view hierarchy to the output.
+         * Dump an entire view hierarchy to the output.
          */
         @SuppressWarnings("unused")
         static void debugDumpViewTree(final int depth,
@@ -936,10 +969,10 @@ public abstract class BookBaseFragment
 
         private interface INextView {
 
-            int getNext(@NonNull final View v);
+            int getNext(@NonNull View v);
 
-            void setNext(@NonNull final View v,
-                         final @IdRes int id);
+            void setNext(@NonNull View v,
+                         @IdRes int id);
         }
     }
 }

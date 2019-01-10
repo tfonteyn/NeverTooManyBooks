@@ -32,6 +32,13 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.TypedValue;
 
+import androidx.annotation.ArrayRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -45,13 +52,6 @@ import org.acra.annotation.ReportsCrashes;
 
 import java.util.Objects;
 
-import androidx.annotation.ArrayRes;
-import androidx.annotation.AttrRes;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-
 /**
  * BookCatalogue Application implementation. Useful for making globals available and for being a
  * central location for logically application-specific objects such as preferences.
@@ -59,62 +59,69 @@ import androidx.annotation.StringRes;
  * @author Philip Warner
  */
 @ReportsCrashes(
-    //mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
-    mailTo = "test@local.net",
-    mode = ReportingInteractionMode.DIALOG,
-    customReportContent = {
-        ReportField.APP_VERSION_CODE,
-        ReportField.APP_VERSION_NAME,
-        ReportField.PACKAGE_NAME,
-        ReportField.PHONE_MODEL,
-        ReportField.ANDROID_VERSION,
-        ReportField.BUILD,
-        ReportField.PRODUCT,
-        ReportField.TOTAL_MEM_SIZE,
-        ReportField.AVAILABLE_MEM_SIZE,
+        //mailTo = "philip.warner@rhyme.com.au,eleybourn@gmail.com",
+        mailTo = "test@local.net",
+        mode = ReportingInteractionMode.DIALOG,
+        customReportContent = {
+                ReportField.APP_VERSION_CODE,
+                ReportField.APP_VERSION_NAME,
+                ReportField.PACKAGE_NAME,
+                ReportField.PHONE_MODEL,
+                ReportField.ANDROID_VERSION,
+                ReportField.BUILD,
+                ReportField.PRODUCT,
+                ReportField.TOTAL_MEM_SIZE,
+                ReportField.AVAILABLE_MEM_SIZE,
 
-        ReportField.CUSTOM_DATA,
-        ReportField.STACK_TRACE,
-        ReportField.DISPLAY,
+                ReportField.CUSTOM_DATA,
+                ReportField.STACK_TRACE,
+                ReportField.DISPLAY,
 
-        ReportField.USER_COMMENT,
-        ReportField.USER_APP_START_DATE,
-        ReportField.USER_CRASH_DATE,
-        ReportField.THREAD_DETAILS,
+                ReportField.USER_COMMENT,
+                ReportField.USER_APP_START_DATE,
+                ReportField.USER_CRASH_DATE,
+                ReportField.THREAD_DETAILS
 //                ReportField.APPLICATION_LOG,
-    }
-    //optional, displayed as soon as the crash occurs, before collecting data which can take a few seconds
-    , resToastText = R.string.acra_resToastText
-    , resNotifTickerText = R.string.acra_resNotifTickerText
-    , resNotifTitle = R.string.acra_resNotifTitle
-    , resNotifText = R.string.acra_resNotifText
-    , resDialogText = R.string.acra_resDialogText
-    // optional. default is your application name
-    , resDialogTitle = R.string.acra_resDialogTitle
-    // optional. when defined, adds a user text field input with this text resource as a label
-    , resDialogCommentPrompt = R.string.acra_resDialogCommentPrompt
-    // optional. displays a message when the user accepts to send a report.
-    , resDialogOkToast = R.string.acra_resDialogOkToast
+        },
+        //optional, displayed as soon as the crash occurs,
+        // before collecting data which can take a few seconds
+        resToastText = R.string.acra_resToastText,
+        resNotifTickerText = R.string.acra_resNotifTickerText,
+        resNotifTitle = R.string.acra_resNotifTitle,
+        resNotifText = R.string.acra_resNotifText,
+        resDialogText = R.string.acra_resDialogText,
+        // optional. default is your application name
+        resDialogTitle = R.string.acra_resDialogTitle,
+        // optional. when defined, adds a user text field input with this text resource as a label
+        resDialogCommentPrompt = R.string.acra_resDialogCommentPrompt,
+        // optional. displays a message when the user accepts to send a report.
+        resDialogOkToast = R.string.acra_resDialogOkToast
 //        ,applicationLogFile = ""
 //        ,applicationLogFileLines = 1000
 )
 
 public class BookCatalogueApp
-    extends Application {
+        extends Application {
 
-    /** Implementation to use for {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showUserMessage} */
+    /**
+     * Implementation to use for
+     * {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showUserMessage}.
+     */
     public static final String PREF_APP_USER_MESSAGE = "App.UserMessage";
 
-    /** we really only use the one */
+    /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;
 
-    /** Give static methods access to our singleton. Note: never store a context in a static, use the instance instead */
+    /**
+     * Give static methods access to our singleton.
+     * Note: never store a context in a static, use the instance instead
+     */
     private static BookCatalogueApp mInstance;
 
-    /** Used to sent notifications regarding tasks */
+    /** Used to sent notifications regarding tasks. */
     private static NotificationManager mNotifier;
 
-    /** create a singleton */
+    /** create a singleton. */
     @SuppressWarnings("unused")
     public BookCatalogueApp() {
         super();
@@ -138,14 +145,15 @@ public class BookCatalogueApp
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
 
         Notification notification = new Notification.Builder(mInstance.getApplicationContext())
-            .setSmallIcon(R.drawable.ic_info_outline)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setWhen(System.currentTimeMillis())
-            .setAutoCancel(true)
-            // The PendingIntent to launch our activity if the user selects this notification
-            .setContentIntent(PendingIntent.getActivity(mInstance.getApplicationContext(), 0, intent, 0))
-            .build();
+                .setSmallIcon(R.drawable.ic_info_outline)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true)
+                // The PendingIntent to launch our activity if the user selects this notification
+                .setContentIntent(
+                        PendingIntent.getActivity(mInstance.getApplicationContext(), 0, intent, 0))
+                .build();
 
         mNotifier.notify(NOTIFICATION_ID, notification);
     }
@@ -163,7 +171,8 @@ public class BookCatalogueApp
         try {
             ai = mInstance.getApplicationContext()
                           .getPackageManager()
-                          .getApplicationInfo(mInstance.getPackageName(), PackageManager.GET_META_DATA);
+                          .getApplicationInfo(mInstance.getPackageName(),
+                                              PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             Logger.error(e);
             throw new IllegalStateException();
@@ -201,12 +210,26 @@ public class BookCatalogueApp
     /**
      * Wrapper to reduce explicit use of the 'context' member.
      *
-     * @param resId Resource ID
+     * @param stringId Resource ID
      *
      * @return Localized resource string
      */
-    public static String getResourceString(@StringRes final int resId) {
-        return mInstance.getApplicationContext().getString(resId).trim();
+    public static String getResourceString(@StringRes final int stringId) {
+        return mInstance.getApplicationContext().getString(stringId).trim();
+    }
+
+    /**
+     * Wrapper to reduce explicit use of the 'context' member.
+     *
+     * @param stringId Resource ID
+     * @param objects  arguments for the resource string
+     *
+     * @return Localized resource string
+     */
+    @NonNull
+    public static String getResourceString(@StringRes final int stringId,
+                                           @Nullable final Object... objects) {
+        return mInstance.getApplicationContext().getString(stringId, objects).trim();
     }
 
     /**
@@ -221,24 +244,7 @@ public class BookCatalogueApp
     }
 
     /**
-     * Wrapper to reduce explicit use of the 'context' member.
-     *
-     * @param resId Resource ID
-     *
-     * @return Localized resource string
-     */
-    @NonNull
-    public static String getResourceString(@StringRes final int resId,
-                                           @Nullable final Object... objects) {
-        return mInstance.getApplicationContext().getString(resId, objects).trim();
-    }
-
-    /**
-     * As per {@link ACRA#init} documentation:
-     *
      * Initialize ACRA for a given Application.
-     *
-     * The call to this method should be placed as soon as possible in the {@link Application#attachBaseContext(Context)} method.
      *
      * @param base The new base context for this wrapper.
      */
@@ -282,8 +288,9 @@ public class BookCatalogueApp
 
     /**
      * Monitor configuration changes to make sure we reset the locale. Overkill ?
-     * This would cover the user putting us to sleep, modify the device locale, then waking us up again.
-     *
+     * This would cover the user putting us to sleep, modify the device locale,
+     * then waking us up again.
+     * <p>
      * Called by the system when the device configuration changes while your
      * component is running.  Note that, unlike activities, other components
      * are never restarted when a configuration changes: they must always deal
@@ -293,8 +300,8 @@ public class BookCatalogueApp
      * object will have been updated to return resource values matching the
      * new configuration.
      *
-     * <p>For more information, read <a href="{@docRoot}guide/topics/resources/runtime-changes.html"
-     * >Handling Runtime Changes</a>.
+     * <p>For more information, read
+     * <a href="{@docRoot}guide/topics/resources/runtime-changes.html">Handling Runtime Changes</a>.
      *
      * @param newConfig The new device configuration.
      */

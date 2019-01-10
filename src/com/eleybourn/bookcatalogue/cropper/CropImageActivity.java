@@ -57,11 +57,13 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  *
- * ENHANCE: maybe update the crop code ? The original was in Android itself but was deprecated long time ago.
+ * ENHANCE: maybe update the crop code ?
+ * The original was in Android itself but was deprecated long time ago.
  *
  * http://www.java2s.com/Open-Source/Android_Free_Code/Image/crop/index.htm
  * https://github.com/biokys/cropimage
- * that one seems to be newer; there are also non-committed pull requests. to be investigated perhaps.
+ * that one seems to be newer; there are also non-committed pull requests.
+ * To be investigated perhaps.
  *
  * The external cropper also worked fine on my device.
  *
@@ -87,28 +89,28 @@ public class CropImageActivity extends CropMonitoredActivity {
     public static final String REQUEST_KEY_WHOLE_IMAGE = "whole-image";
     public static final String REQUEST_KEY_NO_FACE_DETECTION = "noFaceDetection";
 
-    /** used to calculate free space on Shared Storage, 400kb per picture is a GUESS */
+    /** used to calculate free space on Shared Storage, 400kb per picture is a GUESS. */
     private static final long ESTIMATED_PICTURE_SIZE = 400_000L;
 
-    private final Bitmap.CompressFormat defaultCompressFormat = Bitmap.CompressFormat.JPEG; // only used with mOptionSaveUri
+    /** only used with mOptionSaveUri. */
+    private final Bitmap.CompressFormat defaultCompressFormat = Bitmap.CompressFormat.JPEG;
 
     /** These are various options can be specified in the intent. */
     @Nullable
     private Uri mOptionSaveUri = null;
     private int mOptionAspectX, mOptionAspectY;
-    /** crop circle ? (default: rectangle) */
+    /** crop circle ? (default: rectangle). */
     private boolean mOptionCircleCrop = false;
     /** Output image size and whether we should scale the output to fit it (or just crop it). */
     private int mOptionOutputX, mOptionOutputY;
-    /** Options indicating if default crop rect is whole image */
+    /** Options indicating if default crop rect is whole image. */
     private boolean mOptionCropWholeImage = false;
     private boolean mOptionScale;
     private boolean mOptionScaleUp = true;
-    /** Disable face detection */
+    /** Disable face detection. */
     private boolean mOptionNoFaceDetection = true;
 
     private final Handler mHandler = new Handler();
-    private final CropBitmapManager.ThreadSet mDecodingThreads = new CropBitmapManager.ThreadSet();
 
     /** Whether the "save" button is already clicked. */
     boolean mSaving;
@@ -119,7 +121,7 @@ public class CropImageActivity extends CropMonitoredActivity {
 
     /** Whether we are wait the user to pick a face. */
     boolean mWaitingToPickFace;
-    /** runnable that does the actual face detection */
+    /** runnable that does the actual face detection. */
     private final Runnable mRunFaceDetection = new Runnable() {
         final FaceDetector.Face[] mFaces = new FaceDetector.Face[3];
         float mScale = 1F;
@@ -262,9 +264,6 @@ public class CropImageActivity extends CropMonitoredActivity {
             });
         }
     };
-    private CropIImage mImage;
-
-
 
     @Override
     protected int getLayoutId() {
@@ -327,14 +326,14 @@ public class CropImageActivity extends CropMonitoredActivity {
 
             findViewById(R.id.cancel).setOnClickListener(
                     new View.OnClickListener() {
-                        public void onClick(View v) {
-                            setResult(Activity.RESULT_CANCELED); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+                        public void onClick(@NonNull final View v) {
+                            setResult(Activity.RESULT_CANCELED);
                             finish();
                         }
                     });
 
             findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
+                public void onClick(@NonNull final View v) {
                     onSaveClicked();
                 }
             });
@@ -374,9 +373,7 @@ public class CropImageActivity extends CropMonitoredActivity {
                 new Runnable() {
                     public void run() {
                         final CountDownLatch latch = new CountDownLatch(1);
-                        final Bitmap b = (mImage != null) ?
-                                mImage.fullSizeBitmap(CropIImage.UNCONSTRAINED, 1024 * 1024)
-                                : mBitmap;
+                        final Bitmap b = mBitmap;
                         mHandler.post(new Runnable() {
                             public void run() {
                                 if (b != mBitmap && b != null) {
@@ -405,7 +402,7 @@ public class CropImageActivity extends CropMonitoredActivity {
     }
 
     private void onSaveClicked() {
-        // TODO this code needs to change to use the decode/crop/encode single
+        // TODO: this code needs to change to use the decode/crop/encode single
         // onProgress api so that we don't require that the whole (possibly large)
         // bitmap doesn't have to be read into memory
         if (mSaving) {
@@ -495,7 +492,7 @@ public class CropImageActivity extends CropMonitoredActivity {
             resultExtras.putParcelable(BKEY_DATA, croppedImage);
             Intent data = new Intent("inline-data");
             data.putExtras(resultExtras);
-            setResult(Activity.RESULT_OK, data); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+            setResult(Activity.RESULT_OK, data);
             finish();
         } else {
             // save to the URI in a background task
@@ -521,14 +518,14 @@ public class CropImageActivity extends CropMonitoredActivity {
                 }
             } catch (IOException e) {
                 Logger.error(e);
-                setResult(Activity.RESULT_CANCELED); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+                setResult(Activity.RESULT_CANCELED);
             }
 
             // we saved the image
-            setResult(Activity.RESULT_OK, intent); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+            setResult(Activity.RESULT_OK, intent);
         } else {
             // we were not asked to save anything, but we're ok with that
-            setResult(Activity.RESULT_OK); /* 31c90366-d352-496f-9b7d-3237dd199a77 */
+            setResult(Activity.RESULT_OK);
         }
 
         croppedImage.recycle();
@@ -540,7 +537,6 @@ public class CropImageActivity extends CropMonitoredActivity {
     @CallSuper
     protected void onPause() {
         Tracker.enterOnPause(this);
-        CropBitmapManager.instance().cancelThreadDecoding(mDecodingThreads);
         // DO NOT RECYCLE HERE; will leave mBitmap unusable after a resume.
         // mBitmap.recycle();
         super.onPause();

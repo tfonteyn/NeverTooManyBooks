@@ -21,11 +21,12 @@
 package com.eleybourn.bookcatalogue.adapters;
 
 import android.database.Cursor;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.cursors.BookRowViewBase;
 
@@ -69,7 +70,7 @@ public interface MultiTypeListHandler {
                  @NonNull final ViewGroup parent);
 
     /**
-     * Get the text to display in ListView for row at current cursor position
+     * Get the text to display in ListView for row at current cursor position.
      *
      * @param cursor Cursor, correctly positioned.
      *
@@ -87,17 +88,21 @@ public interface MultiTypeListHandler {
      * @author Philip Warner
      */
     abstract class MultiTypeHolder<T> {
+
         /**
          * Setup a new holder for row type based on the passed rowContext. This holder will be
          * associated with a reusable view that will always be used for rows of the current
          * kind. We avoid having to call findViewById() by doing it once at creation time.
          */
-        public abstract void map(@NonNull final T rowContext, @NonNull final View view);
+        public abstract void map(@NonNull final T rowContext,
+                                 @NonNull final View view);
 
         /**
          * Use the passed rowContext to fill in the actual details for the current row.
          */
-        public abstract void set(@NonNull final T rowContext, @NonNull final View view, final int level);
+        public abstract void set(@NonNull final T rowContext,
+                                 @NonNull final View view,
+                                 final int level);
 
         /**
          * Use the passed rowContext to determine the kind of View that is required

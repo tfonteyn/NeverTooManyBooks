@@ -26,9 +26,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
@@ -38,6 +35,10 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -55,41 +56,41 @@ import java.util.TimerTask;
  * Catalogue search based on the SQLite FTS engine. Due to the speed of FTS it updates the
  * number of hits more or less in real time. The user can choose to see a full list at any
  * time.
- *
+ * <p>
  * ENHANCE: Finish ! FTS activity.
  *
  * @author Philip Warner
  */
-public class AdvancedLocalSearchActivity extends BaseActivity {
+public class AdvancedLocalSearchActivity
+        extends BaseActivity {
 
     /** Handle inter-thread messages */
     private final Handler mSCHandler = new Handler();
-    /** Handle the 'Search' button. */
-    private final OnClickListener mShowResultsListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent data = new Intent();
-            data.putExtra(UniqueId.BKEY_BOOK_ID_LIST, mBookIdsFound);
-            setResult(Activity.RESULT_OK, data); /* 6f6e83e1-10fb-445c-8e35-fede41eba03b */
-            finish();
-        }
-    };
     private EditText mAuthorView;
     private EditText mTitleView;
     private EditText mCSearchView;
-
     private Button mShowResultsBtn;
     private Button mFtsRebuildBtn;
     private CatalogueDBAdapter mDb;
     /** Handle the 'FTS Rebuild' button. */
     private final OnClickListener mFtsRebuildListener = new OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull final View v) {
             mDb.rebuildFts();
         }
     };
     private TextView mBooksFound;
     private ArrayList<Integer> mBookIdsFound;
+    /** Handle the 'Search' button. */
+    private final OnClickListener mShowResultsListener = new OnClickListener() {
+        @Override
+        public void onClick(@NonNull final View v) {
+            Intent data = new Intent();
+            data.putExtra(UniqueId.BKEY_BOOK_ID_LIST, mBookIdsFound);
+            setResult(Activity.RESULT_OK, data); /* 6f6e83e1-10fb-445c-8e35-fede41eba03b */
+            finish();
+        }
+    };
     /** Indicates user has changed something since the last search. */
     private boolean mSearchDirty = false;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
@@ -101,7 +102,8 @@ public class AdvancedLocalSearchActivity extends BaseActivity {
     /** Detect when user touches something, just so we know they are 'busy'. */
     private final OnTouchListener mOnTouchListener = new OnTouchListener() {
         @Override
-        public boolean onTouch(@NonNull final View v, @NonNull final MotionEvent event) {
+        public boolean onTouch(@NonNull final View v,
+                               @NonNull final MotionEvent event) {
             userIsActive(false);
             return false;
         }
@@ -112,12 +114,16 @@ public class AdvancedLocalSearchActivity extends BaseActivity {
     private final TextWatcher mTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(@NonNull final CharSequence s,
-                                      final int start, final int count, final int after) {
+                                      final int start,
+                                      final int count,
+                                      final int after) {
         }
 
         @Override
         public void onTextChanged(@NonNull final CharSequence s,
-                                  final int start, final int before, final int count) {
+                                  final int start,
+                                  final int before,
+                                  final int count) {
         }
 
         @Override
@@ -324,7 +330,9 @@ public class AdvancedLocalSearchActivity extends BaseActivity {
      *
      * @author Philip Warner
      */
-    private class SearchUpdateTimer extends TimerTask {
+    private class SearchUpdateTimer
+            extends TimerTask {
+
         @Override
         public void run() {
             boolean doSearch = false;

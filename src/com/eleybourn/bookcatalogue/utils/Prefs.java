@@ -2,6 +2,12 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.preference.PreferenceManager;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksOnBookshelf;
@@ -17,15 +23,8 @@ import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.preference.PreferenceManager;
 
 /**
  * Quick and easy way to:
@@ -76,7 +75,8 @@ public final class Prefs {
         }
         if (DEBUG_SWITCHES.PREFS && BuildConfig.DEBUG) {
             Logger.info(Prefs.class,
-                        "uuid=" + uuid + "|getBoolean|key=" + key + "|defaultValue=`" + defaultValue + "`|result=`" + result + '`');
+                        "uuid=" + uuid + "|getBoolean|key=" + key +
+                                "|defaultValue=`" + defaultValue + "`|result=`" + result + '`');
         }
         return result;
     }
@@ -105,7 +105,8 @@ public final class Prefs {
         }
         if (DEBUG_SWITCHES.PREFS && BuildConfig.DEBUG) {
             Logger.info(Prefs.class,
-                        "uuid=" + uuid + "|getInt|key=" + key + "|defaultValue=`" + defaultValue + "`|result=`" + result + '`');
+                        "uuid=" + uuid + "|getInt|key=" + key +
+                                "|defaultValue=`" + defaultValue + "`|result=`" + result + '`');
         }
         return result;
     }
@@ -134,7 +135,8 @@ public final class Prefs {
         }
         if (DEBUG_SWITCHES.PREFS && BuildConfig.DEBUG) {
             Logger.info(Prefs.class,
-                        "uuid=" + uuid + "|getLong|key=" + key + "|defaultValue=`" + defaultValue + "`|result=`" + result + '`');
+                        "uuid=" + uuid + "|getLong|key=" + key +
+                                "|defaultValue=`" + defaultValue + "`|result=`" + result + '`');
         }
         return result;
     }
@@ -166,41 +168,29 @@ public final class Prefs {
         }
         if (DEBUG_SWITCHES.PREFS && BuildConfig.DEBUG) {
             Logger.info(Prefs.class,
-                        "uuid=" + uuid + "|getString|key=" + key + "|defaultValue=`" + defaultValue + "`|result=`" + result + '`');
+                        "uuid=" + uuid + "|getString|key=" + key +
+                                "|defaultValue=`" + defaultValue + "`|result=`" + result + '`');
         }
         return result;
     }
 
-    /** Convenience wrapper - Get a GLOBAL preference */
-    @Nullable
-    public static Set<String> getStringSet(@StringRes final int keyId,
-                                           @Nullable final Set<String> defaultValue) {
-        return getStringSet(null, BookCatalogueApp.getResourceString(keyId), defaultValue);
-    }
-
-    /** Convenience wrapper - Get a GLOBAL preference */
-    @Nullable
-    public static Set<String> getStringSet(@NonNull final String key,
-                                           @Nullable final Set<String> defaultValue) {
-        return getStringSet(null, key, defaultValue);
-    }
-
-    @Nullable
-    public static Set<String> getStringSet(@Nullable final String uuid,
-                                           @NonNull final String key,
-                                           @Nullable final Set<String> defaultValue) {
-        Set<String> result;
-        try {
-            result = getPrefs(uuid).getStringSet(key, defaultValue);
-        } catch (ClassCastException e) {
-            result = defaultValue;
-        }
-        if (DEBUG_SWITCHES.PREFS && BuildConfig.DEBUG) {
-            Logger.info(Prefs.class,
-                        "uuid=" + uuid + "|getStringSet|key=" + key + "|defaultValue=`" + defaultValue + "`|result=`" + result + '`');
-        }
-        return result;
-    }
+//    @Nullable
+//    public static Set<String> getStringSet(@Nullable final String uuid,
+//                                           @NonNull final String key,
+//                                           @Nullable final Set<String> defaultValue) {
+//        Set<String> result;
+//        try {
+//            result = getPrefs(uuid).getStringSet(key, defaultValue);
+//        } catch (ClassCastException e) {
+//            result = defaultValue;
+//        }
+//        if (DEBUG_SWITCHES.PREFS && BuildConfig.DEBUG) {
+//            Logger.info(Prefs.class,
+//                        "uuid=" + uuid + "|getStringSet|key=" + key +
+//                                "|defaultValue=`" + defaultValue + "`|result=`" + result + '`');
+//        }
+//        return result;
+//    }
 
     /**
      * DEBUG method
@@ -213,7 +203,7 @@ public final class Prefs {
             Arrays.sort(keys);
 
             StringBuilder sb = new StringBuilder(
-                "\n\nSharedPreferences: " + (uuid == null ? "global" : uuid));
+                    "\n\nSharedPreferences: " + (uuid == null ? "global" : uuid));
             for (String key : keys) {
                 Object value = map.get(key);
                 sb.append('\n').append(key).append('=').append(value);
@@ -239,9 +229,9 @@ public final class Prefs {
         for (String key : oldMap.keySet()) {
             try {
                 if (key.startsWith("GoodReads")
-                    || key.startsWith("Backup")
-                    || key.equals("App.Locale")
-                    ) {
+                        || key.startsWith("Backup")
+                        || key.equals("App.Locale")
+                        ) {
                     String tmp = (String) oldMap.get(key);
                     if (!tmp.isEmpty()) {
                         ed.putString(key, tmp);
@@ -252,9 +242,9 @@ public final class Prefs {
 
                 } else if (key.startsWith("lt_hide_alert_")) {
                     ed.putString(
-                        key.replace("lt_hide_alert_",
-                                    LibraryThingManager.PREFS_HIDE_ALERT),
-                        (String) oldMap.get(key));
+                            key.replace("lt_hide_alert_",
+                                        LibraryThingManager.PREFS_HIDE_ALERT),
+                            (String) oldMap.get(key));
 
                 } else if (key.startsWith("field_visibility_")) {
                     ed.putBoolean(key.replace("field_visibility_",
@@ -268,7 +258,7 @@ public final class Prefs {
                     switch (key) {
                         case "ScannerManager.PreferredScanner":
                             ed.putInt(key, ((Integer) oldMap.get(
-                                "ScannerManager.PreferredScanner")) - 1);
+                                    "ScannerManager.PreferredScanner")) - 1);
                             break;
                         case "UpgradeMessages.LastMessage": {
                             int v = (Integer) oldMap.get(key);
@@ -295,16 +285,16 @@ public final class Prefs {
                         }
                         case "App.AutorotateCameraImages":
                             ed.putInt(BookCatalogueApp.getResourceString(
-                                R.string.pk_thumbnails_rotate_auto), (Integer) oldMap.get(key));
+                                    R.string.pk_thumbnails_rotate_auto), (Integer) oldMap.get(key));
                             break;
                         case "App.CropFrameWholeImage":
                             ed.putBoolean(BookCatalogueApp.getResourceString(
-                                R.string.pk_thumbnails_crop_frame_is_whole_image),
+                                    R.string.pk_thumbnails_crop_frame_is_whole_image),
                                           (Boolean) oldMap.get(key));
                             break;
                         case "App.UseExternalImageCropper":
                             ed.putBoolean(BookCatalogueApp.getResourceString(
-                                R.string.pk_thumbnails_external_cropper),
+                                    R.string.pk_thumbnails_external_cropper),
                                           (Boolean) oldMap.get(key));
                             break;
                         case "SoundManager.BeepIfScannedIsbnInvalid":
@@ -315,17 +305,17 @@ public final class Prefs {
                             break;
                         case "APP.DisplayFirstThenLast":
                             ed.putBoolean(BookCatalogueApp.getResourceString(
-                                R.string.pk_bob_format_author_name),
+                                    R.string.pk_bob_format_author_name),
                                           (Boolean) oldMap.get(key));
                             break;
                         case "APP.ShowAllAuthors":
                             ed.putBoolean(BookCatalogueApp.getResourceString(
-                                R.string.pk_bob_books_under_multiple_authors),
+                                    R.string.pk_bob_books_under_multiple_authors),
                                           (Boolean) oldMap.get(key));
                             break;
                         case "APP.ShowAllSeries":
                             ed.putBoolean(BookCatalogueApp.getResourceString(
-                                R.string.pk_bob_books_under_multiple_series),
+                                    R.string.pk_bob_books_under_multiple_series),
                                           (Boolean) oldMap.get(key));
                             break;
                         case "App.BooklistGenerationMode": {
@@ -347,13 +337,15 @@ public final class Prefs {
                                     compatmode = 0;
                             }
                             ed.putInt(
-                                BookCatalogueApp.getResourceString(R.string.pk_bob_list_generation),
-                                compatmode);
+                                    BookCatalogueApp.getResourceString(
+                                            R.string.pk_bob_list_generation),
+                                    compatmode);
                             break;
                         }
                         case "App.OpenBookReadOnly":
                             ed.putBoolean(BookCatalogueApp.getResourceString(
-                                R.string.pk_bob_open_book_read_only), (Boolean) oldMap.get(key));
+                                    R.string.pk_bob_open_book_read_only),
+                                          (Boolean) oldMap.get(key));
                             break;
                         case "BooksOnBookshelf.BOOKSHELF": {
                             String tmp = (String) oldMap.get(key);
@@ -371,41 +363,42 @@ public final class Prefs {
                             break;
                         case "BookList.Global.BooklistState":
                             ed.putInt(
-                                BookCatalogueApp.getResourceString(R.string.pk_bob_list_state),
-                                (Integer) oldMap.get(key) - 1);
+                                    BookCatalogueApp.getResourceString(R.string.pk_bob_list_state),
+                                    (Integer) oldMap.get(key) - 1);
                             break;
                         case "BookList.Global.BackgroundThumbnails":
                             ed.putBoolean(BookCatalogueApp.getResourceString(
-                                R.string.pk_bob_thumbnails_generating_mode),
+                                    R.string.pk_bob_thumbnails_generating_mode),
                                           (Boolean) oldMap.get(key));
                             break;
                         case "BookList.Global.CacheThumbnails":
                             ed.putBoolean(BookCatalogueApp.getResourceString(
-                                R.string.pk_bob_thumbnails_cache_resized),
+                                    R.string.pk_bob_thumbnails_cache_resized),
                                           (Boolean) oldMap.get(key));
                             break;
                         case "BooksOnBookshelf.LIST_STYLE": {
                             String entry = (String) oldMap.get(key);
                             ed.putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
                                        BooklistStyles.getStyleId(
-                                           entry.substring(0, entry.length() - 2)));
+                                               entry.substring(0, entry.length() - 2)));
                             break;
                         }
                         case "BooklistStyles.Menu.Items": {
-                            Set<String> styleIds = new LinkedHashSet<>();
-                            ArrayList<String> list = StringList.decode((String) oldMap.get(key));
+                            List<String> styleIds = new ArrayList<>();
+                            List<String> list = StringList.decode((String) oldMap.get(key));
                             for (String entry : list) {
                                 styleIds.add(String.valueOf(BooklistStyles.getStyleId(
-                                    entry.substring(0, entry.length() - 2))));
+                                        entry.substring(0, entry.length() - 2))));
                             }
-                            ed.putStringSet(BooklistStyle.PREF_BL_PREFERRED_STYLES, styleIds);
+                            ed.putString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
+                                         TextUtils.join(",", styleIds));
                             break;
                         }
                         case "BookList.Condensed":
                             ed.putInt(BookCatalogueApp.getResourceString(R.string.pk_bob_item_size),
                                       (Boolean) oldMap.get(
-                                          key) ? BooklistStyle.SCALE_SIZE_SMALLER
-                                          : BooklistStyle.SCALE_SIZE_NORMAL);
+                                              key) ? BooklistStyle.SCALE_SIZE_SMALLER
+                                                   : BooklistStyle.SCALE_SIZE_NORMAL);
                             break;
                         case "BookList.ShowHeaderInfo":
                             ed.putInt(BookCatalogueApp.getResourceString(R.string.pk_bob_header),
@@ -413,31 +406,35 @@ public final class Prefs {
                             break;
                         case "BookList.ShowAuthor":
                             ed.putBoolean(
-                                BookCatalogueApp.getResourceString(R.string.pk_bob_show_author),
-                                (Boolean) oldMap.get(key));
+                                    BookCatalogueApp.getResourceString(R.string.pk_bob_show_author),
+                                    (Boolean) oldMap.get(key));
                             break;
                         case "BookList.ShowBookshelves":
                             ed.putBoolean(BookCatalogueApp.getResourceString(
-                                R.string.pk_bob_show_bookshelves), (Boolean) oldMap.get(key));
+                                    R.string.pk_bob_show_bookshelves), (Boolean) oldMap.get(key));
                             break;
                         case "BookList.ShowPublisher":
                             ed.putBoolean(
-                                BookCatalogueApp.getResourceString(R.string.pk_bob_show_publisher),
-                                (Boolean) oldMap.get(key));
+                                    BookCatalogueApp.getResourceString(
+                                            R.string.pk_bob_show_publisher),
+                                    (Boolean) oldMap.get(key));
                             break;
                         case "BookList.ShowThumbnails":
                             ed.putBoolean(
-                                BookCatalogueApp.getResourceString(R.string.pk_bob_thumbnails_show),
-                                (Boolean) oldMap.get(key));
+                                    BookCatalogueApp.getResourceString(
+                                            R.string.pk_bob_thumbnails_show),
+                                    (Boolean) oldMap.get(key));
                             break;
                         case "BookList.LargeThumbnails":
                             ed.putBoolean(BookCatalogueApp.getResourceString(
-                                R.string.pk_bob_thumbnails_show_large), (Boolean) oldMap.get(key));
+                                    R.string.pk_bob_thumbnails_show_large),
+                                          (Boolean) oldMap.get(key));
                             break;
                         case "BookList.ShowLocation":
                             ed.putBoolean(
-                                BookCatalogueApp.getResourceString(R.string.pk_bob_show_location),
-                                (Boolean) oldMap.get(key));
+                                    BookCatalogueApp.getResourceString(
+                                            R.string.pk_bob_show_location),
+                                    (Boolean) oldMap.get(key));
                             break;
 
                         // skip obsolete keys
@@ -454,7 +451,7 @@ public final class Prefs {
 
                         default:
                             Logger.info(Prefs.class, "unknown|key=" + key + "|value=" + oldMap.get(
-                                key).toString());
+                                    key).toString());
                             break;
                     }
                 }

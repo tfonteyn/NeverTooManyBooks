@@ -22,9 +22,10 @@ package com.eleybourn.bookcatalogue.debug;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -40,21 +41,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Non-error messages easier to find in the logfile, they always start with either:
+ * Non-error messages easier to find in the logfile.
+ * They always start with either:
  * DEBUG:
  * INFO:
- *
+ * <p>
  * error methods will always print a stacktrace (even if you do not pass in an exception)
- *
- *  ENHANCE Remove Log.error! Replace with ACRA?
- *  ACRA.getErrorReporter().handleException(e);
+ * <p>
+ * ENHANCE: Remove Log.error! Replace with ACRA?
+ * ACRA.getErrorReporter().handleException(e);
  */
 public final class Logger {
 
     private static final String TAG = "BC_Logger";
 
     @SuppressLint("SimpleDateFormat")
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DateFormat DATE_FORMAT =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    static final int OUTPUT_BUFFER = 8192;
+    static final String UTF8 = "utf8";
 
     private Logger() {
     }
@@ -62,9 +67,9 @@ public final class Logger {
     /**
      * Should really only be used from within a debug code block.
      * And even then only in problematic places, as the stack trace can get large
-     *
+     * <p>
      * Generates stacktrace!
-     *
+     * <p>
      * if (BuildConfig.DEBUG) {
      * Logger.debug("blah");
      * }
@@ -75,10 +80,11 @@ public final class Logger {
 
     /**
      * Pure info, no stacktrace.
-     *
+     * <p>
      * For static callers
      */
-    public static void info(@NonNull final Class clazz, final String message) {
+    public static void info(@NonNull final Class clazz,
+                            final String message) {
         String msg = "INFO|" + clazz.getCanonicalName() + '|' + message;
         Log.e(TAG, msg);
         writeToErrorLog(msg);
@@ -86,10 +92,11 @@ public final class Logger {
 
     /**
      * Pure info, no stacktrace.
-     *
+     * <p>
      * For instance callers
      */
-    public static void info(@NonNull final Object object, final String message) {
+    public static void info(@NonNull final Object object,
+                            final String message) {
         Class clazz = object.getClass();
         String msg;
         if (clazz.isAnonymousClass()) {
@@ -102,7 +109,7 @@ public final class Logger {
     }
 
     /**
-     * Generates stacktrace
+     * Generates stacktrace.
      */
     public static void error(@NonNull final String message) {
         error(new DebugStackTrace(), message);
@@ -114,7 +121,7 @@ public final class Logger {
 
     /**
      * Transforms a Java 'Error' into an Exception, so it's not fatal.
-     *
+     * <p>
      * Generates stacktrace
      */
     public static void error(@NonNull final Error e) {
@@ -122,13 +129,14 @@ public final class Logger {
     }
 
     /**
-     * Write the exception stacktrace to the error log file
+     * Write the exception stacktrace to the error log file.
      * Will use e.getLocalizedMessage()
      *
      * @param e       The exception to log
      * @param message extra message
      */
-    public static void error(@Nullable final Exception e, @NonNull final String message) {
+    public static void error(@Nullable final Exception e,
+                             @NonNull final String message) {
         String now = DATE_FORMAT.format(new Date());
         String exMsg = null;
         StringWriter stacktrace = new StringWriter();
@@ -142,13 +150,13 @@ public final class Logger {
         if (e instanceof DebugStackTrace) {
             error = exMsg;
         } else {
-            error = "ERROR|An Exception/Error Occurred @ " + now + '\n' +
-                (exMsg != null ? exMsg + '\n' : "") +
-                "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n" +
-                message + '\n';
+            error = "ERROR|An Exception/Error Occurred @ " + now + '\n'
+                    + (exMsg != null ? exMsg + '\n' : "")
+                    + "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n"
+                    + message + '\n';
         }
-        // Log the exception to the console in full when in debug, but only the message when deployed.
-        // Either way, the exception will be in the physical logfile.
+        // Log the exception to the console in full when in debug, but only the message
+        // when deployed. Either way, the exception will be in the physical logfile.
         if (/* always log */ BuildConfig.DEBUG) {
             Log.e(TAG, error + stacktrace);
         } else {
@@ -161,16 +169,19 @@ public final class Logger {
 
     private static void writeToErrorLog(@NonNull final String message) {
         try {
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
+            BufferedWriter out = new BufferedWriter(
+                    new OutputStreamWriter(
+                            new FileOutputStream(StorageUtils.getErrorLog()), UTF8), OUTPUT_BUFFER);
             out.write(message);
             out.close();
         } catch (Exception ignored) {
-            // do nothing - we can't log an error in the error logger. (and we don't want to CF the app)
+            // do nothing - we can't log an error in the error logger.
+            // (and we don't want to CF the app)
         }
     }
 
     /**
-     * Clear the error log each time the app is started; preserve previous if non-empty
+     * Clear the error log each time the app is started; preserve previous if non-empty.
      */
     public static void clearLog() {
         try {
@@ -183,31 +194,27 @@ public final class Logger {
             } catch (Exception ignore) {
                 // Ignore backup failure...
             }
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(StorageUtils.getErrorLog()), "utf8"), 8192);
+            BufferedWriter out = new BufferedWriter(
+                    new OutputStreamWriter(
+                            new FileOutputStream(StorageUtils.getErrorLog()), UTF8), OUTPUT_BUFFER);
             out.write("");
             out.close();
         } catch (Exception ignore) {
-            // do nothing - we can't log an error in the error logger. (and we don't want to CF the app)
+            // do nothing - we can't log an error in the error logger.
+            // (and we don't want to CF the app)
         }
     }
 
-    private static class DebugStackTrace extends RuntimeException {
+    private static class DebugStackTrace
+            extends RuntimeException {
 
-        public DebugStackTrace() {
+        private static final long serialVersionUID = 5549905921391722588L;
+
+        DebugStackTrace() {
         }
 
-        public DebugStackTrace(final String message) {
-            super(message);
-        }
-
-        public DebugStackTrace(final String message,
-                               final Throwable cause) {
-            super(message, cause);
-        }
-
-        public DebugStackTrace(final Throwable cause) {
+        DebugStackTrace(final Throwable cause) {
             super(cause);
         }
-
     }
 }

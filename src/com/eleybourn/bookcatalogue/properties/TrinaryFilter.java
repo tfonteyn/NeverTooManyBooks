@@ -1,10 +1,11 @@
-package com.eleybourn.bookcatalogue.booklist.filters;
+package com.eleybourn.bookcatalogue.properties;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.annotation.StringRes;
 
+import com.eleybourn.bookcatalogue.booklist.filters.Filter;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.properties.ListOfIntegerValuesProperty;

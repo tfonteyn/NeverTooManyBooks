@@ -3,18 +3,22 @@ package com.eleybourn.bookcatalogue.settings;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.eleybourn.bookcatalogue.R;
-
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceScreen;
+
+import com.eleybourn.bookcatalogue.R;
 
 /**
  * Global settings page.
  */
-public class GlobalSettingsFragment extends BaseSettingsFragment implements
+public class GlobalSettingsFragment
+        extends BaseSettingsFragment
+        implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
-    public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
         PreferenceScreen screen = getPreferenceScreen();

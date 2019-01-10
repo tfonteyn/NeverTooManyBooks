@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.backup.csv;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
@@ -11,43 +13,52 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
-
 /**
  * Class to handle import in a separate thread.
  *
  * @author Philip Warner
  */
 public class CsvImportTask
-    extends ManagedTask {
+        extends ManagedTask {
 
     @NonNull
     private final ImportSettings mSettings;
     @NonNull
     private final Importer.CoverFinder mCoverFinder;
     private final Importer.ImportListener mImportListener =
-        new Importer.ImportListener() {
+            new Importer.ImportListener() {
 
-            @Override
-            public void onProgress(@NonNull final String message,
-                                   final int position) {
-                if (position > 0) {
-                    mTaskManager.sendTaskProgressMessage(CsvImportTask.this, message, position);
-                } else {
-                    mTaskManager.sendHeaderTaskProgressMessage(message);
+                /**
+                 *
+                 * @param message  to display
+                 * @param position absolute position for the progress counter
+                 */
+                @Override
+                public void onProgress(@NonNull final String message,
+                                       final int position) {
+                    if (position > 0) {
+                        mTaskManager.sendTaskProgressMessage(CsvImportTask.this,
+                                                             message, position);
+                    } else {
+                        mTaskManager.sendHeaderTaskProgressMessage(message);
+                    }
                 }
-            }
 
-            @Override
-            public boolean isCancelled() {
-                return CsvImportTask.this.isCancelled();
-            }
 
-            @Override
-            public void setMax(final int max) {
-                mTaskManager.setMaxProgress(CsvImportTask.this, max);
-            }
-        };
+                @Override
+                public boolean isCancelled() {
+                    return CsvImportTask.this.isCancelled();
+                }
+
+                /**
+                 *
+                 * @param max value (can be estimated) for the progress counter
+                 */
+                @Override
+                public void setMax(final int max) {
+                    mTaskManager.setMaxProgress(CsvImportTask.this, max);
+                }
+            };
 
     @NonNull
     private final CsvImporter mImporter;

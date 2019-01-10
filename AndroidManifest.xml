@@ -114,9 +114,6 @@
         <!-- AdminActivity: Edit book list styles -->
         <activity android:name=".settings.PreferredStylesActivity" />
         <activity
-            android:name=".booklist.EditBooklistStyleActivity"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
             android:name=".booklist.EditBooklistStyleGroupsActivity" >
             <intent-filter>
                 <action android:name="BooklistStyleGroups.EDIT" />

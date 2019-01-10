@@ -27,29 +27,39 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
- * Validator to apply a default value and validate as Boolean
+ * Validator to apply a default value and validate as Boolean.
  *
  * @author Philip Warner
  */
-public class BooleanValidator extends DefaultFieldValidator {
+public class BooleanValidator
+        extends DefaultFieldValidator {
+
     public BooleanValidator() {
         super();
     }
 
+    /**
+     * Constructor with default value.
+     *
+     * @param defaultValue Default to apply
+     */
     public BooleanValidator(@NonNull final String defaultValue) {
         super(defaultValue);
     }
 
     @Override
     @CallSuper
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data,
+                         @NonNull final Datum datum,
+                         final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
             return;
         }
-        if (crossValidating)
+        if (crossValidating) {
             return;
+        }
 
         super.validate(data, datum, false);
         try {
@@ -59,7 +69,7 @@ public class BooleanValidator extends DefaultFieldValidator {
                 value = (Boolean) o;
             } else if (o instanceof Integer) {
                 value = (((Integer) o) != 0);
-            } else if (o != null){
+            } else if (o != null) {
                 String s = o.toString();
                 value = Datum.toBoolean(s, true);
             } else {
@@ -67,7 +77,8 @@ public class BooleanValidator extends DefaultFieldValidator {
             }
             data.putBoolean(datum, value);
         } catch (RuntimeException e) {
-            throw new ValidatorException(R.string.vldt_boolean_expected, new Object[]{datum.getKey()});
+            throw new ValidatorException(R.string.vldt_boolean_expected,
+                                         new Object[]{datum.getKey()});
         }
     }
 }

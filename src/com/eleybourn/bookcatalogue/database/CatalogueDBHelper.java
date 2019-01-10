@@ -514,7 +514,7 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
                         // de-serializing will in effect write out the preference file.
                         style = SerializationUtils.deserializeObject(blob);
                         // update db with the newly created prefs file name.
-                        db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES + " SET " + DOM_UUID + "='" + style.uuid + "' WHERE " + DOM_PK_ID + '=' + id);
+                        db.execSQL("UPDATE " + TBL_BOOKLIST_STYLES + " SET " + DOM_UUID + "='" + style.getUuid() + "' WHERE " + DOM_PK_ID + '=' + id);
 
                     } catch (RTE.DeserializationException e) {
                         Logger.error(e, "BooklistStyle id=" + id);
@@ -528,7 +528,7 @@ public class CatalogueDBHelper extends SQLiteOpenHelper {
             /* all books with a list price are assumed to be USD based on the only search up to v82
              * being Amazon US (via proxy... so this is my best guess).
              *
-             * FIXME if a user has manually edited the list price, can we scan for currencies ?
+             * FIXME: if a user has manually edited the list price, can we scan for currencies ?
              *
              * set all rows which have a price, to being in USD. Does not change the price field.
              */

@@ -31,22 +31,31 @@ import com.eleybourn.bookcatalogue.datamanager.Datum;
  *
  * @author Philip Warner
  */
-public class IntegerValidator extends DefaultFieldValidator {
+public class IntegerValidator
+        extends DefaultFieldValidator {
 
+    /**
+     * Constructor with default value.
+     *
+     * @param defaultValue Default to apply
+     */
     public IntegerValidator(@NonNull final String defaultValue) {
         super(defaultValue);
     }
 
     @Override
     @CallSuper
-    public void validate(@NonNull final DataManager data, @NonNull final Datum datum, final boolean crossValidating)
+    public void validate(@NonNull final DataManager data,
+                         @NonNull final Datum datum,
+                         final boolean crossValidating)
             throws ValidatorException {
         if (datum.isHidden()) {
             // No validation required for invisible fields
             return;
         }
-        if (crossValidating)
+        if (crossValidating) {
             return;
+        }
 
         super.validate(data, datum, false);
         try {
@@ -60,7 +69,8 @@ public class IntegerValidator extends DefaultFieldValidator {
             }
             data.putInt(datum, value);
         } catch (NumberFormatException e) {
-            throw new ValidatorException(R.string.vldt_integer_expected, new Object[]{datum.getKey()});
+            throw new ValidatorException(R.string.vldt_integer_expected,
+                                         new Object[]{datum.getKey()});
         }
     }
 }

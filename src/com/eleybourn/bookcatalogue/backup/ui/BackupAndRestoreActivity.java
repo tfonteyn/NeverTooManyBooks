@@ -26,6 +26,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -49,16 +53,14 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import java.io.File;
 import java.util.Objects;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Lets the user choose an archive file to backup to, or import from.
  *
  * @author pjw
  */
-public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
+public class BackupAndRestoreActivity
+        extends FileChooserBaseActivity
+        implements
         ImportDialogFragment.OnImportTypeSelectionDialogResultsListener,
         ExportDialogFragment.OnExportTypeSelectionDialogResultsListener {
 
@@ -66,7 +68,8 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
      * ID's to use when kicking of the tasks for doing a backup or restore.
      * We get it back in {@link #onTaskFinished} so we know the type of task.
      *
-     * Note: could use {@link #isSave()} of course. But keeping it future proof. Option 3 ? cloud ? etc....
+     * Note: could use {@link #isSave()} of course. But keeping it future proof.
+     * Option 3 ? cloud ? etc....
      */
     private static final int TASK_ID_SAVE_TO_ARCHIVE = 1;
     private static final int TASK_ID_READ_FROM_ARCHIVE = 2;
@@ -86,14 +89,15 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
     }
 
     /**
-     * Setup the default file name: blank for 'open', date-based for save.
+     * @return the default file name: blank for 'open', date-based for save.
      */
     @NonNull
     private String getDefaultFileName() {
         if (isSave()) {
             final String sqlDate = DateUtils.localSqlDateForToday();
             return BackupFileDetails.ARCHIVE_PREFIX +
-                    sqlDate.replace(" ", "-").replace(":", "") +
+                    sqlDate.replace(" ", "-")
+                           .replace(":", "") +
                     BackupFileDetails.ARCHIVE_EXTENSION;
         } else {
             return "";
@@ -108,10 +112,10 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
     @Override
     protected FileChooserFragment getChooserFragment() {
         String lastBackupFile = Prefs.getString(BackupManager.PREF_LAST_BACKUP_FILE,
-                StorageUtils.getSharedStorage().getAbsolutePath());
+                                                StorageUtils.getSharedStorage().getAbsolutePath());
 
         return FileChooserFragment.newInstance(new File(Objects.requireNonNull(lastBackupFile)),
-                getDefaultFileName());
+                                               getDefaultFileName());
     }
 
     /**
@@ -124,7 +128,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
     }
 
     /**
-     * After a file was selected, offer the user to:
+     * After a file was selected, ask the user for the next action.
      * - import
      * - cancel
      * - options
@@ -138,24 +142,28 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
                 .setMessage(R.string.import_option_info_all_books)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
                         // User wants to import all.
                         importSettings.what = ImportSettings.ALL;
-                        BackupManager.restore(BackupAndRestoreActivity.this, TASK_ID_READ_FROM_ARCHIVE, importSettings);
+                        BackupManager.restore(BackupAndRestoreActivity.this,
+                                              TASK_ID_READ_FROM_ARCHIVE, importSettings);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
                         dialog.dismiss();
                     }
                 })
                 .setNeutralButton(R.string.btn_options, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
                         // User wants to tune settings first.
                         ImportDialogFragment.newInstance(importSettings)
-                                .show(getSupportFragmentManager(), null);
+                                            .show(getSupportFragmentManager(), null);
                     }
                 })
                 .create();
@@ -163,7 +171,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
     }
 
     /**
-     * User has set his choices for import... kick of the restore task
+     * User has set his choices for import... kick of the restore task.
      */
     @Override
     public void onImportTypeSelectionDialogResult(@NonNull final ImportSettings settings) {
@@ -186,24 +194,29 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
                 .setMessage(R.string.export_info_backup_all)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
                         // User wants to backup all.
                         exportSettings.what = ExportSettings.ALL;
-                        BackupManager.backup(BackupAndRestoreActivity.this, TASK_ID_SAVE_TO_ARCHIVE, exportSettings);
+                        BackupManager.backup(BackupAndRestoreActivity.this,
+                                             TASK_ID_SAVE_TO_ARCHIVE,
+                                             exportSettings);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(@NonNull final DialogInterface dialog,
+                                        final int which) {
                         dialog.dismiss();
                     }
                 })
                 .setNeutralButton(R.string.btn_options, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
                         // User wants to tune settings first.
                         ExportDialogFragment.newInstance(exportSettings)
-                                .show(getSupportFragmentManager(), null);
+                                            .show(getSupportFragmentManager(), null);
                     }
                 })
                 .create();
@@ -212,7 +225,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
     }
 
     /**
-     * User has set his choices for backup... check them, and kick of the backup task
+     * User has set his choices for backup... check them, and kick of the backup task.
      */
     @Override
     public void onExportTypeSelectionDialogResult(@NonNull final ExportSettings settings) {
@@ -238,7 +251,7 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
         BackupManager.backup(this, TASK_ID_SAVE_TO_ARCHIVE, settings);
     }
 
-    /** the import/export has finished */
+    /** the import/export has finished. */
     @Override
     public void onTaskFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                                final int taskId,
@@ -250,15 +263,13 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
 
         // Is it a task we care about?
         switch (taskId) {
-            case TASK_ID_SAVE_TO_ARCHIVE: {
+            case TASK_ID_SAVE_TO_ARCHIVE:
                 handleSaveToArchiveResults(success, cancelled, (ExportSettings) resultSettings);
                 break;
-            }
 
-            case TASK_ID_READ_FROM_ARCHIVE: {
+            case TASK_ID_READ_FROM_ARCHIVE:
                 handleReadFromArchiveResults(success, cancelled, (ImportSettings) resultSettings);
                 break;
-            }
         }
     }
 
@@ -274,7 +285,8 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
                     .setMessage(msg)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(final DialogInterface dialog, final int which) {
+                        public void onClick(final DialogInterface dialog,
+                                            final int which) {
                             // Just return; user may want to try again
                             dialog.dismiss();
                         }
@@ -293,10 +305,14 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
         }
         // see if there are any pre-200 preferences that need migrating.
         if ((resultSettings.what & ImportSettings.PREFERENCES) != 0) {
-            Prefs.migratePreV200preferences(BookCatalogueApp.getAppContext()
-                    .getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE).getAll()
+            Prefs.migratePreV200preferences(
+                    BookCatalogueApp.getAppContext()
+                                    .getSharedPreferences("bookCatalogue",
+                                                          Context.MODE_PRIVATE).getAll()
             );
-            BookCatalogueApp.getAppContext().getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE).edit().clear().apply();
+            BookCatalogueApp.getAppContext()
+                            .getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE)
+                            .edit().clear().apply();
 
         }
 
@@ -306,7 +322,8 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
                 .setMessage(R.string.progress_end_import_complete)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
                         dialog.dismiss();
                         Intent data = new Intent();
                         data.putExtra(UniqueId.BKEY_IMPORT_RESULT_OPTIONS, resultSettings.what);
@@ -331,7 +348,8 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
                     .setMessage(msg)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(final DialogInterface dialog, final int which) {
+                        public void onClick(final DialogInterface dialog,
+                                            final int which) {
                             // Just return; user may want to try again
                             dialog.dismiss();
                         }
@@ -349,15 +367,16 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
         // all done
         //noinspection ConstantConditions
         String msg = getString(R.string.export_info_success_archive_details,
-                resultSettings.file.getParent(),
-                resultSettings.file.getName(),
-                Utils.formatFileSize(resultSettings.file.length()));
+                               resultSettings.file.getParent(),
+                               resultSettings.file.getName(),
+                               Utils.formatFileSize(resultSettings.file.length()));
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_backup)
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(final DialogInterface dialog,
+                                        final int which) {
                         dialog.dismiss();
                         Intent data = new Intent();
                         data.putExtra(UniqueId.BKEY_EXPORT_RESULT_OPTIONS, resultSettings.what);
@@ -370,13 +389,14 @@ public class BackupAndRestoreActivity extends FileChooserBaseActivity implements
     }
 
     /**
-     * Not needed, there is only ever one task for restore/backup
+     * Not needed, there is only ever one task for restore/backup.
      */
     @Override
     public void onAllTasksFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
                                    final int taskId,
                                    final boolean success,
                                    final boolean cancelled) {
-        // Nothing to do here; we really only care when backup tasks finish, and there's only ever one task
+        // Nothing to do here; we really only care when backup tasks finish,
+        // and there's only ever one task
     }
 }

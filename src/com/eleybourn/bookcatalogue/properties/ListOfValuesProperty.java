@@ -100,13 +100,13 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         // Setup click handlers for view and edit button
         root.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(@NonNull View view) {
-                handleClick(view, inflater);
+            public void onClick(@NonNull final View v) {
+                handleClick(v, inflater);
             }
         });
         root.findViewById(R.id.btn_edit).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View /* the button view */ view) {
+            public void onClick(@NonNull final View /* the button view */ v) {
                 // note we use the 'root' here. We're editing the property and not the "button"
                 handleClick(root, inflater);
             }
@@ -273,7 +273,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
     }
 
     /**
-     * Class to represent a collection of list entries for a list-of-values property
+     * Represents a collection of list entries for a list-of-values property.
      *
      * @param <T> Underlying ListEntry data type.
      *
@@ -283,7 +283,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         private static final long serialVersionUID = 4578945419593293928L;
 
         /**
-         * Utility to make adding items easier.
+         * Add items easier.
          *
          * @param value    Underlying value
          * @param stringId String ID of description

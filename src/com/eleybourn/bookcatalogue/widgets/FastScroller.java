@@ -72,8 +72,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.SystemClock;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.MotionEvent;
@@ -85,6 +83,9 @@ import android.widget.ExpandableListView;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
 
@@ -141,7 +142,8 @@ public class FastScroller {
     private SectionIndexerV2 mSectionIndexerV2; // our own
     private boolean mChangedBounds;
 
-    FastScroller(@NonNull final Context context, @NonNull final AbsListView listView) {
+    FastScroller(@NonNull final Context context,
+                 @NonNull final AbsListView listView) {
         mList = listView;
         int overlaySize;
         // Determine the overlay size based on 3xLargeTextSize; if
@@ -221,7 +223,8 @@ public class FastScroller {
         mPaint.setTextSize(mOverlaySize / 3);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
-        TypedArray ta = context.getTheme().obtainStyledAttributes(new int[]{android.R.attr.textColorPrimary});
+        TypedArray ta = context.getTheme().obtainStyledAttributes(
+                new int[]{android.R.attr.textColorPrimary});
         ColorStateList csl = ta.getColorStateList(ta.getIndex(0));
         // is there ever a null situation ?
         if (csl != null) {
@@ -310,22 +313,24 @@ public class FastScroller {
 
             // Draw the first line
             final String text1 = TextUtils.ellipsize(line1, paint,
-                    (mOverlayPos.right - mOverlayPos.left) * 0.8f, TextUtils.TruncateAt.END).toString();
+                                                     (mOverlayPos.right - mOverlayPos.left) * 0.8f,
+                                                     TextUtils.TruncateAt.END).toString();
             canvas.drawText(text1, (int) (rectF.left + rectF.right) / 2,
-                    // Base of text at: (middle) + (half text height) - descent : so it is vertically centred
-                    (int) (rectF.bottom + rectF.top) / 2 + mOverlaySize / 6 - descent,
-                    paint);
+                            // Base of text at: (middle) + (half text height) - descent : so it is vertically centred
+                            (int) (rectF.bottom + rectF.top) / 2 + mOverlaySize / 6 - descent,
+                            paint);
 
             if (has2Lines) {
                 // Draw the second line, but smaller than first
                 float s = paint.getTextSize();
                 paint.setTextSize(s * 0.7f);
                 final String text2 = TextUtils.ellipsize(line2, paint,
-                        (mOverlayPos.right - mOverlayPos.left) * 0.8f, TextUtils.TruncateAt.END).toString();
+                                                         (mOverlayPos.right - mOverlayPos.left) * 0.8f,
+                                                         TextUtils.TruncateAt.END).toString();
                 canvas.drawText(text2, (int) (rectF.left + rectF.right) / 2,
-                        // Base of text at: (middle) + (half text height) - descent : so it is vertically centred
-                        (int) (rectF.bottom + rectF.top) / 2 + mOverlaySize / 6 + s,
-                        paint);
+                                // Base of text at: (middle) + (half text height) - descent : so it is vertically centred
+                                (int) (rectF.bottom + rectF.top) / 2 + mOverlaySize / 6 + s,
+                                paint);
                 paint.setTextSize(s);
             }
 
@@ -338,7 +343,8 @@ public class FastScroller {
         }
     }
 
-    void onSizeChanged(final int w, final int h) {
+    void onSizeChanged(final int w,
+                       final int h) {
         mThumbDrawable.setBounds(w - mThumbW, 0, w, mThumbH);
         final RectF pos = mOverlayPos;
         // Now, Make it 75% of total available space
@@ -347,10 +353,12 @@ public class FastScroller {
         pos.top = h / 10; // 10% from top
         pos.bottom = pos.top + mOverlaySize;
         mOverlayDrawable.setBounds((int) pos.left, (int) pos.top,
-                (int) pos.right, (int) pos.bottom);
+                                   (int) pos.right, (int) pos.bottom);
     }
 
-    void onScroll(final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
+    void onScroll(final int firstVisibleItem,
+                  final int visibleItemCount,
+                  final int totalItemCount) {
         // Are there enough pages to require fast scroll? Recompute only if total count changes
         if (mItemCount != totalItemCount && visibleItemCount > 0) {
             mItemCount = totalItemCount;
@@ -500,7 +508,7 @@ public class FastScroller {
                     } else if (newThumbY + mThumbH > viewHeight) {
                         newThumbY = viewHeight - mThumbH;
                     }
-                    // ENHANCE would be nice to use ViewConfiguration.get(context).getScaledTouchSlop()???
+                    // ENHANCE: would be nice to use ViewConfiguration.get(context).getScaledTouchSlop()???
                     if (Math.abs(mThumbY - newThumbY) < 2) {
                         return true;
                     }
@@ -521,11 +529,13 @@ public class FastScroller {
      * than having to build a huge index at start.
      */
     public interface SectionIndexerV2 {
+
         @Nullable
         String[] getSectionTextForPosition(final int position);
     }
 
-    class ScrollFade implements Runnable {
+    class ScrollFade
+            implements Runnable {
 
         static final int ALPHA_MAX = 208;
         static final long FADE_DURATION = 200;

@@ -53,34 +53,36 @@ import androidx.annotation.NonNull;
  */
 public class TarBackupContainer implements BackupContainer {
 
-    /** UNICODE stream type for read/write text files */
+    /** UNICODE stream type for read/write text files. */
     public static final String UTF8 = "utf8";
-    /** Buffer size for buffered streams */
+    /** Buffer size for buffered streams. */
     public static final int BUFFER_SIZE = 32768;
 
-    /** archives are written in this version */
+    /** archives are written in this version. */
     public static final int VERSION_WRITTEN = 2;
-    /** we can still read archives frm this version and up */
+    /** we can still read archives from this version and up to our current version */
     public static final int VERSION_READ = 1;
 
-    /** Always first entry; Used in the storage and identification of data store in TAR file */
+    /** Always first entry; Used in the storage and identification of data store in TAR file. */
     static final String INFO_FILE = "INFO.xml";
-    /** Used in the storage and identification of data store in TAR file */
-    static final Pattern INFO_PATTERN = Pattern.compile("^INFO_.*\\.xml$", Pattern.CASE_INSENSITIVE);
+    /** Used in the storage and identification of data store in TAR file. */
+    static final Pattern INFO_PATTERN =
+            Pattern.compile("^INFO_.*\\.xml$", Pattern.CASE_INSENSITIVE);
 
-    /** Used in the storage and identification of data store in TAR file */
+    /** Used in the storage and identification of data store in TAR file. */
     static final String BOOKS_FILE = "books.csv";
     /** Used in the storage and identification of data store in TAR file */
-    static final Pattern BOOKS_PATTERN = Pattern.compile("^books_.*\\.csv$", Pattern.CASE_INSENSITIVE);
+    static final Pattern BOOKS_PATTERN =
+            Pattern.compile("^books_.*\\.csv$", Pattern.CASE_INSENSITIVE);
 
-    /** Used in the storage and identification of data store in TAR file */
+    /** Used in the storage and identification of data store in TAR file. */
     static final String DB_FILE = "snapshot.db";
-    /** Used in the storage and identification of data store in TAR file */
+    /** Used in the storage and identification of data store in TAR file. */
     static final String PREFERENCES = "preferences.xml";
-    /** Used in the storage and identification of data store in TAR file */
+    /** Used in the storage and identification of data store in TAR file. */
     static final String STYLES = "styles.xml";
     /**
-     * archive entry that will contain xml dumps of actual tables
+     * archive entry that will contain xml dumps of actual tables.
      * For now, this is export only, cannot import yet.
      * Meant for those who want to experiment with the data on a desktop/server
      * without the need to parse csv strings
@@ -88,12 +90,12 @@ public class TarBackupContainer implements BackupContainer {
     static final String XML_DATA = "data.xml";
 
 
-    /** Backup file spec */
+    /** Backup file spec. */
     @NonNull
     private final File mFile;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public TarBackupContainer(@NonNull final File file) {
         mFile = file;
@@ -119,7 +121,7 @@ public class TarBackupContainer implements BackupContainer {
     }
 
     /**
-     * We write version 2 archives (no backwards compatibility)
+     * We write version 2 archives (no backwards compatibility).
      */
     @Override
     public int getVersion() {

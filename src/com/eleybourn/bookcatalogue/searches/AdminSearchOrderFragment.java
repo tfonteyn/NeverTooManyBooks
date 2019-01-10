@@ -10,6 +10,11 @@ import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -20,15 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 /**
  * Ideally should use {@link EditObjectListActivity} but that needs to be converted to a Fragment first.
  */
-public class AdminSearchOrderFragment extends Fragment
+public class AdminSearchOrderFragment
+        extends Fragment
         implements TouchListView.OnDropListener {
 
     public static final String TAG = "AdminSearchOrderFragment";
@@ -66,12 +67,13 @@ public class AdminSearchOrderFragment extends Fragment
 
     /**
      * Handle drop events; This is a simplified version of {@link EditObjectListActivity#onDrop}
-     *
+     * <p>
      * Lists here are 5 items or so....
      */
     @Override
     @CallSuper
-    public void onDrop(final int fromPosition, final int toPosition) {
+    public void onDrop(final int fromPosition,
+                       final int toPosition) {
         // Check if nothing to do; also avoids the nasty case where list size == 1
         if (fromPosition == toPosition) {
             return;
@@ -96,7 +98,8 @@ public class AdminSearchOrderFragment extends Fragment
         return mList;
     }
 
-    private static class SearchSiteListAdapter extends ArrayAdapter<SearchSites.Site> {
+    private static class SearchSiteListAdapter
+            extends ArrayAdapter<SearchSites.Site> {
 
         SearchSiteListAdapter(@NonNull final Context context,
                               @NonNull final List<SearchSites.Site> list) {
@@ -105,11 +108,14 @@ public class AdminSearchOrderFragment extends Fragment
 
         @NonNull
         @Override
-        public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
+        public View getView(final int position,
+                            @Nullable View convertView,
+                            @NonNull final ViewGroup parent) {
             Holder holder;
             if (convertView == null) {
                 // Not recycling, get a new View and make the holder for it.
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_edit_searchsite, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(
+                        R.layout.row_edit_searchsite, parent, false);
 
                 holder = new Holder();
                 holder.name = convertView.findViewById(R.id.name);

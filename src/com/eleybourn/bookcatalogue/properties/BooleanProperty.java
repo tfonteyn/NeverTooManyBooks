@@ -23,16 +23,17 @@ package com.eleybourn.bookcatalogue.properties;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -51,7 +52,8 @@ import java.util.Objects;
  *
  * @author Philip Warner
  */
-public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
+public class BooleanProperty
+        extends PropertyWithGlobalValue<Boolean> {
 
     private int mPositiveTextId = R.string.yes;
     private int mNegativeTextId = R.string.no;
@@ -80,7 +82,8 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
      * If your labels don't need arguments.
      * Otherwise use {@link #setTrueLabel} {@link #setFalseLabel}
      */
-    public BooleanProperty setOptionLabels(@StringRes final int positiveId, @StringRes final int negativeId) {
+    public BooleanProperty setOptionLabels(@StringRes final int positiveId,
+                                           @StringRes final int negativeId) {
         mPositiveTextId = positiveId;
         mNegativeTextId = negativeId;
         return this;
@@ -89,7 +92,8 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
     /**
      * Override the standard 'true' label
      */
-    public BooleanProperty setTrueLabel(@StringRes final int stringId, @Nullable final Object... args) {
+    public BooleanProperty setTrueLabel(@StringRes final int stringId,
+                                        @Nullable final Object... args) {
         mPositiveTextId = stringId;
         mPositiveTextArgs = args;
         return this;
@@ -98,7 +102,8 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
     /**
      * Override the standard 'false label
      */
-    public BooleanProperty setFalseLabel(@StringRes final int stringId, @Nullable final Object... args) {
+    public BooleanProperty setFalseLabel(@StringRes final int stringId,
+                                         @Nullable final Object... args) {
         mNegativeTextId = stringId;
         mNegativeTextArgs = args;
         return this;
@@ -135,7 +140,8 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
         });
         holder.cb.setOnTriStateChangeListener(new TriStateCheckBox.OnTriStateChangeListener() {
             @Override
-            public void onTriStateChange(final View v, final Boolean state) {
+            public void onTriStateChange(final View v,
+                                         final Boolean state) {
                 Holder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_PROPERTY);
                 holder.property.setValue(state);
                 holder.property.setViewValues(holder, state);
@@ -146,7 +152,8 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
     }
 
     /** Set the checkbox and text fields based on passed value */
-    private void setViewValues(@NonNull final Holder holder, @Nullable final Boolean value) {
+    private void setViewValues(@NonNull final Holder holder,
+                               @Nullable final Boolean value) {
         holder.name.setText(this.getNameResourceId());
         holder.cb.setPressed(false);
         holder.cb.setState(value);
@@ -156,9 +163,11 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
             holder.label.setText(R.string.use_default_setting);
         } else {
             if (value) {
-                holder.label.setText(BookCatalogueApp.getResourceString(mPositiveTextId, mPositiveTextArgs));
+                holder.label.setText(
+                        BookCatalogueApp.getResourceString(mPositiveTextId, mPositiveTextArgs));
             } else {
-                holder.label.setText(BookCatalogueApp.getResourceString(mNegativeTextId, mNegativeTextArgs));
+                holder.label.setText(
+                        BookCatalogueApp.getResourceString(mNegativeTextId, mNegativeTextArgs));
             }
         }
     }
@@ -237,6 +246,7 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
         super.setPreferenceKey(key);
         return this;
     }
+
     /**
      * Only implemented for chaining with correct return type
      */
@@ -253,11 +263,12 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
     }
 
     public void readFromParcel(@NonNull final Parcel in) {
-        setValue((Boolean)in.readValue(getClass().getClassLoader()));
+        setValue((Boolean) in.readValue(getClass().getClassLoader()));
     }
 
 
     private static class Holder {
+
         BooleanProperty property;
         TriStateCheckBox cb;
         TextView name;
@@ -274,7 +285,8 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
      * - listener returns the state
      * - ImageButton
      */
-    public static class TriStateCheckBox extends androidx.appcompat.widget.AppCompatImageButton {
+    public static class TriStateCheckBox
+            extends androidx.appcompat.widget.AppCompatImageButton {
 
         /** is state allowed to be null ? */
         private boolean nullable = true;
@@ -298,7 +310,7 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
          */
         private final OnClickListener privateListener = new OnClickListener() {
 
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 // cycle through the three states
                 if (state == null) {
                     setState(true);
@@ -319,12 +331,15 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
             init();
         }
 
-        public TriStateCheckBox(@NonNull final Context context, @NonNull final AttributeSet attrs) {
+        public TriStateCheckBox(@NonNull final Context context,
+                                @NonNull final AttributeSet attrs) {
             super(context, attrs);
             init();
         }
 
-        public TriStateCheckBox(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyleAttr) {
+        public TriStateCheckBox(@NonNull final Context context,
+                                @NonNull final AttributeSet attrs,
+                                final int defStyleAttr) {
             super(context, attrs, defStyleAttr);
             init();
         }
@@ -332,10 +347,6 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
         @Nullable
         public Boolean getState() {
             return state;
-        }
-
-        public void setNullable(final boolean nullable) {
-            this.nullable = nullable;
         }
 
         public void setState(@Nullable final Boolean state) {
@@ -346,6 +357,10 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
                 }
                 updateBtn();
             }
+        }
+
+        public void setNullable(final boolean nullable) {
+            this.nullable = nullable;
         }
 
         private void init() {
@@ -389,20 +404,24 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
         }
 
         public interface OnTriStateChangeListener {
-            void onTriStateChange(View v, Boolean state);
+
+            void onTriStateChange(View v,
+                                  Boolean state);
         }
 
-        static class SavedState extends BaseSavedState {
-            @SuppressWarnings("hiding")
+        static class SavedState
+                extends BaseSavedState {
+
+            /** {@link Parcelable}. */
             public static final Creator<SavedState> CREATOR =
                     new Creator<SavedState>() {
                         @Override
-                        public SavedState createFromParcel(Parcel source) {
+                        public SavedState createFromParcel(@NonNull final Parcel source) {
                             return new SavedState(source);
                         }
 
                         @Override
-                        public SavedState[] newArray(int size) {
+                        public SavedState[] newArray(final int size) {
                             return new SavedState[size];
                         }
                     };
@@ -423,12 +442,13 @@ public class BooleanProperty extends PropertyWithGlobalValue<Boolean> {
             }
 
             @Override
-            public void writeToParcel(Parcel dest, int flags) {
-                super.writeToParcel(dest, flags);
+            public void writeToParcel(@NonNull final Parcel out,
+                                      final int flags) {
+                super.writeToParcel(out, flags);
                 if (state == null) {
-                    dest.writeInt(-1);
+                    out.writeInt(-1);
                 } else {
-                    dest.writeInt(state ? 1 : 0);
+                    out.writeInt(state ? 1 : 0);
                 }
             }
 

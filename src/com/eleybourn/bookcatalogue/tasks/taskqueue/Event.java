@@ -33,15 +33,17 @@ import java.io.Serializable;
  * do not prevent the task from completing. Examples might include a long running export job
  * in which 3 items fail, but 1000 succeed -- in this case it is useful to export the successful
  * ones and report the failures later.
- *
+ * <p>
  * The Task object has a 'saveException()' method that stores the exception in the database
  * for later retrieval.
- *
+ * <p>
  * Client applications should consider subclassing this object.
  *
  * @author Philip Warner
  */
-public abstract class Event implements Serializable, BindableItemCursorAdapter.BindableItem {
+public abstract class Event
+        implements Serializable, BindableItemCursorAdapter.BindableItem {
+
     private static final long serialVersionUID = 5209097408979831308L;
 
     @NonNull
@@ -53,10 +55,12 @@ public abstract class Event implements Serializable, BindableItemCursorAdapter.B
         mDescription = description;
     }
 
-    public Event(@NonNull final String description, @Nullable final Exception e) {
+    public Event(@NonNull final String description,
+                 @Nullable final Exception e) {
         mDescription = description;
         mException = e;
     }
+
     @NonNull
     public String getDescription() {
         return mDescription;

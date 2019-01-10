@@ -11,13 +11,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 /**
- * Base for primitive object value preferences (e.g. String, Integer, ...)
+ * Base class for a generic Preference
  *
  * @param <T> type of the value to store
  */
 public abstract class PPrefBase<T>
     implements PPref<T> {
 
+    /**
+     * Copy of the style uuid this Preference belongs to.
+     * Convenience only and not locally preserved.
+     * Must be set in the constructor.
+     */
+    @Nullable
+    protected final String uuid;
     /** key for the Preference */
     @StringRes
     private final int key;
@@ -30,11 +37,14 @@ public abstract class PPrefBase<T>
 
     /**
      * @param key          key of preference
+     * @param uuid         of the style
      * @param defaultValue in memory default
      */
     PPrefBase(@StringRes final int key,
+              @Nullable final String uuid,
               @NonNull final T defaultValue) {
         this.key = key;
+        this.uuid = uuid;
         this.defaultValue = defaultValue;
     }
 
@@ -45,7 +55,7 @@ public abstract class PPrefBase<T>
     }
 
     @Override
-    public void remove(@Nullable final String uuid) {
+    public void remove() {
         if (uuid != null) {
             Prefs.getPrefs(uuid).edit().remove(getKey()).apply();
         }
@@ -57,8 +67,7 @@ public abstract class PPrefBase<T>
      * Stores the value as a String
      */
     @Override
-    public void set(@Nullable final String uuid,
-                    @Nullable final T value) {
+    public void set(@Nullable final T value) {
         if (uuid == null) {
             nonPersistedValue = value;
         } else if (value == null) {
@@ -84,18 +93,16 @@ public abstract class PPrefBase<T>
     }
 
     @Override
-    public void set(@Nullable final String uuid,
-                    @NonNull final Parcel in) {
+    public void set(@NonNull final Parcel in) {
         //noinspection unchecked
         T tmp = (T) in.readValue(getClass().getClassLoader());
         if (tmp != null) {
-            set(uuid, tmp);
+            set(tmp);
         }
     }
 
     @Override
-    public void writeToParcel(@Nullable final String uuid,
-                              @NonNull final Parcel dest) {
+    public void writeToParcel(@NonNull final Parcel dest) {
         if (uuid == null) {
             // builtin ? then write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
@@ -103,7 +110,7 @@ public abstract class PPrefBase<T>
         } else {
             // write the actual value, this could be the default if we have no value, but that
             // is what we want for user-defined styles anyhow.
-            dest.writeValue(get(uuid));
+            dest.writeValue(get());
         }
     }
 

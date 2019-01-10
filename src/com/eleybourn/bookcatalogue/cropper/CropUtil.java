@@ -284,7 +284,7 @@ final class CropUtil {
 //	public static synchronized OnClickListener getNullOnClickListener() {
 //		if (sNullOnClickListener == null) {
 //			sNullOnClickListener = new OnClickListener() {
-//				public void onClick(View v) {
+//				public void onClick(@NonNull final View v) {
 //				}
 //			};
 //		}

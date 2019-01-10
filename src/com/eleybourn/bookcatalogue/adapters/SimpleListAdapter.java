@@ -20,10 +20,6 @@
 package com.eleybourn.bookcatalogue.adapters;
 
 import android.content.Context;
-import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,41 +27,45 @@ import android.view.ViewParent;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.List;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 /**
- * TODO: RecyclerView
+ * TODO: RecyclerView.
  * If you are considering using array adapter with a ListView, consider using
  * {@link RecyclerView} instead.
  * RecyclerView offers similar features with better performance and more flexibility than
  * ListView provides.
  * See the
  * <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview.html">
- * Recycler View</a> guide.</p>
- *
+ * Recycler View</a> guide.
+ * <p>
  * {@link ArrayAdapter} to manage rows of an arbitrary type with row movement via clicking
  * on predefined sub-views, if present.
- *
+ * <p>
  * The layout must have the top id of:
  * <pre>
  *    SLA_ROW  {@link #onRowClick}, unless SLA_ROW_DETAILS is defined.
  * </pre>
- *
+ * <p>
  * The layout can optionally contain these "@+id/"  which will trigger the listed methods
  * <pre>
  *    SLA_ROW_DETAILS     {@link #onRowClick}
  *    SLA_ROW_DELETE      {@link #onRowDelete}
  * </pre>
- *
+ * <p>
  * SLA_ROW is the complete row, SLA_ROW_DETAIL is a child of SLA_ROW.
  * So you should never have a SLA_ROW_DETAIL without an enclosing SLA_ROW element
- *
+ * <p>
  * ids.xml has these predefined:
  * <pre>
  *     <item name="SLA_ROW" type="id" />
@@ -73,18 +73,20 @@ import androidx.recyclerview.widget.RecyclerView;
  *     <item name="SLA_ROW_DELETE" type="id"/>
  *     <item name="SLA_ROW_POSITION" type="id"/>
  *     <item name="SLA_ROW_POSITION_TAG" type="id" />
- * 	</pre>
+ *  </pre>
  *
  * @author Philip Warner
  */
-public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
+public abstract class SimpleListAdapter<T>
+        extends ArrayAdapter<T> {
+
     @LayoutRes
     private final int mRowViewId;
 
     @NonNull
     private final View.OnClickListener mRowClickListener = new View.OnClickListener() {
         @Override
-        public void onClick(@NonNull View v) {
+        public void onClick(@NonNull final View v) {
             try {
                 int pos = getViewRow(v);
                 T item = getItem(pos);
@@ -100,7 +102,7 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     @NonNull
     private final View.OnClickListener mRowDeleteListener = new View.OnClickListener() {
         @Override
-        public void onClick(@NonNull View v) {
+        public void onClick(@NonNull final View v) {
             try {
                 int pos = getViewRow(v);
                 T item = getItem(pos);
@@ -115,13 +117,14 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
         }
     };
 
-    // Options fields to (slightly) optimize lookups and prevent looking for fields that are not there.
-    private boolean mCheckedFields = false;
-    private boolean mHasPosition = false;
-    private boolean mHasDelete = false;
+    // Options fields to (slightly) optimize lookups and prevent looking for
+    // fields that are not there.
+    private boolean mCheckedFields;
+    private boolean mHasPosition;
+    private boolean mHasDelete;
 
     protected SimpleListAdapter(@NonNull final Context context,
-                                final @LayoutRes int rowViewId,
+                                @LayoutRes final int rowViewId,
                                 @NonNull final List<T> list) {
         super(context, rowViewId, list);
         mRowViewId = rowViewId;
@@ -129,17 +132,20 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
 
     @NonNull
     @Override
-    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
+    public View getView(final int position,
+                        @Nullable View convertView,
+                        @NonNull final ViewGroup parent) {
         final T item = this.getItem(position);
 
         // Get the view; if not defined, load it.
         if (convertView == null) {
-            LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
+                    Context.LAYOUT_INFLATER_SERVICE);
             // If possible, ask the object for the view ID
             @LayoutRes
             int layout;
-            if (item instanceof ViewProvider) {
-                layout = ((ViewProvider) item).getViewId();
+            if (item instanceof SimpleListAdapter.LayoutProvider) {
+                layout = ((LayoutProvider) item).getLayoutId();
             } else {
                 layout = mRowViewId;
             }
@@ -201,7 +207,8 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     /**
      * Called by {@link #getView} to allow children to setup extra fields.
      */
-    protected abstract void onGetView(final View convertView, final T item);
+    protected abstract void onGetView(final View convertView,
+                                      final T item);
 
     /**
      * Find the first ancestor that has the ID SLA_ROW. This will be the complete row View.
@@ -228,7 +235,9 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      *
      * @return <tt>true</tt> if delete is allowed to happen
      */
-    protected boolean onRowDelete(@NonNull final View target, @NonNull final T item, final int position) {
+    protected boolean onRowDelete(@NonNull final View target,
+                                  @NonNull final T item,
+                                  final int position) {
         return true;
     }
 
@@ -238,13 +247,15 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
      * @param target The view clicked
      * @param item   The object associated with this row
      */
-    protected void onRowClick(@NonNull final View target, @NonNull final T item, final int position) {
+    protected void onRowClick(@NonNull final View target,
+                              @NonNull final T item,
+                              final int position) {
     }
 
     /**
      * Called when the list had been modified in some way.
      * By default, tells the adapter that the list was changed
-     *
+     * <p>
      * Child classes should override when needed and call super FIRST
      */
     @CallSuper
@@ -253,10 +264,12 @@ public abstract class SimpleListAdapter<T> extends ArrayAdapter<T> {
     }
 
     /**
-     * Interface to allow underlying objects to determine their view ID.
+     * Interface to allow underlying objects to determine their layout resource id.
      */
-    public interface ViewProvider {
+    public interface LayoutProvider {
+
         @SuppressWarnings("SameReturnValue")
-        int getViewId();
+        @LayoutRes
+        int getLayoutId();
     }
 }

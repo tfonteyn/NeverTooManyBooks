@@ -24,35 +24,43 @@ package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
 import android.graphics.Point;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.ViewPager;
+
 /**
  * https://gist.github.com/devunwired/8cbe094bb7a783e37ad1
- *
+ * <p>
  * PagerLayout: A layout that displays a ViewPager with its children that are outside
  * the typical pager bounds.
  */
-public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeListener {
+public class PagerLayout
+        extends FrameLayout
+        implements ViewPager.OnPageChangeListener {
 
+    private final Point mCenter = new Point();
+    private final Point mInitialTouch = new Point();
     private ViewPager mPager;
-    private boolean mNeedsRedraw = false;
+    private boolean mNeedsRedraw;
 
     public PagerLayout(@NonNull final Context context) {
         super(context);
         init();
     }
 
-    public PagerLayout(@NonNull final Context context, @NonNull final AttributeSet attrs) {
+    public PagerLayout(@NonNull final Context context,
+                       @NonNull final AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public PagerLayout(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
+    public PagerLayout(@NonNull final Context context,
+                       @NonNull final AttributeSet attrs,
+                       final int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -61,7 +69,8 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
         //Disable clipping of children so non-selected pages are visible
         setClipChildren(false);
 
-        //RELEASE: Child clipping doesn't work with hardware acceleration in Android 3.x/4.x => is this still relevant ? or just remove this comment ?
+        //RELEASE: Child clipping doesn't work with hardware acceleration in Android 3.x/4.x
+        // => is this still relevant ? or just remove this comment ?
         //You need to set this value here if using hardware acceleration in an
         // application targeted at these releases.
 
@@ -84,11 +93,11 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
         return mPager;
     }
 
-    private final Point mCenter = new Point();
-    private final Point mInitialTouch = new Point();
-
     @Override
-    protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
+    protected void onSizeChanged(final int w,
+                                 final int h,
+                                 final int oldw,
+                                 final int oldh) {
         mCenter.x = w / 2;
         mCenter.y = h / 2;
     }
@@ -97,30 +106,34 @@ public class PagerLayout extends FrameLayout implements ViewPager.OnPageChangeLi
     public boolean onTouchEvent(@NonNull final MotionEvent event) {
         //We capture any touches not already handled by the ViewPager
         // to implement scrolling from a touch outside the pager bounds.
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mInitialTouch.x = (int) event.getX();
-                mInitialTouch.y = (int) event.getY();
-            default:
-                event.offsetLocation(mCenter.x - mInitialTouch.x, mCenter.y - mInitialTouch.y);
-                break;
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            mInitialTouch.x = (int) event.getX();
+            mInitialTouch.y = (int) event.getY();
+
         }
+        event.offsetLocation(mCenter.x - mInitialTouch.x,
+                             mCenter.y - mInitialTouch.y);
 
         return mPager.dispatchTouchEvent(event);
     }
 
     @Override
-    public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
+    public void onPageScrolled(final int position,
+                               final float positionOffset,
+                               final int positionOffsetPixels) {
         //Force the container to redraw on scrolling.
         //Without this the outer pages render initially and then stay static
-        if (mNeedsRedraw) invalidate();
+        if (mNeedsRedraw) {
+            invalidate();
+        }
     }
 
     @Override
-    public void onPageSelected(final int position) { }
+    public void onPageSelected(final int position) {
+    }
 
     @Override
-    public void onPageScrollStateChanged(int state) {
+    public void onPageScrollStateChanged(final int state) {
         mNeedsRedraw = (state != ViewPager.SCROLL_STATE_IDLE);
     }
 }

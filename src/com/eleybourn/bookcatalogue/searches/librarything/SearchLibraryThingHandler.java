@@ -2,6 +2,9 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -13,13 +16,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 /**
  * Parser Handler to collect the book data.
  * Search LibraryThing for an ISBN using the Web API.
- *
+ * <p>
  * A typical (and thorough) LibraryThing ISBN response looks like:
  *
  * <pre>
@@ -292,7 +292,7 @@ import androidx.annotation.NonNull;
  * </response>
  *
  * </pre>
- *
+ * <p>
  * A less well-known work produces rather less data:
  *
  * <pre>
@@ -312,29 +312,30 @@ import androidx.annotation.NonNull;
  *
  * @author Philip Warner
  */
-class SearchLibraryThingHandler extends DefaultHandler {
+class SearchLibraryThingHandler
+        extends DefaultHandler {
 
     /**
-     * LibraryThing extra field "placesmentioned"
-     *
+     * LibraryThing extra field "placesmentioned".
+     * <p>
      * * <fact>Mercury</fact>
      * * <fact>New York, New York, USA</fact>
      * * <fact>Roosevelt Building</fact>
      */
     private static final String LT_PLACES = "__places";
     /**
-     * LibraryThing extra field "characternames"
-     *
+     * LibraryThing extra field "characternames".
+     * <p>
      * * <fact>Susan Calvin</fact>
      * * <fact>Cutie (QT1)</fact>
      * * <fact>Gregory Powell</fact>
      */
     private static final String LT_CHARACTERS = "__characters";
     /**
-     * LibraryThing extra field "originalpublicationdate"
-     *
+     * LibraryThing extra field "originalpublicationdate".
+     * <p>
      * The format of these entries is probably not a standard. TODO: get more examples first.
-     *
+     * <p>
      * * <fact>1950 (Collection)</fact>
      * * <fact>1944 (Catch that Rabbit)</fact>
      * * <fact>1945 (Escape!)</fact>
@@ -343,44 +344,44 @@ class SearchLibraryThingHandler extends DefaultHandler {
      */
     private static final String LT_ORIG_PUB_DATE = "__originalpublicationdate";
 
-    /** some common XML attributes */
+    /** some common XML attributes. */
     private static final String XML_ATTR_ID = "id";
     private static final String XML_ATTR_TYPE = "type";
     private static final String XML_ATTR_NAME = "name";
 
-    /** XML tags we look for */
+    /** XML tags we look for. */
     //private static final String XML_RESPONSE = "response";
     private static final String XML_AUTHOR = "author";
-    /** <item id="5196084" type="work"> */
+    /** <item id="5196084" type="work">. */
     private static final String XML_ITEM = "item";
-    /** a 'field' (see below) */
+    /** a 'field' (see below). */
     private static final String XML_FIELD = "field";
-    /** a 'fact' in a 'factlist' of a 'field' */
+    /** a 'fact' in a 'factlist' of a 'field'. */
     private static final String XML_FACT = "fact";
-    /** fields */
+    /** fields. */
     private static final String XML_FIELD_23_SERIES = "series";
     private static final String XML_FIELD_21_CANONICAL_TITLE = "canonicaltitle";
 
     private static final String XML_FIELD_02_PLACES = "placesmentioned";
     private static final String XML_FIELD_03_CHARACTERS = "characternames";
     private static final String XML_FIELD_16_ORIG_PUB_DATE = "originalpublicationdate";
-    /** Bundle to save results in */
+    /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
-    /** accumulate all authors for this book */
+    /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
-    /** accumulate all series for this book */
+    /** accumulate all series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
-    /** XML content */
+    /** XML content. */
     private final StringBuilder mBuilder = new StringBuilder();
     /** Current Field we're in. We need this because the actual data is always in a 'fact' tag. */
     @NonNull
     private FieldTypes mFieldType = FieldTypes.Other;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param bookData Bundle to save results in
      */
@@ -399,17 +400,14 @@ class SearchLibraryThingHandler extends DefaultHandler {
     }
 
     /**
-     * (non-Javadoc)
-     *
-     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-     *
-     * Start each XML element. Specifically identify when we are in the item element and set the appropriate flag.
+     * Start each XML element. Specifically identify when we are in the item
+     * element and set the appropriate flag.
      */
     @Override
     @CallSuper
-    public void startElement(final String uri,
+    public void startElement(@NonNull final String uri,
                              @NonNull final String localName,
-                             final String qName,
+                             @NonNull final String qName,
                              @NonNull final Attributes attributes)
             throws SAXException {
         super.startElement(uri, localName, qName, attributes);
@@ -436,7 +434,8 @@ class SearchLibraryThingHandler extends DefaultHandler {
             }
         } else if (localName.equalsIgnoreCase(XML_ITEM)) {
             String type = attributes.getValue("", XML_ATTR_TYPE);
-            if ("work".equalsIgnoreCase(type)) { // leave hardcoded, it's a value for the attribute.
+            // leave hardcoded, it's a value for the attribute.
+            if ("work".equalsIgnoreCase(type)) {
                 try {
                     long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
                     mBookData.putLong(UniqueId.KEY_BOOK_LIBRARY_THING_ID, id);
@@ -444,24 +443,20 @@ class SearchLibraryThingHandler extends DefaultHandler {
                 }
             }
 //          } else if (localName.equalsIgnoreCase(XML_RESPONSE)){
-//			    // Not really much to do; we *could* look for the <err> element, then report it.
-//				String stat = attributes.get("", "stat");
+//              // Not really much to do; we *could* look for the <err> element, then report it.
+//              String stat = attributes.get("", "stat");
         }
     }
 
     /**
-     * (non-Javadoc)
-     *
-     * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
-     *
      * Populate the results Bundle for each appropriate element.
      * Also download the thumbnail and store in a tmp location
      */
     @Override
     @CallSuper
-    public void endElement(final String uri,
+    public void endElement(@NonNull final String uri,
                            @NonNull final String localName,
-                           final String qName)
+                           @NonNull final String qName)
             throws SAXException {
         super.endElement(uri, localName, qName);
 
@@ -506,7 +501,7 @@ class SearchLibraryThingHandler extends DefaultHandler {
     }
 
     /**
-     * Store the accumulated data in the results
+     * Store the accumulated data in the results.
      */
     @Override
     public void endDocument()

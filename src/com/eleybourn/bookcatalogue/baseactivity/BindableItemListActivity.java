@@ -28,6 +28,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter.BindableItemBinder;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
@@ -36,20 +42,16 @@ import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
-
 /**
  * @author pjw
  */
-public abstract class BindableItemListActivity extends BaseListActivity implements BindableItemBinder {
+public abstract class BindableItemListActivity
+        extends BaseListActivity
+        implements BindableItemBinder {
 
-    /** Cursor of book IDs */
+    /** Cursor of book IDs. */
     private BindableItemCursor mBindableItems;
-    /** Adapter for list */
+    /** Adapter for list. */
     private BindableItemCursorAdapter mListAdapter;
 
     /**
@@ -80,15 +82,23 @@ public abstract class BindableItemListActivity extends BaseListActivity implemen
 
         lv.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(@NonNull final AdapterView<?> parent, @NonNull final View view, final int position, final long id) {
-                BindableItemListActivity.this.onListItemClick(parent, view, position, id);
+            public void onItemClick(@NonNull final AdapterView<?> parent,
+                                    @NonNull final View view,
+                                    final int position,
+                                    final long id) {
+                BindableItemListActivity.this
+                        .onListItemClick(parent, view, position, id);
             }
         });
         lv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
             @Override
-            public boolean onItemLongClick(@NonNull final AdapterView<?> parent, @NonNull final View view, final int position, final long id) {
-                return BindableItemListActivity.this.onListItemLongClick(parent, view, position, id);
+            public boolean onItemLongClick(@NonNull final AdapterView<?> parent,
+                                           @NonNull final View view,
+                                           final int position,
+                                           final long id) {
+                return BindableItemListActivity.this
+                        .onListItemLongClick(parent, view, position, id);
             }
         });
         Tracker.exitOnCreate(this);
@@ -113,7 +123,10 @@ public abstract class BindableItemListActivity extends BaseListActivity implemen
         Tracker.exitOnDestroy(this);
     }
 
-    protected void onListItemClick(@NonNull final AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
+    protected void onListItemClick(@NonNull final AdapterView<?> parent,
+                                   @NonNull final View v,
+                                   final int position,
+                                   final long id) {
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -126,12 +139,13 @@ public abstract class BindableItemListActivity extends BaseListActivity implemen
     }
 
     /**
-     * Utility routine to display an array of ContextDialogItems in an alert.
+     * Displays an array of ContextDialogItems in an alert.
      *
      * @param title Title of Alert
      * @param items Items to display
      */
-    protected void showContextDialogue(@SuppressWarnings("SameParameterValue") @StringRes final int title,
+    protected void showContextDialogue(@SuppressWarnings("SameParameterValue")
+                                       @StringRes final int title,
                                        @NonNull final List<ContextDialogItem> items) {
         if (items.size() > 0) {
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
@@ -141,7 +155,8 @@ public abstract class BindableItemListActivity extends BaseListActivity implemen
                     .setTitle(title)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setItems(itemArray, new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int which) {
+                        public void onClick(@NonNull final DialogInterface dialog,
+                                            final int which) {
                             itemArray[which].handler.run();
                         }
                     }).create();
@@ -149,6 +164,4 @@ public abstract class BindableItemListActivity extends BaseListActivity implemen
             dialog.show();
         }
     }
-
-
 }

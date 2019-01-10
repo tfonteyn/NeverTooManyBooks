@@ -1,13 +1,16 @@
 package com.eleybourn.bookcatalogue.datamanager;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 
-public class BooleanDataAccessor implements DataAccessor {
-    private final String key;
+public class BooleanDataAccessor
+        implements DataAccessor {
+
+    private final String mKey;
 
     public BooleanDataAccessor(@NonNull final String key) {
-        this.key = key;
+        this.mKey = key;
     }
 
     @NonNull
@@ -15,7 +18,7 @@ public class BooleanDataAccessor implements DataAccessor {
     public Boolean get(@NonNull final DataManager data,
                        @NonNull final Datum datum,
                        @NonNull final Bundle rawData) {
-        return data.getInt(key) != 0;
+        return data.getInt(mKey) != 0;
     }
 
     @Override
@@ -23,7 +26,7 @@ public class BooleanDataAccessor implements DataAccessor {
                     @NonNull final Datum datum,
                     @NonNull final Bundle rawData,
                     @NonNull final Object value) {
-        data.putBoolean(key, Datum.toBoolean(value));
+        data.putBoolean(mKey, Datum.toBoolean(value));
 
     }
 
@@ -31,7 +34,7 @@ public class BooleanDataAccessor implements DataAccessor {
     public boolean isPresent(@NonNull final DataManager data,
                              @NonNull final Datum datum,
                              @NonNull final Bundle rawData) {
-        return rawData.containsKey(key);
+        return rawData.containsKey(mKey);
     }
 
 }

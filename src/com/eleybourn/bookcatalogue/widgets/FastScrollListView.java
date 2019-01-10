@@ -22,45 +22,52 @@ package com.eleybourn.bookcatalogue.widgets;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Subclass of ListView that uses a local implementation of FastScroller to bypass
  * the deficiencies in the original Android version. See fastScroller.java for a discussion.
- *
+ * <p>
  * We need to subclass ListView because we need access to events that are only provided
  * by the subclass.
  *
  * @author Philip Warner
  */
-public class FastScrollListView extends ListView {
+public class FastScrollListView
+        extends ListView {
 
-    /** Active scroller, if any */
+    /** Active scroller, if any. */
     @Nullable
-    private FastScroller mScroller = null;
+    private FastScroller mScroller;
 
     @Nullable
-    private OnScrollListener mOnScrollListener = null;
+    private OnScrollListener mOnScrollListener;
     @Nullable
     private final OnScrollListener mOnScrollDispatcher = new OnScrollListener() {
         @Override
-        public void onScroll(@NonNull final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
+        public void onScroll(@NonNull final AbsListView view,
+                             final int firstVisibleItem,
+                             final int visibleItemCount,
+                             final int totalItemCount) {
             if (mScroller != null) {
                 mScroller.onScroll(firstVisibleItem, visibleItemCount, totalItemCount);
             }
             if (mOnScrollListener != null) {
-                mOnScrollListener.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+                mOnScrollListener.onScroll(view, firstVisibleItem, visibleItemCount,
+                                           totalItemCount);
             }
         }
 
         @Override
-        public void onScrollStateChanged(@NonNull final AbsListView view, final int scrollState) {
+        public void onScrollStateChanged(@NonNull final AbsListView view,
+                                         final int scrollState) {
             if (mOnScrollListener != null) {
                 mOnScrollListener.onScrollStateChanged(view, scrollState);
             }
@@ -75,17 +82,20 @@ public class FastScrollListView extends ListView {
         super(context);
     }
 
-    public FastScrollListView(@NonNull final Context context, @NonNull final AttributeSet attrs) {
+    public FastScrollListView(@NonNull final Context context,
+                              @NonNull final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public FastScrollListView(@NonNull final Context context, @NonNull final AttributeSet attrs, final int defStyle) {
+    public FastScrollListView(@NonNull final Context context,
+                              @NonNull final AttributeSet attrs,
+                              final int defStyle) {
         super(context, attrs, defStyle);
     }
 
     @Override
-    public void setOnScrollListener(final OnScrollListener listener) {
-        mOnScrollListener = listener;
+    public void setOnScrollListener(@NonNull final OnScrollListener l) {
+        mOnScrollListener = l;
     }
 
     /**
@@ -105,7 +115,8 @@ public class FastScrollListView extends ListView {
     @Override
     @CallSuper
     public boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
-        return mScroller != null && mScroller.onInterceptTouchEvent(ev) || super.onInterceptTouchEvent(ev);
+        return mScroller != null && mScroller.onInterceptTouchEvent(
+                ev) || super.onInterceptTouchEvent(ev);
 
     }
 
@@ -114,10 +125,13 @@ public class FastScrollListView extends ListView {
      */
     @Override
     @CallSuper
-    protected void onSizeChanged(final int width, final int height, final int oldWidth, final int oldHeight) {
-        super.onSizeChanged(width, height, oldWidth, oldHeight);
+    protected void onSizeChanged(final int w,
+                                 final int h,
+                                 final int oldw,
+                                 final int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
         if (mScroller != null) {
-            mScroller.onSizeChanged(width, height);
+            mScroller.onSizeChanged(w, h);
         }
     }
 

@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 public class ImportSettings {
 
     /*
-     * options as to *what* should be exported
+     * options as to *what* should be exported.
      */
     public static final int BOOK_CSV = 1;
     public static final int PREFERENCES = 1 << 1;
@@ -17,7 +17,8 @@ public class ImportSettings {
     //public static final int IMPORT_5 = 1 << 5;
     //public static final int IMPORT_6 = 1 << 6;
     //public static final int IMPORT_7 = 1 << 7;
-    //public static final int DATABASE = 1 << 8; // pointless to implement. Just here for mirroring export flags
+    // pointless to implement. Just here for mirroring export flags
+    //public static final int DATABASE = 1 << 8;
 
     /* Options value to indicate ALL things should be exported */
     public static final int ALL = BOOK_CSV | COVERS | BOOK_LIST_STYLES | PREFERENCES;
@@ -25,21 +26,21 @@ public class ImportSettings {
 
     /**
      * 0: all books
-     * 1: only new books and books with more recent update_date fields should be imported
+     * 1: only new books and books with more recent update_date fields should be imported.
      */
     public static final int IMPORT_ONLY_NEW_OR_UPDATED = 1 << 16;
 
     /**
-     * all defined flags
+     * all defined flags.
      */
     public static final int MASK = ALL | IMPORT_ONLY_NEW_OR_UPDATED;
     /**
-     * Bitmask
+     * Bitmask.
      */
     public int what;
 
     /**
-     * File to import from
+     * File to import from.
      */
     public File file;
 
@@ -59,6 +60,5 @@ public class ImportSettings {
     }
 
     public void validate() {
-
     }
 }

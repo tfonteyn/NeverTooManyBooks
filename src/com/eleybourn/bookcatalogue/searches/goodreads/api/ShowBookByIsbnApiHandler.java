@@ -22,6 +22,8 @@ package com.eleybourn.bookcatalogue.searches.goodreads.api;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -32,14 +34,13 @@ import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
-
 /**
  * Class to call the search.books api (using an ISBN).
  *
  * @author Philip Warner
  */
-public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
+public class ShowBookByIsbnApiHandler
+        extends ShowBookApiHandler {
 
 
     public ShowBookByIsbnApiHandler(@NonNull final GoodreadsManager manager) {
@@ -53,7 +54,8 @@ public class ShowBookByIsbnApiHandler extends ShowBookApiHandler {
      * @return the array of GoodreadsWork objects.
      */
     @NonNull
-    public Bundle get(@NonNull final String isbn, final boolean fetchThumbnail)
+    public Bundle get(@NonNull final String isbn,
+                      final boolean fetchThumbnail)
             throws NotAuthorizedException,
                    BookNotFoundException,
                    IOException {

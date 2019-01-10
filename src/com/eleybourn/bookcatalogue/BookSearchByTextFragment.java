@@ -9,6 +9,11 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -18,19 +23,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-
 public class BookSearchByTextFragment
-    extends BookSearchBaseFragment {
+        extends BookSearchBaseFragment {
 
     /** A list of author names we have already searched for in this session. */
     @NonNull
     private final ArrayList<String> mAuthorNames = new ArrayList<>();
     /** */
-    private ArrayAdapter<String> mAuthorAdapter = null;
+    private ArrayAdapter<String> mAuthorAdapter;
 
     private EditText mTitleView;
     private AutoCompleteTextView mAuthorView;
@@ -74,7 +74,7 @@ public class BookSearchByTextFragment
         populateAuthorList();
 
         getView().findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            public void onClick(@NonNull final View v) {
                 mAuthorSearchText = mAuthorView.getText().toString().trim();
                 mTitleSearchText = mTitleView.getText().toString().trim();
                 prepareSearch();
@@ -83,7 +83,8 @@ public class BookSearchByTextFragment
 
         // Display hint if required
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_book_search_by_text, null);
+            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_book_search_by_text,
+                                    null);
         }
         Tracker.exitOnActivityCreated(this);
     }
@@ -114,7 +115,7 @@ public class BookSearchByTextFragment
 
     /**
      * Start the actual search with the {@link SearchManager} in the background.
-     *
+     * <p>
      * The results will arrive in {@link #onSearchFinished}
      */
     private void startSearch() {
@@ -137,16 +138,18 @@ public class BookSearchByTextFragment
 
     /**
      * results of search started by {@link #startSearch}.
-     *
+     * <p>
      * The details will get sent to {@link EditBookActivity}
      */
     @SuppressWarnings("SameReturnValue")
     public boolean onSearchFinished(final boolean wasCancelled,
                                     @NonNull final Bundle bookData) {
-        Tracker.handleEvent(this, Tracker.States.Running, "onSearchFinished|SearchManagerId=" + mSearchManagerId);
+        Tracker.handleEvent(this, Tracker.States.Running,
+                            "onSearchFinished|SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {
-                mActivity.getTaskManager().sendHeaderTaskProgressMessage(getString(R.string.progress_msg_adding_book));
+                mActivity.getTaskManager().sendHeaderTaskProgressMessage(
+                        getString(R.string.progress_msg_adding_book));
                 Intent intent = new Intent(this.getContext(), EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, REQ_BOOK_EDIT);
@@ -177,7 +180,8 @@ public class BookSearchByTextFragment
 //                break;
 //        }
 
-        // refresh, we could have modified/created Authors while editing (even when cancelled the edit)
+        // refresh, we could have modified/created Authors while editing
+        // (even when cancelled the edit)
         populateAuthorList();
 
         Tracker.exitOnActivityResult(this);
@@ -188,7 +192,8 @@ public class BookSearchByTextFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         Tracker.enterOnSaveInstanceState(this, outState);
 
-        // Save the current search details as this may be called as a result of a rotate during an alert dialog.
+        // Save the current search details as this may be called as a result of a
+        // rotate during an alert dialog.
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
         outState.putString(UniqueId.KEY_TITLE, mTitleSearchText);
 
@@ -215,7 +220,8 @@ public class BookSearchByTextFragment
         }
 
         // Now get an adapter based on the combined names
-        mAuthorAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line, authors);
+        mAuthorAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line,
+                                            authors);
         mAuthorView.setAdapter(mAuthorAdapter);
     }
 }

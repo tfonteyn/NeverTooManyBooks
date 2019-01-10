@@ -35,7 +35,9 @@ import java.lang.ref.WeakReference;
  *
  * @author Philip Warner
  */
-public class Queue extends Thread {
+public class Queue
+        extends Thread {
+
     /** QueueManager that owns this Queue object */
     @NonNull
     private final QueueManager mManager;
@@ -164,7 +166,7 @@ public class Queue extends Thread {
             if (task.getException() == null) {
                 task.setException(e);
             }
-            Logger.error(e,"Error running task " + task.getId());
+            Logger.error(e, "Error running task " + task.getId());
         }
         handleTaskResult(task, result, requeue);
     }
@@ -176,7 +178,9 @@ public class Queue extends Thread {
      * @param result  true on Save, false on cancel
      * @param requeue true if requeue needed
      */
-    private void handleTaskResult(@NonNull final Task task, final boolean result, final boolean requeue) {
+    private void handleTaskResult(@NonNull final Task task,
+                                  final boolean result,
+                                  final boolean requeue) {
         TaskActions message;
         synchronized (mManager) {
 
@@ -193,10 +197,10 @@ public class Queue extends Thread {
                 message = TaskActions.waiting;
 
             } else {
-                Exception e =  task.getException();
+                Exception e = task.getException();
                 String msg = null;
                 if (e != null) {
-                   msg = e.getLocalizedMessage();
+                    msg = e.getLocalizedMessage();
                 }
                 mDb.setTaskFail(task, "Unhandled exception while running task: " + msg);
                 message = TaskActions.completed;

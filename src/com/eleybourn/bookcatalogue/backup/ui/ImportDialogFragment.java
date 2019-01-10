@@ -3,22 +3,23 @@ package com.eleybourn.bookcatalogue.backup.ui;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Checkable;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
-import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
@@ -26,13 +27,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-public class ImportDialogFragment extends DialogFragment {
+public class ImportDialogFragment
+        extends DialogFragment {
 
     private final ImportSettings settings = new ImportSettings();
 
     /**
-     * Constructor
+     * Constructor.
      *
+     * @param settings import configuration settings
      * @return Created fragment
      */
     @NonNull
@@ -45,18 +48,20 @@ public class ImportDialogFragment extends DialogFragment {
     }
 
     /**
-     * Ensure activity supports interface
+     * Ensure activity supports interface.
      */
     @Override
     @CallSuper
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
-        if (!(context instanceof OnImportTypeSelectionDialogResultsListener))
-            throw new RTE.MustImplementException(context, OnImportTypeSelectionDialogResultsListener.class);
+        if (!(context instanceof OnImportTypeSelectionDialogResultsListener)) {
+            throw new RTE.MustImplementException(context,
+                                                 OnImportTypeSelectionDialogResultsListener.class);
+        }
     }
 
     /**
-     * Create the underlying dialog
+     * Create the underlying dialog.
      */
     @NonNull
     @Override
@@ -66,11 +71,12 @@ public class ImportDialogFragment extends DialogFragment {
         Objects.requireNonNull(args);
         settings.file = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
-        View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_import_options, null);
+        View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_import_options,
+                                                                  null);
 
         root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(final View v) {
+            public void onClick(@NonNull final View v) {
                 updateOptions();
                 OnImportTypeSelectionDialogResultsListener listener =
                         (OnImportTypeSelectionDialogResultsListener) requireActivity();
@@ -81,7 +87,7 @@ public class ImportDialogFragment extends DialogFragment {
 
         root.findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 dismiss();
             }
         });
@@ -122,7 +128,7 @@ public class ImportDialogFragment extends DialogFragment {
     }
 
     /**
-     * read the info block and check if we have valid dates
+     * read the info block and check if we have valid dates.
      */
     private boolean archiveHasValidDates() {
         boolean mArchiveHasValidDates;
@@ -142,6 +148,7 @@ public class ImportDialogFragment extends DialogFragment {
      * Listener interface to receive notifications when dialog is closed by any means.
      */
     public interface OnImportTypeSelectionDialogResultsListener {
+
         void onImportTypeSelectionDialogResult(@NonNull final ImportSettings settings);
     }
 

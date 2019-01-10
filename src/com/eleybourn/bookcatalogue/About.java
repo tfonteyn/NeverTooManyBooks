@@ -31,25 +31,26 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-
 /**
  * This is the About page.
  * It contains details about the app, links to my [original authors] website and email.
- *
+ * <p>
  * URL's are hardcoded and should not be changed.
  *
  * @author Evan Leybourn
  */
 public class About
-    extends BaseActivity {
+        extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
@@ -73,17 +74,19 @@ public class About
         }
 
         view = findViewById(R.id.website);
-        view.setText(Utils.linkifyHtml(getString(R.string.url_website, getString(R.string.about_lbl_website))));
+        view.setText(Utils.linkifyHtml(
+                getString(R.string.url_website, getString(R.string.about_lbl_website))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.sourcecode);
-        view.setText(Utils.linkifyHtml(getString(R.string.url_sourcecode, getString(R.string.about_lbl_sourcecode))));
+        view.setText(Utils.linkifyHtml(
+                getString(R.string.url_sourcecode, getString(R.string.about_lbl_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.contact1);
         view.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 sendContactEmail(R.string.email_contact1);
             }
         });
@@ -91,7 +94,7 @@ public class About
         view = findViewById(R.id.contact2);
         view.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 sendContactEmail(R.string.email_contact2);
             }
         });
@@ -107,12 +110,12 @@ public class About
         // url with encoded % characters
         @SuppressLint("DefaultLocale")
         String paypalUrl = String.format(
-            "<a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_donations" +
-                "&business=WHD6PFWXXTPX8&lc=AU" +
-                "&item_name=BookCatalogue&item_number=BCPP" +
-                "&currency_code=USD" +
-                "&bn=PP%%2dDonationsBF%%3abtn_donateCC_LG%%2egif%%3aNonHosted\">%1s</a>",
-            getString(R.string.about_donate_paypal));
+                "<a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_donations" +
+                        "&business=WHD6PFWXXTPX8&lc=AU" +
+                        "&item_name=BookCatalogue&item_number=BCPP" +
+                        "&currency_code=USD" +
+                        "&bn=PP%%2dDonationsBF%%3abtn_donateCC_LG%%2egif%%3aNonHosted\">%1s</a>",
+                getString(R.string.about_donate_paypal));
 
         view = findViewById(R.id.donate_url);
         view.setText(Utils.linkifyHtml(paypalUrl));
@@ -120,17 +123,17 @@ public class About
 
         view = findViewById(R.id.amazon_url);
         String text = String.format(
-            "<a href=\"https://www.amazon.com/gp/registry/wishlist/2A2E48ONH64HM?tag=bookcatalogue-20\">%1s</a>",
-            getString(R.string.about_donate_amazon));
+                "<a href=\"https://www.amazon.com/gp/registry/wishlist/2A2E48ONH64HM?tag=bookcatalogue-20\">%1s</a>",
+                getString(R.string.about_donate_amazon));
         view.setText(Utils.linkifyHtml(text));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.amazon_links_info);
         text = getString(R.string.hint_amazon_links_blurb,
-            getString(R.string.menu_amazon_books_by_author),
-            getString(R.string.menu_amazon_books_in_series),
-            getString(R.string.menu_amazon_books_by_author_in_series),
-            getString(R.string.app_name));
+                         getString(R.string.menu_amazon_books_by_author),
+                         getString(R.string.menu_amazon_books_in_series),
+                         getString(R.string.menu_amazon_books_by_author_in_series),
+                         getString(R.string.app_name));
         view.setText(Utils.linkifyHtml(text));
         view.setMovementMethod(LinkMovementMethod.getInstance());
         Tracker.exitOnCreate(this);

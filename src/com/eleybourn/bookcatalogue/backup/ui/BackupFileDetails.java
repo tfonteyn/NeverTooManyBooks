@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
@@ -20,9 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Implementation of {@link FileDetails} that collects data about backup files
  * in a background thread.
@@ -30,32 +30,34 @@ import androidx.annotation.Nullable;
  * @author pjw
  */
 public class BackupFileDetails
-    implements FileDetails, Parcelable {
+        implements FileDetails, Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Parcelable.Creator<BackupFileDetails> CREATOR =
-        new Parcelable.Creator<BackupFileDetails>() {
-            public BackupFileDetails createFromParcel(@NonNull final Parcel source) {
-                return new BackupFileDetails(source);
-            }
+            new Parcelable.Creator<BackupFileDetails>() {
+                public BackupFileDetails createFromParcel(@NonNull final Parcel source) {
+                    return new BackupFileDetails(source);
+                }
 
-            public BackupFileDetails[] newArray(final int size) {
-                return new BackupFileDetails[size];
-            }
-        };
+                public BackupFileDetails[] newArray(final int size) {
+                    return new BackupFileDetails[size];
+                }
+            };
 
     /** @see #isArchive(File) */
     public static final String ARCHIVE_EXTENSION = ".bcbk";
+    /** prefix. */
     public static final String ARCHIVE_PREFIX = "BookCatalogue-";
 
-    /** File for this item */
+    /** File for this item. */
     @NonNull
     private final File mFile;
-    /** The BackupInfo we use when displaying the object */
+    /** The BackupInfo we use when displaying the object. */
     @Nullable
     private BackupInfo mInfo;
 
     /**
-     * Constructor
+     * Constructor.
      */
     BackupFileDetails(@NonNull final File file) {
         mFile = file;
@@ -75,8 +77,14 @@ public class BackupFileDetails
         }
     }
 
-    public static boolean isArchive(@NonNull final File f) {
-        return f.getName().toLowerCase().endsWith(ARCHIVE_EXTENSION);
+    /**
+     * Simple check on the file being an archive.
+     *
+     * @param file to check
+     * @return <tt>true</tt> if it's an archive
+     */
+    public static boolean isArchive(@NonNull final File file) {
+        return file.getName().toLowerCase().endsWith(ARCHIVE_EXTENSION);
     }
 
     public void setInfo(@NonNull final BackupInfo info) {
@@ -90,13 +98,13 @@ public class BackupFileDetails
     }
 
     /**
-     * Return the view we use.
+     * @return the view we use.
      *
      * THIS SHOULD ALWAYS RETURN THE SAME VIEW. IT IS NOT A MULTI-TYPE LIST.
      */
     @Override
-    public int getViewId() {
-        return R.layout.row_backup_chooser_item;
+    public int getLayoutId() {
+        return R.layout.row_file_info;
     }
 
     /**
@@ -111,20 +119,23 @@ public class BackupFileDetails
         filenameView.setText(mFile.getName());
 
         ImageView imageView = convertView.findViewById(R.id.icon);
-        TextView detailsView = convertView.findViewById(R.id.details);
-        TextView dateView = convertView.findViewById(R.id.date);
-        TextView sizeView = convertView.findViewById(R.id.size);
+        View fileDetails = convertView.findViewById(R.id.file_details);
 
         // For directories, hide the extra data
         if (mFile.isDirectory()) {
-            dateView.setVisibility(View.GONE);
-            detailsView.setVisibility(View.GONE);
             imageView.setImageDrawable(context.getDrawable(R.drawable.ic_folder));
+            fileDetails.setVisibility(View.GONE);
         } else {
-            // Display date and backup details
+            // Display details
             imageView.setImageDrawable(context.getDrawable(R.drawable.bc_archive));
-            dateView.setVisibility(View.VISIBLE);
-            String formattedFileSize = Utils.formatFileSize(mFile.length());
+            fileDetails.setVisibility(View.VISIBLE);
+
+            TextView fileContentView = convertView.findViewById(R.id.file_content);
+            TextView dateView = convertView.findViewById(R.id.date);
+
+            TextView sizeView = convertView.findViewById(R.id.size);
+            sizeView.setText(Utils.formatFileSize(mFile.length()));
+
             Resources res = context.getResources();
             if (mInfo != null) {
                 List<String> args = new ArrayList<>();
@@ -149,22 +160,19 @@ public class BackupFileDetails
                 }
 
                 // needs RTL
-                detailsView.setText(TextUtils.join(", ", args));
+                fileContentView.setText(TextUtils.join(", ", args));
 
-                sizeView.setText(formattedFileSize);
                 dateView.setText(DateUtils.toPrettyDateTime(mInfo.getCreationDate()));
-                detailsView.setVisibility(View.VISIBLE);
+                fileContentView.setVisibility(View.VISIBLE);
             } else {
-                sizeView.setText(formattedFileSize);
                 dateView.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
-                detailsView.setVisibility(View.GONE);
+                fileContentView.setVisibility(View.GONE);
             }
         }
     }
 
-    /**
-     * {@link Parcelable} INTERFACE.
-     */
+    /** {@link Parcelable}. */
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
@@ -185,5 +193,4 @@ public class BackupFileDetails
             dest.writeByte((byte) 0);
         }
     }
-
 }

@@ -11,6 +11,9 @@ import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -28,12 +31,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
-
 public final class DebugReport {
 
-    /** files with these prefixes will be bundled in the report */
+    /** files with these prefixes will be bundled in the report. */
     private static final String[] FILE_PREFIXES = new String[]{
             "DbUpgrade", "DbExport", "error.log", "export.csv"};
 
@@ -43,7 +43,7 @@ public final class DebugReport {
     /**
      * Return the MD5 hash of the public key that signed this app, or a useful
      * text message if an error or other problem occurred.
-     *
+     * <p>
      * No longer caching as only needed at a crash anyhow
      */
     public static String signedBy(@NonNull final Context context) {
@@ -52,12 +52,13 @@ public final class DebugReport {
         try {
             // Get app info
             PackageManager manager = context.getPackageManager();
-            // deprecated... but replacing it fails entirely in API 21. I presume doc-error.
+            // deprecated... but replacing it fails entirely in API: 21. I presume doc-error.
             @SuppressLint("PackageManagerGetSignatures")
-            PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+            PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(),
+                                                         PackageManager.GET_SIGNATURES);
 
             // Each sig is a PK of the signer:
-            //     https://groups.google.com/forum/?fromgroups=#!topic/android-developers/fPtdt6zDzns
+            //  https://groups.google.com/forum/?fromgroups=#!topic/android-developers/fPtdt6zDzns
             for (Signature sig : appInfo.signatures) {
                 if (sig != null) {
                     final MessageDigest sha1 = MessageDigest.getInstance("MD5");
@@ -87,7 +88,9 @@ public final class DebugReport {
                     }
                 }
             }
-        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException | RuntimeException e) {
+        } catch (PackageManager.NameNotFoundException
+                | NoSuchAlgorithmException
+                | RuntimeException e) {
             return e.getLocalizedMessage();
         }
         return signedBy.toString();
@@ -95,7 +98,7 @@ public final class DebugReport {
 
     /**
      * Collect and send com.eleybourn.bookcatalogue.debug info to a support email address.
-     *
+     * <p>
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
      */
     public static void sendDebugInfo(@NonNull final Activity activity) {
@@ -107,8 +110,10 @@ public final class DebugReport {
         // setup the mail message
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         emailIntent.setType("plain/text");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, activity.getString(R.string.email_debug).split(";"));
-        String subject = '[' + activity.getString(R.string.app_name) + "] " + activity.getString(R.string.debug_subject);
+        emailIntent.putExtra(Intent.EXTRA_EMAIL,
+                             activity.getString(R.string.email_debug).split(";"));
+        String subject = '[' + activity.getString(R.string.app_name) + "] " + activity.getString(
+                R.string.debug_subject);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         StringBuilder message = new StringBuilder();
 
@@ -117,35 +122,43 @@ public final class DebugReport {
             PackageManager manager = activity.getPackageManager();
             PackageInfo appInfo = manager.getPackageInfo(activity.getPackageName(), 0);
             message.append("App: ")
-                    .append(appInfo.packageName).append('\n')
-                    .append("Version: ")
-                    .append(appInfo.versionName)
-                    // versionCode deprecated and new method in API 28, till then ignore...
-                    .append(" (").append(appInfo.versionCode).append(")\n");
+                   .append(appInfo.packageName).append('\n')
+                   .append("Version: ")
+                   .append(appInfo.versionName)
+                   // versionCode deprecated and new method in API: 28, till then ignore...
+                   .append(" (").append(appInfo.versionCode).append(")\n");
         } catch (PackageManager.NameNotFoundException ignore) {
             // Not much we can do inside error logger...
         }
 
 
         message.append("SDK: ").append(Build.VERSION.RELEASE)
-                .append(" (").append(Build.VERSION.SDK_INT).append(' ').append(Build.TAGS).append(")\n")
-                .append("Phone Model: ").append(Build.MODEL).append('\n')
-                .append("Phone Manufacturer: ").append(Build.MANUFACTURER).append('\n')
-                .append("Phone Device: ").append(Build.DEVICE).append('\n')
-                .append("Phone Product: ").append(Build.PRODUCT).append('\n')
-                .append("Phone Brand: ").append(Build.BRAND).append('\n')
-                .append("Phone ID: ").append(Build.ID).append('\n')
-                .append("Signed-By: ").append(signedBy(activity)).append('\n')
-                .append("\nHistory:\n").append(Tracker.getEventsInfo()).append('\n');
+               .append(" (").append(Build.VERSION.SDK_INT).append(' ').append(Build.TAGS).append(
+                ")\n")
+               .append("Phone Model: ").append(Build.MODEL).append('\n')
+               .append("Phone Manufacturer: ").append(Build.MANUFACTURER).append('\n')
+               .append("Phone Device: ").append(Build.DEVICE).append('\n')
+               .append("Phone Product: ").append(Build.PRODUCT).append('\n')
+               .append("Phone Brand: ").append(Build.BRAND).append('\n')
+               .append("Phone ID: ").append(Build.ID).append('\n')
+               .append("Signed-By: ").append(signedBy(activity)).append('\n')
+               .append("\nHistory:\n").append(Tracker.getEventsInfo()).append('\n');
 
         // Scanners installed
         try {
-            message.append("Pref. Scanner: ").append(Prefs.getInt(R.string.pk_scanning_preferred_scanner, -1)).append('\n');
-            String[] scanners = new String[]{ZxingScanner.ACTION, Pic2ShopScanner.Free.ACTION, Pic2ShopScanner.Pro.ACTION};
+            message.append("Pref. Scanner: ").append(
+                    Prefs.getInt(R.string.pk_scanning_preferred_scanner, -1)).append('\n');
+            String[] scanners = new String[]{
+                    ZxingScanner.ACTION,
+                    Pic2ShopScanner.Free.ACTION,
+                    Pic2ShopScanner.Pro.ACTION,
+            };
             for (String scanner : scanners) {
                 message.append("Scanner [").append(scanner).append("]:\n");
                 final Intent mainIntent = new Intent(scanner, null);
-                final List<ResolveInfo> resolved = activity.getPackageManager().queryIntentActivities(mainIntent, 0);
+                final List<ResolveInfo> resolved =
+                        activity.getPackageManager().queryIntentActivities(mainIntent, 0);
+
                 if (resolved.size() > 0) {
                     for (ResolveInfo r : resolved) {
                         message.append("    ");
@@ -157,7 +170,11 @@ public final class DebugReport {
                         } else {
                             message.append("UNKNOWN");
                         }
-                        message.append(" (priority ").append(r.priority).append(", preference ").append(r.preferredOrder).append(", match ").append(r.match).append(", default=").append(r.isDefault).append(")\n");
+                        message.append(" (priority ").append(r.priority)
+                               .append(", preference ").append(r.preferredOrder)
+                               .append(", match ").append(r.match)
+                               .append(", default=").append(r.isDefault)
+                               .append(")\n");
                     }
                 } else {
                     message.append("    No packages found\n");
@@ -170,12 +187,12 @@ public final class DebugReport {
         message.append('\n');
 
         //  urls
-
         message.append("Customizable Search sites URL:\n");
         message.append(AmazonManager.getBaseURL()).append('\n');
         message.append(GoogleBooksManager.getBaseURL()).append('\n');
 
-        message.append("Details:\n\n").append(activity.getString(R.string.debug_body).toUpperCase()).append("\n\n");
+        message.append("Details:\n\n")
+               .append(activity.getString(R.string.debug_body)).append("\n\n");
 
         Logger.info(DebugReport.class, message.toString());
 
@@ -186,20 +203,23 @@ public final class DebugReport {
 
         try {
             // Find all files of interest to send, root and log dirs
-            List<String> files = collectFiles(StorageUtils.getSharedStorage(), StorageUtils.getLogStorage());
+            List<String> files =
+                    collectFiles(StorageUtils.getSharedStorage(), StorageUtils.getLogStorage());
 
             // Build the attachment list
             ArrayList<Uri> attachmentUris = new ArrayList<>();
             for (String fileSpec : files) {
                 File file = StorageUtils.getFile(fileSpec);
                 if (file.exists() && file.length() > 0) {
-                    Uri u = FileProvider.getUriForFile(activity, GenericFileProvider.AUTHORITY, file);
+                    Uri u = FileProvider
+                            .getUriForFile(activity, GenericFileProvider.AUTHORITY, file);
                     attachmentUris.add(u);
                 }
             }
 
             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachmentUris);
-            activity.startActivity(Intent.createChooser(emailIntent, activity.getString(R.string.send_mail)));
+            activity.startActivity(
+                    Intent.createChooser(emailIntent, activity.getString(R.string.send_mail)));
 
         } catch (NullPointerException e) {
             Logger.error(e);

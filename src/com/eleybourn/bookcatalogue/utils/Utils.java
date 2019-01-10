@@ -23,15 +23,16 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -60,16 +61,14 @@ import java.util.Objects;
  */
 public final class Utils {
 
-    private static final Object lock = new Object();
-
-    /** initial connection time to websites timeout */
+    /** initial connection time to websites timeout. */
     public static final int CONNECT_TIMEOUT = 30_000;
-
-    /** timeout for requests to  website */
+    /** timeout for requests to  website. */
     public static final int READ_TIMEOUT = 30_000;
-
-    /** kill connections after this delay */
+    /** kill connections after this delay. */
     public static final int KILL_CONNECT_DELAY = 30_000;
+    /** for synchronization. */
+    private static final Object LOCK = new Object();
 
     private Utils() {
     }
@@ -79,10 +78,10 @@ public final class Utils {
      * The Apache HTTP client was removed from 6.0 (although you can use a legacy lib)
      * Recommended is to use the java.net.HttpURLConnection
      * This means com.android.okhttp
-     *      https://square.github.io/okhttp/
-     *
+     * https://square.github.io/okhttp/
+     * <p>
      * 2018-11-22: removal of apache started....
-     *
+     * <p>
      * Get data from a URL. Makes sure timeout is set to avoid application stalling.
      *
      * @param url URL to retrieve
@@ -90,9 +89,10 @@ public final class Utils {
      * @return InputStream
      */
     @Nullable
-    public static InputStream getInputStreamWithTerminator(@NonNull final URL url) throws IOException {
+    public static InputStream getInputStreamWithTerminator(@NonNull final URL url)
+            throws IOException {
 
-        synchronized (lock) {
+        synchronized (LOCK) {
 
             int retries = 3;
             while (true) {
@@ -121,7 +121,8 @@ public final class Utils {
                     connInfo.connection.setReadTimeout(READ_TIMEOUT);
                     connInfo.connection.setRequestMethod("GET");
 
-                    // close the connection on a background task, so that we can cancel any runaway timeouts.
+                    // close the connection on a background task,
+                    // so that we can cancel any runaway timeouts.
                     Terminator.enqueue(new Runnable() {
                         @Override
                         public void run() {
@@ -140,11 +141,15 @@ public final class Utils {
                         }
                     }, KILL_CONNECT_DELAY);
 
-                    connInfo.inputStream = new StatefulBufferedInputStream(connInfo.connection.getInputStream());
+                    connInfo.inputStream = new StatefulBufferedInputStream(
+                            connInfo.connection.getInputStream());
 
-                    if (connInfo.connection != null && connInfo.connection.getResponseCode() >= 300) {
-                        Logger.error("URL lookup failed: " + connInfo.connection.getResponseCode()
-                                + ' ' + connInfo.connection.getResponseMessage() + ", URL: " + url);
+                    if (connInfo.connection != null
+                            && connInfo.connection.getResponseCode() >= 300) {
+                        Logger.error("URL lookup failed: "
+                                             + connInfo.connection.getResponseCode()
+                                             + ' ' + connInfo.connection.getResponseMessage()
+                                             + ", URL: " + url);
                         return null;
                     }
 
@@ -158,15 +163,14 @@ public final class Utils {
                     }
                     try {
                         Thread.sleep(500);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    } catch (RuntimeException ignored) {
+                    } catch (InterruptedException ignored) {
                     }
                     if (connInfo.connection != null) {
                         connInfo.connection.disconnect();
                     }
-                } catch(InterruptedIOException e) {
-                    Logger.info(Terminator.class,"InterruptedIOException: " + e.getLocalizedMessage());
+                } catch (InterruptedIOException e) {
+                    Logger.info(Terminator.class,
+                                "InterruptedIOException: " + e.getLocalizedMessage());
                     if (connInfo.connection != null) {
                         connInfo.connection.disconnect();
                     }
@@ -186,7 +190,8 @@ public final class Utils {
      * @return <tt>true</tt> if the application can access the internet
      */
     public static boolean isNetworkAvailable(@NonNull final Context context) {
-        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(
+                Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
             NetworkInfo[] info = connectivity.getAllNetworkInfo();
             if (info != null) {
@@ -204,8 +209,10 @@ public final class Utils {
     /**
      * Passed a list of Objects, remove duplicates based on the toString result.
      * <p>
-     * ENHANCE Add author_aliases table to allow further pruning (eg. Joe Haldeman == Jow W Haldeman).
-     * ENHANCE Add series_aliases table to allow further pruning (eg. 'Amber Series' <==> 'Amber').
+     * ENHANCE: Add author_aliases table to allow further pruning
+     * (eg. Joe Haldeman == Jow W Haldeman).
+     * ENHANCE: Add series_aliases table to allow further pruning
+     * (eg. 'Amber Series' <==> 'Amber').
      *
      * @param db   Database connection to lookup IDs
      * @param list List to clean up
@@ -250,7 +257,8 @@ public final class Utils {
     /**
      * Only does web & email links. Most likely all we'll ever need.
      *
-     * @param html        Partial HTML
+     * @param html Partial HTML
+     *
      * @return Spannable with all links
      *
      * @see #linkifyHtml(String, int)
@@ -263,7 +271,7 @@ public final class Utils {
     /**
      * Linkify partial HTML. Linkify methods remove all spans before building links, this
      * method preserves them.
-     *
+     * <p>
      * See:
      * http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml
      *
@@ -274,7 +282,8 @@ public final class Utils {
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
-    public static Spannable linkifyHtml(@NonNull final String html, final int linkifyMask) {
+    public static Spannable linkifyHtml(@NonNull final String html,
+                                        final int linkifyMask) {
         // Get the spannable HTML
         Spanned text = Html.fromHtml(html);
         // Save the span details for later restoration
@@ -294,25 +303,27 @@ public final class Utils {
     }
 
     /**
-     * Format a number of bytes in a human readable form
+     * Format a number of bytes in a human readable form.
      */
     @NonNull
-    public static String formatFileSize(float space) {
-        String sizeFmt;
-        if (space < 3072) { // Show 'bytes' if < 3k
-            sizeFmt = BookCatalogueApp.getResourceString(R.string.bytes);
-        } else if (space < 250 * 1024) { // Show Kb if less than 250kB
-            sizeFmt = BookCatalogueApp.getResourceString(R.string.kilobytes);
-            space = space / 1024;
-        } else { // Show MB otherwise...
-            sizeFmt = BookCatalogueApp.getResourceString(R.string.megabytes);
-            space = space / (1024 * 1024);
+    public static String formatFileSize(final float space) {
+        if (space < 3072) {
+            // Show 'bytes' if < 3k
+            return String.format(BookCatalogueApp.getResourceString(R.string.bytes),
+                                 space);
+        } else if (space < 250 * 1024) {
+            // Show Kb if less than 250kB
+            return String.format(BookCatalogueApp.getResourceString(R.string.kilobytes),
+                                 space / 1024);
+        } else {
+            // Show MB otherwise...
+            return String.format(BookCatalogueApp.getResourceString(R.string.megabytes),
+                                 space / (1024 * 1024));
         }
-        return String.format(sizeFmt, space);
     }
 
     /**
-     * Convert a array of objects to a csv string fit for user displaying
+     * Convert a array of objects to a csv string fit for user displaying.
      *
      * @param list with items. toString() will be used to make the item displayable.
      *
@@ -331,19 +342,24 @@ public final class Utils {
     }
 
     public interface ItemWithIdFixup {
+
         long fixupId(@NonNull final CatalogueDBAdapter db);
 
         boolean isUniqueById();
     }
 
     private static class ConnectionInfo {
+
         @Nullable
-        HttpURLConnection connection = null;
+        HttpURLConnection connection;
         @Nullable
-        StatefulBufferedInputStream inputStream = null;
+        StatefulBufferedInputStream inputStream;
     }
 
-    public static class StatefulBufferedInputStream extends BufferedInputStream implements Closeable {
+    public static class StatefulBufferedInputStream
+            extends BufferedInputStream
+            implements Closeable {
+
         private boolean mIsOpen = true;
 
         StatefulBufferedInputStream(@NonNull final InputStream in) {
@@ -352,7 +368,8 @@ public final class Utils {
 
         @Override
         @CallSuper
-        public void close() throws IOException {
+        public void close()
+                throws IOException {
             try {
                 super.close();
             } finally {
@@ -364,64 +381,4 @@ public final class Utils {
             return mIsOpen;
         }
     }
-
-    /*
-     * Check if phone has a network connection
-     *
-     * @return
-     */
-	/*
-	public static boolean isOnline(Context ctx) {
-	    ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-	        return true;
-	    }
-	    return false;
-	}
-	*/
-
-    /*
-     * Check if phone can connect to a specific host.
-     * Does not work....
-     *
-     * ENHANCE: Find a way to make network host checks possible
-     */
-	/*
-	public static boolean hostIsAvailable(Context ctx, String host) {
-		if (!isOnline(ctx))
-			return false;
-		int addr;
-		try {
-			addr = lookupHost(host);			
-		} catch (Exception error) {
-			return false;
-		}
-	    ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-	    try {
-		    return cm.requestRouteToHost(ConnectivityManager., addr);	    	
-		} catch (Exception error) {
-			return false;
-		}
-	}
-
-	public static int lookupHost(String hostname) {
-	    InetAddress inetAddress;
-	    try {
-	        inetAddress = InetAddress.getByName(hostname);
-	    } catch (UnknownHostException error) {
-	        return -1;
-	    }
-	    byte[] addrBytes;
-	    int addr;
-	    addrBytes = inetAddress.getAddress();
-	    addr = ((addrBytes[3] & 0xff) << 24)
-	            | ((addrBytes[2] & 0xff) << 16)
-	            | ((addrBytes[1] & 0xff) << 8)
-	            |  (addrBytes[0] & 0xff);
-	    return addr;
-	}
-	*/
-
 }
-

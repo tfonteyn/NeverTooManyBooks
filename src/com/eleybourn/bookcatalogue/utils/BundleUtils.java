@@ -2,17 +2,19 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
 public final class BundleUtils {
+
     private BundleUtils() {
     }
 
     /**
-     * Check if passed Bundle contains a non-blank string .
+     * Check if passed Bundle contains a non-blank string.
      *
      * @param bundle to check
      * @param key    to check for
@@ -26,7 +28,7 @@ public final class BundleUtils {
     }
 
     /**
-     * Add the value to the Bundle if not present
+     * Add the value to the Bundle if not present.
      *
      * @param bundle to check
      * @param key    for data to add
@@ -41,14 +43,15 @@ public final class BundleUtils {
     }
 
     /**
-     * Get a string from a Bundle
+     * Get a string from a Bundle.
      *
      * @param key     to check for
      * @param bundles to check
      *
      * @return Result or null when not found
      */
-    public static String getStringFromBundles(final String key, final Bundle... bundles) {
+    public static String getStringFromBundles(final String key,
+                                              final Bundle... bundles) {
         String value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {
@@ -62,14 +65,15 @@ public final class BundleUtils {
     }
 
     /**
-     * Get a int from a Bundle
+     * Get a int from a Bundle.
      *
      * @param key     to check for
      * @param bundles to check
      *
      * @return Result or 0 when not found
      */
-    public static int getIntFromBundles(final String key, @NonNull final Bundle... bundles) {
+    public static int getIntFromBundles(final String key,
+                                        @NonNull final Bundle... bundles) {
         int value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {
@@ -83,14 +87,15 @@ public final class BundleUtils {
     }
 
     /**
-     * Get a long from a Bundle
+     * Get a long from a Bundle.
      *
      * @param key     to check for
      * @param bundles to check
      *
      * @return Result or 0 when not found
      */
-    public static long getLongFromBundles(@Nullable final String key, @NonNull final Bundle... bundles) {
+    public static long getLongFromBundles(@Nullable final String key,
+                                          @NonNull final Bundle... bundles) {
         long value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {
@@ -104,14 +109,15 @@ public final class BundleUtils {
     }
 
     /**
-     * Get a Bundle from a Bundle
+     * Get a Bundle from a Bundle.
      *
      * @param key     to check for
      * @param bundles to check
      *
      * @return Result or null when not found
      */
-    public static Bundle getBundleFromBundles(@Nullable final String key, @NonNull final Bundle... bundles) {
+    public static Bundle getBundleFromBundles(@Nullable final String key,
+                                              @NonNull final Bundle... bundles) {
         Bundle value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {
@@ -125,7 +131,7 @@ public final class BundleUtils {
     }
 
     /**
-     * Utility routine to get the list from the passed bundles. Added to reduce lint warnings...
+     * Get the list from the passed bundles. Added to reduce lint warnings...
      *
      * @param key     to check for
      * @param bundles to check
@@ -133,7 +139,8 @@ public final class BundleUtils {
      * @return List, or null when not present
      */
     @Nullable
-    public static <T extends Parcelable> ArrayList<T> getParcelableArrayList(@Nullable final String key, @NonNull final Bundle... bundles) {
+    public static <T extends Parcelable> ArrayList<T> getParcelableArrayList(@Nullable final String key,
+                                                                             @NonNull final Bundle... bundles) {
         ArrayList<T> value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {

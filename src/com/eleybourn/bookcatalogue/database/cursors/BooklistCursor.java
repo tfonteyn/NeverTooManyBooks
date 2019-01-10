@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -37,16 +38,19 @@ import java.io.Closeable;
  *
  * @author Philip Warner
  */
-public class BooklistCursor extends TrackedCursor implements BooklistSupportProvider, Closeable {
-    /** Underlying BooklistBuilder object */
+public class BooklistCursor
+        extends TrackedCursor
+        implements BooklistSupportProvider, Closeable {
+
+    /** Underlying BooklistBuilder object. */
     @NonNull
     private final BooklistBuilder mBuilder;
-    /** Cached RowView for this cursor */
+    /** Cached RowView for this cursor. */
     @Nullable
     private BooklistRowView mRowView = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param driver    Part of standard cursor constructor.
      * @param editTable Part of standard cursor constructor.

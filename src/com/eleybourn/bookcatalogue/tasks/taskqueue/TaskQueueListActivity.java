@@ -23,13 +23,14 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
@@ -51,13 +52,16 @@ import java.util.List;
  *
  * @author Philip Warner
  */
-public class TaskQueueListActivity extends BindableItemListActivity {
+public class TaskQueueListActivity
+        extends BindableItemListActivity {
+
     /**
      * Listener to handle Event add/change/delete.
      */
     private final OnTaskChangeListener mOnTaskChangeListener = new OnTaskChangeListener() {
         @Override
-        public void onTaskChange(@Nullable final Task task, @NonNull final TaskActions action) {
+        public void onTaskChange(@Nullable final Task task,
+                                 @NonNull final TaskActions action) {
             TaskQueueListActivity.this.refreshData();
         }
     };
@@ -86,7 +90,7 @@ public class TaskQueueListActivity extends BindableItemListActivity {
         cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_tasks);
         cleanupBtn.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull final View v) {
                 QueueManager.getQueueManager().cleanupOldTasks();
             }
         });
@@ -113,16 +117,20 @@ public class TaskQueueListActivity extends BindableItemListActivity {
      * Build a context menu dialogue when an item is clicked.
      */
     @Override
-    public void onListItemClick(@NonNull AdapterView<?> parent, @NonNull final View v, final int position, final long id) {
+    public void onListItemClick(@NonNull AdapterView<?> parent,
+                                @NonNull final View v,
+                                final int position,
+                                final long id) {
         Task task = ViewTagger.getTagOrThrow(v, R.id.TAG_TASK);
         List<ContextDialogItem> items = new ArrayList<>();
 
-        items.add(new ContextDialogItem(getString(R.string.gr_tq_show_events_ellipsis), new Runnable() {
-            @Override
-            public void run() {
-                doShowTaskEvents(id);
-            }
-        }));
+        items.add(new ContextDialogItem(getString(R.string.gr_tq_show_events_ellipsis),
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                doShowTaskEvents(id);
+                                            }
+                                        }));
 
         task.addContextMenuItems(this, parent, v, position, id, items, mDb);
 
@@ -160,7 +168,7 @@ public class TaskQueueListActivity extends BindableItemListActivity {
 
     /**
      * Get a cursor returning the tasks we are interested in (in this case all tasks)
-     *
+     * <p>
      * Reads from {@link TaskQueueDBAdapter}
      */
     @NonNull

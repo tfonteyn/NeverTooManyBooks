@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.booklist.prefs;
 
+import java.util.Collection;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
@@ -12,8 +13,13 @@ import androidx.annotation.NonNull;
  * This call allows by-passing the real type for write-through.
  * Used in importing from a backup.
  */
-public interface PSet {
+public interface PCollection<E> {
 
-    void set(@NonNull final String uuid,
-             @NonNull final Set<String> value);
+    /**
+     *  This call allows by-passing the real type for write-through.
+     */
+    void set(@NonNull final Set<String> value);
+
+    @NonNull
+    Collection<E> get();
 }
