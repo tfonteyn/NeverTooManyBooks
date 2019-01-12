@@ -134,14 +134,14 @@ public class BooleanProperty
         // Setup click handlers for view and checkbox
         root.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(@NonNull View v) {
+            public void onClick(@NonNull final View v) {
                 holder.cb.performClick();
             }
         });
         holder.cb.setOnTriStateChangeListener(new TriStateCheckBox.OnTriStateChangeListener() {
             @Override
-            public void onTriStateChange(final View v,
-                                         final Boolean state) {
+            public void onTriStateChange(@NonNull final View v,
+                                         @NonNull final Boolean state) {
                 Holder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_PROPERTY);
                 holder.property.setValue(state);
                 holder.property.setViewValues(holder, state);
@@ -151,7 +151,7 @@ public class BooleanProperty
         return root;
     }
 
-    /** Set the checkbox and text fields based on passed value */
+    /** Set the checkbox and text fields based on passed value. */
     private void setViewValues(@NonNull final Holder holder,
                                @Nullable final Boolean value) {
         holder.name.setText(this.getNameResourceId());
@@ -164,10 +164,10 @@ public class BooleanProperty
         } else {
             if (value) {
                 holder.label.setText(
-                        BookCatalogueApp.getResourceString(mPositiveTextId, mPositiveTextArgs));
+                        BookCatalogueApp.getResString(mPositiveTextId, mPositiveTextArgs));
             } else {
                 holder.label.setText(
-                        BookCatalogueApp.getResourceString(mNegativeTextId, mNegativeTextArgs));
+                        BookCatalogueApp.getResString(mNegativeTextId, mNegativeTextArgs));
             }
         }
     }
@@ -175,7 +175,7 @@ public class BooleanProperty
     @Override
     @NonNull
     protected Boolean getGlobalValue() {
-        return Prefs.getBoolean(getPreferenceKey(), getDefaultValue());
+        return Prefs.getPrefs().getBoolean(getPreferenceKey(), getDefaultValue());
     }
 
     @Override
@@ -187,7 +187,7 @@ public class BooleanProperty
     }
 
     /**
-     * Convenience method to check for true
+     * Convenience method to check for true.
      *
      * Uses the resolved value to check for 'true'
      */
@@ -196,7 +196,7 @@ public class BooleanProperty
     }
 
     /**
-     * Only implemented for chaining with correct return type
+     * Only implemented for chaining with correct return type.
      */
     @Override
     @NonNull
@@ -215,7 +215,7 @@ public class BooleanProperty
     }
 
     /**
-     * Only implemented for chaining with correct return type
+     * Only implemented for chaining with correct return type.
      */
     @NonNull
     @Override
@@ -226,12 +226,12 @@ public class BooleanProperty
     }
 
     /**
-     * Only implemented for chaining with correct return type
+     * Only implemented for chaining with correct return type.
      */
     @NonNull
     @Override
     @CallSuper
-    public BooleanProperty setWeight(int weight) {
+    public BooleanProperty setWeight(final int weight) {
         super.setWeight(weight);
         return this;
     }

@@ -39,7 +39,8 @@ public class TrinaryFilter extends ListOfIntegerValuesProperty implements Filter
         super(nameResourceId, group, defaultValue, list);
     }
 
-    public void setDomain(final @SuppressWarnings("SameParameterValue") @NonNull TableDefinition table,
+    public void setDomain(@SuppressWarnings("SameParameterValue")
+                          @NonNull final TableDefinition table,
                           @NonNull final DomainDefinition domain) {
         this.table = table;
         this.domain = domain;

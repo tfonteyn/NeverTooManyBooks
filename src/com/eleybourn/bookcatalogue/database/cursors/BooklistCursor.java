@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
+import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
 
 import java.io.Closeable;
 
@@ -47,7 +47,7 @@ public class BooklistCursor
     private final BooklistBuilder mBuilder;
     /** Cached RowView for this cursor. */
     @Nullable
-    private BooklistRowView mRowView = null;
+    private BooklistRowView mRowView;
 
     /**
      * Constructor.
@@ -68,7 +68,7 @@ public class BooklistCursor
     }
 
     /**
-     * Get the builder used to make this cursor.
+     * @return the builder used to make this cursor.
      */
     @NonNull
     public BooklistBuilder getBuilder() {
@@ -76,7 +76,7 @@ public class BooklistCursor
     }
 
     /**
-     * Get a RowView for this cursor. Constructs one if necessary.
+     * @return a RowView for this cursor. Constructs one if necessary.
      */
     @NonNull
     public BooklistRowView getCursorRow() {

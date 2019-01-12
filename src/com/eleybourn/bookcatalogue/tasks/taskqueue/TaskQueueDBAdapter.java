@@ -32,8 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Task.TaskState;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.TasksCursor.TaskCursorSubtype;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
@@ -71,24 +69,24 @@ class TaskQueueDBAdapter {
     @NonNull
     private final TaskQueueDBHelper mTaskQueueDBHelper;
 
-    /** List of statements build by this adapter so that they can be removed on close */
+    /** List of statements build by this adapter so that they can be removed on close. */
     private final List<SQLiteStatement> mStatements = new ArrayList<>();
 
-    /** Static Factory object to create the custom cursor */
+    /** Static Factory object to create the custom cursor. */
     private final CursorFactory mEventsCursorFactory = new CursorFactory() {
         @Override
         public Cursor newCursor(
-                SQLiteDatabase db,
-                @NonNull SQLiteCursorDriver masterQuery,
-                @NonNull String editTable,
-                @NonNull SQLiteQuery query) {
+                @NonNull final SQLiteDatabase db,
+                @NonNull final SQLiteCursorDriver masterQuery,
+                @NonNull final String editTable,
+                @NonNull final SQLiteQuery query) {
             return new EventsCursor(masterQuery, editTable, query);
         }
     };
-    private SQLiteStatement mCheckTaskExistsStmt = null;
+    private SQLiteStatement mCheckTaskExistsStmt;
 
     /**
-     * Constructor
+     * Constructor.
      */
     TaskQueueDBAdapter() {
         mTaskQueueDBHelper = new TaskQueueDBHelper(BookCatalogueApp.getAppContext());
@@ -164,7 +162,8 @@ class TaskQueueDBAdapter {
         // Query to check for any task that CAN run now, sorted by priority then date/id
         String canRunSql = baseSql
                 + "  AND j." + DOM_RETRY_DATE + " <= ?"
-                + "  ORDER BY " + DOM_PRIORITY + " ASC, " + DOM_RETRY_DATE + " ASC," + DOM_ID + " ASC"
+                + "  ORDER BY "
+                + DOM_PRIORITY + " ASC, " + DOM_RETRY_DATE + " ASC," + DOM_ID + " ASC"
                 + " LIMIT 1";
 
         // Get next task that CAN RUN NOW
@@ -175,7 +174,8 @@ class TaskQueueDBAdapter {
             // There is no task available now. Look for one that is waiting.
             String sql = baseSql
                     + "  AND j." + DOM_RETRY_DATE + " > ?"
-                    + "  ORDER BY " + DOM_RETRY_DATE + " ASC, " + DOM_PRIORITY + " ASC, " + DOM_ID + " ASC"
+                    + "  ORDER BY "
+                    + DOM_RETRY_DATE + " ASC, " + DOM_PRIORITY + " ASC, " + DOM_ID + " ASC"
                     + " LIMIT 1";
             cursor = db.rawQuery(sql, new String[]{queueName, currTimeStr});
         }
@@ -195,7 +195,7 @@ class TaskQueueDBAdapter {
             long timeToNext;
             if (retryDate.after(currentTime)) {
                 // set timeToNext to let called know queue is not empty
-                timeToNext = (retryDate.getTime() - currentTime.getTime());
+                timeToNext = retryDate.getTime() - currentTime.getTime();
             } else {
                 // No need to wait
                 timeToNext = 0;
@@ -228,7 +228,8 @@ class TaskQueueDBAdapter {
      * Save the passed task back to the database. The parameter must be a Task that
      * is already in the database. This method is used to preserve a task state.
      * <p>
-     * NOTE: this code must not assume the task exists. IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
+     * NOTE: this code must not assume the task exists.
+     * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task The task to be saved. Must exist in database.
      */
@@ -236,7 +237,8 @@ class TaskQueueDBAdapter {
         ContentValues cv = new ContentValues();
         cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
         cv.put(DOM_CATEGORY, task.getCategory());
-        getDb().update(TBL_TASK, cv, DOM_ID + "=?", new String[]{String.valueOf(task.getId())});
+        getDb().update(TBL_TASK, cv, DOM_ID + "=?",
+                       new String[]{String.valueOf(task.getId())});
     }
 
     /**
@@ -264,7 +266,8 @@ class TaskQueueDBAdapter {
     /**
      * Set the related task record as successfully completed.
      * <p>
-     * NOTE: this code must not assume the task exists. IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
+     * NOTE: this code must not assume the task exists.
+     * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task Task object
      */
@@ -276,10 +279,12 @@ class TaskQueueDBAdapter {
         try (Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(task.getId())})) {
             if (cursor.moveToFirst() && cursor.getLong(0) == 0) {
                 // Delete successful tasks with no events
-                db.delete(TBL_TASK, DOM_ID + " =?", new String[]{String.valueOf(task.getId())});
+                db.delete(TBL_TASK, DOM_ID + " =?",
+                          new String[]{String.valueOf(task.getId())});
             } else {
                 // Just set is as successful
-                sql = "UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S' WHERE " + DOM_ID + '=' + task.getId();
+                sql = "UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S'"
+                        + " WHERE " + DOM_ID + '=' + task.getId();
                 db.execSQL(sql);
             }
         }
@@ -332,11 +337,13 @@ class TaskQueueDBAdapter {
         try {
             // Remove orphaned events -- should never be needed
             String whereClause = "NOT " + DOM_TASK_ID + " IS NULL"
-                    + " AND NOT EXISTS(SELECT * FROM " + TBL_TASK + " t WHERE " + TBL_EVENT + '.' + DOM_TASK_ID + "=t." + DOM_ID + ')';
+                    + " AND NOT EXISTS(SELECT * FROM " + TBL_TASK + " t"
+                    + " WHERE " + TBL_EVENT + '.' + DOM_TASK_ID + "=t." + DOM_ID + ')';
             db.delete(TBL_EVENT, whereClause, null);
 
             // Remove orphaned tasks THAT WERE SUCCESSFUL
-            whereClause = "NOT EXISTS(SELECT * FROM " + TBL_EVENT + " e WHERE e." + DOM_TASK_ID + '=' + TBL_TASK + '.' + DOM_ID + ')'
+            whereClause = "NOT EXISTS(SELECT * FROM " + TBL_EVENT + " e"
+                    + " WHERE e." + DOM_TASK_ID + '=' + TBL_TASK + '.' + DOM_ID + ')'
                     + " AND " + DOM_STATUS_CODE + " = 'S'";
             db.delete(TBL_TASK, whereClause, null);
             db.setTransactionSuccessful();
@@ -348,7 +355,8 @@ class TaskQueueDBAdapter {
     /**
      * Save and requeue the passed task.
      * <p>
-     * NOTE: this code must not assume the task exists. IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
+     * NOTE: this code must not assume the task exists.
+     * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task task object to requeue.
      */
@@ -357,7 +365,6 @@ class TaskQueueDBAdapter {
             // We have waited a lot already; just give up.
             setTaskFail(task, "Retry limit exceeded");
         } else {
-            task.setState(TaskState.waiting);
             // Compute time Task can next be run
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.SECOND, task.getRetryDelay());
@@ -366,22 +373,22 @@ class TaskQueueDBAdapter {
             cv.put(DOM_RETRY_DATE, DateUtils.utcSqlDateTime(cal.getTime()));
             cv.put(DOM_RETRY_COUNT, task.getRetries() + 1);
             cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
-            getDb().update(TBL_TASK, cv, DOM_ID + "=?", new String[]{String.valueOf(task.getId())});
+            getDb().update(TBL_TASK, cv, DOM_ID + "=?",
+                           new String[]{String.valueOf(task.getId())});
         }
     }
 
     /**
      * Save and set the task as failed.
      * <p>
-     * NOTE: this code must not assume the task exists. IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
+     * NOTE: this code must not assume the task exists.
+     * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      *
      * @param task    Task that failed.
      * @param message Final message to store. Task can also contain an Exception object.
      */
     void setTaskFail(@NonNull final Task task,
                      @NonNull final String message) {
-        task.setState(TaskState.failed);
-
         ContentValues cv = new ContentValues();
         cv.put(DOM_FAILURE_REASON, message);
         cv.put(DOM_STATUS_CODE, "F");
@@ -391,14 +398,16 @@ class TaskQueueDBAdapter {
             cv.put(DOM_EXCEPTION, SerializationUtils.serializeObject(e));
         }
 
-        getDb().update(TBL_TASK, cv, DOM_ID + "=?", new String[]{String.valueOf(task.getId())});
+        getDb().update(TBL_TASK, cv, DOM_ID + "=?",
+                       new String[]{String.valueOf(task.getId())});
     }
 
     /**
      * Store an Event object for later retrieval after task has completed. This is
      * analogous to writing a line to the 'log file' for the task.
      * <p>
-     * NOTE: this code must not assume the task exists. IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
+     * NOTE: this code must not assume the task exists.
+     * IT MAY HAVE BEEN DELETED BY THE QUEUE MANAGER.
      */
     void storeTaskEvent(@NonNull final Task task,
                         @NonNull final Event event) {
@@ -461,7 +470,7 @@ class TaskQueueDBAdapter {
      */
     @NonNull
     TasksCursor getTasks() {
-        return TasksCursor.fetchTasks(getDb(), TaskCursorSubtype.all);
+        return TasksCursor.fetchTasks(getDb());
     }
 
     /**
@@ -473,7 +482,7 @@ class TaskQueueDBAdapter {
      */
     @NonNull
     TasksCursor getTasks(final long category) {
-        return TasksCursor.fetchTasks(getDb(), category, TaskCursorSubtype.active);
+        return TasksCursor.fetchTasks(getDb(), category);
     }
 
     /**
@@ -504,7 +513,7 @@ class TaskQueueDBAdapter {
     }
 
     /**
-     * Generic function to close the database
+     * Generic function to close the database.
      */
     public void close() {
         try {
@@ -538,7 +547,7 @@ class TaskQueueDBAdapter {
         final int id;
 
         /**
-         * Constructor
+         * Constructor.
          *
          * @param timeUntilRunnable Milliseconds until task should be run
          * @param cursor            Cursor positioned at task details

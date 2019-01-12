@@ -34,7 +34,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -54,7 +54,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 public class GoodreadsSearchCriteriaActivity
         extends BaseActivity {
 
-    private CatalogueDBAdapter mDb;
+    private DBA mDb;
     private long mBookId;
 
     private TextView mCriteriaView;
@@ -70,7 +70,7 @@ public class GoodreadsSearchCriteriaActivity
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        mDb = new CatalogueDBAdapter(this);
+        mDb = new DBA(this);
 
         mCriteriaView = findViewById(R.id.search_text);
 

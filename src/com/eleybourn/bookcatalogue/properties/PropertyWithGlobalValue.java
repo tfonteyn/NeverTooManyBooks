@@ -146,7 +146,7 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
 
     @NonNull
     public Property<T> setPreferenceKey(@StringRes final int key) {
-        mPreferenceKey = BookCatalogueApp.getResourceString(key);
+        mPreferenceKey = BookCatalogueApp.getResString(key);
         return this;
     }
 

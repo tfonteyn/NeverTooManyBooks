@@ -41,12 +41,12 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
 
     @Override
     public void set(@Nullable final T value) {
-        if (uuid == null) {
-            nonPersistedValue = value;
+        if (mUuid == null) {
+            mNonPersistedValue = value;
         } else if (value == null) {
-            Prefs.getPrefs(uuid).edit().remove(getKey()).apply();
+            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
-            Prefs.getPrefs(uuid).edit()
+            Prefs.getPrefs(mUuid).edit()
                  .putString(getKey(), TextUtils.join(DELIM, value)).apply();
         }
     }
@@ -55,14 +55,14 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      * Bypass the real type
      */
     public void set(@NonNull final Set<String> value) {
-        if (uuid == null) {
+        if (mUuid == null) {
             throw new IllegalArgumentException("uuid was null");
         }
 
         if (value == null) {
-            Prefs.getPrefs(uuid).edit().remove(getKey()).apply();
+            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
-            Prefs.getPrefs(uuid).edit()
+            Prefs.getPrefs(mUuid).edit()
                  .putString(getKey(), TextUtils.join(DELIM, value)).apply();
         }
     }
@@ -78,10 +78,10 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     public void clear() {
-        if (uuid == null) {
-            nonPersistedValue.clear();
+        if (mUuid == null) {
+            mNonPersistedValue.clear();
         } else {
-            Prefs.getPrefs(uuid).edit().remove(getKey()).apply();
+            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
         }
     }
 
@@ -91,24 +91,24 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      * @param value to add
      */
     public void add(@NonNull final E value) {
-        if (uuid == null) {
-            nonPersistedValue.add(value);
+        if (mUuid == null) {
+            mNonPersistedValue.add(value);
         } else {
-            String sValues = Prefs.getPrefs(uuid).getString(getKey(), null);
+            String sValues = Prefs.getPrefs(mUuid).getString(getKey(), null);
             if (sValues == null) {
                 sValues = String.valueOf(value);
             } else {
                 sValues += DELIM + String.valueOf(value);
             }
-            Prefs.getPrefs(uuid).edit().putString(getKey(), sValues).apply();
+            Prefs.getPrefs(mUuid).edit().putString(getKey(), sValues).apply();
         }
     }
 
     public void remove(@NonNull final E value) {
-        if (uuid == null) {
-            nonPersistedValue.remove(value);
+        if (mUuid == null) {
+            mNonPersistedValue.remove(value);
         } else {
-            String sValues = Prefs.getPrefs(uuid).getString(getKey(), null);
+            String sValues = Prefs.getPrefs(mUuid).getString(getKey(), null);
             if (sValues != null && !sValues.isEmpty()) {
                 List<String> newList = new ArrayList<>();
                 for (String e : sValues.split(DELIM)) {
@@ -117,10 +117,10 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                     }
                 }
                 if (!newList.isEmpty()) {
-                    Prefs.getPrefs(uuid).edit()
+                    Prefs.getPrefs(mUuid).edit()
                          .putString(getKey(), TextUtils.join(DELIM, newList)).apply();
                 } else {
-                    Prefs.getPrefs(uuid).edit().remove(getKey()).apply();
+                    Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
                 }
             }
         }
@@ -128,10 +128,10 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest) {
-        if (uuid == null) {
+        if (mUuid == null) {
             // builtin ? then write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeList(new ArrayList<>(nonPersistedValue));
+            dest.writeList(new ArrayList<>(mNonPersistedValue));
         } else {
             // write the actual value, this could be the default if we have no value, but that
             // is ok anyhow.

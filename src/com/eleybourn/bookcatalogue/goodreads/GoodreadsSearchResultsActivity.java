@@ -37,7 +37,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -66,7 +66,7 @@ public class GoodreadsSearchResultsActivity
 
     public static final String BKEY_SEARCH_CRITERIA = "criteria";
     private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("Goodreads-GetImageTask");
-    private CatalogueDBAdapter mDb;
+    private DBA mDb;
     private List<GoodreadsWork> mList = new ArrayList<>();
 
     @Override
@@ -80,7 +80,7 @@ public class GoodreadsSearchResultsActivity
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        mDb = new CatalogueDBAdapter(this);
+        mDb = new DBA(this);
 
         // Look for search criteria
         String criteria = getIntent().getStringExtra(BKEY_SEARCH_CRITERIA);

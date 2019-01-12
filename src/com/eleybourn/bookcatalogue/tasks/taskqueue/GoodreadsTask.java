@@ -33,7 +33,7 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -54,11 +54,11 @@ public abstract class GoodreadsTask
         extends Task
         implements Serializable {
 
-    private static final long serialVersionUID = -5985866222873741455L;
 
     private static final String STATUS_COMPLETE = "S";
     private static final String STATUS_FAILED = "F";
     private static final String STATUS_QUEUED = "Q";
+    private static final long serialVersionUID = -4388499226374546985L;
 
     public GoodreadsTask(@NonNull final String description) {
         super(description);
@@ -71,7 +71,7 @@ public abstract class GoodreadsTask
                                 @NonNull final Context context);
 
     /**
-     * Create a new View
+     * Create a new View.
      */
     @Override
     public View newListItemView(@NonNull final LayoutInflater inflater,
@@ -98,13 +98,13 @@ public abstract class GoodreadsTask
     }
 
     /**
-     * Bind task details to passed View
+     * Bind task details to passed View.
      */
     @Override
     public void bindView(@NonNull final View view,
                          @NonNull final Context context,
                          @NonNull final BindableItemCursor cursor,
-                         @NonNull final CatalogueDBAdapter db) {
+                         @NonNull final DBA db) {
         TaskHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_TASK_HOLDER);
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
@@ -125,8 +125,8 @@ public abstract class GoodreadsTask
                 break;
             case STATUS_QUEUED:
                 statusText = context.getString(R.string.gr_tq_queued);
-                holder.retry_info.setText(
-                        context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
+                holder.retry_info
+                        .setText(context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
                                           this.getRetries(),
                                           this.getRetryLimit(),
                                           DateUtils.toPrettyDateTime(tasksCursor.getRetryDate())));
@@ -146,22 +146,22 @@ public abstract class GoodreadsTask
         Exception e = this.getException();
         if (e != null) {
             holder.error.setVisibility(View.VISIBLE);
-            holder.error.setText(BookCatalogueApp.getResourceString(R.string.gr_tq_last_error_e,
-                                                                    e.getLocalizedMessage()));
+            holder.error.setText(BookCatalogueApp.getResString(R.string.gr_tq_last_error_e,
+                                                               e.getLocalizedMessage()));
         } else {
             holder.error.setVisibility(View.GONE);
         }
         //"Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
-        holder.job_info.setText(BookCatalogueApp.getResourceString(R.string.gr_tq_generic_task_info,
-                                                                   this.getId(),
-                                                                   DateUtils.toPrettyDateTime(
-                                                                           tasksCursor.getQueuedDate())));
+        holder.job_info.setText(BookCatalogueApp
+                                        .getResString(R.string.gr_tq_generic_task_info,
+                                                      this.getId(),
+                                                      DateUtils.toPrettyDateTime(
+                                                                   tasksCursor.getQueuedDate())));
         //view.requestLayout();
     }
 
     /**
-     * Add context menu items:
-     * - Allow task deletion
+     * Add context menu items.
      */
     @Override
     public void addContextMenuItems(@NonNull final Context context,
@@ -170,7 +170,7 @@ public abstract class GoodreadsTask
                                     final int position,
                                     final long id,
                                     @NonNull final List<ContextDialogItem> items,
-                                    @NonNull final CatalogueDBAdapter db) {
+                                    @NonNull final DBA db) {
 
         items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task),
                                         new Runnable() {

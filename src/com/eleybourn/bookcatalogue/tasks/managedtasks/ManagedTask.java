@@ -68,7 +68,7 @@ public abstract class ManagedTask
      * This object handles all underlying task messages for every instance of this class.
      */
     private static final MessageSwitch<ManagedTaskListener, ManagedTaskController>
-            mMessageSwitch = new MessageSwitch<>();
+            MESSAGE_SWITCH = new MessageSwitch<>();
     /** The manager who we will use for progress etc, and who we will inform about our state. */
     @NonNull
     protected final TaskManager mTaskManager;
@@ -107,7 +107,7 @@ public abstract class ManagedTask
         // Set the thread name to something helpful.
         setName(name);
 
-        mMessageSenderId = mMessageSwitch.createSender(controller);
+        mMessageSenderId = MESSAGE_SWITCH.createSender(controller);
         // Save the taskManager for later
         mTaskManager = taskManager;
         // Add myself to my manager
@@ -116,7 +116,7 @@ public abstract class ManagedTask
 
     @NonNull
     public static MessageSwitch<ManagedTaskListener, ManagedTaskController> getMessageSwitch() {
-        return mMessageSwitch;
+        return MESSAGE_SWITCH;
     }
 
     /**
@@ -164,7 +164,7 @@ public abstract class ManagedTask
         onTaskFinish();
 
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
-        mMessageSwitch.send(
+        MESSAGE_SWITCH.send(
                 mMessageSenderId,
                 new MessageSwitch.Message<ManagedTaskListener>() {
                     @Override

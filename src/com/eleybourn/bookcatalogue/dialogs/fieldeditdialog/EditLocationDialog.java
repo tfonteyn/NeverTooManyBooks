@@ -26,13 +26,13 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 
 public class EditLocationDialog
         extends EditStringDialog {
 
     public EditLocationDialog(@NonNull final Activity activity,
-                              @NonNull final CatalogueDBAdapter db,
+                              @NonNull final DBA db,
                               @NonNull final Runnable onChanged) {
         super(activity, db, onChanged);
     }

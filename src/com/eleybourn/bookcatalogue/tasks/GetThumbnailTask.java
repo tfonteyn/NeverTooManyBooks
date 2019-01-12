@@ -30,7 +30,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
-import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
@@ -200,7 +200,7 @@ public class GetThumbnailTask
         // try cache
         if (!mCacheWasChecked) {
             File originalFile = StorageUtils.getCoverFile(mUuid);
-            CoversDBAdapter coversDBAdapter = taskContext.getCoversDb();
+            CoversDBA coversDBAdapter = taskContext.getCoversDb();
             mBitmap = coversDBAdapter.fetchCachedImage(originalFile, mUuid, mWidth, mHeight);
 
             mWasInCache = (mBitmap != null);
@@ -244,7 +244,7 @@ public class GetThumbnailTask
                 // one thread.
                 // Tell the cache write it can be recycled if we don't have a valid view.
                 ThumbnailCacheWriterTask.writeToCache(
-                        CoversDBAdapter.getThumbnailCoverCacheId(mUuid, mWidth, mHeight),
+                        CoversDBA.getThumbnailCoverCacheId(mUuid, mWidth, mHeight),
                         mBitmap, !viewIsValid);
             }
             if (viewIsValid) {

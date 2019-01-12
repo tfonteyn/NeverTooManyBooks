@@ -90,25 +90,25 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.R;
 
 /**
- * Helper class for AbsListView to draw and control the Fast Scroll thumb
+ * Helper class for AbsListView to draw and control the Fast Scroll thumb.
  */
 public class FastScroller {
 
     /** Minimum number of pages to justify showing a fast scroll thumb */
     private static final int MIN_PAGES = 4;
-    /** Scroll thumb not showing */
+    /** Scroll thumb not showing. */
     private static final int STATE_NONE = 0;
     // ENHANCE: Not implemented yet - fade-in transition
     // private static final int STATE_ENTER = 1;
-    /** Scroll thumb visible and moving along with the scrollbar */
+    /** Scroll thumb visible and moving along with the scrollbar. */
     private static final int STATE_VISIBLE = 2;
-    /** Scroll thumb being dragged by user */
+    /** Scroll thumb being dragged by user. */
     private static final int STATE_DRAGGING = 3;
-    /** Scroll thumb fading out due to inactivity timeout */
+    /** Scroll thumb fading out due to inactivity timeout. */
     private static final int STATE_EXIT = 4;
-    /** This value is in SP taken from the Android sources */
-    private static final int mLargeTextSpSize = 22; //Units=SP
-    private static int mLargeTextScaledSize = 22; //Units=SP
+    /** This value is in SP taken from the Android sources. */
+    private static final int mLargeTextSizeInSp = 22;
+    private static int mLargeTextScaledSizeInSp = 22;
     private final int mOverlaySize;
     @NonNull
     private final AbsListView mList;
@@ -150,12 +150,12 @@ public class FastScroller {
         // we get an error, just use a hard-coded guess.
         try {
             final float scale = context.getResources().getDisplayMetrics().scaledDensity;
-            mLargeTextScaledSize = (int) (mLargeTextSpSize * scale);
-            overlaySize = 3 * mLargeTextScaledSize;
+            mLargeTextScaledSizeInSp = (int) (mLargeTextSizeInSp * scale);
+            overlaySize = 3 * mLargeTextScaledSizeInSp;
         } catch (RuntimeException e) {
             // Not a critical value; just try to get it close.
-            mLargeTextScaledSize = mLargeTextSpSize;
-            overlaySize = 3 * mLargeTextScaledSize;
+            mLargeTextScaledSizeInSp = mLargeTextSizeInSp;
+            overlaySize = 3 * mLargeTextScaledSizeInSp;
         }
         mOverlaySize = overlaySize;
 
@@ -196,8 +196,8 @@ public class FastScroller {
         // Bounds are always top right. Y coordinate get's translated during draw
         // For reference, the thumb itself is approximately 50% as wide as the underlying graphic
         // so 1/6th of the width means the thumb is approximately 1/12 the width.
-        mThumbW = (int) (mLargeTextScaledSize * 2.5); // viewWidth / 6 ; //mOverlaySize *3/4 ; //64; //mCurrentThumb.getIntrinsicWidth();
-        mThumbH = (int) (mLargeTextScaledSize * 2.5); //viewWidth / 6 ; //mOverlaySize *3/4; //52; //mCurrentThumb.getIntrinsicHeight();
+        mThumbW = (int) (mLargeTextScaledSizeInSp * 2.5); // viewWidth / 6 ; //mOverlaySize *3/4 ; //64; //mCurrentThumb.getIntrinsicWidth();
+        mThumbH = (int) (mLargeTextScaledSizeInSp * 2.5); //viewWidth / 6 ; //mOverlaySize *3/4; //52; //mCurrentThumb.getIntrinsicHeight();
 
         mThumbDrawable.setBounds(viewWidth - mThumbW, 0, viewWidth, mThumbH);
         mThumbDrawable.setAlpha(ScrollFade.ALPHA_MAX);

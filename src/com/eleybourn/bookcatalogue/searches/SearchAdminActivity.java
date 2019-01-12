@@ -23,7 +23,7 @@ public class SearchAdminActivity
         extends BaseActivity {
 
     /**
-     * Optional: set to one of the {@link AdminSearchOrderFragment} tabs
+     * Optional: set to one of the {@link AdminSearchOrderFragment} tabs,
      * if we should *only* show that tab, and NOT save the new setting.
      */
     public static final String REQUEST_BKEY_TAB = "tab";
@@ -102,13 +102,13 @@ public class SearchAdminActivity
                 ArrayList<SearchSites.Site> list = frag.getList();
                 if (list != null) {
                     for (SearchSites.Site site : list) {
-                        sites = (site.enabled ? sites | site.id : sites & ~site.id);
+                        sites = site.enabled ? sites | site.id : sites & ~site.id;
                     }
                 }
                 Intent data = new Intent();
                 data.putExtra(RESULT_SEARCH_SITES, sites);
                 // no changes committed, we got data to use temporarily
-                setResult(Activity.RESULT_OK, data); /* 4266b81b-137b-4647-aa1c-8ec0fc8726e6 */
+                setResult(Activity.RESULT_OK, data);
                 finish();
             }
         });
@@ -160,7 +160,8 @@ public class SearchAdminActivity
             @Override
             public void onClick(@NonNull final View v) {
 
-                //ENHANCE: compare this approach to what is used in EditBookFragment & children. Decide later...
+                //ENHANCE: compare this approach to what is used in EditBookFragment & children.
+                // Decide later...
 
                 AdminHostsFragment ahf;
                 AdminSearchOrderFragment asf;
@@ -219,11 +220,11 @@ public class SearchAdminActivity
         }
 
         @Override
-        public void onTabUnselected(final TabLayout.Tab tab) {
+        public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
         }
 
         @Override
-        public void onTabReselected(final TabLayout.Tab tab) {
+        public void onTabReselected(@NonNull final TabLayout.Tab tab) {
         }
     }
 }

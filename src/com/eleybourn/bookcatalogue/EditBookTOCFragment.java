@@ -206,8 +206,8 @@ public class EditBookTOCFragment
         // clicking on a list entry, puts it in edit fields
         mListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(final AdapterView<?> parent,
-                                    final View view,
+            public void onItemClick(@NonNull final AdapterView<?> parent,
+                                    @NonNull final View view,
                                     final int position,
                                     final long id) {
                 mEditPosition = position;
@@ -457,7 +457,7 @@ public class EditBookTOCFragment
         if (mISFDBEditionUrls.size() > 1) {
             dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.retry),
                              new DialogInterface.OnClickListener() {
-                                 public void onClick(final DialogInterface dialog,
+                                 public void onClick(@NonNull final DialogInterface dialog,
                                                      final int which) {
                                      // remove the top one, and try again
                                      mISFDBEditionUrls.remove(0);

@@ -680,7 +680,7 @@
     <string name="menu_set_complete">Marquer comme complet</string>
     <string name="error_search_configuration">Erreur de configuration Web. Ouvrez la page Admin et vérifiez les paramètres des pages de recherche.</string>
     <string name="tab_lbl_search_site_order">Ordre</string>
-    <string name="search_with_text">Recherche</string>
+    <string name="search_with_text">Recherche: %1$s</string>
     <string name="btn_options">Options</string>
     <string name="lbl_price_paid">Payé</string>
     <string name="lbl_first_publication">Primera publicación</string>
@@ -709,6 +709,9 @@
     <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="starting">Commencement</string>
+    <string name="pt_bob_preferred_style">Préféré</string>
+    <string name="lbl_books">Livres</string>
+    <string name="title_edit_genre">Modifier les détails du genre</string>
 
     <!-- End: Added/Updated in [Next Version] -->
 

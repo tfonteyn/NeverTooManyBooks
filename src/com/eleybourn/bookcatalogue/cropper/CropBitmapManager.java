@@ -20,7 +20,6 @@ import android.graphics.BitmapFactory;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -40,7 +39,7 @@ import java.util.WeakHashMap;
  */
 class CropBitmapManager {
     @Nullable
-    private static CropBitmapManager sManager = null;
+    private static CropBitmapManager sManager;
     private final Map<Thread, ThreadStatus> mThreadStatus = new WeakHashMap<>();
 
     private CropBitmapManager() {

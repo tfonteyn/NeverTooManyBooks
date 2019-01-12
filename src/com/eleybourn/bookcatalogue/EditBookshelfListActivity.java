@@ -36,7 +36,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -56,7 +56,7 @@ import java.util.ArrayList;
 public class EditBookshelfListActivity
         extends BaseListActivity {
 
-    private CatalogueDBAdapter mDb;
+    private DBA mDb;
     private ArrayList<Bookshelf> mList;
 
     protected int getLayoutId() {
@@ -70,7 +70,7 @@ public class EditBookshelfListActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_edit_bookshelves);
 
-        mDb = new CatalogueDBAdapter(this);
+        mDb = new DBA(this);
 
         populateList();
         Tracker.exitOnCreate(this);
@@ -182,8 +182,8 @@ public class EditBookshelfListActivity
      * {@link BaseListActivity} enables 'this' as the listener
      */
     @Override
-    public void onItemClick(final AdapterView<?> parent,
-                            final View view,
+    public void onItemClick(@NonNull final AdapterView<?> parent,
+                            @NonNull final View view,
                             final int position,
                             final long id) {
         Bookshelf bookshelf = mList.get(position);

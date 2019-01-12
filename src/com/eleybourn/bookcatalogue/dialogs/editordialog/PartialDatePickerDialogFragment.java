@@ -63,27 +63,23 @@ public class PartialDatePickerDialogFragment
     /** a standard sql style date string, must be correct. */
     public static final String BKEY_DATE = "date";
     /** or the date split into components, which can partial. */
+    @SuppressWarnings("WeakerAccess")
     public static final String BKEY_YEAR = "year";
+    @SuppressWarnings("WeakerAccess")
     public static final String BKEY_MONTH = "month";
+    @SuppressWarnings("WeakerAccess")
     public static final String BKEY_DAY = "day";
     /**
      * Object to handle changes.
      */
     private final PartialDatePickerDialog.OnPartialDatePickerResultsListener mDialogListener =
             new PartialDatePickerDialog.OnPartialDatePickerResultsListener() {
-                public void onPartialDatePickerSave(final Integer year,
-                                                    final Integer month,
-                                                    final Integer day) {
+                public void onPartialDatePickerSave(@Nullable final Integer year,
+                                                    @Nullable final Integer month,
+                                                    @Nullable final Integer day) {
                     getFragmentListener()
                             .onPartialDatePickerSave(PartialDatePickerDialogFragment.this,
                                                      mDestinationFieldId, year, month, day);
-                }
-
-                @Override
-                public void onPartialDatePickerCancel() {
-                    getFragmentListener()
-                            .onPartialDatePickerCancel(PartialDatePickerDialogFragment.this,
-                                                       mDestinationFieldId);
                 }
             };
 
@@ -212,9 +208,6 @@ public class PartialDatePickerDialogFragment
                                      @Nullable final Integer year,
                                      @Nullable final Integer month,
                                      @Nullable final Integer day);
-
-        void onPartialDatePickerCancel(@NonNull final PartialDatePickerDialogFragment dialog,
-                                       @IdRes final int destinationFieldId);
     }
 
 
@@ -226,13 +219,16 @@ public class PartialDatePickerDialogFragment
         /** Calling context. */
         @NonNull
         private final Activity mActivity;
+
         /** Local ref to month spinner. */
         private final Spinner mMonthSpinner;
+
         /** Local ref to day spinner. */
         private final Spinner mDaySpinner;
         /** Local ref to day spinner adapter. */
         @NonNull
         private final ArrayAdapter<String> mDayAdapter;
+
         /** Local ref to year text view. */
         private final EditText mYearView;
         /** Currently displayed year; null if empty/invalid. */
@@ -509,9 +505,7 @@ public class PartialDatePickerDialogFragment
                     new View.OnClickListener() {
                         @Override
                         public void onClick(@NonNull final View v) {
-                            if (mListener != null) {
-                                mListener.onPartialDatePickerCancel();
-                            }
+                            dismiss();
                         }
                     }
             );
@@ -527,6 +521,7 @@ public class PartialDatePickerDialogFragment
          * @param month Month (or null)
          * @param day   Day (or null)
          */
+        @SuppressWarnings("WeakerAccess")
         public void setDate(@Nullable final Integer year,
                             @Nullable final Integer month,
                             @Nullable final Integer day) {
@@ -611,7 +606,7 @@ public class PartialDatePickerDialogFragment
          */
         private void handleMonth(@Nullable final Integer pos) {
             // See if we got a valid month
-            boolean isMonth = (pos != null && pos > 0);
+            boolean isMonth = (pos != null) && (pos > 0);
 
             // Seems reasonable to disable other spinners if year invalid, but it actually
             // not very friendly when entering data for new books.
@@ -745,7 +740,7 @@ public class PartialDatePickerDialogFragment
         }
 
         /**
-         * Listener to receive notifications when dialog is closed by any means.
+         * Listener to receive notifications when dialog is confirmed.
          *
          * @author pjw
          */
@@ -754,9 +749,6 @@ public class PartialDatePickerDialogFragment
             void onPartialDatePickerSave(@Nullable final Integer year,
                                          @Nullable final Integer month,
                                          @Nullable final Integer day);
-
-            void onPartialDatePickerCancel();
         }
-
     }
 }

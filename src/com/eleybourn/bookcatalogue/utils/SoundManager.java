@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
@@ -46,6 +47,8 @@ public final class SoundManager {
             player.setVolume(0.2f, 0.2f);
             player.prepare();
             player.start();
+        } catch (Resources.NotFoundException e) {
+            throw new IllegalStateException(e);
         } catch (Exception e) {
             // No sound is critical. Just log errors
             Logger.error(e);

@@ -36,10 +36,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_EVENT;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_EVENT_DATE;
-import static com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBHelper.DOM_ID;
-
 /**
  * Cursor subclass used to make accessing TaskExceptions a little easier.
  *
@@ -58,9 +54,8 @@ public class EventsCursor
 
     private final Map<Long, Boolean> mSelections = new Hashtable<>();
 
-
     /**
-     * Constructor, based on SQLiteCursor constructor
+     * Constructor, based on SQLiteCursor constructor.
      */
     EventsCursor(@NonNull final SQLiteCursorDriver driver,
                  @NonNull final String editTable,
@@ -75,7 +70,7 @@ public class EventsCursor
      */
     public long getId() {
         if (mIdCol < 0) {
-            mIdCol = this.getColumnIndex(DOM_ID);
+            mIdCol = this.getColumnIndex(TaskQueueDBHelper.DOM_ID);
         }
         return getLong(mIdCol);
     }
@@ -88,7 +83,7 @@ public class EventsCursor
     @NonNull
     public Date getEventDate() {
         if (mDateCol < 0) {
-            mDateCol = this.getColumnIndex(DOM_EVENT_DATE);
+            mDateCol = getColumnIndex(TaskQueueDBHelper.DOM_EVENT_DATE);
         }
         Date date = DateUtils.parseDate(getString(mDateCol));
         if (date == null) {
@@ -98,51 +93,37 @@ public class EventsCursor
     }
 
     /**
-     * Accessor for Exception field.
-     *
-     * @return TaskException object
-     */
-    @NonNull
-    private Event getEvent() {
-        if (mEventCol < 0) {
-            mEventCol = this.getColumnIndex(DOM_EVENT);
-        }
-        byte[] blob = getBlob(mEventCol);
-        Event event;
-        try {
-            event = SerializationUtils.deserializeObject(blob);
-        } catch (RTE.DeserializationException de) {
-            event = QueueManager.getQueueManager().newLegacyEvent(blob);
-        }
-        event.setId(this.getId());
-        return event;
-    }
-
-    /**
      * Fake attribute to handle multi-select ListViews. if we ever do them.
      *
      * @return Options indicating if current row has been 'selected'.
      */
-    public boolean getIsSelected() {
-        return getIsSelected(getId());
-    }
-
-    private boolean getIsSelected(final long id) {
-        if (mSelections.containsKey(id)) {
-            return mSelections.get(id);
+    public boolean isSelected() {
+        if (mSelections.containsKey(getId())) {
+            return mSelections.get(getId());
         } else {
             return false;
         }
     }
 
-    public void setIsSelected(final long id,
-                              final boolean selected) {
+    public void setSelected(final long id,
+                            final boolean selected) {
         mSelections.put(id, selected);
     }
 
     @Override
     @NonNull
     public BindableItemCursorAdapter.BindableItem getBindableItem() {
-        return getEvent();
+        if (mEventCol < 0) {
+            mEventCol = getColumnIndex(TaskQueueDBHelper.DOM_EVENT);
+        }
+        byte[] blob = getBlob(mEventCol);
+        Event event;
+        try {
+            event = SerializationUtils.deserializeObject(blob);
+        } catch (RTE.DeserializationException de) {
+            event = new LegacyEvent();
+        }
+        event.setId(getId());
+        return event;
     }
 }

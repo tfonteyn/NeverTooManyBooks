@@ -25,10 +25,11 @@ import android.content.SearchRecentSuggestionsProvider;
 import android.database.Cursor;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 
 /**
  * @author evan
@@ -38,19 +39,20 @@ public class SearchSuggestionProvider
 
     /**
      * can't use getContext, because setupSuggestions() MUST be called from the constructor,
-     * at which point getContext == null
+     * at which point getContext == null.
      * alternative is hardcoding the package name of course
      * <p>
      * Matches the Manifest entry:
      * <p>
      * android:authorities="${packageName}.SearchSuggestionProvider"
      */
-    private final static String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName() +
-            ".SearchSuggestionProvider";
+    private static final String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName()
+            + ".SearchSuggestionProvider";
 
-    private final static int MODE = DATABASE_MODE_QUERIES;
+    private static final int MODE = DATABASE_MODE_QUERIES;
+
     @Nullable
-    private CatalogueDBAdapter mDb = null;
+    private DBA mDb;
 
     public SearchSuggestionProvider() {
         setupSuggestions(AUTHORITY, MODE);
@@ -61,23 +63,24 @@ public class SearchSuggestionProvider
      * deferred until needed. Hence creating it on the fly
      */
     @Override
-    public Cursor query(Uri uri,
-                        String[] projection,
-                        String selection,
-                        String[] selectionArgs,
-                        String sortOrder) {
+    public Cursor query(final Uri uri,
+                        final String[] projection,
+                        final String selection,
+                        @NonNull final String[] selectionArgs,
+                        final String sortOrder) {
         if (selectionArgs[0].isEmpty()) {
             return null;
         }
         if (mDb == null) {
             //noinspection ConstantConditions
-            mDb = new CatalogueDBAdapter(this.getContext());
+            mDb = new DBA(this.getContext());
         }
         return mDb.fetchSearchSuggestions(selectionArgs[0]);
     }
 
     /**
-     * There does not seem to be a way to cleanup resources (here, our db) in a {@link ContentProvider}
+     * There does not seem to be a way to cleanup resources (here, our db)
+     * in a {@link ContentProvider}.
      * Added/Leaving this method here as a reminder
      */
     public void close() {

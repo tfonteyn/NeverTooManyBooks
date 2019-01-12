@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.dialogs.editordialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -62,13 +61,6 @@ public class TextFieldEditorDialogFragment
                     getFragmentListener()
                             .onTextFieldEditorSave(TextFieldEditorDialogFragment.this,
                                                    mDestinationFieldId, newText);
-                }
-
-                @Override
-                public void onTextFieldEditorCancel() {
-                    getFragmentListener()
-                            .onTextFieldEditorCancel(TextFieldEditorDialogFragment.this,
-                                                     mDestinationFieldId);
                 }
             };
 
@@ -141,9 +133,6 @@ public class TextFieldEditorDialogFragment
         void onTextFieldEditorSave(@NonNull final TextFieldEditorDialogFragment dialog,
                                    final int destinationFieldId,
                                    @NonNull final String newText);
-
-        void onTextFieldEditorCancel(@NonNull final TextFieldEditorDialogFragment dialog,
-                                     final int destinationFieldId);
     }
 
 
@@ -196,19 +185,11 @@ public class TextFieldEditorDialogFragment
                     new View.OnClickListener() {
                         @Override
                         public void onClick(@NonNull final View v) {
-                            mListener.onTextFieldEditorCancel();
+                            dismiss();
                         }
                     }
             );
 
-            // Handle Cancel by any means
-            this.setOnCancelListener(new OnCancelListener() {
-
-                @Override
-                public void onCancel(final DialogInterface dialog) {
-                    mListener.onTextFieldEditorCancel();
-                }
-            });
 
             // Setup the layout
             setView(root);
@@ -233,13 +214,11 @@ public class TextFieldEditorDialogFragment
         }
 
         /**
-         * Listener to receive notifications when dialog is closed by any means.
+         * Listener to receive notifications when dialog is confirmed.
          */
         protected interface OnTextFieldEditorResultsListener {
 
             void onTextFieldEditorSave(@NonNull final String newText);
-
-            void onTextFieldEditorCancel();
         }
     }
 }

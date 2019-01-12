@@ -29,12 +29,12 @@ public class PBoolean
 
     @Override
     public void set(@Nullable final Boolean value) {
-        if (uuid == null) {
-            nonPersistedValue = value;
+        if (mUuid == null) {
+            mNonPersistedValue = value;
         } else if (value == null) {
-            Prefs.getPrefs(uuid).edit().remove(getKey()).apply();
+            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
-            Prefs.getPrefs(uuid).edit().putBoolean(getKey(), value).apply();
+            Prefs.getPrefs(mUuid).edit().putBoolean(getKey(), value).apply();
         }
     }
 
@@ -51,10 +51,10 @@ public class PBoolean
     @NonNull
     @Override
     public Boolean get() {
-        if (uuid == null) {
-            return nonPersistedValue != null ? nonPersistedValue : defaultValue;
+        if (mUuid == null) {
+            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            return Prefs.getPrefs(uuid).getBoolean(getKey(), defaultValue);
+            return Prefs.getPrefs(mUuid).getBoolean(getKey(), mDefaultValue);
         }
     }
 

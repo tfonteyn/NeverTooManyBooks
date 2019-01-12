@@ -20,13 +20,10 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -43,7 +40,7 @@ import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.csv.CsvImportTask;
 import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
-import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -59,15 +56,12 @@ import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivi
 import com.eleybourn.bookcatalogue.settings.SettingsActivity;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueListActivity;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is the Administration page.
@@ -83,19 +77,9 @@ public class AdminActivity
     private static final int REQ_ADMIN_SEARCH_SETTINGS = 10;
 
     /**
-     * This is not in use right now, but leaving it in place.
-     * <p>
-     * Can be used to automatically trigger an action in {@link #onResume()}.
-     */
-    private static final String BKEY_DO_AUTO = "do_auto";
-    /** supported action: do an export to a CSV file + finishes the activity when done. */
-    private static final String BVAL_DO_AUTO_EXPORT = "export";
-    /**
      * collected results from all started activities, which we'll pass on up in our own setResult.
      */
     private final Intent resultData = new Intent();
-    private boolean mExportToCsvOnStartup;
-    private boolean mFinishAfterExport;
 
     @Override
     protected int getLayoutId() {
@@ -108,20 +92,6 @@ public class AdminActivity
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.menu_administration_long);
-
-        Bundle extras = getIntent().getExtras();
-        String val = BundleUtils.getStringFromBundles(BKEY_DO_AUTO, extras);
-        if (val != null) {
-            switch (val) {
-                case BVAL_DO_AUTO_EXPORT:
-                    mExportToCsvOnStartup = true;
-                    mFinishAfterExport = true;
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported BKEY_DO_AUTO option: " + val);
-            }
-        }
-
         setupAdminPage();
         Tracker.exitOnCreate(this);
     }
@@ -134,75 +104,6 @@ public class AdminActivity
      * 4. Advanced Options
      */
     private void setupAdminPage() {
-        /* DEBUG */
-        if (BuildConfig.DEBUG) {
-            View v = findViewById(R.id.lbl_debug);
-            v.setVisibility(View.VISIBLE);
-
-            v = findViewById(R.id.lbl_debug_tracker_history);
-            v.setVisibility(View.VISIBLE);
-            v.setBackgroundResource(android.R.drawable.list_selector_background);
-            v.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    Logger.info(this, Tracker.getEventsInfo());
-                }
-            });
-
-            v = findViewById(R.id.lbl_debug_preferences);
-            v.setVisibility(View.VISIBLE);
-            v.setBackgroundResource(android.R.drawable.list_selector_background);
-            v.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    Prefs.dumpPreferences(null);
-                }
-            });
-
-            v = findViewById(R.id.lbl_debug_run_code);
-            v.setVisibility(View.VISIBLE);
-            v.setBackgroundResource(android.R.drawable.list_selector_background);
-            v.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-
-                    System.getProperties().list(System.out);
-
-                    Map<String, String> env = System.getenv();
-                    for (String key : env.keySet()) {
-                        Logger.info(System.class, "env|key=" + key +
-                                ", value=" + env.get(key));
-                    }
-
-                    for (File file : AdminActivity.this.getExternalCacheDirs()) {
-                        Logger.info(AdminActivity.this,
-                                    "getExternalCacheDirs|dir=" +
-                                            file.getAbsolutePath());
-                    }
-                    for (File file : AdminActivity.this.getExternalFilesDirs(null)) {
-                        Logger.info(AdminActivity.this,
-                                    "getExternalFilesDirs|dir=" +
-                                            file.getAbsolutePath());
-                    }
-                    for (File file : AdminActivity.this.getExternalMediaDirs()) {
-                        Logger.info(AdminActivity.this,
-                                    "getExternalMediaDirs|dir=" +
-                                            file.getAbsolutePath());
-                    }
-                    Logger.info(AdminActivity.this,
-                                "isExternalStorageRemovable=" +
-                                        Environment.isExternalStorageRemovable());
-                    Logger.info(AdminActivity.this,
-                                "getDataDirectory=" +
-                                        Environment.getDataDirectory().getAbsolutePath());
-                    Logger.info(AdminActivity.this,
-                                "getCacheDir=" + AdminActivity.this.getCacheDir());
-                    Logger.info(AdminActivity.this,
-                                "getExternalCacheDir=" +
-                                        AdminActivity.this.getExternalCacheDir());
-                }
-            });
-        }
 
         /* Manage Field Visibility */
         View v = findViewById(R.id.lbl_field_visibility);
@@ -412,7 +313,7 @@ public class AdminActivity
         v.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
+                try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
                     coversDBAdapter.deleteAll();
                 }
             }
@@ -537,17 +438,6 @@ public class AdminActivity
         Tracker.exitOnActivityResult(this);
     }
 
-    @Override
-    @CallSuper
-    public void onResume() {
-        Tracker.enterOnResume(this);
-        super.onResume();
-        if (mExportToCsvOnStartup) {
-            exportToCSV();
-        }
-        Tracker.exitOnResume(this);
-    }
-
     /**
      * Called when any background task completes.
      *
@@ -556,7 +446,6 @@ public class AdminActivity
     @Override
     public void onTaskFinished(@NonNull final ManagedTask task) {
         super.onTaskFinished(task);
-
         // If it's an export, handle it
         if (task instanceof CsvExportTask) {
             onExportFinished((CsvExportTask) task);
@@ -570,10 +459,6 @@ public class AdminActivity
      */
     private void onExportFinished(@NonNull final CsvExportTask task) {
         if (task.isCancelled()) {
-            if (mFinishAfterExport) {
-                setResult(Activity.RESULT_OK);
-                finish();
-            }
             return;
         }
 
@@ -602,16 +487,6 @@ public class AdminActivity
                              }
                          });
 
-        dialog.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(@NonNull final DialogInterface dialog) {
-                if (mFinishAfterExport) {
-                    setResult(Activity.RESULT_OK);
-                    finish();
-                }
-            }
-        });
-
         if (!isFinishing()) {
             try {
                 //
@@ -628,8 +503,8 @@ public class AdminActivity
 
     public void sendMail() {
         // setup the mail message
-        String subject = '[' + getString(R.string.app_name) + "] " +
-                getString(R.string.lbl_export_to_csv);
+        String subject = '[' + getString(R.string.app_name) + "] "
+                + getString(R.string.lbl_export_to_csv);
 
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         emailIntent.setType("plain/text");

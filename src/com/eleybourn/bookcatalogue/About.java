@@ -110,11 +110,11 @@ public class About
         // url with encoded % characters
         @SuppressLint("DefaultLocale")
         String paypalUrl = String.format(
-                "<a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_donations" +
-                        "&business=WHD6PFWXXTPX8&lc=AU" +
-                        "&item_name=BookCatalogue&item_number=BCPP" +
-                        "&currency_code=USD" +
-                        "&bn=PP%%2dDonationsBF%%3abtn_donateCC_LG%%2egif%%3aNonHosted\">%1s</a>",
+                "<a href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_donations"
+                        + "&business=WHD6PFWXXTPX8&lc=AU"
+                        + "&item_name=BookCatalogue&item_number=BCPP"
+                        + "&currency_code=USD"
+                        + "&bn=PP%%2dDonationsBF%%3abtn_donateCC_LG%%2egif%%3aNonHosted\">%1s</a>",
                 getString(R.string.about_donate_paypal));
 
         view = findViewById(R.id.donate_url);
@@ -123,7 +123,8 @@ public class About
 
         view = findViewById(R.id.amazon_url);
         String text = String.format(
-                "<a href=\"https://www.amazon.com/gp/registry/wishlist/2A2E48ONH64HM?tag=bookcatalogue-20\">%1s</a>",
+                "<a href=\"https://www.amazon.com/gp/registry/wishlist/"
+                        + "2A2E48ONH64HM?tag=bookcatalogue-20\">%1s</a>",
                 getString(R.string.about_donate_amazon));
         view.setText(Utils.linkifyHtml(text));
         view.setMovementMethod(LinkMovementMethod.getInstance());

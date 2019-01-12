@@ -25,7 +25,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -223,7 +223,7 @@ public class TOCEntry
     }
 
     @Override
-    public long fixupId(@NonNull final CatalogueDBAdapter db) {
+    public long fixupId(@NonNull final DBA db) {
         mAuthor.id = db.getAuthorIdByName(mAuthor.getFamilyName(), mAuthor.getGivenNames());
         this.id = db.getTOCEntryId(mAuthor.id, mTitle);
         return this.id;

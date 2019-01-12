@@ -13,10 +13,10 @@ import androidx.annotation.NonNull;
 public interface Scanner {
 
     /** Request a scan. */
-    void startActivityForResult(@NonNull final Activity activity,
-                                final int requestCode);
+    void startActivityForResult(@NonNull Activity activity,
+                                int requestCode);
 
     /** Get the barcode from the resulting intent. */
     @NonNull
-    String getBarcode(@NonNull final Intent data);
+    String getBarcode(@NonNull Intent data);
 }

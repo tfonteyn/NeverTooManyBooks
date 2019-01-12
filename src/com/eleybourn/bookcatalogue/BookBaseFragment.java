@@ -44,7 +44,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
@@ -88,7 +88,7 @@ public abstract class BookBaseFragment
 
     private static final int REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET = 100;
     /** Database instance. */
-    protected CatalogueDBAdapter mDb;
+    protected DBA mDb;
     /** */
     Fields mFields;
     /** A link to the Activity, cached to avoid requireActivity() all over the place. */
@@ -176,7 +176,7 @@ public abstract class BookBaseFragment
 
         super.onActivityCreated(savedInstanceState);
 
-        mDb = new CatalogueDBAdapter(mActivity);
+        mDb = new DBA(mActivity);
 
         Bundle args = getArguments();
 
@@ -370,7 +370,7 @@ public abstract class BookBaseFragment
      * @see #onCreateOptionsMenu
      */
     @Override
-    public void onPrepareOptionsMenu(final Menu menu) {
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         super.onPrepareOptionsMenu(menu);
         Book book = getBookManager().getBook();
 

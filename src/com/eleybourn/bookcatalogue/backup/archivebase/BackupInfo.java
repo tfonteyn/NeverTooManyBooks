@@ -33,7 +33,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
+import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
@@ -135,7 +135,7 @@ public class BackupInfo
         infoBundle.putInt(INFO_ARCHIVER_COMPATIBLE, container.getVersion());
 
         infoBundle.putInt(INFO_SDK, Build.VERSION.SDK_INT);
-        infoBundle.putInt(INFO_DATABASE_VERSION, CatalogueDBHelper.DATABASE_VERSION);
+        infoBundle.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
         infoBundle.putString(INFO_CREATION_DATE, DateUtils.utcSqlDateTimeForToday());
         try {
             Context context = BookCatalogueApp.getAppContext();

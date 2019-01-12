@@ -17,5 +17,5 @@ public interface CheckListItem<T>
 
     boolean isSelected();
 
-    void setSelected(final boolean selected);
+    void setSelected(boolean selected);
 }

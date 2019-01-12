@@ -33,7 +33,8 @@ import java.io.Serializable;
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  * <p>
- * When run, it will have access to the Application context, and can use that to interact with the UI.
+ * When run, it will have access to the Application context, and can use that to interact
+ * with the UI.
  * <p>
  * It it important to note that the run(...) method is NOT called in the main thread.
  * Access to the main thread is provided by ...
@@ -52,20 +53,18 @@ public abstract class Task
     private final int mRetryLimit = 17;
     @NonNull
     private final String mDescription;
-    private TaskState mState;
     private long mId;
     private int mRetries;
 
     @Nullable
-    private Exception mException = null;
-    private int mRetryDelay = 0;
-    private boolean mAbortTask = false;
+    private Exception mException;
+    private int mRetryDelay;
+    private boolean mAbortTask;
 
     /**
-     * Constructor
+     * Constructor.
      */
     Task(@NonNull final String description) {
-        mState = TaskState.created;
         mDescription = description;
     }
 
@@ -81,14 +80,6 @@ public abstract class Task
     @NonNull
     public String getDescription() {
         return mDescription;
-    }
-
-    public TaskState getState() {
-        return mState;
-    }
-
-    public void setState(@NonNull final TaskState state) {
-        mState = state;
     }
 
     /**
@@ -124,7 +115,7 @@ public abstract class Task
     }
 
     void setRetryDelay() {
-        setRetryDelay((int) Math.pow(2, (mRetries + 1)));
+        setRetryDelay((int) Math.pow(2, mRetries + 1));
     }
 
     int getRetries() {
@@ -156,6 +147,4 @@ public abstract class Task
         mRetries = 0;
         setRetryDelay();
     }
-
-    public enum TaskState {created, running, failed, successful, waiting}
 }

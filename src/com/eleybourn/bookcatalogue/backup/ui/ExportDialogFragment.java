@@ -158,10 +158,10 @@ public class ExportDialogFragment
     }
 
     /**
-     * Listener interface to receive notifications when dialog is closed by any means.
+     * Listener interface to receive notifications when dialog is confirmed.
      */
     public interface OnExportTypeSelectionDialogResultsListener {
 
-        void onExportTypeSelectionDialogResult(@NonNull final ExportSettings settings);
+        void onExportTypeSelectionDialogResult(@NonNull ExportSettings settings);
     }
 }

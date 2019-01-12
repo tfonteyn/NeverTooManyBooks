@@ -67,7 +67,7 @@ public class BackupAndRestoreActivity
     /**
      * ID's to use when kicking of the tasks for doing a backup or restore.
      * We get it back in {@link #onTaskFinished} so we know the type of task.
-     *
+     * <p>
      * Note: could use {@link #isSave()} of course. But keeping it future proof.
      * Option 3 ? cloud ? etc....
      */
@@ -95,10 +95,10 @@ public class BackupAndRestoreActivity
     private String getDefaultFileName() {
         if (isSave()) {
             final String sqlDate = DateUtils.localSqlDateForToday();
-            return BackupFileDetails.ARCHIVE_PREFIX +
-                    sqlDate.replace(" ", "-")
-                           .replace(":", "") +
-                    BackupFileDetails.ARCHIVE_EXTENSION;
+            return BackupFileDetails.ARCHIVE_PREFIX
+                    + sqlDate.replace(" ", "-")
+                             .replace(":", "")
+                    + BackupFileDetails.ARCHIVE_EXTENSION;
         } else {
             return "";
         }
@@ -111,8 +111,8 @@ public class BackupAndRestoreActivity
     @NonNull
     @Override
     protected FileChooserFragment getChooserFragment() {
-        String lastBackupFile = Prefs.getString(BackupManager.PREF_LAST_BACKUP_FILE,
-                                                StorageUtils.getSharedStorage().getAbsolutePath());
+        String lastBackupFile = Prefs.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_FILE,
+                                                           StorageUtils.getSharedStorage().getAbsolutePath());
 
         return FileChooserFragment.newInstance(new File(Objects.requireNonNull(lastBackupFile)),
                                                getDefaultFileName());
@@ -142,7 +142,7 @@ public class BackupAndRestoreActivity
                 .setMessage(R.string.import_option_info_all_books)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog,
+                    public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         // User wants to import all.
                         importSettings.what = ImportSettings.ALL;
@@ -152,14 +152,14 @@ public class BackupAndRestoreActivity
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog,
+                    public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         dialog.dismiss();
                     }
                 })
                 .setNeutralButton(R.string.btn_options, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog,
+                    public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         // User wants to tune settings first.
                         ImportDialogFragment.newInstance(importSettings)
@@ -194,7 +194,7 @@ public class BackupAndRestoreActivity
                 .setMessage(R.string.export_info_backup_all)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog,
+                    public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         // User wants to backup all.
                         exportSettings.what = ExportSettings.ALL;
@@ -212,7 +212,7 @@ public class BackupAndRestoreActivity
                 })
                 .setNeutralButton(R.string.btn_options, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog,
+                    public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         // User wants to tune settings first.
                         ExportDialogFragment.newInstance(exportSettings)
@@ -238,7 +238,8 @@ public class BackupAndRestoreActivity
         if ((settings.what & ExportSettings.EXPORT_SINCE) != 0) {
             // no date set, use "since last backup."
             if (settings.dateFrom == null) {
-                String lastBackup = Prefs.getString(BackupManager.PREF_LAST_BACKUP_DATE, null);
+                String lastBackup = Prefs.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_DATE,
+                                                               null);
                 if (lastBackup != null && !lastBackup.isEmpty()) {
                     settings.dateFrom = DateUtils.parseDate(lastBackup);
                 }
@@ -310,10 +311,10 @@ public class BackupAndRestoreActivity
                                     .getSharedPreferences("bookCatalogue",
                                                           Context.MODE_PRIVATE).getAll()
             );
+            // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences("bookCatalogue");
             BookCatalogueApp.getAppContext()
                             .getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE)
                             .edit().clear().apply();
-
         }
 
         // all done
@@ -375,7 +376,7 @@ public class BackupAndRestoreActivity
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog,
+                    public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         dialog.dismiss();
                         Intent data = new Intent();

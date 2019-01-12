@@ -49,7 +49,8 @@ import java.util.List;
 
 
 /**
- * Class to co-ordinate multiple {@link ManagedSearchTask} objects using an existing {@link TaskManager}.
+ * Class to co-ordinate multiple {@link ManagedSearchTask} objects using
+ * an existing {@link TaskManager}.
  * <p>
  * It uses the {@link TaskManager} it is passed and listens to
  * {@link TaskManager.TaskManagerListener} messages.
@@ -63,11 +64,12 @@ import java.util.List;
 public class SearchManager {
 
     /**
-     * STATIC Object for passing messages from background tasks to activities that may be recreated
+     * STATIC Object for passing messages from background tasks to activities
+     * that may be recreated.
      * <p>
      * This object handles all underlying task messages for every instance of this class.
      */
-    private static final MessageSwitch<SearchManagerListener, SearchManagerController> mMessageSwitch = new MessageSwitch<>();
+    private static final MessageSwitch<SearchManagerListener, SearchManagerController> MESSAGE_SWITCH = new MessageSwitch<>();
 
     /**
      * Unique identifier for this instance.
@@ -75,10 +77,12 @@ public class SearchManager {
      * Used as senderId for SENDING messages specific to this instance.
      */
     private final Long mMessageSenderId;
+
     /**
-     * List of ManagedTask being managed by *this* object
+     * List of ManagedTask being managed by *this* object.
      */
     private final ArrayList<ManagedTask> mManagedTasks = new ArrayList<>();
+
     /**
      * TaskManager which will execute our tasks, and send {@link TaskManager.TaskManagerListener}
      * messages.
@@ -87,27 +91,27 @@ public class SearchManager {
     @NonNull
     private final TaskManager mTaskManager;
 
-    /** Flags applicable to *current* search */
+    /** Flags applicable to *current* search. */
     private int mSearchFlags;
-    /** Accumulated book data */
-    private Bundle mBookData = null;
-    /** Options indicating searches will be non-concurrent title/author found via ASIN */
-    private boolean mSearchingAsin = false;
-    /** Options indicating searches will be non-concurrent until an ISBN is found */
-    private boolean mWaitingForIsbn = false;
+    /** Accumulated book data. */
+    private Bundle mBookData;
+    /** Options indicating searches will be non-concurrent title/author found via ASIN. */
+    private boolean mSearchingAsin;
+    /** Options indicating searches will be non-concurrent until an ISBN is found. */
+    private boolean mWaitingForIsbn;
     /** Options indicating a task was cancelled. */
-    private boolean mCancelledFlg = false;
-    /** Original author for search */
+    private boolean mCancelledFlg;
+    /** Original author for search. */
     private String mAuthor;
-    /** Original title for search */
+    /** Original title for search. */
     private String mTitle;
-    /** Original ISBN for search */
+    /** Original ISBN for search. */
     private String mIsbn;
-    /** Indicates original ISBN is really present and valid */
+    /** Indicates original ISBN is really present and valid. */
     private boolean mHasValidIsbn;
-    /** Whether of not to fetch thumbnails */
+    /** Whether of not to fetch thumbnails. */
     private boolean mFetchThumbnail;
-    /** Output from search threads */
+    /** Output from search threads. */
     @NonNull
     private Hashtable<Integer, Bundle> mSearchResults = new Hashtable<>();
     /**
@@ -147,8 +151,8 @@ public class SearchManager {
                     }
                     // no more tasks ? Then send the results back to our creator.
                     if (size == 0) {
-                        // Stop listening FIRST...otherwise, if sendResults() calls a listener that starts
-                        // a new task, we will stop listening for the new task.
+                        // Stop listening FIRST...otherwise, if sendResults() calls a listener
+                        // that starts a new task, we will stop listening for the new task.
                         TaskManager.getMessageSwitch().removeListener(mTaskManager.getId(), this);
                         // all searches done.
                         sendResults();
@@ -194,7 +198,7 @@ public class SearchManager {
                 return SearchManager.this;
             }
         };
-        mMessageSenderId = mMessageSwitch.createSender(controller);
+        mMessageSenderId = MESSAGE_SWITCH.createSender(controller);
 
         mTaskManager = taskManager;
         getMessageSwitch().addListener(getId(), searchManagerListener, false);
@@ -202,13 +206,14 @@ public class SearchManager {
 
     @NonNull
     public static MessageSwitch<SearchManagerListener, SearchManagerController> getMessageSwitch() {
-        return mMessageSwitch;
+        return MESSAGE_SWITCH;
     }
 
     /**
-     * Start a search
+     * Start a search.
      *
-     * @param searchFlags    bitmask with sites to search, see {@link SearchSites.Site#SEARCH_ALL} and individual flags
+     * @param searchFlags    bitmask with sites to search,
+     *                       see {@link SearchSites.Site#SEARCH_ALL} and individual flags
      *                       <p>
      *                       ONE of these three parameters must be !.isEmpty
      * @param author         to search for (can be empty)
@@ -231,7 +236,8 @@ public class SearchManager {
         }
         if (author.isEmpty() && title.isEmpty() && isbn.isEmpty()) {
             throw new IllegalArgumentException(
-                    "Must specify at least one criteria non-empty: isbn=" + isbn + ", author=" + author + ", title=" + title);
+                    "Must specify at least one criteria non-empty: isbn=" + isbn
+                            + ", author=" + author + ", title=" + title);
         }
 
         // Save the flags
@@ -289,7 +295,8 @@ public class SearchManager {
                 TaskManager.getMessageSwitch().removeListener(mTaskManager.getId(),
                                                               mTaskManagerListener);
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                    Logger.info(this, "listener stopped id=" + mTaskManager.getId());
+                    Logger.info(this,
+                                "listener stopped id=" + mTaskManager.getId());
                 }
             }
         }
@@ -302,7 +309,7 @@ public class SearchManager {
      * <p>
      * The Bundle will contain by default only String and {@link StringList} based data.
      * <p>
-     * NEWKIND: if you add a new Search task that adds non-string based data, you need handle that here.
+     * NEWKIND: if you add a new Search task that adds non-string based data, handle that here.
      *
      * @param searchId Source
      */
@@ -318,7 +325,8 @@ public class SearchManager {
             return;
         }
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "Processing data from search engine: id=" + searchId);
+            Logger.info(this,
+                        "Processing data from search engine: id=" + searchId);
         }
         for (String key : bookData.keySet()) {
             if (UniqueId.KEY_BOOK_DATE_PUBLISHED.equals(key)
@@ -331,7 +339,7 @@ public class SearchManager {
                     || UniqueId.BKEY_TOC_TITLES_ARRAY.equals(key)
                     || UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY.equals(key)
                     ) {
-                accumulateParcelableArrayList(key, bookData);
+                accumulateList(key, bookData);
 
             } else {
                 // handle all normal String based entries
@@ -359,13 +367,15 @@ public class SearchManager {
             // just use it
             mBookData.putString(key, dataToAdd.toString());
             if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                Logger.info(this, "copied: key=" + key + ", value=`" + dataToAdd + '`');
+                Logger.info(this, "copied: key=" + key
+                        + ", value=`" + dataToAdd + '`');
             }
 
 //        } else if (UniqueId.BKEY_THUMBNAIL_FILE_SPEC_STRING_LIST.equals(key)) {
 //            // special case: StringList incoming, transform and add to the ArrayList
 //            ArrayList<String> incomingList = StringList.decode("" + dataToAdd);
-//            ArrayList<String> list = mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+//            ArrayList<String> list =
+//                   mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
 //            if (list == null) {
 //                list = new ArrayList<>();
 //            }
@@ -399,7 +409,8 @@ public class SearchManager {
             // copy, even if the incoming date might not be valid. We'll deal with that later.
             mBookData.putString(key, dataToAdd);
         } else {
-            // Overwrite with the new date if we can parse it and if the current one was present but not valid.
+            // Overwrite with the new date if we can parse it and if the current one
+            // was present but not valid.
             if (dataToAdd != null) {
                 Date newDate = DateUtils.parseDate(dataToAdd);
                 if (newDate != null) {
@@ -430,8 +441,8 @@ public class SearchManager {
      * @param bookData Source bundle with a ParcelableArrayList for the key
      * @param <T>      type of items in the ArrayList
      */
-    private <T extends Parcelable> void accumulateParcelableArrayList(@NonNull final String key,
-                                                                      @NonNull final Bundle bookData) {
+    private <T extends Parcelable> void accumulateList(@NonNull final String key,
+                                                       @NonNull final Bundle bookData) {
         ArrayList<T> dataToAdd = bookData.getParcelableArrayList(key);
         if (dataToAdd == null || dataToAdd.isEmpty()) {
             return;
@@ -442,13 +453,15 @@ public class SearchManager {
             // just copy
             dest = dataToAdd;
             if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                Logger.info(this, "copied: key=" + key + ", value=`" + dataToAdd + '`');
+                Logger.info(this, "copied: key=" + key
+                        + ", value=`" + dataToAdd + '`');
             }
         } else {
             // append
             dest.addAll(dataToAdd);
             if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                Logger.info(this, "appended: key=" + key + ", value=`" + dataToAdd + '`');
+                Logger.info(this, "appended: key=" + key
+                        + ", value=`" + dataToAdd + '`');
             }
         }
         mBookData.putParcelableArrayList(key, dest);
@@ -467,7 +480,8 @@ public class SearchManager {
         final List<Integer> results = new ArrayList<>();
 
         if (mHasValidIsbn) {
-            // If ISBN was passed, ignore entries with the wrong ISBN, and put entries with no ISBN at the end
+            // If ISBN was passed, ignore entries with the wrong ISBN,
+            // and put entries with no ISBN at the end
             final List<Integer> uncertain = new ArrayList<>();
             for (SearchSites.Site site : SearchSites.getSitesByReliability()) {
                 if (mSearchResults.containsKey(site.id)) {
@@ -523,21 +537,27 @@ public class SearchManager {
         ArrayList<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
         // If book not found or is missing required data, warn the user
-        if (mBookData.size() == 0 || authors == null || authors.isEmpty() || title == null || title.isEmpty()) {
+        if (mBookData.size() == 0
+                || authors == null || authors.isEmpty()
+                || title == null || title.isEmpty()) {
             mTaskManager.sendTaskUserMessage(
-                    BookCatalogueApp.getResourceString(R.string.warning_book_not_found));
+                    BookCatalogueApp.getResString(R.string.warning_book_not_found));
         }
 
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "All searches done for MessageSenderId:" + mMessageSenderId);
+            Logger.info(this,
+                        "All searches done for MessageSenderId:" + mMessageSenderId);
         }
         // All done, Pass the data back
-        mMessageSwitch.send(mMessageSenderId, new MessageSwitch.Message<SearchManagerListener>() {
+        MESSAGE_SWITCH.send(mMessageSenderId,
+                            new MessageSwitch.Message<SearchManagerListener>() {
                                 @Override
                                 public boolean deliver(@NonNull final SearchManagerListener listener) {
                                     if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                                        Logger.info(SearchManager.this, "Delivering to SearchListener=" + listener +
-                                                "|title=`" + mBookData.getString(UniqueId.KEY_TITLE) + '`');
+                                        Logger.info(SearchManager.this,
+                                                    "Delivering to SearchListener=" + listener +
+                                                            "|title=`" + mBookData.getString(
+                                                            UniqueId.KEY_TITLE) + '`');
                                     }
                                     return listener.onSearchFinished(mCancelledFlg, mBookData);
                                 }
@@ -626,7 +646,8 @@ public class SearchManager {
      */
     private void handleSearchTaskFinished(@NonNull final ManagedSearchTask managedSearchTask) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "ManagedSearchTask `" + managedSearchTask.getName() + "` finished");
+            Logger.info(this,
+                        "ManagedSearchTask `" + managedSearchTask.getName() + "` finished");
         }
         mCancelledFlg = managedSearchTask.isCancelled();
         final Bundle bookData = managedSearchTask.getBookData();
@@ -647,13 +668,16 @@ public class SearchManager {
                     // See if we got author/title
                     mAuthor = bookData.getString(UniqueId.BKEY_SEARCH_AUTHOR);
                     mTitle = bookData.getString(UniqueId.KEY_TITLE);
-                    if (mAuthor != null && !mAuthor.isEmpty() && mTitle != null && !mTitle.isEmpty()) {
-                        // We got them, so pretend we are searching by author/title now, and waiting for an ISBN...
+                    if (mAuthor != null && !mAuthor.isEmpty()
+                            && mTitle != null && !mTitle.isEmpty()) {
+                        // We got them, so pretend we are searching by author/title now,
+                        // and waiting for an ISBN...
                         mWaitingForIsbn = true;
                     }
                 }
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-                    Logger.info(this, "mSearchingAsin result mWaitingForIsbn=" + mWaitingForIsbn);
+                    Logger.info(this,
+                                "mSearchingAsin result mWaitingForIsbn=" + mWaitingForIsbn);
                 }
             }
 
@@ -667,7 +691,8 @@ public class SearchManager {
                         Logger.info(this, "mWaitingForIsbn result isbn=" + mIsbn);
                     }
 
-                    // Start the others...even if they have run before. They will redo the search with the ISBN.
+                    // Start the others...even if they have run before.
+                    // They will redo the search with the ISBN.
                     startSearches(mSearchFlags);
                 } else {
                     // Start next one that has not run.
@@ -682,7 +707,7 @@ public class SearchManager {
     }
 
     /**
-     * Controller interface for this Object
+     * Controller interface for this Object.
      */
     public interface SearchManagerController {
 
@@ -699,7 +724,7 @@ public class SearchManager {
      */
     public interface SearchManagerListener {
 
-        boolean onSearchFinished(final boolean wasCancelled,
-                                 @NonNull final Bundle bookData);
+        boolean onSearchFinished(boolean wasCancelled,
+                                 @NonNull Bundle bookData);
     }
 }

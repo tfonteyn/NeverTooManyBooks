@@ -30,7 +30,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.EditAuthorListActivity;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Author;
 
@@ -44,12 +44,12 @@ public class EditAuthorDialog {
     @NonNull
     private final Activity mContext;
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
     @NonNull
     private final Runnable mOnChanged;
 
     public EditAuthorDialog(@NonNull final Activity activity,
-                            @NonNull final CatalogueDBAdapter db,
+                            @NonNull final DBA db,
                             @NonNull final Runnable onChanged) {
         mDb = db;
         this.mContext = activity;

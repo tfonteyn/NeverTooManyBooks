@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
@@ -106,7 +106,7 @@ public class ImportAllTask
      */
     ImportAllTask(final boolean isSync) {
 
-        super(BookCatalogueApp.getResourceString(R.string.gr_import_all_from_goodreads));
+        super(BookCatalogueApp.getResString(R.string.gr_import_all_from_goodreads));
         mPosition = 0;
         mIsSync = isSync;
         // If it's a sync job, then find date of last successful sync and only apply
@@ -132,7 +132,7 @@ public class ImportAllTask
     public boolean run(@NonNull final QueueManager queueManager,
                        @NonNull final Context context) {
 
-        try (CatalogueDBAdapter db = new CatalogueDBAdapter(context)) {
+        try (DBA db = new DBA(context)) {
             // Load the goodreads reviews
             boolean ok = processReviews(queueManager, db);
             // If it's a sync job, then start the 'send' part and save last syn date
@@ -153,7 +153,7 @@ public class ImportAllTask
      * Repeatedly request review pages until we are done.
      */
     private boolean processReviews(@NonNull final QueueManager qMgr,
-                                   @NonNull final CatalogueDBAdapter db)
+                                   @NonNull final DBA db)
             throws GoodreadsExceptions.NotAuthorizedException {
 
         GoodreadsManager gr = new GoodreadsManager();
@@ -244,7 +244,7 @@ public class ImportAllTask
     /**
      * Process one review (book).
      */
-    private void processReview(@NonNull final CatalogueDBAdapter db,
+    private void processReview(@NonNull final DBA db,
                                @NonNull final Bundle review) {
 
         long grId = review.getLong(ListReviewsFieldNames.GR_BOOK_ID);
@@ -297,7 +297,7 @@ public class ImportAllTask
      * @return Local name, or goodreads name if no match
      */
     @Nullable
-    private String translateBookshelf(@NonNull final CatalogueDBAdapter db,
+    private String translateBookshelf(@NonNull final DBA db,
                                       @Nullable final String grShelfName) {
 
         if (grShelfName == null) {
@@ -330,7 +330,7 @@ public class ImportAllTask
     /**
      * Update the book using the GR data.
      */
-    private void updateBook(@NonNull final CatalogueDBAdapter db,
+    private void updateBook(@NonNull final DBA db,
                             @NonNull final BookRowView bookCursorRow,
                             @NonNull final Bundle review) {
         // Get last date book was sent to GR (may be null)
@@ -349,15 +349,15 @@ public class ImportAllTask
         Book book = buildBundle(db, bookCursorRow, review);
 
         db.updateBook(bookCursorRow.getId(), book,
-                      CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES
-                              | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                      DBA.BOOK_UPDATE_SKIP_PURGE_REFERENCES
+                              | DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
         //db.setGoodreadsSyncDate(rv.getLongFromBundles());
     }
 
     /**
      * Create a new book.
      */
-    private void insertBook(@NonNull final CatalogueDBAdapter db,
+    private void insertBook(@NonNull final DBA db,
                             @NonNull final Bundle review) {
 
         Book book = buildBundle(db, null, review);
@@ -380,7 +380,7 @@ public class ImportAllTask
      * while other data is processed (eg. dates) and other are combined (authors & series).
      */
     @NonNull
-    private Book buildBundle(@NonNull final CatalogueDBAdapter db,
+    private Book buildBundle(@NonNull final DBA db,
                              @Nullable final BookRowView bookCursorRow,
                              @NonNull final Bundle review) {
 
@@ -645,8 +645,8 @@ public class ImportAllTask
 
         String base = super.getDescription();
         if (mUpdatesAfter == null) {
-            return base + " (" + BookCatalogueApp.getResourceString(R.string.x_of_y,
-                                                                    mPosition, mTotalBooks) + ')';
+            return base + " (" + BookCatalogueApp.getResString(R.string.x_of_y,
+                                                               mPosition, mTotalBooks) + ')';
         } else {
             return base + " (" + mPosition + ')';
         }

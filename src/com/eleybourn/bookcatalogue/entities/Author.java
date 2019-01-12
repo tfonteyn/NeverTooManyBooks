@@ -26,7 +26,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StringList;
@@ -159,7 +159,7 @@ public class Author
         mIsComplete = in.readByte() != 0;
     }
 
-    public static boolean setComplete(@NonNull final CatalogueDBAdapter db,
+    public static boolean setComplete(@NonNull final DBA db,
                                       final long id,
                                       final boolean isComplete) {
         Author author = null;
@@ -171,8 +171,8 @@ public class Author
             return (db.updateAuthor(author) == 1);
         } catch (DBExceptions.UpdateException e) {
             // log but ignore
-            Logger.error(e, "failed to set Author id=" + id +
-                    " to complete=" + isComplete);
+            Logger.error(e, "failed to set Author id=" + id
+                    + " to complete=" + isComplete);
             // rollback
             if (author != null) {
                 author.setComplete(!isComplete);
@@ -181,12 +181,12 @@ public class Author
         }
     }
 
-    public boolean isComplete() {
-        return mIsComplete;
-    }
-
     public void setComplete(final boolean complete) {
         mIsComplete = complete;
+    }
+
+    public boolean isComplete() {
+        return mIsComplete;
     }
 
     @Override
@@ -347,7 +347,7 @@ public class Author
     }
 
     @Override
-    public long fixupId(@NonNull final CatalogueDBAdapter db) {
+    public long fixupId(@NonNull final DBA db) {
         this.id = db.getAuthorIdByName(this.mFamilyName, this.mGivenNames);
         return this.id;
     }

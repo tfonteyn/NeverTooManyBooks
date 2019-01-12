@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.Cursor;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -11,9 +12,9 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
  * Convenience class to avoid having to write the same code in more than one place. This
  * class has get*() methods for the most common (all?) book-related fields. Passed a Cursor object
  * it will retrieve the specified value using the current cursor row.
- *
+ * <p>
  * Unified {@link BookRowView} and {@link BooklistRowView}
- *
+ * <p>
  * This base class should ONLY have accessors for fields actually present in the 'books' table
  * Others should be done via extended classes of this base one.
  */
@@ -62,6 +63,9 @@ public class BookRowViewBase {
         mCursor = cursor;
     }
 
+    /**
+     * Get a string from underlying cursor given a column name.
+     */
     @Nullable
     public String getString(@NonNull final String columnName) {
         final int position = mCursor.getColumnIndex(columnName);
@@ -72,19 +76,21 @@ public class BookRowViewBase {
     }
 
     /**
-     * Query underlying cursor for column index.
-     */
-    public int getColumnIndex(@NonNull final String columnName) {
-        return mCursor.getColumnIndex(columnName);
-    }
-
-    /**
      * Get a string from underlying cursor given a column index.
      */
     @Nullable
     public String getString(final int columnIndex) {
         return mCursor.getString(columnIndex);
     }
+
+
+    /**
+     * Query underlying cursor for column index.
+     */
+    public int getColumnIndex(@NonNull final String columnName) {
+        return mCursor.getColumnIndex(columnName);
+    }
+
 
     /**
      * Get a boolean from underlying cursor given a column index.
@@ -163,17 +169,23 @@ public class BookRowViewBase {
         if (mPublisherCol < 0) {
             mPublisherCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PUBLISHER.name);
             if (mPublisherCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PUBLISHER.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_PUBLISHER.name);
             }
         }
         return mCursor.getString(mPublisherCol);
     }
 
+    /**
+     * Convenience function to retrieve column value.
+     */
     public final String getDatePublished() {
         if (mDatePublishedCol < 0) {
-            mDatePublishedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
+            mDatePublishedCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
             if (mDatePublishedCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED.name);
             }
         }
         return mCursor.getString(mDatePublishedCol);
@@ -207,9 +219,6 @@ public class BookRowViewBase {
         return mCursor.getString(mFormatCol);
     }
 
-    /**
-     * Convenience function to retrieve column value.
-     */
     @NonNull
     public String getGenre() {
         if (mGenreCol < 0) {
@@ -221,9 +230,6 @@ public class BookRowViewBase {
         return mCursor.getString(mGenreCol);
     }
 
-    /**
-     * Convenience function to retrieve column value.
-     */
     @NonNull
     public String getLocation() {
         if (mLocationCol < 0) {
@@ -237,9 +243,11 @@ public class BookRowViewBase {
 
     public final String getFirstPublication() {
         if (mFirstPublicationCol < 0) {
-            mFirstPublicationCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FIRST_PUBLICATION.name);
+            mFirstPublicationCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_FIRST_PUBLICATION.name);
             if (mFirstPublicationCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_FIRST_PUBLICATION.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_FIRST_PUBLICATION.name);
             }
         }
         return mCursor.getString(mFirstPublicationCol);
@@ -249,7 +257,8 @@ public class BookRowViewBase {
         if (mDescriptionCol < 0) {
             mDescriptionCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DESCRIPTION.name);
             if (mDescriptionCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_DESCRIPTION.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_DESCRIPTION.name);
             }
         }
         return mCursor.getString(mDescriptionCol);
@@ -289,7 +298,8 @@ public class BookRowViewBase {
         if (mReadStartCol < 0) {
             mReadStartCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_READ_START.name);
             if (mReadStartCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_READ_START.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_READ_START.name);
             }
         }
         return mCursor.getString(mReadStartCol);
@@ -309,7 +319,8 @@ public class BookRowViewBase {
         if (mListPriceCol < 0) {
             mListPriceCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PRICE_LISTED.name);
             if (mListPriceCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PRICE_LISTED.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_PRICE_LISTED.name);
             }
         }
         return mCursor.getString(mListPriceCol);
@@ -317,9 +328,11 @@ public class BookRowViewBase {
 
     public final String getListPriceCurrency() {
         if (mListPriceCurrencyCol < 0) {
-            mListPriceCurrencyCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY.name);
+            mListPriceCurrencyCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY.name);
             if (mListPriceCurrencyCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY.name);
             }
         }
         return mCursor.getString(mListPriceCurrencyCol);
@@ -329,7 +342,8 @@ public class BookRowViewBase {
         if (mPricePaidCol < 0) {
             mPricePaidCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PRICE_PAID.name);
             if (mPricePaidCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PRICE_PAID.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_PRICE_PAID.name);
             }
         }
         return mCursor.getString(mPricePaidCol);
@@ -337,9 +351,11 @@ public class BookRowViewBase {
 
     public final String getPricePaidCurrency() {
         if (mPricePaidCurrencyCol < 0) {
-            mPricePaidCurrencyCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY.name);
+            mPricePaidCurrencyCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY.name);
             if (mPricePaidCurrencyCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY.name);
             }
         }
         return mCursor.getString(mPricePaidCurrencyCol);
@@ -357,9 +373,11 @@ public class BookRowViewBase {
 
     public final int getAnthologyBitMask() {
         if (mAnthologyMaskCol < 0) {
-            mAnthologyMaskCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK.name);
+            mAnthologyMaskCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK.name);
             if (mAnthologyMaskCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK.name);
             }
         }
         return mCursor.getInt(mAnthologyMaskCol);
@@ -367,9 +385,11 @@ public class BookRowViewBase {
 
     public final int getEditionBitMask() {
         if (mEditionMaskCol < 0) {
-            mEditionMaskCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK.name);
+            mEditionMaskCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK.name);
             if (mEditionMaskCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK.name);
             }
         }
         return mCursor.getInt(mEditionMaskCol);
@@ -377,9 +397,11 @@ public class BookRowViewBase {
 
     public final String getDateAcquired() {
         if (mDateAcquiredCol < 0) {
-            mDateAcquiredCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED.name);
+            mDateAcquiredCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED.name);
             if (mDateAcquiredCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED.name);
             }
         }
         return mCursor.getString(mDateAcquiredCol);
@@ -389,7 +411,8 @@ public class BookRowViewBase {
         if (mDateAddedCol < 0) {
             mDateAddedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
             if (mDateAddedCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
             }
         }
         return mCursor.getString(mDateAddedCol);
@@ -397,9 +420,11 @@ public class BookRowViewBase {
 
     public final String getDateLastUpdated() {
         if (mDateLastUpdatedCol < 0) {
-            mDateLastUpdatedCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name);
+            mDateLastUpdatedCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name);
             if (mDateLastUpdatedCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_LAST_UPDATE_DATE.name);
             }
         }
         return mCursor.getString(mDateLastUpdatedCol);
@@ -407,9 +432,11 @@ public class BookRowViewBase {
 
     public final long getLibraryThingBookId() {
         if (mLibraryThingBookIdCol < 0) {
-            mLibraryThingBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID.name);
+            mLibraryThingBookIdCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID.name);
             if (mLibraryThingBookIdCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID.name);
             }
         }
         return mCursor.getLong(mLibraryThingBookIdCol);
@@ -427,9 +454,11 @@ public class BookRowViewBase {
 
     public final long getGoodreadsBookId() {
         if (mGoodreadsBookIdCol < 0) {
-            mGoodreadsBookIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
+            mGoodreadsBookIdCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
             if (mGoodreadsBookIdCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
             }
         }
         return mCursor.getLong(mGoodreadsBookIdCol);
@@ -437,9 +466,11 @@ public class BookRowViewBase {
 
     public final String getDateLastSyncedWithGoodreads() {
         if (mDateLastSyncedWithGoodreadsCol < 0) {
-            mDateLastSyncedWithGoodreadsCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
+            mDateLastSyncedWithGoodreadsCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
             if (mDateLastSyncedWithGoodreadsCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name);
             }
         }
         return mCursor.getString(mDateLastSyncedWithGoodreadsCol);

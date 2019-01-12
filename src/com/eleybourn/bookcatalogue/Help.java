@@ -33,7 +33,6 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -53,13 +52,10 @@ public class Help
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
 
-        TextView view;
-
-        view = findViewById(R.id.help_page);
+        TextView view = findViewById(R.id.help_page);
         view.setText(Utils.linkifyHtml(
                 getString(R.string.url_help, getString(R.string.about_help_click_here))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
@@ -70,17 +66,13 @@ public class Help
                 DebugReport.sendDebugInfo(Help.this);
             }
         });
-
-        Tracker.exitOnCreate(this);
     }
 
     @Override
     @CallSuper
     protected void onResume() {
-        Tracker.enterOnResume(this);
         super.onResume();
         initCleanupButton();
-        Tracker.exitOnResume(this);
     }
 
     private void initCleanupButton() {

@@ -24,11 +24,11 @@ public class GoodreadsExceptions {
         private static final long serialVersionUID = 5589234170614368111L;
 
         public NotAuthorizedException() {
-            super(BookCatalogueApp.getResourceString(R.string.gr_auth_failed), null);
+            super(BookCatalogueApp.getResString(R.string.gr_auth_failed), null);
         }
 
         public NotAuthorizedException(final Throwable inner) {
-            super(BookCatalogueApp.getResourceString(R.string.gr_auth_failed), inner);
+            super(BookCatalogueApp.getResString(R.string.gr_auth_failed), inner);
         }
     }
 }

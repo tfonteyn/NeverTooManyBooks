@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -21,7 +22,7 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
  */
 public final class DEBUG_SWITCHES {
 
-    public static final boolean TMP_ANTHOLOGY = true;
+    public static final boolean TMP_ANTHOLOGY = false;
     /** dumps the raw Bundle at insert time of a book - LARGE! , not recommended during imports. */
     public static final boolean DUMP_BOOK_BUNDLE_AT_INSERT = false;
     /** dumps the raw Bundle at update time of a book - LARGE! */
@@ -43,14 +44,14 @@ public final class DEBUG_SWITCHES {
     public static final boolean DUMP_STYLE = true;
 
     /** dump the sql string to the log. */
-    public static final boolean SQL = false;
+    public static final boolean SQL = true;
 
-    /** {@link com.eleybourn.bookcatalogue.database.CatalogueDBAdapter}. */
+    /** {@link DBA}. */
     public static final boolean DB_ADAPTER = false;
 
-    /** {@link com.eleybourn.bookcatalogue.database.DbSync}. */
+    /** {@link com.eleybourn.bookcatalogue.database.dbsync}. */
     public static final boolean DB_SYNC = false;
-    /** {@link com.eleybourn.bookcatalogue.database.DbSync}. */
+    /** {@link com.eleybourn.bookcatalogue.database.dbsync}. */
     public static final boolean DB_SYNC_QUERY_FOR_LONG = false;
 
     /** {@link com.eleybourn.bookcatalogue.database.cursors.TrackedCursor}. */
@@ -75,10 +76,10 @@ public final class DEBUG_SWITCHES {
     public static final boolean TASK_MANAGER = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.SearchManager} and related. */
-    public static final boolean SEARCH_INTERNET = true;
+    public static final boolean SEARCH_INTERNET = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook}. */
-    public static final boolean ISFDB_SEARCH = true;
+    public static final boolean ISFDB_SEARCH = false;
 
     /** all things related to {@link com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask}. */
     public static final boolean MANAGED_TASKS = false;
@@ -96,7 +97,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean STARTUP = false;
 
     /** everything related to Dates/Timezone. */
-    public static final boolean DATETIME = true;
+    public static final boolean DATETIME = false;
 
     /** track the flow & values on startActivityForResult & onActivityResult. */
     public static final boolean ON_ACTIVITY_RESULT = false;
@@ -118,7 +119,7 @@ public final class DEBUG_SWITCHES {
     /**
      * The Temporary database tables wil be created as Standard if set to true.
      */
-    public static final boolean TEMP_TABLES_ARE_STANDARD = true;
+    public static final boolean TEMP_TABLES_ARE_STANDARD = false;
     /**
      * all things XML related.
      */

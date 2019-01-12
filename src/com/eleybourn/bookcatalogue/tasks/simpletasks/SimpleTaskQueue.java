@@ -29,8 +29,8 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
@@ -177,7 +177,7 @@ public class SimpleTaskQueue {
      */
     public boolean hasActiveTasks() {
         synchronized (this) {
-            return (mManagedTaskCount > 0);
+            return mManagedTaskCount > 0;
         }
     }
 
@@ -412,10 +412,10 @@ public class SimpleTaskQueue {
     public interface SimpleTaskContext {
 
         @NonNull
-        CatalogueDBAdapter getDb();
+        DBA getDb();
 
         @NonNull
-        CoversDBAdapter getCoversDb();
+        CoversDBA getCoversDb();
 
         void setRequiresFinish(final boolean requiresFinish);
 
@@ -429,7 +429,7 @@ public class SimpleTaskQueue {
             implements SimpleTaskContext {
 
         @NonNull
-        private static final AtomicInteger mIdCounter = new AtomicInteger();
+        private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 
         private static final String ILLEGAL_USE_ERROR =
                 "SimpleTaskWrapper can only be used in a context during the run() stage";
@@ -450,7 +450,7 @@ public class SimpleTaskQueue {
                           @NonNull final SimpleTask task) {
             mOwner = owner;
             mTask = task;
-            id = mIdCounter.incrementAndGet();
+            id = ID_COUNTER.incrementAndGet();
         }
 
         private long getId() {
@@ -478,11 +478,11 @@ public class SimpleTaskQueue {
          * <p>
          * Do not close the database!
          *
-         * @return a {@link CatalogueDBAdapter} which it gets from {@link SimpleTaskQueueThread}
+         * @return a {@link DBA} which it gets from {@link SimpleTaskQueueThread}
          */
         @NonNull
         @Override
-        public CatalogueDBAdapter getDb() {
+        public DBA getDb() {
             Objects.requireNonNull(mActiveThread, ILLEGAL_USE_ERROR);
             return mActiveThread.getDb();
         }
@@ -492,11 +492,11 @@ public class SimpleTaskQueue {
          * <p>
          * Do not close the database!
          *
-         * @return a {@link CoversDBAdapter} which it gets from {@link SimpleTaskQueueThread}
+         * @return a {@link CoversDBA} which it gets from {@link SimpleTaskQueueThread}
          */
         @NonNull
         @Override
-        public CoversDBAdapter getCoversDb() {
+        public CoversDBA getCoversDb() {
             Objects.requireNonNull(mActiveThread, ILLEGAL_USE_ERROR);
             return mActiveThread.getCoversDb();
         }
@@ -524,9 +524,9 @@ public class SimpleTaskQueue {
         private static final int TIMEOUT = 15000;
         /** DB Connection, if task requests one. Survives while thread is alive. */
         @Nullable
-        private CatalogueDBAdapter mDb;
+        private DBA mDb;
         @Nullable
-        private CoversDBAdapter mCoversDBAdapter;
+        private CoversDBA mCoversDBAdapter;
 
         /**
          * Do not close the database; we close it for you when the task finishes.
@@ -534,10 +534,10 @@ public class SimpleTaskQueue {
          * @return a database connection associated with this Task
          */
         @NonNull
-        public CatalogueDBAdapter getDb() {
+        public DBA getDb() {
             if (mDb == null) {
                 // Reminder: don't make/put the context in a static variable! -> Memory Leak!
-                mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+                mDb = new DBA(BookCatalogueApp.getAppContext());
             }
             return mDb;
         }
@@ -549,9 +549,9 @@ public class SimpleTaskQueue {
          */
         @SuppressWarnings("WeakerAccess")
         @NonNull
-        public CoversDBAdapter getCoversDb() {
+        public CoversDBA getCoversDb() {
             if (mCoversDBAdapter == null) {
-                mCoversDBAdapter = CoversDBAdapter.getInstance();
+                mCoversDBAdapter = CoversDBA.getInstance();
             }
             return mCoversDBAdapter;
         }

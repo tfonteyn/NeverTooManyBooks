@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -76,7 +76,7 @@ public class Series
      * For example the regex [\.] is identical to [.]
      */
     private static final String SERIES_REGEX_SUFFIX =
-            BookCatalogueApp.getResourceString(R.string.series_number_prefixes)
+            BookCatalogueApp.getResString(R.string.series_number_prefixes)
                     + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
     private static final String SERIES_REGEX_1 = "^\\s*" + SERIES_REGEX_SUFFIX;
     private static final String SERIES_REGEX_2 = "(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX;
@@ -290,7 +290,7 @@ public class Series
 
     }
 
-    public static boolean setComplete(final CatalogueDBAdapter db,
+    public static boolean setComplete(final DBA db,
                                       final long id,
                                       final boolean isComplete
     ) {
@@ -384,7 +384,7 @@ public class Series
     }
 
     @Override
-    public long fixupId(@NonNull final CatalogueDBAdapter db) {
+    public long fixupId(@NonNull final DBA db) {
         this.id = db.getSeriesId(this);
         return this.id;
     }

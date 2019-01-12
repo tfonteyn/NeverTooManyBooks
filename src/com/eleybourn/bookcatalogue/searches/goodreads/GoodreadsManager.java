@@ -34,7 +34,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -289,7 +289,7 @@ public class GoodreadsManager {
     @Nullable
     public static Date getLastSyncDate() {
 
-        String last = Prefs.getString(PREFS_LAST_SYNC_DATE, null);
+        String last = Prefs.getPrefs().getString(PREFS_LAST_SYNC_DATE, null);
         if (last == null || last.isEmpty()) {
             return null;
         } else {
@@ -344,8 +344,8 @@ public class GoodreadsManager {
         }
 
         // Get the stored token values from prefs, and setup the consumer if present
-        mAccessToken = Prefs.getString(ACCESS_TOKEN, null);
-        mAccessSecret = Prefs.getString(ACCESS_SECRET, null);
+        mAccessToken = Prefs.getPrefs().getString(ACCESS_TOKEN, null);
+        mAccessSecret = Prefs.getPrefs().getString(ACCESS_SECRET, null);
 
         return !(mAccessToken == null || mAccessToken.isEmpty()
                 || mAccessSecret == null || mAccessSecret.isEmpty());
@@ -642,7 +642,7 @@ public class GoodreadsManager {
      * @return Disposition of book
      */
     @NonNull
-    public ExportDisposition sendOneBook(@NonNull final CatalogueDBAdapter db,
+    public ExportDisposition sendOneBook(@NonNull final DBA db,
                                          @NonNull final BookRowView bookCursorRow)
             throws NotAuthorizedException,
                    IOException,
@@ -948,8 +948,8 @@ public class GoodreadsManager {
      */
     private boolean validateCredentials() {
         // Get the stored token values from prefs, and setup the consumer
-        mAccessToken = Prefs.getString(ACCESS_TOKEN, "");
-        mAccessSecret = Prefs.getString(ACCESS_SECRET, "");
+        mAccessToken = Prefs.getPrefs().getString(ACCESS_TOKEN, "");
+        mAccessSecret = Prefs.getPrefs().getString(ACCESS_SECRET, "");
 
         mConsumer.setTokenWithSecret(mAccessToken, mAccessSecret);
 
@@ -1040,8 +1040,8 @@ public class GoodreadsManager {
                    IOException {
 
         // Get the saved request tokens.
-        String tokenString = Prefs.getString(REQUEST_TOKEN, null);
-        String secretString = Prefs.getString(REQUEST_SECRET, null);
+        String tokenString = Prefs.getPrefs().getString(REQUEST_TOKEN, null);
+        String secretString = Prefs.getPrefs().getString(REQUEST_SECRET, null);
 
         if (tokenString == null || tokenString.isEmpty()
                 || secretString == null || secretString.isEmpty()) {

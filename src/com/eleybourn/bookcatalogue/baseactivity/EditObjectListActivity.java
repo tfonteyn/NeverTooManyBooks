@@ -39,7 +39,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
@@ -141,7 +141,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
             onListChanged();
         }
     };
-    protected CatalogueDBAdapter mDb;
+    protected DBA mDb;
     @Nullable
     protected String mBookTitle;
     /** Row ID... mainly used (if list is from a book) to know if book is new. */
@@ -173,7 +173,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        mDb = new CatalogueDBAdapter(this);
+        mDb = new DBA(this);
 
         // see getList for full details as to where we "get" the list from
         mList = getList(mBKey, savedInstanceState);
@@ -256,8 +256,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * get the specific list adapter from the child class.
      */
-    protected abstract SimpleListAdapter<T> createListAdapter(@LayoutRes final int rowViewId,
-                                                              @NonNull final ArrayList<T> list);
+    protected abstract SimpleListAdapter<T> createListAdapter(@LayoutRes int rowViewId,
+                                                              @NonNull ArrayList<T> list);
 
     /**
      * Called when user clicks the 'Add' button (if present).
@@ -427,7 +427,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      */
     @Override
     @CallSuper
-    public void onRestoreInstanceState(final Bundle savedInstanceState) {
+    public void onRestoreInstanceState(@Nullable final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
     }
 

@@ -140,14 +140,14 @@ public abstract class FileChooserBaseActivity
      *
      * @param file Selected file
      */
-    protected abstract void onOpen(@NonNull final File file);
+    protected abstract void onOpen(@NonNull File file);
 
     /**
      * Implemented by subclass to handle a click on the 'Save' button.
      *
      * @param file Selected file
      */
-    protected abstract void onSave(@NonNull final File file);
+    protected abstract void onSave(@NonNull File file);
 
     /**
      * Local handler for 'Open'. Perform basic validation, and pass on.

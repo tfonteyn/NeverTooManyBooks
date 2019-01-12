@@ -63,7 +63,7 @@ public abstract class BindableItemListActivity
      * @return TaskNotesCursor to use
      */
     @NonNull
-    protected abstract BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState);
+    protected abstract BindableItemCursor getBindableItemCursor(@Nullable Bundle savedInstanceState);
 
     @Override
     @CallSuper

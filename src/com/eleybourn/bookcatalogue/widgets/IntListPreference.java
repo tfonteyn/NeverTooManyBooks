@@ -94,7 +94,7 @@ public class IntListPreference
      *
      * @see #setEntryValues(int[])
      */
-    public void setEntries(CharSequence[] entries) {
+    public void setEntries(@NonNull final CharSequence[] entries) {
         mEntries = entries;
     }
 
@@ -255,13 +255,13 @@ public class IntListPreference
     }
 
     @Override
-    protected Object onGetDefaultValue(TypedArray a,
-                                       int index) {
+    protected Object onGetDefaultValue(@NonNull final TypedArray a,
+                                       final int index) {
         return a.getInteger(index, DEFAULT_WHEN_NO_DEFAULT_SET);
     }
 
     @Override
-    protected void onSetInitialValue(Object defaultValue) {
+    protected void onSetInitialValue(@NonNull final Object defaultValue) {
         if (defaultValue == null) {
             Logger.debug("defaultValue was NULL");
         }
@@ -284,7 +284,7 @@ public class IntListPreference
     }
 
     @Override
-    protected void onRestoreInstanceState(Parcelable state) {
+    protected void onRestoreInstanceState(@NonNull final Parcelable state) {
         if (state == null || !state.getClass().equals(SavedState.class)) {
             // Didn't save state for us in onSaveInstanceState
             super.onRestoreInstanceState(state);
@@ -314,18 +314,18 @@ public class IntListPreference
                 };
         int value;
 
-        public SavedState(Parcel source) {
+        public SavedState(@NonNull final Parcel source) {
             super(source);
             value = source.readInt();
         }
 
-        public SavedState(Parcelable superState) {
+        public SavedState(@NonNull final Parcelable superState) {
             super(superState);
         }
 
         @Override
-        public void writeToParcel(@NonNull Parcel dest,
-                                  int flags) {
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
             super.writeToParcel(dest, flags);
             dest.writeInt(value);
         }

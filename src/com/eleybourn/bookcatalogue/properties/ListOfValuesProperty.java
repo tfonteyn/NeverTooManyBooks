@@ -63,7 +63,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         super(group, nameResourceId, defaultValue);
     }
 
-    public void setList( @NonNull final @Size(min = 0) ItemList<T> list) {
+    public void setList( @NonNull @Size(min = 0) final ItemList<T> list) {
         mList = list;
     }
 
@@ -259,7 +259,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         @NonNull
         String getLabel() {
             if (stringId != 0) {
-                return BookCatalogueApp.getResourceString(stringId, textArgs);
+                return BookCatalogueApp.getResString(stringId, textArgs);
             } else {
                 return name;
             }

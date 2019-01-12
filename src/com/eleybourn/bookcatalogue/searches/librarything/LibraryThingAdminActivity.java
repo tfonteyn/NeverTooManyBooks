@@ -87,7 +87,7 @@ public class LibraryThingAdminActivity
         });
 
         EditText devKeyView = findViewById(R.id.dev_key);
-        String key = Prefs.getString(LibraryThingManager.PREFS_DEV_KEY, "");
+        String key = Prefs.getPrefs().getString(LibraryThingManager.PREFS_DEV_KEY, "");
         devKeyView.setText(key);
 
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {

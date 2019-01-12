@@ -578,7 +578,7 @@ public class SimpleTaskQueueProgressDialogFragment
             return mTag;
         }
 
-        public void setTag(final Object tag) {
+        public void setTag(@NonNull final Object tag) {
             mTag = tag;
         }
     }

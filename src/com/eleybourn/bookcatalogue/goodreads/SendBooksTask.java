@@ -4,7 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -84,7 +84,7 @@ public abstract class SendBooksTask
     boolean sendOneBook(@NonNull final QueueManager queueManager,
                         @NonNull final Context context,
                         @NonNull final GoodreadsManager grManager,
-                        @NonNull final CatalogueDBAdapter db,
+                        @NonNull final DBA db,
                         final BookRowView bookCursorRow) {
         GoodreadsManager.ExportDisposition disposition;
         Exception exportException = null;

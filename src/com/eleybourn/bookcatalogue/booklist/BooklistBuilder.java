@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteQuery;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -37,15 +38,15 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.filters.Filter;
 import com.eleybourn.bookcatalogue.booklist.filters.ListOfValuesFilter;
 import com.eleybourn.bookcatalogue.booklist.filters.WildcardFilter;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
+import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.JoinContext;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
@@ -188,7 +189,7 @@ public class BooklistBuilder
 
     /** Database to use. */
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
     /** Database to use. */
     @NonNull
     private final SynchronizedDb mSyncedDb;
@@ -214,11 +215,11 @@ public class BooklistBuilder
                 @NonNull final String editTable,
                 @NonNull final SQLiteQuery query) {
             return new BooklistCursor(masterQuery, editTable, query, BooklistBuilder.this,
-                                      CatalogueDBAdapter.getSynchronizer());
+                                      DBA.getSynchronizer());
         }
     };
     /** not static, allow prefs to change. */
-    private final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown_uc);
+    private final String UNKNOWN = BookCatalogueApp.getResString(R.string.unknown_uc);
     /** the list of Filters; both active and non-active. */
     private final transient ArrayList<Filter> mFilters = new ArrayList<>();
     /** used in debug. */
@@ -272,7 +273,7 @@ public class BooklistBuilder
         mContext = context;
 
         // Get the database and create a statements collection
-        mDb = new CatalogueDBAdapter(mContext);
+        mDb = new DBA(mContext);
         mSyncedDb = mDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing();
         mStatements = new SqlStatementManager(mSyncedDb);
         // Save the requested style
@@ -551,7 +552,7 @@ public class BooklistBuilder
                 public String getExpression(@Nullable final String uuid) {
                     return "EXISTS(SELECT NULL FROM " + TBL_LOAN.ref() +
                             " WHERE " +
-                            TBL_LOAN.dot(DOM_LOANED_TO) + "='" + CatalogueDBAdapter.encodeString(
+                            TBL_LOAN.dot(DOM_LOANED_TO) + "='" + DBA.encodeString(
                             personName) + '\'' +
                             " AND " + TBL_LOAN.fkMatch(TBL_BOOKS) + ')';
                 }
@@ -570,10 +571,10 @@ public class BooklistBuilder
                 public String getExpression(@Nullable final String uuid) {
                     return '(' +
                             TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
-                            " LIKE '%" + CatalogueDBAdapter.encodeString(name) + "%'" +
+                            " LIKE '%" + DBA.encodeString(name) + "%'" +
                             " OR " +
                             TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) +
-                            " LIKE '%" + CatalogueDBAdapter.encodeString(name) + "%'" +
+                            " LIKE '%" + DBA.encodeString(name) + "%'" +
                             ')';
                 }
             });
@@ -624,8 +625,8 @@ public class BooklistBuilder
                     return '(' + TBL_BOOKS.dot(
                             DOM_PK_ID) + " IN (SELECT " + DOM_PK_DOCID + " FROM " + TBL_BOOKS_FTS +
                             " WHERE " + TBL_BOOKS_FTS + " match '" +
-                            CatalogueDBAdapter.encodeString(
-                                    CatalogueDBAdapter.cleanupFtsCriterion(cleanCriteria)) +
+                            DBA.encodeString(
+                                    DBA.cleanupFtsCriterion(cleanCriteria)) +
                             "'))";
                 }
             });
@@ -824,7 +825,7 @@ public class BooklistBuilder
 //				final StringBuilder groupCols = new StringBuilder();
 //                for (DomainDefinition d: summary.cloneGroups()) {
 //					groupCols.append(d.name);
-//					groupCols.append(CatalogueDBAdapter.COLLATION);
+//					groupCols.append(DBA.COLLATION);
 //					groupCols.append(", ");
 //				}
 //				groupCols.append( DOM_BL_NODE_LEVEL.name );
@@ -850,7 +851,7 @@ public class BooklistBuilder
 			        "(" + mGroupColumnList +  "," + DOM_BL_NODE_LEVEL + ")";
 			String ix3cSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable +
 			        "(" + mGroupColumnList +  "," + DOM_ROOT_KEY +
-			        CatalogueDBAdapter.COLLATION + ")";
+			        DBA.COLLATION + ")";
 			String ix3dSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable +
 			        "(" + DOM_BL_NODE_LEVEL + "," + mGroupColumnList +  "," + DOM_ROOT_KEY + ")";
 			String ix3eSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable +
@@ -920,7 +921,7 @@ public class BooklistBuilder
                 //			insStmt.bindNull(i+1);
                 //		} else {
                 //			//insBuilder.append("'");
-                //			//insBuilder.append(CatalogueDBAdapter.encodeString(v));
+                //			//insBuilder.append(DBA.encodeString(v));
                 //			//insBuilder.append("'");
                 //			insStmt.bindString(i+1, v);
                 //		}
@@ -1000,13 +1001,9 @@ public class BooklistBuilder
                         " When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " is null" +
                         "  Then 0 Else 1" +
                         " End" +
-                        "\n FROM " + mListTable.ref() +
-                        /*      */ " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_SETTINGS.ref() +
-                        "  ON " + TBL_BOOK_LIST_NODE_SETTINGS.dot(
-                        DOM_ROOT_KEY) + '=' + mListTable.dot(
-                        DOM_ROOT_KEY) +
-                        "	AND " + TBL_BOOK_LIST_NODE_SETTINGS.dot(
-                        DOM_BL_NODE_ROW_KIND) + '=' + mStyle.getGroupKindAt(0) +
+                        "\n FROM " + mListTable.ref() + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_SETTINGS.ref() +
+                        "  ON " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + '=' + mListTable.dot(DOM_ROOT_KEY) +
+                        "	AND " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND) + '=' + mStyle.getGroupKindAt(0) +
                         " ORDER BY " + sortExpression;
 
                 // Always save the state-preserving navigator for rebuilds
@@ -1179,7 +1176,7 @@ public class BooklistBuilder
         for (SortedDomainInfo sdi : sortedColumns) {
             indexCols.append(sdi.domain.name);
             if (sdi.domain.isText()) {
-                indexCols.append(CatalogueDBHelper.COLLATION);
+                indexCols.append(DBHelper.COLLATION);
 
                 // *If* collations is case-sensitive, handle it.
                 if (collationIsCs) {
@@ -1187,7 +1184,7 @@ public class BooklistBuilder
                 } else {
                     sortCols.append(sdi.domain.name);
                 }
-                sortCols.append(CatalogueDBHelper.COLLATION);
+                sortCols.append(DBHelper.COLLATION);
             } else {
                 sortCols.append(sdi.domain.name);
             }
@@ -1238,7 +1235,7 @@ public class BooklistBuilder
                 }
                 cols.append(',').append(d.name);
 
-                collatedCols.append(' ').append(d.name).append(CatalogueDBHelper.COLLATION);
+                collatedCols.append(' ').append(d.name).append(DBHelper.COLLATION);
             }
             // Construct the sum statement for this group
             String summarySql = "INSERT INTO " + mListTable +
@@ -1251,7 +1248,7 @@ public class BooklistBuilder
                     group.getKind() + " AS " + DOM_BL_NODE_ROW_KIND + cols + ',' +
                     DOM_ROOT_KEY +
                     " FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + '=' + (levelId + 1) +
-                    " GROUP BY " + collatedCols + ',' + DOM_ROOT_KEY + CatalogueDBHelper.COLLATION;
+                    " GROUP BY " + collatedCols + ',' + DOM_ROOT_KEY + DBHelper.COLLATION;
             //" GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
 
             // Save, compile and run this statement
@@ -1405,9 +1402,9 @@ public class BooklistBuilder
                         DOM_LOANED_TO,
                         "Case" +
                                 " When " + TBL_LOAN.dot(DOM_LOANED_TO) + " is null" +
-                                "  Then '" + BookCatalogueApp.getResourceString(
+                                "  Then '" + BookCatalogueApp.getResString(
                                 R.string.loan_book_available) + '\'' +
-                                "  Else '" + BookCatalogueApp.getResourceString(
+                                "  Else '" + BookCatalogueApp.getResString(
                                 R.string.loaned_to_short) + "' || " + TBL_LOAN.dot(DOM_LOANED_TO) +
                                 " End",
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
@@ -1829,7 +1826,7 @@ public class BooklistBuilder
                     }
                     conditionSql.append("Coalesce(l.").append(groupDomain).append(
                             ",'') = Coalesce(new.").append(groupDomain).append(",'') ").append(
-                            CatalogueDBHelper.COLLATION).append('\n');
+                            DBHelper.COLLATION).append('\n');
                 }
             }
             insertSql.append(")\n").append(valuesSql).append(')');
@@ -1996,7 +1993,7 @@ public class BooklistBuilder
                     }
                     conditionSql.append("Coalesce(l.").append(d).append(
                             ", '') = Coalesce(new.").append(d).append(",'') ").append(
-                            CatalogueDBHelper.COLLATION).append('\n');
+                            DBHelper.COLLATION).append('\n');
                 }
             }
             //insertSql += ")\n	Select " + valuesSql + " Where not exists(Select 1 From " + mListTable + " l where " + conditionSql + ")";
@@ -2572,10 +2569,11 @@ public class BooklistBuilder
     }
 
     @Override
+    @CallSuper
     protected void finalize()
             throws Throwable {
-        super.finalize();
         cleanup(true);
+        super.finalize();
     }
 
     public static class SortedDomainInfo {
@@ -2967,8 +2965,8 @@ public class BooklistBuilder
 //			case RowKind.ROW_KIND_UNREAD:
 //				l.displayDomain = DOM_READ_STATUS;
 //				String unreadExpr = "Case When " + TBL_BOOKS.dot(DOM_BOOK_READ) + " = 1 " +
-//						" Then '" + BookCatalogueApp.getResourceString(R.string.booklist_read) + "'" +
-//						" Else '" + BookCatalogueApp.getResourceString(R.string.booklist_unread) + "' end";
+//						" Then '" + BookCatalogueApp.getResString(R.string.booklist_read) + "'" +
+//						" Else '" + BookCatalogueApp.getResString(R.string.booklist_unread) + "' end";
 //				summary.addDomain(DOM_READ_STATUS, unreadExpr, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 //				summary.addDomain(DOM_BOOK_READ, TBL_BOOKS.dot(DOM_BOOK_READ), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_KEY);
 //				//summary.addKeyComponents("'r'", TBL_BOOKS.dot(DOM_BOOK_READ));
@@ -3093,7 +3091,7 @@ public class BooklistBuilder
 //		if (!bookshelf.equals("")) {
 //			if (!where.equals(""))
 //				where += " and ";
-//			where += "(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + " = '" + CatalogueDBAdapter.encodeString(bookshelf) + "')";
+//			where += "(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + " = '" + DBA.encodeString(bookshelf) + "')";
 //		}
 //		if (!authorWhere.equals("")) {
 //			if (!where.equals(""))
@@ -3134,7 +3132,7 @@ public class BooklistBuilder
 //			final StringBuilder sortCols = new StringBuilder();
 //			for (DomainDefinition d: sort) {
 //				sortCols.append(d.name);
-//				sortCols.append(CatalogueDBAdapter.COLLATION + ", ");
+//				sortCols.append(DBA.COLLATION + ", ");
 //			}
 //			sortCols.append(DOM_BL_NODE_LEVEL.name);
 //			mSortColumnList = sortCols.toString();
@@ -3145,7 +3143,7 @@ public class BooklistBuilder
 //			final StringBuilder groupCols = new StringBuilder();;
 //			for (DomainDefinition d: group) {
 //				groupCols.append(d.name);
-//				groupCols.append(CatalogueDBAdapter.COLLATION + ", ");
+//				groupCols.append(DBA.COLLATION + ", ");
 //			}
 //			groupCols.append( DOM_BL_NODE_LEVEL.name );
 //			mGroupColumnList = groupCols.toString();
@@ -3156,7 +3154,7 @@ public class BooklistBuilder
 //			final StringBuilder keyCols = new StringBuilder();;
 //			for (DomainDefinition d: keys) {
 //				keyCols.append(d.name);
-//				keyCols.append(CatalogueDBAdapter.COLLATION + ", ");
+//				keyCols.append(DBA.COLLATION + ", ");
 //			}
 //			keyCols.append( DOM_BL_NODE_LEVEL.name );
 //			mKeyColumnList = keyCols.toString();
@@ -3227,7 +3225,7 @@ public class BooklistBuilder
 //				insertSql += ", " + d;
 //				valuesSql += ", new." + d;
 //				if (summary.getKeys().contains(d))
-//					conditionSql += "	and l." + d + " = new." + d + CatalogueDBAdapter.COLLATION + "\n";
+//					conditionSql += "	and l." + d + " = new." + d + DBA.COLLATION + "\n";
 //			}
 //			//insertSql += ")\n	Select " + valuesSql + " Where not exists(Select 1 From " + mListTable + " l where " + conditionSql + ")";
 //			//tgLines[i] = insertSql;
@@ -3309,8 +3307,8 @@ public class BooklistBuilder
 //					if (!collatedCols.equals(""))
 //						collatedCols += ",";
 //					cols += ",\n	" + d.name;
-//					//collatedCols += ",\n	" + d.name + CatalogueDBAdapter.COLLATION;
-//					collatedCols += "\n	" + d.name + CatalogueDBAdapter.COLLATION;
+//					//collatedCols += ",\n	" + d.name + DBA.COLLATION;
+//					collatedCols += "\n	" + d.name + DBA.COLLATION;
 //				}
 //				sql = "INSERT INTO " + mListTable + "(\n	" + DOM_BL_NODE_LEVEL + ",\n	" + DOM_BL_NODE_ROW_KIND +
 //						//",\n	" + DOM_PARENT_KEY +
@@ -3320,7 +3318,7 @@ public class BooklistBuilder
 //						//l.getKeyExpression() +
 //						cols + "," + DOM_ROOT_KEY +
 //						"\n FROM " + mListTable + "\n " + " WHERE level = " + (levelId+1) +
-//						"\n GROUP BY " + collatedCols + "," + DOM_ROOT_KEY + CatalogueDBAdapter.COLLATION;
+//						"\n GROUP BY " + collatedCols + "," + DOM_ROOT_KEY + DBA.COLLATION;
 //						//"\n GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
 //
 //				SQLiteStatement stmt = mStatements.add("L" + i, sql);

@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.Cursor;
+
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.DBExceptions;
@@ -30,12 +31,13 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
  * Convenience class to avoid having to write the same code in more than one place. This
  * class has get*() methods for the most common book-related fields. Passed a Cursor object
  * it will retrieve the specified value using the current cursor row.
- *
+ * <p>
  * {@link BookCursor#getCursorRow()} returns cached {@link BookRowView} based on the Cursor.
  *
  * @author Philip Warner
  */
-public class BookRowView extends BookRowViewBase {
+public class BookRowView
+        extends BookRowViewBase {
 
     private int mPrimaryAuthorCol = -2;
     private int mPrimaryAuthorGivenFirstCol = -2;
@@ -48,9 +50,11 @@ public class BookRowView extends BookRowViewBase {
 
     public final String getPrimaryAuthorNameFormatted() {
         if (mPrimaryAuthorCol < 0) {
-            mPrimaryAuthorCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED.name);
+            mPrimaryAuthorCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_AUTHOR_FORMATTED.name);
             if (mPrimaryAuthorCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_AUTHOR_FORMATTED.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_AUTHOR_FORMATTED.name);
             }
         }
         return mCursor.getString(mPrimaryAuthorCol);
@@ -58,9 +62,11 @@ public class BookRowView extends BookRowViewBase {
 
     public final String getPrimaryAuthorNameFormattedGivenFirst() {
         if (mPrimaryAuthorGivenFirstCol < 0) {
-            mPrimaryAuthorGivenFirstCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
+            mPrimaryAuthorGivenFirstCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
             if (mPrimaryAuthorGivenFirstCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
             }
         }
         return mCursor.getString(mPrimaryAuthorGivenFirstCol);
@@ -68,9 +74,11 @@ public class BookRowView extends BookRowViewBase {
 
     public final String getPrimarySeriesFormatted() {
         if (mPrimarySeriesCol < 0) {
-            mPrimarySeriesCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_FORMATTED.name);
+            mPrimarySeriesCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_SERIES_FORMATTED.name);
             if (mPrimarySeriesCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_SERIES_FORMATTED.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_SERIES_FORMATTED.name);
             }
         }
         return mCursor.getString(mPrimarySeriesCol);

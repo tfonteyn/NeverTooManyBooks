@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
@@ -64,14 +64,16 @@ import java.util.TimerTask;
 public class AdvancedLocalSearchActivity
         extends BaseActivity {
 
-    /** Handle inter-thread messages */
+    /** create timer to tick every 250ms */
+    private static final int TIMER_TICK = 250;
+    /** Handle inter-thread messages. */
     private final Handler mSCHandler = new Handler();
     private EditText mAuthorView;
     private EditText mTitleView;
     private EditText mCSearchView;
     private Button mShowResultsBtn;
     private Button mFtsRebuildBtn;
-    private CatalogueDBAdapter mDb;
+    private DBA mDb;
     /** Handle the 'FTS Rebuild' button. */
     private final OnClickListener mFtsRebuildListener = new OnClickListener() {
         @Override
@@ -87,14 +89,14 @@ public class AdvancedLocalSearchActivity
         public void onClick(@NonNull final View v) {
             Intent data = new Intent();
             data.putExtra(UniqueId.BKEY_BOOK_ID_LIST, mBookIdsFound);
-            setResult(Activity.RESULT_OK, data); /* 6f6e83e1-10fb-445c-8e35-fede41eba03b */
+            setResult(Activity.RESULT_OK, data);
             finish();
         }
     };
     /** Indicates user has changed something since the last search. */
-    private boolean mSearchDirty = false;
+    private boolean mSearchDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
-    private long mIdleStart = 0;
+    private long mIdleStart;
     /** Timer object for background idle searches. */
     @Nullable
     private Timer mTimer;
@@ -163,7 +165,7 @@ public class AdvancedLocalSearchActivity
             }
         }
 
-        mDb = new CatalogueDBAdapter(this);
+        mDb = new DBA(this);
 
         mBooksFound = this.findViewById(R.id.books_found);
         mShowResultsBtn = this.findViewById(R.id.search);
@@ -186,7 +188,7 @@ public class AdvancedLocalSearchActivity
     }
 
     /**
-     * start the idle timer
+     * start the idle timer.
      */
     private void startIdleTimer() {
         // Synchronize since this is relevant to more than 1 thread.
@@ -197,8 +199,8 @@ public class AdvancedLocalSearchActivity
             mTimer = new Timer();
             mIdleStart = System.currentTimeMillis();
         }
-        //create timer to tick every 200ms
-        mTimer.schedule(new SearchUpdateTimer(), 0, 250);
+
+        mTimer.schedule(new SearchUpdateTimer(), 0, TIMER_TICK);
     }
 
     /**
@@ -249,7 +251,7 @@ public class AdvancedLocalSearchActivity
             Logger.error(e);
         }
 
-        final String message = (tmpMsg != null ? tmpMsg : "");
+        final String message = (tmpMsg != null) ? tmpMsg : "";
 
         // Update the UI in main thread.
         mSCHandler.post(new Runnable() {
@@ -277,7 +279,7 @@ public class AdvancedLocalSearchActivity
                 if (BuildConfig.DEBUG) {
                     mBooksFound.setText("(waiting for idle)");
                 }
-                startIdleTimer(); // (if not started)
+                startIdleTimer();
             }
         }
     }

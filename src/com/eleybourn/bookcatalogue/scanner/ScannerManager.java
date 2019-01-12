@@ -35,14 +35,14 @@ public final class ScannerManager {
 
     /** Collection of ScannerFactory objects. */
     @SuppressLint("UseSparseArrays")
-    private static final Map<Integer, ScannerFactory> myScannerFactories = new HashMap<>();
+    private static final Map<Integer, ScannerFactory> SCANNER_FACTORIES = new HashMap<>();
 
     /*
      * Build the collection.
      */
     static {
         // free and easy
-        myScannerFactories.put(SCANNER_ZXING, new ScannerFactory() {
+        SCANNER_FACTORIES.put(SCANNER_ZXING, new ScannerFactory() {
             @NonNull
             @Override
             public Scanner newInstance() {
@@ -56,7 +56,7 @@ public final class ScannerManager {
         });
 
         // not free, but better in bad conditions
-        myScannerFactories.put(SCANNER_PIC2SHOP, new ScannerFactory() {
+        SCANNER_FACTORIES.put(SCANNER_PIC2SHOP, new ScannerFactory() {
             @NonNull
             @Override
             public Scanner newInstance() {
@@ -70,7 +70,7 @@ public final class ScannerManager {
         });
 
         // bit of a fallback.
-        myScannerFactories.put(SCANNER_ZXING_COMPATIBLE, new ScannerFactory() {
+        SCANNER_FACTORIES.put(SCANNER_ZXING_COMPATIBLE, new ScannerFactory() {
             @NonNull
             @Override
             public Scanner newInstance() {
@@ -99,13 +99,13 @@ public final class ScannerManager {
                                        SCANNER_ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
-        ScannerFactory psf = myScannerFactories.get(prefScanner);
+        ScannerFactory psf = SCANNER_FACTORIES.get(prefScanner);
         if (psf != null && psf.isIntentAvailable(activity)) {
             return psf.newInstance();
         }
 
         // Search all supported scanners; return first working one
-        for (ScannerFactory sf : myScannerFactories.values()) {
+        for (ScannerFactory sf : SCANNER_FACTORIES.values()) {
             if (sf != psf && sf.isIntentAvailable(activity)) {
                 return sf.newInstance();
             }
@@ -118,8 +118,8 @@ public final class ScannerManager {
      */
     public static void promptForScannerInstallAndFinish(@NonNull final Activity activity,
                                                         final boolean noScanner) {
-        int messageId = (noScanner ? R.string.info_install_scanner
-                                   : R.string.warning_bad_scanner);
+        int messageId = noScanner ? R.string.info_install_scanner
+                                   : R.string.warning_bad_scanner;
 
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.title_install_scan)
@@ -136,7 +136,7 @@ public final class ScannerManager {
                     public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         installScanner(activity,
-                                "market://details?id=com.google.zxing.client.android");
+                                       "market://details?id=com.google.zxing.client.android");
                     }
                 });
         dialog.setButton(
@@ -144,17 +144,17 @@ public final class ScannerManager {
                 /* text hardcoded as a it is a product name */
                 "pic2shop",
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog,
+                    public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         installScanner(activity,
-                                "market://details?id=com.visionsmarts.pic2shop");
+                                       "market://details?id=com.visionsmarts.pic2shop");
                     }
                 });
 
         dialog.setButton(
                 AlertDialog.BUTTON_NEUTRAL, activity.getString(android.R.string.cancel),
                 new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog,
+                    public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         //do nothing
                         activity.setResult(Activity.RESULT_CANCELED);

@@ -17,7 +17,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
+import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
@@ -209,7 +209,7 @@ public final class ImageUtils {
         if (checkCache && destView != null
                 && !GetThumbnailTask.hasActiveTasks()
                 && !ThumbnailCacheWriterTask.hasActiveTasks()) {
-            try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
+            try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
                 final Bitmap bm = coversDBAdapter.fetchCachedImageIntoImageView(destView, coverFile,
                                                                                 uuid, maxWidth,
                                                                                 maxHeight);

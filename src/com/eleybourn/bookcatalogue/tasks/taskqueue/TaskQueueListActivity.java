@@ -35,7 +35,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
@@ -66,7 +66,7 @@ public class TaskQueueListActivity
         }
     };
 
-    private CatalogueDBAdapter mDb = null;
+    private DBA mDb;
     private TasksCursor mCursor;
 
     @Override
@@ -81,7 +81,7 @@ public class TaskQueueListActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.gr_tq_menu_background_tasks);
 
-        mDb = new CatalogueDBAdapter(this);
+        mDb = new DBA(this);
 
         //When any Event is added/changed/deleted, update the list. Lazy, yes.
         QueueManager.getQueueManager().registerTaskListener(mOnTaskChangeListener);
@@ -117,7 +117,7 @@ public class TaskQueueListActivity
      * Build a context menu dialogue when an item is clicked.
      */
     @Override
-    public void onListItemClick(@NonNull AdapterView<?> parent,
+    public void onListItemClick(@NonNull final AdapterView<?> parent,
                                 @NonNull final View v,
                                 final int position,
                                 final long id) {
@@ -167,7 +167,7 @@ public class TaskQueueListActivity
     }
 
     /**
-     * Get a cursor returning the tasks we are interested in (in this case all tasks)
+     * Get a cursor returning the tasks we are interested in (in this case all tasks).
      * <p>
      * Reads from {@link TaskQueueDBAdapter}
      */
@@ -181,8 +181,6 @@ public class TaskQueueListActivity
     @Override
     @CallSuper
     protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
-
         try {
             QueueManager.getQueueManager().unregisterTaskListener(mOnTaskChangeListener);
         } catch (RuntimeException ignore) {
@@ -199,6 +197,5 @@ public class TaskQueueListActivity
             mDb.close();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 }

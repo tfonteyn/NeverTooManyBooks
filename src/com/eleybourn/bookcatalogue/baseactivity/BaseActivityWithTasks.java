@@ -114,12 +114,11 @@ public abstract class BaseActivityWithTasks
                                @NonNull final String message) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 @SuppressWarnings("UnusedAssignment")
-                String dbgMsg = "onProgress: " + count + '/' + max + ", '" +
-                        message.replace("\n", "\\n") + '\'';
+                String dbgMsg = "onProgress: " + count + '/' + max + ", '"
+                        + message.replace("\n", "\\n") + '\'';
                 Tracker.handleEvent(BaseActivityWithTasks.this, States.Running,
                                     "|onProgress|msg=" + dbgMsg);
-                Logger.info(BaseActivityWithTasks.this,
-                            "|onProgress|msg=" + dbgMsg);
+                Logger.info(BaseActivityWithTasks.this,"|onProgress|msg=" + dbgMsg);
             }
 
             // Save the details
@@ -193,8 +192,8 @@ public abstract class BaseActivityWithTasks
                 if (controller != null) {
                     mTaskManager = controller.getTaskManager();
                 } else {
-                    Logger.error("Have ID(" + mTaskManagerId + ")," +
-                                         " but can not find controller getting TaskManager");
+                    Logger.error("Have ID(" + mTaskManagerId + "),"
+                                         + " but can not find controller getting TaskManager");
                 }
             }
 
@@ -298,8 +297,8 @@ public abstract class BaseActivityWithTasks
     private void createProgressDialog(final boolean wantInDeterminate) {
         mProgressDialog = new ProgressDialog(BaseActivityWithTasks.this);
         mProgressDialog.setIndeterminate(wantInDeterminate);
-        mProgressDialog.setProgressStyle(
-                wantInDeterminate ? ProgressDialog.STYLE_SPINNER : ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setProgressStyle(wantInDeterminate ? ProgressDialog.STYLE_SPINNER
+                                                           : ProgressDialog.STYLE_HORIZONTAL);
 
         // allow back button only
         mProgressDialog.setCanceledOnTouchOutside(false);

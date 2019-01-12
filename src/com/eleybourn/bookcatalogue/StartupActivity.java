@@ -46,8 +46,8 @@ import androidx.core.content.PermissionChecker;
 
 import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.database.DBCleaner;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -85,6 +85,7 @@ public class StartupActivity
     private static final int PROMPT_WAIT_BACKUP = 5;
     /** Number of app startup's between displaying the Amazon hint. */
     private static final int PROMPT_WAIT_AMAZON = 7;
+
     /** Indicates the upgrade message has been shown. */
     private static boolean mUpgradeMessageShown;
     /** Options set to true on first call. */
@@ -133,6 +134,17 @@ public class StartupActivity
 
     public static boolean getShowAmazonHint() {
         return mShowAmazonHint;
+    }
+
+    /**
+     * Will be called during database creation, so at very first start we don't get an 'upgrade'
+     * message.
+     *
+     * Note: this replaces the semi-reverse mechanism from pre-v200.
+     */
+    public void setNewInstallDone() {
+        mUpgradeMessageShown = true;
+        UpgradeMessageManager.setUpgradeAcknowledged();
     }
 
     @Override
@@ -262,7 +274,7 @@ public class StartupActivity
     /**
      * Update the progress dialog, if it has not been dismissed.
      */
-    private void updateProgress(@NonNull final String message) {
+    public void updateProgress(@NonNull final String message) {
         // If mProgress is null, it has been dismissed. Don't update.
         if (mProgress == null) {
             return;
@@ -358,7 +370,7 @@ public class StartupActivity
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
                          new DialogInterface.OnClickListener() {
-                             public void onClick(final DialogInterface dialog,
+                             public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  UpgradeMessageManager.setUpgradeAcknowledged();
                                  startNextStage();
@@ -414,8 +426,8 @@ public class StartupActivity
      * @return <tt>true</tt> when counter reached 0
      */
     private boolean proposeBackup() {
-        int opened = Prefs.getInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
-        int startCount = Prefs.getInt(PREF_STARTUP_COUNT, 0) + 1;
+        int opened = Prefs.getPrefs().getInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
+        int startCount = Prefs.getPrefs().getInt(PREF_STARTUP_COUNT, 0) + 1;
 
         final SharedPreferences.Editor ed = Prefs.getPrefs().edit();
         if (opened == 0) {
@@ -541,7 +553,7 @@ public class StartupActivity
             updateProgress(R.string.progress_msg_cleaning_database);
 
             // Get a DB, do not close the database!
-            CatalogueDBAdapter db = taskContext.getDb();
+            DBA db = taskContext.getDb();
 
             /*
              * do a mass update of any languages not yet converted to ISO3 codes
@@ -579,8 +591,8 @@ public class StartupActivity
         public void run(@NonNull final SimpleTaskContext taskContext) {
             // Get a DB to make sure the FTS rebuild flag is set appropriately,
             // do not close the database!
-            CatalogueDBAdapter db = taskContext.getDb();
-            if (Prefs.getBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
+            DBA db = taskContext.getDb();
+            if (Prefs.getPrefs().getBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
                 updateProgress(R.string.progress_msg_rebuilding_search_index);
                 db.rebuildFts();
                 Prefs.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED,
@@ -604,15 +616,15 @@ public class StartupActivity
             updateProgress(R.string.progress_msg_optimizing_databases);
 
             // Get a connection, do not close the databases!
-            CatalogueDBAdapter db = taskContext.getDb();
+            DBA db = taskContext.getDb();
             db.analyzeDb();
 
             if (BooklistBuilder.thumbnailsAreCached()) {
-                CoversDBAdapter coversDBAdapter = taskContext.getCoversDb();
+                CoversDBA coversDBAdapter = taskContext.getCoversDb();
                 coversDBAdapter.analyze();
             }
 
-            if (Prefs.getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
+            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
                 UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
                 Prefs.getPrefs().edit().remove(
                         UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED).apply();

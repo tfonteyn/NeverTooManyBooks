@@ -154,7 +154,6 @@ public final class ViewTagger {
      *
      * @return Object with specified tag, never null
      *
-     * @throws NullPointerException if the tag was null
      * @see #getTag(View, int)
      */
     @SuppressWarnings("unchecked")

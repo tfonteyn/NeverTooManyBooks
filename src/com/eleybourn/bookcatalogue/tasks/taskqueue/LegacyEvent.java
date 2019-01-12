@@ -32,28 +32,27 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
 
 /**
- * Class to wrap events that can not be de-serialized so that the EventsCursor *always* returns a valid Event.
+ * Class to wrap events that can not be de-serialized so that the EventsCursor *always*
+ * returns a valid Event.
  *
  * @author Philip Warner
  */
 public class LegacyEvent
         extends Event {
 
-    private static final long serialVersionUID = -8518718598973561219L;
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
-    private final byte[] mOriginal;
+    private static final long serialVersionUID = 8961033939258102422L;
 
-    LegacyEvent(byte[] original) {
+    LegacyEvent() {
         super("Legacy Event");
-        mOriginal = original;
     }
 
     @NonNull
@@ -84,33 +83,29 @@ public class LegacyEvent
     public void bindView(@NonNull final View view,
                          @NonNull final Context context,
                          @NonNull final BindableItemCursor cursor,
-                         @NonNull final CatalogueDBAdapter db) {
+                         @NonNull final DBA db) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
                 .setText("Legacy Event Placeholder for Event #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
-                .setText(
-                        "This event is obsolete and can not be recovered. It is probably advisable to delete it.");
-    }
-
-    public byte[] getOriginal() {
-        return mOriginal;
+                .setText("This event is obsolete and can not be recovered."
+                                 + " It is probably advisable to delete it.");
     }
 
     @Override
     public void addContextMenuItems(@NonNull final Context context,
-                                    @NonNull AdapterView<?> parent,
+                                    @NonNull final AdapterView<?> parent,
                                     @NonNull final View view,
                                     final int position,
                                     final long id,
                                     @NonNull final List<ContextDialogItem> items,
-                                    @NonNull final CatalogueDBAdapter db) {
+                                    @NonNull final DBA db) {
 
         items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
                                         new Runnable() {
                                             @Override
                                             public void run() {
-                                                QueueManager.getQueueManager().deleteEvent(
-                                                        LegacyEvent.this.getId());
+                                                QueueManager.getQueueManager()
+                                                            .deleteEvent(LegacyEvent.this.getId());
                                             }
                                         }));
 

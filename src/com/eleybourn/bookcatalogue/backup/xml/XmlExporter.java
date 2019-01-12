@@ -18,7 +18,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.filters.BooleanFilter;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
@@ -121,12 +121,12 @@ public class XmlExporter
     private static final int XML_EXPORTER_STYLES_VERSION = 1;
 
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
     @NonNull
     private final ExportSettings mSettings;
 
     public XmlExporter() {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb = new DBA(BookCatalogueApp.getAppContext());
         mSettings = new ExportSettings();
         mSettings.what = ExportSettings.ALL;
     }
@@ -138,7 +138,7 @@ public class XmlExporter
      *                 All other flags are ignored.
      */
     public XmlExporter(@NonNull final ExportSettings settings) {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb = new DBA(BookCatalogueApp.getAppContext());
         settings.validate();
         mSettings = settings;
     }
@@ -168,35 +168,35 @@ public class XmlExporter
                .append(">\n");
 
             if (!listener.isCancelled()) {
-                listener.onProgress(BookCatalogueApp.getResourceString(R.string.lbl_bookshelves),
+                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_bookshelves),
                                     pos++);
                 pos += doBookshelves(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(BookCatalogueApp.getResourceString(R.string.lbl_author), pos++);
+                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_author), pos++);
                 pos += doAuthors(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(BookCatalogueApp.getResourceString(R.string.lbl_series), pos++);
+                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_series), pos++);
                 pos += doSeries(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(BookCatalogueApp.getResourceString(R.string.lbl_book), pos++);
+                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_book), pos++);
                 pos += doBooks(out, listener);
             }
 
             if (!listener.isCancelled()
                     && (mSettings.what & ExportSettings.BOOK_LIST_STYLES) != 0) {
-                listener.onProgress(BookCatalogueApp.getResourceString(R.string.lbl_styles), pos++);
+                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_styles), pos++);
                 pos += doStyles(out, listener);
             }
 
             if (!listener.isCancelled()
                     && (mSettings.what & ExportSettings.PREFERENCES) != 0) {
-                listener.onProgress(BookCatalogueApp.getResourceString(R.string.lbl_preferences),
+                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_preferences),
                                     pos++);
                 pos += doPreferences(out, listener);
             }

@@ -5,9 +5,6 @@ if (project.hasProperty("BookCatalogue.signing")
     apply from: project.property("MyProject.signing")
 }
 
-//        2018-10-01 when using Android 28 & gradle plugin 3.2.0, so downgraded to 27 & 3.1.0
-//            https://issuetracker.google.com/issues/110162198
-
 buildscript {
     repositories {
         jcenter()
@@ -86,7 +83,6 @@ android {
     //  6       23      71.0%
     //  5.1     22      85.4%
     //  5.0     21      88.9%
-    //  4.4     19      96.5%   but 5.0 has has so many new things....
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28

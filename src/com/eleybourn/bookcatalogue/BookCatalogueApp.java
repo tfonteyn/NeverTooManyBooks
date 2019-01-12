@@ -214,7 +214,7 @@ public class BookCatalogueApp
      *
      * @return Localized resource string
      */
-    public static String getResourceString(@StringRes final int stringId) {
+    public static String getResString(@StringRes final int stringId) {
         return mInstance.getApplicationContext().getString(stringId).trim();
     }
 
@@ -227,8 +227,8 @@ public class BookCatalogueApp
      * @return Localized resource string
      */
     @NonNull
-    public static String getResourceString(@StringRes final int stringId,
-                                           @Nullable final Object... objects) {
+    public static String getResString(@StringRes final int stringId,
+                                      @Nullable final Object... objects) {
         return mInstance.getApplicationContext().getString(stringId, objects).trim();
     }
 
@@ -239,7 +239,7 @@ public class BookCatalogueApp
      *
      * @return Localized resource string[]
      */
-    public static String[] getResourceStringArray(@ArrayRes final int resId) {
+    public static String[] getResStringArray(@ArrayRes final int resId) {
         return mInstance.getApplicationContext().getResources().getStringArray(resId);
     }
 

@@ -36,7 +36,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -62,7 +62,7 @@ public final class StandardDialogs {
      */
     public static void showUserMessage(@NonNull final Activity activity,
                                        @StringRes final int message) {
-        if (0 == Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
+        if (0 == Prefs.getPrefs().getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message,
@@ -75,7 +75,7 @@ public final class StandardDialogs {
      */
     public static void showUserMessage(@NonNull final Activity activity,
                                        @NonNull final String message) {
-        if (0 == Prefs.getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
+        if (0 == Prefs.getPrefs().getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message,
@@ -141,7 +141,7 @@ public final class StandardDialogs {
     }
 
     public static void deleteSeriesAlert(@NonNull final Context context,
-                                         @NonNull final CatalogueDBAdapter db,
+                                         @NonNull final DBA db,
                                          @NonNull final Series series,
                                          @NonNull final Runnable onDeleted) {
 
@@ -179,11 +179,11 @@ public final class StandardDialogs {
      */
     @StringRes
     public static int deleteBookAlert(@NonNull final Context context,
-                                      @NonNull final CatalogueDBAdapter db,
+                                      @NonNull final DBA db,
                                       final long bookId,
                                       @NonNull final Runnable onDeleted) {
 
-        String UNKNOWN = '<' + BookCatalogueApp.getResourceString(R.string.unknown_uc) + '>';
+        String UNKNOWN = '<' + BookCatalogueApp.getResString(R.string.unknown_uc) + '>';
         List<Author> authorList = db.getBookAuthorList(bookId);
 
         // get the book title

@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
@@ -159,7 +159,7 @@ final class SendBookEvents {
         public void bindView(@NonNull final View view,
                              @NonNull final Context context,
                              @NonNull final BindableItemCursor cursor,
-                             @NonNull final CatalogueDBAdapter db) {
+                             @NonNull final DBA db) {
             final EventsCursor eventsCursor = (EventsCursor) cursor;
 
             // Update event info binding; the Views in the holder are unchanged,
@@ -173,7 +173,7 @@ final class SendBookEvents {
             if (authors.size() > 0) {
                 author = authors.get(0).getDisplayName();
                 if (authors.size() > 1) {
-                    author = author + ' ' + BookCatalogueApp.getResourceString(R.string.and_others);
+                    author = author + ' ' + BookCatalogueApp.getResString(R.string.and_others);
                 }
             } else {
                 author = context.getString(R.string.unknown_uc);
@@ -195,14 +195,14 @@ final class SendBookEvents {
 
             holder.retry.setVisibility(View.GONE);
 
-            holder.button.setChecked(eventsCursor.getIsSelected());
+            holder.button.setChecked(eventsCursor.isSelected());
             holder.button.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(@NonNull final CompoundButton buttonView,
                                              final boolean isChecked) {
                     BookEventHolder holder = ViewTagger.getTagOrThrow(buttonView,
                                                                       R.id.TAG_BOOK_EVENT_HOLDER);
-                    eventsCursor.setIsSelected(holder.rowId, isChecked);
+                    eventsCursor.setSelected(holder.rowId, isChecked);
                 }
             });
 
@@ -236,7 +236,7 @@ final class SendBookEvents {
                                         final int position,
                                         final long id,
                                         @NonNull final List<ContextDialogItem> items,
-                                        @NonNull final CatalogueDBAdapter db) {
+                                        @NonNull final DBA db) {
 
             // EDIT BOOK
             items.add(new ContextDialogItem(

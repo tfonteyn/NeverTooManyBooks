@@ -2,14 +2,15 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.database.sqlite.SQLiteDoneException;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
@@ -66,10 +67,10 @@ public class FlattenedBooklist
      * @param db        Database connection
      * @param tableName Name of underlying table
      */
-    public FlattenedBooklist(@NonNull final CatalogueDBAdapter db,
+    public FlattenedBooklist(@NonNull final DBA db,
                              @NonNull final String tableName) {
         Tracker.enterFunction(this,
-                              "FlattenedBooklist(CatalogueDBAdapter [not logged]," +
+                              "FlattenedBooklist(DBA [not logged]," +
                                       " String)", tableName);
 
         TableDefinition flat = DatabaseDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
@@ -81,7 +82,7 @@ public class FlattenedBooklist
             flat.setType(TableTypes.Temporary);
         }
         init(db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing(), flat);
-        Tracker.exitFunction(this, "FlattenedBooklist(CatalogueDBAdapter, String)");
+        Tracker.exitFunction(this, "FlattenedBooklist(DBA, String)");
     }
 
     /**
@@ -285,9 +286,11 @@ public class FlattenedBooklist
     /**
      * Cleanup the statements.
      */
+    @Override
+    @CallSuper
     protected void finalize()
             throws Throwable {
-        super.finalize();
         close();
+        super.finalize();
     }
 }

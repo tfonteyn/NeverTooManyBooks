@@ -32,7 +32,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
@@ -212,10 +212,10 @@ public class BindableItemCursorAdapter
          * @param convertView View to populate
          * @param cursor      Cursor, positions at the relevant row
          */
-        void bindViewToItem(@NonNull final Context context,
-                            @NonNull final View convertView,
-                            @NonNull final BindableItemCursor cursor,
-                            @NonNull final BindableItem item);
+        void bindViewToItem(@NonNull Context context,
+                            @NonNull View convertView,
+                            @NonNull BindableItemCursor cursor,
+                            @NonNull BindableItem item);
     }
 
     public interface BindableItem {
@@ -233,10 +233,10 @@ public class BindableItemCursorAdapter
          *
          * @return a new view
          */
-        View newListItemView(@NonNull final LayoutInflater inflater,
-                             @NonNull final Context context,
-                             @NonNull final BindableItemCursor cursor,
-                             @NonNull final ViewGroup parent);
+        View newListItemView(@NonNull LayoutInflater inflater,
+                             @NonNull Context context,
+                             @NonNull BindableItemCursor cursor,
+                             @NonNull ViewGroup parent);
 
         /**
          * Bind this Event to the passed view. The view will be one created by a call
@@ -247,10 +247,10 @@ public class BindableItemCursorAdapter
          * @param cursor  EventsCursor for this event, positioned at its row.
          * @param db      database adapter.
          */
-        void bindView(@NonNull final View view,
-                      @NonNull final Context context,
-                      @NonNull final BindableItemCursor cursor,
-                      @NonNull final CatalogueDBAdapter db);
+        void bindView(@NonNull View view,
+                      @NonNull Context context,
+                      @NonNull BindableItemCursor cursor,
+                      @NonNull DBA db);
 
         /**
          * Called when an item in a list has been clicked, this method should populate the passed
@@ -265,12 +265,12 @@ public class BindableItemCursorAdapter
          * @param items    items collection to fill
          * @param db       database adapter.
          */
-        void addContextMenuItems(@NonNull final Context context,
+        void addContextMenuItems(@NonNull Context context,
                                  @NonNull AdapterView<?> parent,
-                                 @NonNull final View view,
-                                 final int position,
-                                 final long id,
-                                 @NonNull final List<ContextDialogItem> items,
-                                 @NonNull final CatalogueDBAdapter db);
+                                 @NonNull View view,
+                                 int position,
+                                 long id,
+                                 @NonNull List<ContextDialogItem> items,
+                                 @NonNull DBA db);
     }
 }

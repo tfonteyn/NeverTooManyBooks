@@ -31,12 +31,12 @@ public class PBitmask
      */
     @Override
     public void set(@Nullable final Integer value) {
-        if (uuid == null) {
-            nonPersistedValue = value;
+        if (mUuid == null) {
+            mNonPersistedValue = value;
         } else if (value == null) {
-            Prefs.getPrefs(uuid).edit().remove(getKey()).apply();
+            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
-            Prefs.getPrefs(uuid).edit()
+            Prefs.getPrefs(mUuid).edit()
                  .putStringSet(getKey(), toStringSet(value)).apply();
         }
     }
@@ -60,12 +60,12 @@ public class PBitmask
     @NonNull
     @Override
     public Integer get() {
-        if (uuid == null) {
-            return nonPersistedValue != null ? nonPersistedValue : defaultValue;
+        if (mUuid == null) {
+            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            Set<String> sValue = Prefs.getPrefs(uuid).getStringSet(getKey(), null);
+            Set<String> sValue = Prefs.getPrefs(mUuid).getStringSet(getKey(), null);
             if (sValue == null || sValue.isEmpty()) {
-                return defaultValue;
+                return mDefaultValue;
             }
             return toInteger(sValue);
         }

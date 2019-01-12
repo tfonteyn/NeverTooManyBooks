@@ -417,7 +417,7 @@ public class LibraryThingManager {
      */
     @NonNull
     private String getDevKey() {
-        String key = Prefs.getString(PREFS_DEV_KEY, null);
+        String key = Prefs.getPrefs().getString(PREFS_DEV_KEY, null);
         if (key != null && !key.isEmpty()) {
             return key.replaceAll("[\\r\\t\\n\\s]*", "");
         }

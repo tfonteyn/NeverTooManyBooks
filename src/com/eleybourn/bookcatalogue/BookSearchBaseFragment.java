@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -45,7 +45,7 @@ public abstract class BookSearchBaseFragment
     protected BookSearchActivity mActivity;
 
     /** Database instance. */
-    protected CatalogueDBAdapter mDb;
+    protected DBA mDb;
     /** Objects managing current search. */
     long mSearchManagerId;
     /** The last Intent returned as a result of creating a book. */
@@ -91,7 +91,7 @@ public abstract class BookSearchBaseFragment
 
         super.onActivityCreated(savedInstanceState);
 
-        mDb = new CatalogueDBAdapter(mActivity);
+        mDb = new DBA(mActivity);
 
         if (savedInstanceState != null) {
             mSearchManagerId = savedInstanceState.getLong(BKEY_SEARCH_MANAGER_ID);
@@ -179,10 +179,10 @@ public abstract class BookSearchBaseFragment
                         @NonNull final String isbnSearchText) {
 
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "startSearch" +
-                    "|isbn=" + isbnSearchText +
-                    "|author=" + authorSearchText +
-                    "|title=" + titleSearchText);
+            Logger.info(this, "startSearch"
+                    + "|isbn=" + isbnSearchText
+                    + "|author=" + authorSearchText
+                    + "|title=" + titleSearchText);
         }
 
         /* Get the book */
@@ -268,8 +268,8 @@ public abstract class BookSearchBaseFragment
             default:
                 // lowest level of our Fragment, see if we missed anything
                 Logger.info(this,
-                            "BookSearchBaseFragment|onActivityResult|NOT HANDLED:" +
-                                    " requestCode=" + requestCode + ", resultCode=" + resultCode);
+                            "BookSearchBaseFragment|onActivityResult|NOT HANDLED:"
+                                    + " requestCode=" + requestCode + ", resultCode=" + resultCode);
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }

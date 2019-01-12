@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.csv.CsvImporter;
 import com.eleybourn.bookcatalogue.backup.xml.XmlImporter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.RTE.DeserializationException;
@@ -53,7 +53,7 @@ public abstract class BackupReaderAbstract
         implements BackupReader {
 
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
     /** progress message. */
     private final String processPreferences;
     /** progress message. */
@@ -71,7 +71,7 @@ public abstract class BackupReaderAbstract
      */
     protected BackupReaderAbstract() {
         Context context = BookCatalogueApp.getAppContext();
-        mDb = new CatalogueDBAdapter(context);
+        mDb = new DBA(context);
 
         processPreferences = context.getString(R.string.progress_msg_process_preferences);
         processCover = context.getString(R.string.progress_msg_process_cover);

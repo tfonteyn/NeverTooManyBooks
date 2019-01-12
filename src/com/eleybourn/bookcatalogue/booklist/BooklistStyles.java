@@ -27,13 +27,14 @@ import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Collection of system-defined and user-defined Book List styles.
@@ -54,7 +55,7 @@ public final class BooklistStyles {
     }
 
     public static long getDefaultStyle() {
-        return Prefs.getLong(PREF_BL_STYLE_CURRENT_DEFAULT, DEFAULT_STYLE);
+        return Prefs.getPrefs().getLong(PREF_BL_STYLE_CURRENT_DEFAULT, DEFAULT_STYLE);
     }
 
     /**
@@ -219,7 +220,7 @@ public final class BooklistStyles {
      * @return all styles, with the preferred styles at the front of the list.
      */
     @NonNull
-    public static Map<Long, BooklistStyle> getStyles(@NonNull final CatalogueDBAdapter db,
+    public static Map<Long, BooklistStyle> getStyles(@NonNull final DBA db,
                                                      final boolean getAll) {
 
         // Get all styles: user
@@ -285,9 +286,9 @@ public final class BooklistStyles {
      * @return the ids of the preferred styles from user preferences.
      */
     @NonNull
-    private static List<Long> getPreferredStyleMenuOrder() {
-        List<Long> ids = new ArrayList<>();
-        String itemsStr = Prefs.getString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
+    private static Set<Long> getPreferredStyleMenuOrder() {
+        Set<Long> ids = new LinkedHashSet<>();
+        String itemsStr = Prefs.getPrefs().getString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
                                           null);
 
         if (itemsStr != null && !itemsStr.isEmpty()) {
@@ -303,26 +304,26 @@ public final class BooklistStyles {
 
     /**
      * Internal single-point of writing the preferred styles menu order.
+     * <p>
+     * Note: this and related methods use a LinkedHashSet as a bit of a hack
+     * to eliminated duplicate id's
      *
      * @param list of style id's
      */
-    private static void setPreferredStyleMenuOrder(@NonNull final List<Long> list) {
+    private static void setPreferredStyleMenuOrder(@NonNull final Set<Long> list) {
         Prefs.getPrefs().edit().putString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
                                           TextUtils.join(",", list)).apply();
     }
 
     /**
      * Add a style (its id) to the menu list of preferred styles.
-     * Does not add if it's already there.
      *
      * @param style to add.
      */
     public static void addPreferredStyle(@NonNull final BooklistStyle style) {
-        List<Long> list = getPreferredStyleMenuOrder();
-        if (!list.contains(style.getId())) {
-            list.add(style.getId());
-            setPreferredStyleMenuOrder(list);
-        }
+        Set<Long> list = getPreferredStyleMenuOrder();
+        list.add(style.getId());
+        setPreferredStyleMenuOrder(list);
     }
 
     /**
@@ -333,7 +334,7 @@ public final class BooklistStyles {
      * @param styles full list of preferred styles to save 'in order'
      */
     public static void savePreferredStyleMenuOrder(@NonNull final List<BooklistStyle> styles) {
-        List<Long> list = new ArrayList<>();
+        Set<Long> list = new LinkedHashSet<>();
         for (BooklistStyle style : styles) {
             if (style.isPreferred()) {
                 list.add(style.getId());
@@ -358,7 +359,7 @@ public final class BooklistStyles {
         }
 
         // try user-defined
-        try (CatalogueDBAdapter db = new CatalogueDBAdapter(BookCatalogueApp.getAppContext())) {
+        try (DBA db = new DBA(BookCatalogueApp.getAppContext())) {
             for (BooklistStyle style : db.getBooklistStyles().values()) {
                 if (style.getDisplayName().equals(name)) {
                     return style.getId();

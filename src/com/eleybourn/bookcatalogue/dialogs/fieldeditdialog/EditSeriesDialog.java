@@ -31,7 +31,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.EditSeriesListActivity;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Series;
 
@@ -47,12 +47,12 @@ public class EditSeriesDialog {
     @NonNull
     private final ArrayAdapter<String> mSeriesAdapter;
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
     @NonNull
     private final Runnable mOnChanged;
 
     public EditSeriesDialog(@NonNull final Activity activity,
-                            @NonNull final CatalogueDBAdapter db,
+                            @NonNull final DBA db,
                             @NonNull final Runnable onChanged) {
         mDb = db;
         mContext = activity;

@@ -40,7 +40,7 @@ public final class GoogleBooksManager {
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return Prefs.getString(PREFS_HOST_URL, "http://books.google.com");
+        return Prefs.getPrefs().getString(PREFS_HOST_URL, "http://books.google.com");
     }
 
     public static void setBaseURL(@NonNull final String url) {

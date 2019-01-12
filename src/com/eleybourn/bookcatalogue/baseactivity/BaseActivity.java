@@ -255,9 +255,9 @@ public abstract class BaseActivity
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
                     // lowest level of our Activities, see if we missed anything
                     // that we should not miss.
-                    Logger.info(this, "onActivityResult|NOT HANDLED:" +
-                            " requestCode=" + requestCode + ',' +
-                            " resultCode=" + resultCode);
+                    Logger.info(this, "onActivityResult|NOT HANDLED:"
+                            + " requestCode=" + requestCode + ','
+                            + " resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
 
@@ -332,12 +332,12 @@ public abstract class BaseActivity
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
 
-        if (key.equals(BookCatalogueApp.getResourceString(R.string.pk_ui_theme))) {
+        if (key.equals(BookCatalogueApp.getResString(R.string.pk_ui_theme))) {
             if (ThemeUtils.loadPreferred()) {
                 this.setTheme(ThemeUtils.getThemeResId());
             }
 
-        } else if (key.equals(BookCatalogueApp.getResourceString(R.string.pk_ui_language))) {
+        } else if (key.equals(BookCatalogueApp.getResString(R.string.pk_ui_language))) {
             // Trigger a restart of this activity in onResume, if the locale has changed.
             LocaleUtils.loadPreferred();
             if (LocaleUtils.loadPreferred()) {

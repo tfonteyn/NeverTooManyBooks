@@ -34,7 +34,7 @@ import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.xml.XmlExporter;
 import com.eleybourn.bookcatalogue.backup.xml.XmlUtils;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -57,7 +57,7 @@ public abstract class BackupWriterAbstract
         implements BackupWriter {
 
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
 
     private @NonNull
     ExportSettings mSettings;
@@ -65,7 +65,7 @@ public abstract class BackupWriterAbstract
     private BackupWriter.BackupWriterListener mProgressListener;
 
     protected BackupWriterAbstract() {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb = new DBA(BookCatalogueApp.getAppContext());
     }
 
     /**
@@ -239,8 +239,8 @@ public abstract class BackupWriterAbstract
         int ok = 0;
         int missing = 0;
         int skipped = 0;
-        String fmtNoSkip = BookCatalogueApp.getResourceString(R.string.progress_msg_covers);
-        String fmtSkip = BookCatalogueApp.getResourceString(R.string.progress_msg_covers_skip);
+        String fmtNoSkip = BookCatalogueApp.getResString(R.string.progress_msg_covers);
+        String fmtSkip = BookCatalogueApp.getResString(R.string.progress_msg_covers_skip);
 
         try (Cursor cursor = mDb.fetchBookUuidList()) {
             final int uuidCol = cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.name);
@@ -272,9 +272,8 @@ public abstract class BackupWriterAbstract
             }
         }
         if (!dryRun) {
-            Logger.info(this,
-                        " Wrote " + ok + " Images, " + missing + " missing," +
-                                " and " + skipped + " skipped");
+            Logger.info(this, " Wrote " + ok + " Images, " + missing + " missing,"
+                    + " and " + skipped + " skipped");
         }
 
         return ok;

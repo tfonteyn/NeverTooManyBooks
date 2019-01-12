@@ -30,8 +30,8 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportException;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
+import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -74,7 +74,7 @@ public class CsvImporter
     private static final String OLD_STYLE_AUTHOR_NAME = "author_name";
 
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
 
     @NonNull
     private final ImportSettings mSettings;
@@ -96,7 +96,7 @@ public class CsvImporter
      *                 handles {@link ImportSettings#BOOK_CSV} anyhow.
      */
     public CsvImporter(@NonNull final ImportSettings settings) {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb = new DBA(BookCatalogueApp.getAppContext());
         mSettings = settings;
     }
 
@@ -288,7 +288,7 @@ public class CsvImporter
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
                     listener.onProgress(title + "\n(" +
-                                                BookCatalogueApp.getResourceString(
+                                                BookCatalogueApp.getResString(
                                                         R.string.progress_msg_n_created_m_updated,
                                                         mCreated,
                                                         mUpdated) +
@@ -376,8 +376,8 @@ public class CsvImporter
         if (exists) {
             if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bookId)) {
                 mDb.updateBook(bookId, book,
-                               CatalogueDBAdapter.BOOK_UPDATE_SKIP_PURGE_REFERENCES
-                                       | CatalogueDBAdapter.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+                               DBA.BOOK_UPDATE_SKIP_PURGE_REFERENCES
+                                       | DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
                 mUpdated++;
             }
         } else {
@@ -389,7 +389,7 @@ public class CsvImporter
     }
 
 
-    private boolean updateOnlyIfNewer(@NonNull final CatalogueDBAdapter db,
+    private boolean updateOnlyIfNewer(@NonNull final DBA db,
                                       @NonNull final Book book,
                                       final long bookId) {
         String bookDateStr = db.getBookLastUpdateDate(bookId);
@@ -419,7 +419,7 @@ public class CsvImporter
     /**
      * The "bookshelf_id" column is not used at all (similar to how author etc is done).
      */
-    private void handleBookshelves(@SuppressWarnings("unused") @NonNull final CatalogueDBAdapter db,
+    private void handleBookshelves(@SuppressWarnings("unused") @NonNull final DBA db,
                                    @NonNull final Book book) {
         String encodedList = book.getString(UniqueId.KEY_BOOKSHELF_NAME);
 
@@ -435,7 +435,7 @@ public class CsvImporter
      * Ignore the actual value of the UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK! it will be
      * 'reset' to mirror what we actually have when storing the book data
      */
-    private void handleAnthology(@NonNull final CatalogueDBAdapter db,
+    private void handleAnthology(@NonNull final DBA db,
                                  @NonNull final Book book) {
 
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
@@ -457,7 +457,7 @@ public class CsvImporter
      *
      * Get the list of series from whatever source is available.
      */
-    private void handleSeries(@NonNull final CatalogueDBAdapter db,
+    private void handleSeries(@NonNull final DBA db,
                               @NonNull final Book book) {
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
         if (encodedList.isEmpty()) {
@@ -485,7 +485,7 @@ public class CsvImporter
      *
      * Get the list of authors from whatever source is available.
      */
-    private void handleAuthors(@NonNull final CatalogueDBAdapter db,
+    private void handleAuthors(@NonNull final DBA db,
                                @NonNull final Book book) {
         // preferred & used in latest versions
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);
@@ -515,9 +515,8 @@ public class CsvImporter
         // (it seems a 'book' record gets written without an 'author' record; should not happen)
         // so we allow blank author_details and fill in a regional version of "Author, Unknown"
         if (encodedList.isEmpty()) {
-            encodedList = BookCatalogueApp.getResourceString(
-                    R.string.lbl_author) + ", " + BookCatalogueApp.getResourceString(
-                    R.string.unknown);
+            encodedList = BookCatalogueApp.getResString(R.string.lbl_author) + ", "
+                    + BookCatalogueApp.getResString(R.string.unknown);
         }
 
         // Now build the array for authors
@@ -665,7 +664,7 @@ public class CsvImporter
             }
         }
 
-        throw new ImportException(BookCatalogueApp.getResourceString(
+        throw new ImportException(BookCatalogueApp.getResString(
                 R.string.import_error_csv_file_must_contain_any_column,
                 TextUtils.join(",", names)));
     }
@@ -679,7 +678,7 @@ public class CsvImporter
             return;
         }
         throw new ImportException(
-                BookCatalogueApp.getResourceString(R.string.error_column_is_blank, name, row));
+                BookCatalogueApp.getResString(R.string.error_column_is_blank, name, row));
     }
 
     @SuppressWarnings("unused")
@@ -694,7 +693,7 @@ public class CsvImporter
         }
 
         throw new ImportException(
-                BookCatalogueApp.getResourceString(R.string.error_columns_are_blank,
-                                                   TextUtils.join(",", names), row));
+                BookCatalogueApp.getResString(R.string.error_columns_are_blank,
+                                              TextUtils.join(",", names), row));
     }
 }

@@ -31,12 +31,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
@@ -50,89 +54,100 @@ import java.io.File;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * DB Helper for Covers DB. It uses the Application Context.
- *
+ * <p>
  * In the initial pass, the covers database has a single table whose members are accessed via unique
  * 'file names'.
- *
+ * <p>
  * This class is used as singleton, to avoid running out of memory very quickly.
  * To be investigated some day. Not sure how much multi-threaded access is hampered by this.
  * TODO: do some speed checks: cache enabled/disabled; do we actually need this db ?
- *
+ * <p>
  * 2018-11-26: database location back to internal storage.
  * The bulk of space is used by the actual image file, not by the database.
  * To be reviewed when the location of the images can be user-configured.
  *
  * @author Philip Warner
  */
-public class CoversDBAdapter implements AutoCloseable {
+public final class CoversDBA
+        implements AutoCloseable {
 
-    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync */
-    private static final Synchronizer mSynchronizer = new Synchronizer();
-    /** DB location */
+    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
+    private static final Synchronizer SYNCHRONIZER = new Synchronizer();
+    /** DB location. */
     private static final String COVERS_DATABASE_NAME = "covers.db";
-    /** DB Version */
+    /** DB Version. */
     private static final int COVERS_DATABASE_VERSION = 1;
 
-    /** Static Factory object to create the custom cursor */
-    private static final SQLiteDatabase.CursorFactory mTrackedCursorFactory = new SQLiteDatabase.CursorFactory() {
-        @Override
-        public Cursor newCursor(
-                SQLiteDatabase db,
-                @NonNull SQLiteCursorDriver masterQuery,
-                @NonNull String editTable,
-                @NonNull SQLiteQuery query) {
-            return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
-        }
-    };
+    /** Static Factory object to create the custom cursor. */
+    private static final SQLiteDatabase.CursorFactory TRACKED_CURSOR_FACTORY =
+            new SQLiteDatabase.CursorFactory() {
+                @Override
+                public Cursor newCursor(
+                        @NonNull final SQLiteDatabase db,
+                        @NonNull final SQLiteCursorDriver masterQuery,
+                        @NonNull final String editTable,
+                        @NonNull final SQLiteQuery query) {
+                    return new TrackedCursor(masterQuery, editTable, query, SYNCHRONIZER);
+                }
+            };
 
-    /* Domain definitions */
-    /** TBL_IMAGE */
-    private static final DomainDefinition DOM_ID = new DomainDefinition("_id");
+    /* Domain definitions. */
+    /** TBL_IMAGE. */
+    private static final DomainDefinition DOM_ID =
+            new DomainDefinition("_id");
 
-    private static final DomainDefinition DOM_DATE = new DomainDefinition("date", TableInfo.TYPE_DATETIME, true)
-            .setDefault("current_timestamp");
+    private static final DomainDefinition DOM_DATE =
+            new DomainDefinition("date", TableInfo.TYPE_DATETIME, true)
+                    .setDefault("current_timestamp");
     // T = Thumbnail; C = cover? Only found reference to "T"
-    private static final DomainDefinition DOM_TYPE = new DomainDefinition("type", TableInfo.TYPE_TEXT, true);
-    private static final DomainDefinition DOM_IMAGE = new DomainDefinition("image", TableInfo.TYPE_BLOB, true);
-    private static final DomainDefinition DOM_WIDTH = new DomainDefinition("width", TableInfo.TYPE_INTEGER, true);
-    private static final DomainDefinition DOM_HEIGHT = new DomainDefinition("height", TableInfo.TYPE_INTEGER, true);
-    private static final DomainDefinition DOM_SIZE = new DomainDefinition("size", TableInfo.TYPE_INTEGER, true);
+    private static final DomainDefinition DOM_TYPE =
+            new DomainDefinition("type", TableInfo.TYPE_TEXT, true);
+    private static final DomainDefinition DOM_IMAGE =
+            new DomainDefinition("image", TableInfo.TYPE_BLOB, true);
+    private static final DomainDefinition DOM_WIDTH =
+            new DomainDefinition("width", TableInfo.TYPE_INTEGER, true);
+    private static final DomainDefinition DOM_HEIGHT =
+            new DomainDefinition("height", TableInfo.TYPE_INTEGER, true);
+    private static final DomainDefinition DOM_SIZE =
+            new DomainDefinition("size", TableInfo.TYPE_INTEGER, true);
 
-    private static final DomainDefinition DOM_FILENAME = new DomainDefinition("filename", TableInfo.TYPE_TEXT, true);
+    private static final DomainDefinition DOM_FILENAME =
+            new DomainDefinition("filename", TableInfo.TYPE_TEXT, true);
 
-    /** table definitions */
-    private static final TableDefinition TBL_IMAGE = new TableDefinition("image",
-            DOM_ID, DOM_TYPE, DOM_IMAGE, DOM_DATE, DOM_WIDTH, DOM_HEIGHT, DOM_SIZE, DOM_FILENAME);
+    /** table definitions. */
+    private static final TableDefinition TBL_IMAGE =
+            new TableDefinition("image", DOM_ID, DOM_TYPE, DOM_IMAGE, DOM_DATE,
+                                DOM_WIDTH, DOM_HEIGHT, DOM_SIZE, DOM_FILENAME);
     /**
      * run a count for the desired file. 1 == exists, 0 == not there
      */
-    private static final String SQL_COUNT_ID = "SELECT COUNT(" + DOM_ID + ") FROM " + TBL_IMAGE + " WHERE " + DOM_FILENAME + "=?";
-    /**
-     * all tables
-     */
+    private static final String SQL_COUNT_ID =
+            "SELECT COUNT(" + DOM_ID + ") FROM " + TBL_IMAGE
+            + " WHERE " + DOM_FILENAME + "=?";
+
+    /** all tables. */
     private static final TableDefinition[] TABLES = new TableDefinition[]{TBL_IMAGE};
     /**
      * Not debug!
-     * close() will only really close if mInstanceCounter == 0 is reached.
+     * close() will only really close if INSTANCE_COUNTER == 0 is reached.
      */
     @NonNull
-    private static final AtomicInteger mInstanceCounter = new AtomicInteger();
+    private static final AtomicInteger INSTANCE_COUNTER = new AtomicInteger();
+    /** Compresses images to 70%. */
+    private static final int QUALITY_PERCENTAGE = 70;
+
     /**
      * We *try* to connect in the Constructor. But this can fail.
      * This is ok, as this class/db is for caching only.
      * So before using it, every method in this class MUST test on != null
      */
     private static SynchronizedDb mSyncedDb;
-    /** singleton */
-    private static CoversDBAdapter mInstance;
+    /** singleton. */
+    private static CoversDBA mInstance;
 
-    /* table indexes */
+    /* table indexes. */
     static {
         TBL_IMAGE
                 .addIndex("id", true, DOM_ID)
@@ -142,28 +157,28 @@ public class CoversDBAdapter implements AutoCloseable {
 
     /** List of statements we create so we can clean them when the instance is closed. */
     private final SqlStatementManager mStatements = new SqlStatementManager();
-    /** {@link #saveFile(String, int, int, byte[])} */
+    /** {@link #saveFile(String, int, int, byte[])}. */
     @Nullable
-    private SynchronizedStatement mExistsStmt = null;
+    private SynchronizedStatement mExistsStmt;
 
-    private CoversDBAdapter() {
+    private CoversDBA() {
     }
 
     /**
      * Get the singleton instance.
-     *
+     * <p>
      * Reminder: we always use the *application* context for the database connection.
      */
-    public static CoversDBAdapter getInstance() {
+    public static CoversDBA getInstance() {
         if (mInstance == null) {
-            mInstance = new CoversDBAdapter();
+            mInstance = new CoversDBA();
         }
         // check each time, as it might have failed last time but might work now.
         if (mSyncedDb == null) {
             mInstance.open(BookCatalogueApp.getAppContext());
         }
 
-        int noi = mInstanceCounter.incrementAndGet();
+        int noi = INSTANCE_COUNTER.incrementAndGet();
         if (/* always show debug */ BuildConfig.DEBUG) {
             Logger.info(mInstance, "instances created: " + noi);
         }
@@ -172,7 +187,7 @@ public class CoversDBAdapter implements AutoCloseable {
 
     /**
      * Construct the cache ID for a given thumbnail spec.
-     *
+     * <p>
      * NOTE: Any changes to the resulting name MUST be reflected in {@link #deleteBookCover}
      *
      * @param uuid      used to construct the cacheId
@@ -187,22 +202,22 @@ public class CoversDBAdapter implements AutoCloseable {
     }
 
     private void open(@NonNull final Context context) {
-        final SQLiteOpenHelper coversHelper = new CoversDbHelper(context, mTrackedCursorFactory);
+        final SQLiteOpenHelper coversHelper = new CoversDbHelper(context, TRACKED_CURSOR_FACTORY);
 
         // Try to connect.
         try {
-            mSyncedDb = new SynchronizedDb(coversHelper, mSynchronizer);
+            mSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
         } catch (RuntimeException e) {
             // Assume exception means DB corrupt. Log, rename, and retry
             Logger.error(e, "Failed to open covers db");
             if (!StorageUtils.renameFile(StorageUtils.getFile(COVERS_DATABASE_NAME),
-                    StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
+                                         StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
                 Logger.error("Failed to rename dead covers database: ");
             }
 
             // try again?
             try {
-                mSyncedDb = new SynchronizedDb(coversHelper, mSynchronizer);
+                mSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
             } catch (RuntimeException e2) {
                 // If we fail a second time (creating a new DB), then just give up.
                 Logger.error(e2, "Covers database unavailable");
@@ -211,22 +226,22 @@ public class CoversDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Generic function to close the database
+     * Generic function to close the database.
      * It does not 'close' the database in the literal sense, but
      * performs a cleanup by closing all open statements
-     *
+     * <p>
      * So it should really be called cleanup()
      * But it allows us to use try-with-resources.
-     *
+     * <p>
      * Consequently, there is no need to 'open' anything before running further operations.
      */
     @Override
     public void close() {
         // must be in a synchronized, as we use noi twice.
-        synchronized (mInstanceCounter) {
-            int noi = mInstanceCounter.decrementAndGet();
+        synchronized (INSTANCE_COUNTER) {
+            int noi = INSTANCE_COUNTER.decrementAndGet();
             if (/* always show debug */BuildConfig.DEBUG) {
-                Logger.info(this, "instances left: " + mInstanceCounter);
+                Logger.info(this, "instances left: " + INSTANCE_COUNTER);
             }
 
             if (noi == 0) {
@@ -276,7 +291,8 @@ public class CoversDBAdapter implements AutoCloseable {
             return null;
         }
 
-        Bitmap bitmap = null;   // resultant Bitmap (which we will return)
+        // resultant Bitmap (which we will return)
+        Bitmap bitmap = null;
 
         byte[] bytes;
         String cacheId = getThumbnailCoverCacheId(uuid, maxWidth, maxHeight);
@@ -300,9 +316,10 @@ public class CoversDBAdapter implements AutoCloseable {
 
         if (bitmap != null) {
             //
-            // Remove any tasks that may be getting the image because they may overwrite anything we do.
-            // Remember: the view may have been re-purposed and have a different associated task which
-            // must be removed from the view and removed from the queue.
+            // Remove any tasks that may be getting the image because they may overwrite
+            // anything we do.
+            // Remember: the view may have been re-purposed and have a different associated
+            // task which must be removed from the view and removed from the queue.
             //
             if (destView != null) {
                 GetThumbnailTask.clearOldTaskFromView(destView);
@@ -318,23 +335,25 @@ public class CoversDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Get the named 'file'
+     * Get the named 'file'.
      *
      * @return byte[] of image data
      */
     @Nullable
-    private byte[] getFile(@NonNull final String filename, @NonNull final Date lastModified) {
+    private byte[] getFile(@NonNull final String filename,
+                           @NonNull final Date lastModified) {
         if (mSyncedDb == null) {
             return null;
         }
 
         try (Cursor cursor = mSyncedDb.query(TBL_IMAGE.getName(),
-                new String[]{DOM_IMAGE.name},
-                DOM_FILENAME + "=? AND " + DOM_DATE + " > ?",
-                new String[]{filename, DateUtils.utcSqlDateTime(lastModified)},
-                null,
-                null,
-                null)) {
+                                             new String[]{DOM_IMAGE.name},
+                                             DOM_FILENAME + "=? AND " + DOM_DATE + " > ?",
+                                             new String[]{filename, DateUtils.utcSqlDateTime(
+                                                     lastModified)},
+                                             null,
+                                             null,
+                                             null)) {
             if (!cursor.moveToFirst()) {
                 return null;
             }
@@ -343,27 +362,31 @@ public class CoversDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Save the passed bitmap to a 'file' in the covers database. Compresses to 70% quality first.
+     * Save the passed bitmap to a 'file' in the covers database.
+     * Compresses to QUALITY_PERCENTAGE first.
      *
-     * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
+     * @return the row ID of the newly inserted row, or -1 if an error occurred,
+     * or 1 for a successful update
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long saveFile(@NonNull final Bitmap bitmap, @NonNull final String filename) {
+    public long saveFile(@NonNull final Bitmap bitmap,
+                         @NonNull final String filename) {
         if (mSyncedDb == null) {
             return -1L;
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, out);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY_PERCENTAGE, out);
         byte[] bytes = out.toByteArray();
 
         return saveFile(filename, bitmap.getHeight(), bitmap.getWidth(), bytes);
     }
 
     /**
-     * Save the passed encoded image data to a 'file'
+     * Save the passed encoded image data to a 'file'.
      *
-     * @return the row ID of the newly inserted row, or -1 if an error occurred, or 1 for a successful update
+     * @return the row ID of the newly inserted row, or -1 if an error occurred,
+     * or 1 for a successful update
      */
     private long saveFile(@NonNull final String filename,
                           final int height,
@@ -391,28 +414,31 @@ public class CoversDBAdapter implements AutoCloseable {
         if (mExistsStmt.count() == 0) {
             return mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
         } else {
-            return mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + "=?", new String[]{filename});
+            return mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + "=?",
+                                    new String[]{filename});
         }
     }
 
     /**
-     * Delete the cached covers associated with the passed book uuid
-     *
+     * Delete the cached covers associated with the passed book uuid.
+     * <p>
      * The original code also had a 2nd 'delete' method with a different where clause:
      * // We use encodeString here because it's possible a user screws up the data and imports
      * // bad UUIDs...this has happened.
-     * // String whereClause = DOM_FILENAME + " glob '" + CatalogueDBAdapter.encodeString(uuid) + ".*'";
+     * // String whereClause = DOM_FILENAME + " glob '" + DBA.encodeString(uuid) + ".*'";
      * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
      */
     public void deleteBookCover(@NonNull final String uuid) {
         if (mSyncedDb == null) {
             return;
         }
-        mSyncedDb.delete(TBL_IMAGE.getName(), DOM_FILENAME + " LIKE ?", new String[]{uuid + '%'});
+        mSyncedDb.delete(TBL_IMAGE.getName(),
+                         DOM_FILENAME + " LIKE ?",
+                         new String[]{uuid + '%'});
     }
 
     /**
-     * delete all rows
+     * delete all rows.
      */
     public void deleteAll() {
         if (mSyncedDb == null) {
@@ -422,7 +448,7 @@ public class CoversDBAdapter implements AutoCloseable {
     }
 
     /**
-     * Analyze the database
+     * Analyze the database.
      */
     public void analyze() {
         if (mSyncedDb == null) {
@@ -431,10 +457,12 @@ public class CoversDBAdapter implements AutoCloseable {
         mSyncedDb.analyze();
     }
 
-    public static class CoversDbHelper extends SQLiteOpenHelper {
+    public static class CoversDbHelper
+            extends SQLiteOpenHelper {
 
         CoversDbHelper(@NonNull final Context context,
-                       @SuppressWarnings("SameParameterValue") @NonNull final SQLiteDatabase.CursorFactory factory) {
+                       @SuppressWarnings("SameParameterValue")
+                       @NonNull final SQLiteDatabase.CursorFactory factory) {
             super(context, COVERS_DATABASE_NAME, factory, COVERS_DATABASE_VERSION);
         }
 
@@ -443,21 +471,23 @@ public class CoversDBAdapter implements AutoCloseable {
         }
 
         /**
-         * As with SQLiteOpenHelper, routine called to create DB
+         * As with SQLiteOpenHelper, routine called to create DB.
          */
         @Override
         @CallSuper
         public void onCreate(@NonNull final SQLiteDatabase db) {
             Logger.info(this, "Creating database: " + db.getPath());
-            TableDefinition.createTables(new SynchronizedDb(db, mSynchronizer), TABLES);
+            TableDefinition.createTables(new SynchronizedDb(db, SYNCHRONIZER), TABLES);
         }
 
         /**
-         * As with SQLiteOpenHelper, routine called to upgrade DB
+         * As with SQLiteOpenHelper, routine called to upgrade DB.
          */
         @Override
         @CallSuper
-        public void onUpgrade(@NonNull final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+        public void onUpgrade(@NonNull final SQLiteDatabase db,
+                              final int oldVersion,
+                              final int newVersion) {
             Logger.info(this, "Upgrading database: " + db.getPath());
             throw new IllegalStateException("Upgrades not handled yet!");
         }

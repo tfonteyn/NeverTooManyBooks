@@ -61,7 +61,7 @@ public class PropertyGroup implements Comparable<PropertyGroup> {
     @NonNull
     private String getName() {
         if (mName == null) {
-            mName = BookCatalogueApp.getResourceString(mNameResourceId);
+            mName = BookCatalogueApp.getResString(mNameResourceId);
         }
         return mName;
     }

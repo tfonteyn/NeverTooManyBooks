@@ -25,7 +25,7 @@ import java.util.Objects;
 
 /**
  * This has now become a copy from {@link ListActivity} but extending {@link BaseActivity}.
- *
+ * <p>
  * You must have a layout with the file name
  * res/layout/list_activity.xml
  * and containing something like this:
@@ -121,9 +121,8 @@ public abstract class BaseListActivity
     public void onContentChanged() {
         super.onContentChanged();
         mListView = findViewById(android.R.id.list);
-        Objects.requireNonNull(mListView,
-                               "Layout must have a ListView whose id" +
-                                       " attribute is '@android:id/list'");
+        Objects.requireNonNull(mListView, "Layout must have a ListView whose id"
+                + " attribute is '@android:id/list'");
 
         View emptyView = findViewById(android.R.id.empty);
         if (emptyView != null) {
@@ -140,7 +139,7 @@ public abstract class BaseListActivity
 
     /**
      * Listen for clicks on items in our list.
-     *
+     * <p>
      * {@link #onContentChanged} enables 'this' as the listener for our ListView
      *
      * @param parent   The AdapterView where the click happened.
@@ -150,8 +149,8 @@ public abstract class BaseListActivity
      * @param id       The row id of the item that was clicked.
      */
     @Override
-    public void onItemClick(final AdapterView<?> parent,
-                            final View view,
+    public void onItemClick(@NonNull final AdapterView<?> parent,
+                            @NonNull final View view,
                             final int position,
                             final long id) {
     }
@@ -241,7 +240,7 @@ public abstract class BaseListActivity
 
     /**
      * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
-     *
+     * <p>
      * Replaces: {@link #onCreateContextMenu(ContextMenu, View, ContextMenu.ContextMenuInfo)}
      */
     @Override

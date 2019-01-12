@@ -219,7 +219,7 @@ public final class GoodreadsUtils {
 
     }
 
-    private static void showConfirmationDialog(final FragmentActivity context) {
+    private static void showConfirmationDialog(@NonNull final FragmentActivity context) {
         // Get the title
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.gr_title_send_book)

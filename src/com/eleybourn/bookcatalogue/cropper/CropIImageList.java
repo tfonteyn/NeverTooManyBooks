@@ -19,6 +19,7 @@ package com.eleybourn.bookcatalogue.cropper;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import java.util.Map;
@@ -46,69 +47,72 @@ import java.util.Map;
 /**
  * The interface of all image collections used in gallery.
  */
-interface CropIImageList extends Parcelable, AutoCloseable {
-	@NonNull
-	Map<String, String> getBucketIds();
+interface CropIImageList
+        extends Parcelable, AutoCloseable {
 
-	void deactivate();
+    @NonNull
+    Map<String, String> getBucketIds();
 
-	/**
-	 * Returns the count of image objects.
-	 * 
-	 * @return the number of images
-	 */
+    void deactivate();
+
+    /**
+     * Returns the count of image objects.
+     *
+     * @return the number of images
+     */
     int getCount();
 
-	/**
-	 * @return <tt>true</tt> if the count of image objects is zero.
-	 */
+    /**
+     * @return <tt>true</tt> if the count of image objects is zero.
+     */
     boolean isEmpty();
 
-	/**
-	 * Returns the image at the ith position.
-	 * 
-	 * @param index		the position
-	 * @return the image at the ith position
-	 */
+    /**
+     * Returns the image at the ith position.
+     *
+     * @param index the position
+     *
+     * @return the image at the ith position
+     */
     @NonNull
     CropIImage getImageAt(int index);
 
-	/**
-	 * Returns the image with a particular Uri.
-	 * 
-	 * @return the image with a particular Uri. null if not found.
-	 */
+    /**
+     * Returns the image with a particular Uri.
+     *
+     * @return the image with a particular Uri. null if not found.
+     */
     @NonNull
     CropIImage getImageForUri(Uri uri);
 
-	/**
-	 * @return <tt>true</tt> if the image was removed.
-	 */
+    /**
+     * @return <tt>true</tt> if the image was removed.
+     */
     boolean removeImage(CropIImage image);
 
-	/**
-	 * Removes the image at the ith position.
-	 * 
-	 * @param index		the position
-	 */
+    /**
+     * Removes the image at the ith position.
+     *
+     * @param index the position
+     */
     boolean removeImageAt(int index);
 
-	int getImageIndex(CropIImage image);
+    int getImageIndex(CropIImage image);
 
-	/**
-	 * Generate thumbnail for the image (if it has not been generated.)
-	 * 
-	 * @param index	the position of the image
-	 */
+    /**
+     * Generate thumbnail for the image (if it has not been generated.)
+     *
+     * @param index the position of the image
+     */
     void checkThumbnail(int index);
 
-	/**
-	 * Opens this list for operation.
-	 */
-    void open(ContentResolver resolver);
+    /**
+     * Opens this list for operation.
+     */
+    void open(@NonNull ContentResolver resolver);
 
-	/**
-	 * Closes this list to release resources, no further operation is allowed.
-	 */
+    /**
+     * Closes this list to release resources, no further operation is allowed.
+     */
     void close();
 }

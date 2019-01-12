@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
+import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
@@ -92,13 +92,13 @@ public final class UpgradeMessageManager {
         final StringBuilder message = new StringBuilder();
 
         // See if we have a saved version id. If not, it's an pre-98 install.
-        long lastVersion = Prefs.getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
+        long lastVersion = Prefs.getPrefs().getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
         if (lastVersion == 0) {
             // It was an old install using old database-based message system
             // set the version to the last installed version that used the old method.
             lastVersion = 98;
-            if (!CatalogueDBHelper.getMessage().isEmpty()) {
-                message.append("<p>").append(CatalogueDBHelper.getMessage()).append("</p>");
+            if (!DBHelper.getMessage().isEmpty()) {
+                message.append("<p>").append(DBHelper.getMessage()).append("</p>");
             }
         }
 
@@ -154,7 +154,7 @@ public final class UpgradeMessageManager {
 
         @NonNull
         public String getLocalizedMessage() {
-            return BookCatalogueApp.getResourceString(mMessageId);
+            return BookCatalogueApp.getResString(mMessageId);
         }
     }
 

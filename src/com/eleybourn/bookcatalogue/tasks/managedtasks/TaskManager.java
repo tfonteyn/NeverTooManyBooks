@@ -73,7 +73,7 @@ public class TaskManager {
      * This object handles all underlying task messages for *every* instance of this class.
      */
     private static final MessageSwitch<TaskManagerListener, TaskManagerController>
-            mMessageSwitch = new MessageSwitch<>();
+            MESSAGE_SWITCH = new MessageSwitch<>();
 
     /**
      * Unique identifier for this instance.
@@ -95,14 +95,14 @@ public class TaskManager {
      * Setting to null or blank will remove the ProgressDialog if no tasks are left running.
      */
     @Nullable
-    private String mBaseMessage = null;
+    private String mBaseMessage;
     /**
      * Listener for ManagedTask messages.
      */
     private final ManagedTask.ManagedTaskListener mManagedTaskListener =
             new ManagedTask.ManagedTaskListener() {
                 @Override
-                public void onTaskFinished(@NonNull ManagedTask task) {
+                public void onTaskFinished(@NonNull final ManagedTask task) {
                     // Remove the finished task from our list
                     synchronized (mManagedTasks) {
                         for (TaskInfo i : mManagedTasks) {
@@ -122,7 +122,7 @@ public class TaskManager {
                     }
 
                     // Tell all listeners that the task has finished.
-                    mMessageSwitch.send(mMessageSenderId,
+                    MESSAGE_SWITCH.send(mMessageSenderId,
                                         new TaskFinishedMessage(TaskManager.this, task));
 
                     // Update the progress dialog
@@ -157,14 +157,14 @@ public class TaskManager {
                 return TaskManager.this;
             }
         };
-        mMessageSenderId = mMessageSwitch.createSender(controller);
+        mMessageSenderId = MESSAGE_SWITCH.createSender(controller);
 
         mContext = context;
     }
 
     @NonNull
     public static MessageSwitch<TaskManagerListener, TaskManagerController> getMessageSwitch() {
-        return mMessageSwitch;
+        return MESSAGE_SWITCH;
     }
 
     /**
@@ -313,7 +313,7 @@ public class TaskManager {
                 }
             }
 
-            mMessageSwitch.send(mMessageSenderId,
+            MESSAGE_SWITCH.send(mMessageSenderId,
                                 new TaskProgressMessage(progressCount, progressMax,
                                                         progressMessage));
 
@@ -328,7 +328,7 @@ public class TaskManager {
      * @param message Message to send
      */
     public void sendTaskUserMessage(@NonNull final String message) {
-        mMessageSwitch.send(mMessageSenderId, new TaskUserMessage(message));
+        MESSAGE_SWITCH.send(mMessageSenderId, new TaskUserMessage(message));
     }
 
     /**

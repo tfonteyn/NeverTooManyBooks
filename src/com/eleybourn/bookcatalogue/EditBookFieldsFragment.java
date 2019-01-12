@@ -283,7 +283,8 @@ public class EditBookFieldsFragment
         if (list.isEmpty()) {
 
             Bookshelf bookshelf = null;
-            String name = Prefs.getString(BooksOnBookshelf.PREF_BOB_CURRENT_BOOKSHELF, null);
+            String name = Prefs.getPrefs()
+                               .getString(BooksOnBookshelf.PREF_BOB_CURRENT_BOOKSHELF, null);
             if (name != null && !name.isEmpty()) {
                 bookshelf = mDb.getBookshelfByName(name);
             }
@@ -345,11 +346,8 @@ public class EditBookFieldsFragment
     @Override
     @CallSuper
     public void onPause() {
-        Tracker.enterOnPause(this);
         mCoverHandler.dismissCoverBrowser();
-
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     /**
@@ -425,23 +423,11 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    public void onCheckListEditorCancel(@NonNull final CheckListEditorDialogFragment dialog,
-                                        final int destinationFieldId) {
-        dialog.dismiss();
-    }
-
-    @Override
     public void onTextFieldEditorSave(@NonNull final TextFieldEditorDialogFragment dialog,
                                       final int destinationFieldId,
                                       @NonNull final String newText) {
         dialog.dismiss();
         mFields.getField(destinationFieldId).setValue(newText);
-    }
-
-    @Override
-    public void onTextFieldEditorCancel(@NonNull final TextFieldEditorDialogFragment dialog,
-                                        final int destinationFieldId) {
-        dialog.dismiss();
     }
 
     @Override
@@ -454,11 +440,6 @@ public class EditBookFieldsFragment
         mFields.getField(destinationFieldId).setValue(DateUtils.buildPartialDate(year, month, day));
     }
 
-    @Override
-    public void onPartialDatePickerCancel(@NonNull final PartialDatePickerDialogFragment dialog,
-                                          final int destinationFieldId) {
-        dialog.dismiss();
-    }
     //</editor-fold>
 
     //<editor-fold desc="Field drop down lists">

@@ -20,9 +20,6 @@
 
 package com.eleybourn.bookcatalogue.database;
 
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -30,6 +27,9 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 
 /**
  * Manages the construction and closure of persisted SQLiteStatement objects.
@@ -82,7 +82,7 @@ public class SqlStatementManager
     }
 
     /**
-     * DEBUG help
+     * DEBUG help.
      *
      * @return list of all the names of the managed statements
      */

@@ -26,6 +26,10 @@ import android.database.Cursor;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
@@ -34,32 +38,22 @@ import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.DATE_ACQUIRED_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.DATE_ADDED_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.DATE_PUBLISHED_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.DATE_READ_MONTH;
-import static com.eleybourn.bookcatalogue.booklist.BooklistGroup.RowKind.RATING;
-
 /**
  * CursorRow object for the BooklistCursor.
- *
+ * <p>
  * Implements methods to perform common tasks on the 'current' row of the cursor.
  *
  * @author Philip Warner
  */
-public class BooklistRowView extends BookRowViewBase {
+public class BooklistRowView
+        extends BookRowViewBase {
 
-    /** Underlying builder object */
+    /** Underlying builder object. */
     @NonNull
     private final BooklistBuilder mBuilder;
-    /** Max size of thumbnails based on preferences at object creation time */
+    /** Max size of thumbnails based on preferences at object creation time. */
     private final int mMaxThumbnailWidth;
-    /** Max size of thumbnails based on preferences at object creation time */
+    /** Max size of thumbnails based on preferences at object creation time. */
     private final int mMaxThumbnailHeight;
 
     private int mLevelCol = -2;
@@ -68,26 +62,27 @@ public class BooklistRowView extends BookRowViewBase {
     private int mAbsPosCol = -2;
     private int mRowKindCol = -2;
 
-    /** linking with any table that is linked with the books table */
+    /** linking with any table that is linked with the books table. */
     private int mBookIdCol = -2;
 
-    /** linking with author table */
+    /** linking with author table. */
     private int mAuthorIdCol = -2;
     private int mAuthorIsCompleteCol = -2;
 
-    /** linking with series table */
+    /** linking with series table. */
     private int mSeriesIdCol = -2;
     private int mSeriesNameCol = -2;
     private int mSeriesIsCompleteCol = -2;
     private int mSeriesNumberCol = -2;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param cursor  Underlying Cursor
      * @param builder Underlying Builder
      */
-    public BooklistRowView(@NonNull final Cursor cursor, @NonNull final BooklistBuilder builder) {
+    public BooklistRowView(@NonNull final Cursor cursor,
+                           @NonNull final BooklistBuilder builder) {
         super(cursor);
         mBuilder = builder;
 
@@ -107,7 +102,8 @@ public class BooklistRowView extends BookRowViewBase {
      *
      * @return Requested thumbnail size
      */
-    private int computeThumbnailSize(@NonNull final Context context, final int extraFieldsInUse) {
+    private int computeThumbnailSize(@NonNull final Context context,
+                                     final int extraFieldsInUse) {
         int maxSize;
 
         if ((extraFieldsInUse & BooklistStyle.EXTRAS_THUMBNAIL_LARGE) != 0) {
@@ -142,13 +138,14 @@ public class BooklistRowView extends BookRowViewBase {
      * @return Formatted string, or original string on any failure
      */
     @Nullable
-    private String formatRowGroup(final int level, @Nullable final String s) {
+    private String formatRowGroup(final int level,
+                                  @Nullable final String s) {
         switch (mBuilder.getStyle().getGroupKindAt(level)) {
-            case DATE_ACQUIRED_MONTH:
-            case DATE_ADDED_MONTH:
-            case DATE_LAST_UPDATE_MONTH:
-            case DATE_PUBLISHED_MONTH:
-            case DATE_READ_MONTH: {
+            case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
+            case BooklistGroup.RowKind.DATE_ADDED_MONTH:
+            case BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH:
+            case BooklistGroup.RowKind.DATE_PUBLISHED_MONTH:
+            case BooklistGroup.RowKind.DATE_READ_MONTH:
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the name
@@ -159,8 +156,8 @@ public class BooklistRowView extends BookRowViewBase {
                 } catch (NumberFormatException ignored) {
                 }
                 break;
-            }
-            case RATING: {
+
+            case BooklistGroup.RowKind.RATING:
                 try {
                     int i = Integer.parseInt(s);
                     // If valid, get the name
@@ -171,7 +168,7 @@ public class BooklistRowView extends BookRowViewBase {
                 } catch (NumberFormatException ignored) {
                 }
                 break;
-            }
+
         }
         return s;
     }
@@ -207,7 +204,7 @@ public class BooklistRowView extends BookRowViewBase {
             return true;
         }
         mSeriesIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FK_SERIES_ID.name);
-        return (mSeriesIdCol >= 0);
+        return mSeriesIdCol >= 0;
     }
 
     /**
@@ -229,9 +226,11 @@ public class BooklistRowView extends BookRowViewBase {
      */
     public boolean isSeriesComplete() {
         if (mSeriesIsCompleteCol < 0) {
-            mSeriesIsCompleteCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_SERIES_IS_COMPLETE.name);
+            mSeriesIsCompleteCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_SERIES_IS_COMPLETE.name);
             if (mSeriesIsCompleteCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_SERIES_IS_COMPLETE.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_SERIES_IS_COMPLETE.name);
             }
         }
         return mCursor.getInt(mSeriesIsCompleteCol) == 1;
@@ -252,7 +251,8 @@ public class BooklistRowView extends BookRowViewBase {
         if (mSeriesNumberCol < 0) {
             mSeriesNumberCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_SERIES_NUM.name);
             if (mSeriesNumberCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BOOK_SERIES_NUM.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BOOK_SERIES_NUM.name);
             }
         }
         return mCursor.getString(mSeriesNumberCol);
@@ -276,7 +276,7 @@ public class BooklistRowView extends BookRowViewBase {
             return true;
         }
         mAuthorIdCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_FK_AUTHOR_ID.name);
-        return (mAuthorIdCol >= 0);
+        return mAuthorIdCol >= 0;
     }
 
     /**
@@ -284,9 +284,11 @@ public class BooklistRowView extends BookRowViewBase {
      */
     public boolean isAuthorComplete() {
         if (mAuthorIsCompleteCol < 0) {
-            mAuthorIsCompleteCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE.name);
+            mAuthorIsCompleteCol = mCursor.getColumnIndex(
+                    DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE.name);
             if (mAuthorIsCompleteCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE.name);
             }
         }
         return mCursor.getInt(mAuthorIsCompleteCol) == 1;
@@ -300,7 +302,8 @@ public class BooklistRowView extends BookRowViewBase {
         if (mAbsPosCol < 0) {
             mAbsPosCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_ABSOLUTE_POSITION.name);
             if (mAbsPosCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_ABSOLUTE_POSITION.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_ABSOLUTE_POSITION.name);
             }
         }
         return mCursor.getInt(mAbsPosCol);
@@ -314,7 +317,8 @@ public class BooklistRowView extends BookRowViewBase {
         if (mRowKindCol < 0) {
             mRowKindCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_BL_NODE_ROW_KIND.name);
             if (mRowKindCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_BL_NODE_ROW_KIND.name);
+                throw new DBExceptions.ColumnNotPresent(
+                        DatabaseDefinitions.DOM_BL_NODE_ROW_KIND.name);
             }
         }
         return mCursor.getInt(mRowKindCol);

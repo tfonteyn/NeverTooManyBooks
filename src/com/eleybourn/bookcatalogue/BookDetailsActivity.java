@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
- * Hosting activity for showing a book
+ * Hosting activity for showing a book.
  */
 public class BookDetailsActivity
         extends BaseActivity {

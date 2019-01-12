@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Ideally should use {@link EditObjectListActivity} but that needs to be converted to a Fragment first.
+ * Ideally should use {@link EditObjectListActivity} but that needs to be converted
+ * to a Fragment first.
  */
 public class AdminSearchOrderFragment
         extends Fragment
@@ -59,14 +60,15 @@ public class AdminSearchOrderFragment
         mListView = getView().findViewById(android.R.id.list);
         mListView.setAdapter(mListAdapter);
 
-        // Do not add handler for 'onDrop' from the TouchListView; we'll get what we need when we're ready to save.
+        // Do not add handler for 'onDrop' from the TouchListView;
+        // we'll get what we need when we're ready to save.
         ((TouchListView) mListView).setOnDropListener(this);
 
         Tracker.exitOnActivityCreated(this);
     }
 
     /**
-     * Handle drop events; This is a simplified version of {@link EditObjectListActivity#onDrop}
+     * Handle drop events; This is a simplified version of {@link EditObjectListActivity#onDrop}.
      * <p>
      * Lists here are 5 items or so....
      */
@@ -127,7 +129,7 @@ public class AdminSearchOrderFragment
                 // Set the click listener for the 'enable' site checkable
                 holder.checkable.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(@NonNull View v) {
+                    public void onClick(@NonNull final View v) {
                         Holder h = ViewTagger.getTagOrThrow(v);
                         h.site.enabled = !h.site.enabled;
                         h.checkable.setChecked(h.site.enabled);

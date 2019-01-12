@@ -65,7 +65,7 @@ public interface CropIImage {
     String getTitle();
 
     /** Get/Set the title of the image */
-    void setTitle(String name);
+    void setTitle(@NonNull String name);
 
     /** Get metadata of the image */
     long getDateTaken();

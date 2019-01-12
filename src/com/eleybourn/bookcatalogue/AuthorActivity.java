@@ -7,7 +7,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
@@ -22,7 +22,7 @@ public class AuthorActivity
         extends BaseListActivity {
 
     /** the database. */
-    private CatalogueDBAdapter mDb;
+    private DBA mDb;
     /** the list of TOC entries. */
     private ArrayList<TOCEntry> mList;
 
@@ -40,7 +40,7 @@ public class AuthorActivity
         Bundle extras = getIntent().getExtras();
         Objects.requireNonNull(extras);
         long authorId = extras.getLong(UniqueId.KEY_ID);
-        mDb = new CatalogueDBAdapter(this);
+        mDb = new DBA(this);
 
         Author author = mDb.getAuthor(authorId);
         Objects.requireNonNull(author);

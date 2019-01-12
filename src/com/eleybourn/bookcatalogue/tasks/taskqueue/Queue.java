@@ -25,7 +25,6 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.TaskActions;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Task.TaskState;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBAdapter.ScheduledTask;
 
 import java.lang.ref.WeakReference;
@@ -38,20 +37,20 @@ import java.lang.ref.WeakReference;
 public class Queue
         extends Thread {
 
-    /** QueueManager that owns this Queue object */
+    /** QueueManager that owns this Queue object. */
     @NonNull
     private final QueueManager mManager;
-    /** Name of this Queue */
+    /** Name of this Queue. */
     @NonNull
     private final String mName;
-    /** TaskQueueDBAdapter used internally */
+    /** TaskQueueDBAdapter used internally. */
     private TaskQueueDBAdapter mDb;
 
-    /** Currently running task */
-    private WeakReference<Task> mTask = null;
+    /** Currently running task. */
+    private WeakReference<Task> mTask;
 
-    /** Options to indicate process is terminating */
-    private boolean mTerminate = false;
+    /** Options to indicate process is terminating. */
+    private boolean mTerminate;
 
     /**
      * Constructor. Nothing to see here, move along. Just save the properties and start the thread.
@@ -75,7 +74,7 @@ public class Queue
     }
 
     /**
-     * Return the bare queue name, as opposed to the thread name
+     * Return the bare queue name, as opposed to the thread name.
      */
     @NonNull
     String getQueueName() {
@@ -91,7 +90,7 @@ public class Queue
     }
 
     /**
-     * Main worker thread logic
+     * Main worker thread logic.
      */
     public void run() {
         try {
@@ -121,12 +120,13 @@ public class Queue
                     }
                 }
 
-                // If we get here, we have a task, or know that there is one waiting to run. Just wait.
-                // for any wait that is longer than a minute.
+                // If we get here, we have a task, or know that there is one waiting to run.
+                // Just wait for any wait that is longer than a minute.
                 if (task != null) {
                     runTask(task);
                 } else {
-                    // Not ready, just wait. Allow for possible wake-up calls if something else gets queued.
+                    // Not ready, just wait. Allow for possible wake-up calls if something
+                    // else gets queued.
                     synchronized (this) {
                         this.wait(scheduledTask.timeUntilRunnable);
                     }
@@ -156,7 +156,6 @@ public class Queue
         boolean requeue = false;
         try {
             task.setException(null);
-            task.setState(TaskState.running);
             // notify here, as we allow mManager.runTask to be overridden
             mManager.notifyTaskChange(task, TaskActions.running);
             result = mManager.runTask(task);

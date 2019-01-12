@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BookSearchActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.datamanager.BitmaskDataAccessor;
@@ -141,7 +141,7 @@ public class Book
      * <p>
      * Either load from database if existing book, or a new Book.
      */
-    private Book(@NonNull final CatalogueDBAdapter db,
+    private Book(@NonNull final DBA db,
                  final long bookId
     ) {
         this();
@@ -189,7 +189,7 @@ public class Book
      * @param bookData Bundle with book data (may be null)
      */
     @NonNull
-    public static Book getBook(@NonNull final CatalogueDBAdapter db,
+    public static Book getBook(@NonNull final DBA db,
                                final long bookId,
                                @Nullable final Bundle bookData
     ) {
@@ -207,14 +207,14 @@ public class Book
      * @param bookId of book (may be 0 for new)
      */
     @NonNull
-    public static Book getBook(@NonNull final CatalogueDBAdapter db,
+    public static Book getBook(@NonNull final DBA db,
                                final long bookId
     ) {
         return new Book(db, bookId);
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean setRead(@NonNull final CatalogueDBAdapter db,
+    public static boolean setRead(@NonNull final DBA db,
                                   final long bookId,
                                   final boolean isRead
     ) {
@@ -261,10 +261,9 @@ public class Book
         Uri coverURI = FileProvider
                 .getUriForFile(activity, GenericFileProvider.AUTHORITY, coverFile);
 
-        /*
-        TEST: There's a problem with the facebook app in android,
-         so despite it being shown on the list it will not post any text unless the user types it.
-		 */
+
+        // TEST: There's a problem with the facebook app in android,
+        // so despite it being shown on the list it will not post any text unless the user types it.
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         String text = activity
                 .getString(R.string.share_book_im_reading, title, author, series, ratingString);
@@ -356,7 +355,7 @@ public class Book
      * @return <tt>true</tt> if the update was successful, <tt>false</tt> on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean setRead(@NonNull final CatalogueDBAdapter db,
+    public boolean setRead(@NonNull final DBA db,
                            final boolean isRead
     ) {
         int prevRead = getInt(UniqueId.KEY_BOOK_READ);
@@ -391,7 +390,7 @@ public class Book
         return this.getLong(UniqueId.KEY_ID);
     }
 
-    public void reload(@NonNull final CatalogueDBAdapter db) {
+    public void reload(@NonNull final DBA db) {
         reload(db, this.getBookId());
     }
 
@@ -400,7 +399,7 @@ public class Book
      *
      * @param bookId of book (may be 0 for new, in which case we do nothing)
      */
-    public void reload(@NonNull final CatalogueDBAdapter db,
+    public void reload(@NonNull final DBA db,
                        final long bookId
     ) {
         // If ID = 0, no details in DB
@@ -422,7 +421,7 @@ public class Book
     }
 
     /**
-     * TODO: use {@link DataAccessor}
+     * TODO: use {@link DataAccessor}.
      *
      * @return the bookshelf list on which this book sits.
      */
@@ -434,7 +433,7 @@ public class Book
     /**
      * @return a complete list of Bookshelves each reflecting the book being on that shelf or not
      */
-    public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final CatalogueDBAdapter db) {
+    public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final DBA db) {
         ArrayList<CheckListItem<Bookshelf>> list = new ArrayList<>();
         // get the list of all shelves the book is currently on.
         List<Bookshelf> currentShelves = getBookshelfList();
@@ -464,9 +463,8 @@ public class Book
         ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
         for (Integer edition : EDITIONS.keySet()) {
             list.add(new EditionCheckListItem(
-                    edition,
-                    EDITIONS.get(edition),
-                    ((edition & getInt(UniqueId.KEY_BOOK_EDITION_BITMASK)) != 0)));
+                    edition, EDITIONS.get(edition),
+                    (edition & getInt(UniqueId.KEY_BOOK_EDITION_BITMASK)) != 0));
         }
         return list;
     }
@@ -480,7 +478,7 @@ public class Book
     }
 
     /**
-     * TODO: use {@link DataAccessor}
+     * TODO: use {@link DataAccessor}.
      *
      * @return List of authors
      */
@@ -499,7 +497,7 @@ public class Book
     }
 
     /**
-     * TODO: use {@link DataAccessor}
+     * TODO: use {@link DataAccessor}.
      *
      * @return a formatted string for author list.
      */
@@ -512,7 +510,7 @@ public class Book
         } else {
             newText = list.get(0).getDisplayName();
             if (list.size() > 1) {
-                newText += ' ' + BookCatalogueApp.getResourceString(R.string.and_others);
+                newText += ' ' + BookCatalogueApp.getResString(R.string.and_others);
             }
             return newText;
         }
@@ -530,7 +528,7 @@ public class Book
      *
      * @param db Database connection
      */
-    public void refreshAuthorList(@NonNull final CatalogueDBAdapter db) {
+    public void refreshAuthorList(@NonNull final DBA db) {
         ArrayList<Author> list = getAuthorList();
         for (Author author : list) {
             db.refreshAuthor(author);
@@ -539,7 +537,7 @@ public class Book
     }
 
     /**
-     * TODO: use {@link DataAccessor}
+     * TODO: use {@link DataAccessor}.
      *
      * @return List of series
      */
@@ -558,7 +556,7 @@ public class Book
     }
 
     /**
-     * TODO: use {@link DataAccessor}
+     * TODO: use {@link DataAccessor}.
      * <p>
      * Build a formatted string for series list.
      */
@@ -571,7 +569,7 @@ public class Book
         } else {
             newText = list.get(0).getDisplayName();
             if (list.size() > 1) {
-                newText += ' ' + BookCatalogueApp.getResourceString(R.string.and_others);
+                newText += ' ' + BookCatalogueApp.getResString(R.string.and_others);
             }
             return newText;
         }
@@ -585,7 +583,7 @@ public class Book
     }
 
     /**
-     * TODO: use {@link DataAccessor}
+     * TODO: use {@link DataAccessor}.
      *
      * @return Table Of Content (a TOCEntry list)
      */
@@ -661,7 +659,7 @@ public class Book
                     }
                 };
         @StringRes
-        private int labelId;
+        private int mLabelId;
 
         public EditionCheckListItem() {
         }
@@ -671,12 +669,12 @@ public class Book
                              final boolean selected
         ) {
             super(bit, selected);
-            this.labelId = labelId;
+            mLabelId = labelId;
         }
 
         EditionCheckListItem(@NonNull final Parcel in) {
             super(in);
-            labelId = in.readInt();
+            mLabelId = in.readInt();
             item = in.readInt();
         }
 
@@ -685,12 +683,12 @@ public class Book
                                   final int flags
         ) {
             super.writeToParcel(dest, flags);
-            dest.writeInt(labelId);
+            dest.writeInt(mLabelId);
             dest.writeInt(item);
         }
 
         public String getLabel() {
-            return BookCatalogueApp.getResourceString(labelId);
+            return BookCatalogueApp.getResString(mLabelId);
         }
     }
 

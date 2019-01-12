@@ -36,7 +36,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
@@ -217,7 +217,7 @@ public final class Utils {
      * @param db   Database connection to lookup IDs
      * @param list List to clean up
      */
-    public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final CatalogueDBAdapter db,
+    public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final DBA db,
                                                                 @Nullable final List<T> list) {
         Objects.requireNonNull(list);
 
@@ -309,15 +309,15 @@ public final class Utils {
     public static String formatFileSize(final float space) {
         if (space < 3072) {
             // Show 'bytes' if < 3k
-            return String.format(BookCatalogueApp.getResourceString(R.string.bytes),
+            return String.format(BookCatalogueApp.getResString(R.string.bytes),
                                  space);
         } else if (space < 250 * 1024) {
             // Show Kb if less than 250kB
-            return String.format(BookCatalogueApp.getResourceString(R.string.kilobytes),
+            return String.format(BookCatalogueApp.getResString(R.string.kilobytes),
                                  space / 1024);
         } else {
             // Show MB otherwise...
-            return String.format(BookCatalogueApp.getResourceString(R.string.megabytes),
+            return String.format(BookCatalogueApp.getResString(R.string.megabytes),
                                  space / (1024 * 1024));
         }
     }
@@ -343,7 +343,7 @@ public final class Utils {
 
     public interface ItemWithIdFixup {
 
-        long fixupId(@NonNull final CatalogueDBAdapter db);
+        long fixupId(@NonNull final DBA db);
 
         boolean isUniqueById();
     }

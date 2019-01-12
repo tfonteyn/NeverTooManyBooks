@@ -68,7 +68,7 @@ public class MessageSwitch<T, U> {
     private static final Handler mHandler = new Handler();
     /** ID counter for unique sender IDs; set > 0 to allow for possible future static senders. */
     @NonNull
-    private static final AtomicLong mSenderIdCounter = new AtomicLong(1024L);
+    private static final AtomicLong SENDER_ID_COUNTER = new AtomicLong(1024L);
 
     /** List of message sources. */
     @SuppressLint("UseSparseArrays")
@@ -455,7 +455,7 @@ public class MessageSwitch<T, U> {
 
         // mId will be used as a key in maps, while 'long' would work,
         // let's be consistent and use Long.
-        private final Long mId = mSenderIdCounter.incrementAndGet();
+        private final Long mId = SENDER_ID_COUNTER.incrementAndGet();
         @NonNull
         private final U mController;
 

@@ -11,10 +11,11 @@ import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
  * @author Philip Warner
  */
 public class JoinContext {
-    /** Text of join statement */
+
+    /** Text of join statement. */
     @NonNull
     private final StringBuilder mSql;
-    /** Last table added to join */
+    /** Last table added to join. */
     private TableDefinition mCurrentTable;
 
     /**
@@ -28,7 +29,7 @@ public class JoinContext {
     }
 
     /**
-     * Add a new table to the join, connecting it to previous table using foreign keys
+     * Add a new table to the join, connecting it to previous table using foreign keys.
      *
      * @param to New table to add
      *
@@ -43,7 +44,7 @@ public class JoinContext {
     }
 
     /**
-     * Add a new table to the join, connecting it to 'from' using foreign keys
+     * Add a new table to the join, connecting it to 'from' using foreign keys.
      *
      * @param from Parent table in join
      * @param to   New table to join
@@ -51,7 +52,8 @@ public class JoinContext {
      * @return Join object (for chaining)
      */
     @NonNull
-    public JoinContext join(@NonNull final TableDefinition from, @NonNull final TableDefinition to) {
+    public JoinContext join(@NonNull final TableDefinition from,
+                            @NonNull final TableDefinition to) {
         mSql.append(from.join(to));
         mSql.append('\n');
         mCurrentTable = to;
@@ -82,7 +84,8 @@ public class JoinContext {
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public JoinContext leftOuterJoin(@NonNull final TableDefinition from, @NonNull final TableDefinition to) {
+    public JoinContext leftOuterJoin(@NonNull final TableDefinition from,
+                                     @NonNull final TableDefinition to) {
         mSql.append(" LEFT OUTER ");
         return join(from, to);
     }
@@ -99,8 +102,8 @@ public class JoinContext {
     }
 
     /**
-     * Append arbitrary text to the generated SQL. Useful for adding extra conditions
-     * to a join clause.
+     * Append arbitrary text to the generated SQL.
+     * Useful for adding extra conditions to a join clause.
      *
      * @param sql Extra SQL to append
      *
@@ -114,7 +117,7 @@ public class JoinContext {
     }
 
     /**
-     * Get the current SQL
+     * @return the current SQL
      */
     @Override
     @NonNull

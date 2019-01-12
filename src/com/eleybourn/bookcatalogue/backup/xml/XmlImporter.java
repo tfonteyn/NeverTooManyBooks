@@ -23,7 +23,7 @@ import com.eleybourn.bookcatalogue.booklist.prefs.PCollection;
 import com.eleybourn.bookcatalogue.booklist.prefs.PInt;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.booklist.prefs.PString;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
@@ -57,18 +57,18 @@ public class XmlImporter
             "Unable to process XML entity ";
 
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
     @NonNull
     private final ImportSettings mSettings;
 
     public XmlImporter() {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb = new DBA(BookCatalogueApp.getAppContext());
         mSettings = new ImportSettings();
         mSettings.what = ExportSettings.ALL;
     }
 
     public XmlImporter(@NonNull final ImportSettings settings) {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb = new DBA(BookCatalogueApp.getAppContext());
         settings.validate();
         mSettings = settings;
     }
@@ -359,9 +359,9 @@ public class XmlImporter
     /**
      * Creates an XmlFilter that can read pre-v200 Info and Preferences XML format.
      */
-    private void createdPreV200Filter(final XmlFilter rootFilter,
-                                      final @NonNull EntityReader<String> accessor,
-                                      final TagInfo tag) {
+    private void createdPreV200Filter(@NonNull final XmlFilter rootFilter,
+                                      @NonNull final EntityReader<String> accessor,
+                                      @NonNull final TagInfo tag) {
 
         XmlFilter.buildFilter(rootFilter, "collection", "item")
                  .setStartAction(new XmlFilter.XmlHandler() {
@@ -713,13 +713,13 @@ public class XmlImporter
     static class StylesReader
             implements EntityReader<String> {
 
-        private final CatalogueDBAdapter mDb;
+        private final DBA mDb;
 
         private BooklistStyle style;
         // a collection of *ALL* Preferences (including from *all* groups)
         private Map<String, PPref> stylePrefs;
 
-        StylesReader(@NonNull final CatalogueDBAdapter db) {
+        StylesReader(@NonNull final DBA db) {
             mDb = db;
         }
 

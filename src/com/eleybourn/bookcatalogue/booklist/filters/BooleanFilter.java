@@ -20,9 +20,9 @@ public class BooleanFilter
     extends PInteger
     implements Filter {
 
-    private static final int PTrue = 1;
-    private static final int PFalse = 0;
-    private static final int PNotUsed = -1;
+    private static final Integer PTrue = 1;
+    private static final Integer PFalse = 0;
+    private static final Integer PNotUsed = -1;
 
     private final TableDefinition table;
     private final DomainDefinition domain;
@@ -46,7 +46,7 @@ public class BooleanFilter
      * @return <tt>true</tt> if this filter is active
      */
     public boolean isActive() {
-        return (get() == PNotUsed);
+        return (PNotUsed.equals(get()));
     }
 
     /**
@@ -55,10 +55,11 @@ public class BooleanFilter
     @Override
     @Nullable
     public String getExpression(@Nullable final String uuid) {
-        if (get() == PNotUsed) {
+        Integer value = get();
+        if (PNotUsed.equals(value)) {
             return null;
         }
-        return table.dot(domain) + '=' + nonPersistedValue;
+        return table.dot(domain) + '=' + value;
     }
 
     @Override

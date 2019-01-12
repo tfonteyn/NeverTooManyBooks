@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 import android.widget.Checkable;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -95,12 +94,8 @@ public class EditBookNotesFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
-
         ViewUtils.fixFocusSettings(getView());
-
-        Tracker.exitOnActivityCreated(this);
     }
 
     @CallSuper
@@ -246,12 +241,6 @@ public class EditBookNotesFragment
     }
 
     @Override
-    public void onCheckListEditorCancel(@NonNull final CheckListEditorDialogFragment dialog,
-                                        @IdRes final int destinationFieldId) {
-        dialog.dismiss();
-    }
-
-    @Override
     public void onPartialDatePickerSave(@NonNull final PartialDatePickerDialogFragment dialog,
                                         final int destinationFieldId,
                                         @Nullable final Integer year,
@@ -261,11 +250,6 @@ public class EditBookNotesFragment
         mFields.getField(destinationFieldId).setValue(DateUtils.buildPartialDate(year, month, day));
     }
 
-    @Override
-    public void onPartialDatePickerCancel(@NonNull final PartialDatePickerDialogFragment dialog,
-                                          final int destinationFieldId) {
-        dialog.dismiss();
-    }
     //</editor-fold>
 
     //<editor-fold desc="Field drop down lists">

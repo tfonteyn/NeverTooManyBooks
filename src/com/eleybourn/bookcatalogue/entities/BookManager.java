@@ -18,5 +18,5 @@ public interface BookManager {
 
     boolean isDirty();
 
-    void setDirty(final boolean isDirty);
+    void setDirty(boolean isDirty);
 }

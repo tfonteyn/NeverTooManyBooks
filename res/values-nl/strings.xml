@@ -351,6 +351,7 @@
     										\n\nU kunt ook het stijl-menu aanpassen en van hieruit de stijlen zelf.
 </string>
     <string name="lbl_preferred_styles">Voorkeursstijlen</string>
+    <string name="pt_bob_preferred_style">Voorkeursstijlen</string>
     <string name="title_edit_style_colon_name">Bewerk stijl: %1$s</string>
     <string name="menu_add_style">Stijl toevoegen</string>
     <string name="title_clone_style_colon_name">Klonen van Stijl: %1$s</string>
@@ -756,4 +757,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
+    <string name="lbl_books">Boeken</string>
+    <string name="lbl_covers">Omslagen</string>
+    <string name="lbl_styles">Stijl</string>
 </resources>

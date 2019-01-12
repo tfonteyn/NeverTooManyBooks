@@ -1,10 +1,11 @@
 package com.eleybourn.bookcatalogue.database.definitions;
 
 import android.database.Cursor;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.DbSync;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.HashMap;
@@ -16,32 +17,60 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
+public class TableInfo
+        implements Iterable<TableInfo.ColumnInfo> {
 
-    /** @see StorageClass */
+    /**
+     * 'actual' types in the database.
+     *
+     * @see StorageClass
+     */
     public static final String TYPE_INTEGER = "integer";
     public static final String TYPE_TEXT = "text";
     public static final String TYPE_REAL = "real";
     public static final String TYPE_BLOB = "blob";
 
-    /** https://sqlite.org/datatype3.html#boolean_datatype */
-    public static final String TYPE_BOOLEAN = "boolean"; // same as Integer(storing 0,1) , but kept for clarity.
+    /**
+     * boolean is the same as Integer(storing 0,1) , but kept for clarity.
+     *
+     * https://sqlite.org/datatype3.html#boolean_datatype
+     */
+    public static final String TYPE_BOOLEAN = "boolean";
 
-    /** https://sqlite.org/datatype3.html#date_and_time_datatype */
+    /**
+     * Date and datetime are kept for clarity.
+     *
+     * https://sqlite.org/datatype3.html#date_and_time_datatype
+     */
     public static final String TYPE_DATE = "date";
-    public static final String TYPE_DATETIME = "datetime";// kept for clarity.
+    public static final String TYPE_DATETIME = "datetime";
 
 
+    /** columns of this table. */
     @NonNull
     private final Map<String, ColumnInfo> mColumns;
-    @NonNull
-    private final DbSync.SynchronizedDb mSyncedDb;
 
-    public TableInfo(@NonNull final DbSync.SynchronizedDb db, @NonNull final String tableName) {
+    @NonNull
+    private final SynchronizedDb mSyncedDb;
+
+    /**
+     * Constructor.
+     *
+     * @param db            the database
+     * @param tableName     name of table
+     */
+    public TableInfo(@NonNull final SynchronizedDb db,
+                     @NonNull final String tableName) {
         mSyncedDb = db;
         mColumns = describeTable(tableName);
     }
 
+    /**
+     * Get the information about a column.
+     *
+     * @param name of column
+     * @return the info, or null if the column is not present
+     */
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {
         String lcName = name.toLowerCase();
@@ -96,7 +125,11 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
         return allColumns;
     }
 
-    /** https://sqlite.org/datatype3.html#storage_classes_and_datatypes */
+    /**
+     * Mapping types to storage classes.
+     *
+     * https://sqlite.org/datatype3.html#storage_classes_and_datatypes
+     */
     public enum StorageClass {
         Integer, Real, Text, Blob;
 
@@ -124,7 +157,8 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
                     return StorageClass.Text;
 
                 default:
-                    // note that "" (empty) type is treated as TEXT. But we really should not allow our columns to be defined without a type.
+                    // note that "" (empty) type is treated as TEXT.
+                    // But we really should not allow our columns to be defined without a type.
                     throw new RTE.IllegalTypeException("columnType=`" + columnType + '`');
             }
         }
@@ -133,10 +167,9 @@ public class TableInfo implements Iterable<TableInfo.ColumnInfo> {
     /**
      * Column info support. This is useful for auto-building queries from maps that have
      * more columns than are in the table.
-     *
-     * @author Philip Warner
      */
     public static class ColumnInfo {
+
         public int position;
         public String name;
         public String typeName;

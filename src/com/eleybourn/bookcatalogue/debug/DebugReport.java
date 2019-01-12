@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
+import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
 import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
@@ -105,7 +105,7 @@ public final class DebugReport {
         // Create a temp file, set to auto-delete at app close
         File tmpDbFile = StorageUtils.getFile("DbExport-tmp.db");
         tmpDbFile.deleteOnExit();
-        StorageUtils.exportFile(CatalogueDBHelper.getDatabasePath(activity), tmpDbFile.getName());
+        StorageUtils.exportFile(DBHelper.getDatabasePath(activity), tmpDbFile.getName());
 
         // setup the mail message
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);

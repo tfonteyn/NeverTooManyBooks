@@ -293,7 +293,7 @@ public class EditBookFragment
     /**
      * add or remove the anthology tab.
      */
-    public void addTOCTab(final boolean show) {
+    void addTOCTab(final boolean show) {
         if (show) {
             if (mAnthologyTab == null) {
                 FragmentHolder fragmentHolder = new FragmentHolder();

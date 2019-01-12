@@ -350,31 +350,4 @@ public final class DateUtils {
             return value;
         }
     }
-
-//    public String convertDate(@NonNull String date) {
-//        switch (date.length()) {
-//            case 2:
-//                //assume yy
-//                try {
-//                    date = Integer.parseInt(date) < 15 ? "20" + date + "-01-01"
-//                                                       : "19" + date + "-01-01";
-//                } catch (NumberFormatException error) {
-//                    date = "";
-//                }
-//                break;
-//            case 4:
-//                //assume yyyy
-//                date = date + "-01-01";
-//                break;
-//            case 6:
-//                //assume yyyymm
-//                date = date.substring(0, 4) + "-" + date.substring(4, 6) + "-01";
-//                break;
-//            case 7:
-//                //assume yyyy-mm
-//                date = date + "-01";
-//                break;
-//        }
-//        return date;
-//    }
 }

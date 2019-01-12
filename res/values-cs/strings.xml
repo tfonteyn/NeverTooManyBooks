@@ -431,4 +431,6 @@
     <string name="loan_book_available">Dostupný</string>
     <string name="menu_edit">Upravit…</string>
     <string name="starting">Začíná</string>
+    <string name="lbl_books">Knihy</string>
+    <string name="title_edit_genre">Upravit podrobnosti o žánru</string>
 </resources>

@@ -2,7 +2,7 @@ package com.eleybourn.bookcatalogue.database.definitions;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.database.DbSync;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 
 /**
  * Class to store an index using a table name and a list of domain definitions.
@@ -10,16 +10,17 @@ import com.eleybourn.bookcatalogue.database.DbSync;
  * @author Philip Warner
  */
 public class IndexDefinition {
-    /** Full name of index */
+
+    /** Full name of index. */
     @NonNull
     private final String mName;
-    /** Table to which index applies */
+    /** Table to which index applies. */
     @NonNull
     private final TableDefinition mTable;
-    /** Domains in index */
+    /** Domains in index. */
     @NonNull
     private final DomainDefinition[] mDomains;
-    /** Options indicating index is unique */
+    /** Options indicating index is unique. */
     private final boolean mIsUnique;
 
     /**
@@ -51,7 +52,7 @@ public class IndexDefinition {
      * @return list of domains in index.
      */
     @NonNull
-    public DomainDefinition[] getDomains() {
+    DomainDefinition[] getDomains() {
         return mDomains;
     }
 
@@ -63,7 +64,7 @@ public class IndexDefinition {
      * @return IndexDefinition (for chaining)
      */
     @NonNull
-    public IndexDefinition drop(@NonNull final DbSync.SynchronizedDb db) {
+    public IndexDefinition drop(@NonNull final SynchronizedDb db) {
         db.execSQL("DROP INDEX If Exists " + mName);
         return this;
     }
@@ -76,7 +77,7 @@ public class IndexDefinition {
      * @return IndexDefinition (for chaining)
      */
     @NonNull
-    public IndexDefinition create(@NonNull final DbSync.SynchronizedDb db) {
+    public IndexDefinition create(@NonNull final SynchronizedDb db) {
         db.execSQL(this.getSql());
         return this;
     }

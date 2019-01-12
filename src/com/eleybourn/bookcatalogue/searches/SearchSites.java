@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Split of from {@link SearchManager} to avoid the static init of "SearchManager#TaskSwitch"
+ * Split of from {@link SearchManager} to avoid the static init of "SearchManager#TaskSwitch".
  * <p>
  * Static class; Holds various lists with {@link Site} 's for use by the {@link SearchManager}
  */
@@ -29,19 +29,19 @@ public final class SearchSites {
     static final String BKEY_SEARCH_SITES = "searchSitesList";
     /** */
     private static final String TAG = "SearchManager";
-    /** the default search site order for standard data/covers */
-    private static final ArrayList<Site> mSearchOrderDefaults = new ArrayList<>();
-    /** the default search site order for _dedicated_ cover searches */
-    private static final ArrayList<Site> mCoverSearchOrderDefaults = new ArrayList<>();
-    /** TODO: not user configurable for now, but plumbing installed */
-    private static final List<Site> mPreferredReliabilityOrder;
-    /** the users preferred search site order */
+    /** the default search site order for standard data/covers. */
+    private static final ArrayList<Site> SEARCH_ORDER_DEFAULTS = new ArrayList<>();
+    /** the default search site order for _dedicated_ cover searches. */
+    private static final ArrayList<Site> COVER_SEARCH_ORDER_DEFAULTS = new ArrayList<>();
+    /** TODO: not user configurable for now, but plumbing installed. */
+    private static final List<Site> PREFERRED_RELIABILITY_ORDER;
+    /** the users preferred search site order. */
     private static ArrayList<Site> mPreferredSearchOrder;
-    /** the users preferred search site order */
+    /** the users preferred search site order. */
     private static ArrayList<Site> mPreferredCoverSearchOrder;
 
     /*
-     * default search order
+     * default search order.
      *
      * NEWKIND: search web site configuration
      *
@@ -53,42 +53,49 @@ public final class SearchSites {
         Site site;
 
         // standard searches; includes cover lookup while searching for all data
-        mSearchOrderDefaults.add(new Site(Site.SEARCH_AMAZON, "Amazon", 0, 1));
-        mSearchOrderDefaults.add(new Site(Site.SEARCH_GOODREADS, "Goodreads", 1, 0));
-        mSearchOrderDefaults.add(new Site(Site.SEARCH_GOOGLE, "Google", 2, 2));
+        SEARCH_ORDER_DEFAULTS.add(
+                new Site(Site.SEARCH_AMAZON, "Amazon", 0, 1));
+        SEARCH_ORDER_DEFAULTS.add(
+                new Site(Site.SEARCH_GOODREADS, "Goodreads", 1, 0));
+        SEARCH_ORDER_DEFAULTS.add(
+                new Site(Site.SEARCH_GOOGLE, "Google", 2, 2));
 
         site = new Site(Site.SEARCH_LIBRARY_THING, "LibraryThing", 3, 3);
         site.isbnOnly = true;
-        mSearchOrderDefaults.add(site);
+        SEARCH_ORDER_DEFAULTS.add(site);
 
-        // pretty reliable site, but only serving one group of readers. Those readers can up the priority in the preferences.
-        mSearchOrderDefaults.add(new Site(Site.SEARCH_ISFDB, "ISFDB", 4, 4));
+        // pretty reliable site, but only serving one group of readers.
+        // Those readers can up the priority in the preferences.
+        SEARCH_ORDER_DEFAULTS.add(
+                new Site(Site.SEARCH_ISFDB, "ISFDB", 4, 4));
 
 
         // dedicated cover lookup; does not use a reliability index.
-        mCoverSearchOrderDefaults.add(new Site(Site.SEARCH_GOOGLE, "Google-cover", 0));
+        COVER_SEARCH_ORDER_DEFAULTS.add(
+                new Site(Site.SEARCH_GOOGLE, "Google-cover", 0));
 
         site = new Site(Site.SEARCH_LIBRARY_THING, "LibraryThing-cover", 1);
         site.isbnOnly = true;
 
-        mCoverSearchOrderDefaults.add(site);
-        mCoverSearchOrderDefaults.add(new Site(Site.SEARCH_ISFDB, "ISFDB-cover", 2));
+        COVER_SEARCH_ORDER_DEFAULTS.add(site);
+        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, "ISFDB-cover", 2));
 
 
         // we're going to use set(index,...), so make them big enough
-        mPreferredSearchOrder = new ArrayList<>(mSearchOrderDefaults);
-        mPreferredCoverSearchOrder = new ArrayList<>(mCoverSearchOrderDefaults);
+        mPreferredSearchOrder = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
+        mPreferredCoverSearchOrder = new ArrayList<>(COVER_SEARCH_ORDER_DEFAULTS);
         // not user configurable yet
-        mPreferredReliabilityOrder = new ArrayList<>(mSearchOrderDefaults);
+        PREFERRED_RELIABILITY_ORDER = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
 
-        // yes, this shows that mPreferredSearchOrder should be Map's but for now the code was done with List
-        // so this was the easiest to make them configurable. To be redone.
-        for (Site searchSite : mSearchOrderDefaults) {
+        // yes, this shows that mPreferredSearchOrder should be Map's but for now
+        // the code was done with List so this was the easiest to make them configurable.
+        // To be redone.
+        for (Site searchSite : SEARCH_ORDER_DEFAULTS) {
             mPreferredSearchOrder.set(searchSite.priority, searchSite);
-            mPreferredReliabilityOrder.set(searchSite.reliability, searchSite);
+            PREFERRED_RELIABILITY_ORDER.set(searchSite.reliability, searchSite);
         }
 
-        for (Site searchSite : mCoverSearchOrderDefaults) {
+        for (Site searchSite : COVER_SEARCH_ORDER_DEFAULTS) {
             mPreferredCoverSearchOrder.set(searchSite.priority, searchSite);
         }
     }
@@ -98,7 +105,7 @@ public final class SearchSites {
 
     @NonNull
     static List<Site> getSitesByReliability() {
-        return mPreferredReliabilityOrder;
+        return PREFERRED_RELIABILITY_ORDER;
     }
 
     @NonNull
@@ -148,21 +155,21 @@ public final class SearchSites {
                         return new Site[size];
                     }
                 };
-        /** search source to use */
+        /** search source to use. */
         public static final int SEARCH_GOOGLE = 1;
-        /** search source to use */
+        /** search source to use. */
         public static final int SEARCH_AMAZON = 1 << 1;
-        /** search source to use */
+        /** search source to use. */
         public static final int SEARCH_LIBRARY_THING = 1 << 2;
-        /** search source to use */
+        /** search source to use. */
         public static final int SEARCH_GOODREADS = 1 << 3;
-        /** search source to use */
+        /** search source to use. */
         public static final int SEARCH_ISFDB = 1 << 4;
-        /** Mask including all search sources */
+        /** Mask including all search sources. */
         public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON
                 | SEARCH_LIBRARY_THING | SEARCH_GOODREADS | SEARCH_ISFDB;
 
-        /** Internal id, bitmask based, not stored in prefs */
+        /** Internal id, bitmask based, not stored in prefs. */
         public final int id;
         /** Internal AND user-visible name, key into prefs. */
         @NonNull
@@ -170,7 +177,7 @@ public final class SearchSites {
         public boolean enabled = true;
         int priority;
         int reliability;
-        boolean isbnOnly = false;
+        boolean isbnOnly;
 
         /**
          * Create the Site with whatever suitable default values.
@@ -242,9 +249,9 @@ public final class SearchSites {
         }
 
         private void loadFromPrefs() {
-            enabled = Prefs.getBoolean(TAG + '.' + name + ".enabled", enabled);
-            priority = Prefs.getInt(TAG + '.' + name + ".order", priority);
-            reliability = Prefs.getInt(TAG + '.' + name + ".reliability", reliability);
+            enabled = Prefs.getPrefs().getBoolean(TAG + '.' + name + ".enabled", enabled);
+            priority = Prefs.getPrefs().getInt(TAG + '.' + name + ".order", priority);
+            reliability = Prefs.getPrefs().getInt(TAG + '.' + name + ".reliability", reliability);
             // leaving commented as a reminder; this is NOT a preference but a site rule
             //isbnOnly = BookCatalogueApp.getBoolean(TAG + "." + name + ".isbnOnly", isbnOnly);
         }

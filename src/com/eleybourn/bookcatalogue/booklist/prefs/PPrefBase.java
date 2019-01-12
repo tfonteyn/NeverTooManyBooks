@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 /**
- * Base class for a generic Preference
+ * Base class for a generic Preference.
  *
  * @param <T> type of the value to store
  */
@@ -24,16 +24,16 @@ public abstract class PPrefBase<T>
      * Must be set in the constructor.
      */
     @Nullable
-    protected final String uuid;
+    protected final String mUuid;
     /** key for the Preference */
     @StringRes
-    private final int key;
-    /** in memory value used for non-persistence situations */
+    private final int mKey;
+    /** in memory value used for non-persistence situations. */
     @Nullable
-    protected T nonPersistedValue;
-    /** in-memory default to use when value==null, or when the backend does not contain the key */
+    protected T mNonPersistedValue;
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
-    protected T defaultValue;
+    protected final T mDefaultValue;
 
     /**
      * @param key          key of preference
@@ -43,42 +43,42 @@ public abstract class PPrefBase<T>
     PPrefBase(@StringRes final int key,
               @Nullable final String uuid,
               @NonNull final T defaultValue) {
-        this.key = key;
-        this.uuid = uuid;
-        this.defaultValue = defaultValue;
+        this.mKey = key;
+        this.mUuid = uuid;
+        this.mDefaultValue = defaultValue;
     }
 
     @NonNull
     @Override
     public String getKey() {
-        return BookCatalogueApp.getResourceString(key);
+        return BookCatalogueApp.getResString(mKey);
     }
 
     @Override
     public void remove() {
-        if (uuid != null) {
-            Prefs.getPrefs(uuid).edit().remove(getKey()).apply();
+        if (mUuid != null) {
+            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
         }
     }
 
     /**
-     * for single pref updated
+     * for single pref updated.
      *
      * Stores the value as a String
      */
     @Override
     public void set(@Nullable final T value) {
-        if (uuid == null) {
-            nonPersistedValue = value;
+        if (mUuid == null) {
+            mNonPersistedValue = value;
         } else if (value == null) {
-            Prefs.getPrefs(uuid).edit().remove(getKey()).apply();
+            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
-            Prefs.getPrefs(uuid).edit().putString(getKey(), String.valueOf(value)).apply();
+            Prefs.getPrefs(mUuid).edit().putString(getKey(), String.valueOf(value)).apply();
         }
     }
 
     /**
-     * for batch pref updated
+     * for batch pref updated.
      *
      * Stores the value as a String
      */
@@ -103,10 +103,10 @@ public abstract class PPrefBase<T>
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest) {
-        if (uuid == null) {
+        if (mUuid == null) {
             // builtin ? then write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeValue(nonPersistedValue);
+            dest.writeValue(mNonPersistedValue);
         } else {
             // write the actual value, this could be the default if we have no value, but that
             // is what we want for user-defined styles anyhow.
@@ -117,10 +117,10 @@ public abstract class PPrefBase<T>
     @Override
     public String toString() {
         return "PPrefBase{" +
-            "key=" + BookCatalogueApp.getResourceString(key) +
-            ", type=" + defaultValue.getClass().getSimpleName() +
-            ", defaultValue=`" + defaultValue + '`' +
-            ", nonPersistedValue=`" + nonPersistedValue + '`' +
+            "mKey=" + BookCatalogueApp.getResString(mKey) +
+            ", type=" + mDefaultValue.getClass().getSimpleName() +
+            ", defaultValue=`" + mDefaultValue + '`' +
+            ", mNonPersistedValue=`" + mNonPersistedValue + '`' +
             '}';
     }
 }

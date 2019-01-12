@@ -54,7 +54,7 @@ public interface ReaderEntity {
     InputStream getStream();
 
     /** Save the data to a directory, using the original file name. */
-    void saveToDirectory(@NonNull final File dir)
+    void saveToDirectory(@NonNull File dir)
             throws IOException;
 
     /** Read the data as a Serializable object. */

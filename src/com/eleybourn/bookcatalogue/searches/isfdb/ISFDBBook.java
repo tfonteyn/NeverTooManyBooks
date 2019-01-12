@@ -66,13 +66,13 @@ public class ISFDBBook
         FORMAT_MAP.put("pb", "Paperback");
         FORMAT_MAP.put("tp", "Trade Paperback");
         FORMAT_MAP.put("hc", "Hardcover");
-        FORMAT_MAP.put("ebook", BookCatalogueApp.getResourceString(R.string.book_format_ebook));
+        FORMAT_MAP.put("ebook", BookCatalogueApp.getResString(R.string.book_format_ebook));
         FORMAT_MAP.put("digest", "Digest");
-        FORMAT_MAP.put("unknown", BookCatalogueApp.getResourceString(R.string.unknown));
+        FORMAT_MAP.put("unknown", BookCatalogueApp.getResString(R.string.unknown));
         FORMAT_MAP.put("audio cassette",
-                       BookCatalogueApp.getResourceString(R.string.book_format_audiobook));
+                       BookCatalogueApp.getResString(R.string.book_format_audiobook));
         FORMAT_MAP.put("audio CD",
-                       BookCatalogueApp.getResourceString(R.string.book_format_audiobook));
+                       BookCatalogueApp.getResString(R.string.book_format_audiobook));
     }
 
     /**
@@ -287,9 +287,9 @@ public class ISFDBBook
                     bookData.putString(ISFDB_BKEY_ISBN_2, digits(tmp));
 
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
-                    tmp = li.childNode(3).attr("href");
+                    //tmp = li.childNode(3).attr("href");
                     //ENHANCE: pass and store these ISFBD id's
-//                    bookData.putString(ISFDB_BKEY_PUBLISHER_ID, String.valueOf(stripNumber(tmp)));
+                    //bookData.putString(ISFDB_BKEY_PUBLISHER_ID, String.valueOf(stripNumber(tmp)));
 
                     tmp = li.childNode(3).childNode(0).toString().trim();
                     bookData.putString(UniqueId.KEY_BOOK_PUBLISHER, tmp);

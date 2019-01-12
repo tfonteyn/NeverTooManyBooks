@@ -49,8 +49,7 @@ final class MenuHandler {
     static void addCreateBookSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
                                           Menu.NONE,
-                                          BookCatalogueApp.getResourceString(
-                                                  R.string.menu_add_book));
+                                          BookCatalogueApp.getResString(R.string.menu_add_book));
 
         subMenu.setIcon(R.drawable.ic_add)
                .getItem()
@@ -119,8 +118,7 @@ final class MenuHandler {
     static void addAmazonSearchSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_AMAZON_SEARCH, R.id.SUBMENU_AMAZON_SEARCH,
                                           Menu.NONE,
-                                          BookCatalogueApp.getResourceString(
-                                                  R.string.amazon_ellipsis));
+                                          BookCatalogueApp.getResString(R.string.amazon_ellipsis));
 
         subMenu.setIcon(R.drawable.ic_search);
         // we use the group to make the entry visible/invisible, hence it's == the actual id.

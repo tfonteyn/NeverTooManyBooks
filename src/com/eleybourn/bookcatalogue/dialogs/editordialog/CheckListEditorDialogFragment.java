@@ -20,7 +20,6 @@
 package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -62,13 +60,6 @@ public class CheckListEditorDialogFragment<T>
                     getFragmentListener()
                             .onCheckListEditorSave(CheckListEditorDialogFragment.this,
                                                    mDestinationFieldId, list);
-                }
-
-                @Override
-                public void onCheckListEditorCancel() {
-                    getFragmentListener()
-                            .onCheckListEditorCancel(CheckListEditorDialogFragment.this,
-                                                     mDestinationFieldId);
                 }
             };
 
@@ -118,14 +109,12 @@ public class CheckListEditorDialogFragment<T>
     @Override
     @CallSuper
     public void onPause() {
-        Tracker.enterOnPause(this);
         @SuppressWarnings("unchecked")
         CheckListEditorDialog<T> dialog = (CheckListEditorDialog<T>) getDialog();
         if (dialog != null) {
             mList = dialog.getList();
         }
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     /**
@@ -135,12 +124,9 @@ public class CheckListEditorDialogFragment<T>
      */
     public interface OnCheckListEditorResultsListener<T> {
 
-        void onCheckListEditorSave(@NonNull final CheckListEditorDialogFragment dialog,
-                                   final int destinationFieldId,
-                                   @NonNull final List<CheckListItem<T>> list);
-
-        void onCheckListEditorCancel(@NonNull final CheckListEditorDialogFragment dialog,
-                                     final int destinationFieldId);
+        void onCheckListEditorSave(@NonNull CheckListEditorDialogFragment dialog,
+                                   int destinationFieldId,
+                                   @NonNull List<CheckListItem<T>> list);
     }
 
     public static class CheckListEditorDialog<T>
@@ -151,11 +137,12 @@ public class CheckListEditorDialogFragment<T>
                     @Override
                     public void onCheckedChanged(@NonNull final CompoundButton buttonView,
                                                  final boolean isChecked) {
-                        CheckListItem item = ViewTagger.getTagOrThrow(buttonView,
-                                                                      R.id.TAG_DIALOG_ITEM);
+                        CheckListItem item =
+                                ViewTagger.getTagOrThrow(buttonView, R.id.TAG_DIALOG_ITEM);
                         item.setSelected(isChecked);
                     }
                 };
+
         /** body of the dialog. */
         private final ViewGroup mContent;
         /** the list to display in the content view. */
@@ -193,19 +180,10 @@ public class CheckListEditorDialogFragment<T>
                     new View.OnClickListener() {
                         @Override
                         public void onClick(@NonNull final View v) {
-                            mListener.onCheckListEditorCancel();
+                            dismiss();
                         }
                     }
             );
-
-            // Handle Cancel by any means
-            this.setOnCancelListener(new OnCancelListener() {
-
-                @Override
-                public void onCancel(@NonNull final DialogInterface dialog) {
-                    mListener.onCheckListEditorCancel();
-                }
-            });
         }
 
         @NonNull
@@ -238,9 +216,7 @@ public class CheckListEditorDialogFragment<T>
          */
         interface OnCheckListEditorResultsListener<T> {
 
-            void onCheckListEditorSave(@NonNull final List<CheckListItem<T>> list);
-
-            void onCheckListEditorCancel();
+            void onCheckListEditorSave(@NonNull List<CheckListItem<T>> list);
         }
     }
 }

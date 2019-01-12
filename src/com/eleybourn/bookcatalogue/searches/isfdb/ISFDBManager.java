@@ -38,7 +38,7 @@ public final class ISFDBManager {
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return Prefs.getString(PREFS_HOST_URL, "http://www.isfdb.org");
+        return Prefs.getPrefs().getString(PREFS_HOST_URL, "http://www.isfdb.org");
     }
 
     public static void setBaseURL(@NonNull final String url) {

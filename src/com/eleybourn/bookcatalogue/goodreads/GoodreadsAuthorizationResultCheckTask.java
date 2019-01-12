@@ -58,7 +58,7 @@ public class GoodreadsAuthorizationResultCheckTask
      */
     GoodreadsAuthorizationResultCheckTask() {
 
-        super(BookCatalogueApp.getResourceString(R.string.gr_auth_check));
+        super(BookCatalogueApp.getResString(R.string.gr_auth_check));
     }
 
     /**

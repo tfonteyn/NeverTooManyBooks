@@ -48,10 +48,10 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public class QueueManager {
+public final class QueueManager {
 
     /*
-     * Queues we need:
+     * Queues we need.
      * main: long-running tasks, or tasks that can just wait
      * small_jobs: trivial background tasks that will only take a few seconds.
      */
@@ -61,25 +61,26 @@ public class QueueManager {
     private static final String MESSAGE = "message";
     private static final String TOAST = "toast";
     /**
-     * Static reference to the active QueueManager - singleton
+     * Static reference to the active QueueManager - singleton.
      */
     private static QueueManager mInstance;
 
-    /** Database access layer */
+    /** Database access layer. */
     @NonNull
     private final TaskQueueDBAdapter mDb;
-    /** Collection of currently active queues */
+    /** Collection of currently active queues. */
     private final Map<String, Queue> mActiveQueues = new Hashtable<>();
-    /** The UI thread */
+    /** The UI thread. */
     @NonNull
     private final WeakReference<Thread> mUIThread;
-    /** Objects listening for Event operations */
-    private final List<WeakReference<OnEventChangeListener>> mEventChangeListeners = new ArrayList<>();
-    /** Objects listening for Task operations */
+    /** Objects listening for Event operations. */
+    private final List<WeakReference<OnEventChangeListener>> mEventChangeListeners =
+            new ArrayList<>();
+    /** Objects listening for Task operations. */
     @NonNull
     private final List<WeakReference<OnTaskChangeListener>> mTaskChangeListeners;
 
-    /** Handle inter-thread messages */
+    /** Handle inter-thread messages. */
     private final MessageHandler mMessageHandler;
 
     /**
@@ -264,7 +265,7 @@ public class QueueManager {
     }
 
     /**
-     * Called by a Queue object in its Constructor to inform the QueueManager of its existence
+     * Called by a Queue object in its Constructor to inform the QueueManager of its existence.
      *
      * @param queue New queue object
      */
@@ -282,8 +283,8 @@ public class QueueManager {
     void onQueueTerminating(@NonNull final Queue queue) {
         synchronized (this) {
             try {
-                // It's possible that a queue terminated and another started; make sure we are removing
-                // the one that called us.
+                // It's possible that a queue terminated and another started; make sure
+                // we are removing the one that called us.
                 Queue q = mActiveQueues.get(queue.getQueueName());
                 if (q.equals(queue)) {
                     mActiveQueues.remove(queue.getQueueName());
@@ -344,13 +345,13 @@ public class QueueManager {
      * Store an Event object for later retrieval after task has completed. This is
      * analogous to writing a line to the 'log file' for the task.
      *
-     * @param t Related task
-     * @param e Exception (usually subclassed)
+     * @param task Related task
+     * @param event Exception (usually subclassed)
      */
-    void storeTaskEvent(@NonNull final Task t,
-                        @NonNull final Event e) {
-        mDb.storeTaskEvent(t, e);
-        this.notifyEventChange(e, EventActions.created);
+    void storeTaskEvent(@NonNull final Task task,
+                        @NonNull final Event event) {
+        mDb.storeTaskEvent(task, event);
+        this.notifyEventChange(event, EventActions.created);
     }
 
     /**
@@ -399,7 +400,7 @@ public class QueueManager {
     }
 
     /**
-     * Delete the specified Task object and related Event objects
+     * Delete the specified Task object and related Event objects.
      *
      * @param id ID of TaskException to delete.
      */
@@ -408,11 +409,11 @@ public class QueueManager {
         // Check if the task is running in a queue.
         synchronized (this) {
             // Synchronize so that no queue will be able to get another task while we are deleting
-            for (Queue q : mActiveQueues.values()) {
-                Task t = q.getTask();
-                if (t != null && t.getId() == id) {
+            for (Queue queue : mActiveQueues.values()) {
+                Task task = queue.getTask();
+                if (task != null && task.getId() == id) {
                     // Abort it, don't delete from DB...it will do that WHEN it aborts
-                    t.abortTask();
+                    task.abortTask();
                     isActive = true;
                 }
             }
@@ -466,29 +467,6 @@ public class QueueManager {
         // This is non-optimal, but ... it's easy and clear.
         this.notifyEventChange(null, EventActions.deleted);
         this.notifyTaskChange(null, TaskActions.deleted);
-    }
-
-    /**
-     * Get a new Event object capable of representing a non-deserializable Event object.
-     * <p>
-     * This method is used when deserialization fails, most likely as a result of changes
-     * to the underlying serialized class.
-     *
-     * @param original original serialization source
-     */
-    @NonNull
-    LegacyEvent newLegacyEvent(byte[] original) {
-        return new LegacyEvent(original);
-    }
-
-    /**
-     * Get a new Task object capable of representing a non-deserializable Task object.
-     *
-     * @param original original serialization source
-     */
-    @NonNull
-    LegacyTask newLegacyTask(byte[] original) {
-        return new LegacyTask(original);
     }
 
     /**

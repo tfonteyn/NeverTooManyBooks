@@ -192,21 +192,35 @@
     <string name="lbl_field_usage_overwrite">überschreibt zusätzliche Daten</string>
     <string name="progress_msg_cancelling">Abbruch</string>
     <string name="progress_msg_starting_search">Beginn der Suche</string>
-    <string name="lt_info">Diese App nutzt LibraryThing als Quelle für Buchinformationen und alternative Cover. Um diese Funktionalitäten nutzen zu können, müssen Sie sich bei LibraryThing registrieren (kostenlos) und einen Entwicklerschlüssel anfordern (ebenfalls kostenlos).</string>
+    <string name="lt_info">Diese App nutzt LibraryThing als Quelle für Buchinformationen
+        und alternative Cover. Um diese Funktionalitäten nutzen zu können, müssen Sie sich bei
+        LibraryThing registrieren (kostenlos) und einen Entwicklerschlüssel anfordern
+        (ebenfalls kostenlos).</string>
     <string name="lt_register_text">Registrieren Sie sich bei LibraryThing</string>
     <string name="lt_dev_key_text">LibraryThing-Entwicklerschlüssel anfordern</string>
-    <string name="lt_got_key">Nachdem Sie einen Entwicklerschlüssel erhalten haben (oder bereits einen besitzen), geben Sie diesen unten ein.</string>
+    <string name="lt_got_key">Nachdem Sie einen Entwicklerschlüssel erhalten haben
+        (oder bereits einen besitzen), geben Sie diesen unten ein.</string>
     <string name="lt_developer_key">Entwicklerschlüssel</string>
-    <string name="lt_required_info">Diese Funktionalität setzt einen LibraryThing Entwicklerschlüssel voraus. Möchten Sie mehr Informationen über LibraryThing erhalten?</string>
-    <string name="lt_uses_info">Diese Funktionalität profitiert von einem LibraryThing Entwicklerschlüssel. Wollen Sie mehr Informationen über LibraryThing erhalten oder diese Meldung deaktivieren?\n\nInformationen zu LibraryThing erhalten Sie im Tab LibraryThing in Hilfe &amp; Verwaltung.</string>
+    <string name="lt_required_info">Diese Funktionalität setzt einen LibraryThing Entwicklerschlüssel voraus.
+        Möchten Sie mehr Informationen über LibraryThing erhalten?</string>
+    <string name="lt_uses_info">Diese Funktionalität profitiert von einem LibraryThing Entwicklerschlüssel. Wollen Sie mehr Informationen über LibraryThing erhalten oder diese Meldung deaktivieren?  Informationen zu LibraryThing erhalten Sie im Tab LibraryThing in Hilfe & Verwaltung.</string>
     <string name="lt_registration_title">LibraryThing-Registrierung</string>
     <string name="btn_more_info">Weitere Informationen.</string>
     <string name="btn_disable_message">Meldung deaktivieren</string>
-    <string name="lt_reset_messages_info">Diese App zeigt fallweise optionale Meldungen zu LibraryThing an. Wenn diese Meldungen deaktiviert wurden können, Sie die Deaktivierung über den Knopf unten zurücksetzen.</string>
+    <string name="lt_reset_messages_info">Diese App zeigt fallweise optionale Meldungen zu LibraryThing an.
+        Wenn diese Meldungen deaktiviert wurden können, Sie die Deaktivierung über den Knopf unten zurücksetzen.</string>
     <string name="btn_reset">Zurücksetzen</string>
-    <string name="debug_send_info_text">Klicken Sie auf den Button unten, um Informationen über die letzten Abstürze der App zu sammeln und an einen der Entwickler zu schicken. Dieser Vorgang erstellt eine Sicherheitskopie Ihrer gesamten Datenbank und der Log-Dateien. Wenn Sie eine dieser Dateien nicht verschicken wollen, löschen Sie diese vor dem Senden aus dem Anhang.</string>
+    <string name="debug_send_info_text">Klicken Sie auf den Button unten, um Informationen über
+        die letzten Abstürze der App zu sammeln und an einen der Entwickler zu schicken.
+        Dieser Vorgang erstellt eine Sicherheitskopie Ihrer gesamten Datenbank und der Log-Dateien.
+        Wenn Sie eine dieser Dateien nicht verschicken wollen, löschen Sie diese vor dem
+        Senden aus dem Anhang.</string>
     <string name="send_info">Sende Informationen</string>
-    <string name="info_cleanup_files_text">Die Dateien belegen %s Speicherplatz auf der SD-Karte. Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten, ziehen Sie bitte in Betracht, den \'Sende Informationen\' Knopf zuerst zu benutzen.</string>
+    <string name="info_cleanup_files_text">Die Dateien belegen %s Speicherplatz auf der SD-Karte.
+        Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder
+        wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese
+        Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten,
+        ziehen Sie bitte in Betracht, den \'Sende Informationen\' Knopf zuerst zu benutzen.</string>
     <string name="cleanup_files">Dateien bereinigen</string>
     <string name="megabytes">%.2f MB</string>
     <string name="kilobytes">%.2f kB</string>
@@ -215,7 +229,8 @@
     <string name="debug_body">Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.</string>
     <string name="menu_duplicate_book">Dublette</string>
     <string name="warning_cannot_edit_system">Die Systemwerte können nicht geändert werden</string>
-    <string name="lt_incorrect_key">Der eingegebene LibraryThing-Entwicklerschlüssel war falsch, oder es konnte keine Netzwerkverbindung zur Verifizierung hergestellt werden.</string>
+    <string name="lt_incorrect_key">Der eingegebene LibraryThing-Entwicklerschlüssel war falsch,
+        oder es konnte keine Netzwerkverbindung zur Verifizierung hergestellt werden.</string>
     <string name="lt_correct_key">Ihr LibraryThing-Entwicklerschlüssel ist gültig.</string>
     <string name="error_no_internet_connection">Internet Verbindung nicht verfügbar.</string>
     <string name="menu_share_this">Teilen</string>
@@ -229,18 +244,21 @@
     <string name="loan_return_book">Buch verleihen, zurückgeben oder bearbeiten</string>
     <string name="menu_admin_and_prefs">Verwaltung und Einstellungen</string>
     <string name="gr_menu_send_to_goodreads">Zu Goodreads senden</string>
-    <string name="gr_auth_blurb_part1">Goodreads ist eine Website, deren ausgewiesener Zweck es ist, "Menschen zu helfen, um Bücher zu suchen und zu teilen, die sie gern haben".
+    <string name="gr_auth_blurb_part1">Goodreads ist eine Website, deren ausgewiesener Zweck
+        es ist, "Menschen zu helfen, um Bücher zu suchen und zu teilen, die sie gern haben".
 Sie führt eine umfassende Datenbank von Büchern und Buchbesprechungen, und wenn Sie ein
 registrierter Benutzer von Goodreads sind, kann &APP_NAME; Ihre Bücher, Bücherregale
 und Buchbesprechnungen exportieren und importieren.
         &APP_NAME; ist eine eigenständige App und erfordert keine Verbindung zu Goodreads,
 aber wenn Sie möchten, können Sie sich hier registrieren:</string>
-    <string name="gr_auth_blurb_part2">Als registrierter Nutzer können Sie den Zugriff von &APP_NAME; auf Ihre Daten bei Goodreads autorisieren.
+    <string name="gr_auth_blurb_part2">Als registrierter Nutzer können Sie den Zugriff von &APP_NAME;
+        auf Ihre Daten bei Goodreads autorisieren.
 Drücken Sie dazu den Button unten. Sie werden auf eine Website weitergeleitet, auf der Sie sich bei Goodreads
 anmelden und den Zugriff autorisieren können. Wir werden Ihr Kennwort nie sehen, und Sie können den Zugriff
 auf der Website von Goodreads jederzeit beenden. Wegen der Unwägbarkeiten des Webs kann es sein, dass Sie
 anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück"-Button, um hierher zurückzukehren!</string>
-    <string name="gr_auth_blurb_part3">Aber denken Sie daran… Sie müssen nichts davon tun: &APP_NAME; funktioniert ganz wunderbar ohne Goodreads!</string>
+    <string name="gr_auth_blurb_part3">Aber denken Sie daran… Sie müssen nichts davon tun: &APP_NAME;
+        funktioniert ganz wunderbar ohne Goodreads!</string>
     <string name="gr_title_auth_access">Zugriff autorisieren</string>
     <string name="gr_auth_access_already_auth">Scheinbar haben Sie diese App bereits autorisiert. Alle Funktionen von Goodreads sollten bereits verwendbar sein.</string>
     <string name="gr_access_error">Beim Zugriff auf Goodreads ist ein Netzwerkproblem aufgetreten. Bitte überprüfen Sie, ob die Website von Goodreads erreichbar ist. Falls das Problem nicht gelöst werden kann, kontaktieren Sie den Support.</string>
@@ -478,7 +496,8 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
 
     <string name="progress_msg_adding_book">Buch hinzufügen…</string>
 
-    <string name="warning_bad_scanner">Anscheinend ist Ihre derzeitige Scanner-App nicht mit &APP_NAME; kompatible. Wir empfehlen, die App "Zxing Barcode Scanner" zu installieren. Falls sie bereits installiert ist, empfehlen wir eine Deinstalltion und erneute Installation.</string>
+    <string name="warning_bad_scanner">Anscheinend ist Ihre derzeitige Scanner-App nicht mit &APP_NAME;
+        kompatible. Wir empfehlen, die App "Zxing Barcode Scanner" zu installieren. Falls sie bereits installiert ist, empfehlen wir eine Deinstalltion und erneute Installation.</string>
 
 
     <string name="hint_view_only_book_details">
@@ -713,6 +732,12 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
+    <string name="pt_bob_preferred_style">Bevorzugt</string>
+    <string name="starting">Beginnend</string>
+    <string name="lbl_books">Bücher</string>
+    <string name="title_edit_genre">Genre-Details bearbeiten</string>
+    <string name="title_edit_language">Sprachdetails bearbeiten</string>
+    <string name="title_edit_location">Standortdetails bearbeiten</string>
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 

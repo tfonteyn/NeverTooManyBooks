@@ -23,12 +23,14 @@ import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteQuery;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -39,14 +41,14 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.csv.CsvImporter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.database.DbSync.SynchronizedStatement;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
+import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
@@ -76,7 +78,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.eleybourn.bookcatalogue.database.CatalogueDBHelper.COLLATION;
+import static com.eleybourn.bookcatalogue.database.DBHelper.COLLATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
@@ -177,7 +179,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_E
  * ENHANCE: Use date_acquired to add 'Recent Acquisitions' virtual shelf;
  * need to resolve how this may relate to date_added
  */
-public class CatalogueDBAdapter
+public class DBA
     implements AutoCloseable {
 
     /**
@@ -189,9 +191,9 @@ public class CatalogueDBAdapter
     public static final int BOOK_UPDATE_SKIP_PURGE_REFERENCES = 1 << 1;
 
     /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
-    private static final Synchronizer mSynchronizer = new Synchronizer();
+    private static final Synchronizer SYNCHRONIZER = new Synchronizer();
     /** Static Factory object to create the custom cursor. */
-    private static final CursorFactory mTrackedCursorFactory = new CursorFactory() {
+    private static final CursorFactory CURSOR_FACTORY = new CursorFactory() {
         @Override
         @NonNull
         public Cursor newCursor(
@@ -199,24 +201,24 @@ public class CatalogueDBAdapter
             @NonNull final SQLiteCursorDriver masterQuery,
             @NonNull final String editTable,
             @NonNull final SQLiteQuery query) {
-            return new TrackedCursor(masterQuery, editTable, query, mSynchronizer);
+            return new TrackedCursor(masterQuery, editTable, query, SYNCHRONIZER);
         }
     };
     /** Static Factory object to create the custom cursor. */
     @NonNull
-    private static final CursorFactory mBooksCursorFactory = new CursorFactory() {
+    private static final CursorFactory BOOKS_CURSOR_FACTORY = new CursorFactory() {
         @Override
         public Cursor newCursor(
             final SQLiteDatabase db,
             @NonNull final SQLiteCursorDriver masterQuery,
             @NonNull final String editTable,
             @NonNull final SQLiteQuery query) {
-            return new BookCursor(masterQuery, editTable, query, mSynchronizer);
+            return new BookCursor(masterQuery, editTable, query, SYNCHRONIZER);
         }
     };
 
     /** DEBUG only. */
-    private static final ArrayList<InstanceRefDebug> mInstances = new ArrayList<>();
+    private static final ArrayList<InstanceRefDebug> INSTANCES = new ArrayList<>();
     private static final String COLUMN_ALIAS_NR_OF_SERIES = "_num_series";
     private static final String COLUMN_ALIAS_NR_OF_AUTHORS = "_num_authors";
 
@@ -225,9 +227,9 @@ public class CatalogueDBAdapter
 
     /** DEBUG instance counter. */
     @NonNull
-    private static final AtomicInteger mDebugInstanceCount = new AtomicInteger();
+    private static final AtomicInteger DEBUG_INSTANCE_COUNT = new AtomicInteger();
     /** the actual SQLiteOpenHelper. */
-    private static CatalogueDBHelper mDbHelper;
+    private static DBHelper mDbHelper;
     /** the synchronized wrapper around the real database. */
     private static SynchronizedDb mSyncedDb;
     /** needed for Resources & for getting the covers db. */
@@ -383,36 +385,35 @@ public class CatalogueDBAdapter
     private SynchronizedStatement mGlobalReplaceAuthorOnTOCEntries;
     //endregion Statements
 
-    /**
-     * used by finalize so close does not get called twice
-     */
+    /** used by finalize so close does not get called twice. */
     private boolean mCloseCalled;
 
     /**
-     * Constructor - takes the context to allow the database to be opened/created
+     * Constructor - takes the context to allow the database to be opened/created.
      *
      * Small note: don't be tempted to turn this into a singleton...
      * multi-threading does not like that.
      *
      * @param context the Context within which to work
      */
-    public CatalogueDBAdapter(@NonNull final Context context) {
+    public DBA(@NonNull final Context context) {
         mContext = context;
         // initialise static if not done yet
         if (mDbHelper == null) {
-            mDbHelper = new CatalogueDBHelper(mContext, mTrackedCursorFactory, mSynchronizer);
+            mDbHelper = new DBHelper(mContext, CURSOR_FACTORY, SYNCHRONIZER);
         }
 
         // initialise static if not done yet
         if (mSyncedDb == null) {
             // Get the DB wrapper
-            mSyncedDb = new SynchronizedDb(mDbHelper, mSynchronizer);
+            mSyncedDb = new SynchronizedDb(mDbHelper, SYNCHRONIZER);
             // Turn on foreign key support so that CASCADE works.
             mSyncedDb.execSQL("PRAGMA foreign_keys = ON");
             // Turn on recursive triggers; not strictly necessary
             mSyncedDb.execSQL("PRAGMA recursive_triggers = ON");
 
-            mSyncedDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing().setMaxSqlCacheSize(10);
+            mSyncedDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing()
+                     .setMaxSqlCacheSize(10);
         }
 
         // for debug
@@ -422,8 +423,8 @@ public class CatalogueDBAdapter
         mStatements = new SqlStatementManager(mSyncedDb);
 
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            Logger.info(this, "instances created: " +
-                    mDebugInstanceCount.incrementAndGet());
+            Logger.info(this,
+                        "instances created: " + DEBUG_INSTANCE_COUNT.incrementAndGet());
             //debugAddInstance(this);
         }
     }
@@ -436,7 +437,7 @@ public class CatalogueDBAdapter
      */
     @NonNull
     public static Synchronizer getSynchronizer() {
-        return mSynchronizer;
+        return SYNCHRONIZER;
     }
 
     /**
@@ -576,23 +577,23 @@ public class CatalogueDBAdapter
      * DEBUG only.
      */
     @SuppressWarnings("unused")
-    private static void debugAddInstance(@NonNull final CatalogueDBAdapter db) {
-        mInstances.add(new InstanceRefDebug(db));
+    private static void debugAddInstance(@NonNull final DBA db) {
+        INSTANCES.add(new InstanceRefDebug(db));
     }
 
     /**
      * DEBUG only.
      */
     @SuppressWarnings("unused")
-    private static void debugRemoveInstance(@NonNull final CatalogueDBAdapter db) {
+    private static void debugRemoveInstance(@NonNull final DBA db) {
         List<InstanceRefDebug> toDelete = new ArrayList<>();
-        for (InstanceRefDebug ref : mInstances) {
-            CatalogueDBAdapter refDb = ref.get();
+        for (InstanceRefDebug ref : INSTANCES) {
+            DBA refDb = ref.get();
             if (refDb == null) {
-                Logger.info(CatalogueDBAdapter.class,
+                Logger.info(DBA.class,
                             "<-- **** Missing ref (not closed?) **** vvvvvvv");
                 Logger.error(ref.getCreationException());
-                Logger.info(CatalogueDBAdapter.class,
+                Logger.info(DBA.class,
                             "--> **** Missing ref (not closed?) **** ^^^^^^^");
             } else {
                 if (refDb == db) {
@@ -601,7 +602,7 @@ public class CatalogueDBAdapter
             }
         }
         for (InstanceRefDebug ref : toDelete) {
-            mInstances.remove(ref);
+            INSTANCES.remove(ref);
         }
     }
 
@@ -612,8 +613,8 @@ public class CatalogueDBAdapter
     @SuppressWarnings("unused")
     public static void debugPrintReferenceCount(@Nullable final String msg) {
         if (mSyncedDb != null) {
-            SynchronizedDb.printRefCount(msg,
-                                         mSyncedDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing());
+            SynchronizedDb
+                    .printRefCount(msg, mSyncedDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing());
         }
     }
 
@@ -622,12 +623,12 @@ public class CatalogueDBAdapter
      */
     @SuppressWarnings("unused")
     public static void debugDumpInstances() {
-        for (InstanceRefDebug ref : mInstances) {
+        for (InstanceRefDebug ref : INSTANCES) {
             if (ref.get() == null) {
-                Logger.info(CatalogueDBAdapter.class,
+                Logger.info(DBA.class,
                             "<-- **** Missing ref (not closed?) **** vvvvvvv");
                 Logger.error(ref.getCreationException());
-                Logger.info(CatalogueDBAdapter.class,
+                Logger.info(DBA.class,
                             "--> **** Missing ref (not closed?) **** ^^^^^^^");
             } else {
                 Logger.error(ref.getCreationException());
@@ -696,22 +697,23 @@ public class CatalogueDBAdapter
         }
 
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            Logger.info(this, "instances left: " +
-                    mDebugInstanceCount.decrementAndGet());
+            Logger.info(this,
+                        "instances left: " + DEBUG_INSTANCE_COUNT.decrementAndGet());
             //debugRemoveInstance(this);
         }
         mCloseCalled = true;
     }
 
     @Override
+    @CallSuper
     protected void finalize()
             throws Throwable {
-        super.finalize();
         if (!mCloseCalled) {
-            Logger.info(this, "Leaking instances: " +
-                    mDebugInstanceCount.get());
+            Logger.info(this,
+                        "Leaking instances: " + DEBUG_INSTANCE_COUNT.get());
             close();
         }
+        super.finalize();
     }
 
     /**
@@ -782,8 +784,8 @@ public class CatalogueDBAdapter
 
             if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
                 Logger.info(this,
-                            "inserted TOCEntry: " + tocEntryId +
-                                    ", authorId=" + authorId + ", " + title);
+                            "inserted TOCEntry: " + tocEntryId
+                                    + ", authorId=" + authorId + ", " + title);
             }
         } else {
             int rowsAffected = mSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
@@ -1549,7 +1551,7 @@ public class CatalogueDBAdapter
             StorageUtils.deleteFile(StorageUtils.getCoverFile(uuid));
             // remove from cache
             if (!uuid.isEmpty()) {
-                try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
+                try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
                     coversDBAdapter.deleteBookCover(uuid);
                 }
             }
@@ -1976,7 +1978,9 @@ public class CatalogueDBAdapter
                     mAddBookSeriesStmt.bindLong(4, pos);
                     mAddBookSeriesStmt.executeInsert();
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
+                throw new IllegalStateException(e);
+            } catch (RuntimeException e) {
                 Logger.error(e);
                 throw new DBExceptions.InsertException(
                         "Error adding series '" + series.name +
@@ -2042,9 +2046,9 @@ public class CatalogueDBAdapter
 
     /**
      * Create the link between {@link Book} and {@link Author}.
-     *
+     * <p>
      * {@link DatabaseDefinitions#TBL_BOOK_AUTHOR}
-     *
+     * <p>
      * Note that {@link DatabaseDefinitions#DOM_BOOK_AUTHOR_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
@@ -2080,13 +2084,14 @@ public class CatalogueDBAdapter
         }
 
         if (mAddBookAuthorsStmt == null) {
-            mAddBookAuthorsStmt = mStatements.add("mAddBookAuthorsStmt",
-                                                  "INSERT INTO " + TBL_BOOK_AUTHOR
-                                                      + '(' +
-                                                      DOM_FK_BOOK_ID + ',' +
-                                                      DOM_FK_AUTHOR_ID + ',' +
-                                                      DOM_BOOK_AUTHOR_POSITION +
-                                                      ") VALUES(?,?,?)");
+            mAddBookAuthorsStmt =
+                    mStatements.add("mAddBookAuthorsStmt",
+                                    "INSERT INTO " + TBL_BOOK_AUTHOR
+                                            + '(' +
+                                            DOM_FK_BOOK_ID + ',' +
+                                            DOM_FK_AUTHOR_ID + ',' +
+                                            DOM_BOOK_AUTHOR_POSITION +
+                                            ") VALUES(?,?,?)");
         }
 
         // The list MAY contain duplicates (eg. from Internet lookups of multiple
@@ -2116,15 +2121,16 @@ public class CatalogueDBAdapter
                     }
                     mAddBookAuthorsStmt.clearBindings();
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
+                throw new IllegalStateException(e);
+            } catch (RuntimeException e) {
                 Logger.error(e);
                 throw new DBExceptions.InsertException(
-                    "Error adding author '" + author + "' {" + authorId + '}' +
-                            " to book " + bookId + ": " + e.getLocalizedMessage(),
-                    e);
+                        "Error adding author '" + author + "' {" + authorId + '}' +
+                                " to book " + bookId + ": " + e.getLocalizedMessage(),
+                        e);
             }
         }
-
     }
 
     /**
@@ -2194,7 +2200,9 @@ public class CatalogueDBAdapter
                 mInsertBookBookshelfStmt.bindLong(1, bookId);
                 mInsertBookBookshelfStmt.bindLong(2, bookshelfId);
                 mInsertBookBookshelfStmt.executeInsert();
-            } catch (Exception e) {
+            } catch (SQLException e) {
+                throw new IllegalStateException(e);
+            } catch (RuntimeException e) {
                 Logger.error(e, "Error assigning a book to a bookshelf");
             }
         }
@@ -2462,8 +2470,8 @@ public class CatalogueDBAdapter
             " Case" +
                 "  When " + COLUMN_ALIAS_NR_OF_SERIES + " < 2" +
                 "   Then Coalesce(s." + DOM_SERIES_FORMATTED + ", '')" +
-                "   Else " + DOM_SERIES_FORMATTED + "||' " + BookCatalogueApp.getResourceString(
-                R.string.and_others) + '\'' +
+                "   Else " + DOM_SERIES_FORMATTED + "||' " +
+                    BookCatalogueApp.getResString(R.string.and_others) + '\'' +
                 " End AS " + DOM_SERIES_FORMATTED
         ) +
             " FROM (" +
@@ -2538,7 +2546,7 @@ public class CatalogueDBAdapter
     @NonNull
     private BookCursor fetchBooks(@NonNull final String sql,
                                   @Nullable final String[] selectionArgs) {
-        return (BookCursor) mSyncedDb.rawQueryWithFactory(mBooksCursorFactory, sql, selectionArgs,
+        return (BookCursor) mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY, sql, selectionArgs,
                                                           "");
     }
 
@@ -2663,7 +2671,9 @@ public class CatalogueDBAdapter
             mSyncedDb.execSQL(sql);
 
             mSyncedDb.setTransactionSuccessful();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        } catch (RuntimeException e) {
             Logger.error(e);
             throw new DBExceptions.UpdateException(e);
         } finally {
@@ -3242,8 +3252,8 @@ public class CatalogueDBAdapter
             mGlobalReplacePublisher = mStatements.add("mGlobalReplacePublisher",
                                                       SqlString.GLOBAL_REPLACE_PUBLISHER);
         }
-        mGlobalReplacePublisher.bindString(1, to.name);
-        mGlobalReplacePublisher.bindString(2, from.name);
+        mGlobalReplacePublisher.bindString(1, to.getName());
+        mGlobalReplacePublisher.bindString(2, from.getName());
         mGlobalReplacePublisher.executeUpdateDelete();
     }
 
@@ -3686,15 +3696,15 @@ public class CatalogueDBAdapter
                     Object entry = book.get(key);
                     try {
                         switch (columnInfo.storageClass) {
-                            case Real: {
+                            case Real:
                                 if (entry instanceof Float) {
                                     cv.put(columnInfo.name, (Float) entry);
                                 } else if (entry != null) {
                                     cv.put(columnInfo.name, Float.parseFloat(entry.toString()));
                                 }
                                 break;
-                            }
-                            case Integer: {
+
+                            case Integer:
                                 if (entry instanceof Boolean) {
                                     if ((Boolean) entry) {
                                         cv.put(columnInfo.name, 1);
@@ -3707,17 +3717,16 @@ public class CatalogueDBAdapter
                                     cv.put(columnInfo.name, Integer.parseInt(entry.toString()));
                                 }
                                 break;
-                            }
-                            case Text: {
+
+                            case Text:
                                 if (entry instanceof String) {
                                     cv.put(columnInfo.name, ((String) entry));
                                 } else if (entry != null) {
                                     cv.put(columnInfo.name, entry.toString());
                                 }
                                 break;
-                            }
                         }
-                    } catch (Exception e) {
+                    } catch (final NumberFormatException e) {
                         cv.put(columnInfo.name, entry.toString());
                     }
                 }
@@ -4102,12 +4111,12 @@ public class CatalogueDBAdapter
      * DEBUG only.
      */
     private static class InstanceRefDebug
-        extends WeakReference<CatalogueDBAdapter> {
+        extends WeakReference<DBA> {
 
         @NonNull
         private final Exception mCreationException;
 
-        InstanceRefDebug(@NonNull final CatalogueDBAdapter db) {
+        InstanceRefDebug(@NonNull final DBA db) {
             super(db);
             mCreationException = new RuntimeException();
         }
@@ -4229,18 +4238,18 @@ public class CatalogueDBAdapter
          */
         private static final String GET_ID_FROM_ISBN =
                 "SELECT" +
-                " Coalesce(max(" + DOM_PK_ID + "), 0)" +
+                " Coalesce(max(" + DOM_PK_ID + "),0)" +
                 " FROM " + TBL_BOOKS +
-                " WHERE lower(" + DOM_BOOK_ISBN + ") = lower(?)";
+                " WHERE lower(" + DOM_BOOK_ISBN + ")=lower(?)";
 
         /**
          * Find the Book ID based on a search for the ISBN (both 10 & 13).
          */
         private static final String GET_ID_FROM_ISBN2 =
                 "SELECT" +
-                " Coalesce(max(" + DOM_PK_ID + "), 0)" +
+                " Coalesce(max(" + DOM_PK_ID + "),0)" +
                 " FROM " + TBL_BOOKS +
-                " WHERE lower(" + DOM_BOOK_ISBN + ") IN (lower(?), lower(?))";
+                " WHERE lower(" + DOM_BOOK_ISBN + ") IN (lower(?),lower(?))";
 
         private static final String GET_ALL_BOOKLIST_STYLES =
             SELECT(
@@ -4258,7 +4267,7 @@ public class CatalogueDBAdapter
                 TBL_BOOKSHELF.dotAs(DOM_BOOKSHELF)
             ) +
                 " FROM " + TBL_BOOKSHELF.ref() +
-                " ORDER BY lower(" + DOM_BOOKSHELF + ") " + COLLATION;
+                " ORDER BY lower(" + DOM_BOOKSHELF + ')' + COLLATION;
 
         private static final String GET_BOOKSHELF_NAME_BY_ID =
             "SELECT " +
@@ -4273,7 +4282,7 @@ public class CatalogueDBAdapter
             ) +
                 " FROM " + TBL_BOOK_BOOKSHELF.ref() + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF) +
                 " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOK_ID) + "=?" +
-                " ORDER BY lower(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ") " + COLLATION;
+                " ORDER BY lower(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ')' + COLLATION;
 
 
         private static final String GET_AUTHOR_BY_ID =
@@ -4288,8 +4297,8 @@ public class CatalogueDBAdapter
             "SELECT " +
                 DOM_PK_ID +
                 " FROM " + TBL_AUTHORS +
-                " WHERE lower(" + DOM_AUTHOR_FAMILY_NAME + ") = lower(?) " + COLLATION +
-                " AND lower(" + DOM_AUTHOR_GIVEN_NAMES + ") = lower(?)" + COLLATION;
+                " WHERE lower(" + DOM_AUTHOR_FAMILY_NAME + ")=lower(?)" + COLLATION +
+                " AND lower(" + DOM_AUTHOR_GIVEN_NAMES + ")=lower(?)" + COLLATION;
 
         private static final String GET_AUTHORS_BY_BOOK_ID =
             SELECT_DISTINCT(
@@ -4306,8 +4315,8 @@ public class CatalogueDBAdapter
                 " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_BOOK_ID) + "=?" +
                 " ORDER BY " +
                 TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " ASC," +
-                " lower(" + DOM_AUTHOR_FAMILY_NAME + ") " + COLLATION + " ASC," +
-                " lower(" + DOM_AUTHOR_GIVEN_NAMES + ") " + COLLATION + " ASC";
+                " lower(" + DOM_AUTHOR_FAMILY_NAME + ')' + COLLATION + "ASC," +
+                " lower(" + DOM_AUTHOR_GIVEN_NAMES + ')' + COLLATION + "ASC";
 
         private static final String GET_SERIES_BY_BOOK_ID =
             SELECT_DISTINCT(
@@ -4321,9 +4330,8 @@ public class CatalogueDBAdapter
             ) +
                 " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES) +
                 " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=?" +
-                " ORDER BY " + TBL_BOOK_SERIES.dot(
-                DOM_BOOK_SERIES_POSITION) + ", lower(" + TBL_SERIES.dot(
-                DOM_SERIES_NAME) + ") " + COLLATION + " ASC";
+                " ORDER BY " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) +
+                    ",lower(" + TBL_SERIES.dot(DOM_SERIES_NAME) + ')' + COLLATION + "ASC";
 
         private static final String GET_TOC_ENTRIES_BY_BOOK_ID =
             SELECT(
@@ -4352,8 +4360,7 @@ public class CatalogueDBAdapter
                 " ORDER BY lower(" + TBL_TOC_ENTRIES.dot(DOM_TITLE) + ')' + COLLATION;
 
         private static final String GLOBAL_REPLACE_AUTHOR_ON_TOC_ENTRIES =
-            "UPDATE " + TBL_TOC_ENTRIES + " SET " +
-                DOM_FK_AUTHOR_ID + "=?" +
+            "UPDATE " + TBL_TOC_ENTRIES + " SET " + DOM_FK_AUTHOR_ID + "=?" +
                 " WHERE " + DOM_FK_AUTHOR_ID + "=?";
 
         private static final String GET_ALL_SERIES =

@@ -222,10 +222,10 @@ public class Fields
 
     @SuppressWarnings("WeakerAccess")
     public static boolean isVisible(@NonNull final String fieldName) {
-        return Prefs.getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
+        return Prefs.getPrefs().getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
-    public static void setVisibility(final String fieldName,
+    public static void setVisibility(@NonNull final String fieldName,
                                      final boolean isVisible) {
         Prefs.getPrefs().edit().putBoolean(PREFS_FIELD_VISIBILITY + fieldName, isVisible).apply();
     }
@@ -1242,7 +1242,7 @@ public class Fields
             List<String> list = new ArrayList<>();
             for (Integer edition : Book.EDITIONS.keySet()) {
                 if ((edition & bitmask) != 0) {
-                    list.add(BookCatalogueApp.getResourceString(Book.EDITIONS.get(edition)));
+                    list.add(BookCatalogueApp.getResString(Book.EDITIONS.get(edition)));
                 }
             }
             return Utils.toDisplayString(list);

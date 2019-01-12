@@ -35,9 +35,8 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
@@ -56,24 +55,24 @@ import java.util.List;
 public class EventQueueListActivity
         extends BindableItemListActivity {
 
-    /** Key to store optional task ID when activity is started */
+    /** Key to store optional task ID when activity is started. */
     public static final String REQUEST_BKEY_TASK_ID = "EventQueueListActivity.TaskId";
     /**
      * Listener to handle Event add/change/delete.
      */
     private final OnEventChangeListener mOnEventChangeListener = new OnEventChangeListener() {
         @Override
-        public void onEventChange(@Nullable Event event,
-                                  @NonNull EventActions action) {
+        public void onEventChange(@Nullable final Event event,
+                                  @NonNull final EventActions action) {
             //When any Event is added/changed/deleted, update the list. Lazy, yes.
             EventQueueListActivity.this.refreshData();
         }
     };
-    /** DB connection */
-    private CatalogueDBAdapter mDb = null;
+    /** DB connection. */
+    private DBA mDb;
     private BindableItemCursor mCursor;
-    /** Task ID, if provided in intent */
-    private long mTaskId = 0;
+    /** Task ID, if provided in intent. */
+    private long mTaskId;
 
     @Override
     protected int getLayoutId() {
@@ -83,8 +82,7 @@ public class EventQueueListActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
-        mDb = new CatalogueDBAdapter(this);
+        mDb = new DBA(this);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -106,10 +104,10 @@ public class EventQueueListActivity
         });
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_background_task_events,
+            HintManager.displayHint(this.getLayoutInflater(),
+                                    R.string.hint_background_task_events,
                                     null);
         }
-        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -118,10 +116,8 @@ public class EventQueueListActivity
     @Override
     @CallSuper
     protected void onResume() {
-        Tracker.enterOnResume(this);
         super.onResume();
         refreshData();
-        Tracker.exitOnResume(this);
     }
 
     /**
@@ -168,8 +164,6 @@ public class EventQueueListActivity
     @Override
     @CallSuper
     protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
-
         try {
             if (mCursor != null) {
                 mCursor.close();
@@ -186,7 +180,6 @@ public class EventQueueListActivity
             mDb.close();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     /**
@@ -210,7 +203,7 @@ public class EventQueueListActivity
     }
 
     /**
-     * Get the EventsCursor relevant to this Activity
+     * Get the EventsCursor relevant to this Activity.
      */
     @NonNull
     @Override

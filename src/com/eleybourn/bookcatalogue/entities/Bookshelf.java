@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public class Bookshelf
     }
 
     @Override
-    public long fixupId(@NonNull final CatalogueDBAdapter db) {
+    public long fixupId(@NonNull final DBA db) {
         this.id = db.getBookshelfId(this);
         return this.id;
     }

@@ -16,19 +16,19 @@ import androidx.annotation.Nullable;
 public interface PPref<T> {
 
     /**
-     * for single updates
+     * for single updates.
      */
-    void set(@Nullable final T value);
+    void set(@Nullable T value);
 
     /**
-     * for batch updates
+     * for batch updates.
      */
-    void set(@NonNull final SharedPreferences.Editor ed,
-             @NonNull final T value);
+    void set(@NonNull SharedPreferences.Editor ed,
+             @NonNull T value);
 
-    void set(@NonNull final Parcel in);
+    void set(@NonNull Parcel in);
 
-    void writeToParcel(@NonNull final Parcel dest);
+    void writeToParcel(@NonNull Parcel dest);
 
     @NonNull
     T get();

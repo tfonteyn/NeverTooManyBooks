@@ -63,6 +63,7 @@ public abstract class BaseSettingsFragment
         }
         ed.apply();
         if (clearSource) {
+            // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences(source);
             sourcePrefs.edit().clear().apply();
         }
     }

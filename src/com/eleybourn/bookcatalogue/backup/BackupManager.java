@@ -67,7 +67,7 @@ public final class BackupManager {
 
     /**
      * Start a foreground task that backs up the entire catalogue.
-     *
+     * <p>
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
     public static void backup(@NonNull final FragmentActivity context,
@@ -130,9 +130,8 @@ public final class BackupManager {
                     } catch (IOException | RuntimeException e) {
                         // add user-friendly message
                         throw new Exception(
-                                BookCatalogueApp.getResourceString(
-                                        R.string.export_error_backup_failed),
-                                e);
+                                BookCatalogueApp
+                                        .getResString(R.string.export_error_backup_failed), e);
                     }
 
                     // All done. we handle the result here, still in the background.
@@ -140,8 +139,8 @@ public final class BackupManager {
                         // cancelled
                         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                             Logger.info(this,
-                                        "backup|cancelling|file=" +
-                                                settings.file.getAbsolutePath());
+                                        "backup|cancelling|file="
+                                                + settings.file.getAbsolutePath());
                         }
                         StorageUtils.deleteFile(tempFile);
                     } else {
@@ -152,9 +151,9 @@ public final class BackupManager {
 
                         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                             Logger.info(this,
-                                        "backup|finished|file=" +
-                                                settings.file.getAbsolutePath() +
-                                                ", size = " + settings.file.length());
+                                        "backup|finished|file="
+                                                + settings.file.getAbsolutePath()
+                                                + ", size = " + settings.file.length());
                         }
                     }
                 }
@@ -196,7 +195,7 @@ public final class BackupManager {
 
     /**
      * Start a foreground task that restores the entire catalogue.
-     *
+     * <p>
      * We use a FragmentTask so that long actions do not occur in the UI thread.
      */
     public static void restore(@NonNull final FragmentActivity context,
@@ -242,13 +241,13 @@ public final class BackupManager {
                 } catch (IOException e) {
                     // add user-friendly message
                     throw new Exception(
-                            BookCatalogueApp.getResourceString(R.string.error_import_failed), e);
+                            BookCatalogueApp.getResString(R.string.error_import_failed), e);
                 }
 
                 // all done. we handle the result here, still in the background.
                 Logger.info(BackupManager.class,
-                            "restore|finishing|file=" + settings.file.getAbsolutePath() +
-                                    ", size = " + settings.file.length());
+                            "restore|finishing|file=" + settings.file.getAbsolutePath()
+                                    + ", size = " + settings.file.length());
             }
         };
 

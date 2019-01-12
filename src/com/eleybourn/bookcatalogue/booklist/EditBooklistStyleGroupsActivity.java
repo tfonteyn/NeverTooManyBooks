@@ -201,7 +201,7 @@ public class EditBooklistStyleGroupsActivity
         final BooklistGroup group;
         /** Whether this groups is present in the style. */
         boolean present;
-        String uuid;
+        final String uuid;
 
         /** Constructor. */
         GroupWrapper(@NonNull final BooklistGroup group,

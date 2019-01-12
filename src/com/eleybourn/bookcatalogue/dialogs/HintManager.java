@@ -149,7 +149,7 @@ public final class HintManager {
         // Setup the message
         final TextView msgField = root.findViewById(R.id.hint);
         if (msgField != null) {
-            String hintText = BookCatalogueApp.getResourceString(stringId, args);
+            String hintText = BookCatalogueApp.getResString(stringId, args);
             msgField.setText(Utils.linkifyHtml(hintText));
 
             // Automatically start a browser (or whatever)
@@ -237,7 +237,7 @@ public final class HintManager {
          * Check if this hint should be shown.
          */
         private boolean shouldBeShown() {
-            return !hasBeenDisplayed() && Prefs.getBoolean(getFullPrefName(), true);
+            return !hasBeenDisplayed() && Prefs.getPrefs().getBoolean(getFullPrefName(), true);
         }
 
         private boolean hasBeenDisplayed() {

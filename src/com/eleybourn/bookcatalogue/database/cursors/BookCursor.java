@@ -22,13 +22,14 @@ package com.eleybourn.bookcatalogue.database.cursors;
 
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.DbSync.Synchronizer;
+import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
 
 import java.io.Closeable;
 
@@ -39,7 +40,9 @@ import java.io.Closeable;
  *
  * @author Philip Warner
  */
-public class BookCursor extends TrackedCursor implements Closeable {
+public class BookCursor
+        extends TrackedCursor
+        implements Closeable {
 
     /** Get the row ID; need a local implementation so that get/setSelected() works. */
     private int mIdCol = -2;
@@ -57,8 +60,9 @@ public class BookCursor extends TrackedCursor implements Closeable {
     public final long getId() {
         if (mIdCol < 0) {
             mIdCol = getColumnIndex(DatabaseDefinitions.DOM_PK_ID.name);
-            if (mIdCol < 0)
+            if (mIdCol < 0) {
                 throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_PK_ID.name);
+            }
         }
         return getLong(mIdCol);
     }

@@ -241,5 +241,6 @@
     <string name="menu_customize_ellipsis">Dostosuj…</string>
     <string name="menu_edit">Edytować…</string>
     <string name="starting">Startowy</string>
+    <string name="lbl_books">Książki</string>
 
 </resources>

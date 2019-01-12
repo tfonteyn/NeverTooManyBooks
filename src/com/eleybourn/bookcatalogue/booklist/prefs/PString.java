@@ -21,10 +21,10 @@ public class PString extends PPrefBase<String> {
     @NonNull
     @Override
     public String get() {
-        if (uuid == null) {
-            return nonPersistedValue != null ? nonPersistedValue : defaultValue;
+        if (mUuid == null) {
+            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            return Prefs.getPrefs(uuid).getString(getKey(), defaultValue);
+            return Prefs.getPrefs(mUuid).getString(getKey(), mDefaultValue);
         }
     }
 }

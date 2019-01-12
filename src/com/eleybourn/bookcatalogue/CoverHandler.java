@@ -16,14 +16,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
-import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -81,7 +82,7 @@ public class CoverHandler
     private final Fragment mFragment;
 
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
     @NonNull
     private final BookManager mBookManager;
     private final Fields.Field mCoverField;
@@ -101,7 +102,7 @@ public class CoverHandler
      * Constructor.
      */
     CoverHandler(@NonNull final Fragment fragment,
-                 @NonNull final CatalogueDBAdapter db,
+                 @NonNull final DBA db,
                  @NonNull final BookManager bookManager,
                  @NonNull final Fields.Field coverField,
                  @NonNull final Fields.Field isbnField) {
@@ -613,7 +614,7 @@ public class CoverHandler
     private void invalidateCachedThumbnail() {
         final long bookId = mBookManager.getBook().getBookId();
         if (bookId != 0) {
-            try (CoversDBAdapter coversDBAdapter = CoversDBAdapter.getInstance()) {
+            try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
                 coversDBAdapter.deleteBookCover(mDb.getBookUuid(bookId));
             } catch (RuntimeException e) {
                 Logger.error(e, "Error cleaning up cached cover images");
@@ -632,10 +633,11 @@ public class CoverHandler
     }
 
     @Override
+    @CallSuper
     protected void finalize()
             throws Throwable {
-        super.finalize();
         dismissCoverBrowser();
+        super.finalize();
     }
 
     /**

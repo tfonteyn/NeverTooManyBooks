@@ -23,7 +23,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.Exporter;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -101,7 +101,7 @@ public class CsvExporter
     /** backup copies to keep. */
     private static final int COPIES = 5;
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
     @NonNull
     private final ExportSettings mSettings;
     /**
@@ -111,49 +111,49 @@ public class CsvExporter
      */
     @SuppressWarnings("NonConstantFieldWithUpperCaseName")
     private final String EXPORT_FIELD_HEADERS =
-        '"' + DOM_PK_ID.name + "\"," +
-            '"' + CSV_COLUMN_AUTHORS + "\"," +
-            '"' + DOM_TITLE + "\"," +
-            '"' + DOM_BOOK_ISBN + "\"," +
-            '"' + DOM_BOOK_PUBLISHER + "\"," +
-            '"' + DOM_BOOK_DATE_PUBLISHED + "\"," +
-            '"' + DOM_FIRST_PUBLICATION + "\"," +
-            '"' + DOM_BOOK_EDITION_BITMASK + "\"," +
-            '"' + DOM_BOOK_RATING + "\"," +
+        '"' + DOM_PK_ID.name + "\","
+            + '"' + CSV_COLUMN_AUTHORS + "\","
+            + '"' + DOM_TITLE + "\","
+            + '"' + DOM_BOOK_ISBN + "\","
+            + '"' + DOM_BOOK_PUBLISHER + "\","
+            + '"' + DOM_BOOK_DATE_PUBLISHED + "\","
+            + '"' + DOM_FIRST_PUBLICATION + "\","
+            + '"' + DOM_BOOK_EDITION_BITMASK + "\","
+            + '"' + DOM_BOOK_RATING + "\","
             // this should be UniqueId.DOM_FK_BOOKSHELF_ID but it was misnamed originally
             // but in fact, FIXME: it's not actually used during import anyway
-            '"' + "bookshelf_id\"," +
-            '"' + DOM_BOOKSHELF + "\"," +
-            '"' + DOM_BOOK_READ + "\"," +
-            '"' + CSV_COLUMN_SERIES + "\"," +
-            '"' + DOM_BOOK_PAGES + "\"," +
-            '"' + DOM_BOOK_NOTES + "\"," +
+            + '"' + "bookshelf_id\","
+            + '"' + DOM_BOOKSHELF + "\","
+            + '"' + DOM_BOOK_READ + "\","
+            + '"' + CSV_COLUMN_SERIES + "\","
+            + '"' + DOM_BOOK_PAGES + "\","
+            + '"' + DOM_BOOK_NOTES + "\","
 
-            '"' + DOM_BOOK_PRICE_LISTED + "\"," +
-            '"' + DOM_BOOK_PRICE_LISTED_CURRENCY + "\"," +
-            '"' + DOM_BOOK_PRICE_PAID + "\"," +
-            '"' + DOM_BOOK_PRICE_PAID_CURRENCY + "\"," +
-            '"' + DOM_BOOK_DATE_ACQUIRED + "\"," +
+            + '"' + DOM_BOOK_PRICE_LISTED + "\","
+            + '"' + DOM_BOOK_PRICE_LISTED_CURRENCY + "\","
+            + '"' + DOM_BOOK_PRICE_PAID + "\","
+            + '"' + DOM_BOOK_PRICE_PAID_CURRENCY + "\","
+            + '"' + DOM_BOOK_DATE_ACQUIRED + "\","
 
-            '"' + DOM_BOOK_ANTHOLOGY_BITMASK + "\"," +
-            '"' + DOM_BOOK_LOCATION + "\"," +
-            '"' + DOM_BOOK_READ_START + "\"," +
-            '"' + DOM_BOOK_READ_END + "\"," +
-            '"' + DOM_BOOK_FORMAT + "\"," +
-            '"' + DOM_BOOK_SIGNED + "\"," +
-            '"' + DOM_LOANED_TO + "\"," +
-            '"' + CSV_COLUMN_TOC + "\"," +
-            '"' + DOM_BOOK_DESCRIPTION + "\"," +
-            '"' + DOM_BOOK_GENRE + "\"," +
-            '"' + DOM_BOOK_LANGUAGE + "\"," +
-            '"' + DOM_BOOK_DATE_ADDED + "\"," +
-            '"' + DOM_BOOK_LIBRARY_THING_ID + "\"," +
-            '"' + DOM_BOOK_ISFDB_ID + "\"," +
-            '"' + DOM_BOOK_GOODREADS_BOOK_ID + "\"," +
-            '"' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "\"," +
-            '"' + DOM_LAST_UPDATE_DATE + "\"," +
-            '"' + DOM_BOOK_UUID + '"' +
-            '\n';
+            + '"' + DOM_BOOK_ANTHOLOGY_BITMASK + "\","
+            + '"' + DOM_BOOK_LOCATION + "\","
+            + '"' + DOM_BOOK_READ_START + "\","
+            + '"' + DOM_BOOK_READ_END + "\","
+            + '"' + DOM_BOOK_FORMAT + "\","
+            + '"' + DOM_BOOK_SIGNED + "\","
+            + '"' + DOM_LOANED_TO + "\","
+            + '"' + CSV_COLUMN_TOC + "\","
+            + '"' + DOM_BOOK_DESCRIPTION + "\","
+            + '"' + DOM_BOOK_GENRE + "\","
+            + '"' + DOM_BOOK_LANGUAGE + "\","
+            + '"' + DOM_BOOK_DATE_ADDED + "\","
+            + '"' + DOM_BOOK_LIBRARY_THING_ID + "\","
+            + '"' + DOM_BOOK_ISFDB_ID + "\","
+            + '"' + DOM_BOOK_GOODREADS_BOOK_ID + "\","
+            + '"' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "\","
+            + '"' + DOM_LAST_UPDATE_DATE + "\","
+            + '"' + DOM_BOOK_UUID + '"'
+            + '\n';
 
     /**
      * Constructor.
@@ -165,7 +165,7 @@ public class CsvExporter
      *                 handles {@link ExportSettings#BOOK_CSV} anyhow.
      */
     public CsvExporter(@NonNull final ExportSettings settings) {
-        mDb = new CatalogueDBAdapter(BookCatalogueApp.getAppContext());
+        mDb = new DBA(BookCatalogueApp.getAppContext());
         mSettings = settings;
         settings.validate();
     }
@@ -189,12 +189,12 @@ public class CsvExporter
     public int doBooks(@NonNull final OutputStream outputStream,
                        @NonNull final ExportListener listener)
         throws IOException {
-        final String UNKNOWN = BookCatalogueApp.getResourceString(R.string.unknown);
-        final String AUTHOR = BookCatalogueApp.getResourceString(R.string.lbl_author);
+        final String UNKNOWN = BookCatalogueApp.getResString(R.string.unknown);
+        final String AUTHOR = BookCatalogueApp.getResString(R.string.lbl_author);
 
         // Display startup message
         listener.onProgress(
-            BookCatalogueApp.getResourceString(R.string.progress_msg_export_starting), 0);
+                BookCatalogueApp.getResString(R.string.progress_msg_export_starting), 0);
         boolean displayingStartupMessage = true;
 
         long lastUpdate = 0;

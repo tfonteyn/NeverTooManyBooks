@@ -667,12 +667,12 @@ public class CoverBrowser
             File file = new File(mFileSpec);
             TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
             if (file.exists() && file.length() > 100) {
-                Drawable image = new BitmapDrawable
-                        (mActivity.getResources(),
-                         ImageUtils.fetchFileIntoImageView(null, file,
-                                                           mPreviewSizeWidth * 4,
-                                                           mPreviewSizeHeight * 4,
-                                                           true));
+                Drawable image = new BitmapDrawable(
+                        mActivity.getResources(),
+                        ImageUtils.fetchFileIntoImageView(null, file,
+                                                          mPreviewSizeWidth * 4,
+                                                          mPreviewSizeHeight * 4,
+                                                          true));
                 mSwitcher.setImageDrawable(image);
                 ViewTagger.setTag(mSwitcher, file.getAbsolutePath());
                 msgVw.setVisibility(View.GONE);

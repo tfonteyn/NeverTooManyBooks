@@ -30,13 +30,13 @@ public class PInteger
     @NonNull
     @Override
     public Integer get() {
-        if (uuid == null) {
-            return nonPersistedValue != null ? nonPersistedValue : defaultValue;
+        if (mUuid == null) {
+            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             // Use a workaround for the real default value not being a String.
-            String sValue = Prefs.getPrefs(uuid).getString(getKey(), null);
+            String sValue = Prefs.getPrefs(mUuid).getString(getKey(), null);
             if (sValue == null || sValue.isEmpty()) {
-                return defaultValue;
+                return mDefaultValue;
             }
             return Integer.parseInt(sValue);
         }

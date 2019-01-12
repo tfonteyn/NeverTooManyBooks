@@ -33,7 +33,7 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
@@ -42,15 +42,12 @@ import java.util.List;
 public class LegacyTask
         extends Task {
 
-    private static final long serialVersionUID = 3596858518802582316L;
-
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
-    private final byte[] mOriginal;
+    private static final long serialVersionUID = -8686257363994080502L;
 
-    public LegacyTask(byte[] original) {
-        super(BookCatalogueApp.getResourceString(R.string.gr_tq_legacy_task));
-        mOriginal = original;
+    public LegacyTask() {
+        super(BookCatalogueApp.getResString(R.string.gr_tq_legacy_task));
     }
 
     @Override
@@ -86,36 +83,30 @@ public class LegacyTask
     public void bindView(@NonNull final View view,
                          @NonNull final Context context,
                          @NonNull final BindableItemCursor cursor,
-                         @NonNull final CatalogueDBAdapter db) {
+                         @NonNull final DBA db) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
                 .setText("Legacy Task Placeholder for Task #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
-                .setText(
-                        "This task is obsolete and can not be recovered. It is probably advisable to delete it.");
-    }
-
-    public byte[] getOriginal() {
-        return mOriginal;
+                .setText("This task is obsolete and can not be recovered."
+                                 + " It is probably advisable to delete it.");
     }
 
     @Override
     public void addContextMenuItems(@NonNull final Context context,
-                                    @NonNull AdapterView<?> parent,
+                                    @NonNull final AdapterView<?> parent,
                                     @NonNull final View view,
                                     final int position,
                                     final long id,
                                     @NonNull final List<ContextDialogItem> items,
-                                    @NonNull final CatalogueDBAdapter db) {
+                                    @NonNull final DBA db) {
 
         items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task),
                                         new Runnable() {
                                             @Override
                                             public void run() {
-                                                QueueManager.getQueueManager().deleteTask(
-                                                        LegacyTask.this.getId());
+                                                QueueManager.getQueueManager()
+                                                            .deleteTask(LegacyTask.this.getId());
                                             }
                                         }));
-
     }
-
 }

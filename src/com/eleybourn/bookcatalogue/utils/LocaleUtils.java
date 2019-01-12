@@ -16,6 +16,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 /**
  * Static class. There is only ONE Locale *active* at any given time.
@@ -238,7 +239,9 @@ public final class LocaleUtils {
             // MissingResourceException
             // NullPointerException can be thrown from within, when the ISO3Language fails.
             return locale.getISO3Language() != null && locale.getISO3Country() != null;
-        } catch (Exception ignore) {
+        } catch (MissingResourceException e) {
+            throw new IllegalStateException(e);
+        } catch (RuntimeException ignore) {
             return false;
         }
     }

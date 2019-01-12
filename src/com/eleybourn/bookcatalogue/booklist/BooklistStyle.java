@@ -41,14 +41,13 @@ import com.eleybourn.bookcatalogue.booklist.prefs.PIntList;
 import com.eleybourn.bookcatalogue.booklist.prefs.PInteger;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.booklist.prefs.PString;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +62,7 @@ import java.util.UUID;
  * Represents a specific style of book list (eg. authors/series).
  * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
  * to describe the resulting list style.
- *
+ * <p>
  * 2018-12-20: the implementation no longer stores serialized blobs, neither in the database nor
  * in backup archives (but can still read them from archives).
  * The database table now consists of a PK id, and a UUID column
@@ -73,18 +72,18 @@ import java.util.UUID;
  * Every setting in a style is backed by a {@link PPref} which handles the storage of that setting.
  * *All* style settings are private to a style, there is no inheritance of global settings.
  * ENHANCE: re-introduce global inheritance ? But would that actually be used ?
- *
+ * <p>
  * ENHANCE: when a style is deleted, the prefs are cleared. But the actual fine is not removed.
  * How to do this in a device independent manner?
- *
+ * <p>
  * How to add a new Group:
- *
+ * <p>
  * 1. add it to {@link BooklistGroup.RowKind} and update ROW_KIND_MAX
- *
+ * <p>
  * 2. if necessary add new domain to {@link DatabaseDefinitions }
- *
+ * <p>
  * 3. modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains
- *
+ * <p>
  * 4. modify {@link BooksMultiTypeListHandler} ; If it is just a string field,
  * then use a {@link BooksMultiTypeListHandler.GenericStringHolder}, otherwise add a new holder.
  * Need to at least modify {@link BooksMultiTypeListHandler#createHolder}
@@ -140,8 +139,10 @@ public class BooklistStyle
     public static final Integer SUMMARY_SHOW_ALL = 0xff;
 
     /** Scaling of text and images. */
+    @SuppressWarnings("WeakerAccess")
     public static final int SCALE_SIZE_NORMAL = 1;
     /** Scaling of text and images. */
+    @SuppressWarnings("WeakerAccess")
     public static final int SCALE_SIZE_SMALLER = 2;
     /** Scaling of text and images. */
     @SuppressWarnings("WeakerAccess")
@@ -152,21 +153,17 @@ public class BooklistStyle
      * Stored in global shared preferences as a CSV String of id's.
      */
     public static final String PREF_BL_PREFERRED_STYLES = "BookList.Style.Preferred.Order";
-
+    /** version field used in serialized data reading from file, see {@link #readObject}. */
+    static final long realSerialVersion = 5;
     /**
      * Unique name. This is a stored in our preference file (with the same name)
      * and is used for backup/restore purposes as the 'id'.
-     *
+     * <p>
      * (this is not a PPref, as we'd need the uuid to store the uuid....)
      */
     private static final String PREF_STYLE_UUID = "BookList.Style.uuid";
-
     /** serialization id for the plain class data. */
     private static final long serialVersionUID = 6615877148246388549L;
-
-    /** version field used in serialized data reading from file, see {@link #readObject}. */
-    static final long realSerialVersion = 5;
-
     /**
      * Row id of database row from which this object comes.
      * A '0' is for an as yet unsaved user-style.
@@ -190,7 +187,7 @@ public class BooklistStyle
 
     /**
      * Display name of this style.
-     *
+     * <p>
      * Used for user-defined styles.
      * encapsulated value always null for a builtin style.
      */
@@ -207,7 +204,7 @@ public class BooklistStyle
     /**
      * Legacy field needs to be kept for backward serialization compatibility,
      * replaced by {@link #mStyleGroups}.
-     *
+     * <p>
      * Will be converted to the new one during de-serialization, and then null'd
      * Note to self: a 'List' will NOT be deserialize'd, must be the original ArrayList
      * Do not rename.
@@ -222,7 +219,7 @@ public class BooklistStyle
      * But all preferred (user *and* builtin) styles also stored as a single set
      * in the app-preferences.
      */
-    private PBoolean mIsPreferred;
+    private transient PBoolean mIsPreferred;
 
     /**
      * Relative size of list text/images.
@@ -231,7 +228,7 @@ public class BooklistStyle
     private transient PInteger mScaleSize;
     /**
      * Show list header info.
-     *
+     * <p>
      * Ideally this would use a simple int, but {@link MultiSelectListPreference} insists on a Set.
      */
     private transient PBitmask mShowHeaderInfo;
@@ -282,7 +279,7 @@ public class BooklistStyle
 
     /**
      * Constructor for user-defined styles.
-     *
+     * <p>
      * Only used when styles are loaded from storage.
      * Real new styles are created by cloning an existing style.
      */
@@ -357,7 +354,7 @@ public class BooklistStyle
      * Delete *ALL* styles from the database.
      */
     @SuppressWarnings("unused")
-    public static void deleteAllStyles(@NonNull final CatalogueDBAdapter db) {
+    public static void deleteAllStyles(@NonNull final DBA db) {
         db.deleteAllBooklistStyle();
     }
 
@@ -480,7 +477,7 @@ public class BooklistStyle
     @NonNull
     public String getDisplayName() {
         if (mNameResId != 0) {
-            return BookCatalogueApp.getResourceString(mNameResId);
+            return BookCatalogueApp.getResString(mNameResId);
         } else {
             return mDisplayNamePref.get();
         }
@@ -774,41 +771,41 @@ public class BooklistStyle
     @SuppressWarnings("SameParameterValue")
     void setFilter(@NonNull final Integer key,
                    final boolean value) {
-        mFilters.get(BookCatalogueApp.getResourceString(key)).set(value);
+        mFilters.get(BookCatalogueApp.getResString(key)).set(value);
     }
 
-    /**
-     * Custom serialization support. The signature of this method should never be changed.
-     *
-     * @see Serializable
-     */
-    private void writeObject(@NonNull final ObjectOutputStream out)
-            throws IOException {
-        out.defaultWriteObject();
-        // version must use writeObject
-        out.writeObject(realSerialVersion);
-        // uuid is done by defaultWriteObject, so next up is the name
-        out.writeObject(mDisplayNamePref.get());
-
-        out.writeBoolean(mIsPreferred.get());
-        out.writeInt(mScaleSize.get());
-        out.writeInt(mShowHeaderInfo.get());
-
-        out.writeBoolean(mExtraShowThumbnails.get());
-        out.writeBoolean(mExtraLargeThumbnails.get());
-        out.writeBoolean(mExtraShowBookshelves.get());
-        out.writeBoolean(mExtraShowLocation.get());
-        out.writeBoolean(mExtraShowPublisher.get());
-        out.writeBoolean(mExtraShowAuthor.get());
-        out.writeBoolean(mExtraShowFormat.get());
-
-        out.writeBoolean(mSortAuthor.get());
-
-        out.writeInt(mFilterRead.get());
-        out.writeInt(mFilterSigned.get());
-        out.writeInt(mFilterAnthology.get());
-        out.writeInt(mFilterLoaned.get());
-    }
+//    /**
+//     * Custom serialization support. The signature of this method should never be changed.
+//     *
+//     * @see Serializable
+//     */
+//    private void writeObject(@NonNull final ObjectOutputStream out)
+//            throws IOException {
+//        out.defaultWriteObject();
+//        // version must use writeObject
+//        out.writeObject(realSerialVersion);
+//        // uuid is done by defaultWriteObject, so next up is the name
+//        out.writeObject(mDisplayNamePref.get());
+//
+//        out.writeBoolean(mIsPreferred.get());
+//        out.writeInt(mScaleSize.get());
+//        out.writeInt(mShowHeaderInfo.get());
+//
+//        out.writeBoolean(mExtraShowThumbnails.get());
+//        out.writeBoolean(mExtraLargeThumbnails.get());
+//        out.writeBoolean(mExtraShowBookshelves.get());
+//        out.writeBoolean(mExtraShowLocation.get());
+//        out.writeBoolean(mExtraShowPublisher.get());
+//        out.writeBoolean(mExtraShowAuthor.get());
+//        out.writeBoolean(mExtraShowFormat.get());
+//
+//        out.writeBoolean(mSortAuthor.get());
+//
+//        out.writeInt(mFilterRead.get());
+//        out.writeInt(mFilterSigned.get());
+//        out.writeInt(mFilterAnthology.get());
+//        out.writeInt(mFilterLoaned.get());
+//    }
 
     /**
      * Custom serialization support. The signature of this method should never be changed.
@@ -825,8 +822,9 @@ public class BooklistStyle
             // It's the version
             version = (Long) object;
             if (version > 4) {
-                readObjectPostVersion4(version, in);
-                return;
+                // readObjectPostVersion4(version, in);
+                throw new IllegalStateException();
+//                return;
             }
             // Get the next object
             object = in.readObject();
@@ -844,7 +842,22 @@ public class BooklistStyle
         mExtraShowLocation.set(ed, (Boolean) in.readObject());
         mExtraShowPublisher.set(ed, (Boolean) in.readObject());
         mExtraShowAuthor.set(ed, (Boolean) in.readObject());
-        mFilterRead.set(ed, (Integer) in.readObject());
+
+        //	public static final int FILTER_READ = 1; => true => 1
+        //	public static final int FILTER_UNREAD = 2; => false => 0
+        //	public static final int FILTER_READ_AND_UNREAD = 3; => not set => -1
+        Integer tmpReadFilter = (Integer) in.readObject();
+        switch (tmpReadFilter) {
+            case 1:
+                break;
+            case 2:
+                tmpReadFilter = 0;
+                break;
+            default:
+                tmpReadFilter = -1;
+                break;
+        }
+        mFilterRead.set(ed, tmpReadFilter);
 
         // v1 'condensed' was a Boolean.
         Object tmpCondensed = in.readObject();
@@ -886,41 +899,41 @@ public class BooklistStyle
         ed.apply();
     }
 
-    private void readObjectPostVersion4(@SuppressWarnings("unused") final long version,
-                                        final ObjectInputStream in)
-            throws IOException, ClassNotFoundException {
-        initPrefs();
-
-        SharedPreferences.Editor ed = Prefs.getPrefs(mUuid).edit();
-        mDisplayNamePref.set(ed, (String) in.readObject());
-
-        mIsPreferred.set(ed, in.readBoolean());
-        mScaleSize.set(ed, in.readInt());
-        mShowHeaderInfo.set(ed, in.readInt());
-
-        mExtraShowThumbnails.set(ed, in.readBoolean());
-        mExtraLargeThumbnails.set(ed, in.readBoolean());
-        mExtraShowBookshelves.set(ed, in.readBoolean());
-        mExtraShowLocation.set(ed, in.readBoolean());
-        mExtraShowPublisher.set(ed, in.readBoolean());
-        mExtraShowAuthor.set(ed, in.readBoolean());
-        mExtraShowFormat.set(ed, in.readBoolean());
-
-        mSortAuthor.set(ed, in.readBoolean());
-
-        mFilterRead.set(ed, in.readInt());
-        mFilterSigned.set(ed, in.readInt());
-        mFilterAnthology.set(ed, in.readInt());
-        mFilterLoaned.set(ed, in.readInt());
-        ed.apply();
-    }
+//    private void readObjectPostVersion4(@SuppressWarnings("unused") final long version,
+//                                        final ObjectInputStream in)
+//            throws IOException, ClassNotFoundException {
+//        initPrefs();
+//
+//        SharedPreferences.Editor ed = Prefs.getPrefs(mUuid).edit();
+//        mDisplayNamePref.set(ed, (String) in.readObject());
+//
+//        mIsPreferred.set(ed, in.readBoolean());
+//        mScaleSize.set(ed, in.readInt());
+//        mShowHeaderInfo.set(ed, in.readInt());
+//
+//        mExtraShowThumbnails.set(ed, in.readBoolean());
+//        mExtraLargeThumbnails.set(ed, in.readBoolean());
+//        mExtraShowBookshelves.set(ed, in.readBoolean());
+//        mExtraShowLocation.set(ed, in.readBoolean());
+//        mExtraShowPublisher.set(ed, in.readBoolean());
+//        mExtraShowAuthor.set(ed, in.readBoolean());
+//        mExtraShowFormat.set(ed, in.readBoolean());
+//
+//        mSortAuthor.set(ed, in.readBoolean());
+//
+//        mFilterRead.set(ed, in.readInt());
+//        mFilterSigned.set(ed, in.readInt());
+//        mFilterAnthology.set(ed, in.readInt());
+//        mFilterLoaned.set(ed, in.readInt());
+//        ed.apply();
+//    }
 
     /**
      * Construct a clone of this object.
      * The clone is committed! (written to a new pref file, and stored in the database)
      */
     @NonNull
-    public BooklistStyle getClone(@NonNull final CatalogueDBAdapter db) {
+    public BooklistStyle getClone(@NonNull final DBA db) {
         Parcel parcel = Parcel.obtain();
         writeToParcel(parcel, 0);
         byte[] bytes = parcel.marshall();
@@ -939,10 +952,10 @@ public class BooklistStyle
 
     /**
      * Save the style to the database. This is now limited to the UUID.
-     *
+     * <p>
      * if an insert fails, the style retains id==0.
      */
-    public void save(@NonNull final CatalogueDBAdapter db) {
+    public void save(@NonNull final DBA db) {
         // negative id == builtin style
         if (mId < 0) {
             throw new IllegalArgumentException(
@@ -966,13 +979,14 @@ public class BooklistStyle
     /**
      * Delete this style.
      */
-    public void delete(@NonNull final CatalogueDBAdapter db) {
+    public void delete(@NonNull final DBA db) {
         // cannot delete a builtin or a 'new' style(id==0)
         if (mId <= 0) {
             throw new IllegalArgumentException(
                     "Style is not stored in the database, can not be deleted");
         }
         db.deleteBooklistStyle(mId);
+        // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences(mUuid);
         Prefs.getPrefs(mUuid).edit().clear().apply();
     }
 
@@ -1021,7 +1035,7 @@ public class BooklistStyle
         private void loadGroups() {
             mGroups.clear();
             for (int kind : get()) {
-                mGroups.add(BooklistGroup.newInstance(kind, uuid));
+                mGroups.add(BooklistGroup.newInstance(kind, mUuid));
             }
         }
 
@@ -1111,8 +1125,8 @@ public class BooklistStyle
         public String toString() {
             return "PStyleGroups{" +
                     "mGroups=" + mGroups +
-                    ", nonPersistedValue=" + nonPersistedValue +
-                    ", defaultValue=" + defaultValue +
+                    ", mNonPersistedValue=" + mNonPersistedValue +
+                    ", defaultValue=" + mDefaultValue +
                     '}';
         }
     }

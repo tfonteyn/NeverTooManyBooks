@@ -30,7 +30,7 @@ public final class AmazonManager {
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return Prefs.getString(PREFS_HOST_URL, "http://www.amazon.com");
+        return Prefs.getPrefs().getString(PREFS_HOST_URL, "http://www.amazon.com");
     }
 
     public static void setBaseURL(@NonNull final String url) {

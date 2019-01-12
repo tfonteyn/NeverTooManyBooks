@@ -53,6 +53,8 @@ public class BackupListerFragmentTask
     /**
      * Process an array of Files.
      *
+     * @param files to process
+     *
      * @return an ArrayList of BackupFileDetails.
      */
     @NonNull

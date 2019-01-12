@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 
@@ -42,12 +42,12 @@ public class EditPublisherDialog {
     @NonNull
     private final Activity mContext;
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
     @NonNull
     private final Runnable mOnChanged;
 
     public EditPublisherDialog(@NonNull final Activity activity,
-                               @NonNull final CatalogueDBAdapter db,
+                               @NonNull final DBA db,
                                @NonNull final Runnable onChanged) {
         mDb = db;
         mContext = activity;
@@ -57,11 +57,11 @@ public class EditPublisherDialog {
     public void edit(@NonNull final Publisher publisher) {
         // Build the base dialog
         final View root = mContext.getLayoutInflater()
-                                  .inflate(R.layout.dialog_edit_publisher,null);
+                                  .inflate(R.layout.dialog_edit_publisher, null);
 
         final EditText nameView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
-        nameView.setText(publisher.name);
+        nameView.setText(publisher.getName());
 
         final AlertDialog dialog = new AlertDialog.Builder(mContext)
                 .setView(root)
@@ -96,6 +96,9 @@ public class EditPublisherDialog {
 
     /**
      * ENHANCE: once {@link Publisher} use id's, use code from {@link EditSeriesDialog#confirmEdit}.
+     *
+     * @param from the publisher data before editing
+     * @param to the data after editing
      */
     private void confirmEdit(@NonNull final Publisher from,
                              @NonNull final Publisher to) {

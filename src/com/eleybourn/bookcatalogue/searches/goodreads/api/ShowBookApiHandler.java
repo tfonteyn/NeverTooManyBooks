@@ -524,7 +524,7 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(ShowBookFieldNames.IS_EBOOK) && mBookData.getBoolean(
                 ShowBookFieldNames.IS_EBOOK)) {
             mBookData.putString(UniqueId.KEY_BOOK_FORMAT,
-                                BookCatalogueApp.getResourceString(R.string.book_format_ebook));
+                                BookCatalogueApp.getResString(R.string.book_format_ebook));
         }
 
         /*

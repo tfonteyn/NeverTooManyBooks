@@ -38,6 +38,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -74,7 +75,7 @@ public final class Logger {
      * Logger.debug("blah");
      * }
      */
-    public static void debug(final String message) {
+    public static void debug(@Nullable final String message) {
         error("DEBUG|" + message);
     }
 
@@ -84,7 +85,7 @@ public final class Logger {
      * For static callers
      */
     public static void info(@NonNull final Class clazz,
-                            final String message) {
+                            @Nullable final String message) {
         String msg = "INFO|" + clazz.getCanonicalName() + '|' + message;
         Log.e(TAG, msg);
         writeToErrorLog(msg);
@@ -96,7 +97,7 @@ public final class Logger {
      * For instance callers
      */
     public static void info(@NonNull final Object object,
-                            final String message) {
+                            @Nullable final String message) {
         Class clazz = object.getClass();
         String msg;
         if (clazz.isAnonymousClass()) {

@@ -12,7 +12,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 abstract class EditStringDialog {
 
     @NonNull
-    protected final CatalogueDBAdapter mDb;
+    protected final DBA mDb;
     @NonNull
     final Runnable mOnChanged;
     @NonNull
@@ -31,7 +31,7 @@ abstract class EditStringDialog {
      * EditText.
      */
     EditStringDialog(@NonNull final Activity activity,
-                     @NonNull final CatalogueDBAdapter db,
+                     @NonNull final DBA db,
                      @NonNull final Runnable onChanged) {
         this.mActivity = activity;
         mOnChanged = onChanged;
@@ -44,7 +44,7 @@ abstract class EditStringDialog {
      * @param onChanged    Runnable to be started after user confirming
      */
     EditStringDialog(@NonNull final Activity activity,
-                     @NonNull final CatalogueDBAdapter db,
+                     @NonNull final DBA db,
                      @SuppressWarnings("SameParameterValue") @LayoutRes final int adapterResId,
                      @NonNull final List<String> list,
                      @NonNull final Runnable onChanged) {
@@ -101,6 +101,6 @@ abstract class EditStringDialog {
         dialog.show();
     }
 
-    protected abstract void confirmEdit(@NonNull final String from,
-                                        @NonNull final String to);
+    protected abstract void confirmEdit(@NonNull String from,
+                                        @NonNull String to);
 }

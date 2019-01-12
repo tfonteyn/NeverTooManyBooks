@@ -67,7 +67,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -176,7 +176,7 @@ public class BooksOnBookshelf
     private int mTopRowOffset;
 
     /** Database connection. */
-    private CatalogueDBAdapter mDb;
+    private DBA mDb;
     /** Handler to manage all Views on the list. */
     private BooksMultiTypeListHandler mListHandler;
     /** Current displayed list cursor. */
@@ -214,7 +214,7 @@ public class BooksOnBookshelf
             mRebuildState = BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED;
         }
 
-        mDb = new CatalogueDBAdapter(this);
+        mDb = new DBA(this);
 
         // Restore bookshelf
         mCurrentBookshelf = getPreferredBookshelf();
@@ -223,8 +223,8 @@ public class BooksOnBookshelf
         refreshCurrentStyle();
 
         // Restore list position on bookshelf
-        mTopRow = Prefs.getInt(PREF_BOB_TOP_ROW, 0);
-        mTopRowOffset = Prefs.getInt(PREF_BOB_TOP_ROW_OFFSET, 0);
+        mTopRow = Prefs.getPrefs().getInt(PREF_BOB_TOP_ROW, 0);
+        mTopRowOffset = Prefs.getPrefs().getInt(PREF_BOB_TOP_ROW_OFFSET, 0);
 
         // set the search capability to local (application) search
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -278,7 +278,7 @@ public class BooksOnBookshelf
      * get the preferred bookshelf.
      */
     private Bookshelf getPreferredBookshelf() {
-        String bookshelfName = Prefs.getString(PREF_BOB_CURRENT_BOOKSHELF, null);
+        String bookshelfName = Prefs.getPrefs().getString(PREF_BOB_CURRENT_BOOKSHELF, null);
         Bookshelf bookshelf;
         if (bookshelfName == null || bookshelfName.isEmpty()) {
             // pref not set, start with initial shelf
@@ -376,8 +376,8 @@ public class BooksOnBookshelf
      * * {@link BaseListActivity} enables 'this' as the listener for our ListView.
      */
     @Override
-    public void onItemClick(final AdapterView<?> parent,
-                            final View view,
+    public void onItemClick(@NonNull final AdapterView<?> parent,
+                            @NonNull final View view,
                             final int position,
                             final long id) {
         mListCursor.moveToPosition(position);
@@ -495,6 +495,10 @@ public class BooksOnBookshelf
         menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
             .setIcon(R.drawable.ic_unfold_less);
 
+        if (BuildConfig.DEBUG) {
+            menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_PREFS, 0, R.string.lbl_preferences);
+            menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, 0, R.string.history);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -545,7 +549,18 @@ public class BooksOnBookshelf
             }
 
             default:
-                return MenuHandler.handleBookSubMenu(this, item) || super.onOptionsItemSelected(
+                if (BuildConfig.DEBUG) {
+                    switch (item.getItemId()) {
+                        case R.id.MENU_DEBUG_DUMP_PREFS:
+                            Prefs.dumpPreferences(null);
+                            return true;
+                        case R.id.MENU_DEBUG_DUMP_TRACKER:
+                            Logger.info(this, Tracker.getEventsInfo());
+                            return true;
+                    }
+                }
+                return MenuHandler.handleBookSubMenu(this, item)
+                        || super.onOptionsItemSelected(
                         item);
         }
     }
@@ -767,8 +782,8 @@ public class BooksOnBookshelf
             fixPositionWhenDrawn(listView, targetRows);
         }
 
-        final boolean hasLevel1 = (mListCursor.numLevels() > 1);
-        final boolean hasLevel2 = (mListCursor.numLevels() > 2);
+        final boolean hasLevel1 = mListCursor.numLevels() > 1;
+        final boolean hasLevel2 = mListCursor.numLevels() > 2;
 
         if (hasLevel2 && (showHeaderFlags & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0) {
             holder.level2Text.setVisibility(View.VISIBLE);
@@ -817,7 +832,8 @@ public class BooksOnBookshelf
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             //TODO: move this to the bookshelf spinner ? more space in there
-            actionBar.setSubtitle(mCurrentStyle != null ? mCurrentStyle.getDisplayName() : "");
+            actionBar.setSubtitle(mCurrentStyle != null ? mCurrentStyle.getDisplayName()
+                                                        : "");
         }
 
         // Close old list
@@ -936,8 +952,7 @@ public class BooksOnBookshelf
      * @param flags     bitmask with flags from {@link BooklistStyle#SUMMARY_SHOW_ALL}
      */
     private void updateListHeader(@NonNull final Holder holder,
-                                  @IntRange(from = 0)
-                                  final int topItem,
+                                  @IntRange(from = 0) final int topItem,
                                   final boolean hasLevel1,
                                   final boolean hasLevel2,
                                   final int flags) {
@@ -1042,8 +1057,8 @@ public class BooksOnBookshelf
          */
         mBookshelfSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
-            public void onItemSelected(final AdapterView<?> parent,
-                                       final View view,
+            public void onItemSelected(@NonNull final AdapterView<?> parent,
+                                       @NonNull final View view,
                                        final int position,
                                        final long id) {
                 // Check to see if mBookshelfAdapter is null, which should only occur if
@@ -1071,7 +1086,7 @@ public class BooksOnBookshelf
             }
 
             @Override
-            public void onNothingSelected(final AdapterView<?> parent) {
+            public void onNothingSelected(@NonNull final AdapterView<?> parent) {
                 // Do Nothing
             }
         });
@@ -1185,7 +1200,7 @@ public class BooksOnBookshelf
     private BooklistStyle getBookshelfStyle(@NonNull final Bookshelf bookshelf,
                                             @NonNull final Map<Long, BooklistStyle> styles) {
         String key = PREF_BOB_CURRENT_BOOKSHELF_STYLE + bookshelf.name;
-        long id = Prefs.getLong(key, BooklistStyles.getDefaultStyle());
+        long id = Prefs.getPrefs().getLong(key, BooklistStyles.getDefaultStyle());
 
         BooklistStyle style = styles.get(id);
         if (style == null) {

@@ -56,7 +56,7 @@ public class BooklistStyleSettingsFragment
         // but the class is not present (for now?)
         // so we do it manually in our base class.
 //        EditTextPreference np = (EditTextPreference) screen
-//              .findPreference(BookCatalogueApp.getResourceString(R.string.name));
+//              .findPreference(BookCatalogueApp.getResString(R.string.name));
 //        np.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
         // add the preferences from all groups:
@@ -108,8 +108,8 @@ public class BooklistStyleSettingsFragment
      * The groups are a PreferenceScreen of their own, here 'faked' with a new activity.
      */
     private void setupBooklistGroups() {
-        Preference preference = findPreference(
-                BookCatalogueApp.getResourceString(R.string.pg_groupings));
+        Preference preference =
+                findPreference(BookCatalogueApp.getResString(R.string.pg_groupings));
         if (preference != null) {
             preference.setSummary(mStyle.getGroupListDisplayNames());
 
@@ -135,8 +135,10 @@ public class BooklistStyleSettingsFragment
                     // replace the current style with the new (edited) copy
                     mStyle = data.getParcelableExtra(REQUEST_BKEY_STYLE);
                     Objects.requireNonNull(mStyle);
-                    // and refresh
+                    // refresh groupings
                     setupBooklistGroups();
+                    // and update the preferences from the groups (groups added/removed)
+                    //TOMF
                 }
                 break;
 

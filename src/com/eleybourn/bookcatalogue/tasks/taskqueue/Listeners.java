@@ -23,7 +23,7 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class Listeners {
+class Listeners {
 
     public enum EventActions {created, deleted, updated}
 

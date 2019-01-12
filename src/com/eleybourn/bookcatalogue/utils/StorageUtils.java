@@ -34,8 +34,8 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBHelper;
-import com.eleybourn.bookcatalogue.database.CoversDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBHelper;
+import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
@@ -576,9 +576,9 @@ public final class StorageUtils {
      * Create a copy of the databases into the Shared Storage location
      */
     public static void exportDatabaseFiles(@NonNull final Context context) {
-        exportFile(CatalogueDBHelper.getDatabasePath(context),
+        exportFile(DBHelper.getDatabasePath(context),
                    "DbExport.db");
-        exportFile(CoversDBAdapter.CoversDbHelper.getDatabasePath(context),
+        exportFile(CoversDBA.CoversDbHelper.getDatabasePath(context),
                    "DbExport-covers.db");
     }
 

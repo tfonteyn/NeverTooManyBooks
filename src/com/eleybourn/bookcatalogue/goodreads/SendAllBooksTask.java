@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
@@ -60,7 +60,7 @@ public class SendAllBooksTask
      * Constructor.
      */
     SendAllBooksTask(final boolean updatesOnly) {
-        super(BookCatalogueApp.getResourceString(R.string.gr_title_send_book));
+        super(BookCatalogueApp.getResString(R.string.gr_title_send_book));
         mUpdatesOnly = updatesOnly;
     }
 
@@ -73,7 +73,7 @@ public class SendAllBooksTask
                            @NonNull final GoodreadsManager grManager) {
 
         // Use the app context; the calling activity may go away
-        try (CatalogueDBAdapter db = new CatalogueDBAdapter(context.getApplicationContext());
+        try (DBA db = new DBA(context.getApplicationContext());
              BookCursor bookCursor = db.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
             final BookRowView bookCursorRow = bookCursor.getCursorRow();
             mTotalBooks = bookCursor.getCount() + mCount;
@@ -122,7 +122,7 @@ public class SendAllBooksTask
     @CallSuper
     public String getDescription() {
         return super.getDescription() + " ("
-                + BookCatalogueApp.getResourceString(R.string.x_of_y, mCount, mTotalBooks) + ')';
+                + BookCatalogueApp.getResString(R.string.x_of_y, mCount, mTotalBooks) + ')';
     }
 
     @Override

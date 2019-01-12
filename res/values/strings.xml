@@ -1186,7 +1186,7 @@
     <!-- book format string used if a search site indicates in any form it's some sort of Audio (tape, cd, etc..) -->
     <string name="book_format_audiobook">AudioBook</string>
 
-    <string name="debug">Debug</string>
+    <string name="debug" translatable="false">Debug</string>
     <string name="history">History</string>
 
     <string name="import_export_xml_tables">as XML</string>

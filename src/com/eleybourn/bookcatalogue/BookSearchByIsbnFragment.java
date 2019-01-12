@@ -160,7 +160,7 @@ public class BookSearchByIsbnFragment
     /**
      * Setup the UI e.g. the keypad etc....
      */
-    private void initUI(final View root) {
+    private void initUI(@NonNull final View root) {
         mIsbnView = root.findViewById(R.id.isbn);
         mAllowAsinCb = root.findViewById(R.id.allow_asin);
         if (mAllowAsinCb != null) {
@@ -224,7 +224,7 @@ public class BookSearchByIsbnFragment
         //noinspection ConstantConditions
         mAllowAsinCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(final CompoundButton buttonView,
+            public void onCheckedChanged(@NonNull final CompoundButton buttonView,
                                          final boolean isChecked) {
                 if (isChecked) {
                     mActivity.getWindow().setSoftInputMode(
@@ -348,7 +348,7 @@ public class BookSearchByIsbnFragment
         // User wants to add regardless, doSearch get details and eventually doSearch to edit
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.btn_confirm_add),
                          new DialogInterface.OnClickListener() {
-                             public void onClick(final DialogInterface dialog,
+                             public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  startSearch();
                              }
@@ -357,7 +357,7 @@ public class BookSearchByIsbnFragment
         // User wants to review the existing book, doSearch to edit
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit_book),
                          new DialogInterface.OnClickListener() {
-                             public void onClick(final DialogInterface dialog,
+                             public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  Intent intent = new Intent(
                                          BookSearchByIsbnFragment.this.getContext(),
@@ -372,7 +372,7 @@ public class BookSearchByIsbnFragment
         // User aborts this isbn
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                          new DialogInterface.OnClickListener() {
-                             public void onClick(final DialogInterface dialog,
+                             public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  // reset the now-discarded details
                                  mIsbnSearchText = "";

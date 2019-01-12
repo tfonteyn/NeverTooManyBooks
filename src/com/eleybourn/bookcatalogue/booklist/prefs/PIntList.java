@@ -22,7 +22,7 @@ public class PIntList
     public PIntList(@StringRes final int key,
                     @Nullable final String uuid) {
         super(key, uuid, new ArrayList<Integer>());
-        nonPersistedValue = new ArrayList<>();
+        mNonPersistedValue = new ArrayList<>();
     }
 
     @Override
@@ -35,12 +35,12 @@ public class PIntList
     @NonNull
     @Override
     public List<Integer> get() {
-        if (uuid == null) {
-            return nonPersistedValue != null ? nonPersistedValue : defaultValue;
+        if (mUuid == null) {
+            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            String sValues = Prefs.getPrefs(uuid).getString(getKey(), null);
+            String sValues = Prefs.getPrefs(mUuid).getString(getKey(), null);
             if (sValues == null || sValues.isEmpty()) {
-                return defaultValue;
+                return mDefaultValue;
             }
 
             return getAsList(sValues);

@@ -100,7 +100,7 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
     @NonNull
     protected String getGlobalValue() {
         //noinspection ConstantConditions
-        return Prefs.getString(getPreferenceKey(), getDefaultValue());
+        return Prefs.getPrefs().getString(getPreferenceKey(), getDefaultValue());
     }
 
     /** Set underlying preferences value */
@@ -129,8 +129,8 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
             // check actual (non-resolved)
             String s = getValue();
             if (s == null || s.trim().isEmpty()) {
-                String fieldName = BookCatalogueApp.getResourceString(getNameResourceId());
-                throw new ValidationException(BookCatalogueApp.getResourceString(R.string.warning_required_field_x, fieldName));
+                String fieldName = BookCatalogueApp.getResString(getNameResourceId());
+                throw new ValidationException(BookCatalogueApp.getResString(R.string.warning_required_field_x, fieldName));
             }
         }
         super.validate();

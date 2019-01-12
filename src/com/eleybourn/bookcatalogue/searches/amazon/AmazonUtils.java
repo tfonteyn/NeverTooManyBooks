@@ -147,7 +147,8 @@ public final class AmazonUtils {
             Logger.error(e, "Unable to call the Amazon API");
             StandardDialogs.showUserMessage(activity, R.string.error_unexpected_error);
             /* This code works, but Amazon have a nasty tendency to cancel Associate IDs... */
-//            String baseUrl = "http://www.amazon.com/gp/search?index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
+//            String baseUrl = "http://www.amazon.com/gp/search?"
+//                    + "index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
 //            String extra = buildSearchArgs(author, series);
 //            if (extra != null && !extra.isEmpty()) {
 //            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra));

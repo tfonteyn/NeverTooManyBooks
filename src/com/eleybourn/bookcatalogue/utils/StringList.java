@@ -410,6 +410,6 @@ public class StringList<T> {
     public interface Factory<T> {
 
         @NonNull
-        T get(@NonNull final String stringList);
+        T get(@NonNull String stringList);
     }
 }

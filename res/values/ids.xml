@@ -70,6 +70,10 @@
     <item name="MENU_SORT" type="id"/>
     <item name="MENU_EXPAND" type="id"/>
     <item name="MENU_COLLAPSE" type="id"/>
+    <!-- debug options for the options menu; only shown in debug mode. -->
+    <item name="MENU_DEBUG_DUMP_PREFS" type="id"/>
+    <item name="MENU_DEBUG_DUMP_TRACKER" type="id"/>
+
 
     <!-- Amazon search options submenu -->
     <item name="SUBMENU_AMAZON_SEARCH" type="id"/>

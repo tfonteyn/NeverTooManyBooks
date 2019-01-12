@@ -35,7 +35,7 @@ import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.ArrayList;
 
-abstract public class ManagedSearchTask
+public abstract class ManagedSearchTask
         extends ManagedTask {
 
     protected static boolean mFetchThumbnail;
@@ -48,7 +48,8 @@ abstract public class ManagedSearchTask
      * <p>
      * The Bundle will contain String or {@link StringList} based entries by default
      * <p>
-     * NEWKIND: if you add a new Search task that adds non-string based data, {@link SearchManager#accumulateData(int)} must be able to handle it.
+     * NEWKIND: if you add a new Search task that adds non-string based data,
+     * {@link SearchManager#accumulateData(int)} must be able to handle it.
      */
     @NonNull
     protected Bundle mBookData = new Bundle();
@@ -104,7 +105,7 @@ abstract public class ManagedSearchTask
     }
 
     /**
-     * Look for a title; if present try to get a series name from it and clean the title
+     * Look for a title; if present try to get a series name from it and clean the title.
      */
     protected void checkForSeriesNameInTitle() {
         String bookTitle = mBookData.getString(UniqueId.KEY_TITLE);
@@ -128,7 +129,7 @@ abstract public class ManagedSearchTask
     }
 
     /**
-     * Show an unexpected exception message after task finish
+     * Show an unexpected exception message after task finish.
      */
     protected void setFinalError(@StringRes final int id,
                                  @NonNull final Exception e) {
@@ -142,7 +143,7 @@ abstract public class ManagedSearchTask
     }
 
     /**
-     * Show a 'known' error after task finish, without the dreaded exception message
+     * Show a 'known' error after task finish, without the dreaded exception message.
      */
     protected void setFinalError(@StringRes final int id,
                                  @StringRes final int error) {

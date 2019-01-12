@@ -33,7 +33,7 @@ import java.util.Objects;
 /**
  * Class to hold Publisher data. Used in lists.
  *
- * ENHANCE: Could just have used a String, but this way we're prepared for a dedicated table with the publishers
+ * ENHANCE: use a dedicated table with the publishers
  */
 public class Publisher
         implements Parcelable {
@@ -52,20 +52,20 @@ public class Publisher
                 }
             };
     private static final char SEPARATOR = ',';
-    public String name;
+    private String mName;
 
     public Publisher(@NonNull final String name) {
-        this.name = name.trim();
+        this.mName = name.trim();
     }
 
-    protected Publisher(Parcel in) {
-        name = in.readString();
+    protected Publisher(@NonNull final Parcel in) {
+        mName = in.readString();
     }
 
     @Override
-    public void writeToParcel(Parcel dest,
-                              int flags) {
-        dest.writeString(name);
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeString(mName);
     }
 
     /** {@link Parcelable}. */
@@ -75,30 +75,34 @@ public class Publisher
         return 0;
     }
 
+    public String getName() {
+        return mName;
+    }
+
     /**
-     * Support for encoding to a text file
+     * Support for encoding to a text file.
      *
      * @return the object encoded as a String.
      *
-     * "name"
+     * "mName"
      */
     @Override
     @NonNull
     public String toString() {
-        return StringList.encodeListItem(SEPARATOR, name);
+        return StringList.encodeListItem(SEPARATOR, mName);
     }
 
     /**
-     * Replace local details from another publisher
+     * Replace local details from another publisher.
      *
      * @param source publisher to copy
      */
     public void copyFrom(@NonNull final Publisher source) {
-        name = source.name;
+        mName = source.mName;
     }
 
     /**
-     * Two are the same if:
+     * Equality.
      *
      * - it's the same Object duh..
      * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
@@ -117,15 +121,13 @@ public class Publisher
         Publisher that = (Publisher) obj;
         //ENHANCE: uncomment the 3 lines once(if) we start using ids
 //        if (this.id == 0 || that.id == 0 || this.id == that.id) {
-        return Objects.equals(this.name, that.name);
+        return Objects.equals(this.mName, that.mName);
 //        }
 //        return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(mName);
     }
-
-
 }

@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 
@@ -44,12 +44,12 @@ public class EditBookshelfDialog {
     @NonNull
     private final Activity mContext;
     @NonNull
-    private final CatalogueDBAdapter mDb;
+    private final DBA mDb;
     @NonNull
     private final Runnable mOnChanged;
 
     public EditBookshelfDialog(@NonNull final Activity activity,
-                               @NonNull final CatalogueDBAdapter db,
+                               @NonNull final DBA db,
                                @NonNull final Runnable onChanged) {
         mDb = db;
         mContext = activity;

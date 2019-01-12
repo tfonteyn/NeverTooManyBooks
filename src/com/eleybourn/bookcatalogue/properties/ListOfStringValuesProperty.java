@@ -50,8 +50,8 @@ public class ListOfStringValuesProperty extends ListOfValuesProperty<String> {
         super(nameResourceId, group, defaultValue);
 
         ItemList<String> list = new ItemList<>();
-        String[] labelArray = BookCatalogueApp.getResourceStringArray(labels);
-        String[] valueArray = BookCatalogueApp.getResourceStringArray(values);
+        String[] labelArray = BookCatalogueApp.getResStringArray(labels);
+        String[] valueArray = BookCatalogueApp.getResStringArray(values);
 
         list.add(new ListEntry<String>(null, R.string.use_default_setting));
         for (int i = 0; i < labelArray.length; i++) {
@@ -64,7 +64,7 @@ public class ListOfStringValuesProperty extends ListOfValuesProperty<String> {
     @NonNull
     protected String getGlobalValue() {
         //noinspection ConstantConditions
-        return Prefs.getString(getPreferenceKey(), getDefaultValue());
+        return Prefs.getPrefs().getString(getPreferenceKey(), getDefaultValue());
     }
 
     @NonNull

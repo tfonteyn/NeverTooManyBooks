@@ -33,7 +33,7 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.UpdateFieldsFromInternetActivity;
-import com.eleybourn.bookcatalogue.database.CatalogueDBAdapter;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -63,31 +63,31 @@ public class UpdateFieldsFromInternetTask
         extends ManagedTask
         implements SearchManager.SearchManagerListener {
 
-    /** The fields that the user requested to update */
+    /** The fields that the user requested to update. */
     @NonNull
     private final UpdateFieldsFromInternetActivity.FieldUsages mRequestedFields;
 
     //** Lock help by pop and by push when an item was added to an empty stack. */
     private final ReentrantLock mSearchLock = new ReentrantLock();
-    /** Signal for available items */
+    /** Signal for available items. */
     private final Condition mSearchDone = mSearchLock.newCondition();
-    /** Sites to search */
+    /** Sites to search. */
     private final int mSearchSites;
-    /** Active search manager */
+    /** Active search manager. */
     private final SearchManager mSearchManager;
 
-    /** DB connection */
-    private CatalogueDBAdapter mDb;
+    /** DB connection. */
+    private DBA mDb;
 
     // Data related to current row being processed
-    /** Original row data */
-    private Bundle mOriginalBookData = null;
-    /** current book ID */
-    private long mCurrentBookId = 0;
-    /** current book UUID */
-    private String mCurrentUuid = null;
+    /** Original row data. */
+    private Bundle mOriginalBookData;
+    /** current book ID. */
+    private long mCurrentBookId;
+    /** current book UUID. */
+    private String mCurrentUuid;
 
-    /** The (subset) of fields relevant to the current book */
+    /** The (subset) of fields relevant to the current book. */
     private UpdateFieldsFromInternetActivity.FieldUsages mCurrentBookFieldUsages;
 
 //    /**
@@ -95,15 +95,17 @@ public class UpdateFieldsFromInternetTask
 //     * This must be a class global. Don't make this local to the constructor.
 //     */
 //    @SuppressWarnings("FieldCanBeLocal")
-//    private final SearchManager.SearchManagerListener mSearchListener = new SearchManager.SearchManagerListener() {
+//    private final SearchManager.SearchManagerListener mSearchListener =
+//           new SearchManager.SearchManagerListener() {
 //        @Override
-//        public boolean onSearchFinished(@NonNull final Bundle bookData, final boolean wasCancelled) {
+//        public boolean onSearchFinished(@NonNull final Bundle bookData,
+//                                        final boolean wasCancelled) {
 //            return UpdateFieldsFromInternetTask.this.onSearchFinished(bookData, wasCancelled);
 //        }
 //    };
 
     /**
-     * where clause to use in cursor, none by default, but
+     * where clause to use in cursor, none by default, but.
      *
      * @see #setBookId(long)
      */
@@ -124,13 +126,13 @@ public class UpdateFieldsFromInternetTask
                                         @NonNull final ManagedTaskListener listener) {
         super("UpdateFieldsFromInternetTask", taskManager);
 
-        mDb = new CatalogueDBAdapter(taskManager.getContext());
+        mDb = new DBA(taskManager.getContext());
         mRequestedFields = requestedFields;
         mSearchSites = searchSites;
 
         mSearchManager = new SearchManager(mTaskManager, this);
         mTaskManager.sendHeaderTaskProgressMessage(
-                BookCatalogueApp.getResourceString(R.string.progress_msg_starting_search));
+                BookCatalogueApp.getResString(R.string.progress_msg_starting_search));
         getMessageSwitch().addListener(getSenderId(), listener, false);
     }
 
@@ -175,12 +177,14 @@ public class UpdateFieldsFromInternetTask
     }
 
     /**
-     * By default, the update is for all books. By calling this before starting the task, you can limit it to one book.
+     * By default, the update is for all books. By calling this before starting the task,
+     * you can limit it to one book.
      *
      * @param bookId for the book to update
      */
     public void setBookId(final long bookId) {
-        //TODO: not really happy exposing the DOM's here, but it will do for now. Ideally the sql behind this becomes static and uses binds
+        //TODO: not really happy exposing the DOM's here, but it will do for now.
+        // Ideally the sql behind this becomes static and uses binds
         mBookWhereClause = DatabaseDefinitions.TBL_BOOKS.dot(
                 DatabaseDefinitions.DOM_PK_ID) + '=' + bookId;
     }
@@ -200,7 +204,8 @@ public class UpdateFieldsFromInternetTask
                 progressCounter++;
 
                 // Copy the fields from the cursor and build a complete set of data for this book.
-                // This only needs to include data that we can fetch (so, for example, bookshelves are ignored).
+                // This only needs to include data that we can fetch (so, for example,
+                // bookshelves are ignored).
                 mOriginalBookData = new Bundle();
                 for (int i = 0; i < books.getColumnCount(); i++) {
                     mOriginalBookData.putString(books.getColumnName(i), books.getString(i));
@@ -220,7 +225,8 @@ public class UpdateFieldsFromInternetTask
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
 
-                // Make sure the searchable fields are not NULL (legacy data, and possibly set to null when adding new book)
+                // Make sure the searchable fields are not NULL
+                // (legacy data, and possibly set to null when adding new book)
                 String isbn = mOriginalBookData.getString(UniqueId.KEY_BOOK_ISBN, "");
                 String author = mOriginalBookData.getString(UniqueId.KEY_AUTHOR_FORMATTED, "");
                 String title = mOriginalBookData.getString(UniqueId.KEY_TITLE, "");
@@ -228,7 +234,8 @@ public class UpdateFieldsFromInternetTask
                 // Check which fields this book needs.
                 mCurrentBookFieldUsages = getCurrentBookFieldUsages(mRequestedFields);
                 // if no data required, skip to next book
-                if (mCurrentBookFieldUsages.size() == 0 || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
+                if (mCurrentBookFieldUsages.size() == 0 || isbn.isEmpty()
+                        && (author.isEmpty() || title.isEmpty())) {
                     // Update progress appropriately
                     mTaskManager.sendHeaderTaskProgressMessage(
                             String.format(getString(R.string.progress_msg_skip_title), title));
@@ -274,7 +281,7 @@ public class UpdateFieldsFromInternetTask
                                           "" + progressCounter);
             if (isCancelled()) {
                 mFinalMessage = String.format(
-                        BookCatalogueApp.getResourceString(R.string.progress_end_cancelled_info),
+                        BookCatalogueApp.getResString(R.string.progress_end_cancelled_info),
                         mFinalMessage);
                 Logger.info(this, " was cancelled");
             }
@@ -287,7 +294,8 @@ public class UpdateFieldsFromInternetTask
     private UpdateFieldsFromInternetActivity.FieldUsages getCurrentBookFieldUsages(
             @NonNull final UpdateFieldsFromInternetActivity.FieldUsages requestedFields) {
 
-        UpdateFieldsFromInternetActivity.FieldUsages fieldUsages = new UpdateFieldsFromInternetActivity.FieldUsages();
+        UpdateFieldsFromInternetActivity.FieldUsages fieldUsages =
+                new UpdateFieldsFromInternetActivity.FieldUsages();
         for (Fields.FieldUsage usage : requestedFields.values()) {
             // Not selected, we don't want it
             if (usage.isSelected()) {
@@ -298,61 +306,66 @@ public class UpdateFieldsFromInternetTask
                         fieldUsages.put(usage);
                         break;
                     case CopyIfBlank:
-                        // Handle special cases first, 'default:' for the rest
-                        switch (usage.fieldId) {
-                            // - If it's a thumbnail, then see if it's missing or empty.
-                            case UniqueId.BKEY_HAVE_THUMBNAIL:
-                                File file = StorageUtils.getCoverFile(mCurrentUuid);
-                                if (!file.exists() || file.length() == 0) {
-                                    fieldUsages.put(usage);
-                                }
-                                break;
-
-                            case UniqueId.BKEY_AUTHOR_ARRAY:
-                                // We should never have a book without authors, but lets be paranoid
-                                if (mOriginalBookData.containsKey(usage.fieldId)) {
-                                    ArrayList<Author> list = mOriginalBookData.getParcelableArrayList(
-                                            UniqueId.BKEY_AUTHOR_ARRAY);
-                                    if (list == null || list.size() == 0) {
-                                        fieldUsages.put(usage);
-                                    }
-                                }
-                                break;
-
-                            case UniqueId.BKEY_SERIES_ARRAY:
-                                if (mOriginalBookData.containsKey(usage.fieldId)) {
-                                    ArrayList<Series> list = mOriginalBookData.getParcelableArrayList(
-                                            UniqueId.BKEY_SERIES_ARRAY);
-                                    if (list == null || list.size() == 0) {
-                                        fieldUsages.put(usage);
-                                    }
-                                }
-                                break;
-
-                            case UniqueId.BKEY_TOC_TITLES_ARRAY:
-                                if (mOriginalBookData.containsKey(usage.fieldId)) {
-                                    ArrayList<TOCEntry> list = mOriginalBookData.getParcelableArrayList(
-                                            UniqueId.BKEY_TOC_TITLES_ARRAY);
-                                    if (list == null || list.size() == 0) {
-                                        fieldUsages.put(usage);
-                                    }
-                                }
-                                break;
-
-                            default:
-                                // If the original was blank, add to list
-                                String value = mOriginalBookData.getString(usage.fieldId);
-                                if (value == null || value.isEmpty()) {
-                                    fieldUsages.put(usage);
-                                }
-                                break;
-                        }
+                        currentCopyIfBlank(fieldUsages, usage);
                         break;
                 }
             }
         }
 
         return fieldUsages;
+    }
+
+    private void currentCopyIfBlank(@NonNull final UpdateFieldsFromInternetActivity.FieldUsages fieldUsages,
+                                    @NonNull final Fields.FieldUsage usage) {
+        // Handle special cases first, 'default:' for the rest
+        switch (usage.fieldId) {
+            // - If it's a thumbnail, then see if it's missing or empty.
+            case UniqueId.BKEY_HAVE_THUMBNAIL:
+                File file = StorageUtils.getCoverFile(mCurrentUuid);
+                if (!file.exists() || file.length() == 0) {
+                    fieldUsages.put(usage);
+                }
+                break;
+
+            case UniqueId.BKEY_AUTHOR_ARRAY:
+                // We should never have a book without authors, but be paranoid
+                if (mOriginalBookData.containsKey(usage.fieldId)) {
+                    ArrayList<Author> list = mOriginalBookData.getParcelableArrayList(
+                            UniqueId.BKEY_AUTHOR_ARRAY);
+                    if (list == null || list.size() == 0) {
+                        fieldUsages.put(usage);
+                    }
+                }
+                break;
+
+            case UniqueId.BKEY_SERIES_ARRAY:
+                if (mOriginalBookData.containsKey(usage.fieldId)) {
+                    ArrayList<Series> list = mOriginalBookData.getParcelableArrayList(
+                            UniqueId.BKEY_SERIES_ARRAY);
+                    if (list == null || list.size() == 0) {
+                        fieldUsages.put(usage);
+                    }
+                }
+                break;
+
+            case UniqueId.BKEY_TOC_TITLES_ARRAY:
+                if (mOriginalBookData.containsKey(usage.fieldId)) {
+                    ArrayList<TOCEntry> list = mOriginalBookData.getParcelableArrayList(
+                            UniqueId.BKEY_TOC_TITLES_ARRAY);
+                    if (list == null || list.size() == 0) {
+                        fieldUsages.put(usage);
+                    }
+                }
+                break;
+
+            default:
+                // If the original was blank, add to list
+                String value = mOriginalBookData.getString(usage.fieldId);
+                if (value == null || value.isEmpty()) {
+                    fieldUsages.put(usage);
+                }
+                break;
+        }
     }
 
     /**
@@ -380,7 +393,7 @@ public class UpdateFieldsFromInternetTask
         } else if (bookData.size() == 0) {
             // tell the user if the search failed.
             mTaskManager.sendTaskUserMessage(
-                    BookCatalogueApp.getResourceString(R.string.warning_unable_to_find_book));
+                    BookCatalogueApp.getResString(R.string.warning_unable_to_find_book));
         }
 
         // Save the local data from the context so we can start a new search
@@ -438,7 +451,7 @@ public class UpdateFieldsFromInternetTask
                     boolean copyThumb = false;
                     if (usage.usage == Fields.FieldUsage.Usage.CopyIfBlank) {
                         File file = StorageUtils.getCoverFile(uuid);
-                        copyThumb = (!file.exists() || file.length() == 0);
+                        copyThumb = !file.exists() || file.length() == 0;
                     } else if (usage.usage == Fields.FieldUsage.Usage.Overwrite) {
                         copyThumb = true;
                     }
@@ -494,7 +507,8 @@ public class UpdateFieldsFromInternetTask
                             break;
 
                         case AddExtra:
-                            // Handle arrays (note: before you're clever, and collapse this to one... Android Studio hides the type in the <~> notation!
+                            // Handle arrays (note: before you're clever, and collapse this to
+                            // one... Android Studio hides the type in the <~> notation!
                             switch (usage.fieldId) {
                                 case UniqueId.BKEY_AUTHOR_ARRAY:
                                     UpdateFieldsFromInternetTask.<Author>combineArrays(
@@ -511,7 +525,9 @@ public class UpdateFieldsFromInternetTask
                                 default:
                                     // No idea how to handle this for non-arrays
                                     throw new RTE.IllegalTypeException(
-                                            "Illegal usage '" + usage.usage + "' specified for field '" + usage.fieldId + '\'');
+                                            "Illegal usage '" + usage.usage
+                                                    + "' specified for field '"
+                                                    + usage.fieldId + '\'');
                             }
                             break;
                     }
@@ -543,5 +559,4 @@ public class UpdateFieldsFromInternetTask
         cleanup();
         super.finalize();
     }
-
 }

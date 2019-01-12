@@ -113,20 +113,17 @@ public class BooklistGroup
             };
     /** */
     private static final long serialVersionUID = 1012206875683862714L;
-
-    /**
-     * the name of the Preference file (comes from the style that contains this group.
-     */
-    @Nullable
-    String mUuid;
-
     /**
      * the kind of row/group we represent, see {@link RowKind}.
      * <p>
      * Do not rename or move this variable, deserialization will break.
      */
     private final int kind;
-
+    /**
+     * the name of the Preference file (comes from the style that contains this group.
+     */
+    @Nullable
+    String mUuid;
     /**
      * The domains represented by this group.
      * Set at runtime by builder based on current group and outer groups
@@ -330,7 +327,7 @@ public class BooklistGroup
         private static final long serialVersionUID = 9023218506278704155L;
         /** mAllSeries Parameter values and descriptions. */
         private static final String description =
-                BookCatalogueApp.getResourceString(R.string.lbl_series);
+                BookCatalogueApp.getResString(R.string.lbl_series);
         /** Show book under each series it appears in. */
         private transient PBoolean mAllSeries;
 
@@ -392,19 +389,19 @@ public class BooklistGroup
         @Override
         public void addPreferences(@NonNull final PreferenceScreen screen) {
             PreferenceCategory category = (PreferenceCategory) screen.findPreference(
-                    BookCatalogueApp.getResourceString(R.string.lbl_series));
+                    BookCatalogueApp.getResString(R.string.lbl_series));
             if (category != null) {
                 category.setVisible(true);
 
                 SwitchPreference pShowAll = new SwitchPreference(screen.getContext());
                 pShowAll.setTitle(R.string.pt_bob_books_under_multiple_series);
                 pShowAll.setIcon(R.drawable.ic_functions);
-                pShowAll.setKey(BookCatalogueApp.getResourceString(
+                pShowAll.setKey(BookCatalogueApp.getResString(
                         R.string.pk_bob_books_under_multiple_series));
                 pShowAll.setDefaultValue(false);
-                pShowAll.setSummaryOn(BookCatalogueApp.getResourceString(
+                pShowAll.setSummaryOn(BookCatalogueApp.getResString(
                         R.string.pv_bob_books_under_multiple_show_book_under_each_1s, description));
-                pShowAll.setSummaryOff(BookCatalogueApp.getResourceString(
+                pShowAll.setSummaryOff(BookCatalogueApp.getResString(
                         R.string.pv_bob_books_under_multiple_show_under_primary_1s_only,
                         description));
                 //pAllSeries.setHint(R.string.hint_series_book_may_appear_more_than_once);
@@ -474,7 +471,7 @@ public class BooklistGroup
                     }
                 };
         private static final long serialVersionUID = -1984868877792780113L;
-        private static final String description = BookCatalogueApp.getResourceString(
+        private static final String description = BookCatalogueApp.getResString(
                 R.string.lbl_author);
         /** Support for 'Show All Authors of Book' property. */
         private transient PBoolean mAllAuthors;
@@ -546,19 +543,19 @@ public class BooklistGroup
         @Override
         public void addPreferences(@NonNull final PreferenceScreen screen) {
             PreferenceCategory category = (PreferenceCategory) screen.findPreference(
-                    BookCatalogueApp.getResourceString(R.string.lbl_author));
+                    BookCatalogueApp.getResString(R.string.lbl_author));
             if (category != null) {
                 category.setVisible(true);
 
                 SwitchPreference pShowAll = new SwitchPreference(screen.getContext());
                 pShowAll.setTitle(R.string.pt_bob_books_under_multiple_authors);
                 pShowAll.setIcon(R.drawable.ic_functions);
-                pShowAll.setKey(BookCatalogueApp.getResourceString(
+                pShowAll.setKey(BookCatalogueApp.getResString(
                         R.string.pk_bob_books_under_multiple_authors));
                 pShowAll.setDefaultValue(false);
-                pShowAll.setSummaryOn(BookCatalogueApp.getResourceString(
+                pShowAll.setSummaryOn(BookCatalogueApp.getResString(
                         R.string.pv_bob_books_under_multiple_show_book_under_each_1s, description));
-                pShowAll.setSummaryOff(BookCatalogueApp.getResourceString(
+                pShowAll.setSummaryOff(BookCatalogueApp.getResString(
                         R.string.pv_bob_books_under_multiple_show_under_primary_1s_only,
                         description));
                 //pAllAuthors.setHint(R.string.hint_authors_book_may_appear_more_than_once)
@@ -568,7 +565,7 @@ public class BooklistGroup
                 pGivenNameFirst.setTitle(R.string.pt_bob_format_author_name);
                 pGivenNameFirst.setIcon(R.drawable.ic_title);
                 pGivenNameFirst.setKey(
-                        BookCatalogueApp.getResourceString(R.string.pk_bob_format_author_name));
+                        BookCatalogueApp.getResString(R.string.pk_bob_format_author_name));
                 pGivenNameFirst.setDefaultValue(false);
                 pGivenNameFirst.setSummaryOn(R.string.pv_bob_format_author_name_given_first);
                 pGivenNameFirst.setSummaryOff(R.string.pv_bob_format_author_name_family_first);
@@ -882,14 +879,12 @@ public class BooklistGroup
         }
 
         String getName() {
-            return BookCatalogueApp.getResourceString(mLabelId);
+            return BookCatalogueApp.getResString(mLabelId);
         }
 
         @Override
         public String toString() {
-            return "RowKind{" +
-                    "name=" + getName() +
-                    '}';
+            return "RowKind{name=" + getName() + '}';
         }
     }
 
@@ -933,7 +928,7 @@ public class BooklistGroup
         }
 
         /**
-         * Never null but can be empty (for a BOOK)
+         * Never null but can be empty (for a BOOK).
          *
          * @return Unique prefix used to represent a key in the hierarchy.
          */

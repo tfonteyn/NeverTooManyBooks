@@ -77,7 +77,7 @@ public class BooklistPseudoCursor
         extends AbstractCursor
         implements BooklistSupportProvider {
 
-    /** Number of 'pages' a cursor has to 'away' to be considered for purging */
+    /** Number of 'pages' a cursor has to 'away' to be considered for purging. */
     private static final int PAGES_AWAY_FOR_PURGE = 3;
     /** Number of rows to return in each cursor. No tuning has been done to pick this number. */
     private static final int CURSOR_SIZE = 20;

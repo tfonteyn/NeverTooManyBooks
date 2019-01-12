@@ -13,8 +13,9 @@ import java.util.List;
 
 /**
  * Class to store domain name and definition.
- *
- * TOMF FIXME: add support for 'references' clause (and/or in TableDefinition for table constraints to be added)
+ * <p>
+ * TOMF FIXME: add support for 'references' clause (and/or in TableDefinition for
+ * table constraints to be added)
  *
  * @author Philip Warner
  */
@@ -39,12 +40,12 @@ public class DomainDefinition
     @NonNull
     public final String name;
     @NonNull
-    private final String type;
+    private final String mType;
     @NonNull
-    private final List<String> constraints = new ArrayList<>();
+    private final List<String> mConstraints = new ArrayList<>();
 
     /**
-     * Create a PRIMARY KEY column
+     * Create a PRIMARY KEY column.
      *
      * @param name column name
      */
@@ -53,11 +54,11 @@ public class DomainDefinition
         // a special case; the constraints are added to the type
         // as they should *always* be used even when we deliberately do not
         // apply constraints at creation time.
-        this.type = TableInfo.TYPE_INTEGER + " PRIMARY KEY autoincrement NOT NULL";
+        mType = TableInfo.TYPE_INTEGER + " PRIMARY KEY autoincrement NOT NULL";
     }
 
     /**
-     * Simple column without constraints
+     * Simple column without constraints.
      *
      * @param name column name
      * @param type column type (text, int, float, ...)
@@ -65,11 +66,11 @@ public class DomainDefinition
     public DomainDefinition(@NonNull final String name,
                             @NonNull final String type) {
         this.name = name;
-        this.type = type;
+        mType = type;
     }
 
     /**
-     * Simple column with optional NOT NULL constraint
+     * Simple column with optional NOT NULL constraint.
      *
      * @param name    column name
      * @param type    column type (text, int, float, ...)
@@ -79,9 +80,9 @@ public class DomainDefinition
                             @NonNull final String type,
                             final boolean notNull) {
         this.name = name;
-        this.type = type;
+        mType = type;
         if (notNull) {
-            this.constraints.add("NOT NULL");
+            this.mConstraints.add("NOT NULL");
         }
     }
 
@@ -96,23 +97,23 @@ public class DomainDefinition
                             final boolean notNull,
                             @Nullable final String... constraints) {
         this.name = name;
-        this.type = type;
+        mType = type;
         if (notNull) {
-            this.constraints.add("NOT NULL");
+            mConstraints.add("NOT NULL");
         }
         if ((constraints != null) && (constraints.length > 0)) {
-            this.constraints.addAll(Arrays.asList(constraints));
+            mConstraints.addAll(Arrays.asList(constraints));
         }
     }
 
     private DomainDefinition(@NonNull final Parcel in) {
         name = in.readString();
-        type = in.readString();
-        in.readList(constraints, getClass().getClassLoader());
+        mType = in.readString();
+        in.readList(mConstraints, getClass().getClassLoader());
     }
 
     /**
-     * add a numerical default constraint
+     * add a numerical default constraint.
      *
      * @param value to use as default
      *
@@ -120,12 +121,12 @@ public class DomainDefinition
      */
     @NonNull
     public DomainDefinition setDefault(@NonNull final int value) {
-        constraints.add("DEFAULT " + value);
+        mConstraints.add("DEFAULT " + value);
         return this;
     }
 
     /**
-     * add a string default constraint
+     * add a string default constraint.
      *
      * @param value to add (a string default must include the quotes!)
      *
@@ -133,12 +134,23 @@ public class DomainDefinition
      */
     @NonNull
     public DomainDefinition setDefault(@NonNull final String value) {
-        constraints.add("DEFAULT " + value);
+        mConstraints.add("DEFAULT " + value);
         return this;
     }
 
     /**
-     * add a generic constraint
+     * add a string default '' constraint.
+     *
+     * @return this for chaining.
+     */
+    @NonNull
+    public DomainDefinition setDefaultEmptyString() {
+        mConstraints.add("DEFAULT ''");
+        return this;
+    }
+
+    /**
+     * add a generic constraint.
      *
      * @param constraint to add
      *
@@ -146,31 +158,32 @@ public class DomainDefinition
      */
     @NonNull
     public DomainDefinition addConstraint(@NonNull final String constraint) {
-        constraints.add(constraint);
+        mConstraints.add(constraint);
         return this;
     }
 
     @Override
-    public void writeToParcel(Parcel dest,
-                              int flags) {
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
         dest.writeString(name);
-        dest.writeString(type);
-        dest.writeList(constraints);
+        dest.writeString(mType);
+        dest.writeList(mConstraints);
     }
 
     /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
-
     public int describeContents() {
         return 0;
     }
 
     public boolean isText() {
-        return TableInfo.TYPE_TEXT.equals(type.toLowerCase());
+        return TableInfo.TYPE_TEXT.equals(mType.toLowerCase());
     }
 
-    /** useful for using the DomainDefinition in place of a domain name */
+    /**
+     * useful for using the DomainDefinition in place of a domain name.
+     */
     @Override
     @NonNull
     public String toString() {
@@ -178,7 +191,7 @@ public class DomainDefinition
     }
 
     /**
-     * Get the SQL used to define this domain
+     * @return the SQL used to define this domain.
      */
     @NonNull
     public String def() {
@@ -186,18 +199,18 @@ public class DomainDefinition
     }
 
     /**
-     * Get the SQL used to define this domain
-     *
+     * Get the SQL used to define this domain.
+     * <p>
      * Are you sure you don't want to use {@link #def()} ?
      *
      * @param withConstraints when false, no constraints are applied
      */
     @NonNull
     String def(final boolean withConstraints) {
-        StringBuilder sql = new StringBuilder(name + ' ' + type);
+        StringBuilder sql = new StringBuilder(name + ' ' + mType);
 
-        if (withConstraints && !constraints.isEmpty()) {
-            for (String cs : constraints) {
+        if (withConstraints && !mConstraints.isEmpty()) {
+            for (String cs : mConstraints) {
                 sql.append(' ').append(cs);
             }
         }

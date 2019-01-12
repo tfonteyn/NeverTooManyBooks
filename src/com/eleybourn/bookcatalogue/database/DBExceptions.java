@@ -18,7 +18,7 @@ public class DBExceptions {
     }
 
 
-    /** should only be used from INSIDE a transaction so the caller can rollback */
+    /** should only be used from INSIDE a transaction so the caller can rollback. */
     static class InsertException extends RuntimeException {
         private static final long serialVersionUID = 7393004442420653364L;
 
@@ -42,7 +42,7 @@ public class DBExceptions {
         }
     }
 
-//    // left as a reminder: don't bother, just return a '0' for nothing deleted
+//    // left as a reminder: don't bother, just return a '0' for nothing deleted.
 //    static class DeleteException extends RuntimeException {
 //    }
 
@@ -58,27 +58,17 @@ public class DBExceptions {
         }
     }
 
-    static class TransactionException extends RuntimeException {
+    public static class TransactionException extends RuntimeException {
         private static final long serialVersionUID = -3659088149611399296L;
 
         TransactionException() {
             super();
         }
-        TransactionException(@Nullable final String msg) {
+        public TransactionException(@Nullable final String msg) {
             super(msg);
         }
-        TransactionException(@Nullable final String msg, @Nullable final Exception inner) {
-            super(msg, inner);
-        }
-    }
-    static class LockException extends RuntimeException {
-        private static final long serialVersionUID = 7650790928312862831L;
-
-        LockException(@Nullable final String msg) {
-            super(msg);
-        }
-        LockException(@SuppressWarnings("SameParameterValue") @Nullable final String msg,
-                      @Nullable final Exception inner) {
+        public TransactionException(@Nullable final String msg,
+                                    @Nullable final Exception inner) {
             super(msg, inner);
         }
     }

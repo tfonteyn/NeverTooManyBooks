@@ -66,8 +66,8 @@ public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
         super(nameResourceId, group, defaultValue);
 
         ItemList<Integer> list = new ItemList<>();
-        String[] labelArray = BookCatalogueApp.getResourceStringArray(labels);
-        String[] valueArray = BookCatalogueApp.getResourceStringArray(values);
+        String[] labelArray = BookCatalogueApp.getResStringArray(labels);
+        String[] valueArray = BookCatalogueApp.getResStringArray(values);
 
         list.add(new ListEntry<Integer>(null, R.string.use_default_setting));
         for (int i = 0; i < labelArray.length; i++) {
@@ -79,7 +79,7 @@ public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
     @Override
     @NonNull
     protected Integer getGlobalValue() {
-        return Prefs.getInt(getPreferenceKey(), getDefaultValue());
+        return Prefs.getPrefs().getInt(getPreferenceKey(), getDefaultValue());
     }
 
     @Override
