@@ -36,6 +36,7 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.TaskActions;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ public final class QueueManager {
     @NonNull
     private final TaskQueueDBAdapter mDb;
     /** Collection of currently active queues. */
-    private final Map<String, Queue> mActiveQueues = new Hashtable<>();
+    private final Map<String, Queue> mActiveQueues = new HashMap<>();
     /** The UI thread. */
     @NonNull
     private final WeakReference<Thread> mUIThread;
@@ -285,8 +286,7 @@ public final class QueueManager {
             try {
                 // It's possible that a queue terminated and another started; make sure
                 // we are removing the one that called us.
-                Queue q = mActiveQueues.get(queue.getQueueName());
-                if (q.equals(queue)) {
+                if (queue.equals(mActiveQueues.get(queue.getQueueName()))) {
                     mActiveQueues.remove(queue.getQueueName());
                 }
             } catch (RuntimeException ignore) {

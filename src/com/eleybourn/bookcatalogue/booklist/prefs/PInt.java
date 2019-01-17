@@ -7,7 +7,8 @@ import androidx.annotation.Nullable;
  * Allows us to cast any PPref<Integer> as needed.
  */
 public interface PInt {
-    void set(@Nullable Integer value);
+
+    void set(@Nullable final Integer value);
 
     @NonNull
     Integer get();

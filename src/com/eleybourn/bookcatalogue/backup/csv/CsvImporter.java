@@ -47,6 +47,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -61,7 +62,6 @@ import java.util.List;
 public class CsvImporter
         implements Importer, Closeable {
 
-    private static final String UTF8 = "utf8";
     private static final int BUFFER_SIZE = 32768;
 
     private static final char QUOTE_CHAR = '"';
@@ -120,7 +120,7 @@ public class CsvImporter
         final List<String> importedList = new ArrayList<>();
 
         final BufferedReader in =
-                new BufferedReader(new InputStreamReader(importStream, UTF8), BUFFER_SIZE);
+                new BufferedReader(new InputStreamReader(importStream, StandardCharsets.UTF_8), BUFFER_SIZE);
         String line;
         while ((line = in.readLine()) != null) {
             importedList.add(line);

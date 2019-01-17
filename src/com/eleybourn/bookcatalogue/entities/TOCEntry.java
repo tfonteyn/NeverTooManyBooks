@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
- *
+ * <p>
  * Note:
  * these are always insert/update'd ONLY when a book is insert/update'd
  * Hence writes are always a List<TOCEntry> in one go. This circumvents the 'position' column
@@ -64,7 +64,7 @@ public class TOCEntry
             };
     /**
      * import/export etc...
-     *
+     * <p>
      * "anthology title (year) * author ","anthology title (year) * author ",...
      */
     private static final char SEPARATOR = ',';
@@ -72,15 +72,15 @@ public class TOCEntry
 
     /**
      * Find the publication year in a string like "some title (1960)".
-     *
+     * <p>
      * The pattern finds (1960), group 1 will then contain the pure 1960.
-     *
+     * <p>
      * Used by:
      * - ISFDB import of anthology titles
      * - export/import
      */
     private static final Pattern YEAR_FROM_STRING = Pattern.compile("\\(([1|2]\\d\\d\\d)\\)");
-    private long id;
+    private long mId;
     private Author mAuthor;
     private String mTitle;
     @NonNull
@@ -96,21 +96,25 @@ public class TOCEntry
     /**
      * Constructor.
      *
+     * @param id     row id
      * @param author Author of title
      * @param title  Title
      */
-    public TOCEntry(@NonNull final Author author,
+    public TOCEntry(final long id,
+                    @NonNull final Author author,
                     @NonNull final String title,
                     @NonNull final String publicationDate) {
+        this.mId = id;
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate;
     }
 
     protected TOCEntry(@NonNull final Parcel in) {
-        id = in.readLong();
+        mId = in.readLong();
         mAuthor = in.readParcelable(getClass().getClassLoader());
         mTitle = in.readString();
+        //noinspection ConstantConditions
         mFirstPublicationDate = in.readString();
     }
 
@@ -135,7 +139,7 @@ public class TOCEntry
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(id);
+        dest.writeLong(mId);
         dest.writeParcelable(mAuthor, flags);
         dest.writeString(mTitle);
         dest.writeString(mFirstPublicationDate);
@@ -175,7 +179,7 @@ public class TOCEntry
      * Support for encoding to a text file.
      *
      * @return the object encoded as a String.
-     *
+     * <p>
      * If the year is known:
      * "Giants In The Sky (1952) * Blish, James"
      * else:
@@ -191,8 +195,12 @@ public class TOCEntry
         } else {
             yearStr = "";
         }
-        return StringList.encodeListItem(SEPARATOR, mTitle) +
-                yearStr + ' ' + TITLE_AUTHOR_DELIM + ' ' + mAuthor;
+        return StringList.encodeListItem(SEPARATOR, mTitle) + yearStr
+                + ' ' + TITLE_AUTHOR_DELIM + ' ' + mAuthor;
+    }
+
+    public long getId() {
+        return mId;
     }
 
     @NonNull
@@ -225,8 +233,8 @@ public class TOCEntry
     @Override
     public long fixupId(@NonNull final DBA db) {
         mAuthor.id = db.getAuthorIdByName(mAuthor.getFamilyName(), mAuthor.getGivenNames());
-        this.id = db.getTOCEntryId(mAuthor.id, mTitle);
-        return this.id;
+        this.mId = db.getTOCEntryId(mAuthor.id, mTitle);
+        return this.mId;
     }
 
     /**
@@ -239,11 +247,11 @@ public class TOCEntry
 
     /**
      * Equality.
-     *
+     * <p>
      * - it's the same Object duh..
-     * - one or both of them is 'new' (e.g. id == 0) but all their fields are equal
-     * - their id's are the same
-     *
+     * - one or both of them is 'new' (e.g. mId == 0) but all their fields are equal
+     * - their mId's are the same
+     * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
@@ -255,18 +263,17 @@ public class TOCEntry
             return false;
         }
         TOCEntry that = (TOCEntry) obj;
-        if (this.id == 0 || that.id == 0) {
+        if (this.mId == 0 || that.mId == 0) {
             return Objects.equals(this.mAuthor, that.mAuthor)
                     && Objects.equals(this.mTitle, that.mTitle)
                     && Objects.equals(this.mFirstPublicationDate, that.mFirstPublicationDate);
         }
-        return (this.id == that.id);
+        return this.mId == that.mId;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, mAuthor, mTitle);
+        return Objects.hash(mId, mAuthor, mTitle);
     }
 
 

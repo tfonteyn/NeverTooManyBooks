@@ -63,13 +63,9 @@ public class EditBooklistStyleGroupsActivity
 
     /** Preferences setup. */
     public static final String REQUEST_BKEY_STYLE = "Style";
-    public static final String REQUEST_BKEY_SAVE_TO_DATABASE = "SaveToDb";
 
     /** Copy of the style we are editing. */
     private BooklistStyle mStyle;
-    /** Copy of flag passed by calling activity to indicate changes made here should be
-     *  saved on exit. */
-    private boolean mSaveToDb = true;
 
     /**
      * Constructor.
@@ -84,10 +80,6 @@ public class EditBooklistStyleGroupsActivity
         Tracker.enterOnCreate(this, savedInstanceState);
         // Get the intent and get the style and other settings
         Intent intent = this.getIntent();
-
-        if (intent.hasExtra(REQUEST_BKEY_SAVE_TO_DATABASE)) {
-            mSaveToDb = intent.getBooleanExtra(REQUEST_BKEY_SAVE_TO_DATABASE, true);
-        }
 
         mStyle = intent.getParcelableExtra(REQUEST_BKEY_STYLE);
         Objects.requireNonNull(mStyle);
@@ -108,7 +100,7 @@ public class EditBooklistStyleGroupsActivity
     /**
      * Required by parent class since we do not pass a key for the intent to get the list.
      */
-    @Nullable
+    @NonNull
     @Override
     protected ArrayList<GroupWrapper> getList() {
         // Build an array list with the groups from the style
@@ -157,11 +149,6 @@ public class EditBooklistStyleGroupsActivity
         // Apply any saved properties.
         mStyle.updatePreferences(allPreferences);
 
-        // Save to DB if necessary
-        if (mSaveToDb) {
-            mStyle.save(mDb);
-        }
-
         if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
             Logger.info(this, "onSave|" + mStyle.toString());
         }
@@ -170,9 +157,9 @@ public class EditBooklistStyleGroupsActivity
         return true;
     }
 
-    protected SimpleListAdapter<GroupWrapper> createListAdapter(@LayoutRes final int rowViewId,
+    protected SimpleListAdapter<GroupWrapper> createListAdapter(@LayoutRes final int rowLayoutId,
                                                                 @NonNull final ArrayList<GroupWrapper> list) {
-        return new GroupWrapperListAdapter(this, rowViewId, list);
+        return new GroupWrapperListAdapter(this, rowLayoutId, list);
     }
 
     /**
@@ -249,9 +236,9 @@ public class EditBooklistStyleGroupsActivity
             extends SimpleListAdapter<GroupWrapper> {
 
         GroupWrapperListAdapter(@NonNull final Context context,
-                                @LayoutRes final int rowViewId,
+                                @LayoutRes final int rowLayoutId,
                                 @NonNull final ArrayList<GroupWrapper> items) {
-            super(context, rowViewId, items);
+            super(context, rowLayoutId, items);
         }
 
         @Override
@@ -291,7 +278,6 @@ public class EditBooklistStyleGroupsActivity
          */
         @Override
         public void onListChanged() {
-            super.onListChanged();
             EditBooklistStyleGroupsActivity.this.onListChanged();
         }
     }

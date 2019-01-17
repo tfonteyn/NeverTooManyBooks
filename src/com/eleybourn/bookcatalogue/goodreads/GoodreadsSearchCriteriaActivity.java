@@ -37,7 +37,6 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 /**
@@ -67,7 +66,6 @@ public class GoodreadsSearchCriteriaActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         mDb = new DBA(this);
@@ -124,7 +122,6 @@ public class GoodreadsSearchCriteriaActivity
                 doSearch();
             }
         });
-        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -145,11 +142,9 @@ public class GoodreadsSearchCriteriaActivity
     @Override
     @CallSuper
     public void onDestroy() {
-        Tracker.enterOnDestroy(this);
         if (mDb != null) {
             mDb.close();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 }

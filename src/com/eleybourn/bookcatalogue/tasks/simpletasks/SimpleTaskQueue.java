@@ -96,7 +96,7 @@ public class SimpleTaskQueue {
     private final List<SimpleTaskQueueThread> mThreads = new ArrayList<>();
     /** Max number of threads to create. */
     private final int mMaxTasks;
-    /** Options indicating this object should terminate. */
+    /** Flag indicating this object should terminate. */
     private boolean mTerminate;
     /** Number of currently queued, executing (or starting/finishing) tasks. */
     private int mManagedTaskCount;
@@ -106,7 +106,7 @@ public class SimpleTaskQueue {
     @Nullable
     private OnTaskFinishListener mTaskFinishListener;
     /**
-     * Options indicating runnable is queued but not run.
+     * Flag indicating runnable is queued but not run.
      * Avoids multiple unnecessary Runnable's
      */
     private boolean mDoProcessResultsIsQueued;
@@ -149,7 +149,7 @@ public class SimpleTaskQueue {
     }
 
     /**
-     * @return Options indicating queue is terminating (finish() was called).
+     * @return Flag indicating queue is terminating (finish() was called).
      */
     private boolean isTerminating() {
         return mTerminate;
@@ -457,6 +457,7 @@ public class SimpleTaskQueue {
             return id;
         }
 
+        @NonNull
         private SimpleTask getTask() {
             return mTask;
         }
@@ -534,7 +535,7 @@ public class SimpleTaskQueue {
          * @return a database connection associated with this Task
          */
         @NonNull
-        public DBA getDb() {
+        DBA getDb() {
             if (mDb == null) {
                 // Reminder: don't make/put the context in a static variable! -> Memory Leak!
                 mDb = new DBA(BookCatalogueApp.getAppContext());

@@ -34,6 +34,7 @@ import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
 import com.eleybourn.bookcatalogue.backup.xml.XmlExporter;
 import com.eleybourn.bookcatalogue.backup.xml.XmlUtils;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -45,6 +46,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -164,7 +166,7 @@ public abstract class BackupWriterAbstract
 
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         final BufferedWriter out = new BufferedWriter(
-                new OutputStreamWriter(data, XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
+                new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
 
         try (XmlExporter xmlExporter = new XmlExporter()) {
             xmlExporter.doBackupInfoBlock(out, new ForwardingListener(),
@@ -195,7 +197,7 @@ public abstract class BackupWriterAbstract
         // Turn the preferences into an XML file in a byte array
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         final BufferedWriter out = new BufferedWriter(
-                new OutputStreamWriter(data, XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
+                new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
 
         try (XmlExporter xmlExporter = new XmlExporter()) {
             xmlExporter.doPreferences(out, new ForwardingListener());
@@ -207,12 +209,12 @@ public abstract class BackupWriterAbstract
 
     private void doStyles()
             throws IOException {
-        Map<Long, BooklistStyle> bsMap = mDb.getBooklistStyles();
+        Map<Long, BooklistStyle> bsMap = BooklistStyles.getUserStyles(mDb);
         if (!bsMap.isEmpty()) {
             // Turn the styles into an XML file in a byte array
             final ByteArrayOutputStream data = new ByteArrayOutputStream();
             final BufferedWriter out = new BufferedWriter(
-                    new OutputStreamWriter(data, XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
+                    new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
 
             try (XmlExporter xmlExporter = new XmlExporter()) {
                 xmlExporter.doStyles(out, new ForwardingListener());

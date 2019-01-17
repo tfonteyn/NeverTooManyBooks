@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -57,8 +56,7 @@ public class LegacyEvent
 
     @NonNull
     @Override
-    public View newListItemView(@NonNull final LayoutInflater inflater,
-                                @NonNull final Context context,
+    public View newListItemView(@NonNull final Context context,
                                 @NonNull final BindableItemCursor cursor,
                                 @NonNull final ViewGroup parent) {
         LinearLayout root = new LinearLayout(context);

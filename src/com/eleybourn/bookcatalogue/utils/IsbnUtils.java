@@ -419,14 +419,14 @@ public final class IsbnUtils {
             List<Integer> digits = new ArrayList<>();
 
             for (int i = 0; i < isbn.length(); i++) {
-                final Character c = isbn.charAt(i);
+                final char c = isbn.charAt(i);
                 int digit;
                 if (Character.isDigit(c)) {
                     if (foundX) {
                         // X can only be at end of an ISBN10
                         throw new NumberFormatException();
                     }
-                    digit = Integer.parseInt(c.toString());
+                    digit = Integer.parseInt(Character.toString(c));
 
                 } else if (Character.toUpperCase(c) == 'X' && digits.size() == 9) {
                     if (foundX) {

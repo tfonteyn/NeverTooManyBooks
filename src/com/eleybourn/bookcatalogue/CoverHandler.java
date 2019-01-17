@@ -1,9 +1,9 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.database.sqlite.SQLiteDoneException;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -61,7 +61,7 @@ import java.util.Objects;
  * 2018-11-30: making this a configuration option.
  */
 public class CoverHandler
-        implements SelectOneDialog.hasViewContextMenu {
+        implements SimpleDialog.ViewContextMenu {
 
     /** request code: use internal routines for cropping images. */
     private static final int REQ_CROP_IMAGE_INTERNAL = 0;
@@ -117,7 +117,7 @@ public class CoverHandler
 
         if (mCoverField.isVisible()) {
             // add context menu to the cover image
-            initViewContextMenuListener(mActivity, mCoverField.getView());
+            initContextMenuOnView(mCoverField.getView());
             //Allow zooming by clicking on the image
             mCoverField.getView().setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -129,26 +129,27 @@ public class CoverHandler
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
-    public void onCreateViewContextMenu(@NonNull final Menu menu,
-                                        @NonNull final View view,
-                                        @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+    @Override
+    public void onCreateViewContextMenu(@NonNull final View view,
+                                        @NonNull final Menu menu,
+                                        @NonNull final SimpleDialog.ContextMenuInfo menuInfo) {
 
         if (menu.size() > 0) {
-            SelectOneDialog.showContextMenuDialog(
-                    mActivity.getLayoutInflater(), menuInfo, menu,
-                    new SelectOneDialog.SimpleDialogOnClickListener() {
+            SimpleDialog.showContextMenu(
+                    mActivity.getLayoutInflater(), menuInfo.title, menu,
+                    new SimpleDialog.OnClickListener() {
                         @Override
-                        public void onClick(@NonNull final SelectOneDialog.SimpleDialogItem item) {
+                        public void onClick(@NonNull final SimpleDialog.SimpleDialogItem item) {
                             MenuItem menuItem =
-                                    ((SelectOneDialog.SimpleDialogMenuItem) item).getMenuItem();
+                                    ((SimpleDialog.SimpleDialogMenuItem) item).getMenuItem();
                             if (menuItem.hasSubMenu()) {
                                 menuInfo.title = menuItem.getTitle().toString();
                                 // recursive call for sub-menu
-                                onCreateViewContextMenu(menuItem.getSubMenu(), view, menuInfo);
+                                onCreateViewContextMenu(view, menuItem.getSubMenu(), menuInfo);
                             } else {
-                                onViewContextItemSelected(menuItem, view);
+                                onViewContextItemSelected(view, menuItem);
                             }
                         }
                     });
@@ -156,7 +157,7 @@ public class CoverHandler
     }
 
     /**
-     * external from {@link #initViewContextMenuListener} as we also need this
+     * external from {@link #initContextMenuOnView} as we also need this
      * from {@link Fragment#onOptionsItemSelected}.
      */
     void prepareCoverImageViewContextMenu() {
@@ -166,8 +167,8 @@ public class CoverHandler
         // legal trick to get an instance of Menu.
         Menu menu = new PopupMenu(mActivity, null).getMenu();
         // custom menuInfo
-        SelectOneDialog.SimpleDialogMenuInfo menuInfo =
-                new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, 0);
+        SimpleDialog.ContextMenuInfo menuInfo =
+                new SimpleDialog.ContextMenuInfo(menuTitle, 0);
 
         // populate the menu
         menu.add(Menu.NONE, R.id.MENU_THUMB_DELETE, 0, R.string.menu_delete)
@@ -207,11 +208,11 @@ public class CoverHandler
             .setIcon(R.drawable.ic_crop);
 
         // display
-        onCreateViewContextMenu(menu, mCoverField.getView(), menuInfo);
+        onCreateViewContextMenu(mCoverField.getView(), menu, menuInfo);
     }
 
-    public void initViewContextMenuListener(@NonNull final Context context,
-                                            @NonNull final View view) {
+    @Override
+    public void initContextMenuOnView(@NonNull final View view) {
         view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(@NonNull final View v) {
@@ -222,10 +223,11 @@ public class CoverHandler
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
-    public boolean onViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                             @NonNull final View view) {
+    @Override
+    public boolean onViewContextItemSelected(@NonNull final View view,
+                                             @NonNull final MenuItem menuItem) {
 
         // should not happen for now, but nice to remind ourselves we *could* have multiple views.
         if (view.getId() != R.id.coverImage) {
@@ -554,7 +556,7 @@ public class CoverHandler
             cropIntent.setDataAndType(Uri.fromFile(inputFile), "image/*");
             // not interested in faces
             cropIntent.putExtra("noFaceDetection", true);
-            // True to return a Bitmap, false to directly save the cropped image
+            // <tt>true</tt> to return a Bitmap, <tt>false</tt> to directly save the cropped image
             cropIntent.putExtra("return-data", false);
             //indicate we want to crop
             cropIntent.putExtra("crop", true);
@@ -616,8 +618,10 @@ public class CoverHandler
         if (bookId != 0) {
             try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
                 coversDBAdapter.deleteBookCover(mDb.getBookUuid(bookId));
+            } catch (SQLiteDoneException e) {
+                Logger.error(e, "SQLiteDoneException cleaning up cached cover images");
             } catch (RuntimeException e) {
-                Logger.error(e, "Error cleaning up cached cover images");
+                Logger.error(e, "RuntimeException cleaning up cached cover images");
             }
         }
     }

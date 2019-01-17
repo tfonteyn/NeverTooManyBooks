@@ -43,8 +43,8 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserBaseActivity;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment;
 import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -111,8 +111,9 @@ public class BackupAndRestoreActivity
     @NonNull
     @Override
     protected FileChooserFragment getChooserFragment() {
-        String lastBackupFile = Prefs.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_FILE,
-                                                           StorageUtils.getSharedStorage().getAbsolutePath());
+        String lastBackupFile =
+                Prefs.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_FILE,
+                                           StorageUtils.getSharedStorage().getAbsolutePath());
 
         return FileChooserFragment.newInstance(new File(Objects.requireNonNull(lastBackupFile)),
                                                getDefaultFileName());
@@ -254,7 +255,7 @@ public class BackupAndRestoreActivity
 
     /** the import/export has finished. */
     @Override
-    public void onTaskFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+    public void onTaskFinished(@NonNull final TaskWithProgressDialogFragment fragment,
                                final int taskId,
                                final boolean success,
                                final boolean cancelled,
@@ -271,6 +272,9 @@ public class BackupAndRestoreActivity
             case TASK_ID_READ_FROM_ARCHIVE:
                 handleReadFromArchiveResults(success, cancelled, (ImportSettings) resultSettings);
                 break;
+            default:
+                Logger.error("Unknown taskId=" + taskId);
+                break;
         }
     }
 
@@ -286,7 +290,7 @@ public class BackupAndRestoreActivity
                     .setMessage(msg)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(final DialogInterface dialog,
+                        public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
                             // Just return; user may want to try again
                             dialog.dismiss();
@@ -323,7 +327,7 @@ public class BackupAndRestoreActivity
                 .setMessage(R.string.progress_end_import_complete)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog,
+                    public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         dialog.dismiss();
                         Intent data = new Intent();
@@ -349,7 +353,7 @@ public class BackupAndRestoreActivity
                     .setMessage(msg)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(final DialogInterface dialog,
+                        public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
                             // Just return; user may want to try again
                             dialog.dismiss();
@@ -387,17 +391,5 @@ public class BackupAndRestoreActivity
                 })
                 .create();
         dialog.show();
-    }
-
-    /**
-     * Not needed, there is only ever one task for restore/backup.
-     */
-    @Override
-    public void onAllTasksFinished(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
-                                   final int taskId,
-                                   final boolean success,
-                                   final boolean cancelled) {
-        // Nothing to do here; we really only care when backup tasks finish,
-        // and there's only ever one task
     }
 }

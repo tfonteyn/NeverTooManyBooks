@@ -95,7 +95,7 @@ public class EventsCursor
     /**
      * Fake attribute to handle multi-select ListViews. if we ever do them.
      *
-     * @return Options indicating if current row has been 'selected'.
+     * @return Flag indicating if current row has been 'selected'.
      */
     public boolean isSelected() {
         if (mSelections.containsKey(getId())) {

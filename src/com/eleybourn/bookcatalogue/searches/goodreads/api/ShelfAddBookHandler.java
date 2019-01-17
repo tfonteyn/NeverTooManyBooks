@@ -37,6 +37,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 /**
@@ -131,7 +132,7 @@ public class ShelfAddBookHandler
         parameters.add(new BasicNameValuePair("book_id", String.valueOf(grBookId)));
         parameters.add(new BasicNameValuePair("name", shelfName));
 
-        post.setEntity(new UrlEncodedFormEntity(parameters, "UTF8"));
+        post.setEntity(new UrlEncodedFormEntity(parameters, StandardCharsets.UTF_8));
 
         // Use a parser based on the filters
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);

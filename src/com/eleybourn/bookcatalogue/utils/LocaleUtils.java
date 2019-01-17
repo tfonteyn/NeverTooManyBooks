@@ -27,7 +27,7 @@ public final class LocaleUtils {
     private static final String LANGUAGE_MAP = "language2iso3";
 
     /** The locale used at startup; so that we can revert to system locale if we want to. */
-    private static final Locale mInitialLocale;
+    private static final Locale INITIAL_LOCALE;
 
     /**
      * A Map to translate currency symbols to their official ISO3 code.
@@ -84,7 +84,7 @@ public final class LocaleUtils {
     /* static constructor. */
     static {
         // preserve startup==system Locale
-        mInitialLocale = Locale.getDefault();
+        INITIAL_LOCALE = Locale.getDefault();
 
         loadPreferred();
         mLastLocale = mCurrentLocale;
@@ -106,7 +106,7 @@ public final class LocaleUtils {
      */
     @NonNull
     public static Locale getSystemLocal() {
-        return mInitialLocale;
+        return INITIAL_LOCALE;
     }
 
     /**
@@ -179,7 +179,7 @@ public final class LocaleUtils {
         if (loc != null && !loc.isEmpty()) {
             mCurrentLocale = LocaleUtils.getLocaleFromCode(loc);
         } else {
-            mCurrentLocale = mInitialLocale;
+            mCurrentLocale = INITIAL_LOCALE;
         }
 
         if (!mCurrentLocale.equals(mLastLocale)) {
@@ -195,8 +195,8 @@ public final class LocaleUtils {
      * @param displayName key
      * @param iso         value
      */
-    public static void cacheLanguage(final String displayName,
-                                     final String iso) {
+    public static void cacheLanguage(@NonNull final String displayName,
+                                     @NonNull final String iso) {
         getLanguageCache().edit().putString(displayName, iso).apply();
         if (BuildConfig.DEBUG) {
             Logger.info(LocaleUtils.class,

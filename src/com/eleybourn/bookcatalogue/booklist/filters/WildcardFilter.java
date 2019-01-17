@@ -8,29 +8,30 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 
 /**
- * an SQL WHERE clause  (column LIKE '%text%')
+ * an SQL WHERE clause  (column LIKE '%text%').
  * <p>
  * FIXME: bad stopgap... use PreparedStatements instead !
  */
 public class WildcardFilter
         implements Filter {
 
-    private final TableDefinition table;
-    private final DomainDefinition domain;
+    private final TableDefinition mTable;
+    private final DomainDefinition mDomain;
 
-    private final String criteria;
+    private final String mCriteria;
 
     public WildcardFilter(@NonNull final TableDefinition table,
                           @NonNull final DomainDefinition domain,
                           @NonNull final String criteria) {
-        this.table = table;
-        this.domain = domain;
-        this.criteria = criteria;
+        mTable = table;
+        mDomain = domain;
+        mCriteria = criteria;
     }
 
     @Override
+    @NonNull
     public String getExpression(@Nullable final String uuid) {
-        return '(' + table.dot(domain) +
-                " LIKE '%" + DBA.encodeString(criteria) + "%'" + ')';
+        return '(' + mTable.dot(mDomain)
+                + " LIKE '%" + DBA.encodeString(mCriteria) + "%'" + ')';
     }
 }

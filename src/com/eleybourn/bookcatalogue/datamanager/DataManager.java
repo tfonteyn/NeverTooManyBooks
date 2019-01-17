@@ -56,12 +56,12 @@ import java.util.Set;
 public class DataManager {
 
     // Generic validators; if field-specific defaults are needed, create a new one.
-    protected static final DataValidator integerValidator = new IntegerValidator("0");
-    protected static final DataValidator nonBlankValidator = new NonBlankValidator();
-    protected static final DataValidator blankOrIntegerValidator = new OrValidator(
+    protected static final DataValidator INTEGER_VALIDATOR = new IntegerValidator("0");
+    protected static final DataValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
+    protected static final DataValidator BLANK_OR_INTEGER_VALIDATOR = new OrValidator(
             new BlankValidator(),
             new IntegerValidator("0"));
-    protected static final DataValidator blankOrFloatValidator = new OrValidator(
+    protected static final DataValidator BLANK_OR_FLOAT_VALIDATOR = new OrValidator(
             new BlankValidator(),
             new FloatValidator("0.00"));
 
@@ -287,6 +287,7 @@ public class DataManager {
         return this;
     }
 
+    /** Store a String value. */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public DataManager putString(@NonNull final Datum datum,
@@ -390,9 +391,8 @@ public class DataManager {
     public DataManager putSerializable(@NonNull final String key,
                                        @NonNull final Serializable value) {
         if (BuildConfig.DEBUG) {
-            Logger.debug(
-                    "putSerializable, key=" + key +
-                            " , type=" + value.getClass().getCanonicalName());
+            Logger.debug("putSerializable, key=" + key
+                                 + ", type=" + value.getClass().getCanonicalName());
         }
         mData.get(key).putSerializable(mBundle, value);
         return this;
@@ -613,7 +613,7 @@ public class DataManager {
         private static final long serialVersionUID = -650159534364183779L;
 
         /**
-         * Get the specified {@link Datum}, and create a new one if not present
+         * Get the specified {@link Datum}, and create a new one if not present.
          */
         @Override
         @NonNull

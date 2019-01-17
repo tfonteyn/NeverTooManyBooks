@@ -36,7 +36,6 @@
 
         <RelativeLayout
             android:id="@id/SLA_ROW_DETAILS"
-            layout="@layout/row_toc_entry_with_author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

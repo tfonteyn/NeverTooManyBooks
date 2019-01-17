@@ -39,7 +39,7 @@
     <string name="lbl_bookshelf">Półka</string>
     <string name="all_books">Wszystkie książki</string>
     <string name="isbn_found">ISBN odczytany. Wyszukiwanie w Internecie.</string>
-    <string name="title_isbn_search">Szukj wg ISBN</string>
+    <string name="search_isbn">Szukj wg ISBN</string>
     <string name="title_edit_bookshelves">Zarządzaj półkami</string>
     <string name="menu_edit_bookshelf">Edycja półek</string>
     <string name="lbl_search_for_books">Szukaj książek</string>

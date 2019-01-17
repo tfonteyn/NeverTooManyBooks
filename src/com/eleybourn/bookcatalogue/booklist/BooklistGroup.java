@@ -228,6 +228,7 @@ public class BooklistGroup
         return RowKind.get(kind).getCompoundKey();
     }
 
+    @Nullable
     ArrayList<DomainDefinition> getDomains() {
         return mDomains;
     }
@@ -326,7 +327,7 @@ public class BooklistGroup
 
         private static final long serialVersionUID = 9023218506278704155L;
         /** mAllSeries Parameter values and descriptions. */
-        private static final String description =
+        private static final String DESCRIPTION =
                 BookCatalogueApp.getResString(R.string.lbl_series);
         /** Show book under each series it appears in. */
         private transient PBoolean mAllSeries;
@@ -388,7 +389,7 @@ public class BooklistGroup
          */
         @Override
         public void addPreferences(@NonNull final PreferenceScreen screen) {
-            PreferenceCategory category = (PreferenceCategory) screen.findPreference(
+            PreferenceCategory category = screen.findPreference(
                     BookCatalogueApp.getResString(R.string.lbl_series));
             if (category != null) {
                 category.setVisible(true);
@@ -400,10 +401,10 @@ public class BooklistGroup
                         R.string.pk_bob_books_under_multiple_series));
                 pShowAll.setDefaultValue(false);
                 pShowAll.setSummaryOn(BookCatalogueApp.getResString(
-                        R.string.pv_bob_books_under_multiple_show_book_under_each_1s, description));
+                        R.string.pv_bob_books_under_multiple_show_book_under_each_1s, DESCRIPTION));
                 pShowAll.setSummaryOff(BookCatalogueApp.getResString(
                         R.string.pv_bob_books_under_multiple_show_under_primary_1s_only,
-                        description));
+                        DESCRIPTION));
                 //pAllSeries.setHint(R.string.hint_series_book_may_appear_more_than_once);
                 category.addPreference(pShowAll);
             }
@@ -471,7 +472,7 @@ public class BooklistGroup
                     }
                 };
         private static final long serialVersionUID = -1984868877792780113L;
-        private static final String description = BookCatalogueApp.getResString(
+        private static final String DESCRIPTION = BookCatalogueApp.getResString(
                 R.string.lbl_author);
         /** Support for 'Show All Authors of Book' property. */
         private transient PBoolean mAllAuthors;
@@ -542,7 +543,7 @@ public class BooklistGroup
          */
         @Override
         public void addPreferences(@NonNull final PreferenceScreen screen) {
-            PreferenceCategory category = (PreferenceCategory) screen.findPreference(
+            PreferenceCategory category = screen.findPreference(
                     BookCatalogueApp.getResString(R.string.lbl_author));
             if (category != null) {
                 category.setVisible(true);
@@ -554,10 +555,10 @@ public class BooklistGroup
                         R.string.pk_bob_books_under_multiple_authors));
                 pShowAll.setDefaultValue(false);
                 pShowAll.setSummaryOn(BookCatalogueApp.getResString(
-                        R.string.pv_bob_books_under_multiple_show_book_under_each_1s, description));
+                        R.string.pv_bob_books_under_multiple_show_book_under_each_1s, DESCRIPTION));
                 pShowAll.setSummaryOff(BookCatalogueApp.getResString(
                         R.string.pv_bob_books_under_multiple_show_under_primary_1s_only,
-                        description));
+                        DESCRIPTION));
                 //pAllAuthors.setHint(R.string.hint_authors_book_may_appear_more_than_once)
                 category.addPreference(pShowAll);
 
@@ -671,7 +672,8 @@ public class BooklistGroup
         static {
             RowKind rowKind;
 
-            rowKind = new RowKind(BOOK, R.string.lbl_book, "", (DomainDefinition[]) null);
+            // hardcoded BOOK construction.
+            rowKind = new RowKind();
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(AUTHOR, R.string.lbl_author, "a",
@@ -814,21 +816,35 @@ public class BooklistGroup
         @NonNull
         private final CompoundKey mCompoundKey;
 
-        @Nullable
+        @SuppressWarnings("NullableProblems")
+        @NonNull
         private DomainDefinition mDisplayDomain;
+
+        /**
+         * Hardcoded constructor for a BOOK
+         *
+         * Note we suppress the 'null' use.
+         */
+        @SuppressWarnings("ConstantConditions")
+        private RowKind() {
+            mKind = BOOK;
+            mLabelId = R.string.lbl_book;
+            mCompoundKey = new CompoundKey("", (DomainDefinition[]) null);
+            mDisplayDomain = null;
+        }
 
         /**
          * @param domains all underlying domains.
          *                The first element will be used as the displayDomain.
          */
-        private RowKind(@IntRange(from = 0, to = RowKind.ROW_KIND_MAX) final int kind,
+        private RowKind(@IntRange(from = 1, to = RowKind.ROW_KIND_MAX) final int kind,
                         @StringRes final int labelId,
                         @NonNull final String prefix,
-                        @Nullable final DomainDefinition... domains) {
+                        @NonNull final DomainDefinition... domains) {
             mKind = kind;
             mLabelId = labelId;
             mCompoundKey = new CompoundKey(prefix, domains);
-            if (domains != null && domains.length > 0) {
+            if (domains.length > 0) {
                 mDisplayDomain = domains[0];
             }
         }
@@ -847,6 +863,7 @@ public class BooklistGroup
          */
         @NonNull
         public static RowKind get(@IntRange(from = 0, to = RowKind.ROW_KIND_MAX) final int kind) {
+            //noinspection ConstantConditions
             return ALL_KINDS.get(kind);
         }
 
@@ -874,10 +891,10 @@ public class BooklistGroup
          */
         @NonNull
         CompoundKey getCompoundKey() {
-            //noinspection ConstantConditions
             return mCompoundKey;
         }
 
+        @NonNull
         String getName() {
             return BookCatalogueApp.getResString(mLabelId);
         }
@@ -913,6 +930,7 @@ public class BooklistGroup
         private final String prefix;
 
         /** List of domains in key. */
+        @NonNull
         private final DomainDefinition[] domains;
 
         CompoundKey(@NonNull final String prefix,
@@ -923,7 +941,9 @@ public class BooklistGroup
 
         /** {@link Parcelable}. */
         CompoundKey(@NonNull final Parcel in) {
+            //noinspection ConstantConditions
             prefix = in.readString();
+            //noinspection ConstantConditions
             domains = in.createTypedArray(DomainDefinition.CREATOR);
         }
 
@@ -937,7 +957,7 @@ public class BooklistGroup
             return prefix;
         }
 
-        @Nullable
+        @NonNull
         DomainDefinition[] getDomains() {
             return domains;
         }

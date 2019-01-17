@@ -121,7 +121,7 @@ public class Book
 //     */
 //    private static final String IS_BOOK_CLUB_EDITION = "+IsBookClubEdition";
 
-    /* NEWKIND: edition */
+    /* NEWKIND: edition. */
     static {
         EDITIONS.put(EDITION_FIRST, R.string.lbl_edition_first_edition);
         EDITIONS.put(EDITION_FIRST_IMPRESSION, R.string.lbl_edition_first_impression);
@@ -222,7 +222,7 @@ public class Book
         Book book = getBook(db, bookId);
         book.putBoolean(UniqueId.KEY_BOOK_READ, isRead);
         book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
-        return (db.updateBook(bookId, book, 0) == 1);
+        return db.updateBook(bookId, book, 0) == 1;
     }
 
     /**
@@ -621,14 +621,14 @@ public class Book
      * Build any special purpose validators/accessors.
      */
     private void initValidatorsAndAccessors() {
-        addValidator(UniqueId.KEY_TITLE, nonBlankValidator);
-        addValidator(UniqueId.KEY_BOOK_PAGES, blankOrIntegerValidator);
+        addValidator(UniqueId.KEY_TITLE, NON_BLANK_VALIDATOR);
+        addValidator(UniqueId.KEY_BOOK_PAGES, BLANK_OR_INTEGER_VALIDATOR);
 
-        addValidator(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, integerValidator);
-        addValidator(UniqueId.KEY_BOOK_EDITION_BITMASK, integerValidator);
+        addValidator(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, INTEGER_VALIDATOR);
+        addValidator(UniqueId.KEY_BOOK_EDITION_BITMASK, INTEGER_VALIDATOR);
 
-        addValidator(UniqueId.KEY_BOOK_PRICE_LISTED, blankOrFloatValidator);
-        addValidator(UniqueId.KEY_BOOK_PRICE_PAID, blankOrFloatValidator);
+        addValidator(UniqueId.KEY_BOOK_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR);
+        addValidator(UniqueId.KEY_BOOK_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR);
 
 
         addAccessor(IS_READ, new BooleanDataAccessor(UniqueId.KEY_BOOK_READ));

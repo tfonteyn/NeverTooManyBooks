@@ -40,7 +40,7 @@
     <string name="lbl_bookshelf">Книжная полка</string>
     <string name="all_books">Все книги</string>
     <string name="isbn_found">ISBN отсканирован. Поиск в Интернете.</string>
-    <string name="title_isbn_search">поиск по ISBN</string>
+    <string name="search_isbn">поиск по ISBN</string>
     <string name="title_edit_bookshelves">управление книжными полками</string>
     <string name="menu_edit_bookshelf">редактирование книжной полки</string>
     <string name="lbl_search_for_books">Поиск книг</string>
@@ -424,7 +424,7 @@
     <string name="size">Размер</string>
     <string name="updated">Обновлено</string>
     <string name="import_error_csv_file_not_found">Файлы экспорта не найдены</string>
-    <string name="import_warning_csv_file_more_then_one_found">Найдено больше одного файла экспорта; пожалуйста, выберите файл экспорта для импортирования из списка</string>
+    <string name="import_warning_select_csv_file">Найдено больше одного файла экспорта; пожалуйста, выберите файл экспорта для импортирования из списка</string>
     <string name="problem_starting_import_arg">Возникла проблема при начале импорта: %1$s</string>
     <string name="hint_booklist_style_menu">        Это меню позволяет Вам выбрать стиль списка. 
     	\n\nВы можете также настроить это меню и создать свои стили списков нажатием на \'Настроить\' в конце списка.</string>

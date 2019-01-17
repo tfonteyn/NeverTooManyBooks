@@ -39,7 +39,7 @@
     <string name="lbl_bookshelf">Biblioteca</string>
     <string name="all_books">Todos los libros</string>
     <string name="isbn_found">ISBN escaneado. Buscando en Internet.</string>
-    <string name="title_isbn_search">Buscar ISBN</string>
+    <string name="search_isbn">Buscar ISBN</string>
     <string name="title_edit_bookshelves">Gestionar bibliotecas</string>
     <string name="menu_edit_bookshelf">Editar bibliotecas</string>
     <string name="lbl_search_for_books">Buscar libro</string>
@@ -443,7 +443,7 @@
     <string name="size">Tamaño</string>
     <string name="updated">Actualizado</string>
     <string name="import_error_csv_file_not_found">No se han encontrado archivos exportados</string>
-    <string name="import_warning_csv_file_more_then_one_found">Se ha encontrado más de un archivo exportado; por favor, seleccione el archivo que desea importar de la lista siguiente</string>
+    <string name="import_warning_select_csv_file">Se ha encontrado más de un archivo exportado; por favor, seleccione el archivo que desea importar de la lista siguiente</string>
     <string name="problem_starting_import_arg">Ha habido un problema con la importación: %1$s</string>
     <string name="hint_booklist_style_menu">Esta opción le permite seleccionar el estilo de los listados. 
     								\n\nTambién puede modificar este menú, así como crear sus propios estilos de listado, seleccionando \'Configurar\' al final de la lista.</string>
@@ -701,7 +701,7 @@ y puede editar el libro utilizando el menú de opciones.
     <string name="menu_set_incomplete">Marcar como incompleto</string>
     <string name="error_search_configuration">Error de configuración web. Abra la página de administración y verifique la configuración en las páginas de búsqueda.</string>
     <string name="tab_lbl_search_site_order">Orden</string>
-    <string name="search_with_text">Buscar</string>
+    <string name="search_with_text">Buscar: %1$s</string>
     <string name="btn_options">Opciones</string>
     <string name="lbl_price_paid">Pagado</string>
     <string name="lbl_first_publication">Primera publicación</string>
@@ -712,7 +712,7 @@ y puede editar el libro utilizando el menú de opciones.
     <string name="lbl_date_acquired_year">Año de adquisición</string>
     <string name="lbl_is_complete">Esta completo</string>
     <string name="btn_merge">Unir</string>
-    <string name="table_of_content">Tabla de contenidos</string>
+    <string name="lbl_table_of_content">Tabla de contenidos</string>
     <string name="book_format_audiobook">Audio libro</string>
     <string name="progress_msg_process_preferences">Preferencias…</string>
     <string name="progress_msg_process_cover">Portadas…</string>

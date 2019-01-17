@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -31,9 +30,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public final class SelectOneDialog {
+public final class SimpleDialog {
 
-    private SelectOneDialog() {
+    private SimpleDialog() {
     }
 
     /**
@@ -44,7 +43,7 @@ public final class SelectOneDialog {
                                          @Nullable final String message,
                                          @NonNull final List<SimpleDialogItem> items,
                                          @Nullable final SimpleDialogItem selectedItem,
-                                         @NonNull final SimpleDialogOnClickListener handler) {
+                                         @NonNull final OnClickListener handler) {
 
         // Build the base dialog
         final View root = inflater.inflate(R.layout.dialog_select_one_from_list, null);
@@ -108,14 +107,14 @@ public final class SelectOneDialog {
     }
 
     /**
-     * Wrapper class to present a list of files for selection.
+     * Present a list of files for selection.
      *
      * @see #selectItemDialog
      */
     public static void selectFileDialog(@NonNull final LayoutInflater inflater,
                                         @Nullable final String title,
                                         @NonNull final List<File> files,
-                                        @NonNull final SimpleDialogOnClickListener handler) {
+                                        @NonNull final OnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         for (File file : files) {
             items.add(new SimpleDialogFileItem(file));
@@ -124,10 +123,7 @@ public final class SelectOneDialog {
     }
 
     /**
-     * Wrapper class to present a list of objects for selection.
-     * <p>
-     * The objects get wrapped in {@link SimpleDialogObjectItem} which provides a
-     * RadioButton selector for each row.
+     * Present a list of objects for selection.
      *
      * @param <T> type of object
      *
@@ -137,7 +133,7 @@ public final class SelectOneDialog {
                                               @Nullable final String title,
                                               @NonNull final Fields.Field field,
                                               @NonNull final List<T> list,
-                                              @NonNull final SimpleDialogOnClickListener handler) {
+                                              @NonNull final OnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
         for (T listEntry : list) {
@@ -151,20 +147,24 @@ public final class SelectOneDialog {
     }
 
     /**
-     * Wrapper class to present a {@link Menu} *with* icons.
+     * Present a context {@link Menu} *with* icons.
+     *
+     * @param title   for the menu header
+     * @param menu    the menu
+     * @param handler the listener to handle a menu selection.
      *
      * @see #selectItemDialog
      */
-    public static void showContextMenuDialog(@NonNull final LayoutInflater inflater,
-                                             @NonNull final SimpleDialogMenuInfo menuInfo,
-                                             @NonNull final Menu menu,
-                                             @NonNull final SimpleDialogOnClickListener handler) {
+    public static void showContextMenu(@NonNull final LayoutInflater inflater,
+                                       @NonNull final String title,
+                                       @NonNull final Menu menu,
+                                       @NonNull final OnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
             items.add(new SimpleDialogMenuItem(item));
         }
-        selectItemDialog(inflater, menuInfo.title, null, items, null, handler);
+        selectItemDialog(inflater, title, null, items, null, handler);
     }
 
     /**
@@ -175,15 +175,15 @@ public final class SelectOneDialog {
         @NonNull
         View getView(@NonNull final LayoutInflater inflater);
 
-        /** optional, for visual effects only. */
+        /** optional, mostly for visual effects only. */
         @Nullable
-        CompoundButton getSelector(@NonNull final View v);
+        CompoundButton getSelector(@NonNull final View view);
     }
 
     /**
      * Interface to listen for item selection in a custom dialog list.
      */
-    public interface SimpleDialogOnClickListener {
+    public interface OnClickListener {
 
         void onClick(@NonNull final SimpleDialogItem item);
     }
@@ -191,36 +191,100 @@ public final class SelectOneDialog {
     /**
      * Marker interface to indicate the {@link BaseListActivity} has a {@link ListView}
      * using this type of context menu.
+     * <p>
+     * Only a single ListView is supported.
      */
-    public interface hasListViewContextMenu {
+    public interface ListViewContextMenu {
 
-        void initListViewContextMenuListener(@NonNull final Context context);
+        /**
+         * Prepare to view to bring up a context menu upon long-click.
+         */
+        void initContextMenuOnListView();
 
-        void onCreateListViewContextMenu(@NonNull final Menu menu,
-                                         @NonNull final View view,
-                                         @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo);
+        /**
+         * @param view     (row in the list) on which the context menu is set
+         * @param menu     to display
+         * @param menuInfo information about the menu, e.g. the 'title', 'position'
+         */
+        void onCreateListViewContextMenu(@NonNull final View view,
+                                         @NonNull final Menu menu,
+                                         @NonNull final ContextMenuInfo menuInfo);
 
+        /**
+         * @param menuItem that was selected
+         * @param position of the item in the list/cursor
+         *
+         * @return <tt>true</tt> if the selection was handled.
+         */
         @SuppressWarnings("UnusedReturnValue")
         boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                              @NonNull final SimpleDialogMenuInfo menuInfo);
+                                              final int position);
     }
 
     /**
      * Marker interface to indicate the {@link BaseActivity} has a {@link View}
      * using this type of context menu.
+     * <p>
+     * Multiple views are supported; i.e. the view ,ust be passed to every method.
      */
-    public interface hasViewContextMenu {
+    public interface ViewContextMenu {
 
-        void initViewContextMenuListener(@NonNull final Context context,
-                                         @NonNull final View view);
+        /**
+         * Prepare to view to bring up a context menu upon long-click.
+         *
+         * @param view on which the context menu is set
+         */
+        void initContextMenuOnView(@NonNull final View view);
 
-        void onCreateViewContextMenu(@NonNull final Menu menu,
-                                     @NonNull final View view,
-                                     @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo);
+        /**
+         * @param view     on which the context menu is set
+         * @param menu     to display
+         * @param menuInfo information about the menu, e.g. the 'title'
+         */
+        void onCreateViewContextMenu(@NonNull final View view,
+                                     @NonNull final Menu menu,
+                                     @NonNull final ContextMenuInfo menuInfo);
 
+        /**
+         * @param view     on which the context menu is set. Passed here because we *could*
+         *                 have multiple views with different context menus.
+         * @param menuItem that was selected
+         *
+         * @return <tt>true</tt> if the selection was handled.
+         */
         @SuppressWarnings("UnusedReturnValue")
-        boolean onViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                          @NonNull final View view);
+        boolean onViewContextItemSelected(@NonNull final View view,
+                                          @NonNull final MenuItem menuItem);
+    }
+
+    /**
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
+     */
+    public static class ContextMenuInfo
+            implements ContextMenu.ContextMenuInfo {
+
+        /**
+         * The position of the item in the list/cursor for which the
+         * context menu is being displayed.
+         */
+        public final int position;
+
+        /**
+         * The title that can be used as the menu header.
+         */
+        public String title;
+
+        /**
+         * Constructor.
+         *
+         * @param title    for the menu heading.
+         * @param position in a list/cursor, set to 0 if no list is involved.
+         */
+        public ContextMenuInfo(@NonNull final String title,
+                               final int position) {
+            this.title = title;
+            this.position = position;
+        }
     }
 
     /**
@@ -253,15 +317,15 @@ public final class SelectOneDialog {
             Drawable icon = mMenuItem.getIcon();
             Drawable subMenuPointer = null;
             if (mMenuItem.hasSubMenu()) {
-                subMenuPointer = inflater.getContext().getDrawable(
-                        R.drawable.submenu_arrow_nofocus);
+                subMenuPointer = inflater.getContext()
+                                         .getDrawable(R.drawable.submenu_arrow_nofocus);
             }
             line.setCompoundDrawablesWithIntrinsicBounds(icon, null, subMenuPointer, null);
             return root;
         }
 
         @Nullable
-        public CompoundButton getSelector(@NonNull final View v) {
+        public CompoundButton getSelector(@NonNull final View view) {
             return null;
         }
     }
@@ -310,7 +374,7 @@ public final class SelectOneDialog {
 
         @Override
         @Nullable
-        public CompoundButton getSelector(@NonNull final View v) {
+        public CompoundButton getSelector(@NonNull final View view) {
             return null;
         }
     }
@@ -349,8 +413,8 @@ public final class SelectOneDialog {
         }
 
         @NonNull
-        public CompoundButton getSelector(@NonNull final View v) {
-            return (CompoundButton) v.findViewById(R.id.selector);
+        public CompoundButton getSelector(@NonNull final View view) {
+            return (CompoundButton) view.findViewById(R.id.selector);
         }
 
         /**
@@ -362,26 +426,4 @@ public final class SelectOneDialog {
         }
     }
 
-    /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
-     */
-    public static class SimpleDialogMenuInfo
-            implements ContextMenu.ContextMenuInfo {
-
-        /**
-         * The position in MenuItem's list for which the context menu is being displayed.
-         */
-        public final int position;
-
-        /**
-         * The title that can be used as the menu header.
-         */
-        public String title;
-
-        public SimpleDialogMenuInfo(@NonNull final String title,
-                                    final int position) {
-            this.position = position;
-            this.title = title;
-        }
-    }
 }

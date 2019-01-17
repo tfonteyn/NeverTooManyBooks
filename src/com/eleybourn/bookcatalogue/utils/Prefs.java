@@ -14,6 +14,7 @@ import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
@@ -74,13 +75,14 @@ public final class Prefs {
      */
     public static void dumpPreferences(@Nullable final String uuid) {
         if (/* always show debug */ BuildConfig.DEBUG) {
-            Map<String, ?> map = uuid == null ? getPrefs().getAll() : getPrefs(uuid).getAll();
+            Map<String, ?> map = uuid != null ? getPrefs(uuid).getAll()
+                                              : getPrefs().getAll();
             List<String> keyList = new ArrayList<>(map.keySet());
             String[] keys = keyList.toArray(new String[]{});
             Arrays.sort(keys);
 
-            StringBuilder sb = new StringBuilder(
-                    "\n\nSharedPreferences: " + (uuid == null ? "global" : uuid));
+            StringBuilder sb = new StringBuilder("\n\nSharedPreferences: "
+                                                         + (uuid != null ? uuid : "global"));
             for (String key : keys) {
                 Object value = map.get(key);
                 sb.append('\n').append(key).append('=').append(value);
@@ -111,11 +113,11 @@ public final class Prefs {
                         ed.putInt(key, ((Integer) oldMap.get(key)) - 1);
                         break;
 
-                    case "UpgradeMessages.LastMessage": {
+                    case "UpgradeMessages.LastMessage":
                         int v = (Integer) oldMap.get(key);
                         ed.putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, v);
                         break;
-                    }
+
                     case "state_opened":
                         ed.putInt(StartupActivity.PREFS_STARTUP_COUNTDOWN,
                                   (Integer) oldMap.get(key));
@@ -163,30 +165,29 @@ public final class Prefs {
                         ed.putBoolean(key, (Boolean) oldMap.get(key));
                         break;
 
-                    case "App.BooklistGenerationMode": {
-                        int compatmode = (Integer) oldMap.get(key);
-                        switch (compatmode) {
-//                                case 4:
-//                                    compatmode = 0;
-//                                    break;
-                            case 3:
-                                compatmode = 1;
+                    case "App.BooklistGenerationMode":
+                        int compatMode = (Integer) oldMap.get(key);
+                        switch (compatMode) {
+                            case 4:
+                                compatMode = BooklistBuilder.PREF_COMPATIBILITY_MODE_DEFAULT;
                                 break;
-//                                case 2:
-//                                    compatmode = 2;
-//                                    break;
+                            case 3:
+                                compatMode = BooklistBuilder.PREF_COMPATIBILITY_MODE_NESTED_TRIGGERS;
+                                break;
+                            case 2:
+                                compatMode = BooklistBuilder.PREF_COMPATIBILITY_MODE_FLAT_TRIGGERS;
+                                break;
                             case 1:
-                                compatmode = 3;
+                                compatMode = BooklistBuilder.PREF_COMPATIBILITY_MODE_OLD_STYLE;
                                 break;
                             default:
-                                compatmode = 0;
+                                compatMode = BooklistBuilder.PREF_COMPATIBILITY_MODE_DEFAULT;
                         }
                         ed.putInt(
                                 BookCatalogueApp.getResString(
-                                        R.string.pk_bob_list_generation),
-                                compatmode);
+                                        R.string.pk_bob_list_generation), compatMode);
                         break;
-                    }
+
                     case "App.OpenBookReadOnly":
                         ed.putBoolean(BookCatalogueApp.getResString(
                                 R.string.pk_bob_open_book_read_only),
@@ -228,19 +229,19 @@ public final class Prefs {
                                       (Boolean) oldMap.get(key));
                         break;
 
-                    case "BooksOnBookshelf.LIST_STYLE": {
+                    case "BooksOnBookshelf.LIST_STYLE":
                         String entry = (String) oldMap.get(key);
                         ed.putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
                                    BooklistStyles.getStyleId(
                                            entry.substring(0, entry.length() - 2)));
                         break;
-                    }
+
                     case "BooklistStyles.Menu.Items":
                         // set to eliminate duplicates
                         Set<Long> styleIds = new LinkedHashSet<>();
-                        for (String entry : StringList.decode((String) oldMap.get(key))) {
+                        for (String styleStringList : StringList.decode((String) oldMap.get(key))) {
                             styleIds.add(BooklistStyles.getStyleId(
-                                    entry.substring(0, entry.length() - 2)));
+                                    styleStringList.substring(0, styleStringList.length() - 2)));
                         }
                         ed.putString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
                                      TextUtils.join(",", styleIds));
@@ -276,7 +277,7 @@ public final class Prefs {
                         if (key.startsWith("GoodReads")
                                 || key.startsWith("Backup")
                                 || "App.Locale".equals(key)
-                                ) {
+                        ) {
                             String tmp = (String) oldMap.get(key);
                             if (!tmp.isEmpty()) {
                                 ed.putString(key, tmp);

@@ -70,6 +70,8 @@
     <item name="MENU_SORT" type="id"/>
     <item name="MENU_EXPAND" type="id"/>
     <item name="MENU_COLLAPSE" type="id"/>
+    <item name="MENU_CLEAR_FILTERS" type="id"/>
+
     <!-- debug options for the options menu; only shown in debug mode. -->
     <item name="MENU_DEBUG_DUMP_PREFS" type="id"/>
     <item name="MENU_DEBUG_DUMP_TRACKER" type="id"/>
@@ -102,8 +104,6 @@
     <item name="SLA_ROW" type="id" />
     <item name="SLA_ROW_DETAILS" type="id" />
     <item name="SLA_ROW_DELETE" type="id"/>
-    <item name="SLA_ROW_POSITION" type="id"/>
-    <item name="SLA_ROW_POSITION_TAG" type="id" />
     <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
 
     <!-- used by {@link BooksMultiTypeListHandler} for the row details (book, level 1,2,3) -->

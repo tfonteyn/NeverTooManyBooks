@@ -48,7 +48,7 @@ public class TrinaryFilter extends ListOfIntegerValuesProperty implements Filter
 
     @Override
     @Nullable
-    public String getExpression(@NonNull final String uuid) {
+    public String getExpression(@Nullable final String uuid) {
         switch (getResolvedValue()) {
             case FILTER_YES:
                 return table.dot(domain) + "=1";

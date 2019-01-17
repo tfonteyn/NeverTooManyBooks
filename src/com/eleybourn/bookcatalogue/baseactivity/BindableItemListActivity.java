@@ -37,7 +37,6 @@ import androidx.appcompat.app.AlertDialog;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter.BindableItemBinder;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
@@ -68,7 +67,6 @@ public abstract class BindableItemListActivity
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         mBindableItems = getBindableItemCursor(savedInstanceState);
@@ -101,7 +99,6 @@ public abstract class BindableItemListActivity
                         .onListItemLongClick(parent, view, position, id);
             }
         });
-        Tracker.exitOnCreate(this);
     }
 
     protected void refreshData() {
@@ -112,7 +109,6 @@ public abstract class BindableItemListActivity
     @Override
     @CallSuper
     protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
         try {
             if (mBindableItems != null) {
                 mBindableItems.close();
@@ -120,7 +116,6 @@ public abstract class BindableItemListActivity
         } catch (RuntimeException ignore) {
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     protected void onListItemClick(@NonNull final AdapterView<?> parent,
@@ -157,7 +152,7 @@ public abstract class BindableItemListActivity
                     .setItems(itemArray, new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
-                            itemArray[which].handler.run();
+                            itemArray[which].mHandler.run();
                         }
                     }).create();
 

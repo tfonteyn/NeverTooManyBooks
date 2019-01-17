@@ -37,7 +37,7 @@ import java.util.Map;
  *
  * @author Philip Warner
  */
-public class TaskQueueDBHelper
+class TaskQueueDBHelper
         extends SQLiteOpenHelper {
 
     static final String DOM_ID = "_id";

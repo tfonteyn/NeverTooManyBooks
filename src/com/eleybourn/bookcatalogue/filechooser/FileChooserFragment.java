@@ -39,8 +39,6 @@ import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter.LayoutProvider;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask.FileListerListener;
@@ -222,26 +220,18 @@ public class FileChooserFragment
      * Interface for details of files in current directory.
      */
     public interface FileDetails
-            extends LayoutProvider, Parcelable {
+            extends Parcelable {
 
         /** Get the underlying File object. */
         @NonNull
         File getFile();
 
-        /**
-         * Called to fill in the details of this object in the View provided
-         * by the LayoutProvider implementation.
-         */
         void onGetView(@NonNull final View convertView,
                        @NonNull final Context context);
     }
 
     /**
      * List Adapter for FileDetails objects.
-     * <p>
-     * {@link FileDetails} can provide the view using
-     * {@link SimpleListAdapter.LayoutProvider#getLayoutId}
-     * and {@link LayoutProvider#onGetView}
      */
     protected class FileDetailsAdapter
             extends ArrayAdapter<FileDetails> {
@@ -259,8 +249,8 @@ public class FileChooserFragment
 
             final FileDetails item = this.getItem(position);
             if (convertView == null) {
-                //noinspection ConstantConditions
-                convertView = LayoutInflater.from(getContext()).inflate(item.getLayoutId(), null);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_file_info,
+                                                                        null);
             }
 
             //noinspection ConstantConditions

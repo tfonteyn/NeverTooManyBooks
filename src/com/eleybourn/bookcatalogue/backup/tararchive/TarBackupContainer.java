@@ -53,15 +53,13 @@ import androidx.annotation.NonNull;
  */
 public class TarBackupContainer implements BackupContainer {
 
-    /** UNICODE stream type for read/write text files. */
-    public static final String UTF8 = "utf8";
     /** Buffer size for buffered streams. */
     public static final int BUFFER_SIZE = 32768;
 
     /** archives are written in this version. */
-    public static final int VERSION_WRITTEN = 2;
+    private static final int VERSION_WRITTEN = 2;
     /** we can still read archives from this version and up to our current version */
-    public static final int VERSION_READ = 1;
+    private static final int VERSION_READ = 1;
 
     /** Always first entry; Used in the storage and identification of data store in TAR file. */
     static final String INFO_FILE = "INFO.xml";
@@ -121,7 +119,7 @@ public class TarBackupContainer implements BackupContainer {
     }
 
     /**
-     * We write version 2 archives (no backwards compatibility).
+     * We always write the latest version archives (no backwards compatibility).
      */
     @Override
     public int getVersion() {

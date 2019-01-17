@@ -294,16 +294,16 @@ public abstract class BackupReaderAbstract
             throws IOException {
 
         mProgressListener.onProgressStep(processBooklistStyles, 1);
-        BooklistStyle booklistStyle = null;
+        BooklistStyle style = null;
         try {
             // deserialization will take care of writing the v200+ SharedPreference file
-            booklistStyle = entity.getSerializable();
+            style = entity.getSerializable();
         } catch (DeserializationException e) {
             Logger.error(e, "Unable to restore style");
         }
 
-        if (booklistStyle != null) {
-            booklistStyle.save(mDb);
+        if (style != null) {
+            style.save(mDb);
         }
     }
 

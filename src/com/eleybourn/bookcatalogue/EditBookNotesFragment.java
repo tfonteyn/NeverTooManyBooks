@@ -95,6 +95,7 @@ public class EditBookNotesFragment
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //noinspection ConstantConditions
         ViewUtils.fixFocusSettings(getView());
     }
 
@@ -205,10 +206,8 @@ public class EditBookNotesFragment
     @Override
     @CallSuper
     public void onPause() {
-        Tracker.enterOnPause(this);
         onSaveFieldsToBook(getBookManager().getBook());
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     /**

@@ -58,7 +58,7 @@ public class GetThumbnailTask
      * many books to process it introduces what looks like lag when scrolling: 5 tasks
      * building now-invisible views is pointless.
      * <p>
-     * Despite above 'allow 2 threads', original code had '1' set so I presume even 2 was to much.
+     * Despite above 'allow 2 threads', original code had '1' set; so I presume even 2 was to much.
      * Given the number of cores has gone up these days, let's see what we can do....
      */
     @NonNull
@@ -84,7 +84,7 @@ public class GetThumbnailTask
     /** ID of book whose cover we are getting. */
     @NonNull
     private final String mUuid;
-    /** Options indicating original caller had checked cache. */
+    /** Flag indicating original caller had checked cache. */
     private final boolean mCacheWasChecked;
     /** The width of the thumbnail retrieved (based on preferences). */
     private final int mWidth;
@@ -93,7 +93,7 @@ public class GetThumbnailTask
     /** Resulting bitmap object. */
     @Nullable
     private Bitmap mBitmap;
-    /** Options indicating image was found in the cache. */
+    /** Flag indicating image was found in the cache. */
     private boolean mWasInCache;
     /** Indicated we want the queue manager to call the finished() method. */
     private boolean mWantFinished = true;
@@ -141,10 +141,10 @@ public class GetThumbnailTask
     /**
      * Allow other tasks (or subclasses tasks) to be queued.
      *
-     * @param t Task to put in queue
+     * @param task Task to put in queue
      */
-    public static void enqueue(@NonNull final SimpleTaskQueue.SimpleTask t) {
-        TASK_QUEUE.enqueue(t);
+    public static void enqueue(@NonNull final SimpleTaskQueue.SimpleTask task) {
+        TASK_QUEUE.enqueue(task);
     }
 
     public static boolean hasActiveTasks() {
@@ -220,7 +220,7 @@ public class GetThumbnailTask
      * Handle the results of the task.
      */
     @Override
-    public void onFinish(@NonNull final Exception e) {
+    public void onFinish(@Nullable final Exception e) {
         if (!mWantFinished) {
             return;
         }

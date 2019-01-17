@@ -38,7 +38,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialog;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -71,7 +70,6 @@ public class EditSeriesListActivity
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(mBookTitle);
         mSeriesAdapter = new ArrayAdapter<>(this,
@@ -81,7 +79,6 @@ public class EditSeriesListActivity
 
         getWindow().setSoftInputMode(
                 android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        Tracker.exitOnCreate(this);
     }
 
     @Override
@@ -124,7 +121,7 @@ public class EditSeriesListActivity
 
         final EditText seriesNumberField = root.findViewById(R.id.series_num);
         //noinspection ConstantConditions
-        seriesNumberField.setText(series.number);
+        seriesNumberField.setText(series.getNumber());
 
         final AlertDialog dialog = new AlertDialog.Builder(EditSeriesListActivity.this)
                 .setView(root)
@@ -269,9 +266,9 @@ public class EditSeriesListActivity
         return false;
     }
 
-    protected SimpleListAdapter<Series> createListAdapter(@LayoutRes final int rowViewId,
+    protected SimpleListAdapter<Series> createListAdapter(@LayoutRes final int rowLayoutId,
                                                           @NonNull final ArrayList<Series> list) {
-        return new SeriesListAdapter(this, rowViewId, list);
+        return new SeriesListAdapter(this, rowLayoutId, list);
     }
 
     /**
@@ -279,41 +276,41 @@ public class EditSeriesListActivity
      */
     private static class Holder {
 
-        TextView rowSeries;
-        TextView rowSeriesSort;
+        TextView rowSeriesView;
+        TextView rowSeriesSortView;
     }
 
     protected class SeriesListAdapter
             extends SimpleListAdapter<Series> {
 
         SeriesListAdapter(@NonNull final Context context,
-                          @LayoutRes final int rowViewId,
+                          @LayoutRes final int rowLayoutId,
                           @NonNull final ArrayList<Series> items) {
-            super(context, rowViewId, items);
+            super(context, rowLayoutId, items);
         }
 
         @Override
         public void onGetView(@NonNull final View convertView,
-                              @NonNull final Series series) {
+                              @NonNull final Series item) {
             Holder holder = ViewTagger.getTag(convertView);
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
-                holder.rowSeries = convertView.findViewById(R.id.row_series);
-                holder.rowSeriesSort = convertView.findViewById(R.id.row_series_sort);
+                holder.rowSeriesView = convertView.findViewById(R.id.row_series);
+                holder.rowSeriesSortView = convertView.findViewById(R.id.row_series_sort);
                 // Tag the parts that need it
                 ViewTagger.setTag(convertView, holder);
             }
             // Setup the variant fields in the holder
-            if (holder.rowSeries != null) {
-                holder.rowSeries.setText(series.getDisplayName());
+            if (holder.rowSeriesView != null) {
+                holder.rowSeriesView.setText(item.getDisplayName());
             }
-            if (holder.rowSeriesSort != null) {
-                if (series.getDisplayName().equals(series.getSortName())) {
-                    holder.rowSeriesSort.setVisibility(View.GONE);
+            if (holder.rowSeriesSortView != null) {
+                if (item.getDisplayName().equals(item.getSortName())) {
+                    holder.rowSeriesSortView.setVisibility(View.GONE);
                 } else {
-                    holder.rowSeriesSort.setVisibility(View.VISIBLE);
-                    holder.rowSeriesSort.setText(series.getSortName());
+                    holder.rowSeriesSortView.setVisibility(View.VISIBLE);
+                    holder.rowSeriesSortView.setText(item.getSortName());
                 }
             }
         }
@@ -323,9 +320,9 @@ public class EditSeriesListActivity
          */
         @Override
         public void onRowClick(@NonNull final View target,
-                               @NonNull final Series series,
+                               @NonNull final Series item,
                                final int position) {
-            edit(series);
+            edit(item);
         }
 
         /**
@@ -333,7 +330,6 @@ public class EditSeriesListActivity
          */
         @Override
         public void onListChanged() {
-            super.onListChanged();
             EditSeriesListActivity.this.onListChanged();
         }
     }

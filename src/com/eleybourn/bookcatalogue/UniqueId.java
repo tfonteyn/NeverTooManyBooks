@@ -106,8 +106,6 @@ public final class UniqueId {
     /** int, id of fragment to display if an Activity supports multiple. */
     public static final String FRAGMENT_ID = "fragment";
     public static final String BKEY_NO_COVER = "noCover";
-    /** ArrayList<String> of preference keys tht have changed. */
-    public static final String BKEY_PREFERENCE_KEYS = "prefKeys";
     /** the resulting {@link ImportSettings#what} flags after an import. */
     public static final String BKEY_IMPORT_RESULT_OPTIONS = "importResult";
     /** the resulting {@link ExportSettings#what} flags after an export. */

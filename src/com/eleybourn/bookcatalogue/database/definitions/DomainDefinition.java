@@ -13,9 +13,6 @@ import java.util.List;
 
 /**
  * Class to store domain name and definition.
- * <p>
- * TOMF FIXME: add support for 'references' clause (and/or in TableDefinition for
- * table constraints to be added)
  *
  * @author Philip Warner
  */
@@ -43,18 +40,20 @@ public class DomainDefinition
     private final String mType;
     @NonNull
     private final List<String> mConstraints = new ArrayList<>();
+    /** Holds a 'REFERENCES' clause (if any). */
+    @Nullable
+    private String mReferences;
 
+    private boolean isPrimaryKey;
     /**
      * Create a PRIMARY KEY column.
      *
      * @param name column name
      */
     public DomainDefinition(@NonNull final String name) {
+        isPrimaryKey = true;
         this.name = name;
-        // a special case; the constraints are added to the type
-        // as they should *always* be used even when we deliberately do not
-        // apply constraints at creation time.
-        mType = TableInfo.TYPE_INTEGER + " PRIMARY KEY autoincrement NOT NULL";
+        mType = ColumnInfo.TYPE_INTEGER;
     }
 
     /**
@@ -74,7 +73,7 @@ public class DomainDefinition
      *
      * @param name    column name
      * @param type    column type (text, int, float, ...)
-     * @param notNull true if this column should never be null
+     * @param notNull <tt>true</tt> if this column should never be null
      */
     public DomainDefinition(@NonNull final String name,
                             @NonNull final String type,
@@ -89,7 +88,7 @@ public class DomainDefinition
     /**
      * @param name        column name
      * @param type        column type (text, int, float, ...)
-     * @param notNull     true if this column should never be null
+     * @param notNull     <tt>true</tt> if this column should never be null
      * @param constraints (optional) a list of generic constraints
      */
     public DomainDefinition(@NonNull final String name,
@@ -120,7 +119,7 @@ public class DomainDefinition
      * @return this for chaining.
      */
     @NonNull
-    public DomainDefinition setDefault(@NonNull final int value) {
+    public DomainDefinition setDefault(final int value) {
         mConstraints.add("DEFAULT " + value);
         return this;
     }
@@ -162,6 +161,27 @@ public class DomainDefinition
         return this;
     }
 
+    /**
+     * Defines a foreign key for this column.
+     * Only simple, primary key references supported for now.
+     * <p>
+     * No validation is done on the arguments.
+     *
+     * FIXME: refactor to keep this on the table level instead.
+     *
+     * @param table   to reference
+     * @param actions 'on delete...' etc...
+     *
+     * @return this for chaining.
+     */
+    @NonNull
+    public DomainDefinition references(@NonNull final TableDefinition table,
+                                       @NonNull final String actions) {
+        mReferences = table.getName() + ' ' + actions;
+        return this;
+    }
+
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -177,8 +197,12 @@ public class DomainDefinition
         return 0;
     }
 
+    /**
+     *
+     * @return <tt>true</tt> if this domain is a 'text' type.
+     */
     public boolean isText() {
-        return TableInfo.TYPE_TEXT.equals(mType.toLowerCase());
+        return ColumnInfo.TYPE_TEXT.equalsIgnoreCase(mType);
     }
 
     /**
@@ -204,14 +228,24 @@ public class DomainDefinition
      * Are you sure you don't want to use {@link #def()} ?
      *
      * @param withConstraints when false, no constraints are applied
+     *
+     * @return the column creation clause
      */
     @NonNull
     String def(final boolean withConstraints) {
         StringBuilder sql = new StringBuilder(name + ' ' + mType);
+        if (isPrimaryKey) {
+            sql.append(" PRIMARY KEY autoincrement NOT NULL");
+        }
 
-        if (withConstraints && !mConstraints.isEmpty()) {
-            for (String cs : mConstraints) {
-                sql.append(' ').append(cs);
+        if (withConstraints) {
+            if (!mConstraints.isEmpty()) {
+                for (String cs : mConstraints) {
+                    sql.append(' ').append(cs);
+                }
+            }
+            if (mReferences != null) {
+                sql.append(" REFERENCES ").append(mReferences);
             }
         }
         return sql.toString();

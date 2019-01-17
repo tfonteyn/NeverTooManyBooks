@@ -101,7 +101,7 @@ public class TableDefinition
         for (TableDefinition table : tables) {
             table.create(db);
             for (IndexDefinition index : table.getIndexes()) {
-                db.execSQL(index.getSql());
+                db.execSQL(index.getCreateStatement());
             }
         }
     }
@@ -736,8 +736,8 @@ public class TableDefinition
      * Return the SQL that can be used to define this table.
      *
      * @param name            Name to use for table
-     * @param withConstraints Options indicating domain constraints should be applied
-     * @param ifNecessary     Options indicating if creation should not be done if table exists
+     * @param withConstraints Flag indicating domain constraints should be applied
+     * @param ifNecessary     Flag indicating if creation should not be done if table exists
      *
      * @return SQL to create table
      */
@@ -849,7 +849,7 @@ public class TableDefinition
     @NonNull
     private TableDefinition createIndices(@NonNull final SynchronizedDb db) {
         for (IndexDefinition i : getIndexes()) {
-            db.execSQL(i.getSql());
+            db.execSQL(i.getCreateStatement());
         }
         return this;
     }

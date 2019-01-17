@@ -44,8 +44,8 @@ public interface Exporter {
      *
      * @throws IOException on any error
      */
-    int doExport(@NonNull OutputStream outputStream,
-                 @NonNull ExportListener listener)
+    int doExport(@NonNull final OutputStream outputStream,
+                 @NonNull final ExportListener listener)
             throws IOException;
 
     /**
@@ -56,13 +56,13 @@ public interface Exporter {
         /**
          * @param max value (can be estimated) for the progress counter.
          */
-        void setMax(int max);
+        void setMax(final int max);
 
         /**
          * report progress in absolute position.
          */
-        void onProgress(@NonNull String message,
-                        int position);
+        void onProgress(@NonNull final String message,
+                        final int position);
 
         boolean isCancelled();
     }

@@ -17,23 +17,25 @@
 package com.eleybourn.bookcatalogue.cropper;
 
 import android.os.Bundle;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
 import java.util.List;
 
-abstract class CropMonitoredActivity extends BaseActivity {
+abstract class CropMonitoredActivity
+        extends BaseActivity {
 
     private final List<LifeCycleListener> mListeners = new ArrayList<>();
 
     public void addLifeCycleListener(@NonNull final LifeCycleListener listener) {
-        if (mListeners.contains(listener))
+        if (mListeners.contains(listener)) {
             return;
+        }
         mListeners.add(listener);
     }
 
@@ -44,23 +46,19 @@ abstract class CropMonitoredActivity extends BaseActivity {
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityCreated(this);
         }
-        Tracker.exitOnCreate(this);
     }
 
     @Override
     @CallSuper
     protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
         for (LifeCycleListener listener : mListeners) {
             listener.onActivityDestroyed(this);
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     @Override
@@ -83,25 +81,38 @@ abstract class CropMonitoredActivity extends BaseActivity {
 
     @SuppressWarnings({"EmptyMethod", "unused"})
     interface LifeCycleListener {
+
         void onActivityCreated(@NonNull final CropMonitoredActivity activity);
+
         void onActivityDestroyed(@NonNull final CropMonitoredActivity activity);
+
         void onActivityPaused(@NonNull final CropMonitoredActivity activity);
+
         void onActivityResumed(@NonNull final CropMonitoredActivity activity);
+
         void onActivityStarted(@NonNull final CropMonitoredActivity activity);
+
         void onActivityStopped(@NonNull final CropMonitoredActivity activity);
     }
 
-    public static class LifeCycleAdapter implements LifeCycleListener {
+    public static class LifeCycleAdapter
+            implements LifeCycleListener {
+
         public void onActivityCreated(@NonNull final CropMonitoredActivity activity) {
         }
+
         public void onActivityDestroyed(@NonNull final CropMonitoredActivity activity) {
         }
+
         public void onActivityPaused(@NonNull final CropMonitoredActivity activity) {
         }
+
         public void onActivityResumed(@NonNull final CropMonitoredActivity activity) {
         }
+
         public void onActivityStarted(@NonNull final CropMonitoredActivity activity) {
         }
+
         public void onActivityStopped(@NonNull final CropMonitoredActivity activity) {
         }
     }

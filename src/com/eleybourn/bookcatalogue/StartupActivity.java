@@ -46,12 +46,11 @@ import androidx.core.content.PermissionChecker;
 
 import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
-import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBCleaner;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.OnTaskFinishListener;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
@@ -79,7 +78,7 @@ public class StartupActivity
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     public static final String PREFS_STARTUP_COUNTDOWN = "Startup.StartCountdown";
-    /** Options to indicate FTS rebuild is required at startup. */
+    /** Flag to indicate FTS rebuild is required at startup. */
     public static final String PREF_STARTUP_FTS_REBUILD_REQUIRED = "Startup.FtsRebuildRequired";
     /** Number of app startup's between offers to backup. */
     private static final int PROMPT_WAIT_BACKUP = 5;
@@ -88,9 +87,9 @@ public class StartupActivity
 
     /** Indicates the upgrade message has been shown. */
     private static boolean mUpgradeMessageShown;
-    /** Options set to true on first call. */
+    /** Flag set to <tt>true</tt> on first call. */
     private static boolean mIsReallyStartup = true;
-    /** Options indicating Amazon hint could be shown. */
+    /** Flag indicating Amazon hint should be shown. */
     private static boolean mShowAmazonHint;
     private static WeakReference<StartupActivity> mStartupActivity = null;
     /** Handler to post run'ables to UI thread. */
@@ -110,7 +109,7 @@ public class StartupActivity
     @Deprecated
     private ProgressDialog mProgress;
 
-    /** Options indicating a backup is required after startup. */
+    /** Flag indicating a backup is required after startup. */
     private boolean mBackupRequired;
     /** UI thread. */
     private Thread mUiThread;
@@ -139,7 +138,7 @@ public class StartupActivity
     /**
      * Will be called during database creation, so at very first start we don't get an 'upgrade'
      * message.
-     *
+     * <p>
      * Note: this replaces the semi-reverse mechanism from pre-v200.
      */
     public void setNewInstallDone() {
@@ -150,7 +149,6 @@ public class StartupActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // request Permissions (Android 6+)
@@ -166,7 +164,6 @@ public class StartupActivity
             }
             startNextStage();
         }
-        Tracker.exitOnCreate(this);
     }
 
     private void initStorage() {
@@ -443,7 +440,7 @@ public class StartupActivity
     }
 
     /**
-     * Last onProgress.
+     * Last step.
      */
     private void gotoMainScreen() {
         Intent intent = new Intent(this, BooksOnBookshelf.class);
@@ -463,12 +460,10 @@ public class StartupActivity
     @Override
     @CallSuper
     protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
         if (mTaskQueue != null) {
             mTaskQueue.terminate();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     /**
@@ -624,7 +619,8 @@ public class StartupActivity
                 coversDBAdapter.analyze();
             }
 
-            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, false)) {
+            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED,
+                                            false)) {
                 UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
                 Prefs.getPrefs().edit().remove(
                         UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED).apply();

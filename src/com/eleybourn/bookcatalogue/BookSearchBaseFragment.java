@@ -74,18 +74,13 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
-
         // make sure {@link #onCreateOptionsMenu} is called
         this.setHasOptionsMenu(true);
-        Tracker.exitOnCreate(this);
     }
 
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this, savedInstanceState);
-
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BookSearchActivity) requireActivity();
 
@@ -113,8 +108,6 @@ public abstract class BookSearchBaseFragment
         if (!Utils.isNetworkAvailable(mActivity)) {
             StandardDialogs.showUserMessage(mActivity, R.string.error_no_internet_connection);
         }
-
-        Tracker.exitOnActivityCreated(this);
     }
 
     /**
@@ -156,13 +149,11 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public void onResume() {
-        Tracker.enterOnResume(this);
         super.onResume();
         if (mSearchManagerId != 0) {
             SearchManager.getMessageSwitch()
                          .addListener(mSearchManagerId, this, true);
         }
-        Tracker.exitOnResume(this);
     }
 
     /**
@@ -217,23 +208,19 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public void onPause() {
-        Tracker.enterOnPause(this);
         if (mSearchManagerId != 0) {
             SearchManager.getMessageSwitch().removeListener(mSearchManagerId, this);
         }
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     @Override
     @CallSuper
     public void onDestroy() {
-        Tracker.enterOnDestroy(this);
         if (mDb != null) {
             mDb.close();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     @Override

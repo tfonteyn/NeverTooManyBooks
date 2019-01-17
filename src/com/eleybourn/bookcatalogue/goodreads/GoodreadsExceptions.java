@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
+import androidx.annotation.NonNull;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 
@@ -27,7 +29,7 @@ public class GoodreadsExceptions {
             super(BookCatalogueApp.getResString(R.string.gr_auth_failed), null);
         }
 
-        public NotAuthorizedException(final Throwable inner) {
+        public NotAuthorizedException(@NonNull final Throwable inner) {
             super(BookCatalogueApp.getResString(R.string.gr_auth_failed), inner);
         }
     }

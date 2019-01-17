@@ -290,10 +290,8 @@ public class AdvancedLocalSearchActivity
     @Override
     @CallSuper
     protected void onPause() {
-        Tracker.enterOnPause(this);
         stopIdleTimer();
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     /**
@@ -302,27 +300,19 @@ public class AdvancedLocalSearchActivity
     @Override
     @CallSuper
     protected void onResume() {
-        Tracker.enterOnResume(this);
         super.onResume();
         userIsActive(true);
-        Tracker.exitOnResume(this);
     }
 
     @Override
     @CallSuper
     public void onDestroy() {
-        Tracker.enterOnDestroy(this);
-
-        try {
-            stopIdleTimer();
-        } catch (RuntimeException ignored) {
-        }
+        stopIdleTimer();
 
         if (mDb != null) {
             mDb.close();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     /**

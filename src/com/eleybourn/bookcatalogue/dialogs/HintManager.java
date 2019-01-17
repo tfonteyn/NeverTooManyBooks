@@ -227,7 +227,7 @@ public final class HintManager {
         /**
          * Set the preference to indicate if this hint should be shown again.
          *
-         * @param visible Options indicating future visibility
+         * @param visible Flag indicating future visibility
          */
         private void setVisibility(final boolean visible) {
             Prefs.getPrefs().edit().putBoolean(getFullPrefName(), visible).apply();

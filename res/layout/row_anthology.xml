@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/SLA_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:focusable="false"
     android:paddingBottom="@dimen/padding_border">
 
-    <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView
         android:id="@+id/title"
         android:layout_width="0dp"
@@ -21,10 +20,9 @@
         android:id="@+id/year"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textIsSelectable="false"
         android:layout_weight="1"
         android:minEms="6"
+        android:textIsSelectable="false"
         android:textSize="12sp"
         tools:text="(1971)" />
-
 </LinearLayout>

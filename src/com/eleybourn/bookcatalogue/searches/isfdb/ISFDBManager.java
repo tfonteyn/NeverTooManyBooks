@@ -103,7 +103,7 @@ public final class ISFDBManager {
      * away from ManagedTask.
      * <p>
      * specifically used by {@link EditBookTOCFragment}.
-     * First onProgress, get all editions for the ISBN
+     * First step, get all editions for the ISBN
      */
     public static void searchEditions(@NonNull final String isbn,
                                       @NonNull final ISFDBResultsListener listener) {
@@ -116,7 +116,7 @@ public final class ISFDBManager {
 
     /**
      * specifically used by {@link EditBookTOCFragment}.
-     * First onProgress, get all editions for the ISBN via
+     * First step, get all editions for the ISBN via
      * {@link #searchEditions(String, ISFDBResultsListener)}
      * That will then call this one
      */

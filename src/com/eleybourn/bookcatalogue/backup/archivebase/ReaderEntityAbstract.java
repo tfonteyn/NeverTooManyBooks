@@ -39,9 +39,6 @@ import java.io.Serializable;
 public abstract class ReaderEntityAbstract
         implements ReaderEntity {
 
-    /** UNICODE stream type for read/write text files. */
-    public static final String UTF8 = "utf8";
-
     /** Buffer size for buffered streams. */
     protected static final int BUFFER_SIZE = 32768;
 

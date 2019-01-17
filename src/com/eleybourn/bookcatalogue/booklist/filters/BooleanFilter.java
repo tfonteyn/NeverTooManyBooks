@@ -1,52 +1,52 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
-import com.eleybourn.bookcatalogue.booklist.prefs.PInteger;
-import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
-import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.eleybourn.bookcatalogue.booklist.prefs.PInteger;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
+
 /**
  * Used for {@link androidx.preference.ListPreference} mimicking a nullable Boolean
- * and supporting an SQL WHERE clause expression
- *
+ * and supporting an SQL WHERE clause expression.
+ * <p>
  * value==1 -> true
  * value==0 -> false
  * value==-1 -> do not use the filter
  */
 public class BooleanFilter
-    extends PInteger
-    implements Filter {
+        extends PInteger
+        implements Filter {
 
-    private static final Integer PTrue = 1;
-    private static final Integer PFalse = 0;
-    private static final Integer PNotUsed = -1;
+    private static final Integer P_TRUE = 1;
+    private static final Integer P_FALSE = 0;
+    private static final Integer P_NOT_USED = -1;
 
-    private final TableDefinition table;
-    private final DomainDefinition domain;
+    private final TableDefinition mTable;
+    private final DomainDefinition mDomain;
 
     public BooleanFilter(@StringRes final int key,
                          @Nullable final String uuid,
                          @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
                          @NonNull final DomainDefinition domain) {
-        super(key, uuid, PNotUsed);
-        this.table = table;
-        this.domain = domain;
+        super(key, uuid, P_NOT_USED);
+        mTable = table;
+        mDomain = domain;
     }
 
     public void set(final boolean value) {
-        set(value ? PTrue : PFalse);
+        set(value ? P_TRUE : P_FALSE);
     }
 
     /**
-     * syntax sugar
+     * syntax sugar.
      *
      * @return <tt>true</tt> if this filter is active
      */
     public boolean isActive() {
-        return (PNotUsed.equals(get()));
+        return P_NOT_USED.equals(get());
     }
 
     /**
@@ -56,18 +56,18 @@ public class BooleanFilter
     @Nullable
     public String getExpression(@Nullable final String uuid) {
         Integer value = get();
-        if (PNotUsed.equals(value)) {
+        if (P_NOT_USED.equals(value)) {
             return null;
         }
-        return table.dot(domain) + '=' + value;
+        return mTable.dot(mDomain) + '=' + value;
     }
 
     @Override
     public String toString() {
-        return "BooleanFilter{" +
-            "table=" + table +
-            ", domain=" + domain +
-            ", " + super.toString() +
-            "}\n";
+        return "BooleanFilter{"
+                + "table=" + mTable
+                + ", domain=" + mDomain
+                + ", " + super.toString()
+                + "}\n";
     }
 }

@@ -23,13 +23,15 @@
     <string name="lbl_pages">Seiten</string>
     <string name="btn_confirm_add_book">Buch hinzufügen</string>
     <string name="btn_confirm_update">Aktualisieren</string>
-    <string name="info_no_books_yet">Es befinden sich keine Bücher im Bücherregal. Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.</string>
+    <string name="info_no_books_yet">Es befinden sich keine Bücher im Bücherregal.
+        Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.</string>
     <string name="menu_expand_all">Alles ausklappen</string>
     <string name="menu_sort_by">Sortieren nach</string>
     <string name="menu_collapse_all">Alles einklappen</string>
     <string name="menu_search">Suche</string>
     <string name="btn_confirm_save_book">Buch speichern</string>
-    <string name="info_no_bookshelves_yet">Es wurde noch kein Bücherregal erstellt. Bitte fügen Sie Bücherregale über das Menü am unteren Bildschirmrand hinzu.</string>
+    <string name="info_no_bookshelves_yet">Es wurde noch kein Bücherregal erstellt.
+        Bitte fügen Sie Bücherregale über das Menü am unteren Bildschirmrand hinzu.</string>
     <string name="menu_add_bookshelf">Bücherregal erstellen</string>
     <string name="btn_confirm_add_bs">Bücherregal hinzufügen</string>
     <string name="menu_edit_bookshelves">Bücherregale verwalten</string>
@@ -39,23 +41,32 @@
     <string name="lbl_bookshelf">Bücherregal: </string>
     <string name="all_books">Alle Bücher</string>
     <string name="isbn_found">ISBN gescannt. Suche im Internet.</string>
-    <string name="title_isbn_search">ISBN-Suche</string>
+    <string name="search_isbn">ISBN-Suche</string>
     <string name="title_edit_bookshelves">Bücherregale verwalten</string>
     <string name="menu_edit_bookshelf">Bücherregal bearbeiten</string>
     <string name="lbl_search_for_books">Suche nach Büchern</string>
     <string name="title_search_for">Suche nach Autor oder Titel</string>
-    <string name="warning_book_not_found">Das gescannte Buch wurde nicht gefunden. Manchmal befindet sich der korrekte Barcode auf der Rückseite des Covers. Geben Sie ansonsten die Daten manuell ein.</string>
+    <string name="warning_book_not_found">Das gescannte Buch wurde nicht gefunden.
+        Manchmal befindet sich der korrekte Barcode auf der Rückseite des Covers.
+        Geben Sie ansonsten die Daten manuell ein.</string>
     <string name="lbl_series_num">#</string>
     <string name="title_import_book_data">Bücher importieren</string>
-    <string name="warning_import_be_cautious">Warnung. Der Import von Daten kann Informationen von bestehenden Büchern überschreiben, wenn die ID der Importdatei mit der bestehenden ID übereinstimmt. Normalerweise ist es kein Problem wenn ein Feld in der exportierten Datei geändert wurde. Bitte stellen Sie bei einem neuen Buch sicher, dass das ID-Feld leer ist.</string>
-    <string name="import_error_failed_is_csv_file_location_correct">FEHLER: Der Import von Daten von der SD-Karte ist fehlgeschlagen. Ist die Datei bereits vorhanden?</string>
+    <string name="warning_import_be_cautious">Warnung. Der Import von Daten kann Informationen
+        von bestehenden Büchern überschreiben, wenn die ID der Importdatei mit der bestehenden
+        ID übereinstimmt. Normalerweise ist es kein Problem wenn ein Feld in der exportierten
+        Datei geändert wurde. Bitte stellen Sie bei einem neuen Buch sicher,
+        dass das ID-Feld leer ist.</string>
+    <string name="import_error_failed_is_csv_file_location_correct">FEHLER: Der Import von
+        Daten von der SD-Karte ist fehlgeschlagen. Ist die Datei bereits vorhanden?</string>
     <string name="search_title">Suchergebnisse</string>
     <string name="results_found">Bücher gefunden</string>
     <string name="menu_administration_long">Verwaltungsfunktionen</string>
     <string name="menu_administration">Verwaltung</string>
     <string name="title_install_scan">Installiere Barcode Scanner</string>
     <string name="about_lbl_version_number">Versionsnummer:</string>
-    <string name="about_donate">Wenn Sie die Entwicklung dieser App unterstützen möchten, können Sie über meine Amazon-Wunschliste oder den PayPal-Knopf spenden. Weil ich in Australien bin, kann ich keine "Kaufversion" der App anbieten. :-) </string>
+    <string name="about_donate">Wenn Sie die Entwicklung dieser App unterstützen möchten,
+        können Sie über meine Amazon-Wunschliste oder den PayPal-Knopf spenden.
+        Weil ich in Australien bin, kann ich keine "Kaufversion" der App anbieten. :-) </string>
     <string name="about_lbl_upgrade">Seit der letzten Aktualisierung</string>
     <string name="menu_edit_book">Buch bearbeiten</string>
     <string name="menu_edit_book_notes">Kommentar</string>
@@ -75,23 +86,31 @@
     <string name="lbl_price_listed">Preis</string>
     <string name="lbl_update_fields">Automatische Aktualisierung der Felder</string>
     <string name="lbl_update_fields_to_update">Felder für Aktualisierung auswählen</string>
-    <string name="info_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
-    <string name="overwrite_thumbnail">Die ausgewählten Felder werden wie gezeigt aktualisiert. Die Cover-Bilder können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle bestehenden Cover-Bilder überschrieben werden? Warnung, die Aktualisierung kann lange dauern. </string>
+    <string name="info_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet
+        aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
+    <string name="overwrite_thumbnail">Die ausgewählten Felder werden wie gezeigt aktualisiert.
+        Die Cover-Bilder können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle
+        bestehenden Cover-Bilder überschrieben werden?
+        Warnung, die Aktualisierung kann lange dauern. </string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
-    <string name="error_search_failed">Die Suche nach dem Buch ist fehlgeschlagen. Bitte überprüfen Sie die Netzwerkeinstellungen.</string>
+    <string name="error_search_failed">Die Suche nach dem Buch ist fehlgeschlagen.
+        Bitte überprüfen Sie die Netzwerkeinstellungen.</string>
     <string name="error_search_exception">Die Suche ist fehlgeschlagen während %1$s: %2$s</string>
     <string name="menu_delete">Cover-Bild löschen</string>
     <string name="help">Hilfe</string>
     <string name="menu_manage_fields">Feld Sichtbarkeit bearbeiten</string>
-    <string name="info_manage_fields">Die ausgewählten Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
+    <string name="info_manage_fields">Die ausgewählten Felder werden im Bildschirm Buch
+        hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
     <string name="anthology_titles">Anthologie-Titel</string>
     <string name="about_donate_amazon">Amazon-Wunschliste</string>
-    <string name="lbl_toc_same_author">Alle Geschichten in dieser Anthologie wurden vom gleichen Autor geschrieben.</string>
+    <string name="lbl_toc_same_author">Alle Geschichten in dieser Anthologie wurden vom
+        gleichen Autor geschrieben.</string>
     <string name="menu_delete_toc_entry">Titel von Anthologie löschen</string>
     <string name="lbl_is_anthology">Ist dieses Buch eine Anthologie?</string>
-    <string name="menu_populate_toc">Automatisches Ausfüllen der Anthologie-Titel (EXPERIMENTELL)</string>
-    <string name="error_automatic_toc_population_failed">Das automatische Ausfüllen der Anthologie-Titel ist fehlgeschlagen</string>
+    <string name="menu_populate_toc">Automatisches Ausfüllen der Anthologie-Titel (nur ISFDB)</string>
+    <string name="error_automatic_toc_population_failed">Das automatische Ausfüllen der
+        Anthologie-Titel ist fehlgeschlagen</string>
     <string name="lbl_anthology">Anthologie</string>
     <string name="toc_confirm">Bitte bestätigen Sie dass diese Anthologie-Titel korrekt sind.</string>
     <string name="menu_cover_add_from_camera">Von Kamera…</string>
@@ -104,7 +123,8 @@
     <string name="lbl_read_start">Datum mit Lesen begonnen</string>
     <string name="lbl_read_end">Datum Lesen beendet</string>
     <string name="title_duplicate_book">Doppeltes Buch</string>
-    <string name="warning_duplicate_book_message">Das hinzuzufügende Buch besteht bereits in der Datenbank. Sind Sie sicher, dass Sie noch eine Kopie hinzufügen möchten?</string>
+    <string name="warning_duplicate_book_message">Das hinzuzufügende Buch besteht bereits in
+        der Datenbank. Sind Sie sicher, dass Sie noch eine Kopie hinzufügen möchten?</string>
     <string name="menu_cover_add_from_gallery">Aus der Fotogalerie…</string>
     <string name="backup_request">Möchten Sie ihre Datenbank auf SD-Karte sichern?</string>
     <string name="lbl_backup_dialog">Sicherungskopie?</string>
@@ -117,13 +137,16 @@
     <string name="lbl_genre">Genre</string>
     <string name="not_set">Nicht gesetzt</string>
     <string name="menu_search_books">Suche Bücher</string>
-    <string name="hint_book_search_by_text">Das Hinzufügen der Bücher per ISBN ist genauer als das Hinzufügen per Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachten Sie, dass der korrekte Barcode manchmal auf der Rückseite des Covers zu finden ist. \n\n</string>
+    <string name="hint_book_search_by_text">Das Hinzufügen der Bücher per ISBN ist genauer als
+        das Hinzufügen per Autor und Titel und sollte im Allgemeinen bevorzugt werden.
+        Bitte beachten Sie, dass der korrekte Barcode manchmal auf der Rückseite des
+        Covers zu finden ist. \n\n</string>
     <string name="about_help_click_here">Klicken Sie hier, um die Online-Hilfe aufzurufen</string>
     <string name="vldt_unable_to_get_value">Der Wert für \'%s\' konnte nicht ermittelt werden</string>
     <string name="vldt_integer_expected">Es wird ein Integer-Wert für \'%s\' erwartet</string>
     <string name="vldt_real_expected">Es wird ein Gleitkomma-Wert für \'%s\' erwartet</string>
     <string name="vldt_date_expected">Es wird ein Datum für \'%s\' erwartet</string>
-    <string name="vldt_boolean_expected">Es wird ein boolescher Wert  (0,1,t,f,true,false) für \'%s\' erwartet</string>
+    <string name="vldt_boolean_expected">Es wird ein boolescher Wert (0,1,t,f,true,false) für \'%s\' erwartet</string>
     <string name="vldt_non_blank_required">Es ist ein Wert für \'%s\' erforderlich</string>
     <string name="vldt_blank_required">\'%s\' muss leer sein</string>
     <string name="vldt_failed">Die Überprüfung für \'%s\' ist fehlgeschlagen</string>
@@ -131,7 +154,8 @@
     <string name="progress_end_backup_success">Sicherungskopie erfolgreich erstellt</string>
     <string name="export_error_backup_failed">Sicherungskopie erstellen fehlgeschlagen</string>
     <string name="error_file_must_contain_column">Die Datei muss eine Spalte mit dem Namen %s enthalten</string>
-    <string name="import_error_csv_file_must_contain_any_column">Die Datei muss eine Spalte mit den folgenden Namen enthalten: %s</string>
+    <string name="import_error_csv_file_must_contain_any_column">Die Datei muss eine Spalte
+        mit den folgenden Namen enthalten: %s</string>
     <string name="error_column_is_blank">Die Spalte %1$s ist in Zeile %2$s leer</string>
     <string name="error_columns_are_blank">Die Spalten %1$s sind in der Zeile %2$d leer</string>
     <string name="btn_confirm_save">Speichern</string>
@@ -201,14 +225,19 @@
     <string name="lt_got_key">Nachdem Sie einen Entwicklerschlüssel erhalten haben
         (oder bereits einen besitzen), geben Sie diesen unten ein.</string>
     <string name="lt_developer_key">Entwicklerschlüssel</string>
-    <string name="lt_required_info">Diese Funktionalität setzt einen LibraryThing Entwicklerschlüssel voraus.
+    <string name="lt_required_info">Diese Funktionalität setzt einen LibraryThing
+        Entwicklerschlüssel voraus.
         Möchten Sie mehr Informationen über LibraryThing erhalten?</string>
-    <string name="lt_uses_info">Diese Funktionalität profitiert von einem LibraryThing Entwicklerschlüssel. Wollen Sie mehr Informationen über LibraryThing erhalten oder diese Meldung deaktivieren?  Informationen zu LibraryThing erhalten Sie im Tab LibraryThing in Hilfe & Verwaltung.</string>
+    <string name="lt_uses_info">Diese Funktionalität profitiert von einem LibraryThing
+        Entwicklerschlüssel. Wollen Sie mehr Informationen über LibraryThing erhalten
+        oder diese Meldung deaktivieren?  Informationen zu LibraryThing erhalten Sie im
+        Tab LibraryThing in Hilfe &amp; Verwaltung.</string>
     <string name="lt_registration_title">LibraryThing-Registrierung</string>
     <string name="btn_more_info">Weitere Informationen.</string>
     <string name="btn_disable_message">Meldung deaktivieren</string>
-    <string name="lt_reset_messages_info">Diese App zeigt fallweise optionale Meldungen zu LibraryThing an.
-        Wenn diese Meldungen deaktiviert wurden können, Sie die Deaktivierung über den Knopf unten zurücksetzen.</string>
+    <string name="lt_reset_messages_info">Diese App zeigt fallweise optionale Meldungen
+        zu LibraryThing an. Wenn diese Meldungen deaktiviert wurden können, Sie die
+        Deaktivierung über den Knopf unten zurücksetzen.</string>
     <string name="btn_reset">Zurücksetzen</string>
     <string name="debug_send_info_text">Klicken Sie auf den Button unten, um Informationen über
         die letzten Abstürze der App zu sammeln und an einen der Entwickler zu schicken.
@@ -449,7 +478,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="size">Größe</string>
     <string name="updated">Geändert</string>
     <string name="import_error_csv_file_not_found">Keine Exportdatei gefunden</string>
-    <string name="import_warning_csv_file_more_then_one_found">Mehr als eine Exportdatei gefunden. Bitte wählen Sie eine aus der nachstehenden Liste</string>
+    <string name="import_warning_select_csv_file">Mehr als eine Exportdatei gefunden. Bitte wählen Sie eine aus der nachstehenden Liste</string>
     <string name="problem_starting_import_arg">Problem beim Start des Imports: %1$s</string>
     <string name="hint_booklist_style_menu">Hier können Sie den Stil der Liste wählen.
         \n\nSie können auch dieses Menü anpassen und Ihre eigenen Stile erzeugen. Klicken Sie dafür auf \'Anpassen\' am Ende der Liste.
@@ -704,7 +733,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="menu_set_incomplete">Als unvollständig markieren</string>
     <string name="error_search_configuration">Suchkonfigurationsfehler. Öffnen Sie die Admin-Seite und überprüfen Sie die Einstellungen für die Suchseiten</string>
     <string name="tab_lbl_search_site_order">Reihenfolge</string>
-    <string name="search_with_text">Suche</string>
+    <string name="search_with_text">Suche: %1$s</string>
     <string name="btn_options">Optionen</string>
     <string name="lbl_price_paid">Bezahlt</string>
     <string name="lbl_first_publication">Erstveröffentlichung</string>
@@ -715,7 +744,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="lbl_date_acquired_year">Jahr erworben</string>
     <string name="lbl_is_complete">Ist komplett</string>
     <string name="btn_merge">Vereinigen</string>
-    <string name="table_of_content">Inhaltsverzeichnis</string>
+    <string name="lbl_table_of_content">Inhaltsverzeichnis</string>
     <string name="lbl_edition_book_club">Buchclub Edition</string>
     <string name="book_format_audiobook">Hörbuch</string>
     <string name="progress_msg_process_preferences">Einstellungen…</string>

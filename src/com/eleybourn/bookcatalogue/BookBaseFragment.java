@@ -52,7 +52,7 @@ import com.eleybourn.bookcatalogue.datamanager.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
@@ -170,7 +170,6 @@ public abstract class BookBaseFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this, savedInstanceState);
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
 
@@ -191,7 +190,6 @@ public abstract class BookBaseFragment
         }
 
         initFields();
-        Tracker.exitOnActivityCreated(this);
     }
 
     /**
@@ -257,7 +255,7 @@ public abstract class BookBaseFragment
 
     /**
      * Default implementation of code to load the Book object.
-     * Override as needed, calling super as the first onProgress.
+     * Override as needed, calling super as the first step.
      * <p>
      * This is where you should populate all the fields with the values coming from the book.
      * This base class manages all the actual fields, but 'special' fields can/should be handled
@@ -289,11 +287,9 @@ public abstract class BookBaseFragment
     @Override
     @CallSuper
     public void onPause() {
-        Tracker.enterOnPause(this);
         // This is now done in onPause() since the view may have been deleted when this is called
         saveFieldsTo(getBookManager().getBook());
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     /**
@@ -320,12 +316,10 @@ public abstract class BookBaseFragment
     @Override
     @CallSuper
     public void onDestroy() {
-        Tracker.enterOnDestroy(this);
         if (mDb != null) {
             mDb.close();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     //</editor-fold>
@@ -463,7 +457,7 @@ public abstract class BookBaseFragment
 
     /**
      * The 'drop-down' menu button next to an AutoCompleteTextView field.
-     * Allows us to show a {@link SelectOneDialog#selectObjectDialog} with a list of strings
+     * Allows us to show a {@link SimpleDialog#selectObjectDialog} with a list of strings
      * to choose from.
      *
      * @param field         {@link Field} to edit
@@ -491,12 +485,12 @@ public abstract class BookBaseFragment
         getView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                SelectOneDialog.selectObjectDialog(
+                SimpleDialog.selectObjectDialog(
                         requireActivity().getLayoutInflater(),
                         getString(dialogTitleId), field, list,
-                        new SelectOneDialog.SimpleDialogOnClickListener() {
+                        new SimpleDialog.OnClickListener() {
                             @Override
-                            public void onClick(@NonNull final SelectOneDialog.SimpleDialogItem item) {
+                            public void onClick(@NonNull final SimpleDialog.SimpleDialogItem item) {
                                 field.setValue(item.toString());
                             }
                         });
@@ -511,7 +505,7 @@ public abstract class BookBaseFragment
      * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
      * @param fieldButtonId field/button to bind the OnClickListener to (can be same as field.id)
-     * @param multiLine     true if the dialog box should offer a multi-line input.
+     * @param multiLine     <tt>true</tt> if the dialog box should offer a multi-line input.
      */
     @SuppressWarnings("SameParameterValue")
     void initTextFieldEditor(@NonNull final String callerTag,
@@ -738,7 +732,7 @@ public abstract class BookBaseFragment
                     // Determine if we should hide it
                     if (!(view instanceof ImageView)) {
                         final String value = mFields.getField(fieldId).getValue().toString();
-                        visibility = (value != null && !value.isEmpty()) ? View.VISIBLE : View.GONE;
+                        visibility = !value.isEmpty() ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
                     }
                 }

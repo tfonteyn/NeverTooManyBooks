@@ -186,11 +186,11 @@ public class EditBookLoanedFragment
     }
 
     @NonNull
-    private ViewGroup loadFragmentIntoView(@LayoutRes final int fragmentId) {
+    private ViewGroup loadFragmentIntoView(@LayoutRes final int fragmentLayoutId) {
         //noinspection ConstantConditions
         ViewGroup sv = getView().findViewById(R.id.root);
         sv.removeAllViews();
-        requireActivity().getLayoutInflater().inflate(fragmentId, sv);
+        requireActivity().getLayoutInflater().inflate(fragmentLayoutId, sv);
         return sv;
     }
     //</editor-fold>

@@ -41,9 +41,9 @@ import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
+import com.eleybourn.bookcatalogue.database.definitions.ColumnInfo;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
-import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
@@ -99,22 +99,22 @@ public final class CoversDBA
             new DomainDefinition("_id");
 
     private static final DomainDefinition DOM_DATE =
-            new DomainDefinition("date", TableInfo.TYPE_DATETIME, true)
+            new DomainDefinition("date", ColumnInfo.TYPE_DATETIME, true)
                     .setDefault("current_timestamp");
     // T = Thumbnail; C = cover? Only found reference to "T"
     private static final DomainDefinition DOM_TYPE =
-            new DomainDefinition("type", TableInfo.TYPE_TEXT, true);
+            new DomainDefinition("type", ColumnInfo.TYPE_TEXT, true);
     private static final DomainDefinition DOM_IMAGE =
-            new DomainDefinition("image", TableInfo.TYPE_BLOB, true);
+            new DomainDefinition("image", ColumnInfo.TYPE_BLOB, true);
     private static final DomainDefinition DOM_WIDTH =
-            new DomainDefinition("width", TableInfo.TYPE_INTEGER, true);
+            new DomainDefinition("width", ColumnInfo.TYPE_INTEGER, true);
     private static final DomainDefinition DOM_HEIGHT =
-            new DomainDefinition("height", TableInfo.TYPE_INTEGER, true);
+            new DomainDefinition("height", ColumnInfo.TYPE_INTEGER, true);
     private static final DomainDefinition DOM_SIZE =
-            new DomainDefinition("size", TableInfo.TYPE_INTEGER, true);
+            new DomainDefinition("size", ColumnInfo.TYPE_INTEGER, true);
 
     private static final DomainDefinition DOM_FILENAME =
-            new DomainDefinition("filename", TableInfo.TYPE_TEXT, true);
+            new DomainDefinition("filename", ColumnInfo.TYPE_TEXT, true);
 
     /** table definitions. */
     private static final TableDefinition TBL_IMAGE =

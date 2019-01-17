@@ -39,7 +39,7 @@
     <string name="lbl_bookshelf">Libreria</string>
     <string name="all_books">Tutti i libri</string>
     <string name="isbn_found">ISBN acquisito. Ricerca in Internet.</string>
-    <string name="title_isbn_search">Cerca ISBN</string>
+    <string name="search_isbn">Cerca ISBN</string>
     <string name="title_edit_bookshelves">Gestisci librerie</string>
     <string name="menu_edit_bookshelf">Modifica libreria</string>
     <string name="lbl_search_for_books">Cerca per libro</string>
@@ -422,7 +422,7 @@
     <string name="size">Dimensioni</string>
     <string name="updated">Aggiornato</string>
     <string name="import_error_csv_file_not_found">Nessun file di esportazione trovato</string>
-    <string name="import_warning_csv_file_more_then_one_found">È stato trovato più di un file di esportazione; scegli un file di esportazione da importare dall\'elenco qui sotto</string>
+    <string name="import_warning_select_csv_file">È stato trovato più di un file di esportazione; scegli un file di esportazione da importare dall\'elenco qui sotto</string>
     <string name="problem_starting_import_arg">Si è verificato un problema all\'avvio dell\'importazione: %1$s</string>
     <string name="hint_booklist_style_menu">Questo menu permette di scegliere lo stile dell\'elenco. 
     								\n\nÈ anche possibile personalizzare questo menu, così come creare i propri stili di elenco, facendo click su \'Personalizza\' in fondo dell\'elenco.</string>
@@ -689,7 +689,7 @@
     <string name="lbl_date_acquired_year">Anno acquisito</string>
     <string name="lbl_is_complete">È completo</string>
     <string name="btn_merge">Unire</string>
-    <string name="table_of_content">Tabella dei contenuti</string>
+    <string name="lbl_table_of_content">Tabella dei contenuti</string>
     <string name="book_format_audiobook">Audiolibro</string>
     <string name="progress_msg_process_preferences">Preferenze…</string>
     <string name="progress_msg_process_cover">Copertine…</string>

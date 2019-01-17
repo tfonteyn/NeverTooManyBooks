@@ -76,7 +76,7 @@ public abstract class ManagedTask
     private final long mMessageSenderId;
     /** message to send to the TaskManager when all is said and done. */
     protected String mFinalMessage;
-    /** Options indicating the main runTask method has completed. Set in thread run. */
+    /** Flag indicating the main runTask method has completed. Set in thread run. */
     private boolean mFinished;
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mCancelFlg;
@@ -132,7 +132,7 @@ public abstract class ManagedTask
             throws Exception;
 
     /**
-     * Convinience routine to ask the TaskManager to get a String from a resource ID.
+     * Convenience routine to ask the TaskManager to get a String from a resource ID.
      *
      * @param id Resource ID
      *

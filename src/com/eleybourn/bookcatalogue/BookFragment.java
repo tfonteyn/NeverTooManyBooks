@@ -20,6 +20,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.adapters.TOCAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -128,7 +129,7 @@ public class BookFragment
     }
 
     /**
-     * Set the current visible book id.
+     * Set the current visible book id int the result code.
      */
     private void setDefaultActivityResult() {
         Intent data = new Intent();
@@ -205,7 +206,7 @@ public class BookFragment
         mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
                .setFormatter(new Fields.BookEditionsFormatter());
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED)
-               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(this.requireContext()));
+               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(requireContext()));
         mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
         mFields.add(R.id.notes, UniqueId.KEY_BOOK_NOTES)
@@ -340,7 +341,7 @@ public class BookFragment
         }
 
         // finally, enable the listener for flings
-        mGestureDetector = new GestureDetector(this.getContext(), new FlingHandler());
+        mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
         //noinspection ConstantConditions
         getView().setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("ClickableViewAccessibility")
@@ -481,9 +482,8 @@ public class BookFragment
             //noinspection ConstantConditions
             final ListView contentSection = getView().findViewById(R.id.toc);
 
-            ArrayAdapter<TOCEntry> adapter = new TOCListAdapter(mActivity,
-                                                                R.layout.row_toc_entry_with_author,
-                                                                list);
+            ArrayAdapter<TOCEntry> adapter =
+                    new TOCAdapter(mActivity, R.layout.row_toc_entry_with_author, list);
             contentSection.setAdapter(adapter);
 
             getView().findViewById(R.id.toc_button)
@@ -512,14 +512,13 @@ public class BookFragment
     /**
      * Close the list object (frees statements) and if we are finishing, delete the temp table.
      * <p>
-     * This is an ESSENTIAL onProgress; for some reason, in Android 2.1 if these statements are not
+     * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
      * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
      * the database being closed by the deeply dodgy auto-close code in Android.
      */
     @Override
     @CallSuper
     public void onPause() {
-        Tracker.enterOnPause(this);
         if (mFlattenedBooklist != null) {
             mFlattenedBooklist.close();
             if (mActivity.isFinishing()) {
@@ -533,7 +532,6 @@ public class BookFragment
         setDefaultActivityResult();
 
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     /**
@@ -628,7 +626,6 @@ public class BookFragment
     public void onActivityResult(final int requestCode,
                                  final int resultCode,
                                  @Nullable final Intent data) {
-        Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case UniqueId.REQ_BOOK_DUPLICATE:
             case UniqueId.REQ_BOOK_EDIT:
@@ -644,8 +641,6 @@ public class BookFragment
                 }
                 break;
         }
-
-        Tracker.exitOnActivityResult(this);
     }
 
     /**
@@ -656,7 +651,7 @@ public class BookFragment
             extends GestureDetector.SimpleOnGestureListener {
 
         @Override
-        public boolean onDown(final MotionEvent e) {
+        public boolean onDown(@NonNull final MotionEvent e) {
             return true;
         }
 

@@ -150,7 +150,7 @@ public class GoodreadsManager {
     private static final String INVALID_CREDENTIALS =
             "Goodreads credentials need to be validated before accessing user data";
 
-    /** Set to true when the credentials have been successfully verified. */
+    /** Set to <tt>true</tt> when the credentials have been successfully verified. */
     private static boolean mHasValidCredentials = false;
     /** Cached when credentials have been verified. */
     @Nullable
@@ -241,7 +241,7 @@ public class GoodreadsManager {
         StringBuilder canonical = new StringBuilder();
         name = name.toLowerCase();
         for (int i = 0; i < name.length(); i++) {
-            Character c = name.charAt(i);
+            char c = name.charAt(i);
             if (Character.isLetterOrDigit(c)) {
                 canonical.append(c);
             } else {
@@ -274,7 +274,7 @@ public class GoodreadsManager {
                     date += '-' + String.format("%02d", data.getLong(dayKey));
                 }
             }
-            if (resultKey != null && date != null && !date.isEmpty()) {
+            if (resultKey != null && !date.isEmpty()) {
                 data.putString(resultKey, date);
             }
         }

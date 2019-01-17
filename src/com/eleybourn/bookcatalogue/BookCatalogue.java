@@ -7,8 +7,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.eleybourn.bookcatalogue.debug.Tracker;
-
 /**
  * This is a placeholder class to deal with the surprising number of old shortcuts that
  * have not been updated from version 3.x.

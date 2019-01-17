@@ -50,6 +50,7 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -61,6 +62,7 @@ import java.util.Objects;
 public class UpdateFieldsFromInternetActivity
         extends BaseActivityWithTasks {
 
+    /** RequestCode for editing the search sites order. */
     private static final int REQ_PREFERRED_SEARCH_SITES = 0;
 
     /**
@@ -69,12 +71,13 @@ public class UpdateFieldsFromInternetActivity
      */
     private static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
     /** which fields to update and how. */
-    private final FieldUsages mFieldUsages = new FieldUsages();
+    private final Map<String, Fields.FieldUsage> mFieldUsages = new LinkedHashMap<>();
     /** where to look. */
     private int mSearchSites = SearchSites.Site.SEARCH_ALL;
     /** 0 for all books, or a specific book. */
     private long mBookId;
 
+    /** the ViewGroup where we'll add the list of fields. */
     private ViewGroup mListContainer;
 
     /** senderId of the update task. */
@@ -111,7 +114,6 @@ public class UpdateFieldsFromInternetActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
@@ -141,8 +143,22 @@ public class UpdateFieldsFromInternetActivity
 
         initFields();
         populateFields();
-        initCancelConfirmButtons();
-        Tracker.exitOnCreate(this);
+
+        // start the update
+        findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                handleConfirm();
+            }
+        });
+
+        // don't start update, just quit.
+        findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                finish();
+            }
+        });
     }
 
     /**
@@ -160,7 +176,7 @@ public class UpdateFieldsFromInternetActivity
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES,
                      R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.BKEY_TOC_TITLES_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                     R.string.table_of_content, Fields.FieldUsage.Usage.AddExtra, true);
+                     R.string.lbl_table_of_content, Fields.FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.KEY_BOOK_PUBLISHER,
                      R.string.lbl_publisher, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED,
@@ -195,7 +211,8 @@ public class UpdateFieldsFromInternetActivity
                               final boolean isList) {
 
         if (Fields.isVisible(fieldId)) {
-            mFieldUsages.put(new Fields.FieldUsage(fieldId, nameStringId, defaultUsage, isList));
+            mFieldUsages.put(fieldId,
+                             new Fields.FieldUsage(fieldId, nameStringId, defaultUsage, isList));
         }
     }
 
@@ -215,7 +232,8 @@ public class UpdateFieldsFromInternetActivity
                               final boolean isList) {
 
         if (Fields.isVisible(visField)) {
-            mFieldUsages.put(new Fields.FieldUsage(fieldId, nameStringId, defaultUsage, isList));
+            mFieldUsages.put(fieldId,
+                             new Fields.FieldUsage(fieldId, nameStringId, defaultUsage, isList));
         }
     }
 
@@ -251,24 +269,10 @@ public class UpdateFieldsFromInternetActivity
         }
     }
 
-    private void initCancelConfirmButtons() {
-        findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                handleConfirm(v);
-            }
-        });
-
-        // don't start update, just quit.
-        findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                finish();
-            }
-        });
-    }
-
-    public void handleConfirm(@NonNull final View v) {
+    /**
+     * After confirmation, start the process.
+     */
+    public void handleConfirm() {
         // sanity check
         if (!hasSelections()) {
             StandardDialogs.showUserMessage(UpdateFieldsFromInternetActivity.this,
@@ -427,40 +431,20 @@ public class UpdateFieldsFromInternetActivity
     @Override
     @CallSuper
     protected void onPause() {
-        Tracker.enterOnPause(this);
         if (mUpdateSenderId != 0) {
             UpdateFieldsFromInternetTask.getMessageSwitch()
                                         .removeListener(mUpdateSenderId, mSearchTaskListener);
         }
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     @Override
     @CallSuper
     protected void onResume() {
-        Tracker.enterOnResume(this);
         super.onResume();
         if (mUpdateSenderId != 0) {
             UpdateFieldsFromInternetTask.getMessageSwitch()
                                         .addListener(mUpdateSenderId, mSearchTaskListener, true);
-        }
-        Tracker.exitOnResume(this);
-    }
-
-    /**
-     * Class to manage a collection of fields and the rules for importing them.
-     * Inherits from {@link LinkedHashMap} to guarantee iteration order.
-     *
-     * @author Philip Warner
-     */
-    public static class FieldUsages
-            extends LinkedHashMap<String, Fields.FieldUsage> {
-
-        private static final long serialVersionUID = -1477866533726535097L;
-
-        public void put(@NonNull final Fields.FieldUsage usage) {
-            this.put(usage.fieldId, usage);
         }
     }
 }

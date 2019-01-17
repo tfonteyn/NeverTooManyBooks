@@ -26,7 +26,7 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
 
 /**
- * 'Meta' Validator to evaluate a list of validators; any one being true is OK.
+ * 'Meta' Validator to evaluate a list of validators; any one being <tt>true</tt> is OK.
  *
  * @author Philip Warner
  */

@@ -3,8 +3,7 @@ package com.eleybourn.bookcatalogue;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -38,13 +37,10 @@ public final class DEBUG_SWITCHES {
     /** enable timers for performance measurements. */
     public static final boolean TIMERS = false;
 
-    /** {@link Prefs}. */
-    public static final boolean PREFS = true;
-
     public static final boolean DUMP_STYLE = true;
 
     /** dump the sql string to the log. */
-    public static final boolean SQL = true;
+    public static final boolean SQL = false;
 
     /** {@link DBA}. */
     public static final boolean DB_ADAPTER = false;
@@ -66,8 +62,8 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.utils.ImageUtils}. */
     public static final boolean IMAGE_UTILS = false;
 
-    /** {@link SimpleTaskQueueProgressDialogFragment}. */
-    public static final boolean SQPFragment = false;
+    /** {@link TaskWithProgressDialogFragment}. */
+    public static final boolean SQP_FRAGMENT = false;
 
     /** {@link com.eleybourn.bookcatalogue.utils.StorageUtils}. */
     public static final boolean STORAGE_UTILS = false;
@@ -123,7 +119,7 @@ public final class DEBUG_SWITCHES {
     /**
      * all things XML related.
      */
-    public static final boolean XML = true;
+    public static final boolean XML = false;
 
     private DEBUG_SWITCHES() {
     }

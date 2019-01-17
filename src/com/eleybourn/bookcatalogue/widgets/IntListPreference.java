@@ -10,6 +10,7 @@ import android.util.TypedValue;
 
 import androidx.annotation.ArrayRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.DialogPreference;
 import androidx.preference.Preference;
 
@@ -216,6 +217,7 @@ public class IntListPreference
      *
      * @return The entry corresponding to the current value, or null.
      */
+    @Nullable
     public CharSequence getEntry() {
         int index = getValueIndex();
         return index >= 0 && mEntries != null ? mEntries[index] : null;
@@ -261,7 +263,7 @@ public class IntListPreference
     }
 
     @Override
-    protected void onSetInitialValue(@NonNull final Object defaultValue) {
+    protected void onSetInitialValue(@Nullable final Object defaultValue) {
         if (defaultValue == null) {
             Logger.debug("defaultValue was NULL");
         }

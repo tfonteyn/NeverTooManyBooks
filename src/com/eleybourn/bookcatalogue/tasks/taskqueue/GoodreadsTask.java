@@ -74,11 +74,10 @@ public abstract class GoodreadsTask
      * Create a new View.
      */
     @Override
-    public View newListItemView(@NonNull final LayoutInflater inflater,
-                                @NonNull final Context context,
+    public View newListItemView(@NonNull final Context context,
                                 @NonNull final BindableItemCursor cursor,
                                 @NonNull final ViewGroup parent) {
-        View view = inflater.inflate(R.layout.task_info, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.task_info, parent, false);
         ViewTagger.setTag(view, R.id.TAG_TASK, this);
 
         TaskHolder holder = new TaskHolder();
@@ -127,9 +126,10 @@ public abstract class GoodreadsTask
                 statusText = context.getString(R.string.gr_tq_queued);
                 holder.retry_info
                         .setText(context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
-                                          this.getRetries(),
-                                          this.getRetryLimit(),
-                                          DateUtils.toPrettyDateTime(tasksCursor.getRetryDate())));
+                                                   this.getRetries(),
+                                                   this.getRetryLimit(),
+                                                   DateUtils.toPrettyDateTime(
+                                                           tasksCursor.getRetryDate())));
                 holder.retry_info.setVisibility(View.VISIBLE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
@@ -156,7 +156,7 @@ public abstract class GoodreadsTask
                                         .getResString(R.string.gr_tq_generic_task_info,
                                                       this.getId(),
                                                       DateUtils.toPrettyDateTime(
-                                                                   tasksCursor.getQueuedDate())));
+                                                              tasksCursor.getQueuedDate())));
         //view.requestLayout();
     }
 

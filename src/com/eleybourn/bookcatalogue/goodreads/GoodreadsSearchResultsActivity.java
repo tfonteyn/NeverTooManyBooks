@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +38,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsWork;
@@ -77,7 +75,6 @@ public class GoodreadsSearchResultsActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         mDb = new DBA(this);
@@ -93,7 +90,6 @@ public class GoodreadsSearchResultsActivity
             setResult(Activity.RESULT_CANCELED);
             finish();
         }
-        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -157,12 +153,10 @@ public class GoodreadsSearchResultsActivity
     @Override
     @CallSuper
     public void onDestroy() {
-        Tracker.enterOnDestroy(this);
         if (mDb != null) {
             mDb.close();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     /**
@@ -194,15 +188,8 @@ public class GoodreadsSearchResultsActivity
     private class ResultsAdapter
             extends ArrayAdapter<GoodreadsWork> {
 
-        /** Used in building views when needed. */
-        @NonNull
-        private final LayoutInflater mInflater;
-
         ResultsAdapter() {
             super(GoodreadsSearchResultsActivity.this, 0, mList);
-            // Save Inflater for later use
-            //noinspection ConstantConditions
-            mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @NonNull
@@ -212,8 +199,8 @@ public class GoodreadsSearchResultsActivity
             ListHolder holder;
             if (convertView == null) {
                 // Not recycling, get a new View and make the holder for it.
-                convertView = mInflater.inflate(R.layout.goodreads_work_item,
-                                                parent, false);
+                convertView = LayoutInflater.from(getContext())
+                                            .inflate(R.layout.goodreads_work_item, parent, false);
 
                 holder = new ListHolder((ImageView) convertView.findViewById(R.id.coverImage));
                 holder.author = convertView.findViewById(R.id.author);

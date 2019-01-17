@@ -113,12 +113,9 @@ public class EditBookFieldsFragment
     @CallSuper
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
-
+        //noinspection ConstantConditions
         ViewUtils.fixFocusSettings(getView());
-
-        Tracker.exitOnActivityCreated(this);
     }
 
     /**

@@ -4,22 +4,22 @@
         <string name="new_in_600">
 		<![CDATA[
 			<p><b>New in 6.0.0</b>\n\n
-				* Modernisation to Android 5.0 bringing lots of new UI goodies.\n
-                * Cover thumbnails and log files moved to dedicated sub folders.\n
-                * Configurable websites search order.\n
-                * New Search website: ISFDB.\n
-                * Better Anthology support (Edit/View/cross-book) and morphed into \'Table of Content\' or \'TOC\'\n
-                * TOC auto populated (ISFDB site only!).\n
-                * Language field wil show the translated name for the current locale.\n
-                * Removed the old \'Classic\' view (sorry)\n
-                * Books & Anthology/TOC titles now have a \'first published\' field\n
-                * Books Editions (1st, book-club, etc)\n
-                * Book paid price\n
-                * Book date acquired\n
-                * Currency support for prices\n
-                * Styles now exported/imported in XML format\n
-                * Export of Book information in XML (no import yet)\n
-                * LibraryThing & ISFDB local id for future usage\n
+                * Modernisation to Android 5.0 bringing lots of new UI goodies.
+                * Cover thumbnails and log files moved to dedicated sub folders.
+                * Configurable websites search order.
+                * New Search website: ISFDB.
+                * Better Anthology support (Edit/View/cross-book) and morphed into \'Table of Content\' or \'TOC\'
+                * TOC auto populated (ISFDB site only!).
+                * Language field wil show the translated name for the current locale.
+                * Removed the old \'Classic\' view (sorry).
+                * Books & Anthology/TOC titles now have a \'first published\' field.
+                * Books Editions (1st, book-club, etc).
+                * Book paid price.
+                * Book date acquired.
+                * Currency support for prices.
+                * Styles now exported/imported in XML format.
+                * Export of Book information in XML (no import yet).
+                * LibraryThing & ISFDB local id for future usage.
 			</p>
 		]]>
     </string>

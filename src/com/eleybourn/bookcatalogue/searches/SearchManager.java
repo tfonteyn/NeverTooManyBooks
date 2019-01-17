@@ -95,11 +95,11 @@ public class SearchManager {
     private int mSearchFlags;
     /** Accumulated book data. */
     private Bundle mBookData;
-    /** Options indicating searches will be non-concurrent title/author found via ASIN. */
+    /** Flag indicating searches will be non-concurrent title/author found via ASIN. */
     private boolean mSearchingAsin;
-    /** Options indicating searches will be non-concurrent until an ISBN is found. */
+    /** Flag indicating searches will be non-concurrent until an ISBN is found. */
     private boolean mWaitingForIsbn;
-    /** Options indicating a task was cancelled. */
+    /** Flag indicating a task was cancelled. */
     private boolean mCancelledFlg;
     /** Original author for search. */
     private String mAuthor;

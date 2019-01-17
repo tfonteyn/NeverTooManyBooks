@@ -9,6 +9,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 
@@ -75,6 +76,12 @@ abstract class AbstractBase {
 
             } catch (java.net.SocketTimeoutException e) {
                 throw e;
+            } catch (EOFException e) {
+                // this happens a often with ISFDB... Mr. Internet says it's a server issue.
+                // not so sure that Mr. Internet is correct thought.
+                //HACK: try again....
+                return loadPage();
+
             } catch (IOException e) {
                 Logger.error(e, mPath);
                 return false;

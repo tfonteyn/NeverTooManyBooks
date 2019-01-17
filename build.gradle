@@ -7,32 +7,45 @@ if (project.hasProperty("BookCatalogue.signing")
 
 buildscript {
     repositories {
+        google()
         jcenter()
         mavenCentral()
-        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.0'
     }
 }
 
 allprojects {
     repositories {
-        mavenCentral()
         google()
+        jcenter()
+        mavenCentral()
     }
 }
 
+/*
+  AndroidX release notes:  https://developer.android.com/jetpack/androidx/androidx-rn
+ */
 dependencies {
     // Can't get the Amazon one online.
     implementation fileTree(include: 'amazon-mobile-associates-1.0.64.0.jar', dir: 'libs')
+
     // standard Android support libs
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'androidx.core:core:1.1.0-alpha03'
     implementation 'androidx.annotation:annotation:1.0.1'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.preference:preference:1.1.0-alpha02'
+    implementation 'androidx.drawerlayout:drawerlayout:1.0.0'
+    implementation 'androidx.viewpager:viewpager:1.0.0'
+    implementation 'androidx.fragment:fragment:1.1.0-alpha03'
+
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+
+//    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    //
     implementation 'com.google.android.material:material:1.1.0-alpha02'
-    implementation 'com.android.support:preference-v7:28.0.0'
+    //
+    //
     implementation 'ch.acra:acra:4.11'
     // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.11.3'

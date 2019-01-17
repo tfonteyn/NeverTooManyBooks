@@ -128,26 +128,26 @@ final class SendBookEvents {
          * This method also prepares the BookEventHolder object for the View.
          */
         @Override
-        public View newListItemView(@NonNull final LayoutInflater inflater,
-                                    @NonNull final Context context,
+        public View newListItemView(@NonNull final Context context,
                                     @NonNull final BindableItemCursor cursor,
                                     @NonNull final ViewGroup parent) {
-            View view = inflater.inflate(R.layout.row_book_event_info, parent, false);
+            View view = LayoutInflater.from(context)
+                                      .inflate(R.layout.row_book_event_info, parent,false);
             ViewTagger.setTag(view, R.id.TAG_EVENT, this);
             BookEventHolder holder = new BookEventHolder();
             holder.event = this;
             holder.rowId = cursor.getId();
 
-            holder.author = view.findViewById(R.id.author);
-            holder.button = view.findViewById(R.id.checked);
-            holder.date = view.findViewById(R.id.date);
-            holder.error = view.findViewById(R.id.error);
-            holder.retry = view.findViewById(R.id.retry);
-            holder.title = view.findViewById(R.id.title);
+            holder.authorView = view.findViewById(R.id.author);
+            holder.buttonView = view.findViewById(R.id.checked);
+            holder.dateView = view.findViewById(R.id.date);
+            holder.errorView = view.findViewById(R.id.error);
+            holder.retryView = view.findViewById(R.id.retry);
+            holder.titleView = view.findViewById(R.id.title);
 
             ViewTagger.setTag(view, R.id.TAG_BOOK_EVENT_HOLDER, holder);
-            ViewTagger.setTag(holder.button, R.id.TAG_BOOK_EVENT_HOLDER, holder);
-            ViewTagger.setTag(holder.retry, R.id.TAG_BOOK_EVENT_HOLDER, holder);
+            ViewTagger.setTag(holder.buttonView, R.id.TAG_BOOK_EVENT_HOLDER, holder);
+            ViewTagger.setTag(holder.retryView, R.id.TAG_BOOK_EVENT_HOLDER, holder);
 
             return view;
         }
@@ -184,24 +184,24 @@ final class SendBookEvents {
                 title = context.getString(R.string.warning_book_was_deleted_uc);
             }
 
-            holder.title.setText(title);
-            holder.author.setText(
+            holder.titleView.setText(title);
+            holder.authorView.setText(
                     String.format(context.getString(R.string.lbl_by_authors), author));
-            holder.error.setText(this.getDescription());
+            holder.errorView.setText(this.getDescription());
 
             String date = String.format(context.getString(R.string.gr_tq_occurred_at),
                                         DateUtils.toPrettyDateTime(eventsCursor.getEventDate()));
-            holder.date.setText(date);
+            holder.dateView.setText(date);
 
-            holder.retry.setVisibility(View.GONE);
+            holder.retryView.setVisibility(View.GONE);
 
-            holder.button.setChecked(eventsCursor.isSelected());
-            holder.button.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            holder.buttonView.setChecked(eventsCursor.isSelected());
+            holder.buttonView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(@NonNull final CompoundButton buttonView,
                                              final boolean isChecked) {
-                    BookEventHolder holder = ViewTagger.getTagOrThrow(buttonView,
-                                                                      R.id.TAG_BOOK_EVENT_HOLDER);
+                    BookEventHolder holder =
+                            ViewTagger.getTagOrThrow(buttonView, R.id.TAG_BOOK_EVENT_HOLDER);
                     eventsCursor.setSelected(holder.rowId, isChecked);
                 }
             });
@@ -212,14 +212,14 @@ final class SendBookEvents {
                 if (bookCursor.moveToFirst()) {
                     final BookRowView bookCursorRow = bookCursor.getCursorRow();
                     if (bookCursorRow.getIsbn().isEmpty()) {
-                        holder.retry.setVisibility(View.GONE);
+                        holder.retryView.setVisibility(View.GONE);
                     } else {
-                        holder.retry.setVisibility(View.VISIBLE);
-                        ViewTagger.setTag(holder.retry, this);
-                        holder.retry.setOnClickListener(mRetryButtonListener);
+                        holder.retryView.setVisibility(View.VISIBLE);
+                        ViewTagger.setTag(holder.retryView, this);
+                        holder.retryView.setOnClickListener(mRetryButtonListener);
                     }
                 } else {
-                    holder.retry.setVisibility(View.GONE);
+                    holder.retryView.setVisibility(View.GONE);
                 }
             }
         }
@@ -319,15 +319,14 @@ final class SendBookEvents {
          * Class to implement the 'holder' model for view we create.
          */
         static class BookEventHolder {
-
             long rowId;
             GrSendBookEvent event;
-            TextView title;
-            TextView author;
-            TextView error;
-            TextView date;
-            Button retry;
-            CompoundButton button;
+            TextView titleView;
+            TextView authorView;
+            TextView errorView;
+            TextView dateView;
+            Button retryView;
+            CompoundButton buttonView;
         }
 
     }

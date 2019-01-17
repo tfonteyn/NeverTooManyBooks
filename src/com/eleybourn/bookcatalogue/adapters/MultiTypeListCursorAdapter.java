@@ -59,8 +59,7 @@ public class MultiTypeListCursorAdapter
                                       @NonNull final Cursor cursor,
                                       @NonNull final MultiTypeListHandler handler) {
         super(activity, cursor);
-        //noinspection ConstantConditions
-        mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = LayoutInflater.from(activity);
         mListHandler = handler;
     }
 

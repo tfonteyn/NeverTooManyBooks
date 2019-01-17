@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -99,7 +100,7 @@ public class XmlImporter
             throws IOException {
         final BufferedReader in =
                 new BufferedReaderNoClose(new InputStreamReader(entity.getStream(),
-                                                                XmlUtils.UTF8),
+                                                                StandardCharsets.UTF_8),
                                           XmlUtils.BUFFER_SIZE);
 
         switch (entity.getType()) {
@@ -120,12 +121,11 @@ public class XmlImporter
      * @param entity to read
      * @param info   object to populate
      */
-    @NonNull
     public void doBackupInfoBlock(@NonNull final ReaderEntity entity,
                                   @NonNull final BackupInfo info)
             throws IOException {
         final BufferedReader in = new BufferedReaderNoClose(
-                new InputStreamReader(entity.getStream(), XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
+                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
         fromXml(in, null, new InfoReader(info));
     }
 
@@ -141,7 +141,7 @@ public class XmlImporter
                               @NonNull final SharedPreferences prefs)
             throws IOException {
         final BufferedReader in = new BufferedReaderNoClose(
-                new InputStreamReader(entity.getStream(), XmlUtils.UTF8), XmlUtils.BUFFER_SIZE);
+                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
         SharedPreferences.Editor editor = prefs.edit();
         fromXml(in, listener, new PreferencesReader(editor));
         editor.apply();
@@ -724,7 +724,7 @@ public class XmlImporter
         }
 
         @Override
-        @Nullable
+        @NonNull
         public String getListRoot() {
             return XmlUtils.XML_STYLE_LIST;
         }
@@ -744,10 +744,9 @@ public class XmlImporter
          * @param id      row-id in the database, or 0 if not present
          * @param name    the UUID for the Style
          */
-        @NonNull
         public void startElement(final int version,
                                  final long id,
-                                 @NonNull final String name) {
+                                 @Nullable final String name) {
             if (name == null || name.isEmpty()) {
                 throw new IllegalArgumentException();
             }

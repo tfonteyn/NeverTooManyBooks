@@ -9,14 +9,15 @@ import androidx.annotation.NonNull;
  */
 public interface BookManager {
 
+    @NonNull
     BookManager getBookManager();
 
     @NonNull
     Book getBook();
 
-    void setBook(@NonNull Book book);
+    void setBook(@NonNull final Book book);
 
     boolean isDirty();
 
-    void setDirty(boolean isDirty);
+    void setDirty(final boolean isDirty);
 }

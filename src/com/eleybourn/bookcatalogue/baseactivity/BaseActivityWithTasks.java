@@ -210,7 +210,6 @@ public abstract class BaseActivityWithTasks
     @Override
     @CallSuper
     protected void onPause() {
-        Tracker.enterOnPause(this);
         // Stop listening
         if (mTaskManagerId != 0) {
             TaskManager.getMessageSwitch().removeListener(mTaskManagerId, mTaskListener);
@@ -222,13 +221,11 @@ public abstract class BaseActivityWithTasks
         }
         closeProgressDialog();
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     @Override
     @CallSuper
     protected void onResume() {
-        Tracker.enterOnResume(this);
         super.onResume();
         // If we are finishing, we don't care about active tasks.
         if (!isFinishing()) {
@@ -238,7 +235,6 @@ public abstract class BaseActivityWithTasks
             TaskManager.getMessageSwitch()
                        .addListener(mTaskManagerId, mTaskListener, true);
         }
-        Tracker.exitOnResume(this);
     }
 
     /**

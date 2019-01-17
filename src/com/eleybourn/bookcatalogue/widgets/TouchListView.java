@@ -77,6 +77,7 @@ import com.eleybourn.bookcatalogue.R;
 public class TouchListView
         extends ListView {
 
+    private static final int MODE_NOT_SET = -1;
     private static final int FLING = 0;
     private static final int SLIDE_RIGHT = 1;
     private static final int SLIDE_LEFT = 2;
@@ -103,16 +104,18 @@ public class TouchListView
     private int mHeight;
     @Nullable
     private GestureDetector mGestureDetector;
-    private int mRemoveMode = -1;
+    private int mRemoveMode = MODE_NOT_SET;
     @Nullable
     private Bitmap mDragBitmap;
     private int mItemHeightNormal = -1;
     //private int mItemHeightExpanded=-1;
     @IdRes
     private int grabberId = -1;
+    /** Color.TRANSPARENT by default. */
     @ColorInt
-    private int dragndropBackgroundColor = Color.TRANSPARENT;
-    /** Set to true at start of a new drag operation. */
+    private final int dragndropBackgroundColor;
+
+    /** Set to <tt>true</tt> at start of a new drag operation. */
     private boolean mWasFirstExpansion;
 
     @Nullable
@@ -140,7 +143,7 @@ public class TouchListView
         grabberId = typedArray.getResourceId(R.styleable.TouchListView_grabber, -1);
         dragndropBackgroundColor = typedArray.getColor(
                 R.styleable.TouchListView_dragndrop_background, Color.TRANSPARENT);
-        mRemoveMode = typedArray.getInt(R.styleable.TouchListView_remove_mode, -1);
+        mRemoveMode = typedArray.getInt(R.styleable.TouchListView_remove_mode, MODE_NOT_SET);
 
         typedArray.recycle();
     }
@@ -563,12 +566,12 @@ public class TouchListView
 
         if (mRemoveMode == SLIDE_RIGHT) {
             if (x > width / 2) {
-                alpha = ((float) (width - x)) / (width / 2);
+                alpha = ((float) (width - x)) / (width / 2f);
             }
             mWindowParams.alpha = alpha;
         } else if (mRemoveMode == SLIDE_LEFT) {
             if (x < width / 2) {
-                alpha = ((float) x) / (width / 2);
+                alpha = ((float) x) / (width / 2f);
             }
             mWindowParams.alpha = alpha;
         }

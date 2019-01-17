@@ -18,6 +18,7 @@ package com.eleybourn.bookcatalogue.cropper;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
 
 import java.io.InputStream;
@@ -35,16 +36,19 @@ public interface CropIImage {
 
     /** Get the bitmap for the full size image. */
     @NonNull
-    Bitmap fullSizeBitmap(int minSideLength,
-                          int maxNumberOfPixels);
+    Bitmap fullSizeBitmap(final int minSideLength,
+                          final int maxNumberOfPixels);
 
     @NonNull
-    Bitmap fullSizeBitmap(int minSideLength,
-                          int maxNumberOfPixels, boolean rotateAsNeeded);
+    Bitmap fullSizeBitmap(final int minSideLength,
+                          final int maxNumberOfPixels,
+                          final boolean rotateAsNeeded);
 
     @NonNull
-    Bitmap fullSizeBitmap(int minSideLength,
-                          int maxNumberOfPixels, boolean rotateAsNeeded, boolean useNative);
+    Bitmap fullSizeBitmap(final int minSideLength,
+                          final int maxNumberOfPixels,
+                          final boolean rotateAsNeeded,
+                          final boolean useNative);
 
     int getDegreesRotated();
 
@@ -64,10 +68,10 @@ public interface CropIImage {
     @NonNull
     String getTitle();
 
-    /** Get/Set the title of the image */
-    void setTitle(@NonNull String name);
+    /** Get/Set the title of the image. */
+    void setTitle(@NonNull final String name);
 
-    /** Get metadata of the image */
+    /** Get metadata of the image. */
     long getDateTaken();
 
     @NonNull
@@ -80,14 +84,14 @@ public interface CropIImage {
     @NonNull
     String getDisplayName();
 
-    /** Get property of the image */
+    /** Get property of the image. */
     boolean isReadonly();
 
     boolean isDrm();
 
-    /** Get the bitmap/uri of the medium thumbnail */
+    /** Get the bitmap/uri of the medium thumbnail. */
     @NonNull
-    Bitmap thumbBitmap(boolean rotateAsNeeded);
+    Bitmap thumbBitmap(final boolean rotateAsNeeded);
 
     @NonNull
     Uri thumbUri();
@@ -96,7 +100,7 @@ public interface CropIImage {
     @NonNull
     Bitmap miniThumbBitmap();
 
-    /** Rotate the image */
-    boolean rotateImageBy(int degrees);
+    /** Rotate the image. */
+    boolean rotateImageBy(final int degrees);
 
 }

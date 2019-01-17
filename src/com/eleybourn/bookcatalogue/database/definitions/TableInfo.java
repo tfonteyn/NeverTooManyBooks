@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,57 +17,29 @@ import java.util.Map;
  * @author Philip Warner
  */
 public class TableInfo
-        implements Iterable<TableInfo.ColumnInfo> {
-
-    /**
-     * 'actual' types in the database.
-     *
-     * @see StorageClass
-     */
-    public static final String TYPE_INTEGER = "integer";
-    public static final String TYPE_TEXT = "text";
-    public static final String TYPE_REAL = "real";
-    public static final String TYPE_BLOB = "blob";
-
-    /**
-     * boolean is the same as Integer(storing 0,1) , but kept for clarity.
-     *
-     * https://sqlite.org/datatype3.html#boolean_datatype
-     */
-    public static final String TYPE_BOOLEAN = "boolean";
-
-    /**
-     * Date and datetime are kept for clarity.
-     *
-     * https://sqlite.org/datatype3.html#date_and_time_datatype
-     */
-    public static final String TYPE_DATE = "date";
-    public static final String TYPE_DATETIME = "datetime";
+        implements Iterable<ColumnInfo> {
 
 
     /** columns of this table. */
     @NonNull
     private final Map<String, ColumnInfo> mColumns;
 
-    @NonNull
-    private final SynchronizedDb mSyncedDb;
-
     /**
      * Constructor.
      *
-     * @param db            the database
-     * @param tableName     name of table
+     * @param db        the database
+     * @param tableName name of table
      */
     public TableInfo(@NonNull final SynchronizedDb db,
                      @NonNull final String tableName) {
-        mSyncedDb = db;
-        mColumns = describeTable(tableName);
+        mColumns = describeTable(db, tableName);
     }
 
     /**
      * Get the information about a column.
      *
      * @param name of column
+     *
      * @return the info, or null if the column is not present
      */
     @Nullable
@@ -89,93 +60,25 @@ public class TableInfo
     /**
      * Get the column details for the given table.
      *
+     * @param db        the database
      * @param tableName Name of the database table to lookup
      *
      * @return A collection of ColumnInfo objects.
      */
     @NonNull
-    private Map<String, ColumnInfo> describeTable(@NonNull final String tableName) {
-        String sql = "PRAGMA table_info(" + tableName + ')';
-
+    private Map<String, ColumnInfo> describeTable(@NonNull final SynchronizedDb db,
+                                                  @NonNull final String tableName) {
         Map<String, ColumnInfo> allColumns = new HashMap<>();
 
-        try (Cursor colCsr = mSyncedDb.rawQuery(sql, new String[]{})) {
-            if (!colCsr.moveToFirst()) {
-                throw new IllegalStateException("Unable to get column details");
-            }
-
-            while (true) {
-                ColumnInfo col = new ColumnInfo();
-                col.position = colCsr.getInt(0);
-                col.name = colCsr.getString(1);
-                col.typeName = colCsr.getString(2);
-                col.allowNull = colCsr.getInt(3) == 0;
-                col.defaultValue = colCsr.getString(4);
-                col.isPrimaryKey = colCsr.getInt(5) == 1;
-
-                col.storageClass = StorageClass.newInstance(col.typeName);
-
+        try (Cursor colCsr = db.rawQuery(ColumnInfo.getSql(tableName), null)) {
+            while (colCsr.moveToNext()) {
+                ColumnInfo col = new ColumnInfo(colCsr);
                 allColumns.put(col.name.toLowerCase(), col);
-                if (colCsr.isLast()) {
-                    break;
-                }
-                colCsr.moveToNext();
             }
+        }
+        if (allColumns.isEmpty()) {
+            throw new IllegalStateException("Unable to get column details");
         }
         return allColumns;
-    }
-
-    /**
-     * Mapping types to storage classes.
-     *
-     * https://sqlite.org/datatype3.html#storage_classes_and_datatypes
-     */
-    public enum StorageClass {
-        Integer, Real, Text, Blob;
-
-        public static StorageClass newInstance(@NonNull final String columnType) {
-            // hardcoded strings are for backwards compatibility
-            switch (columnType.toLowerCase()) {
-                case TYPE_INTEGER:
-                case "int":
-                    return StorageClass.Integer;
-                case TYPE_TEXT:
-                case "char":
-                    return StorageClass.Text;
-                case TYPE_REAL:
-                case "float":
-                case "double":
-                    return StorageClass.Real;
-                case TYPE_BLOB:
-                    return StorageClass.Blob;
-
-                case TYPE_BOOLEAN:
-                    return StorageClass.Integer;
-
-                case TYPE_DATE:
-                case TYPE_DATETIME:
-                    return StorageClass.Text;
-
-                default:
-                    // note that "" (empty) type is treated as TEXT.
-                    // But we really should not allow our columns to be defined without a type.
-                    throw new RTE.IllegalTypeException("columnType=`" + columnType + '`');
-            }
-        }
-    }
-
-    /**
-     * Column info support. This is useful for auto-building queries from maps that have
-     * more columns than are in the table.
-     */
-    public static class ColumnInfo {
-
-        public int position;
-        public String name;
-        public String typeName;
-        public boolean allowNull;
-        public boolean isPrimaryKey;
-        public String defaultValue;
-        public StorageClass storageClass;
     }
 }

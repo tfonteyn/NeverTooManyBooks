@@ -34,7 +34,7 @@
     <string name="lbl_bookshelf">Knihovna</string>
     <string name="all_books">Všechny knihy</string>
     <string name="isbn_found">Zjištěn ISBN kód. Prohledávám Internet.</string>
-    <string name="title_isbn_search">Hledat ISBN</string>
+    <string name="search_isbn">Hledat ISBN</string>
     <string name="title_edit_bookshelves">Spravovat knihovny</string>
     <string name="menu_edit_bookshelf">Upravit knihovnu</string>
     <string name="lbl_search_for_books">Hledat knihy</string>
@@ -411,7 +411,7 @@
     <string name="size">Velikost</string>
     <string name="updated">Aktualizování</string>
     <string name="import_error_csv_file_not_found">Nebyl nalezen exportovaný soubor</string>
-    <string name="import_warning_csv_file_more_then_one_found">Bylo nalezeno více exportovaných souborů; zvolte prosím soubor pro importování knih</string>
+    <string name="import_warning_select_csv_file">Bylo nalezeno více exportovaných souborů; zvolte prosím soubor pro importování knih</string>
     <string name="problem_starting_import_arg">Vyskytl se problém při zahájení importu: %1$s</string>
     <string name="hint_booklist_style_menu">Toto menu umožňuje zvolit si styl seznamu.
     								\n\nProstřednictvím tlačítka \'Přizpůsobit\' (na konci seznamu) máte možnost si toto menu přizpůsobit, nebo si vytvořit vlastní styl.</string>

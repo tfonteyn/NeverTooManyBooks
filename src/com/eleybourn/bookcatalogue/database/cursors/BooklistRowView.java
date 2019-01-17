@@ -140,6 +140,10 @@ public class BooklistRowView
     @Nullable
     private String formatRowGroup(final int level,
                                   @Nullable final String s) {
+        if (s == null) {
+            return null;
+        }
+
         switch (mBuilder.getStyle().getGroupKindAt(level)) {
             case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
             case BooklistGroup.RowKind.DATE_ADDED_MONTH:

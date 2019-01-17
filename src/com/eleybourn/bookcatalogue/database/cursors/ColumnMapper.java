@@ -71,7 +71,7 @@ public class ColumnMapper {
         return mCursor.getLong(colIds.get(domain.name));
     }
 
-    public byte[] getBlob(final DomainDefinition domain) {
+    public byte[] getBlob(@NonNull final DomainDefinition domain) {
         return mCursor.getBlob(colIds.get(domain.name));
     }
 }

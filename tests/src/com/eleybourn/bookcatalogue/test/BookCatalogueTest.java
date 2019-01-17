@@ -544,7 +544,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnText("Manage Field Visibility");
 		t.assertCurrentActivity("Expected FieldVisibilitySettingsFragment", "FieldVisibilitySettingsFragment");
 		
-		//set all as true (reset)
+		//set all as <tt>true</tt> (reset)
 		ArrayList<CheckBox> fields = t.getCurrentCheckBoxes();
 		for (int i = 0; i<fields.size(); i++) {
 			CheckBox field = fields.get(i);
@@ -630,7 +630,7 @@ public class BookCatalogueTest extends ActivityInstrumentationTestCase2 {
 		t.clickOnText("Manage Field Visibility");
 		t.assertCurrentActivity("Expected FieldVisibilitySettingsFragment", "FieldVisibilitySettingsFragment");
 		
-		//set all as true (reset)
+		//set all as <tt>true</tt> (reset)
 		//ArrayList<CheckBox> fields = t.getCurrentCheckBoxes();
 		//for (int i = 0; i<fields.size(); i++) {
 		//	CheckBox field = fields.get(i);

@@ -272,7 +272,7 @@ public class SearchAmazonHandler
 
     /**
      * @param bookData       Bundle to save results in
-     * @param fetchThumbnail true if we need to get a thumbnail
+     * @param fetchThumbnail <tt>true</tt> if we need to get a thumbnail
      */
     SearchAmazonHandler(@NonNull final Bundle bookData,
                         final boolean fetchThumbnail) {

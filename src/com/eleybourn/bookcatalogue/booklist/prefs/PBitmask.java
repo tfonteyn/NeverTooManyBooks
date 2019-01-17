@@ -73,7 +73,7 @@ public class PBitmask
 
     @NonNull
     private Integer toInteger(@NonNull final Set<String> sValue) {
-        Integer tmp = 0;
+        int tmp = 0;
         for (String s : sValue) {
             tmp += Integer.parseInt(s);
         }
@@ -83,7 +83,7 @@ public class PBitmask
     @NonNull
     private Set<String> toStringSet(@NonNull final Integer value) {
         Set<String> set = new HashSet<>();
-        Integer tmp = value;
+        int tmp = value;
         int bit = 1;
         while (tmp != 0) {
             if ((tmp & 1) == 1) {

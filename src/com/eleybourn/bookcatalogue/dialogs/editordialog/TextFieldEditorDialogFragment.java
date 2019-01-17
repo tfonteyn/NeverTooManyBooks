@@ -114,13 +114,11 @@ public class TextFieldEditorDialogFragment
     @Override
     @CallSuper
     public void onPause() {
-        Tracker.enterOnPause(this);
         TextFieldEditorDialog dialog = (TextFieldEditorDialog) getDialog();
         if (dialog != null) {
             mText = dialog.getText();
         }
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     /**

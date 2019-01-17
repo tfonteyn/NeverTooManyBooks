@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.app.Activity;
 import android.app.ListActivity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ContextMenu;
@@ -18,8 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 
 import java.util.Objects;
 
@@ -72,7 +70,7 @@ public abstract class BaseListActivity
         extends BaseActivity
         implements
         AdapterView.OnItemClickListener,
-        SelectOneDialog.hasListViewContextMenu {
+        SimpleDialog.ListViewContextMenu {
 
     private final Handler mHandler = new Handler();
     protected Menu mListViewContextMenu;
@@ -92,11 +90,9 @@ public abstract class BaseListActivity
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         // enable context menu for the list view
-        initListViewContextMenuListener(this);
-        Tracker.exitOnCreate(this);
+        initContextMenuOnListView();
     }
 
     /**
@@ -105,10 +101,8 @@ public abstract class BaseListActivity
     @Override
     @CallSuper
     protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
         mHandler.removeCallbacks(mRequestFocus);
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 
     /**
@@ -205,10 +199,10 @@ public abstract class BaseListActivity
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
     @Override
-    public void initListViewContextMenuListener(@NonNull final Context context) {
+    public void initContextMenuOnListView() {
         //do nothing, example code you can copy to overriding methods:
 
 //        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -221,10 +215,10 @@ public abstract class BaseListActivity
 //                String menuTitle = mList.get(position).getTitle();
 //
 //                // legal trick to get an instance of Menu.
-//                mListViewContextMenu = new PopupMenu(context, null).getMenu();
+//                mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
 //                // custom menuInfo
-//                SelectOneDialog.SimpleDialogMenuInfo menuInfo =
-//                    new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, view, position);
+//                SimpleDialog.ContextMenuInfo menuInfo =
+//                    new SimpleDialog.ContextMenuInfo(menuTitle, view, position);
 //
 //                // POPULATE THE MENU
 //                mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0,
@@ -239,29 +233,29 @@ public abstract class BaseListActivity
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
      * <p>
      * Replaces: {@link #onCreateContextMenu(ContextMenu, View, ContextMenu.ContextMenuInfo)}
      */
     @Override
-    public final void onCreateListViewContextMenu(@NonNull final Menu menu,
-                                                  @NonNull final View view,
-                                                  @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+    public final void onCreateListViewContextMenu(@NonNull final View view,
+                                                  @NonNull final Menu menu,
+                                                  @NonNull final SimpleDialog.ContextMenuInfo
+                                                          menuInfo) {
         if (menu.size() > 0) {
-            SelectOneDialog.showContextMenuDialog(
-                    getLayoutInflater(), menuInfo, menu,
-                    new SelectOneDialog.SimpleDialogOnClickListener() {
+            SimpleDialog.showContextMenu(
+                    getLayoutInflater(), menuInfo.title, menu,
+                    new SimpleDialog.OnClickListener() {
                         @Override
-                        public void onClick(@NonNull final SelectOneDialog.SimpleDialogItem item) {
-                            MenuItem menuItem = ((SelectOneDialog.SimpleDialogMenuItem) item).getMenuItem();
+                        public void onClick(@NonNull final SimpleDialog.SimpleDialogItem item) {
+                            MenuItem menuItem =
+                                    ((SimpleDialog.SimpleDialogMenuItem) item).getMenuItem();
                             if (menuItem.hasSubMenu()) {
+                                // bring up sub-menu
                                 menuInfo.title = menuItem.getTitle().toString();
-                                onCreateListViewContextMenu(
-                                        menuItem.getSubMenu(), view,
-                                        menuInfo);
+                                onCreateListViewContextMenu(view, menuItem.getSubMenu(), menuInfo);
                             } else {
-                                onListViewContextItemSelected(
-                                        menuItem, menuInfo);
+                                onListViewContextItemSelected(menuItem, menuInfo.position);
                             }
                         }
                     });
@@ -269,13 +263,12 @@ public abstract class BaseListActivity
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
     @SuppressWarnings("UnusedReturnValue")
     @Override
     public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                                 @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+                                                 final int position) {
         return false;
     }
-
 }

@@ -80,15 +80,15 @@ public class Series
                     + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
     private static final String SERIES_REGEX_1 = "^\\s*" + SERIES_REGEX_SUFFIX;
     private static final String SERIES_REGEX_2 = "(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX;
-    /** Pattern used to recognize series numbers embedded in names */
-    private static Pattern mSeriesPat = null;
-    /** Pattern used to remove extraneous text from series positions */
-    private static Pattern mSeriesPosCleanupPat = null;
-    private static Pattern mSeriesIntegerPat = null;
-    @SuppressWarnings({"FieldCanBeLocal"})
-    private final Pattern PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
+    /** Pattern used to recognize series numbers embedded in names. */
+    private static Pattern mSeriesPat;
+    /** Pattern used to remove extraneous text from series positions. */
+    private static Pattern mSeriesPosCleanupPat;
+    private static Pattern mSeriesIntegerPat;
+    @SuppressWarnings("FieldCanBeLocal")
+    private static final Pattern PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
     /*
-        A Series as defined in the database is really just id+name
+        A Series as defined in the database is really just id+name.
         The number is of course related to the book itself.
 
         ENHANCE: This class does not represent a Series, but a "BookInSeries"
@@ -96,7 +96,8 @@ public class Series
     public long id;
     public String name;
     public boolean isComplete;
-    public String number;
+
+    private String mNumber;
 
     /**
      * Constructor that will attempt to parse a single string into a Series name and number.
@@ -105,10 +106,10 @@ public class Series
         java.util.regex.Matcher m = PATTERN.matcher(encodedName);
         if (m.find()) {
             this.name = m.group(1).trim();
-            this.number = cleanupSeriesPosition(m.group(2));
+            this.mNumber = cleanupSeriesPosition(m.group(2));
         } else {
             this.name = encodedName.trim();
-            this.number = "";
+            this.mNumber = "";
         }
         this.id = 0L;
     }
@@ -151,14 +152,14 @@ public class Series
         this.id = id;
         this.name = name.trim();
         this.isComplete = isComplete;
-        this.number = cleanupSeriesPosition(number);
+        this.mNumber = cleanupSeriesPosition(number);
     }
 
     protected Series(Parcel in) {
         id = in.readLong();
         name = in.readString();
         isComplete = in.readByte() != 0;
-        number = in.readString();
+        mNumber = in.readString();
     }
 
     /**
@@ -173,11 +174,12 @@ public class Series
         }
         SeriesDetails details = null;
         int last = title.lastIndexOf('(');
-        if (last >= 1) { // We want a title that does not START with a bracket!
+        // We want a title that does not START with a bracket!
+        if (last >= 1) {
             int close = title.lastIndexOf(')');
             if (close > -1 && last < close) {
                 details = new SeriesDetails();
-                details.name = title.substring((last + 1), close);
+                details.name = title.substring(last + 1, close);
                 details.startChar = last;
                 if (mSeriesPat == null) {
                     mSeriesPat = Pattern.compile(SERIES_REGEX_2,
@@ -250,28 +252,27 @@ public class Series
         Map<String, Series> index = new HashMap<>();
 
         for (Series s : list) {
-            final boolean emptyNum = (s.number == null || s.number.trim().isEmpty());
             final String lcName = s.name.trim().toLowerCase();
-            final boolean inNames = index.containsKey(lcName);
-            if (!inNames) {
+            if (!index.containsKey(lcName)) {
                 // Just add and continue
                 index.put(lcName, s);
             } else {
                 // See if we can purge either
-                if (emptyNum) {
-                    // Always delete series with empty numbers if an equally or more specific one exists
+                if (s.mNumber == null || s.mNumber.trim().isEmpty()) {
+                    // Always delete series with empty numbers if an equally or more
+                    // specific one exists
                     toDelete.add(s);
                 } else {
                     // See if the one in 'index' also has a num
                     Series orig = index.get(lcName);
-                    if (orig.number == null || orig.number.trim().isEmpty()) {
+                    if (orig.mNumber == null || orig.mNumber.trim().isEmpty()) {
                         // Replace with this one, and add original to the delete list
                         index.put(lcName, s);
                         toDelete.add(orig);
                     } else {
                         // Both have numbers. See if they are the same.
-                        if (s.number.trim().toLowerCase().equals(
-                                orig.number.trim().toLowerCase())) {
+                        if (s.mNumber.trim().toLowerCase().equals(
+                                orig.mNumber.trim().toLowerCase())) {
                             // Same exact series, delete this one
                             toDelete.add(s);
                         } //else {
@@ -286,11 +287,11 @@ public class Series
             list.remove(s);
         }
 
-        return (toDelete.size() > 0);
+        return toDelete.size() > 0;
 
     }
 
-    public static boolean setComplete(final DBA db,
+    public static boolean setComplete(@NonNull final DBA db,
                                       final long id,
                                       final boolean isComplete
     ) {
@@ -300,7 +301,7 @@ public class Series
             series = db.getSeries(id);
             Objects.requireNonNull(series);
             series.setComplete(isComplete);
-            return (db.updateSeries(series) == 1);
+            return db.updateSeries(series) == 1;
         } catch (DBExceptions.UpdateException e) {
             // log but ignore
             Logger.error(e, "failed to set Series id=" + id + " to complete=" + isComplete);
@@ -321,13 +322,13 @@ public class Series
     }
 
     @Override
-    public void writeToParcel(Parcel dest,
-                              int flags
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags
     ) {
         dest.writeLong(id);
         dest.writeString(name);
         dest.writeByte((byte) (isComplete ? 1 : 0));
-        dest.writeString(number);
+        dest.writeString(mNumber);
     }
 
     /** {@link Parcelable}. */
@@ -339,8 +340,8 @@ public class Series
 
     @NonNull
     public String getDisplayName() {
-        if (number != null && !number.isEmpty()) {
-            return name + " (" + number + ')';
+        if (mNumber != null && !mNumber.isEmpty()) {
+            return name + " (" + mNumber + ')';
         } else {
             return name;
         }
@@ -351,8 +352,12 @@ public class Series
         return getDisplayName();
     }
 
+    public String getNumber() {
+        return mNumber;
+    }
+
     /**
-     * Support for encoding to a text file
+     * Support for encoding to a text file.
      *
      * @return the object encoded as a String.
      *
@@ -363,22 +368,22 @@ public class Series
     @Override
     @NonNull
     public String toString() {
-        if (number != null && !number.isEmpty()) {
+        if (mNumber != null && !mNumber.isEmpty()) {
             // start with a space !
-            return name + " (" + number + ')';
+            return name + " (" + mNumber + ')';
         } else {
             return name;
         }
     }
 
     /**
-     * Replace local details from another series
+     * Replace local details from another series.
      *
      * @param source Series to copy
      */
     public void copyFrom(@NonNull final Series source) {
         name = source.name;
-        number = source.number;
+        mNumber = source.mNumber;
         isComplete = source.isComplete;
         id = source.id;
     }
@@ -399,7 +404,7 @@ public class Series
     }
 
     /**
-     * Two are the same if:
+     * Equality.
      *
      * - it's the same Object duh..
      * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
@@ -421,7 +426,7 @@ public class Series
         }
         return Objects.equals(this.name, that.name)
                 && (this.isComplete == that.isComplete)
-                && Objects.equals(this.number, that.number);
+                && Objects.equals(this.mNumber, that.mNumber);
 
     }
 
@@ -432,15 +437,13 @@ public class Series
 
 
     /**
-     * Data class giving resulting series info after parsing a series name
-     *
-     * @author Philip Warner
+     * Data class giving resulting series info after parsing a series name.
      */
     public static class SeriesDetails {
 
         public String name;
         @Nullable
-        public String position = null;
+        public String position;
         public int startChar;
     }
 

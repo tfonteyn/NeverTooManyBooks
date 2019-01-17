@@ -45,7 +45,7 @@ public final class Terminator {
     private static final PriorityQueue<Event> EVENTS =
             new PriorityQueue<>(10, new EventComparator());
     /**
-     * Options indicating the main thread process is still running and waiting
+     * Flag indicating the main thread process is still running and waiting
      * for a timer to elapse.
      */
     private static boolean mIsRunning;

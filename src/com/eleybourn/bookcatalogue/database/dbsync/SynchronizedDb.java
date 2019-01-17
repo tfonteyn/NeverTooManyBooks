@@ -14,8 +14,8 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBExceptions;
-import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.lang.reflect.Field;
@@ -65,13 +65,7 @@ public class SynchronizedDb {
     public SynchronizedDb(@NonNull final SQLiteOpenHelper helper,
                           @NonNull final Synchronizer sync) {
         mSync = sync;
-        mSqlDb = openWithRetries(new DbOpener() {
-            @NonNull
-            @Override
-            public SQLiteDatabase open() {
-                return helper.getWritableDatabase();
-            }
-        });
+        mSqlDb = openWithRetries(helper);
     }
 
     /**
@@ -90,13 +84,7 @@ public class SynchronizedDb {
                           @NonNull final Synchronizer sync,
                           final int preparedStmtCache) {
         mSync = sync;
-        mSqlDb = openWithRetries(new DbOpener() {
-            @NonNull
-            @Override
-            public SQLiteDatabase open() {
-                return helper.getWritableDatabase();
-            }
-        });
+        mSqlDb = openWithRetries(helper);
 
         // only set when bigger then default
         if ((preparedStmtCache > 25)
@@ -153,22 +141,21 @@ public class SynchronizedDb {
      * Call the passed database opener with retries to reduce risks of access conflicts
      * causing crashes.
      *
-     * @param opener DbOpener interface
+     * @param opener SQLiteOpenHelper interface
      *
      * @return The opened database
      */
     @NonNull
-    private SQLiteDatabase openWithRetries(@NonNull final DbOpener opener) {
+    private SQLiteDatabase openWithRetries(@NonNull final SQLiteOpenHelper opener) {
         // 10ms
         int wait = 10;
         // 2^10 * 10ms = 10.24sec (actually 2x that due to total wait time)
         int retriesLeft = 10;
 
-        SQLiteDatabase db;
         do {
             Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {
-                db = opener.open();
+                SQLiteDatabase db = opener.getWritableDatabase();
                 Logger.info(this, db.getPath() + "|retriesLeft=" + retriesLeft);
                 return db;
             } catch (RuntimeException e) {
@@ -197,6 +184,11 @@ public class SynchronizedDb {
 
     /**
      * Locking-aware wrapper for underlying database method.
+     * <p>
+     * lint says this cursor is not always closed.
+     * 2019-01-14: the only place it's not closed is in
+     * {@link com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider}
+     * where it seems not possible to close it ourselves.
      */
     @NonNull
     public SynchronizedCursor rawQuery(@NonNull final String sql,
@@ -219,24 +211,29 @@ public class SynchronizedDb {
     /**
      * Locking-aware wrapper for underlying database method.
      */
-    public void execSQL(@NonNull final String sql)
-            throws SQLException {
+    public void execSQL(@NonNull final String sql) {
         if (DEBUG_SWITCHES.SQL && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
             Logger.debug(sql);
         }
 
-        if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
-                throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
-            }
-            mSqlDb.execSQL(sql);
-        } else {
-            Synchronizer.SyncLock l = mSync.getExclusiveLock();
-            try {
+        try {
+            if (mTxLock != null) {
+                if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
+                    throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
+                }
                 mSqlDb.execSQL(sql);
-            } finally {
-                l.unlock();
+            } else {
+                Synchronizer.SyncLock l = mSync.getExclusiveLock();
+                try {
+                    mSqlDb.execSQL(sql);
+                } finally {
+                    l.unlock();
+                }
             }
+        } catch (SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(sql + '\n' + e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -257,8 +254,7 @@ public class SynchronizedDb {
         }
 
         try {
-            return mSqlDb.query(table, columns, selection, selectionArgs, groupBy, having,
-                                orderBy);
+            return mSqlDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -288,6 +284,10 @@ public class SynchronizedDb {
         // but it can throw other exceptions.
         try {
             return mSqlDb.insert(table, nullColumnHack, cv);
+        } catch (SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(e);
+            throw new IllegalArgumentException(e);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -317,6 +317,10 @@ public class SynchronizedDb {
         // but it can throw other exceptions.
         try {
             return mSqlDb.update(table, cv, whereClause, whereArgs);
+        } catch (SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(e);
+            throw new IllegalArgumentException(e);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -347,6 +351,10 @@ public class SynchronizedDb {
         // but it can throw other exceptions.
         try {
             return mSqlDb.delete(table, whereClause, whereArgs);
+        } catch (SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(e);
+            throw new IllegalArgumentException(e);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -546,34 +554,29 @@ public class SynchronizedDb {
         try {
             // Row that *should* be returned first assuming 'a' <=> 'A'
             mSqlDb.execSQL("INSERT INTO collation_cs_check VALUES('a', 1)");
-            // Row that *should* be returned second assuming 'a' <=> 'A'; will be returned first if 'A' < 'a'.
+            // Row that *should* be returned second assuming 'a' <=> 'A';
+            // will be returned first if 'A' < 'a'.
             mSqlDb.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
 
             String s;
-            try (Cursor c = mSqlDb.rawQuery(
-                    "SELECT t, i FROM collation_cs_check ORDER BY t " + DBHelper.COLLATION + ", i",
-                    new String[]{})) {
+            try (Cursor c = mSqlDb.rawQuery("SELECT t,i FROM collation_cs_check"
+                                                    + " ORDER BY t " + DBA.COLLATION + ",i",
+                                            null)) {
                 c.moveToFirst();
                 s = c.getString(0);
             }
             return !"a".equals(s);
+        } catch (SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(e);
+            throw new IllegalArgumentException(e);
         } finally {
             try {
                 mSqlDb.execSQL("DROP TABLE If Exists collation_cs_check");
             } catch (SQLException e) {
                 Logger.error(e);
-            } catch (RuntimeException ignored) {
             }
         }
-    }
-
-    /**
-     * Interface to an object that can return an open SQLite database object.
-     */
-    private interface DbOpener {
-
-        @NonNull
-        SQLiteDatabase open();
     }
 
     /**

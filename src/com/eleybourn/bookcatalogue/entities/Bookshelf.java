@@ -106,7 +106,7 @@ public class Bookshelf
 
     @Override
     public long fixupId(@NonNull final DBA db) {
-        this.id = db.getBookshelfId(this);
+        this.id = db.getBookshelfIdByName(this.name);
         return this.id;
     }
 

@@ -98,7 +98,7 @@ class TaskQueueDBAdapter {
      * @return The database
      */
     @NonNull
-    protected SQLiteDatabase getDb() {
+    SQLiteDatabase getDb() {
         return mTaskQueueDBHelper.getWritableDatabase();
     }
 
@@ -535,7 +535,7 @@ class TaskQueueDBAdapter {
      *
      * @author Philip Warner
      */
-    protected static class ScheduledTask {
+    static class ScheduledTask {
 
         /** Time, in milliseconds, until Task needs to be executed. */
         final long timeUntilRunnable;
@@ -566,7 +566,7 @@ class TaskQueueDBAdapter {
          * @return related Task object
          */
         @Nullable
-        protected Task getTask() {
+        Task getTask() {
             Task task;
 
             try {

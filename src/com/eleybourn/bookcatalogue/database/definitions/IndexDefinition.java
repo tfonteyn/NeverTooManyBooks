@@ -20,14 +20,14 @@ public class IndexDefinition {
     /** Domains in index. */
     @NonNull
     private final DomainDefinition[] mDomains;
-    /** Options indicating index is unique. */
+    /** Flag indicating index is unique. */
     private final boolean mIsUnique;
 
     /**
      * Constructor.
      *
      * @param name    name of index
-     * @param unique  Options indicating index is unique
+     * @param unique  Flag indicating index is unique
      * @param table   Table to which index applies
      * @param domains Domains in index
      */
@@ -78,7 +78,7 @@ public class IndexDefinition {
      */
     @NonNull
     public IndexDefinition create(@NonNull final SynchronizedDb db) {
-        db.execSQL(this.getSql());
+        db.execSQL(getCreateStatement());
         return this;
     }
 
@@ -88,7 +88,7 @@ public class IndexDefinition {
      * @return SQL Fragment
      */
     @NonNull
-    public String getSql() {
+    public String getCreateStatement() {
         StringBuilder sql = new StringBuilder("CREATE ");
         if (mIsUnique) {
             sql.append(" UNIQUE");

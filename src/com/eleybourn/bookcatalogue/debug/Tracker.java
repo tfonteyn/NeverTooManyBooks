@@ -148,27 +148,6 @@ public final class Tracker {
         }
     }
 
-    public static void enterOnRestoreInstanceState(@NonNull final Object a,
-                                                   @Nullable final Bundle savedInstanceState) {
-        handleEvent(a, States.Enter, "onRestoreInstanceState");
-        if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(a,
-                        "onRestoreInstanceState|" + States.Enter
-                                + "|savedInstanceState=" + savedInstanceState);
-        }
-    }
-
-    public static void exitOnRestoreInstanceState(@NonNull final Object a,
-                                                  @Nullable final Bundle savedInstanceState) {
-        handleEvent(a, States.Exit, "onRestoreInstanceState");
-        if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(a,
-                        "onRestoreInstanceState|" + States.Exit
-                                + "|savedInstanceState=" + savedInstanceState);
-        }
-    }
-
-
     public static void enterOnLoadFieldsFromBook(@NonNull final Object a,
                                                  final long bookId) {
         handleEvent(a, States.Enter, "onLoadFieldsFromBook");
@@ -252,16 +231,6 @@ public final class Tracker {
         }
     }
 
-    public static void exitFunction(@NonNull final Object a,
-                                    @NonNull final String name,
-                                    @NonNull final Object result) {
-        String s = name + '|' + result;
-        handleEvent(a, States.Exit, s);
-        if (BuildConfig.DEBUG) {
-            Logger.info(a, s);
-        }
-    }
-
     public static void handleEvent(@NonNull final Object o,
                                    @NonNull final States type,
                                    @NonNull final String message) {
@@ -296,17 +265,17 @@ public final class Tracker {
     private static class Event {
 
         @NonNull
-        public final String message;
+        final String message;
         @NonNull
-        public final States state;
+        final States state;
         @NonNull
-        public final Date date;
+        final Date date;
         @NonNull
         final String clazz;
 
-        public Event(@NonNull final Object clazz,
-                     @NonNull final States state,
-                     @NonNull final String message) {
+        Event(@NonNull final Object clazz,
+              @NonNull final States state,
+              @NonNull final String message) {
             this.clazz = clazz.getClass().getCanonicalName();
             this.message = message;
             this.state = state;
@@ -314,7 +283,7 @@ public final class Tracker {
         }
 
         @NonNull
-        public String getInfo() {
+        String getInfo() {
             return DateUtils.utcSqlDateTime(date) + '|' + clazz + '|' + state + '|' + message;
         }
     }

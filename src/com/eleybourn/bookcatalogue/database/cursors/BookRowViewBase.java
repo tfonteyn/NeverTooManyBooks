@@ -83,14 +83,12 @@ public class BookRowViewBase {
         return mCursor.getString(columnIndex);
     }
 
-
     /**
      * Query underlying cursor for column index.
      */
     public int getColumnIndex(@NonNull final String columnName) {
         return mCursor.getColumnIndex(columnName);
     }
-
 
     /**
      * Get a boolean from underlying cursor given a column index.

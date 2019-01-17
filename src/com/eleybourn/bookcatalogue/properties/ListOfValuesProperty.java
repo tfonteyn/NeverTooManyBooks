@@ -22,12 +22,6 @@ package com.eleybourn.bookcatalogue.properties;
 
 import android.annotation.SuppressLint;
 import android.graphics.Typeface;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.Size;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,6 +29,12 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.Size;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
@@ -45,15 +45,17 @@ import java.util.ArrayList;
 
 /**
  * Implement a generic list-of-values property.
- *
+ * <p>
  * Resulting editing display is a list of values with Radio Buttons in a dialog.
  *
  * @param <T> type of the list items
  *
  * @author Philip Warner
  */
-public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T> {
-    /** List of valid values */
+public abstract class ListOfValuesProperty<T>
+        extends PropertyWithGlobalValue<T> {
+
+    /** List of valid values. */
     @NonNull
     private ItemList<T> mList;
 
@@ -63,7 +65,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         super(group, nameResourceId, defaultValue);
     }
 
-    public void setList( @NonNull @Size(min = 0) final ItemList<T> list) {
+    public void setList(@NonNull @Size(min = 0) final ItemList<T> list) {
         mList = list;
     }
 
@@ -71,7 +73,8 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
     @NonNull
     @Override
     public View getView(@NonNull final LayoutInflater inflater) {
-        final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.row_property_list_of_values, null);
+        final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.row_property_list_of_values,
+                                                            null);
 
         // create Holder -> not needed here
 
@@ -116,7 +119,8 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
     }
 
     /** Set the 'value' field in the passed view to match the passed item. */
-    private void setValueInView(@NonNull final View baseView, @Nullable final ListEntry<T> item) {
+    private void setValueInView(@NonNull final View baseView,
+                                @Nullable final ListEntry<T> item) {
         TextView view = baseView.findViewById(R.id.value);
 
         if (item == null) {
@@ -132,7 +136,8 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         }
     }
 
-    private void handleClick(@NonNull final View base, @NonNull final LayoutInflater inflater) {
+    private void handleClick(@NonNull final View base,
+                             @NonNull final LayoutInflater inflater) {
         final ItemList<T> items = mList;
         if (this.hasHint()) {
             HintManager.displayHint(inflater, this.getHint(), new Runnable() {
@@ -160,7 +165,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         T currentValue = this.getValue();
 
         // Get the view and the radio group
-        @SuppressLint("InflateParams") // root==null as it's a dialog
+        @SuppressLint("InflateParams")
                 View root = inflater.inflate(R.layout.row_property_list_of_values_dialog, null);
         final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
                 .setView(root)
@@ -169,7 +174,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
         // Create a listener that responds to any click on the list
         OnClickListener clickListener = new OnClickListener() {
             @Override
-            public void onClick(@NonNull View v) {
+            public void onClick(@NonNull final View v) {
                 dialog.dismiss();
                 Holder<T> holder = ViewTagger.getTagOrThrow(v);
                 setValue(holder.item.value);
@@ -192,7 +197,8 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
                 }
 
                 // Make the view for this item
-                View line = inflater.inflate(R.layout.row_property_list_of_values_item, radioGroup, false);
+                View line = inflater.inflate(R.layout.row_property_list_of_values_item, radioGroup,
+                                             false);
                 CompoundButton sel = line.findViewById(R.id.selector);
 
                 //Set the various values
@@ -215,8 +221,7 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("ListOfValuesProperty{" +
-                "mList=[");
+        StringBuilder sb = new StringBuilder("ListOfValuesProperty{mList=[");
 
         for (ListEntry entry : mList) {
             sb.append('{').append(entry).append('}');
@@ -226,32 +231,37 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
     }
 
     /**
-     * Class to represent all items in a list-of-values property
+     * Class to represent all items in a list-of-values property.
      *
      * @param <T> Type of underlying list item
      *
      * @author Philip Warner
      */
     public static class ListEntry<T> {
+
         /** Actual value, never displayed. */
         @Nullable
         final T value;
-        /** Text description of the meaning of that value */
+        /** Text description of the meaning of that value. */
         @StringRes
-        private int stringId = 0;
+        private int stringId;
         private String name;
 
         @Nullable
         private Object[] textArgs;
 
         /** Constructor. Instantiates string. */
-        ListEntry(@Nullable final T value, @StringRes final int stringId, @Nullable final Object... args) {
+        ListEntry(@Nullable final T value,
+                  @StringRes final int stringId,
+                  @Nullable final Object... args) {
             this.value = value;
             this.stringId = stringId;
             this.textArgs = args;
         }
+
         /** Constructor. Instantiates string. */
-        ListEntry(@Nullable final T value, @NonNull final String name) {
+        ListEntry(@Nullable final T value,
+                  @NonNull final String name) {
             this.value = value;
             this.name = name;
         }
@@ -279,7 +289,9 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
      *
      * @author Philip Warner
      */
-    public static class ItemList<T> extends ArrayList<ListEntry<T>> {
+    public static class ItemList<T>
+            extends ArrayList<ListEntry<T>> {
+
         private static final long serialVersionUID = 4578945419593293928L;
 
         /**
@@ -308,19 +320,21 @@ public abstract class ListOfValuesProperty<T> extends PropertyWithGlobalValue<T>
     }
 
     /**
-     * Holder class for list items
+     * Holder class for list items.
      *
      * @param <T>
      *
      * @author Philip Warner
      */
     private static class Holder<T> {
+
         @NonNull
         final ListEntry<T> item;
         @NonNull
         final View baseView;
 
-        Holder(@NonNull final ListEntry<T> item, @NonNull final View baseView) {
+        Holder(@NonNull final ListEntry<T> item,
+               @NonNull final View baseView) {
             this.item = item;
             this.baseView = baseView;
         }

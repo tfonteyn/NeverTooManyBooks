@@ -66,7 +66,7 @@ class CropRotateBitmap {
             int cy = mBitmap.getHeight() / 2;
             matrix.preTranslate(-cx, -cy);
             matrix.postRotate(mRotation);
-            matrix.postTranslate(getWidth() / 2, getHeight() / 2);
+            matrix.postTranslate(getWidth() / 2f, getHeight() / 2f);
         }
         return matrix;
     }

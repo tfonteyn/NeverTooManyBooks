@@ -40,8 +40,8 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment.FragmentTask;
 
 import java.io.IOException;
 
@@ -58,7 +58,7 @@ public class GoodreadsRegisterActivity
      * Called by button click to start a non-UI-thread task to do the work.
      */
     public static void requestAuthorizationInBackground(@NonNull final FragmentActivity activity) {
-        FragmentTask task = new SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract() {
+        FragmentTask task = new TaskWithProgressDialogFragment.FragmentTaskAbstract() {
             @StringRes
             private int mMessage;
 
@@ -66,7 +66,7 @@ public class GoodreadsRegisterActivity
              * Call the static method to start the web page; this can take a few seconds.
              */
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+            public void run(@NonNull final TaskWithProgressDialogFragment fragment,
                             @NonNull final SimpleTaskContext taskContext) {
                 mMessage = requestAuthorizationImmediate(activity);
             }
@@ -75,7 +75,7 @@ public class GoodreadsRegisterActivity
              * Display any error message.
              */
             @Override
-            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+            public void onFinish(@NonNull final TaskWithProgressDialogFragment fragment,
                                  @Nullable final Exception e) {
                 if (mMessage != 0) {
                     fragment.showUserMessage(fragment.getString(mMessage));
@@ -85,7 +85,7 @@ public class GoodreadsRegisterActivity
         };
 
         // Get the fragment to display task progress
-        SimpleTaskQueueProgressDialogFragment
+        TaskWithProgressDialogFragment
                 .newInstance(activity, R.string.progress_msg_connecting_to_web_site,
                              task, true, 0);
     }
@@ -98,7 +98,7 @@ public class GoodreadsRegisterActivity
     @StringRes
     private static int requestAuthorizationImmediate(@NonNull final Context context) {
         GoodreadsManager grMgr = new GoodreadsManager();
-        // This next onProgress can take several seconds....
+        // This next step can take several seconds....
         if (!grMgr.hasValidCredentials()) {
             try {
                 grMgr.requestAuthorization(context);

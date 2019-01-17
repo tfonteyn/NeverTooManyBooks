@@ -144,7 +144,7 @@ public class BookSearchByTextFragment
     @SuppressWarnings("SameReturnValue")
     public boolean onSearchFinished(final boolean wasCancelled,
                                     @NonNull final Bundle bookData) {
-        Tracker.handleEvent(this, Tracker.States.Running,
+        Tracker.handleEvent(this, Tracker.States.Enter,
                             "onSearchFinished|SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {

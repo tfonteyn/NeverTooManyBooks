@@ -27,45 +27,49 @@ import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
 /**
  * Class to make building a 'context menu' from an AlertDialog a little easier.
  * Used in {@link BindableItemListActivity} and related.
- *
+ * <p>
  * Basically links a menu choice string to a Runnable
- *
- * Move code using this to {@link SelectOneDialog.SimpleDialogMenuItem}
+ * <p>
+ * Move code using this to {@link SimpleDialog.SimpleDialogMenuItem}
  *
  * @author Philip Warner
  */
 @Deprecated
-public class ContextDialogItem implements CharSequence {
-    @NonNull
-    public final Runnable handler;
-    @NonNull
-    private final String name;
+public class ContextDialogItem
+        implements CharSequence {
 
-    public ContextDialogItem(@NonNull final String name, @NonNull final Runnable handler) {
-        this.name = name;
-        this.handler = handler;
+    @NonNull
+    public final Runnable mHandler;
+    @NonNull
+    private final String mName;
+
+    public ContextDialogItem(@NonNull final String name,
+                             @NonNull final Runnable handler) {
+        mName = name;
+        mHandler = handler;
     }
 
     @NonNull
     @Override
     public String toString() {
-        return name;
+        return mName;
     }
 
     @Override
-    public char charAt(int index) {
-        return name.charAt(index);
+    public char charAt(final int index) {
+        return mName.charAt(index);
     }
 
     @Override
     public int length() {
-        return name.length();
+        return mName.length();
     }
 
     @NonNull
     @Override
-    public CharSequence subSequence(final int start, final int end) {
-        return name.subSequence(start, end);
+    public CharSequence subSequence(final int start,
+                                    final int end) {
+        return mName.subSequence(start, end);
     }
 }
 

@@ -139,7 +139,7 @@ public class ISFDBBook
     /** url list of all editions of this book. */
     private List<String> mEditions;
 
-    //ENHANCE: pass and store these ISFBD id's
+    //ENHANCE: pass and store these ISFBD id's?
 //    private final ArrayList<Long> ISFDB_BKEY_AUTHOR_ID_LIST = new ArrayList<>();
 //    private final ArrayList<Long> ISFDB_BKEY_SERIES_ID_LIST = new ArrayList<>();
 
@@ -618,7 +618,7 @@ public class ISFDBBook
                 mFirstPublication = year;
             }
 
-            TOCEntry tocEntry = new TOCEntry(author, title, year);
+            TOCEntry tocEntry = new TOCEntry(0, author, title, year);
             results.add(tocEntry);
         }
 

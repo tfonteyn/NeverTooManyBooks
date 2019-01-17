@@ -40,7 +40,7 @@
     <string name="lbl_bookshelf">Ράφι</string>
     <string name="all_books">Όλα τα βιβλία.</string>
     <string name="isbn_found">ISBN σαρώθηκε. Αναζήτηση στο διαδίκτυο.</string>
-    <string name="title_isbn_search">ISBN Αναζήτηση</string>
+    <string name="search_isbn">ISBN Αναζήτηση</string>
     <string name="title_edit_bookshelves">Διαχείρηση Ραφιών</string>
     <string name="menu_edit_bookshelf">Επεξεργασία ραφιού</string>
     <string name="lbl_search_for_books">Αναζήτηση για βιβλία</string>
@@ -431,7 +431,7 @@
     <string name="size">Μέγεθος</string>
     <string name="updated">Ενημερωμένο</string>
     <string name="import_error_csv_file_not_found">Δε βρέθηκαν αρχεία για εξαγωγή</string>
-    <string name="import_warning_csv_file_more_then_one_found">Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω</string>
+    <string name="import_warning_select_csv_file">Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω</string>
     <string name="problem_starting_import_arg">Υπήρξε ένα πρόβλημα στην έναρξη της εισαγωγής: %1$s</string>
     <string name="hint_booklist_style_menu">Σε αυτό το μενού μπορείτε να επιλέξετε το στυλ της λίστας.
     								\n\nΜπορείτε επίσης να προσαρμόσετε και αυτό το μενού, καθώς και να δημιουργήσετε το δικό σας στυλ για λίστες, πατώντας \'Προσαρμογή\' στο τέλος της λίστας.</string>

@@ -36,9 +36,9 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -60,7 +60,6 @@ public final class Logger {
     private static final DateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     static final int OUTPUT_BUFFER = 8192;
-    static final String UTF8 = "utf8";
 
     private Logger() {
     }
@@ -172,7 +171,8 @@ public final class Logger {
         try {
             BufferedWriter out = new BufferedWriter(
                     new OutputStreamWriter(
-                            new FileOutputStream(StorageUtils.getErrorLog()), UTF8), OUTPUT_BUFFER);
+                            new FileOutputStream(StorageUtils.getErrorLog()),
+                            StandardCharsets.UTF_8), OUTPUT_BUFFER);
             out.write(message);
             out.close();
         } catch (Exception ignored) {
@@ -197,7 +197,8 @@ public final class Logger {
             }
             BufferedWriter out = new BufferedWriter(
                     new OutputStreamWriter(
-                            new FileOutputStream(StorageUtils.getErrorLog()), UTF8), OUTPUT_BUFFER);
+                            new FileOutputStream(StorageUtils.getErrorLog()),
+                            StandardCharsets.UTF_8), OUTPUT_BUFFER);
             out.write("");
             out.close();
         } catch (Exception ignore) {
@@ -214,7 +215,7 @@ public final class Logger {
         DebugStackTrace() {
         }
 
-        DebugStackTrace(final Throwable cause) {
+        DebugStackTrace(@NonNull final Throwable cause) {
             super(cause);
         }
     }

@@ -108,16 +108,16 @@ public final class ImageUtils {
                 (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(ImageUtils.class, "fetchFileIntoImageView:\n" +
-                    " filename = " + fileSpec + '\n' +
-                    "  exact       = " + exact + '\n' +
-                    "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth +
-                    ", widthRatio   = " + widthRatio + '\n' +
-                    "  maxHeight   = " + maxHeight + ", opt.outHeight= " + opt.outHeight +
-                    ",  heightRatio = " + heightRatio + '\n' +
-                    "  ratio            = " + ratio + '\n' +
-                    "  idealSampleSize  = " + idealSampleSize + '\n' +
-                    "  samplePow2       = " + samplePow2);
+            Logger.info(ImageUtils.class, "fetchFileIntoImageView:\n"
+                    + " filename = " + fileSpec + '\n'
+                    + "  exact       = " + exact + '\n'
+                    + "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth
+                    + ", widthRatio   = " + widthRatio + '\n'
+                    + "  maxHeight   = " + maxHeight + ", opt.outHeight= " + opt.outHeight
+                    + ",  heightRatio = " + heightRatio + '\n'
+                    + "  ratio            = " + ratio + '\n'
+                    + "  idealSampleSize  = " + idealSampleSize + '\n'
+                    + "  samplePow2       = " + samplePow2);
         }
 
         final Bitmap bm;
@@ -321,9 +321,8 @@ public final class ImageUtils {
                                                       new BitmapFactory.Options());
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(ImageUtils.class,
-                        "Array " + bytes.length + " bytes, bitmap " +
-                                bitmap.getHeight() + 'x' + bitmap.getWidth());
+            Logger.info(ImageUtils.class, "Array " + bytes.length + " bytes, bitmap "
+                    + bitmap.getHeight() + 'x' + bitmap.getWidth());
         }
         return bitmap;
     }

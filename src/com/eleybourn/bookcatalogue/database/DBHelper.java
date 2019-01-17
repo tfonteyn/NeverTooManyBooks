@@ -15,8 +15,8 @@ import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
@@ -26,7 +26,6 @@ import java.io.File;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_AUTHOR_POSITION;
@@ -67,7 +66,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_TOC_ENTRY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UUID;
@@ -92,6 +90,19 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_E
  * <p>
  * This used to be an inner class of {@link DBA}
  * Externalised because of the size of the class. ONLY used by {@link DBA}
+ * <p>
+ * <p>
+ * NOTE: ***BEFORE*** changing any CREATE TABLE statement:
+ * <p>
+ * Making changes:
+ * 1. copy the create statement to a renamed version in {@link UpgradeDatabase#doUpgrade}
+ * 2. Find all uses in {@link UpgradeDatabase} and make sure upgrades use the
+ * 'old/renamed' version of the statement
+ * 3. modify the current statement, and if not already so, make it 'private'.
+ * (tables that have never changed since conception will be package-private)
+ * 4. modify {@link DomainDefinition} if needed to reflect the new version
+ * 5. Check and check again, that *everything* EXCEPT {@link UpgradeDatabase} is using
+ * the current version
  *
  * @author evan
  */
@@ -102,93 +113,36 @@ public class DBHelper
      * RELEASE: Update database version. (last official version was 82).
      */
     public static final int DATABASE_VERSION = 100;
+
     /**
-     * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM),
-     * Android supplies two more.
-     * LOCALIZED: using the system's current locale,
-     * UNICODE  : Unicode Collation Algorithm and not tailored to the current locale.
-     * <p>
-     * We tried 'Collate UNICODE' but it seemed to be case sensitive.
-     * We ended up with 'Ursula Le Guin' and 'Ursula le Guin'.
-     * <p>
-     * We now use Collate LOCALE and check to see if it is case sensitive.
-     * We *hope* in the future Android will add LOCALE_CI (or equivalent).
-     * <p>
-     * public static final String COLLATION = " Collate NOCASE ";
-     * public static final String COLLATION = " Collate UNICODE ";
-     * <p>
-     * NOTE: Important to have start/end spaces!
+     * the one and only (aside of the covers one...).
      */
-    public static final String COLLATION = " Collate LOCALIZED ";
+    private static final String DATABASE_NAME = "book_catalogue";
+
     /**
      * Database creation sql statement.
      */
-    static final String DATABASE_CREATE_BOOK_AUTHOR =
+    private static final String DATABASE_CREATE_BOOK_AUTHOR =
             "CREATE TABLE " + TBL_BOOK_AUTHOR + '('
-                    // if a book is deleted, remove the link
-                    + DOM_FK_BOOK_ID.def() + " REFERENCES " + TBL_BOOKS
-                    + " ON DELETE CASCADE ON UPDATE CASCADE"
-
-                    // if an author is deleted, remove the link
-                    + ',' + DOM_FK_AUTHOR_ID.def() + " REFERENCES " + TBL_AUTHORS
-                    + " ON DELETE CASCADE ON UPDATE CASCADE"
-
+                    + DOM_FK_BOOK_ID.def()
+                    + ',' + DOM_FK_AUTHOR_ID.def()
                     + ',' + DOM_BOOK_AUTHOR_POSITION.def()
                     //TODO: check PRIMARY KEY usage for all 'link' tables.
                     + ',' + "PRIMARY KEY(" + DOM_FK_BOOK_ID + ',' + DOM_BOOK_AUTHOR_POSITION + ')'
                     + ')';
 
-
-    /*
-     * NOTE: ***BEFORE*** changing any CREATE TABLE statement:
-     * <p>
-     * Making changes:
-     * 1. copy the create statement to a renamed version in {@link UpgradeDatabase#doUpgrade}
-     * 2. Find all uses in {@link UpgradeDatabase} and make sure upgrades use the
-     * 'old/renamed' version of the statement
-     * 3. modify the current statement, and if not already so, make it 'private'.
-     * (tables that have never changed since conception will be package-private)
-     * 4. modify {@link DomainDefinition} if needed to reflect the new version
-     * 5. Check and check again, that *everything* EXCEPT {@link UpgradeDatabase} is using
-     * the current version
-     */
     /**
      * Database creation sql statement.
      */
-    static final String DATABASE_CREATE_BOOK_SERIES =
+    private static final String DATABASE_CREATE_BOOK_SERIES =
             "CREATE TABLE " + TBL_BOOK_SERIES + '('
-                    // if a book is deleted, remove the link
-                    + DOM_FK_BOOK_ID.def() + " REFERENCES " + TBL_BOOKS
-                    + " ON DELETE CASCADE ON UPDATE CASCADE"
-
-                    // if a series is deleted, remove the link
-                    + ',' + DOM_FK_SERIES_ID.def() + " REFERENCES " + TBL_SERIES
-                    + " ON DELETE CASCADE ON UPDATE CASCADE"
-
+                    + DOM_FK_BOOK_ID.def()
+                    + ',' + DOM_FK_SERIES_ID.def()
                     + ',' + DOM_BOOK_SERIES_NUM.def()
                     + ',' + DOM_BOOK_SERIES_POSITION.def()
                     + ',' + "PRIMARY KEY(" + DOM_FK_BOOK_ID + ',' + DOM_BOOK_SERIES_POSITION + ')'
                     + ')';
-    /**
-     * this inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
-     */
-    static final String DATABASE_CREATE_BOOKSHELF_DATA =
-            "INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ") VALUES ('"
-                    + BookCatalogueApp.getResString(R.string.initial_bookshelf)
-                    + "')";
-    /**
-     * the one and only (aside of the covers one...).
-     */
-    private static final String DATABASE_NAME = "book_catalogue";
-    /**
-     * Database creation sql statement.
-     */
-    private static final String DATABASE_CREATE_AUTHORS =
-            "CREATE table " + TBL_AUTHORS + " (" + DOM_PK_ID.def()
-                    + ',' + DOM_AUTHOR_FAMILY_NAME.def()
-                    + ',' + DOM_AUTHOR_GIVEN_NAMES.def()
-                    + ',' + DOM_AUTHOR_IS_COMPLETE.def()
-                    + ')';
+
     /**
      * Database creation sql statement.
      */
@@ -234,25 +188,7 @@ public class DBHelper
                     + ',' + DOM_BOOK_DATE_ADDED.def()
                     + ',' + DOM_LAST_UPDATE_DATE.def()
                     + ')';
-    /**
-     * Database creation sql statement.
-     */
-    private static final String DATABASE_CREATE_BOOK_BOOKSHELF =
-            "CREATE TABLE " + TBL_BOOK_BOOKSHELF + '('
-                    + DOM_FK_BOOK_ID.def() + " REFERENCES " + TBL_BOOKS
-                    + " ON DELETE CASCADE ON UPDATE CASCADE" +
-                    ',' + DOM_FK_BOOKSHELF_ID.def() + " REFERENCES " + TBL_BOOKSHELF
-                    + " ON DELETE CASCADE ON UPDATE CASCADE"
-                    + ')';
-    /**
-     * Database creation sql statement.
-     */
-    private static final String DATABASE_CREATE_BOOK_LOAN =
-            "CREATE TABLE " + TBL_LOAN + " (" + DOM_PK_ID.def()
-                    + ',' + DOM_FK_BOOK_ID.def() + " REFERENCES " + TBL_BOOKS
-                    + " ON DELETE CASCADE ON UPDATE CASCADE" +
-                    ',' + DOM_LOANED_TO.def()
-                    + ')';
+
     /**
      * Database creation sql statement.
      */
@@ -261,24 +197,8 @@ public class DBHelper
                     // if an Author is deleted, set the id to null but keep the row.
                     + ',' + DOM_FK_AUTHOR_ID.def() + " REFERENCES " + TBL_AUTHORS
                     + " ON DELETE SET NULL ON UPDATE CASCADE"
-
-                    + ',' + DOM_TITLE.def()
-                    + ',' + DOM_FIRST_PUBLICATION.def()
                     + ')';
-    /**
-     * Database creation sql statement.
-     */
-    private static final String DATABASE_CREATE_BOOK_TOC_ENTRIES =
-            "CREATE TABLE " + TBL_BOOK_TOC_ENTRIES + " (" + DOM_PK_ID.def()
-                    // if a Book is deleted, remove the link
-                    + ',' + DOM_FK_BOOK_ID.def() + " REFERENCES " + TBL_BOOKS
-                    + " ON DELETE CASCADE ON UPDATE CASCADE"
-                    // if a TOC entry is deleted, remove the link
-                    + ',' + DOM_FK_TOC_ENTRY_ID.def() + " REFERENCES " + TBL_TOC_ENTRIES
-                    + " ON DELETE CASCADE ON UPDATE CASCADE"
 
-                    + ',' + DOM_BOOK_TOC_ENTRY_POSITION.def()
-                    + ')';
     /**
      * All the indexes.
      */
@@ -286,17 +206,18 @@ public class DBHelper
             "CREATE INDEX IF NOT EXISTS authors_given_names ON " + TBL_AUTHORS
                     + " (" + DOM_AUTHOR_GIVEN_NAMES + ')',
             "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS
-                    + " (" + DOM_AUTHOR_GIVEN_NAMES + COLLATION + ')',
+                    + " (" + DOM_AUTHOR_GIVEN_NAMES + DBA.COLLATION + ')',
 
             "CREATE INDEX IF NOT EXISTS authors_family_name ON " + TBL_AUTHORS
                     + " (" + DOM_AUTHOR_FAMILY_NAME + ')',
             "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS
-                    + " (" + DOM_AUTHOR_FAMILY_NAME + COLLATION + ')',
+                    + " (" + DOM_AUTHOR_FAMILY_NAME + DBA.COLLATION + ')',
+
 
             "CREATE INDEX IF NOT EXISTS books_title ON " + TBL_BOOKS
                     + " (" + DOM_TITLE + ')',
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
-                    + " (" + DOM_TITLE + COLLATION + ')',
+                    + " (" + DOM_TITLE + DBA.COLLATION + ')',
 
             "CREATE INDEX IF NOT EXISTS books_isbn ON " + TBL_BOOKS
                     + " (" + DOM_BOOK_ISBN + ')',
@@ -310,8 +231,10 @@ public class DBHelper
             "CREATE INDEX IF NOT EXISTS books_isfdb_book ON " + TBL_BOOKS
                     + " (" + DOM_BOOK_ISFDB_ID + ')',
 
+
             "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON " + TBL_LOAN
                     + " (" + DOM_FK_BOOK_ID + ')',
+
 
             "CREATE INDEX IF NOT EXISTS anthology_author ON " + TBL_TOC_ENTRIES
                     + " (" + DOM_FK_AUTHOR_ID + ')',
@@ -320,20 +243,24 @@ public class DBHelper
             "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + TBL_TOC_ENTRIES
                     + " (" + DOM_FK_AUTHOR_ID + ',' + DOM_TITLE + ')',
 
+
             "CREATE INDEX IF NOT EXISTS book_anthology_anthology ON " + TBL_BOOK_TOC_ENTRIES
                     + " (" + DOM_FK_TOC_ENTRY_ID + ')',
             "CREATE INDEX IF NOT EXISTS book_anthology_book ON " + TBL_BOOK_TOC_ENTRIES
                     + " (" + DOM_FK_BOOK_ID + ')',
+
 
             "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON " + TBL_BOOK_BOOKSHELF
                     + " (" + DOM_FK_BOOK_ID + ')',
             "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON " + TBL_BOOK_BOOKSHELF
                     + " (" + DOM_FK_BOOKSHELF_ID + ')',
 
+
             "CREATE UNIQUE INDEX IF NOT EXISTS book_author_author ON " + TBL_BOOK_AUTHOR
                     + " (" + DOM_FK_AUTHOR_ID + ',' + DOM_FK_BOOK_ID + ')',
             "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + TBL_BOOK_AUTHOR
                     + " (" + DOM_FK_BOOK_ID + ',' + DOM_FK_AUTHOR_ID + ')',
+
 
             "CREATE UNIQUE INDEX IF NOT EXISTS book_series_series ON " + TBL_BOOK_SERIES
                     + " (" + DOM_FK_SERIES_ID + ','
@@ -396,18 +323,24 @@ public class DBHelper
         // RELEASE: Make sure these are always DATABASE_CREATE_table WITHOUT VERSIONS
 
         TBL_BOOKSHELF.createAll(syncedDb);
-        db.execSQL(DATABASE_CREATE_BOOKSHELF_DATA);
+        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
+        db.execSQL("INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ") VALUES ('"
+                           + BookCatalogueApp.getResString(R.string.initial_bookshelf)
+                           + "')");
 
-        db.execSQL(DATABASE_CREATE_AUTHORS);
+
+        // the createAll() calls will also do the indexes, the create() calls not.
+        TBL_AUTHORS.create(syncedDb);
         TBL_SERIES.createAll(syncedDb);
         db.execSQL(DATABASE_CREATE_TOC_ENTRIES);
         db.execSQL(DATABASE_CREATE_BOOKS);
 
-        db.execSQL(DATABASE_CREATE_BOOK_LOAN);
-        db.execSQL(DATABASE_CREATE_BOOK_TOC_ENTRIES);
+        TBL_LOAN.create(syncedDb);
+        TBL_BOOK_TOC_ENTRIES.create(syncedDb);
         db.execSQL(DATABASE_CREATE_BOOK_AUTHOR);
-        db.execSQL(DATABASE_CREATE_BOOK_BOOKSHELF);
+        TBL_BOOK_BOOKSHELF.create(syncedDb);
         db.execSQL(DATABASE_CREATE_BOOK_SERIES);
+        // create the indexes not covered in the create() calls above.
         createIndices(db);
 
         TBL_BOOKLIST_STYLES.createAll(syncedDb);
@@ -444,14 +377,16 @@ public class DBHelper
     private void createIndices(@NonNull final SQLiteDatabase db) {
         //delete all indices first
         String sql = "SELECT name FROM sqlite_master WHERE type = 'index' AND sql is not null;";
-        try (Cursor current = db.rawQuery(sql, new String[]{})) {
+        try (Cursor current = db.rawQuery(sql, null)) {
             while (current.moveToNext()) {
                 String indexName = current.getString(0);
                 String deleteSql = "DROP INDEX " + indexName;
                 try {
                     db.execSQL(deleteSql);
                 } catch (SQLException e) {
-                    throw new IllegalStateException(e);
+                    // bad sql is a developer issue... die!
+                    Logger.error(e);
+                    throw new IllegalArgumentException(e);
                 } catch (RuntimeException e) {
                     Logger.error(e, "Index deletion failed (probably not a problem)");
                 }
@@ -468,7 +403,9 @@ public class DBHelper
             try {
                 db.execSQL(index);
             } catch (SQLException e) {
-                throw new IllegalStateException(e);
+                // bad sql is a developer issue... die!
+                Logger.error(e);
+                throw new IllegalArgumentException(e);
             } catch (RuntimeException e) {
                 // Expected on multi-version upgrades.
                 Logger.error(e, "Index creation failed (probably not a problem),"
@@ -612,7 +549,7 @@ public class DBHelper
 
             // anthology-titles are now cross-book;
             // e.g. one 'story' can be present in multiple books
-            db.execSQL(DATABASE_CREATE_BOOK_TOC_ENTRIES);
+            TBL_BOOK_TOC_ENTRIES.create(syncedDb);
             // move the existing book-anthology links to the new table
             db.execSQL("INSERT INTO " + TBL_BOOK_TOC_ENTRIES
                                + " SELECT " + DOM_FK_BOOK_ID + ',' + DOM_PK_ID + ','

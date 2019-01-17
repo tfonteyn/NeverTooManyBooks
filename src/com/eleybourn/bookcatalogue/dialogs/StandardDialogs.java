@@ -304,7 +304,7 @@ public final class StandardDialogs {
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                          context.getString(android.R.string.ok),
                          new DialogInterface.OnClickListener() {
-                             public void onClick(final DialogInterface dialog,
+                             public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  nextStep.onPositive();
                              }
@@ -312,7 +312,7 @@ public final class StandardDialogs {
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                          context.getString(android.R.string.cancel),
                          new DialogInterface.OnClickListener() {
-                             public void onClick(final DialogInterface dialog,
+                             public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  nextStep.onNegative();
                              }

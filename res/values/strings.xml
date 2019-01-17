@@ -527,10 +527,16 @@
 
     <string name="unknown">Unknown</string>
     <string name="unknown_uc">UNKNOWN</string>
+
     <!-- 'try again' -->
     <string name="retry">Retry</string>
     <!-- e.g. "in a folder" -->
     <string name="in">In</string>
+    <!-- Content description for the 'up' icon in the folder browser -->
+    <string name="up_folder">Up</string>
+
+    <!-- 'and' as used in lists:  x and y -->
+    <string name="list_and">and</string>
 
     <string name="updated">Updated</string>
 
@@ -837,6 +843,7 @@
     <!-- Heading in Admin activity -->
     <string name="lbl_advanced_options">Advanced</string>
 
+    <string name="lbl_table_of_content">Table Of Content</string>
     <string name="lbl_cover_images">Cover images</string>
     <string name="lbl_search_for_books">Search for Books</string>
     <string name="lbl_details_have_changed">Details have changed</string>
@@ -975,7 +982,7 @@
     <!-- ####################################################################################### -->
 
     <string name="import_error_csv_file_not_found">No export files found</string>
-    <string name="import_warning_csv_file_more_then_one_found">More than one export file
+    <string name="import_warning_select_csv_file">More than one export file
         was found; please select an export file to import from the list below</string>
 
     <!-- Displayed when a CSV import fails -->
@@ -1002,10 +1009,12 @@
     <string name="searching_google_books">Searching Google Books</string>
     <string name="searching_library_thing">Searching LibraryThing</string>
     <string name="searching_goodreads">Searching Goodreads</string>
+    <string name="searching_isfdb">Searching ISFDB</string>
 
     <string name="search_criteria">Search Criteria</string>
     <string name="search_internet">Search Internet</string>
-    <string name="title_isbn_search">ISBN Search</string>
+    <string name="search_isbn">ISBN Search</string>
+    <string name="search_with_text">Search: %1$s</string>
 
     <string name="not_set">Not Set</string>
     <string name="not_set_with_brackets">(Not Set)</string>
@@ -1031,7 +1040,7 @@
         You have changed the series from:\n  \'%1$s\' to \n  \'%2$s\'\n
         How do you wish to apply this change?\nNote: The choice \'%3$s\' will be applied instantly.
     </string>
-    <string name="list_and">and</string>
+
 
     <string name="send_info">Send Information</string>
     <string name="cleanup_files">Cleanup Files</string>
@@ -1042,17 +1051,12 @@
     <string name="not_authorized">Not Authorized</string>
     <string name="please_enter_search_criteria">Please enter search criteria</string>
 
-
-
     <string name="read_amp_unread">Read &amp; Unread</string>
 
     <string name="displaying_n_books_in_m_entries">displaying %1$d books, in %2$d entries</string>
 
     <!-- name of virtual bookshelf which displays all books; also used in list filters -->
     <string name="all_books">All Books</string>
-
-    <!-- Content description for the 'up' icon in the folder browser -->
-    <string name="up_folder">Up</string>
 
 
     <!-- ####################################################################################### -->
@@ -1162,14 +1166,10 @@
     <string name="tab_lbl_search_site_order">Order</string>
     <string name="tab_lbl_search_site_cover_order">Cover Search Order</string>
 
-    <string name="search_with_text">Search: %1$s</string>
-    <string name="searching_isfdb">Searching ISFDB</string>
-
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="menu_internet_update_fields">Update Fields</string>
     <string name="share_book_im_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
 
-    <string name="table_of_content">Table Of Content</string>
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
 
     <!-- "Usage" in Update Fields from internet:  'Skip field' versus 'copy,...' -->
@@ -1192,5 +1192,6 @@
     <string name="import_export_xml_tables">as XML</string>
     <string name="import_export_info_xml_tables">as XML</string>
     <string name="info_tap_to_edit">Tap here to edit the name</string>
+    <string name="menu_clear_filters">Clear Filters</string>
 
 </resources>

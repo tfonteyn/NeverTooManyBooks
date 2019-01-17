@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.OnPathChangedListener;
 import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask.FileListerListener;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,8 +52,8 @@ import java.util.ArrayList;
 public abstract class FileChooserBaseActivity
         extends BaseActivity
         implements
-        SimpleTaskQueueProgressDialogFragment.OnTaskFinishedListener,
-        SimpleTaskQueueProgressDialogFragment.OnAllTasksFinishedListener,
+        TaskWithProgressDialogFragment.OnTaskFinishedListener,
+        TaskWithProgressDialogFragment.OnAllTasksFinishedListener,
         FileListerFragmentTask.FileListerListener,
         OnPathChangedListener {
 
@@ -62,7 +62,7 @@ public abstract class FileChooserBaseActivity
     public static final String BVAL_MODE_SAVE = "saveAs";
     public static final String BVAL_MODE_OPEN = "open";
 
-    /** Options indicating nature of this activity. */
+    /** Flag indicating nature of this activity. */
     private boolean mIsSave;
 
     public boolean isSave() {
@@ -213,8 +213,18 @@ public abstract class FileChooserBaseActivity
         FileListerFragmentTask lister = getFileLister(root);
 
         // Start the task
-        SimpleTaskQueueProgressDialogFragment
+        TaskWithProgressDialogFragment
                 .newInstance(this, R.string.progress_msg_searching_directory, lister, true, 0);
 
+    }
+
+    /**
+     * Empty implementation. Override if you need to.
+     */
+    @Override
+    public void onAllTasksFinished(@NonNull final TaskWithProgressDialogFragment fragment,
+                                   final int taskId,
+                                   final boolean success,
+                                   final boolean cancelled) {
     }
 }

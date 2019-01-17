@@ -52,11 +52,8 @@ public class BooklistStyleSettingsFragment
         setPreferencesFromResource(R.xml.preferences_book_style, rootKey);
         PreferenceScreen screen = getPreferenceScreen();
 
-        // this is weird... the docs show how to use a SimpleSummaryProvider,
-        // but the class is not present (for now?)
-        // so we do it manually in our base class.
-//        EditTextPreference np = (EditTextPreference) screen
-//              .findPreference(BookCatalogueApp.getResString(R.string.name));
+        // doing this in our base class. TODO: use this for all prefs instead of our own code.
+//        EditTextPreference np = screen.findPreference(BookCatalogueApp.getResString(R.string.name));
 //        np.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
         // add the preferences from all groups:
@@ -66,15 +63,15 @@ public class BooklistStyleSettingsFragment
 
         // Set the title (not the screen title)
         if (mStyle.getId() == 0) {
-            getActivity().setTitle(
+            requireActivity().setTitle(
                     getString(R.string.title_clone_style_colon_name, mStyle.getDisplayName()));
         } else {
-            getActivity().setTitle(
+            requireActivity().setTitle(
                     getString(R.string.title_edit_style_colon_name, mStyle.getDisplayName()));
         }
         // Display hint if required
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(),
+            HintManager.displayHint(getLayoutInflater(),
                                     R.string.hint_booklist_style_properties, null);
         }
 
@@ -132,13 +129,12 @@ public class BooklistStyleSettingsFragment
             case REQ_EDIT_GROUPS:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    // replace the current style with the new (edited) copy
+                    // replace the current style with the edited copy
                     mStyle = data.getParcelableExtra(REQUEST_BKEY_STYLE);
+                    // sanity check
                     Objects.requireNonNull(mStyle);
-                    // refresh groupings
+                    // refresh groupings on screen
                     setupBooklistGroups();
-                    // and update the preferences from the groups (groups added/removed)
-                    //TOMF
                 }
                 break;
 

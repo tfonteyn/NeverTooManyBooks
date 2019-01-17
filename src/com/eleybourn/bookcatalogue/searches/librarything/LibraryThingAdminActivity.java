@@ -37,8 +37,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment.FragmentTask;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -101,12 +101,12 @@ public class LibraryThingAdminActivity
 
                 if (!devKey.isEmpty()) {
                     FragmentTask task =
-                            new SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract() {
+                            new TaskWithProgressDialogFragment.FragmentTaskAbstract() {
                         /**
                          * Validate the key by getting a known cover.
                          */
                         @Override
-                        public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                        public void run(@NonNull final TaskWithProgressDialogFragment fragment,
                                         @NonNull final SimpleTaskContext taskContext) {
                             LibraryThingManager ltm = new LibraryThingManager();
                             File tmpFile = ltm.getCoverImage("0451451783",
@@ -126,13 +126,13 @@ public class LibraryThingAdminActivity
                         }
 
                         @Override
-                        public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+                        public void onFinish(@NonNull final TaskWithProgressDialogFragment fragment,
                                              @Nullable final Exception e) {
                         }
                     };
 
                     // Get the fragment to display task progress
-                    SimpleTaskQueueProgressDialogFragment.newInstance(
+                    TaskWithProgressDialogFragment.newInstance(
                             LibraryThingAdminActivity.this,
                             R.string.progress_msg_connecting_to_web_site, task, true, 0);
 

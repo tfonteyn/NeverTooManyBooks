@@ -356,7 +356,7 @@ public class EditBookFragment
      * passed nextStep parameter will be executed. Passing nextStep is necessary because
      * this method may return after displaying a dialogue.
      *
-     * @param nextStep The next onProgress to be executed on confirm/cancel.
+     * @param nextStep The next step to be executed on confirm/cancel.
      */
     private void doSave(@NonNull final StandardDialogs.AlertDialogAction nextStep) {
         Book book = getBook();
@@ -367,6 +367,7 @@ public class EditBookFragment
         //noinspection ConstantConditions
         DataEditor currentChildFragment = (DataEditor) getChildFragmentManager()
                 .findFragmentById(R.id.tab_fragment);
+        //noinspection ConstantConditions
         currentChildFragment.saveFieldsTo(book);
 
 

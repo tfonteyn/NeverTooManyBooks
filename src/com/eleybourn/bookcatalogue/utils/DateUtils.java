@@ -257,7 +257,7 @@ public final class DateUtils {
      * for caller to specify if the parsing should be strict or lenient.
      *
      * @param dateString String to parse
-     * @param lenient    True if parsing should be lenient
+     * @param lenient    <tt>true</tt> if parsing should be lenient
      *
      * @return Resulting date if successfully parsed, otherwise null
      */

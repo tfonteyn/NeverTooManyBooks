@@ -45,8 +45,8 @@ public interface BackupReader
      *
      * @throws IOException on failure
      */
-    void restore(@NonNull ImportSettings settings,
-                 @NonNull BackupReaderListener listener)
+    void restore(@NonNull final ImportSettings settings,
+                 @NonNull final BackupReaderListener listener)
             throws IOException;
 
     /**
@@ -87,13 +87,13 @@ public interface BackupReader
         /**
          * Set the end point for the progress.
          */
-        void setMax(int max);
+        void setMax(final int max);
 
         /**
          * Advance progress by 'delta'.
          */
-        void onProgressStep(@NonNull String message,
-                            int delta);
+        void onProgressStep(@NonNull final String message,
+                            final int delta);
 
         /**
          * Check if operation is cancelled.

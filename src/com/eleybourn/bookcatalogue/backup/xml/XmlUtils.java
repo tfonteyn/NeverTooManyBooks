@@ -42,7 +42,6 @@ import java.util.Set;
  */
 public final class XmlUtils {
 
-    public static final String UTF8 = "utf8";
     public static final int BUFFER_SIZE = 32768;
 
     /**
@@ -357,9 +356,6 @@ public final class XmlUtils {
                                Base64.encodeToString(convertToBytes(value), Base64.DEFAULT));
 
         } else {
-            if (value == null) {
-                throw new NullPointerException();
-            }
             throw new RTE.IllegalTypeException(value.getClass().getCanonicalName());
         }
     }

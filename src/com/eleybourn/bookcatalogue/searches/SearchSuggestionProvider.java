@@ -53,6 +53,8 @@ public class SearchSuggestionProvider
 
     @Nullable
     private DBA mDb;
+    @Nullable
+    private Cursor mSSCursor;
 
     public SearchSuggestionProvider() {
         setupSuggestions(AUTHORITY, MODE);
@@ -75,7 +77,8 @@ public class SearchSuggestionProvider
             //noinspection ConstantConditions
             mDb = new DBA(this.getContext());
         }
-        return mDb.fetchSearchSuggestions(selectionArgs[0]);
+        mSSCursor = mDb.fetchSearchSuggestions(selectionArgs[0]);
+        return mSSCursor;
     }
 
     /**
@@ -84,6 +87,9 @@ public class SearchSuggestionProvider
      * Added/Leaving this method here as a reminder
      */
     public void close() {
+        if (mSSCursor != null) {
+            mSSCursor.close();
+        }
         if (mDb != null) {
             mDb.close();
         }

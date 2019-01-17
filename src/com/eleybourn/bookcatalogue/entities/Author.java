@@ -168,7 +168,7 @@ public class Author
             author = db.getAuthor(id);
             //noinspection ConstantConditions
             author.setComplete(isComplete);
-            return (db.updateAuthor(author) == 1);
+            return db.updateAuthor(author) == 1;
         } catch (DBExceptions.UpdateException e) {
             // log but ignore
             Logger.error(e, "failed to set Author id=" + id
@@ -392,9 +392,9 @@ public class Author
         return Objects.hash(id, mFamilyName, mGivenNames);
     }
 
-    public void copy(final Author that) {
-        this.mFamilyName = that.getFamilyName();
-        this.mGivenNames = that.getGivenNames();
-        this.mIsComplete = that.isComplete();
+    public void copy(@NonNull final Author that) {
+        mFamilyName = that.getFamilyName();
+        mGivenNames = that.getGivenNames();
+        mIsComplete = that.isComplete();
     }
 }

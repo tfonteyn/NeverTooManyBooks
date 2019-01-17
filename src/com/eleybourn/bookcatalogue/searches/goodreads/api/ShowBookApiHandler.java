@@ -56,7 +56,7 @@ public abstract class ShowBookApiHandler
         extends ApiHandler {
 
     /**
-     * Options to indicate if request should be signed. Signed requests via ISB cause server errors
+     * Flag to indicate if request should be signed. Signed requests via ISB cause server errors
      * and unsigned requests do not return review (not a big problem for searches)
      */
     private final boolean mSignRequest;

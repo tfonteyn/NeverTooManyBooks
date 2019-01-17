@@ -255,9 +255,9 @@ public class EditAuthorListActivity
         return false;
     }
 
-    protected SimpleListAdapter<Author> createListAdapter(@LayoutRes final int rowViewId,
+    protected SimpleListAdapter<Author> createListAdapter(@LayoutRes final int rowLayoutId,
                                                           @NonNull final ArrayList<Author> list) {
-        return new AuthorListAdapter(this, rowViewId, list);
+        return new AuthorListAdapter(this, rowLayoutId, list);
     }
 
     /**
@@ -266,40 +266,40 @@ public class EditAuthorListActivity
     private static class Holder {
 
         TextView rowAuthor;
-        TextView rowAuthorSsort;
+        TextView rowAuthorSort;
     }
 
     protected class AuthorListAdapter
             extends SimpleListAdapter<Author> {
 
         AuthorListAdapter(@NonNull final Context context,
-                          @LayoutRes final int rowViewId,
+                          @LayoutRes final int rowLayoutId,
                           @NonNull final ArrayList<Author> items) {
-            super(context, rowViewId, items);
+            super(context, rowLayoutId, items);
         }
 
         @Override
         protected void onGetView(@NonNull final View convertView,
-                                 @NonNull final Author author) {
+                                 @NonNull final Author item) {
             Holder holder = ViewTagger.getTag(convertView);
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
                 holder.rowAuthor = convertView.findViewById(R.id.row_author);
-                holder.rowAuthorSsort = convertView.findViewById(R.id.row_author_sort);
+                holder.rowAuthorSort = convertView.findViewById(R.id.row_author_sort);
                 // Tag the parts that need it
                 ViewTagger.setTag(convertView, holder);
             }
             // Setup the variant fields in the holder.
             if (holder.rowAuthor != null) {
-                holder.rowAuthor.setText(author.getDisplayName());
+                holder.rowAuthor.setText(item.getDisplayName());
             }
-            if (holder.rowAuthorSsort != null) {
-                if (author.getDisplayName().equals(author.getSortName())) {
-                    holder.rowAuthorSsort.setVisibility(View.GONE);
+            if (holder.rowAuthorSort != null) {
+                if (item.getDisplayName().equals(item.getSortName())) {
+                    holder.rowAuthorSort.setVisibility(View.GONE);
                 } else {
-                    holder.rowAuthorSsort.setVisibility(View.VISIBLE);
-                    holder.rowAuthorSsort.setText(author.getSortName());
+                    holder.rowAuthorSort.setVisibility(View.VISIBLE);
+                    holder.rowAuthorSort.setText(item.getSortName());
                 }
             }
         }
@@ -309,9 +309,9 @@ public class EditAuthorListActivity
          */
         @Override
         protected void onRowClick(@NonNull final View target,
-                                  @NonNull final Author author,
+                                  @NonNull final Author item,
                                   final int position) {
-            edit(author);
+            edit(item);
         }
 
         /**
@@ -319,7 +319,6 @@ public class EditAuthorListActivity
          */
         @Override
         protected void onListChanged() {
-            super.onListChanged();
             EditAuthorListActivity.this.onListChanged();
         }
     }

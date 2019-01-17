@@ -40,7 +40,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
@@ -48,19 +47,19 @@ import java.util.ArrayList;
 
 /**
  * ENHANCE: Ultimately, this should become a Fragment.
- *
+ * <p>
  * Base class for editing a list of objects. The inheritor must specify a view id and a row view
  * id to the constructor of this class.
- *
+ * <p>
  * This Activity uses {@link TouchListView} from CommonsWare which is in turn based on Android code
  * for TouchInterceptor which was (reputedly) removed in Android 2.2.
- *
+ * <p>
  * Mandatory: {@link #createListAdapter}
  * needs to be implemented returning a suitable {@link SimpleListAdapter}
  * The method {@link SimpleListAdapter#onGetView} should be implemented.
  * Others are optional to override.
- *
- *
+ * <p>
+ * <p>
  * For this code to work, the main view must contain a {@link TouchListView}
  * <pre>
  *     id:
@@ -70,17 +69,17 @@ import java.util.ArrayList;
  *        tlv:remove_mode="none"
  *        tlv:normal_height="64dip" ---- or some similar value
  *  </pre>
- *
+ * <p>
  * Main View buttons:
  * - R.id.cancel         calls {@link #onSave(Intent)}
  * - R.id.confirm        calls {@link #onCancel()}
  * - R.id.add (OPTIONAL) calls {@link #onAdd}
- *
+ * <p>
  * Method {@link #onAdd} has an implementation that throws an {@link UnsupportedOperationException}
  * So if your list supports adding to the list, you must implement {@link #onAdd}.
- *
+ * <p>
  * Moving an item in the list calls {@link #onListChanged()}
- *
+ * <p>
  * Each row view must use id's as listed in {@link SimpleListAdapter} and in addition have
  * an {@link ImageView} with an ID of "@+id/<SOME ID FOR AN IMAGE>" matching the TLV one as above.
  *
@@ -97,10 +96,10 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     private final String mBKey;
     /** The resource ID for the base view. */
     @LayoutRes
-    private final int mBaseViewId;
+    private final int mBaseLayoutId;
     /** The resource ID for the row view. */
     @LayoutRes
-    private final int mRowViewId;
+    private final int mRowLayoutId;
 
     /**
      * Handle 'Cancel'.
@@ -117,7 +116,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected ArrayList<T> mList;
     /**
      * Handle 'Save'.
-     *
+     * <p>
      * TEST: setResult(Activity.RESULT_OK although we might not have made any.
      */
     private final OnClickListener mSaveListener = new OnClickListener() {
@@ -150,27 +149,26 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * Constructor.
      *
-     * @param baseViewId Resource id of base view
-     * @param rowViewId  Resource id of row view
-     * @param bkey       The key to use in the Bundle to get the list
+     * @param rootLayoutId Resource id of base view
+     * @param rowLayoutId  Resource id of row view
+     * @param bkey         The key to use in the Bundle to get the list
      */
-    protected EditObjectListActivity(@LayoutRes final int baseViewId,
-                                     @LayoutRes final int rowViewId,
+    protected EditObjectListActivity(@LayoutRes final int rootLayoutId,
+                                     @LayoutRes final int rowLayoutId,
                                      @Nullable final String bkey) {
-        mBaseViewId = baseViewId;
-        mRowViewId = rowViewId;
+        mBaseLayoutId = rootLayoutId;
+        mRowLayoutId = rowLayoutId;
         mBKey = bkey;
     }
 
     @Override
     protected int getLayoutId() {
-        return mBaseViewId;
+        return mBaseLayoutId;
     }
 
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         mDb = new DBA(this);
@@ -178,7 +176,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         // see getList for full details as to where we "get" the list from
         mList = getList(mBKey, savedInstanceState);
         // setup the adapter
-        mListAdapter = createListAdapter(mRowViewId, mList);
+        mListAdapter = createListAdapter(mRowLayoutId, mList);
         setListAdapter(mListAdapter);
 
         // Look for id and title
@@ -196,8 +194,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
         // Add handler for 'onDrop' from the TouchListView
         ((TouchListView) getListView()).setOnDropListener(this);
-
-        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -208,7 +204,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * 4. throw FATAL error
      */
     @NonNull
-    private ArrayList<T> getList(@NonNull final String key,
+    private ArrayList<T> getList(@Nullable final String key,
                                  @Nullable final Bundle savedInstanceState) {
         ArrayList<T> list = null;
 
@@ -242,7 +238,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         final int savedRow = getListView().getFirstVisiblePosition();
 
         mList = newList;
-        mListAdapter = createListAdapter(mRowViewId, mList);
+        mListAdapter = createListAdapter(mRowLayoutId, mList);
         setListAdapter(mListAdapter);
 
         getListView().post(new Runnable() {
@@ -256,7 +252,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * get the specific list adapter from the child class.
      */
-    protected abstract SimpleListAdapter<T> createListAdapter(@LayoutRes int rowViewId,
+    protected abstract SimpleListAdapter<T> createListAdapter(@LayoutRes int rowLayoutId,
                                                               @NonNull ArrayList<T> list);
 
     /**
@@ -327,7 +323,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * Called when user clicks the 'Save' button (if present). Primary task is
      * to return a boolean indicating it is OK to continue.
-     *
+     * <p>
      * Can be overridden to perform other checks.
      *
      * @param data A newly created Intent to store output if necessary.
@@ -357,7 +353,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * Called when the list had been modified in some way.
      * By default, tells the adapter that the list was changed
-     *
+     * <p>
      * Child classes should override when needed and call super FIRST
      */
     @CallSuper
@@ -388,7 +384,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected void setTextOrHideView(@SuppressWarnings("SameParameterValue")
                                      @IdRes final int viewId,
                                      @Nullable final String value) {
-        TextView textView = this.findViewById(viewId);
+        TextView textView = findViewById(viewId);
         if (textView == null) {
             return;
         }
@@ -434,12 +430,9 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     @Override
     @CallSuper
     protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
         if (mDb != null) {
             mDb.close();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
-
 }

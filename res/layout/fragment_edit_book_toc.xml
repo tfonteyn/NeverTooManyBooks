@@ -70,7 +70,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/add_button"
         android:textIsSelectable="false"
-        android:textSize="16sp"
-        tools:text="@string/not_set" />
+        android:textSize="16sp" />
 
 </RelativeLayout>

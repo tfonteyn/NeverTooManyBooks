@@ -71,6 +71,7 @@ import java.util.UUID;
  * and negative id's.
  * Every setting in a style is backed by a {@link PPref} which handles the storage of that setting.
  * *All* style settings are private to a style, there is no inheritance of global settings.
+ * <p>
  * ENHANCE: re-introduce global inheritance ? But would that actually be used ?
  * <p>
  * ENHANCE: when a style is deleted, the prefs are cleared. But the actual fine is not removed.
@@ -191,11 +192,11 @@ public class BooklistStyle
      * Used for user-defined styles.
      * encapsulated value always null for a builtin style.
      */
-    private transient PString mDisplayNamePref;
+    private transient PString mDisplayName;
 
     /**
      * Legacy field needs to be kept for backward serialization compatibility,
-     * replaced by {@link #mDisplayNamePref}.
+     * replaced by {@link #mDisplayName}.
      * Do not rename.
      */
     @SuppressWarnings({"unused", "FieldCanBeLocal"})
@@ -213,7 +214,7 @@ public class BooklistStyle
     private ArrayList<BooklistGroup> mGroups;
 
     /**
-     * Options indicating this style was in the 'preferred' set when it was added to
+     * Flag indicating this style was in the 'preferred' set when it was added to
      * its Styles collection.
      * This preference is stored with the user-defined style.
      * But all preferred (user *and* builtin) styles also stored as a single set
@@ -316,8 +317,8 @@ public class BooklistStyle
         // only init the prefs once we have a valid uuid
         initPrefs();
 
-        mDisplayNamePref.set(in);
-        mName = mDisplayNamePref.get();
+        mDisplayName.set(in);
+        mName = mDisplayName.get();
 
         // create new clone ?
         if (doNew) {
@@ -351,24 +352,21 @@ public class BooklistStyle
     }
 
     /**
-     * Delete *ALL* styles from the database.
-     */
-    @SuppressWarnings("unused")
-    public static void deleteAllStyles(@NonNull final DBA db) {
-        db.deleteAllBooklistStyle();
-    }
-
-    /**
      * create + set the UUID.
      *
      * @return the UUID
      */
+    @NonNull
     private String createUniqueName() {
         mUuid = UUID.randomUUID().toString();
         Prefs.getPrefs(mUuid).edit().putString(PREF_STYLE_UUID, mUuid).apply();
         return mUuid;
     }
 
+    /**
+     * @return the UUID, will be null for builtin styles.
+     */
+    @Nullable
     public String getUuid() {
         return mUuid;
     }
@@ -378,7 +376,7 @@ public class BooklistStyle
      */
     private void initPrefs() {
 
-        mDisplayNamePref = new PString(R.string.pk_bob_style_name, mUuid);
+        mDisplayName = new PString(R.string.pk_bob_style_name, mUuid);
 
         mStyleGroups = new PStyleGroups(R.string.pk_bob_groups, mUuid);
 
@@ -426,7 +424,7 @@ public class BooklistStyle
         dest.writeInt(mNameResId);
         dest.writeString(mUuid);
 
-        mDisplayNamePref.writeToParcel(dest);
+        mDisplayName.writeToParcel(dest);
 
         mIsPreferred.writeToParcel(dest);
         mScaleSize.writeToParcel(dest);
@@ -479,20 +477,20 @@ public class BooklistStyle
         if (mNameResId != 0) {
             return BookCatalogueApp.getResString(mNameResId);
         } else {
-            return mDisplayNamePref.get();
+            return mDisplayName.get();
         }
     }
 
-    private void setName(final String name) {
+    private void setName(@NonNull final String name) {
         mName = name;
-        mDisplayNamePref.set(name);
+        mDisplayName.set(name);
     }
 
     /**
      * @return <tt>true</tt> if this style is user-defined.
      */
     public boolean isUserDefined() {
-        return (mNameResId == 0 || mId > 0);
+        return (mNameResId == 0);
     }
 
     /**
@@ -520,7 +518,7 @@ public class BooklistStyle
         @SuppressLint("UseSparseArrays")
         Map<String, PPref> map = new HashMap<>();
         // essential property for user-defined styles 'name'
-        map.put(mDisplayNamePref.getKey(), mDisplayNamePref);
+        map.put(mDisplayName.getKey(), mDisplayName);
 
         // is a preferred style
         map.put(mIsPreferred.getKey(), mIsPreferred);
@@ -745,7 +743,6 @@ public class BooklistStyle
     /**
      * @return the group kind at the passed index.
      */
-    @NonNull
     public int getGroupKindAt(final int index) {
         return mStyleGroups.getGroupKindAt(index);
     }
@@ -785,7 +782,7 @@ public class BooklistStyle
 //        // version must use writeObject
 //        out.writeObject(realSerialVersion);
 //        // uuid is done by defaultWriteObject, so next up is the name
-//        out.writeObject(mDisplayNamePref.get());
+//        out.writeObject(mDisplayName.get());
 //
 //        out.writeBoolean(mIsPreferred.get());
 //        out.writeInt(mScaleSize.get());
@@ -871,7 +868,7 @@ public class BooklistStyle
         // v2
         if (version > 1) {
             mName = (String) in.readObject();
-            mDisplayNamePref.set(ed, mName);
+            mDisplayName.set(ed, mName);
         }
 
         // v3 Added mShowHeaderInfo as a Boolean
@@ -905,7 +902,7 @@ public class BooklistStyle
 //        initPrefs();
 //
 //        SharedPreferences.Editor ed = Prefs.getPrefs(mUuid).edit();
-//        mDisplayNamePref.set(ed, (String) in.readObject());
+//        mDisplayName.set(ed, (String) in.readObject());
 //
 //        mIsPreferred.set(ed, in.readBoolean());
 //        mScaleSize.set(ed, in.readInt());
@@ -945,8 +942,7 @@ public class BooklistStyle
         BooklistStyle clone = new BooklistStyle(parcel, true);
         parcel.recycle();
 
-        clone.save(db);
-
+        clone.setId(db.insertBooklistStyle(clone));
         return clone;
     }
 
@@ -962,7 +958,7 @@ public class BooklistStyle
                     "Builtin Style is not stored in the database, can not be saved");
         }
 
-        // check if the style already exists. This is easy as we have a UUID.
+        // check if the style already exists.
         long existingId = db.getBooklistStyleIdByUuid(mUuid);
         if (existingId == 0) {
             long newId = db.insertBooklistStyle(this);
@@ -972,7 +968,6 @@ public class BooklistStyle
         } else {
             // force-update the id.
             mId = existingId;
-            db.updateBooklistStyle(this);
         }
     }
 
@@ -996,12 +991,15 @@ public class BooklistStyle
                 "id=" + mId +
                 "\nuuid=`" + mUuid + '`' +
                 "\nmNameResId=" + mNameResId +
-                "\nmDisplayNamePref=" + mDisplayNamePref +
+                "\nmDisplayName=" + mDisplayName +
                 "\nmName=`" + mName + '`' +
+
                 "\nmIsPreferred=" + mIsPreferred +
                 "\nmScaleSize=" + mScaleSize +
                 "\nmShowHeaderInfo=" + mShowHeaderInfo +
+
                 "\nmSortAuthor=" + mSortAuthor +
+
                 "\nmExtraShowThumbnails=" + mExtraShowThumbnails +
                 "\nmExtraLargeThumbnails=" + mExtraLargeThumbnails +
                 "\nmExtraShowBookshelves=" + mExtraShowBookshelves +

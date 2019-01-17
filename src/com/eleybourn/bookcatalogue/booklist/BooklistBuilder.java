@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.booklist.filters.Filter;
 import com.eleybourn.bookcatalogue.booklist.filters.ListOfValuesFilter;
 import com.eleybourn.bookcatalogue.booklist.filters.WildcardFilter;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.JoinContext;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
@@ -219,7 +218,7 @@ public class BooklistBuilder
         }
     };
     /** not static, allow prefs to change. */
-    private final String UNKNOWN = BookCatalogueApp.getResString(R.string.unknown_uc);
+    private final String mUnknown = BookCatalogueApp.getResString(R.string.unknown_uc);
     /** the list of Filters; both active and non-active. */
     private final transient ArrayList<Filter> mFilters = new ArrayList<>();
     /** used in debug. */
@@ -342,7 +341,7 @@ public class BooklistBuilder
         flat.setName(flat.getName() + '_' + flatId);
         //RELEASE Make sure is TEMPORARY
         flat.setType(TableTypes.Temporary);
-        flat.create(mSyncedDb);
+        flat.create(mSyncedDb, false);
 
         String sql = flat.getInsert(DOM_PK_ID, DOM_FK_BOOK_ID) +
                 " SELECT " + mNavTable.dot(DOM_PK_ID) + ',' + mListTable.dot(DOM_FK_BOOK_ID) +
@@ -378,6 +377,7 @@ public class BooklistBuilder
             // Make sure it has the same definition.
             boolean ok;
             ExtraDomainDetails oldInfo = mExtraDomains.get(domain.name);
+            //noinspection ConstantConditions
             if (oldInfo.sourceExpression == null) {
                 ok = info.sourceExpression == null || info.sourceExpression.isEmpty();
             } else {
@@ -461,7 +461,7 @@ public class BooklistBuilder
         return "Case" +
                 " When " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]*'" +
                 "  Then substr(" + fieldSpec + ", 1, 4)" +
-                "  Else '" + UNKNOWN + '\'' +
+                "  Else '" + mUnknown + '\'' +
                 " End";
     }
 
@@ -487,7 +487,7 @@ public class BooklistBuilder
                 "  Then substr(" + fieldSpec + ", 6, 2)" +
                 " When " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]-[0123456789]*'" +
                 "  Then substr(" + fieldSpec + ", 6, 1)" +
-                "  Else '" + UNKNOWN + '\'' +
+                "  Else '" + mUnknown + '\'' +
                 " End";
     }
 
@@ -526,26 +526,30 @@ public class BooklistBuilder
     /**
      * expects a full WHERE condition.
      *
-     * @param criteria additional conditions that apply
+     * @param filter additional conditions that apply
      */
-    public void setGenericCriteria(@Nullable final String criteria) {
-        if (isNonBlank(criteria)) {
+    public void setGenericCriteria(@Nullable final String filter) {
+        if (isNonBlank(filter)) {
             mFilters.add(new Filter() {
 
                 @Override
                 @NonNull
                 public String getExpression(@Nullable final String uuid) {
-                    return '(' + criteria + ')';
+                    return '(' + filter + ')';
                 }
             });
         }
     }
 
     /**
-     * @param personName only books loaned to named person (exact name)
+     * Set the filter for only books loaned to the named person (exact name).
+     *
+     * An empty filter will silently be rejected.
+     *
+     * @param filter the exact name of the person we loaned books to.
      */
-    public void setFilterOnLoanedToPerson(@Nullable final String personName) {
-        if (isNonBlank(personName)) {
+    public void setFilterOnLoanedToPerson(@Nullable final String filter) {
+        if (isNonBlank(filter)) {
             mFilters.add(new Filter() {
                 @Override
                 @NonNull
@@ -553,7 +557,7 @@ public class BooklistBuilder
                     return "EXISTS(SELECT NULL FROM " + TBL_LOAN.ref() +
                             " WHERE " +
                             TBL_LOAN.dot(DOM_LOANED_TO) + "='" + DBA.encodeString(
-                            personName) + '\'' +
+                            filter) + '\'' +
                             " AND " + TBL_LOAN.fkMatch(TBL_BOOKS) + ')';
                 }
             });
@@ -561,73 +565,86 @@ public class BooklistBuilder
     }
 
     /**
-     * @param name only books with named author (family or given) with added wildcards
+     * Set the filter for only books with named author (family or given) with added wildcards.
+     *
+     * An empty filter will silently be rejected.
+     *
+     * @param filter the author (family or given) to limit the search for.
      */
-    public void setFilterOnAuthorName(@Nullable final String name) {
-        if (isNonBlank(name)) {
+    public void setFilterOnAuthorName(@Nullable final String filter) {
+        if (isNonBlank(filter)) {
             mFilters.add(new Filter() {
                 @Override
                 @NonNull
                 public String getExpression(@Nullable final String uuid) {
-                    return '(' +
-                            TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
-                            " LIKE '%" + DBA.encodeString(name) + "%'" +
-                            " OR " +
-                            TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) +
-                            " LIKE '%" + DBA.encodeString(name) + "%'" +
-                            ')';
+                    return '(' + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
+                            + " LIKE '%" + DBA.encodeString(filter) + "%'"
+                            + " OR "
+                            + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
+                            + " LIKE '%" + DBA.encodeString(filter) + "%')" ;
                 }
             });
         }
     }
 
     /**
-     * @param name only books with named title with added wildcards
+     * Set the filter for only books with named title with added wildcards.
+     *
+     * An empty filter will silently be rejected.
+     *
+     * @param filter the title to limit the search for.
      */
-    public void setFilterOnTitle(@Nullable final String name) {
-        if (isNonBlank(name)) {
-            mFilters.add(new WildcardFilter(TBL_BOOKS, DOM_TITLE, name));
+    public void setFilterOnTitle(@Nullable final String filter) {
+        if (isNonBlank(filter)) {
+            mFilters.add(new WildcardFilter(TBL_BOOKS, DOM_TITLE, filter));
         }
     }
 
     /**
-     * @param name only books in named series with added wildcards
+     * Set the filter for only books in named series with added wildcards.
+     *
+     * An empty filter will silently be rejected.
+     *
+     * @param filter the series to limit the search for.
      */
-    public void setFilterOnSeriesName(@Nullable final String name) {
-        if (isNonBlank(name)) {
-            mFilters.add(new WildcardFilter(TBL_SERIES, DOM_SERIES_NAME, name));
+    public void setFilterOnSeriesName(@Nullable final String filter) {
+        if (isNonBlank(filter)) {
+            mFilters.add(new WildcardFilter(TBL_SERIES, DOM_SERIES_NAME, filter));
         }
     }
 
     /**
-     * @param bookshelfId only books in on this shelf
+     * Set the filter to return only books on this bookshelf.
+     * If set to 0, return books from all shelves.
+     *
+     * @param bookshelfId only books on this shelf, or 0 for all shelves.
      */
     public void setFilterOnBookshelfId(final long bookshelfId) {
         mFilterOnBookshelfId = bookshelfId;
     }
 
     /**
-     * adds the FTS book table for a keyword match.
+     * Adds the FTS book table for a keyword match.
      *
-     * @param text book details must in some way contain the passed text
+     * An empty filter will silently be rejected.
+     *
+     * @param filter book details must in some way contain the passed text
      */
-    public void setFilterOnText(@Nullable final String text) {
-        if (isNonBlank(text)) {
+    public void setFilterOnText(@Nullable final String filter) {
+        if (isNonBlank(filter)) {
             // Cleanup searchText
             // Because FTS does not understand locales in all android up to 4.2,
             // we do case folding here using the default locale.
-            final String cleanCriteria = text.toLowerCase(Locale.getDefault());
+            final String cleanCriteria = filter.toLowerCase(Locale.getDefault());
 
             mFilters.add(new Filter() {
                 @Override
                 @NonNull
                 public String getExpression(@Nullable final String uuid) {
-                    return '(' + TBL_BOOKS.dot(
-                            DOM_PK_ID) + " IN (SELECT " + DOM_PK_DOCID + " FROM " + TBL_BOOKS_FTS +
-                            " WHERE " + TBL_BOOKS_FTS + " match '" +
-                            DBA.encodeString(
-                                    DBA.cleanupFtsCriterion(cleanCriteria)) +
-                            "'))";
+                    return '(' + TBL_BOOKS.dot(DOM_PK_ID)
+                            + " IN (SELECT " + DOM_PK_DOCID + " FROM " + TBL_BOOKS_FTS
+                            + " WHERE " + TBL_BOOKS_FTS + " match '"
+                            + DBA.encodeString(DBA.cleanupFtsCriterion(cleanCriteria)) + "'))";
                 }
             });
         }
@@ -637,11 +654,14 @@ public class BooklistBuilder
      * The where clause will add a "AND books._id IN (list)".
      * Be careful when combining with other criteria as you might get less then expected
      *
-     * @param list a list of book id's.
+     * An empty filter will silently be rejected.
+     *
+     * @param filter a list of book id's.
      */
-    public void setFilterOnBookIdList(@Nullable final List<Integer> list) {
-        if (list != null && !list.isEmpty()) {
-            mFilters.add(new ListOfValuesFilter<>(TBL_BOOKS, DOM_PK_ID, list));
+    public void setFilterOnBookIdList(@Nullable final List<Integer> filter) {
+
+        if (filter != null && !filter.isEmpty()) {
+            mFilters.add(new ListOfValuesFilter<>(TBL_BOOKS, DOM_PK_ID, filter));
         }
     }
 
@@ -1176,7 +1196,7 @@ public class BooklistBuilder
         for (SortedDomainInfo sdi : sortedColumns) {
             indexCols.append(sdi.domain.name);
             if (sdi.domain.isText()) {
-                indexCols.append(DBHelper.COLLATION);
+                indexCols.append(DBA.COLLATION);
 
                 // *If* collations is case-sensitive, handle it.
                 if (collationIsCs) {
@@ -1184,7 +1204,7 @@ public class BooklistBuilder
                 } else {
                     sortCols.append(sdi.domain.name);
                 }
-                sortCols.append(DBHelper.COLLATION);
+                sortCols.append(DBA.COLLATION);
             } else {
                 sortCols.append(sdi.domain.name);
             }
@@ -1235,7 +1255,7 @@ public class BooklistBuilder
                 }
                 cols.append(',').append(d.name);
 
-                collatedCols.append(' ').append(d.name).append(DBHelper.COLLATION);
+                collatedCols.append(' ').append(d.name).append(DBA.COLLATION);
             }
             // Construct the sum statement for this group
             String summarySql = "INSERT INTO " + mListTable +
@@ -1248,7 +1268,7 @@ public class BooklistBuilder
                     group.getKind() + " AS " + DOM_BL_NODE_ROW_KIND + cols + ',' +
                     DOM_ROOT_KEY +
                     " FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + '=' + (levelId + 1) +
-                    " GROUP BY " + collatedCols + ',' + DOM_ROOT_KEY + DBHelper.COLLATION;
+                    " GROUP BY " + collatedCols + ',' + DOM_ROOT_KEY + DBA.COLLATION;
             //" GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
 
             // Save, compile and run this statement
@@ -1667,11 +1687,16 @@ public class BooklistBuilder
         return (s != null && !s.trim().isEmpty());
     }
 
+    /**
+     * Create the WHERE clause based on all filters.
+     *
+     * @return a full WHERE clause (including keyword 'WHERE'), or the empty string for none.
+     */
     @NonNull
     private String buildWhereClause() {
         StringBuilder where = new StringBuilder();
 
-        /* Add local Filters */
+        // Add local Filters
         for (Filter filter : mFilters) {
             if (where.length() != 0) {
                 where.append(" AND ");
@@ -1679,7 +1704,7 @@ public class BooklistBuilder
             where.append(' ').append(filter.getExpression(mStyle.getUuid()));
         }
 
-        /* Add BooklistStyle Filters */
+        // Add BooklistStyle Filters
         for (Filter filter : mStyle.getFilters().values()) {
             String filterSql = filter.getExpression(mStyle.getUuid());
             if (filterSql != null) {
@@ -1826,7 +1851,7 @@ public class BooklistBuilder
                     }
                     conditionSql.append("Coalesce(l.").append(groupDomain).append(
                             ",'') = Coalesce(new.").append(groupDomain).append(",'') ").append(
-                            DBHelper.COLLATION).append('\n');
+                            DBA.COLLATION).append('\n');
                 }
             }
             insertSql.append(")\n").append(valuesSql).append(')');
@@ -1993,7 +2018,7 @@ public class BooklistBuilder
                     }
                     conditionSql.append("Coalesce(l.").append(d).append(
                             ", '') = Coalesce(new.").append(d).append(",'') ").append(
-                            DBHelper.COLLATION).append('\n');
+                            DBA.COLLATION).append('\n');
                 }
             }
             //insertSql += ")\n	Select " + valuesSql + " Where not exists(Select 1 From " + mListTable + " l where " + conditionSql + ")";
@@ -2640,9 +2665,9 @@ public class BooklistBuilder
         BooklistGroup.BooklistSeriesGroup seriesGroup;
         /** Will be set to appropriate Group if an Author group exists in style. */
         BooklistGroup.BooklistAuthorGroup authorGroup;
-        /** Will be set to TRUE if a LOANED group exists in style. */
+        /** Will be set to <tt>true</tt> if a LOANED group exists in style. */
         boolean hasGroupLOANED;
-        /** Will be set to TRUE if a BOOKSHELF group exists in style. */
+        /** Will be set to <tt>true</tt> if a BOOKSHELF group exists in style. */
         boolean hasGroupBOOKSHELF;
     }
 
@@ -2670,19 +2695,19 @@ public class BooklistBuilder
      */
     private class SummaryBuilder {
 
-        /** Options (bitmask) indicating added domain has no special properties. */
+        /** Flag (bitmask) indicating added domain has no special properties. */
         static final int FLAG_NONE = 0;
-        /** Options indicating added domain is SORTED. */
+        /** Flag indicating added domain is SORTED. */
         static final int FLAG_SORTED = 1;
-        /** Options indicating added domain is GROUPED. */
+        /** Flag indicating added domain is GROUPED. */
         static final int FLAG_GROUPED = 1 << 1;
 
         // Not currently used.
-        ///** Options indicating added domain is part of the unique key. */
+        ///** Flag indicating added domain is part of the unique key. */
         //static final int FLAG_KEY = 1 << 2;
 
         /**
-         * Options indicating added domain should be SORTED in descending order.
+         * Flag indicating added domain should be SORTED in descending order.
          * DO NOT USE FOR GROUPED DATA. See notes below.
          */
         static final int FLAG_SORT_DESCENDING = 1 << 3;

@@ -34,7 +34,7 @@ import java.lang.ref.WeakReference;
  *
  * @author Philip Warner
  */
-public class Queue
+class Queue
         extends Thread {
 
     /** QueueManager that owns this Queue object. */
@@ -49,7 +49,7 @@ public class Queue
     /** Currently running task. */
     private WeakReference<Task> mTask;
 
-    /** Options to indicate process is terminating. */
+    /** Flag to indicate process is terminating. */
     private boolean mTerminate;
 
     /**
@@ -174,8 +174,8 @@ public class Queue
      * Update the related database record to process the task correctly.
      *
      * @param task    Task object
-     * @param result  true on Save, false on cancel
-     * @param requeue true if requeue needed
+     * @param result  <tt>true</tt> on Save, <tt>false</tt> on cancel
+     * @param requeue <tt>true</tt> if requeue needed
      */
     private void handleTaskResult(@NonNull final Task task,
                                   final boolean result,

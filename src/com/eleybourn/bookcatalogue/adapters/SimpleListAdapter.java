@@ -23,18 +23,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.List;
@@ -60,7 +56,7 @@ import java.util.List;
  * The layout can optionally contain these "@+id/"  which will trigger the listed methods
  * <pre>
  *    SLA_ROW_DETAILS     {@link #onRowClick}
- *    SLA_ROW_DELETE      {@link #onRowDelete}
+ *    SLA_ROW_DELETE      deletes that row.
  * </pre>
  * <p>
  * SLA_ROW is the complete row, SLA_ROW_DETAIL is a child of SLA_ROW.
@@ -71,8 +67,6 @@ import java.util.List;
  *     <item name="SLA_ROW" type="id" />
  *     <item name="SLA_ROW_DETAILS" type="id" />
  *     <item name="SLA_ROW_DELETE" type="id"/>
- *     <item name="SLA_ROW_POSITION" type="id"/>
- *     <item name="SLA_ROW_POSITION_TAG" type="id" />
  *  </pre>
  *
  * @author Philip Warner
@@ -81,53 +75,13 @@ public abstract class SimpleListAdapter<T>
         extends ArrayAdapter<T> {
 
     @LayoutRes
-    private final int mRowViewId;
-
-    @NonNull
-    private final View.OnClickListener mRowClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(@NonNull final View v) {
-            try {
-                int pos = getViewRow(v);
-                T item = getItem(pos);
-                if (item != null) {
-                    onRowClick(v, item, pos);
-                }
-            } catch (RuntimeException e) {
-                Logger.error(e);
-            }
-        }
-    };
-
-    @NonNull
-    private final View.OnClickListener mRowDeleteListener = new View.OnClickListener() {
-        @Override
-        public void onClick(@NonNull final View v) {
-            try {
-                int pos = getViewRow(v);
-                T item = getItem(pos);
-                if (item != null && onRowDelete(v, item, pos)) {
-                    remove(item);
-                    onListChanged();
-                }
-            } catch (RuntimeException e) {
-                // TODO: Allow a specific exception to cancel the action
-                Logger.error(e);
-            }
-        }
-    };
-
-    // Options fields to (slightly) optimize lookups and prevent looking for
-    // fields that are not there.
-    private boolean mCheckedFields;
-    private boolean mHasPosition;
-    private boolean mHasDelete;
+    private final int mRowLayoutId;
 
     protected SimpleListAdapter(@NonNull final Context context,
-                                @LayoutRes final int rowViewId,
+                                @LayoutRes final int rowLayoutId,
                                 @NonNull final List<T> list) {
-        super(context, rowViewId, list);
-        mRowViewId = rowViewId;
+        super(context, rowLayoutId, list);
+        mRowLayoutId = rowLayoutId;
     }
 
     @NonNull
@@ -136,70 +90,60 @@ public abstract class SimpleListAdapter<T>
                         @Nullable View convertView,
                         @NonNull final ViewGroup parent) {
         final T item = this.getItem(position);
+        SimpleHolder holder;
 
         // Get the view; if not defined, load it.
         if (convertView == null) {
-            LayoutInflater vi = (LayoutInflater) getContext().getSystemService(
-                    Context.LAYOUT_INFLATER_SERVICE);
-            // If possible, ask the object for the view ID
-            @LayoutRes
-            int layout;
-            if (item instanceof SimpleListAdapter.LayoutProvider) {
-                layout = ((LayoutProvider) item).getLayoutId();
-            } else {
-                layout = mRowViewId;
+            convertView = LayoutInflater.from(getContext()).inflate(mRowLayoutId, null);
+            // make it flash
+            convertView.setBackgroundResource(android.R.drawable.list_selector_background);
+            // build holder
+            holder = new SimpleHolder();
+            // If we use a TouchListView, then don't enable the whole row, so buttons keep working
+            holder.row = convertView.findViewById(R.id.SLA_ROW_DETAILS);
+            if (holder.row == null) {
+                // but if we did not define a details row subview, try row anyhow
+                holder.row = convertView.findViewById(R.id.SLA_ROW);
             }
-            //noinspection ConstantConditions
-            convertView = vi.inflate(layout, null);
+
+            holder.deleteRowButton = convertView.findViewById(R.id.SLA_ROW_DELETE);
+
+            ViewTagger.setTag(convertView, holder);
+
+        } else {
+            holder = ViewTagger.getTagOrThrow(convertView);
         }
 
-        // Save this views position
-        ViewTagger.setTag(convertView, R.id.SLA_ROW_POSITION_TAG, position);
-
-        // If we use a TouchListView, then don't enable the whole row, so buttons keep working
-        View row = convertView.findViewById(R.id.SLA_ROW_DETAILS);
-        if (row == null) {
-            // but if we did not define a details row subview, try row anyhow
-            row = convertView.findViewById(R.id.SLA_ROW);
-        }
-
-        if (row != null) {
-            row.setOnClickListener(mRowClickListener);
-            row.setFocusable(false);
+        if (holder.row != null) {
+            holder.row.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(@NonNull final View v) {
+                    if (item != null) {
+                        onRowClick(v, item, position);
+                    }
+                }
+            });
+            //FIXME: this is forced onto the layout; caused (me) confusion as a click worked
+            // without realising why it worked.
+            holder.row.setFocusable(false);
         }
 
         // If the object is not null, do some processing
         if (item != null) {
-            // Try to set position value
-            if (mHasPosition || !mCheckedFields) {
-                TextView pt = convertView.findViewById(R.id.SLA_ROW_POSITION);
-                if (pt != null) {
-                    mHasPosition = true;
-                    String text = String.valueOf(position + 1);
-                    pt.setText(text);
-                }
-            }
-
             // Try to set the DELETE handler
-            if (mHasDelete || !mCheckedFields) {
-                View del = convertView.findViewById(R.id.SLA_ROW_DELETE);
-                if (del != null) {
-                    del.setOnClickListener(mRowDeleteListener);
-                    mHasDelete = true;
-                }
+            if (holder.deleteRowButton != null) {
+                holder.deleteRowButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull final View v) {
+                        remove(item);
+                        onListChanged();
+                    }
+                });
+
             }
 
             // Ask the subclass to set other fields.
-            try {
-                onGetView(convertView, item);
-            } catch (RuntimeException e) {
-                Logger.error(e);
-            }
-
-            // make it flash
-            convertView.setBackgroundResource(android.R.drawable.list_selector_background);
-
-            mCheckedFields = true;
+            onGetView(convertView, item);
         }
         return convertView;
     }
@@ -207,38 +151,8 @@ public abstract class SimpleListAdapter<T>
     /**
      * Called by {@link #getView} to allow children to setup extra fields.
      */
-    protected abstract void onGetView(final View convertView,
-                                      final T item);
-
-    /**
-     * Find the first ancestor that has the ID SLA_ROW. This will be the complete row View.
-     * Use the TAG on that to get the physical row number.
-     *
-     * @param view View to search from
-     *
-     * @return The row view.
-     */
-    @NonNull
-    public Integer getViewRow(@NonNull View view) {
-        while (view.getId() != R.id.SLA_ROW) {
-            ViewParent parent = view.getParent();
-            if (!(parent instanceof View)) {
-                throw new RuntimeException("Could not find row view in view ancestors");
-            }
-            view = (View) parent;
-        }
-        return ViewTagger.getTagOrThrow(view, R.id.SLA_ROW_POSITION_TAG);
-    }
-
-    /**
-     * Default implementation always returns true.
-     *
-     * @return <tt>true</tt> if delete is allowed to happen
-     */
-    protected boolean onRowDelete(@NonNull final View target,
-                                  @NonNull final T item,
-                                  final int position) {
-        return true;
+    protected void onGetView(@NonNull final View convertView,
+                             final T item) {
     }
 
     /**
@@ -254,22 +168,17 @@ public abstract class SimpleListAdapter<T>
 
     /**
      * Called when the list had been modified in some way.
-     * By default, tells the adapter that the list was changed
      * <p>
-     * Child classes should override when needed and call super FIRST
+     * Child classes should override when needed.
      */
-    @CallSuper
     protected void onListChanged() {
-        notifyDataSetChanged();
     }
 
-    /**
-     * Interface to allow underlying objects to determine their layout resource id.
-     */
-    public interface LayoutProvider {
+    static class SimpleHolder {
 
-        @SuppressWarnings("SameReturnValue")
-        @LayoutRes
-        int getLayoutId();
+        @Nullable
+        View row;
+        @Nullable
+        View deleteRowButton;
     }
 }

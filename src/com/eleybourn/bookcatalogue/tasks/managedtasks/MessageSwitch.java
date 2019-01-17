@@ -260,8 +260,8 @@ public class MessageSwitch<T, U> {
          * @param listener Listener to who message must be delivered
          *
          * @return <tt>true</tt> if message should not be delivered to any other listeners or
-         * stored for delivery as 'last message'. Should only return true if the message has
-         * been handled and would break the app if delivered more than once.
+         * stored for delivery as 'last message'. Should only return <tt>false</tt> if
+         * the message has been handled and would break the app if delivered more than once.
          */
         boolean deliver(@NonNull final T listener);
     }
@@ -315,7 +315,7 @@ public class MessageSwitch<T, U> {
         }
 
         /** Add a listener to this queue. */
-        public void add(@NonNull final T listener) {
+        void add(@NonNull final T listener) {
             synchronized (mList) {
                 mList.add(new WeakReference<>(listener));
             }
@@ -326,7 +326,7 @@ public class MessageSwitch<T, U> {
          *
          * @param listener Listener to be removed
          */
-        public void remove(@NonNull final T listener) {
+        void remove(@NonNull final T listener) {
             synchronized (mList) {
                 // List of refs to be removed
                 List<WeakReference<T>> toRemove = new ArrayList<>();

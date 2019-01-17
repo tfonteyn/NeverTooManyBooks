@@ -33,6 +33,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,7 +95,7 @@ public class ReviewUpdateHandler
             parameters.add(new BasicNameValuePair("review[rating]", String.valueOf(rating)));
         }
 
-        post.setEntity(new UrlEncodedFormEntity(parameters, "UTF8"));
+        post.setEntity(new UrlEncodedFormEntity(parameters, StandardCharsets.UTF_8));
 
         //ReviewUpdateParser handler = new ReviewUpdateParser();
         mManager.execute(post, null, true);

@@ -44,7 +44,7 @@ public class Datum {
     /** Key of this datum. */
     @NonNull
     private final String mKey;
-    /** True if data should be visible. */
+    /** <tt>true</tt> if data should be visible. */
     private final boolean mIsVisible;
     /** Validator for this Datum. */
     @Nullable
@@ -57,7 +57,7 @@ public class Datum {
      * Constructor.
      *
      * @param key     Key of this datum
-     * @param visible True if data should be visible
+     * @param visible <tt>true</tt> if data should be visible
      */
     public Datum(@NonNull final String key,
                  final boolean visible) {
@@ -663,7 +663,7 @@ public class Datum {
 
         private static final long serialVersionUID = 2561013689178409200L;
 
-        AccessorNotSupportedException(final String typeDescription) {
+        AccessorNotSupportedException(@NonNull final String typeDescription) {
             super("Accessor not supported for " + typeDescription + " objects");
         }
     }

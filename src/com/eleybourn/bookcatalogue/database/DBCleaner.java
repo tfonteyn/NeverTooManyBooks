@@ -210,15 +210,15 @@ public class DBCleaner {
      * @param state Enter/Exit
      * @param sql   to execute
      */
-    public void toLog(@NonNull final Tracker.States state,
-                      @NonNull final String sql) {
-        SynchronizedCursor cursor = mSyncDb.rawQuery(sql, null);
-        while (cursor.moveToNext()) {
-            String field = cursor.getColumnName(0);
-            String value = cursor.getString(0);
+    private void toLog(@NonNull final Tracker.States state,
+                       @NonNull final String sql) {
+        try (SynchronizedCursor cursor = mSyncDb.rawQuery(sql, null)) {
+            while (cursor.moveToNext()) {
+                String field = cursor.getColumnName(0);
+                String value = cursor.getString(0);
 
-            Logger.info(this, state + "|" + field + '=' + value);
+                Logger.info(this, state + "|" + field + '=' + value);
+            }
         }
-        cursor.close();
     }
 }

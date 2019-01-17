@@ -60,7 +60,6 @@ public class About
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
 
@@ -137,7 +136,6 @@ public class About
                          getString(R.string.app_name));
         view.setText(Utils.linkifyHtml(text));
         view.setMovementMethod(LinkMovementMethod.getInstance());
-        Tracker.exitOnCreate(this);
     }
 
     private void sendContactEmail(@StringRes final int stringId) {

@@ -220,7 +220,7 @@ public class FastScroller {
         mPaint = new TextPaint();
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Paint.Align.CENTER);
-        mPaint.setTextSize(mOverlaySize / 3);
+        mPaint.setTextSize(mOverlaySize / 3f);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(
@@ -315,9 +315,9 @@ public class FastScroller {
             final String text1 = TextUtils.ellipsize(line1, paint,
                                                      (mOverlayPos.right - mOverlayPos.left) * 0.8f,
                                                      TextUtils.TruncateAt.END).toString();
-            canvas.drawText(text1, (int) (rectF.left + rectF.right) / 2,
+            canvas.drawText(text1, (int) (rectF.left + rectF.right) / 2f,
                             // Base of text at: (middle) + (half text height) - descent : so it is vertically centred
-                            (int) (rectF.bottom + rectF.top) / 2 + mOverlaySize / 6 - descent,
+                            (int) (rectF.bottom + rectF.top) / 2f + mOverlaySize / 6f - descent,
                             paint);
 
             if (has2Lines) {
@@ -327,9 +327,9 @@ public class FastScroller {
                 final String text2 = TextUtils.ellipsize(line2, paint,
                                                          (mOverlayPos.right - mOverlayPos.left) * 0.8f,
                                                          TextUtils.TruncateAt.END).toString();
-                canvas.drawText(text2, (int) (rectF.left + rectF.right) / 2,
+                canvas.drawText(text2, (int) (rectF.left + rectF.right) / 2f,
                                 // Base of text at: (middle) + (half text height) - descent : so it is vertically centred
-                                (int) (rectF.bottom + rectF.top) / 2 + mOverlaySize / 6 + s,
+                                (int) (rectF.bottom + rectF.top) / 2f + mOverlaySize / 6f + s,
                                 paint);
                 paint.setTextSize(s);
             }
@@ -348,9 +348,9 @@ public class FastScroller {
         mThumbDrawable.setBounds(w - mThumbW, 0, w, mThumbH);
         final RectF pos = mOverlayPos;
         // Now, Make it 75% of total available space
-        pos.left = (w / 8);
-        pos.right = pos.left + w * 3 / 4;
-        pos.top = h / 10; // 10% from top
+        pos.left = (w / 8f);
+        pos.right = pos.left + w * 0.75f;
+        pos.top = h / 10f; // 10% from top
         pos.bottom = pos.top + mOverlaySize;
         mOverlayDrawable.setBounds((int) pos.left, (int) pos.top,
                                    (int) pos.right, (int) pos.bottom);

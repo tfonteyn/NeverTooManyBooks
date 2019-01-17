@@ -49,7 +49,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ import java.util.Objects;
  */
 public class PreferredStylesActivity
         extends EditObjectListActivity<BooklistStyle>
-        implements SelectOneDialog.hasListViewContextMenu,
+        implements SimpleDialog.ListViewContextMenu,
                    AdapterView.OnItemLongClickListener {
 
     private static final int REQ_EDIT_STYLE = 0;
@@ -110,8 +110,8 @@ public class PreferredStylesActivity
     }
 
     /**
-     * Reminder: the item row itself has to have:  android:longClickable="true"
-     * otherwise the click will only work on the 'blank' bits of the row.
+     * Reminder: the item row itself has to have:  android:longClickable="true".
+     * Otherwise the click will only work on the 'blank' bits of the row.
      */
     @Override
     public boolean onItemLongClick(@NonNull final AdapterView<?> parent,
@@ -123,10 +123,10 @@ public class PreferredStylesActivity
         String menuTitle = style.getDisplayName();
 
         // legal trick to get an instance of Menu.
-        mListViewContextMenu = new PopupMenu(this, null).getMenu();
+        mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
         // custom menuInfo
-        SelectOneDialog.SimpleDialogMenuInfo menuInfo =
-                new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, position);
+        SimpleDialog.ContextMenuInfo menuInfo =
+                new SimpleDialog.ContextMenuInfo(menuTitle, position);
         // populate the menu
         if (style.isUserDefined()) {
             mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_DELETE, 0,
@@ -141,21 +141,21 @@ public class PreferredStylesActivity
 
         // display the menu
         PreferredStylesActivity.this
-                .onCreateListViewContextMenu(mListViewContextMenu, view, menuInfo);
+                .onCreateListViewContextMenu(view, mListViewContextMenu, menuInfo);
         return true;
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
     @Override
     public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                                 @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+                                                 final int position) {
 
         // Save the current row
-        mEditedRow = menuInfo.position;
+        mEditedRow = position;
 
-        BooklistStyle style = mList.get(menuInfo.position);
+        BooklistStyle style = mList.get(position);
         switch (menuItem.getItemId()) {
             case R.id.MENU_STYLE_DELETE:
                 style.delete(mDb);
@@ -200,6 +200,7 @@ public class PreferredStylesActivity
         super.onListChanged();
         // we save the order after each change.
         BooklistStyles.savePreferredStyleMenuOrder(mList);
+        // and make sure the results flags up we changed something.
         setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity);
     }
 
@@ -274,11 +275,9 @@ public class PreferredStylesActivity
                 }
             }
             if (style != null) {
-                // now update the db.
+                // add to the db if new.
                 if (style.getId() == 0) {
                     mDb.insertBooklistStyle(style);
-                } else {
-                    mDb.updateBooklistStyle(style);
                 }
             }
 
@@ -292,9 +291,9 @@ public class PreferredStylesActivity
         }
     }
 
-    protected SimpleListAdapter<BooklistStyle> createListAdapter(@LayoutRes final int rowViewId,
+    protected SimpleListAdapter<BooklistStyle> createListAdapter(@LayoutRes final int rowLayoutId,
                                                                  @NonNull final ArrayList<BooklistStyle> list) {
-        return new BooklistStyleListAdapter(this, rowViewId, list);
+        return new BooklistStyleListAdapter(this, rowLayoutId, list);
     }
 
     /**
@@ -303,20 +302,20 @@ public class PreferredStylesActivity
     private static class Holder {
 
         BooklistStyle style;
-        CheckedTextView checkable;
-        TextView name;
+        CheckedTextView checkableView;
+        TextView nameView;
 
-        TextView groups;
-        TextView kind;
+        TextView groupsView;
+        TextView kindView;
     }
 
     private class BooklistStyleListAdapter
             extends SimpleListAdapter<BooklistStyle> {
 
         BooklistStyleListAdapter(@NonNull final Context context,
-                                 @LayoutRes final int rowViewId,
+                                 @LayoutRes final int rowLayoutId,
                                  @NonNull final ArrayList<BooklistStyle> items) {
-            super(context, rowViewId, items);
+            super(context, rowLayoutId, items);
         }
 
         @Override
@@ -326,22 +325,22 @@ public class PreferredStylesActivity
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
-                holder.name = convertView.findViewById(R.id.name);
-                holder.checkable = convertView.findViewById(R.id.row_check);
-                holder.groups = convertView.findViewById(R.id.groups);
-                holder.kind = convertView.findViewById(R.id.kind);
+                holder.nameView = convertView.findViewById(R.id.name);
+                holder.checkableView = convertView.findViewById(R.id.row_check);
+                holder.groupsView = convertView.findViewById(R.id.groups);
+                holder.kindView = convertView.findViewById(R.id.kind);
                 // Tag the parts that need it
                 ViewTagger.setTag(convertView, holder);
-                ViewTagger.setTag(holder.checkable, holder);
+                ViewTagger.setTag(holder.checkableView, holder);
 
                 // Handle clicks on the CheckedTextView
-                holder.checkable.setOnClickListener(new OnClickListener() {
+                holder.checkableView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
                         Holder h = ViewTagger.getTagOrThrow(v);
                         boolean newStatus = !h.style.isPreferred();
                         h.style.setPreferred(newStatus);
-                        h.checkable.setChecked(newStatus);
+                        h.checkableView.setChecked(newStatus);
                         onListChanged();
                     }
                 });
@@ -349,14 +348,14 @@ public class PreferredStylesActivity
 
             // Setup the variant fields in the holder
             holder.style = item;
-            holder.name.setText(item.getDisplayName());
-            holder.checkable.setChecked(item.isPreferred());
+            holder.nameView.setText(item.getDisplayName());
+            holder.checkableView.setChecked(item.isPreferred());
 
-            holder.groups.setText(item.getGroupListDisplayNames());
+            holder.groupsView.setText(item.getGroupListDisplayNames());
             if (item.isUserDefined()) {
-                holder.kind.setText(R.string.style_is_user_defined);
+                holder.kindView.setText(R.string.style_is_user_defined);
             } else {
-                holder.kind.setText(R.string.style_is_builtin);
+                holder.kindView.setText(R.string.style_is_builtin);
             }
         }
 
@@ -365,8 +364,7 @@ public class PreferredStylesActivity
          */
         @Override
         public void onListChanged() {
-            super.onListChanged();
-            // go save the menu order and setResult.
+            // will save the menu order + call setResult
             PreferredStylesActivity.this.onListChanged();
         }
     }

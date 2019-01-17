@@ -16,6 +16,7 @@ import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.booklist.filters.BooleanFilter;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -34,6 +35,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -160,7 +162,7 @@ public class XmlExporter
         listener.setMax(5);
 
         try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream,
-                                                                            XmlUtils.UTF8),
+                                                                            StandardCharsets.UTF_8),
                                                      XmlUtils.BUFFER_SIZE)) {
 
             out.append('<' + XmlUtils.XML_ROOT)
@@ -442,7 +444,7 @@ public class XmlExporter
     public int doStyles2(@NonNull final BufferedWriter out,
                          @NonNull final ExportListener listener)
             throws IOException {
-        Collection<BooklistStyle> styles = mDb.getBooklistStyles().values();
+        Collection<BooklistStyle> styles = BooklistStyles.getUserStyles(mDb).values();
         if (styles.isEmpty()) {
             return 0;
         }
@@ -503,7 +505,7 @@ public class XmlExporter
     public int doStyles(@NonNull final BufferedWriter out,
                         @NonNull final ExportListener listener)
             throws IOException {
-        Collection<BooklistStyle> styles = mDb.getBooklistStyles().values();
+        Collection<BooklistStyle> styles = BooklistStyles.getUserStyles(mDb).values();
         if (styles.isEmpty()) {
             return 0;
         }

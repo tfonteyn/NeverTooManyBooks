@@ -81,6 +81,7 @@ public class BackupFileDetails
      * Simple check on the file being an archive.
      *
      * @param file to check
+     *
      * @return <tt>true</tt> if it's an archive
      */
     public static boolean isArchive(@NonNull final File file) {
@@ -95,16 +96,6 @@ public class BackupFileDetails
     @Override
     public File getFile() {
         return mFile;
-    }
-
-    /**
-     * @return the view we use.
-     *
-     * THIS SHOULD ALWAYS RETURN THE SAME VIEW. IT IS NOT A MULTI-TYPE LIST.
-     */
-    @Override
-    public int getLayoutId() {
-        return R.layout.row_file_info;
     }
 
     /**

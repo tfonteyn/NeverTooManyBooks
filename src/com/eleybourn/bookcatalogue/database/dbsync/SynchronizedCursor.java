@@ -17,6 +17,7 @@ public class SynchronizedCursor
 
     @NonNull
     private final Synchronizer mSync;
+    /** cached count for the query. */
     private int mCount = -1;
 
     protected SynchronizedCursor(@NonNull final SQLiteCursorDriver driver,

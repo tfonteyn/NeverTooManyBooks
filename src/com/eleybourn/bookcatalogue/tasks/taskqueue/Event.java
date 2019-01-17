@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 

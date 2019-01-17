@@ -21,7 +21,7 @@ public class BitmaskDataAccessor
     public Boolean get(@NonNull final DataManager data,
                        @NonNull final Datum datum,
                        @NonNull final Bundle rawData) {
-        Integer bitmask = data.getInt(mKey);
+        int bitmask = data.getInt(mKey);
         return (bitmask & mBit) != 0;
     }
 
@@ -30,7 +30,7 @@ public class BitmaskDataAccessor
                     @NonNull final Datum datum,
                     @NonNull final Bundle rawData,
                     @NonNull final Object value) {
-        Integer bitmask = data.getInt(mKey);
+        int bitmask = data.getInt(mKey);
         // Parse the string the CheckBox returns us (0 or 1)
         if (Datum.toBoolean(value)) {
             bitmask |= mBit;

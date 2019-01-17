@@ -46,7 +46,7 @@ import java.util.Objects;
  * @author Philip Warner
  */
 public class StringProperty extends PropertyWithGlobalValue<String> {
-    /** Options indicating value must be non-blank */
+    /** Flag indicating value must be non-blank */
     private boolean mRequireNonBlank = false;
 
     public StringProperty(@StringRes final int nameResourceId,

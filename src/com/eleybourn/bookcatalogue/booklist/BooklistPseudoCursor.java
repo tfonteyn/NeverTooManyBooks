@@ -117,7 +117,7 @@ public class BooklistPseudoCursor
             mMruList[i] = -1;
         }
 
-        Tracker.handleEvent(this, Tracker.States.Running, "Created " + this);
+        Tracker.handleEvent(this, Tracker.States.Exit, "Created " + this);
     }
 
     /**
@@ -254,7 +254,9 @@ public class BooklistPseudoCursor
                 Logger.info(this, "Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
-            c.close();
+            if (c!= null) {
+                c.close();
+            }
         }
     }
 
@@ -381,5 +383,12 @@ public class BooklistPseudoCursor
 
         clearCursors();
         Tracker.handleEvent(this, Tracker.States.Exit, "Close " + this);
+    }
+
+    @Override
+    public String toString() {
+        return "BooklistPseudoCursor{" +
+                "mCursors=" + mCursors +
+                '}';
     }
 }

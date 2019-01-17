@@ -265,7 +265,7 @@ public final class StorageUtils {
     /**
      * Count size + (optional) Cleanup any purgeable files.
      *
-     * @param reallyDelete if true, delete files, if false only count bytes
+     * @param reallyDelete if <tt>true</tt>, delete files, if <tt>false</tt> only count bytes
      *
      * @return the total size in bytes of purgeable/purged files.
      */
@@ -478,7 +478,7 @@ public final class StorageUtils {
                                  .append(" does not exist\n");
                     }
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 Logger.error(e, "Failed to read directory " + dir.getAbsolutePath());
             }
         }

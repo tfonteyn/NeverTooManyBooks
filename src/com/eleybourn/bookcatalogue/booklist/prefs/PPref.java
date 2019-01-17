@@ -18,17 +18,17 @@ public interface PPref<T> {
     /**
      * for single updates.
      */
-    void set(@Nullable T value);
+    void set(@Nullable final T value);
 
     /**
      * for batch updates.
      */
-    void set(@NonNull SharedPreferences.Editor ed,
-             @NonNull T value);
+    void set(@NonNull final SharedPreferences.Editor ed,
+             @NonNull final T value);
 
-    void set(@NonNull Parcel in);
+    void set(@NonNull final Parcel in);
 
-    void writeToParcel(@NonNull Parcel dest);
+    void writeToParcel(@NonNull final Parcel dest);
 
     @NonNull
     T get();

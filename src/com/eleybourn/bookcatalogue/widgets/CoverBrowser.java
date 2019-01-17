@@ -313,8 +313,8 @@ public class CoverBrowser
          * @return the fileSpec, or null when not found
          */
         @Nullable
-        public String download(@NonNull final String isbn,
-                               @NonNull final ImageSizes size) {
+        String download(@NonNull final String isbn,
+                        @NonNull final ImageSizes size) {
             String fileSpec;
             String key = isbn + '_' + size;
 
@@ -378,8 +378,8 @@ public class CoverBrowser
          * @return the file, or null if not found
          */
         @Nullable
-        public File getFile(@NonNull final String isbn,
-                            @NonNull final ImageSizes size) {
+        File getFile(@NonNull final String isbn,
+                     @NonNull final ImageSizes size) {
             String key = isbn + '_' + size;
             String fileSpec;
             synchronized (files) {

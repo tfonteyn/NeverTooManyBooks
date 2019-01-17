@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
@@ -9,7 +10,7 @@ import com.eleybourn.bookcatalogue.utils.StringList;
 import java.util.List;
 
 /**
- * an SQL WHERE clause  (column IN (a,b,c,...)
+ * an SQL WHERE clause (column IN (a,b,c,...).
  *
  * @param <T> type the elements of the 'IN' list.
  */
@@ -17,26 +18,27 @@ public class ListOfValuesFilter<T>
         implements Filter {
 
     @NonNull
-    private final TableDefinition table;
+    private final TableDefinition mTable;
     @NonNull
-    private final DomainDefinition domain;
+    private final DomainDefinition mDomain;
 
+    /** CSV list of values */
     @NonNull
-    private final String criteria;
+    private final String mCriteria;
 
     public ListOfValuesFilter(@NonNull final TableDefinition table,
                               @NonNull final DomainDefinition domain,
                               @NonNull final List<T> list) {
-        this.table = table;
-        this.domain = domain;
+        mTable = table;
+        mDomain = domain;
 
         StringList<T> au = new StringList<>();
-        criteria = au.encode(list);
+        mCriteria = au.encode(list);
     }
 
     @Override
     @NonNull
-    public String getExpression(@NonNull final String uuid) {
-        return '(' + table.dot(domain) + " IN (" + criteria + "))";
+    public String getExpression(@Nullable final String uuid) {
+        return '(' + mTable.dot(mDomain) + " IN (" + mCriteria + "))";
     }
 }

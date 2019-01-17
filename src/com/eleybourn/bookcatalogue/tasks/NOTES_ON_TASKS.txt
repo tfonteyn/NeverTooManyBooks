@@ -31,19 +31,18 @@ Used by:
 - BookSearchActivity
 - UpdateFieldsFromInternetActivity
 ==> the SearchManager/SearchTasks for getting book information from web sites.
-- AdminActivity
- ==> CSV import/export
+
 ----------------------------------------------------------------------------------------------------
 2. SimpleTask
    Uses SimpleTaskQueue, with callbacks (listeners) directly to the object which enqueued the task.
 
 3. FragmentTask
    Almost the same as SimpleTask, but has access to the Fragment that started it.
-   Uses a SimpleTaskQueueProgressDialogFragment, displaying a ProgressDialog
+   Uses a TaskWithProgressDialogFragment, displaying a ProgressDialog
 
 4. Terminator/TerminatorTask: delayed start of SimpleTask's
 ----------------------------------------------------------------------------------------------------
-5. taskqueue - minimalistic traditional database backed "Sun MessageQueue" like product
+5. taskqueue - minimalistic traditional database backed 'MessageQueue' like product
    Task
    LegacyTask extends Task
    RunnableTask extends Task

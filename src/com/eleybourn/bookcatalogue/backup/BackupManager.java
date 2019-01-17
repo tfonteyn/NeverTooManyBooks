@@ -38,9 +38,9 @@ import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
 import com.eleybourn.bookcatalogue.backup.ui.BackupFileDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTask;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueueProgressDialogFragment.FragmentTaskAbstract;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment.FragmentTaskAbstract;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -72,8 +72,7 @@ public final class BackupManager {
      */
     public static void backup(@NonNull final FragmentActivity context,
                               final int taskId,
-                              @NonNull final ExportSettings settings
-    ) {
+                              @NonNull final ExportSettings settings) {
 
         // sanity checks
         if ((settings.what & ExportSettings.MASK) == 0) {
@@ -95,7 +94,7 @@ public final class BackupManager {
             private boolean mSuccess;
 
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+            public void run(@NonNull final TaskWithProgressDialogFragment fragment,
                             @NonNull final SimpleTaskContext taskContext
             )
                     throws Exception {
@@ -161,7 +160,7 @@ public final class BackupManager {
 
             @Override
             @CallSuper
-            public void onFinish(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+            public void onFinish(@NonNull final TaskWithProgressDialogFragment fragment,
                                  @Nullable final Exception e
             ) {
                 // show the user the exception if there was one, and clean up
@@ -188,7 +187,7 @@ public final class BackupManager {
         task.setTag(settings);
 
         // show progress dialog and start the task
-        SimpleTaskQueueProgressDialogFragment frag = SimpleTaskQueueProgressDialogFragment
+        TaskWithProgressDialogFragment frag = TaskWithProgressDialogFragment
                 .newInstance(context, R.string.progress_msg_backing_up, task, false, taskId);
         frag.setNumberFormat(null);
     }
@@ -200,8 +199,7 @@ public final class BackupManager {
      */
     public static void restore(@NonNull final FragmentActivity context,
                                final int taskId,
-                               @NonNull final ImportSettings /* in/out */settings
-    ) {
+                               @NonNull final ImportSettings /* in/out */settings) {
 
         if ((settings.what & ImportSettings.MASK) == 0) {
             throw new IllegalArgumentException("Options must be specified");
@@ -209,7 +207,7 @@ public final class BackupManager {
 
         final FragmentTask task = new FragmentTaskAbstract() {
             @Override
-            public void run(@NonNull final SimpleTaskQueueProgressDialogFragment fragment,
+            public void run(@NonNull final TaskWithProgressDialogFragment fragment,
                             @NonNull final SimpleTaskContext taskContext
             )
                     throws Exception {
@@ -255,11 +253,11 @@ public final class BackupManager {
         task.setTag(settings);
 
         // show progress dialog and start the task
-        SimpleTaskQueueProgressDialogFragment frag =
-                SimpleTaskQueueProgressDialogFragment.newInstance(context,
-                                                                  R.string.progress_msg_importing,
-                                                                  task,
-                                                                  false, taskId);
+        TaskWithProgressDialogFragment frag =
+                TaskWithProgressDialogFragment.newInstance(context,
+                                                           R.string.progress_msg_importing,
+                                                           task,
+                                                           false, taskId);
         frag.setNumberFormat(null);
     }
 
@@ -289,4 +287,5 @@ public final class BackupManager {
 
         return bkp.newReader();
     }
+
 }

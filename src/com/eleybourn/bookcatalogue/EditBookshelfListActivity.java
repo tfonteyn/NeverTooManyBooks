@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,8 +36,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
+import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialog;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -66,14 +64,11 @@ public class EditBookshelfListActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.title_edit_bookshelves);
-
         mDb = new DBA(this);
 
         populateList();
-        Tracker.exitOnCreate(this);
     }
 
     private void populateList() {
@@ -84,23 +79,23 @@ public class EditBookshelfListActivity
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
     @Override
-    public void initListViewContextMenuListener(@NonNull final Context context) {
+    public void initContextMenuOnListView() {
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(final AdapterView<?> parent,
-                                           final View view,
+            public boolean onItemLongClick(@NonNull final AdapterView<?> parent,
+                                           @NonNull final View view,
                                            final int position,
                                            final long id) {
                 String menuTitle = mList.get(position).name;
 
                 // legal trick to get an instance of Menu.
-                mListViewContextMenu = new PopupMenu(context, null).getMenu();
+                mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
                 // custom menuInfo
-                SelectOneDialog.SimpleDialogMenuInfo menuInfo =
-                        new SelectOneDialog.SimpleDialogMenuInfo(menuTitle, position);
+                SimpleDialog.ContextMenuInfo menuInfo =
+                        new SimpleDialog.ContextMenuInfo(menuTitle, position);
                 // populate the menu
                 mListViewContextMenu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit_bookshelf)
                                     .setIcon(R.drawable.ic_edit);
@@ -108,20 +103,20 @@ public class EditBookshelfListActivity
                                          R.string.menu_delete_bookshelf)
                                     .setIcon(R.drawable.ic_delete);
                 // display
-                onCreateListViewContextMenu(mListViewContextMenu, view, menuInfo);
+                onCreateListViewContextMenu(view, mListViewContextMenu, menuInfo);
                 return true;
             }
         });
     }
 
     /**
-     * Using {@link SelectOneDialog#showContextMenuDialog} for context menus.
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
     @Override
     public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                                 @NonNull final SelectOneDialog.SimpleDialogMenuInfo menuInfo) {
+                                                 final int position) {
 
-        Bookshelf bookshelf = mList.get(menuInfo.position);
+        Bookshelf bookshelf = mList.get(position);
         switch (menuItem.getItemId()) {
             case R.id.MENU_EDIT:
                 doEditDialog(bookshelf);
@@ -155,7 +150,6 @@ public class EditBookshelfListActivity
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-
         menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_add_bookshelf)
             .setIcon(R.drawable.ic_add)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -207,11 +201,9 @@ public class EditBookshelfListActivity
     @Override
     @CallSuper
     protected void onDestroy() {
-        Tracker.enterOnDestroy(this);
         if (mDb != null) {
             mDb.close();
         }
         super.onDestroy();
-        Tracker.exitOnDestroy(this);
     }
 }

@@ -86,13 +86,13 @@ public class ImportAllTask
      */
     @Nullable
     private final String mUpdatesAfter;
-    /** Options indicating this job is a sync job: on completion, it will start an export. */
+    /** Flag indicating this job is a sync job: on completion, it will start an export. */
     private final boolean mIsSync;
     /** Current position in entire list of reviews. */
     private int mPosition;
     /** Total number of reviews user has. */
     private int mTotalBooks;
-    /** Options indicating this is the first time *this* object instance has been called. */
+    /** Flag indicating this is the first time *this* object instance has been called. */
     private transient boolean mFirstCall = true;
     /** Date at which this job started downloading first page. */
     @Nullable
@@ -152,14 +152,14 @@ public class ImportAllTask
     /**
      * Repeatedly request review pages until we are done.
      */
-    private boolean processReviews(@NonNull final QueueManager qMgr,
+    private boolean processReviews(@NonNull final QueueManager queueManager,
                                    @NonNull final DBA db)
             throws GoodreadsExceptions.NotAuthorizedException {
 
         GoodreadsManager gr = new GoodreadsManager();
         ListReviewsApiHandler api = new ListReviewsApiHandler(gr);
 
-        int currPage = (mPosition / BOOKS_PER_PAGE);
+        int currPage = mPosition / BOOKS_PER_PAGE;
         while (true) {
             // page numbers are 1-based; start at 0 and increment at start of each loop
             currPage++;
@@ -169,7 +169,7 @@ public class ImportAllTask
 
             Bundle books;
 
-            // Call the API, return false if failed.
+            // Call the API, return <tt>false</tt> if failed.
             try {
                 // If we have not started successfully yet, record the date at which
                 // the run() was called. This date is used if the job is a sync job.
@@ -193,7 +193,7 @@ public class ImportAllTask
             mTotalBooks = (int) books.getLong(ListReviewsFieldNames.TOTAL);
             if (mFirstCall) {
                 // So the details get updated
-                qMgr.updateTask(this);
+                queueManager.updateTask(this);
                 mFirstCall = false;
             }
 
@@ -228,14 +228,14 @@ public class ImportAllTask
                 //}
 
                 // Update after each book. Mainly for a nice UI.
-                qMgr.updateTask(this);
+                queueManager.updateTask(this);
                 mPosition++;
             }
         }
         try {
             db.analyzeDb();
         } catch (RuntimeException e) {
-            // Do nothing. Not a critical onProgress.
+            // Do nothing. Not a critical step.
             Logger.error(e);
         }
         return true;

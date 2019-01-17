@@ -121,15 +121,14 @@ public class TarBackupReader
     }
 
     /**
-     * @return the TarArchiveEntry type. However, {@link BackupEntityType#Cover} is returned for
-     * *all* files which are not actually recognised.
+     * @return the TarArchiveEntry type.
      */
     @NonNull
     private BackupEntityType getBackupEntityType(@NonNull final TarArchiveEntry entry) {
-        String name = entry.getName();
+        String name = entry.getName().toLowerCase();
 
         // check covers first, as we will have many
-        if (name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".png")) {
+        if (name.endsWith(".jpg") || name.endsWith(".png")) {
             return BackupEntityType.Cover;
 
         } else if (TarBackupContainer.INFO_FILE.equalsIgnoreCase(name)
@@ -155,15 +154,15 @@ public class TarBackupReader
             return BackupEntityType.BooklistStylesPreV200;
 
             // pre-v200
-        } else if ("preferences".equalsIgnoreCase(name)) {
+        } else if ("preferences".equals(name)) {
             return BackupEntityType.PreferencesPreV200;
 
             // needs to be below any specific xml files.
-        } else if (name.toLowerCase().endsWith(".xml")) {
+        } else if (name.endsWith(".xml")) {
             return BackupEntityType.XML;
 
         } else {
-            Logger.info(this, "Unknown file in archive: " + name);
+            Logger.info(this, "Unknown file in archive: " + entry.getName());
             return BackupEntityType.Unknown;
         }
     }

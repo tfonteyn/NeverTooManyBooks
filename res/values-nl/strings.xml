@@ -38,7 +38,7 @@
     <string name="lbl_bookshelf">Boekenplank: </string>
     <string name="all_books">Alle Boeken</string>
     <string name="isbn_found">ISBN gescand. Zoeken op Internet.</string>
-    <string name="title_isbn_search">ISBN zoeken</string>
+    <string name="search_isbn">ISBN zoeken</string>
     <string name="title_edit_bookshelves">Boekenplank beheren</string>
     <string name="menu_edit_bookshelf">Boekenplank bewerken</string>
     <string name="lbl_search_for_books">Zoeken naar boeken</string>
@@ -444,7 +444,7 @@
     <string name="size">Grootte</string>
     <string name="updated">Bijgewerkt</string>
     <string name="import_error_csv_file_not_found">Geen exportbestanden gevonden</string>
-    <string name="import_warning_csv_file_more_then_one_found">Meer dan een exportbestand gevonden. Selecteer aub een exportbestand om te importeren uit de lijst hieronder</string>
+    <string name="import_warning_select_csv_file">Meer dan een exportbestand gevonden. Selecteer aub een exportbestand om te importeren uit de lijst hieronder</string>
     <string name="problem_starting_import_arg">Het is een probleem bij het starten van de import van: %1$s</string>
     <string name="hint_booklist_style_menu">Dit menu laat u de lijststijl selecteren. 
     								\n\nU kunt het menu ook aanpassen of u eigen lijststijl maken door te tikken op \'Aanpassen\' onderaan de lijst.</string>
@@ -706,7 +706,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="error_storage_no_space_left">Niet genoeg opslag</string>
     <string name="error_storage_not_available">Klaarmaken opslag</string>
     <string name="error_storage_cannot_write">Opslag niet beschrijfbaar?</string>
-    <string name="table_of_content">Inhouds tabel</string>
+    <string name="lbl_table_of_content">Inhouds tabel</string>
     <string name="tab_info_search_sites">Locale paginas</string>
     <string name="lbl_date_acquired">Datum verworven</string>
     <string name="lbl_edition">Editie</string>
@@ -760,4 +760,5 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="lbl_books">Boeken</string>
     <string name="lbl_covers">Omslagen</string>
     <string name="lbl_styles">Stijl</string>
+    <string name="menu_clear_filters">Filters verwijderen</string>
 </resources>

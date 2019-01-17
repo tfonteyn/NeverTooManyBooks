@@ -71,13 +71,13 @@ public abstract class BaseSettingsFragment
     /**
      * Set the summaries reflecting the current values for all Preferences.
      */
-    protected void setSummary(@NonNull final PreferenceScreen screen) {
+    void setSummary(@NonNull final PreferenceScreen screen) {
         for (String key : screen.getSharedPreferences().getAll().keySet()) {
             setSummary(key);
         }
     }
 
-    void setSummary(@NonNull final String key) {
+    private void setSummary(@NonNull final String key) {
         Preference preference = findPreference(key);
         if (preference != null) {
             preference.setSummary(getSummary(preference));
@@ -88,7 +88,7 @@ public abstract class BaseSettingsFragment
      * @return the current string value for a single Preference.
      */
     @NonNull
-    CharSequence getSummary(@NonNull final Preference preference) {
+    private CharSequence getSummary(@NonNull final Preference preference) {
         if (preference instanceof ListPreference) {
             return ((ListPreference) preference).getEntry();
 

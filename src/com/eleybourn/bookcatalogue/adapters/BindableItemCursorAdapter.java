@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -43,9 +42,6 @@ import java.util.Map;
 public class BindableItemCursorAdapter
         extends CursorAdapter {
 
-    /** A local Inflater for convenience. */
-    @NonNull
-    private final LayoutInflater mInflater;
     @NonNull
     private final Context mContext;
     @NonNull
@@ -71,8 +67,6 @@ public class BindableItemCursorAdapter
                                      @NonNull final Context context,
                                      @NonNull final Cursor cursor) {
         super(context, cursor);
-        //noinspection ConstantConditions
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContext = context;
         mBinder = binder;
     }
@@ -182,7 +176,7 @@ public class BindableItemCursorAdapter
         }
 
         if (convertView == null) {
-            convertView = bindable.newListItemView(mInflater, mContext, cursor, parent);
+            convertView = bindable.newListItemView(mContext, cursor, parent);
         }
 
         // Bind it, and we are done!
@@ -226,15 +220,13 @@ public class BindableItemCursorAdapter
          * NOTE: A single event subclass should NOT RETURN MORE THAN ONE TYPE OF VIEW. If it needs
          * to do this, create a new Event subclass or use a more complex view.
          *
-         * @param inflater LayoutInflater for use in expanding XML resources
-         * @param context  Context that requires the view
-         * @param cursor   EventsCursor for this event, positioned at its row.
-         * @param parent   ViewGroup that will contain the new View.
+         * @param context Context that requires the view
+         * @param cursor  EventsCursor for this event, positioned at its row.
+         * @param parent  ViewGroup that will contain the new View.
          *
          * @return a new view
          */
-        View newListItemView(@NonNull LayoutInflater inflater,
-                             @NonNull Context context,
+        View newListItemView(@NonNull Context context,
                              @NonNull BindableItemCursor cursor,
                              @NonNull ViewGroup parent);
 

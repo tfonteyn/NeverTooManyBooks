@@ -25,45 +25,52 @@ abstract class EditStringDialog {
     final Runnable mOnChanged;
     @NonNull
     private final Activity mActivity;
+
+    /** Adapter for the AutoCompleteTextView field. */
     private ArrayAdapter<String> mAdapter;
 
     /**
      * EditText.
+     *
+     * @param onChanged Runnable to be started after user confirming
      */
     EditStringDialog(@NonNull final Activity activity,
                      @NonNull final DBA db,
                      @NonNull final Runnable onChanged) {
-        this.mActivity = activity;
+        mActivity = activity;
         mOnChanged = onChanged;
         mDb = db;
     }
 
     /**
-     * @param adapterResId the layout id to inflate a new View for a row
-     * @param list         for theAutoCompleteTextView
-     * @param onChanged    Runnable to be started after user confirming
+     * AutoCompleteTextView.
+     *
+     * @param rowLayoutId the layout id to inflate a new View for a row
+     * @param list        for theAutoCompleteTextView
+     * @param onChanged   Runnable to be started after user confirming
      */
     EditStringDialog(@NonNull final Activity activity,
                      @NonNull final DBA db,
-                     @SuppressWarnings("SameParameterValue") @LayoutRes final int adapterResId,
+                     @SuppressWarnings("SameParameterValue")
+                     @LayoutRes final int rowLayoutId,
                      @NonNull final List<String> list,
                      @NonNull final Runnable onChanged) {
-        this.mActivity = activity;
+        mActivity = activity;
         mOnChanged = onChanged;
         mDb = db;
-        mAdapter = new ArrayAdapter<>(activity, adapterResId, list);
+        mAdapter = new ArrayAdapter<>(activity, rowLayoutId, list);
     }
 
     /**
-     * @param currentText to edit
-     * @param layout      dialog content view layout
-     * @param title       dialog title
+     * @param currentText    to edit
+     * @param dialogLayoutId dialog content view layout
+     * @param title          dialog title
      */
     protected void edit(@NonNull final String currentText,
-                        @LayoutRes final int layout,
+                        @LayoutRes final int dialogLayoutId,
                         @StringRes final int title) {
         // Build the base dialog
-        final View root = mActivity.getLayoutInflater().inflate(layout, null);
+        final View root = mActivity.getLayoutInflater().inflate(dialogLayoutId, null);
 
         final EditText editView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
@@ -101,6 +108,6 @@ abstract class EditStringDialog {
         dialog.show();
     }
 
-    protected abstract void confirmEdit(@NonNull String from,
-                                        @NonNull String to);
+    protected abstract void confirmEdit(@NonNull final String from,
+                                        @NonNull final String to);
 }

@@ -78,7 +78,7 @@ import java.util.Objects;
  * This is the class that manages data and views for an Activity; access to the data that
  * each view represents should be handled via this class (and its related classes) where
  * possible.
- *
+ * <p>
  * Features provides are:
  * <ul>
  * <li> handling of visibility via preferences
@@ -92,48 +92,51 @@ import java.util.Objects;
  * <li> simplified loading of data from a Cursor.
  * <li> simplified extraction of data to a {@link ContentValues} collection.
  * </ul>
- *
+ * <p>
  * Formatters and Accessors
- *
+ * <p>
  * It is up to each accessor to decide what to do with any formatters defined for a field.
  * The fields themselves have extract() and format() methods that will apply the formatter
  * functions (if present) or just pass the value through.
- *
+ * <p>
  * On a set(), the accessor should call format() function then apply the value
- *
  * On a get() the accessor should retrieve the value and apply the extract() function.
- *
+ * <p>
  * The use of a formatter typically results in all values being converted to strings so
  * they should be avoided for most non-string data.
- *
+ * <p>
  * Data Flow
- *
+ * <p>
  * Data flows to and from a view as follows:
- * IN  (with formatter): (Cursor or other source) -> format() (via accessor)
- * -> transform (in accessor) -> View
- * IN  ( no formatter ): (Cursor or other source) -> transform (in accessor)
- * -> View
- * OUT (with formatter): (Cursor or other source) -> transform (in accessor)
- * -> extract (via accessor) -> validator -> (ContentValues or Object)
- * OUT ( no formatter ): (Cursor or other source) -> transform (in accessor)
+ * IN  ( no formatter ):
+ * (Cursor or other source) -> transform (in accessor) -> View
+ * <p>
+ * IN  (with formatter):
+ * (Cursor or other source) -> format() (via accessor) -> transform (in accessor) -> View
+ * <p>
+ * OUT ( no formatter ):
+ * (Cursor or other source) -> transform (in accessor) -> validator -> (ContentValues or Object)
+ * <p>
+ * OUT (with formatter):
+ * (Cursor or other source) -> transform (in accessor) -> extract (via accessor)
  * -> validator -> (ContentValues or Object)
- *
+ * <p>
  * Usage Note:
- *
+ * <p>
  * 1. Which Views to Add?
- *
+ * <p>
  * It is not necessary to add every control to the 'Fields' collection, but as a general rule
  * any control that displays data from a database, or related derived data, or labels for such
  * data should be added.
- *
+ * <p>
  * Typical controls NOT added, are 'Save' and 'Cancel' buttons, or other controls whose
  * interactions are purely functional.
- *
+ * <p>
  * 2. Handlers?
- *
+ * <p>
  * The add() method of Fields returns a new {@link Field} object which exposes the 'View' member;
  * this can be used to perform view-specific tasks like setting onClick() handlers.
- *
+ * <p>
  * TODO: Rationalize the use of this collection with the {@link DataManager}.
  *
  * @author Philip Warner
@@ -155,6 +158,7 @@ public class Fields
     private final List<FieldCrossValidator> mCrossValidators = new ArrayList<>();
     /** All validator exceptions caught. */
     private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
+    /** TextEdit fields will be watched. */
     @Nullable
     private AfterFieldChangeListener mAfterFieldChangeListener;
 
@@ -181,27 +185,27 @@ public class Fields
 
     /**
      * This should NEVER happen, but it does. See Issue #505. So we need more info about why & when.
-     *
+     * <p>
      * // Allow for the (apparent) possibility that the view may have been removed due
      * // to a tab change or similar. See Issue #505.
-     *
+     * <p>
      * Every field MUST have an associated View object, but sometimes it is not found.
      * When not found, the app crashes.
-     *
+     * <p>
      * The following code is to help diagnose these cases, not avoid them.
-     *
+     * <p>
      * NOTE: This does NOT entirely fix the problem, it gathers debug info.
      * but we have implemented one work-around
-     *
+     * <p>
      * Work-around #1:
-     *
+     * <p>
      * It seems that sometimes the afterTextChanged() event fires after the text field
      * is removed from the screen. In this case, there is no need to synchronize the values
      * since the view is gone.
      */
     private static void debugNullView(@NonNull final Field field) {
-        String msg = "NULL View: col=" + field.mColumn + ", id=" + field.id +
-                ", group=" + field.group;
+        String msg = "NULL View: col=" + field.mColumn + ", id=" + field.id
+                + ", group=" + field.group;
         Fields fields = field.getFields();
         if (fields == null) {
             msg += ". Fields is NULL.";
@@ -210,11 +214,11 @@ public class Fields
             FieldsContext context = fields.getContext();
             msg += ". Context is " + context.getClass().getCanonicalName() + '.';
             Object ownerContext = context.dbgGetOwnerContext();
+            msg += ". Owner is ";
             if (ownerContext == null) {
-                msg += ". Owner is NULL.";
+                msg += "NULL.";
             } else {
-                msg += ". Owner is " + ownerContext.getClass().getCanonicalName() +
-                        " (" + ownerContext + ')';
+                msg += ownerContext.getClass().getCanonicalName() + " (" + ownerContext + ')';
             }
         }
         throw new IllegalStateException("Unable to get associated View object\n" + msg);
@@ -234,7 +238,6 @@ public class Fields
      * @param listener the listener for field changes
      */
     @SuppressWarnings("WeakerAccess")
-    @Nullable
     public void setAfterFieldChangeListener(@Nullable final AfterFieldChangeListener listener) {
         mAfterFieldChangeListener = listener;
     }
@@ -391,9 +394,8 @@ public class Fields
      */
     @SuppressWarnings("WeakerAccess")
     public void resetVisibility() {
-        FieldsContext context = getContext();
         for (Field field : this) {
-            field.resetVisibility(context);
+            field.resetVisibility();
         }
     }
 
@@ -401,9 +403,9 @@ public class Fields
      * Loop through and apply validators, generating a Bundle collection as a by-product.
      * The Bundle collection is then used in cross-validation as a second pass, and finally
      * passed to each defined cross-validator.
-     *
+     * <p>
      * 2018-11-11: this and all related code is not used at all in the original code.
-     *
+     * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
      *
      * @param values The Bundle collection to fill
@@ -411,7 +413,7 @@ public class Fields
      * @return <tt>true</tt> if all validation passed.
      */
     @SuppressWarnings("unused")
-    public boolean validateAllFields(@NonNull final Bundle values) {
+    private boolean validateAllFields(@NonNull final Bundle values) {
         boolean isOk = true;
         mValidationExceptions.clear();
 
@@ -439,13 +441,13 @@ public class Fields
 
     /**
      * Perform a loop validating all fields.
-     *
+     * <p>
      * 2018-11-11: Called by {@link #validateAllFields(Bundle)} which however is not called at all
-     *
+     * <p>
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
      *
      * @param values          The Bundle to fill in/use.
-     * @param crossValidating Options indicating if this is a cross validation pass.
+     * @param crossValidating flag indicating if this is a cross validation pass.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean validateAllFields(@NonNull final Bundle values,
@@ -513,7 +515,7 @@ public class Fields
 
     /**
      * added to the Fields collection with (2018-11-11) a simple call to setDirty(true).
-     *
+     * <p>
      * Serializable: because it's a member of a serializable class (and lint...)
      */
     public interface AfterFieldChangeListener
@@ -528,10 +530,10 @@ public class Fields
      * with the crossValidating flag set to false, then, if all validations were successful,
      * they are all called a second time with the flag set to true.
      * This is done in {@link #validateAllFields(Bundle)}
-     *
+     * <p>
      * This is an alternate method of applying cross-validation.
      * 2018-11-11: the original code never actively used this.
-     *
+     * <p>
      * It basically seems {@link DataManager} replaced/implemented validation instead
      *
      * @author Philip Warner
@@ -546,7 +548,7 @@ public class Fields
          * @param values          A ContentValues collection to store the validated value.
          *                        On a cross-validation pass this collection will have all
          *                        field values set and can be read.
-         * @param crossValidating Options indicating if this is the cross-validation pass.
+         * @param crossValidating flag indicating if this is the cross-validation pass.
          *
          * @throws ValidatorException For any validation failure.
          */
@@ -560,7 +562,7 @@ public class Fields
     /**
      * Interface for all cross-validators; these are applied after all field-level validators
      * have succeeded.
-     *
+     * <p>
      * Serializable: because it's a member of a serializable class (and lint...)
      *
      * @author Philip Warner
@@ -628,7 +630,7 @@ public class Fields
                  @NonNull final String value);
 
         /**
-         * Get the the value from the view associated with Field and store a native version
+         * Get the value from the view associated with Field and store a native version
          * in the passed values collection.
          *
          * @param field  associated with the View object
@@ -638,7 +640,7 @@ public class Fields
                                @NonNull final Bundle values);
 
         /**
-         * Get the the value from the view associated with Field and store a native version
+         * Get the value from the view associated with Field and store a native version
          * in the passed DataManager.
          *
          * @param field  associated with the View object
@@ -648,7 +650,7 @@ public class Fields
                                @NonNull final DataManager values);
 
         /**
-         * Get the the value from the view associated with Field and return it as an Object.
+         * Get the value from the view associated with Field and return it as an Object.
          *
          * @param field associated with the View object
          *
@@ -678,7 +680,7 @@ public class Fields
 
         /**
          * This method is intended to be called from a {@link FieldDataAccessor}.
-         *
+         * <p>
          * Extract a formatted string from the displayed version.
          *
          * @param source The value to be back-translated
@@ -766,7 +768,7 @@ public class Fields
     /**
      * Implementation that stores and retrieves data from a TextView.
      * This is treated differently to an EditText in that HTML is (optionally) displayed properly.
-     *
+     * <p>
      * The actual value is stored in a local variable.
      * Does not use a {@link FieldFormatter}
      */
@@ -822,7 +824,7 @@ public class Fields
     /**
      * Implementation that stores and retrieves data from an EditText.
      * Uses the defined {@link FieldFormatter} and setText() and getText().
-     *
+     * <p>
      * 2018-12-11: set is now synchronized. There was recursion builtin due to the setText call.
      * So now, disabling the TextWatcher while doing the latter.
      */
@@ -864,7 +866,7 @@ public class Fields
 
     /**
      * Checkable accessor. Attempt to convert data to/from a boolean.
-     *
+     * <p>
      * {@link Checkable} covers more then just a Checkbox:
      * CheckBox, RadioButton, Switch, ToggleButton extend CompoundButton
      * CheckedTextView extends TextView
@@ -913,7 +915,7 @@ public class Fields
         public Object get(@NonNull final Field field) {
             Checkable cb = field.getView();
             if (field.formatter != null) {
-                return field.formatter.extract(field, (cb.isChecked() ? "1" : "0"));
+                return field.formatter.extract(field, cb.isChecked() ? "1" : "0");
             } else {
                 return cb.isChecked() ? 1 : 0;
             }
@@ -941,7 +943,7 @@ public class Fields
         public void set(@NonNull final Field field,
                         @Nullable final String value) {
             RatingBar ratingBar = field.getView();
-            Float f = 0.0f;
+            float f = 0.0f;
             try {
                 f = Float.parseFloat(field.format(value));
             } catch (NumberFormatException ignored) {
@@ -954,7 +956,8 @@ public class Fields
             RatingBar ratingBar = field.getView();
             if (field.formatter != null) {
                 values.putString(field.mColumn,
-                                 field.formatter.extract(field, "" + ratingBar.getRating()));
+                                 field.formatter
+                                         .extract(field, String.valueOf(ratingBar.getRating())));
             } else {
                 values.putFloat(field.mColumn, ratingBar.getRating());
             }
@@ -965,7 +968,8 @@ public class Fields
             RatingBar ratingBar = field.getView();
             if (field.formatter != null) {
                 values.putString(field.mColumn,
-                                 field.formatter.extract(field, "" + ratingBar.getRating()));
+                                 field.formatter
+                                         .extract(field, String.valueOf(ratingBar.getRating())));
             } else {
                 values.putFloat(field.mColumn, ratingBar.getRating());
             }
@@ -1027,6 +1031,8 @@ public class Fields
 
     /**
      * Formatter for date fields.
+     *
+     * Can be shared among multiple fields.
      */
     public static class DateFieldFormatter
             implements FieldFormatter {
@@ -1117,9 +1123,10 @@ public class Fields
         }
     }
 
+
     /**
      * Formatter for price fields.
-     *
+     * <p>
      * Does not support {@link FieldFormatter#extract}
      */
     public static class PriceFormatter
@@ -1175,14 +1182,14 @@ public class Fields
 
     /**
      * Formatter for language fields.
-     *
+     * <p>
      * The format implementation is fairly simplistic.
      * If the database column contains a standard ISO language code, then 'format'
      * will return a current Locale based display name of that language.
      * Otherwise, we just use the source String
-     *
+     * <p>
      * The extract implementation will attempt to convert the value string to an ISO language code.
-     *
+     * <p>
      * Note: the use of extract is not actually needed, as the insert of the book into
      * the database checks the ISO3 code. But at least this class works "correct".
      */
@@ -1218,7 +1225,7 @@ public class Fields
 
     /**
      * Formatter for a bitmask based Book Editions field.
-     *
+     * <p>
      * Does not support {@link FieldFormatter#extract}.
      */
     public static class BookEditionsFormatter
@@ -1295,7 +1302,7 @@ public class Fields
 
         /**
          * Cycle to the next Usage stage.
-         *
+         * <p>
          * if (isList): Skip -> CopyIfBlank -> AddExtra -> Overwrite -> Skip
          * else          : Skip -> CopyIfBlank -> Overwrite -> Skip
          */
@@ -1306,6 +1313,7 @@ public class Fields
         public enum Usage {
             Skip, CopyIfBlank, AddExtra, Overwrite;
 
+            @NonNull
             public Usage nextState(final boolean isList) {
                 switch (this) {
                     case Skip:
@@ -1318,10 +1326,11 @@ public class Fields
                         }
                     case AddExtra:
                         return Overwrite;
-                    case Overwrite:
+
+                    //case Overwrite:
+                    default:
                         return Skip;
                 }
-                return null;
             }
 
             @StringRes
@@ -1416,16 +1425,16 @@ public class Fields
         public final String group;
         /**
          * column name (can be blank) used to access a {@link DataManager} (or Bundle/Cursor).
-         *
+         * <p>
          * - column is set, and doNoFetch==false:
          * ===> fetched from the {@link DataManager} (or Bundle/Cursor), and populated on the screen
          * ===> extracted from the screen and put in {@link DataManager} (or Bundle)
-         *
+         * <p>
          * - column is set, and doNoFetch==true:
          * ===> fetched from the {@link DataManager} (or Bundle/Cursor), but populating
          * the screen must be done manually.
          * ===> extracted from the screen and put in {@link DataManager} (or Bundle)
-         *
+         * <p>
          * - column is not set: field is defined, but data handling is fully manual.
          */
         @NonNull
@@ -1477,10 +1486,11 @@ public class Fields
             group = visibilityGroupName;
 
             // Lookup the view
-            final View view = fields.getContext().findViewById(this.id);
+            final View view = mFields.get().getContext().findViewById(this.id);
 
             // Set the appropriate accessor
             if (view == null) {
+                // if the field does not have a View, then we provide generic String storage for it.
                 mFieldDataAccessor = new StringDataAccessor();
             } else {
                 if (view instanceof Spinner) {
@@ -1526,6 +1536,7 @@ public class Fields
                 } else if (view instanceof RatingBar) {
                     mFieldDataAccessor = new RatingBarAccessor();
                     addTouchSignalsDirty(view);
+
                 } else {
                     throw new RTE.IllegalTypeException(view.getClass().getCanonicalName());
                 }
@@ -1583,7 +1594,7 @@ public class Fields
         }
 
         /**
-         * @param doNoFetch true to stop the field being fetched from the database
+         * @param doNoFetch <tt>true</tt> to stop the field being fetched from the database
          *
          * @return field (for chaining)
          */
@@ -1594,7 +1605,6 @@ public class Fields
         }
 
         /**
-         *
          * @return visibility status
          */
         public boolean isVisible() {
@@ -1604,12 +1614,9 @@ public class Fields
         /**
          * Reset one fields visibility based on user preferences.
          */
-        private void resetVisibility(@Nullable final FieldsContext context) {
-            if (context == null) {
-                return;
-            }
+        private void resetVisibility() {
             // Lookup the view
-            final View view = context.findViewById(this.id);
+            final View view = mFields.get().getContext().findViewById(this.id);
             if (view != null) {
                 mIsVisible = Fields.isVisible(group);
                 view.setVisibility(mIsVisible ? View.VISIBLE : View.GONE);
@@ -1660,9 +1667,7 @@ public class Fields
         @SuppressWarnings("unchecked")
         @NonNull
         public <T extends View> T getView() {
-            Fields fields = mFields.get();
-
-            T view = (T) fields.getContext().findViewById(this.id);
+            T view = (T) mFields.get().getContext().findViewById(this.id);
             if (view == null) {
                 debugNullView(this);
                 throw new NullPointerException("view is NULL");

@@ -28,13 +28,13 @@ public class ZxingScanner
 
     private static final String SCAN_RESULT = "SCAN_RESULT";
 
-    /** Set to true of the Zxing package is required. */
+    /** Set to <tt>true</tt> if the Zxing package is required. */
     private final boolean mMustBeZxing;
 
     /**
      * Constructor.
      *
-     * @param mustBeZxingPackage Set to true if the Zxing scanner app MUST be used
+     * @param mustBeZxingPackage Set to <tt>true</tt> if the Zxing scanner app MUST be used
      */
     ZxingScanner(final boolean mustBeZxingPackage) {
         mMustBeZxing = mustBeZxingPackage;

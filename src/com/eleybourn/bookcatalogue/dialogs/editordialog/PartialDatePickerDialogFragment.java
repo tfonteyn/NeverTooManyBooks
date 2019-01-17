@@ -187,7 +187,6 @@ public class PartialDatePickerDialogFragment
     @Override
     @CallSuper
     public void onPause() {
-        Tracker.enterOnPause(this);
         PartialDatePickerDialog dialog = (PartialDatePickerDialog) getDialog();
         if (dialog != null) {
             mYear = dialog.getYear();
@@ -195,7 +194,6 @@ public class PartialDatePickerDialogFragment
             mDay = dialog.getDay();
         }
         super.onPause();
-        Tracker.exitOnPause(this);
     }
 
     /**

@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -35,26 +34,25 @@ import androidx.core.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
-import com.eleybourn.bookcatalogue.backup.csv.CsvExportTask;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
-import com.eleybourn.bookcatalogue.backup.csv.CsvImportTask;
+import com.eleybourn.bookcatalogue.backup.csv.CsvTasks;
 import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogFileItem;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogItem;
-import com.eleybourn.bookcatalogue.dialogs.SelectOneDialog.SimpleDialogOnClickListener;
+import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
+import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.OnClickListener;
+import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.SimpleDialogFileItem;
+import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.settings.SettingsActivity;
-import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueListActivity;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -69,9 +67,12 @@ import java.util.List;
  * @author Evan Leybourn
  */
 public class AdminActivity
-        extends BaseActivityWithTasks {
+        extends BaseActivity
+        implements TaskWithProgressDialogFragment.OnTaskFinishedListener {
 
+    /** requestCode for making a backup to archive. // taskId for exporting CSV. */
     private static final int REQ_ARCHIVE_BACKUP = 0;
+    /** requestCode for doing a restore/import from archive.  // taskId for importing CSV. */
     private static final int REQ_ARCHIVE_RESTORE = 1;
 
     private static final int REQ_ADMIN_SEARCH_SETTINGS = 10;
@@ -79,7 +80,7 @@ public class AdminActivity
     /**
      * collected results from all started activities, which we'll pass on up in our own setResult.
      */
-    private final Intent resultData = new Intent();
+    private final Intent mResultData = new Intent();
 
     @Override
     protected int getLayoutId() {
@@ -109,10 +110,11 @@ public class AdminActivity
         View v = findViewById(R.id.lbl_field_visibility);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
+        v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this, SettingsActivity.class);
+                Intent intent = new Intent(AdminActivity.this,
+                                           SettingsActivity.class);
                 intent.putExtra(UniqueId.FRAGMENT_ID,
                                 SettingsActivity.FRAGMENT_FIELD_VISIBILITY);
                 startActivity(intent);
@@ -124,76 +126,26 @@ public class AdminActivity
         v = findViewById(R.id.lbl_preferences);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
+        v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this, SettingsActivity.class);
+                Intent intent = new Intent(AdminActivity.this,
+                                           SettingsActivity.class);
                 intent.putExtra(UniqueId.FRAGMENT_ID,
                                 SettingsActivity.FRAGMENT_GLOBAL_SETTINGS);
                 startActivity(intent);
             }
         });
 
-        /* Export (backup) to Archive */
-        v = findViewById(R.id.lbl_backup);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this, BackupAndRestoreActivity.class);
-                intent.putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                                BackupAndRestoreActivity.BVAL_MODE_SAVE);
-                startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
-            }
-        });
 
-
-        /* Import from Archive - Start the restore activity*/
-        v = findViewById(R.id.lbl_import_from_archive);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this, BackupAndRestoreActivity.class);
-                intent.putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                                BackupAndRestoreActivity.BVAL_MODE_OPEN);
-                startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
-            }
-        });
-
-
-        /* Export to CSV */
-        v = findViewById(R.id.lbl_export);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                exportToCSV();
-            }
-        });
-
-
-        /* Import From CSV */
-        v = findViewById(R.id.lbl_import);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                // Verify - this can be a dangerous operation
-                confirmToImportFromCSV();
-            }
-        });
+        setupImportExport();
 
 
         /* Automatically Update Fields from internet*/
         v = findViewById(R.id.lbl_update_internet);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
+        v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
                 Intent intent = new Intent(AdminActivity.this,
@@ -203,76 +155,20 @@ public class AdminActivity
         });
 
 
-        /* Goodreads Synchronize */
-        v = findViewById(R.id.lbl_sync_with_goodreads);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                GoodreadsUtils.importAllFromGoodreads(AdminActivity.this, true);
-            }
-        });
+        setupGoodreadsImportExport();
 
-
-        /* Goodreads Import */
-        v = findViewById(R.id.lbl_import_all_from_goodreads);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                GoodreadsUtils.importAllFromGoodreads(AdminActivity.this, false);
-            }
-        });
-
-
-        /* Goodreads Export (send to) */
-        v = findViewById(R.id.lbl_send_books_to_goodreads);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                GoodreadsUtils.sendBooksToGoodreads(AdminActivity.this);
-            }
-        });
-
-
-        /* Goodreads credentials */
-        v = findViewById(R.id.goodreads_auth);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this, GoodreadsRegisterActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
-        /* LibraryThing credentials */
-        v = findViewById(R.id.librarything_auth);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this, LibraryThingAdminActivity.class);
-                startActivity(intent);
-            }
-        });
+        setupCredentials();
 
 
         /* Search sites */
         v = findViewById(R.id.search_sites);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
+        v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this, SearchAdminActivity.class);
+                Intent intent = new Intent(AdminActivity.this,
+                                           SearchAdminActivity.class);
                 startActivityForResult(intent, REQ_ADMIN_SEARCH_SETTINGS);
             }
         });
@@ -282,10 +178,11 @@ public class AdminActivity
         v = findViewById(R.id.lbl_background_tasks);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
+        v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this, TaskQueueListActivity.class);
+                Intent intent = new Intent(AdminActivity.this,
+                                           TaskQueueListActivity.class);
                 startActivity(intent);
             }
         });
@@ -295,7 +192,7 @@ public class AdminActivity
         v = findViewById(R.id.lbl_reset_hints);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
+        v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
                 HintManager.resetHints();
@@ -310,7 +207,7 @@ public class AdminActivity
         v = findViewById(R.id.lbl_erase_cover_cache);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
+        v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
                 try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
@@ -324,13 +221,141 @@ public class AdminActivity
         v = findViewById(R.id.lbl_copy_database);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
-        v.setOnClickListener(new OnClickListener() {
+        v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
                 StorageUtils.exportDatabaseFiles(AdminActivity.this);
                 //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
                 StandardDialogs.showUserMessage(AdminActivity.this,
                                                 R.string.progress_end_backup_success);
+            }
+        });
+    }
+
+    private void setupImportExport() {
+        View v;
+
+        /* Export (backup) to Archive */
+        v = findViewById(R.id.lbl_backup);
+        // Make line flash when clicked.
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                Intent intent = new Intent(AdminActivity.this,
+                                           BackupAndRestoreActivity.class);
+                intent.putExtra(BackupAndRestoreActivity.BKEY_MODE,
+                                BackupAndRestoreActivity.BVAL_MODE_SAVE);
+                startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
+            }
+        });
+
+
+        /* Import from Archive - Start the restore activity*/
+        v = findViewById(R.id.lbl_import_from_archive);
+        // Make line flash when clicked.
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                Intent intent = new Intent(AdminActivity.this,
+                                           BackupAndRestoreActivity.class);
+                intent.putExtra(BackupAndRestoreActivity.BKEY_MODE,
+                                BackupAndRestoreActivity.BVAL_MODE_OPEN);
+                startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
+            }
+        });
+
+
+        /* Export to CSV */
+        v = findViewById(R.id.lbl_export);
+        // Make line flash when clicked.
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                exportToCSV();
+            }
+        });
+
+
+        /* Import From CSV */
+        v = findViewById(R.id.lbl_import);
+        // Make line flash when clicked.
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                // Verify - this can be a dangerous operation
+                confirmToImportFromCSV();
+            }
+        });
+    }
+
+    private void setupGoodreadsImportExport() {
+        View v;
+        /* Goodreads Synchronize */
+        v = findViewById(R.id.lbl_sync_with_goodreads);
+        // Make line flash when clicked.
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                GoodreadsUtils.importAllFromGoodreads(AdminActivity.this, true);
+            }
+        });
+
+
+        /* Goodreads Import */
+        v = findViewById(R.id.lbl_import_all_from_goodreads);
+        // Make line flash when clicked.
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                GoodreadsUtils.importAllFromGoodreads(AdminActivity.this, false);
+            }
+        });
+
+
+        /* Goodreads Export (send to) */
+        v = findViewById(R.id.lbl_send_books_to_goodreads);
+        // Make line flash when clicked.
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                GoodreadsUtils.sendBooksToGoodreads(AdminActivity.this);
+            }
+        });
+    }
+
+    private void setupCredentials() {
+        View v;
+        /* Goodreads credentials */
+        v = findViewById(R.id.goodreads_auth);
+        // Make line flash when clicked.
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                Intent intent = new Intent(AdminActivity.this,
+                                           GoodreadsRegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+        /* LibraryThing credentials */
+        v = findViewById(R.id.librarything_auth);
+        // Make line flash when clicked.
+        v.setBackgroundResource(android.R.drawable.list_selector_background);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                Intent intent = new Intent(AdminActivity.this,
+                                           LibraryThingAdminActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -342,8 +367,7 @@ public class AdminActivity
         File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
         ExportSettings settings = new ExportSettings(file);
         settings.what = ExportSettings.BOOK_CSV;
-        new CsvExportTask(getTaskManager(), settings)
-                .start();
+        CsvTasks.exportCSV(this, REQ_ARCHIVE_BACKUP, settings);
     }
 
     /**
@@ -376,7 +400,6 @@ public class AdminActivity
      * Import all data from somewhere on Shared Storage; ask user to disambiguate if necessary.
      */
     private void importFromCSV() {
-
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files.size() == 0) {
@@ -388,11 +411,11 @@ public class AdminActivity
             } else {
                 // If more than one, ask user which file
                 // ENHANCE: Consider asking about importing cover images.
-                SelectOneDialog.selectFileDialog(
+                SimpleDialog.selectFileDialog(
                         getLayoutInflater(),
-                        getString(R.string.import_warning_csv_file_more_then_one_found),
+                        getString(R.string.import_warning_select_csv_file),
                         files,
-                        new SimpleDialogOnClickListener() {
+                        new OnClickListener() {
                             @Override
                             public void onClick(@NonNull final SimpleDialogItem item) {
                                 SimpleDialogFileItem fileItem = (SimpleDialogFileItem) item;
@@ -411,7 +434,7 @@ public class AdminActivity
     private void importFromCSV(@NonNull final File file) {
         ImportSettings settings = new ImportSettings(file);
         settings.what = ImportSettings.BOOK_CSV;
-        new CsvImportTask(getTaskManager(), settings).start();
+        CsvTasks.importCSV(this, REQ_ARCHIVE_RESTORE, settings);
     }
 
     @Override
@@ -420,13 +443,18 @@ public class AdminActivity
                                     final int resultCode,
                                     @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+        // collect all data
+        if (data != null) {
+            mResultData.putExtras(data);
+        }
+
         switch (requestCode) {
             case REQ_ADMIN_SEARCH_SETTINGS:
             case REQ_ARCHIVE_BACKUP:
             case REQ_ARCHIVE_RESTORE:
                 if (resultCode == RESULT_OK) {
                     // no local action needed, pass results up
-                    setResult(resultCode, resultData);
+                    setResult(resultCode, mResultData);
                 }
                 break;
 
@@ -438,30 +466,32 @@ public class AdminActivity
         Tracker.exitOnActivityResult(this);
     }
 
+
     /**
-     * Called when any background task completes.
-     *
-     * @param task that finished
+     * Called when a task finishes.
      */
     @Override
-    public void onTaskFinished(@NonNull final ManagedTask task) {
-        super.onTaskFinished(task);
-        // If it's an export, handle it
-        if (task instanceof CsvExportTask) {
-            onExportFinished((CsvExportTask) task);
+    public void onTaskFinished(@NonNull final TaskWithProgressDialogFragment fragment,
+                               final int taskId,
+                               final boolean success,
+                               final boolean cancelled,
+                               @NonNull final TaskWithProgressDialogFragment.FragmentTask task) {
+        switch (taskId) {
+            case REQ_ARCHIVE_BACKUP:
+                if (!cancelled) {
+                    onExportFinished();
+                }
+                break;
+
+            case REQ_ARCHIVE_RESTORE:
+                break;
         }
     }
 
     /**
      * Callback for the CSV export task.
-     *
-     * @param task that finished
      */
-    private void onExportFinished(@NonNull final CsvExportTask task) {
-        if (task.isCancelled()) {
-            return;
-        }
-
+    private void onExportFinished() {
         AlertDialog dialog = new AlertDialog.Builder(AdminActivity.this)
                 .setTitle(R.string.export_csv_email)
                 .setIcon(R.drawable.ic_send)
@@ -473,7 +503,7 @@ public class AdminActivity
                              @Override
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
-                                 sendMail();
+                                 emailCSVFile();
                                  dialog.dismiss();
                              }
                          });
@@ -501,7 +531,10 @@ public class AdminActivity
         }
     }
 
-    public void sendMail() {
+    /**
+     * Create and send an email with the CSV export file.
+     */
+    private void emailCSVFile() {
         // setup the mail message
         String subject = '[' + getString(R.string.app_name) + "] "
                 + getString(R.string.lbl_export_to_csv);

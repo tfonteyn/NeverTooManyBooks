@@ -107,10 +107,8 @@ public class TaskQueueListActivity
     @Override
     @CallSuper
     protected void onResume() {
-        Tracker.enterOnResume(this);
         super.onResume();
         refreshData();
-        Tracker.exitOnResume(this);
     }
 
     /**

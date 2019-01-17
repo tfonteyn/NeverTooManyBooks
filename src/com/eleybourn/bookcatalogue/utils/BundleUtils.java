@@ -32,6 +32,7 @@ public final class BundleUtils {
      *
      * @param bundle to check
      * @param key    for data to add
+     * @param value  to use
      */
     public static void addIfNotPresent(@NonNull final Bundle bundle,
                                        @NonNull final String key,
@@ -50,8 +51,8 @@ public final class BundleUtils {
      *
      * @return Result or null when not found
      */
-    public static String getStringFromBundles(final String key,
-                                              final Bundle... bundles) {
+    public static String getStringFromBundles(@NonNull final String key,
+                                              @NonNull final Bundle... bundles) {
         String value;
         for (Bundle bundle : bundles) {
             if (bundle != null && bundle.containsKey(key)) {
@@ -72,7 +73,7 @@ public final class BundleUtils {
      *
      * @return Result or 0 when not found
      */
-    public static int getIntFromBundles(final String key,
+    public static int getIntFromBundles(@NonNull final String key,
                                         @NonNull final Bundle... bundles) {
         int value;
         for (Bundle bundle : bundles) {

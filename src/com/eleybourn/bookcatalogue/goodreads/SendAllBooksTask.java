@@ -46,7 +46,10 @@ public class SendAllBooksTask
         extends SendBooksTask {
 
     private static final long serialVersionUID = -1933000305276643875L;
-    /** Options indicating if it should only send UPDATED books to Goodreads; false == all books. */
+    /**
+     * Flag indicating if it should only send UPDATED books to Goodreads;
+     * <tt>false</tt> == all books.
+     */
     private final boolean mUpdatesOnly;
 
     /** Last book ID processed. */
@@ -65,8 +68,10 @@ public class SendAllBooksTask
     }
 
     /**
-     * Do the mean of the task. Called from within {@link #run}
+     * Do the main of the task. Called from within {@link #run}
      * Deal with restarts by using mLastId as starting point.
+     *
+     * @return <tt>true</tt> on success.
      */
     protected boolean send(@NonNull final QueueManager queueManager,
                            @NonNull final Context context,

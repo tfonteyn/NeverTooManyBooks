@@ -75,7 +75,7 @@ interface CropIImageList
      * @return the image at the ith position
      */
     @NonNull
-    CropIImage getImageAt(int index);
+    CropIImage getImageAt(final int index);
 
     /**
      * Returns the image with a particular Uri.
@@ -83,33 +83,33 @@ interface CropIImageList
      * @return the image with a particular Uri. null if not found.
      */
     @NonNull
-    CropIImage getImageForUri(Uri uri);
+    CropIImage getImageForUri(@NonNull final Uri uri);
 
     /**
      * @return <tt>true</tt> if the image was removed.
      */
-    boolean removeImage(CropIImage image);
+    boolean removeImage(@NonNull final CropIImage image);
 
     /**
      * Removes the image at the ith position.
      *
      * @param index the position
      */
-    boolean removeImageAt(int index);
+    boolean removeImageAt(final int index);
 
-    int getImageIndex(CropIImage image);
+    int getImageIndex(@NonNull final CropIImage image);
 
     /**
      * Generate thumbnail for the image (if it has not been generated.)
      *
      * @param index the position of the image
      */
-    void checkThumbnail(int index);
+    void checkThumbnail(final int index);
 
     /**
      * Opens this list for operation.
      */
-    void open(@NonNull ContentResolver resolver);
+    void open(@NonNull final ContentResolver resolver);
 
     /**
      * Closes this list to release resources, no further operation is allowed.

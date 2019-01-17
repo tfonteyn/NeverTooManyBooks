@@ -45,9 +45,14 @@ public final class BooklistStyles {
 
     /** Preference name for the current default style to use. */
     public static final String PREF_BL_STYLE_CURRENT_DEFAULT = "BookList.Style.Current";
+
+    /** Preference name for the StringSet of all user-defined style. Stores the UUID's */
+    public static final String PREF_BL_STYLES_LIST = "BookList.Style.UserDefined";
+
     /** default style when none is set yet -1 -> R.string.style_builtin_author_series. */
     @StringRes
     private static final long DEFAULT_STYLE = -1;
+
     /** initialised at first use. */
     private static Map<Long, BooklistStyle> mBuiltinStyles;
 
@@ -214,6 +219,40 @@ public final class BooklistStyles {
         return mBuiltinStyles;
     }
 
+//    /**
+//     * Get the user-defined Styles from the Preferences.
+//     *
+//     * @return list of BooklistStyle
+//     */
+//    @NonNull
+//    private static Map<Long, BooklistStyle> getUserStyles() {
+//        Map<Long, BooklistStyle> userStyles = new LinkedHashMap<>();
+//        Set<String> set = Prefs.getPrefs()
+//                               .getStringSet(PREF_BL_STYLES_LIST, new LinkedHashSet<String>());
+//
+//        return userStyles;
+//    }
+
+    /**
+     * Get the user-defined Styles from the database.
+     *
+     * The plan is to eliminate the styled database table, and store a list of uuid's in
+     * Preferences instead.
+     *
+     * @param db database
+     *
+     * @return list of BooklistStyle
+     */
+    @NonNull
+    public static Map<Long, BooklistStyle> getUserStyles(@NonNull final DBA db) {
+        Map<Long, BooklistStyle> styles = new LinkedHashMap<>();
+        Map<Long, String> uuids = db.getBooklistStyles();
+        for (Long id : uuids.keySet()) {
+            styles.put(id, new BooklistStyle(id, uuids.get(id)));
+        }
+        return styles;
+    }
+
     /**
      * @param getAll if <tt>true</tt> then also return the non-preferred styles
      *
@@ -224,7 +263,7 @@ public final class BooklistStyles {
                                                      final boolean getAll) {
 
         // Get all styles: user
-        Map<Long, BooklistStyle> allStyles = new LinkedHashMap<>(db.getBooklistStyles());
+        Map<Long, BooklistStyle> allStyles = getUserStyles(db);
         // Get all styles: builtin
         allStyles.putAll(getBuiltinStyles());
 
@@ -289,7 +328,7 @@ public final class BooklistStyles {
     private static Set<Long> getPreferredStyleMenuOrder() {
         Set<Long> ids = new LinkedHashSet<>();
         String itemsStr = Prefs.getPrefs().getString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
-                                          null);
+                                                     null);
 
         if (itemsStr != null && !itemsStr.isEmpty()) {
             String[] entries = itemsStr.split(",");
@@ -360,7 +399,7 @@ public final class BooklistStyles {
 
         // try user-defined
         try (DBA db = new DBA(BookCatalogueApp.getAppContext())) {
-            for (BooklistStyle style : db.getBooklistStyles().values()) {
+            for (BooklistStyle style : BooklistStyles.getUserStyles(db).values()) {
                 if (style.getDisplayName().equals(name)) {
                     return style.getId();
                 }

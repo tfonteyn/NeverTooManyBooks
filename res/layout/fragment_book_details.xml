@@ -171,7 +171,7 @@
                 style="@style/lbl_textField"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/table_of_content" />
+                android:text="@string/lbl_table_of_content" />
 
             <CheckBox
                 android:id="@+id/toc_button"
@@ -449,7 +449,10 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             tools:ignore="SelectableText"
-            tools:text="I hereby nominate Lizard the humongous football player and Sylphide the mysterious ballerina as two of my favorite characters of 2012. Rarely have such elite and outsize personalities felt so true on the page--a joy to be with, worth rooting for." />
+            tools:text="I hereby nominate Lizard the humongous football player and Sylphide the
+             mysterious ballerina as two of my favorite characters of 2012. Rarely have such
+              elite and outsize personalities felt so true on the page--a joy to be with,
+              worth rooting for." />
     </LinearLayout>
 
 </ScrollView>

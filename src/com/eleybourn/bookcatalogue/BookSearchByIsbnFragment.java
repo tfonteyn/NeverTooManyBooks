@@ -35,7 +35,7 @@ import java.util.Objects;
 //  field gets focus, up it pops
 //        mIsbnView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override
-//            public void onFocusChange(final View v, final boolean hasFocus) {
+//            public void onFocusChange(@NonNull final View v, final boolean hasFocus) {
 //                if (v.equals(mIsbnView)) {
 //                    InputMethodManager imm = (InputMethodManager)
 //                            getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -74,7 +74,7 @@ public class BookSearchByIsbnFragment
 
     private boolean mScannerStarted;
     /**
-     * Options to indicate the Activity should not 'finish()' because an alert is being displayed.
+     * Flag to indicate the Activity should not 'finish()' because an alert is being displayed.
      * The alert will call finish().
      */
     private boolean mDisplayingAlert;
@@ -120,7 +120,7 @@ public class BookSearchByIsbnFragment
 
         ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(R.string.title_isbn_search);
+            actionBar.setTitle(R.string.search_isbn);
             actionBar.setSubtitle(null);
         }
 
@@ -418,7 +418,7 @@ public class BookSearchByIsbnFragment
     @SuppressWarnings("SameReturnValue")
     public boolean onSearchFinished(final boolean wasCancelled,
                                     @NonNull final Bundle bookData) {
-        Tracker.handleEvent(this, Tracker.States.Running,
+        Tracker.handleEvent(this, Tracker.States.Enter,
                             "onSearchFinished|SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {

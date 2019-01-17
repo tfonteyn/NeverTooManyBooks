@@ -48,8 +48,7 @@ public class SynchronizedStatement
         mSql = sql;
 
         mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
-        mStatement = db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing().compileStatement(
-            sql);
+        mStatement = db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing().compileStatement(sql);
 
         if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
             Logger.info(this, sql + "\n\n");
@@ -147,7 +146,7 @@ public class SynchronizedStatement
     }
 
     /**
-     * Syntax sugar
+     * Syntax sugar. Converts an SQLiteDoneException into returning 0.
      *
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
      *
@@ -210,13 +209,13 @@ public class SynchronizedStatement
     }
 
     /**
-     * Syntax sugar
+     * Syntax sugar. Converts an SQLiteDoneException into returning null.
      *
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
      *
      * Execute a statement that returns a 1 by 1 table with a text value.
      *
-     * @return The result of the query.
+     * @return The result of the query, or null if not found.
      */
     @Nullable
     public String simpleQueryForStringOrNull() {
@@ -238,11 +237,8 @@ public class SynchronizedStatement
      *
      * Execute this SQL statement, if it is not a SELECT / INSERT / DELETE / UPDATE, for example
      * CREATE / DROP table, view, trigger, index etc.
-     *
-     * @throws android.database.SQLException If the SQL string is invalid for some reason
      */
-    public void execute()
-            throws SQLException {
+    public void execute() {
         Synchronizer.SyncLock txLock;
         if (mIsReadOnly) {
             txLock = mSync.getSharedLock();
@@ -251,6 +247,10 @@ public class SynchronizedStatement
         }
         try {
             mStatement.execute();
+        } catch (SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(mStatement.toString() + '\n' + e);
+            throw new IllegalArgumentException(e);
         } finally {
             txLock.unlock();
         }
@@ -259,18 +259,20 @@ public class SynchronizedStatement
     /**
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
      *
-     * Execute this SQL statement, if the the number of rows affected by execution of this SQL
+     * Execute this SQL statement, if the number of rows affected by execution of this SQL
      * statement is of any importance to the caller - for example, UPDATE / DELETE SQL statements.
      *
      * @return the number of rows affected by this SQL statement execution.
-     *
-     * @throws SQLException If the SQL string is invalid for some reason
      */
     @SuppressWarnings("UnusedReturnValue")
     public int executeUpdateDelete() {
         Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
         try {
             return mStatement.executeUpdateDelete();
+        } catch (SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(mStatement.toString() + '\n' + e);
+            throw new IllegalArgumentException(e);
         } finally {
             exclusiveLock.unlock();
         }
@@ -283,14 +285,15 @@ public class SynchronizedStatement
      * The SQL statement should be an INSERT for this to be a useful call.
      *
      * @return the row ID of the last row inserted, if this insert is successful. -1 otherwise.
-     *
-     * @throws SQLException If the SQL string is invalid for some reason
      */
-    public long executeInsert()
-        throws SQLException {
+    public long executeInsert() {
         Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
         try {
             return mStatement.executeInsert();
+        } catch (SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(mStatement.toString() + '\n' + e);
+            throw new IllegalArgumentException(e);
         } finally {
             exclusiveLock.unlock();
         }
