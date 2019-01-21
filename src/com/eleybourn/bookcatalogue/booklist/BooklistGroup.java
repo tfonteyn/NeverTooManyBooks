@@ -75,7 +75,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_STATUS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
@@ -297,6 +297,7 @@ public class BooklistGroup
 
     /** make it easy to display the name in generic functions. */
     @Override
+    @NonNull
     public String toString() {
         return getName();
     }
@@ -700,7 +701,7 @@ public class BooklistGroup
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(LOANED, R.string.lbl_loaned, "l",
-                                  DOM_LOANED_TO);
+                                  DOM_LOANEE);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(DATE_PUBLISHED_YEAR, R.string.lbl_publication_year, "yrp",
@@ -900,6 +901,7 @@ public class BooklistGroup
         }
 
         @Override
+        @NonNull
         public String toString() {
             return "RowKind{name=" + getName() + '}';
         }

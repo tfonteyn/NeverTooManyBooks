@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
- <string name="new_in_42">
+ <string name="new_in_420">
 <![CDATA[
     		<p><b>Новое в версии 4.2</b>\n\n
 			* Диалог выбора даты, поддерживающий как даты вплоть до 0 года нашей эры так и отдельные.\n\n

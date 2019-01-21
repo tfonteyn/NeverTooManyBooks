@@ -45,15 +45,17 @@ public class DomainDefinition
     private String mReferences;
 
     private boolean isPrimaryKey;
+
     /**
      * Create a PRIMARY KEY column.
      *
      * @param name column name
      */
     public DomainDefinition(@NonNull final String name) {
-        isPrimaryKey = true;
         this.name = name;
         mType = ColumnInfo.TYPE_INTEGER;
+        isPrimaryKey = true;
+        mConstraints.add("NOT NULL");
     }
 
     /**
@@ -81,7 +83,7 @@ public class DomainDefinition
         this.name = name;
         mType = type;
         if (notNull) {
-            this.mConstraints.add("NOT NULL");
+            mConstraints.add("NOT NULL");
         }
     }
 
@@ -166,8 +168,7 @@ public class DomainDefinition
      * Only simple, primary key references supported for now.
      * <p>
      * No validation is done on the arguments.
-     *
-     * FIXME: refactor to keep this on the table level instead.
+     * <p>
      *
      * @param table   to reference
      * @param actions 'on delete...' etc...
@@ -198,15 +199,20 @@ public class DomainDefinition
     }
 
     /**
-     *
      * @return <tt>true</tt> if this domain is a 'text' type.
      */
     public boolean isText() {
         return ColumnInfo.TYPE_TEXT.equalsIgnoreCase(mType);
     }
 
+    boolean isPrimaryKey() {
+        return isPrimaryKey;
+    }
+
     /**
      * useful for using the DomainDefinition in place of a domain name.
+     *
+     * @return the name of the domain.
      */
     @Override
     @NonNull
@@ -235,14 +241,12 @@ public class DomainDefinition
     String def(final boolean withConstraints) {
         StringBuilder sql = new StringBuilder(name + ' ' + mType);
         if (isPrimaryKey) {
-            sql.append(" PRIMARY KEY autoincrement NOT NULL");
+            sql.append(" PRIMARY KEY AUTOINCREMENT");
         }
 
         if (withConstraints) {
-            if (!mConstraints.isEmpty()) {
-                for (String cs : mConstraints) {
-                    sql.append(' ').append(cs);
-                }
+            for (String cs : mConstraints) {
+                sql.append(' ').append(cs);
             }
             if (mReferences != null) {
                 sql.append(" REFERENCES ").append(mReferences);

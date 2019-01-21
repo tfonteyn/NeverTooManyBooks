@@ -533,11 +533,11 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(UniqueId.KEY_TITLE)) {
             String thisTitle = mBookData.getString(UniqueId.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
-            if (details != null && !details.name.isEmpty()) {
+            if (details != null && !details.getName().isEmpty()) {
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
                 }
-                mSeries.add(new Series(details.name, details.position));
+                mSeries.add(new Series(details.getName(), details.position));
                 // Tempting to replace title with ORIG_TITLE, but that does bad things to translations (it used the original language)
                 mBookData.putString(UniqueId.KEY_TITLE,
                                     thisTitle.substring(0, details.startChar - 1));

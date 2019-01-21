@@ -22,19 +22,18 @@ package com.eleybourn.bookcatalogue.datamanager;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.eleybourn.bookcatalogue.datamanager.datavalidators.DataValidator;
-import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Class to manage storage and retrieval of a piece of data from a bundle as well as
  * ancillary details such as visibility.
- *
+ * <p>
  * Note: In theory, all strings PUT into the collection will get automatically trimmed.
  *
  * @author pjw
@@ -49,8 +48,10 @@ public class Datum {
     /** Validator for this Datum. */
     @Nullable
     private DataValidator mValidator;
-    /** Accessor for this Datum (eg. the datum might be a bit in a bitmask field,
-     *  or a composite read-only value. */
+    /**
+     * Accessor for this Datum (eg. the datum might be a bit in a bitmask field,
+     * or a composite read-only value.
+     */
     private DataAccessor mAccessor;
 
     /**
@@ -156,14 +157,17 @@ public class Datum {
      * @param emptyIsFalse if true, null and empty string is handled as false
      *
      * @return Boolean value
+     *
+     * @throws IllegalArgumentException when the string does not contain a valid boolean.
      */
     public static boolean toBoolean(@Nullable final String s,
-                                    final boolean emptyIsFalse) {
+                                    final boolean emptyIsFalse)
+            throws IllegalArgumentException {
         if (s == null || s.trim().isEmpty()) {
             if (emptyIsFalse) {
                 return false;
             } else {
-                throw new RTE.IllegalTypeException("Not a valid boolean value, s=`" + s + '`');
+                throw new IllegalArgumentException("Invalid boolean, s=`" + s + '`');
             }
         } else {
             switch (s.trim().toLowerCase()) {
@@ -183,8 +187,7 @@ public class Datum {
                     try {
                         return Integer.parseInt(s) != 0;
                     } catch (NumberFormatException e) {
-                        throw new RTE.IllegalTypeException(
-                            "Not a valid boolean value, s=`" + s + '`');
+                        throw new IllegalArgumentException("Invalid boolean, s=`" + s + '`');
                     }
             }
         }
@@ -659,7 +662,7 @@ public class Datum {
     }
 
     private static class AccessorNotSupportedException
-        extends IllegalStateException {
+            extends IllegalStateException {
 
         private static final long serialVersionUID = 2561013689178409200L;
 

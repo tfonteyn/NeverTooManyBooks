@@ -38,8 +38,8 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.SAXException;
 
@@ -277,7 +277,7 @@ public class LibraryThingManager {
         try {
             URL url = new URL(urlText);
             SAXParser parser = factory.newSAXParser();
-            parser.parse(Utils.getInputStreamWithTerminator(url), handler);
+            parser.parse(NetworkUtils.getInputStreamWithTerminator(url), handler);
 
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -377,7 +377,7 @@ public class LibraryThingManager {
         try {
             URL url = new URL(urlText);
             SAXParser parser = factory.newSAXParser();
-            parser.parse(Utils.getInputStreamWithTerminator(url), handler);
+            parser.parse(NetworkUtils.getInputStreamWithTerminator(url), handler);
 
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | SAXException e) {

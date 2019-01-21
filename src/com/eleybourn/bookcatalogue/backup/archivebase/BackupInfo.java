@@ -19,9 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -137,16 +135,13 @@ public class BackupInfo
         infoBundle.putInt(INFO_SDK, Build.VERSION.SDK_INT);
         infoBundle.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
         infoBundle.putString(INFO_CREATION_DATE, DateUtils.utcSqlDateTimeForToday());
-        try {
-            Context context = BookCatalogueApp.getAppContext();
-            // Get app info from the manifest
-            PackageManager manager = context.getPackageManager();
-            PackageInfo appInfo = manager.getPackageInfo(context.getPackageName(), 0);
-            infoBundle.putString(INFO_APPPACKAGE, appInfo.packageName);
-            infoBundle.putString(INFO_APPVERSIONNAME, appInfo.versionName);
+
+        PackageInfo packageInfo = BookCatalogueApp.getPackageInfo(0);
+        if (packageInfo != null) {
+            infoBundle.putString(INFO_APPPACKAGE, packageInfo.packageName);
+            infoBundle.putString(INFO_APPVERSIONNAME, packageInfo.versionName);
             // versionCode deprecated and new method in API: 28, till then ignore...
-            infoBundle.putInt(INFO_APPVERSIONCODE, appInfo.versionCode);
-        } catch (PackageManager.NameNotFoundException ignore) {
+            infoBundle.putInt(INFO_APPVERSIONCODE, packageInfo.versionCode);
         }
         return new BackupInfo(infoBundle);
     }
@@ -208,9 +203,9 @@ public class BackupInfo
      * @since v200
      */
     public int getDatabaseVersionCode() {
-        // 5.2.2
         switch (getAppVersionCode()) {
             case 179:
+                // 5.2.2
                 return 82;
 
             default:

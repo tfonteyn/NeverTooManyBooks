@@ -165,7 +165,7 @@ public class XmlImporter
         final Set<String> currentStringSet = new HashSet<>();
 
         // Allow reading pre-v200 archive data.
-        createdPreV200Filter(rootFilter, accessor, tag);
+        createPreV200Filter(rootFilter, accessor, tag);
 
         String listRootElement = accessor.getListRoot();
         String rootElement = accessor.getElementRoot();
@@ -359,9 +359,9 @@ public class XmlImporter
     /**
      * Creates an XmlFilter that can read pre-v200 Info and Preferences XML format.
      */
-    private void createdPreV200Filter(@NonNull final XmlFilter rootFilter,
-                                      @NonNull final EntityReader<String> accessor,
-                                      @NonNull final TagInfo tag) {
+    private void createPreV200Filter(@NonNull final XmlFilter rootFilter,
+                                     @NonNull final EntityReader<String> accessor,
+                                     @NonNull final TagInfo tag) {
 
         XmlFilter.buildFilter(rootFilter, "collection", "item")
                  .setStartAction(new XmlFilter.XmlHandler() {
@@ -417,7 +417,7 @@ public class XmlImporter
                                      throw new RTE.IllegalTypeException(tag.type);
                              }
 
-                         } catch (RuntimeException e) {
+                         } catch (NumberFormatException e) {
                              Logger.error(e);
                              throw new RuntimeException(
                                      UNABLE_TO_PROCESS_XML_ENTITY_ERROR + tag.name +

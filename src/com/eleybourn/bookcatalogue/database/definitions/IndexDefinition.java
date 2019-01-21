@@ -1,8 +1,17 @@
 package com.eleybourn.bookcatalogue.database.definitions;
 
+import android.database.Cursor;
+import android.database.SQLException;
+
 import androidx.annotation.NonNull;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.Csv;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to store an index using a table name and a list of domain definitions.
@@ -10,6 +19,10 @@ import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
  * @author Philip Warner
  */
 public class IndexDefinition {
+
+    /** SQL to get the names of all indexes. */
+    private static final String SQL_GET_INDEX_NAMES =
+            "SELECT name FROM sqlite_master WHERE type = 'index' AND sql is not null;";
 
     /** Full name of index. */
     @NonNull
@@ -19,7 +32,7 @@ public class IndexDefinition {
     private final TableDefinition mTable;
     /** Domains in index. */
     @NonNull
-    private final DomainDefinition[] mDomains;
+    private final List<DomainDefinition> mDomains;
     /** Flag indicating index is unique. */
     private final boolean mIsUnique;
 
@@ -34,11 +47,35 @@ public class IndexDefinition {
     IndexDefinition(@NonNull final String name,
                     final boolean unique,
                     @NonNull final TableDefinition table,
-                    @NonNull final DomainDefinition... domains) {
-        this.mName = name;
-        this.mIsUnique = unique;
-        this.mTable = table;
-        this.mDomains = domains;
+                    @NonNull final List<DomainDefinition> domains) {
+        mName = name;
+        mIsUnique = unique;
+        mTable = table;
+        // take a COPY
+        mDomains = new ArrayList<>(domains);
+    }
+
+    /**
+     * Find and delete all indexes on all tables.
+     *
+     * @param db the database.
+     */
+    public static void dropAllIndexes(@NonNull final SynchronizedDb db) {
+        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
+            while (current.moveToNext()) {
+                String indexName = current.getString(0);
+                String deleteSql = "DROP INDEX " + indexName;
+                try {
+                    db.execSQL(deleteSql);
+                } catch (SQLException e) {
+                    // bad sql is a developer issue... die!
+                    Logger.error(e);
+                    throw e;
+                } catch (RuntimeException e) {
+                    Logger.error(e, "Index deletion failed: " + indexName);
+                }
+            }
+        }
     }
 
     /**
@@ -52,7 +89,7 @@ public class IndexDefinition {
      * @return list of domains in index.
      */
     @NonNull
-    DomainDefinition[] getDomains() {
+    List<DomainDefinition> getDomains() {
         return mDomains;
     }
 
@@ -65,7 +102,7 @@ public class IndexDefinition {
      */
     @NonNull
     public IndexDefinition drop(@NonNull final SynchronizedDb db) {
-        db.execSQL("DROP INDEX If Exists " + mName);
+        db.execSQL("DROP INDEX IF EXISTS " + mName);
         return this;
     }
 
@@ -78,7 +115,7 @@ public class IndexDefinition {
      */
     @NonNull
     public IndexDefinition create(@NonNull final SynchronizedDb db) {
-        db.execSQL(getCreateStatement());
+        db.execSQL(getSqlCreateStatement());
         return this;
     }
 
@@ -88,25 +125,17 @@ public class IndexDefinition {
      * @return SQL Fragment
      */
     @NonNull
-    public String getCreateStatement() {
+    private String getSqlCreateStatement() {
         StringBuilder sql = new StringBuilder("CREATE ");
         if (mIsUnique) {
             sql.append(" UNIQUE");
         }
-        sql.append(" INDEX ");
-        sql.append(mName);
-        sql.append(" ON ").append(mTable.getName()).append("(\n");
-        boolean first = true;
-        for (DomainDefinition d : mDomains) {
-            if (first) {
-                first = false;
-            } else {
-                sql.append(",\n");
-            }
-            sql.append("    ");
-            sql.append(d.name);
+        sql.append(" INDEX ").append(mName).append(" ON ").append(mTable.getName())
+           .append('(').append(Csv.csv(",", mDomains)).append(')');
+
+        if (/* always log */ BuildConfig.DEBUG) {
+            Logger.info(this, "getSqlCreateStatement:\n" + sql.toString());
         }
-        sql.append(")\n");
         return sql.toString();
     }
 }

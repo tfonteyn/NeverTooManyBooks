@@ -407,7 +407,7 @@ public class BookSearchByIsbnFragment
             // we don't have an isbn, but we're scanning. Restart scanner.
             startScannerActivity();
         }
-        //ENHANCE: else: the user will surely realise he cannot search without entering something?
+        //ENHANCE: else: the user will surely realise they cannot search without entering something?
     }
 
     /**

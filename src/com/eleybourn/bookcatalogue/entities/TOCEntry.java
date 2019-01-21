@@ -195,7 +195,7 @@ public class TOCEntry
         } else {
             yearStr = "";
         }
-        return StringList.encodeListItem(SEPARATOR, mTitle) + yearStr
+        return StringList.escapeListItem(SEPARATOR, mTitle) + yearStr
                 + ' ' + TITLE_AUTHOR_DELIM + ' ' + mAuthor;
     }
 

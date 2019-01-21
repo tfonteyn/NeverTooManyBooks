@@ -41,6 +41,7 @@ public class BooklistStyleSettingsFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
 
+        //noinspection ConstantConditions
         mStyle = getArguments().getParcelable(REQUEST_BKEY_STYLE);
         Objects.requireNonNull(mStyle);
         if (BuildConfig.DEBUG) {

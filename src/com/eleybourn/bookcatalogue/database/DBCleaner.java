@@ -75,18 +75,14 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_
  */
 public class DBCleaner {
 
-    /** normal database actions. */
-    private final DBA mDb;
-
-    /** direct SQL actions. */
+    /** The database. */
     private final SynchronizedDb mSyncDb;
 
     /**
      * Constructor.
      */
     public DBCleaner(@NonNull final DBA db) {
-        mDb = db;
-        mSyncDb = mDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing();
+        mSyncDb = db.getUnderlyingDatabase();
     }
 
     public void all(final boolean dryRun) {
@@ -197,7 +193,7 @@ public class DBCleaner {
         toLog(Tracker.States.Enter, sql);
         if (!dryRun) {
             mSyncDb.execSQL("UPDATE " + table + " SET " + column + "=1"
-                                    + " WHERE lower(" + column + ") IN ('true', 't')");
+                                    + " WHERE lower(" + column + ") IN ('true','t')");
             mSyncDb.execSQL("UPDATE " + table + " SET " + column + "=0"
                                     + " WHERE lower(" + column + ") IN ('false','f')");
             toLog(Tracker.States.Exit, sql);

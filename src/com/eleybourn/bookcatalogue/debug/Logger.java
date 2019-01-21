@@ -148,7 +148,7 @@ public final class Logger {
 
         String error;
         if (e instanceof DebugStackTrace) {
-            error = exMsg;
+            error = message;
         } else {
             error = "ERROR|An Exception/Error Occurred @ " + now + '\n'
                     + (exMsg != null ? exMsg + '\n' : "")

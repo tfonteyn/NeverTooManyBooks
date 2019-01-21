@@ -48,7 +48,6 @@ import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
-import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -98,8 +97,8 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO_SORT;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_REAL_ROW_ID;
@@ -117,8 +116,8 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_LIST;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_SERIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ROW_NAVIGATOR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_ROW_NAVIGATOR_FLATTENED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
@@ -149,32 +148,32 @@ public class BooklistBuilder
      * Convenience expression for the SQL which gets formatted author names in 'Last, Given' form.
      */
     private static final String AUTHOR_FORMATTED_LAST_FIRST_EXPRESSION =
-            "Case" +
-                    " When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''" +
-                    "  Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
-                    "  Else " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + "|| ',' || " +
-                    /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) +
-                    " End";
+            "Case"
+                    + " When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
+                    + "  Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
+                    + "  Else " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) + "|| ',' || "
+                    + /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
+                    + " End";
     /**
      * Convenience expression for the SQL which gets formatted author names in 'Given Last' form.
      */
     private static final String AUTHOR_FORMATTED_FIRST_LAST_EXPRESSION =
-            "Case" +
-                    " When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''" +
-                    "  Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
-                    "  Else " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "|| ' ' || " +
-                    /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME) +
-                    " End";
+            "Case"
+                    + " When " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
+                    + "  Then " + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
+                    + "  Else " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "|| ' ' || "
+                    + /*       */ TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
+                    + " End";
 
     /** Counter for BooklistBuilder IDs. */
     @NonNull
-    private static final AtomicInteger mIdCounter = new AtomicInteger();
+    private static final AtomicInteger ID_COUNTER = new AtomicInteger();
     /** Counter for 'flattened' book temp tables. */
     @NonNull
-    private static final AtomicInteger mFlatListIdCounter = new AtomicInteger();
+    private static final AtomicInteger FLAT_LIST_ID_COUNTER = new AtomicInteger();
     /** DEBUG Instance counter. */
     @NonNull
-    private static final AtomicInteger mDebugInstanceCounter = new AtomicInteger();
+    private static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
 
     @NonNull
     private final Context mContext;
@@ -251,7 +250,7 @@ public class BooklistBuilder
     private SynchronizedStatement mGetNextAtSameLevelStmt;
     private SynchronizedStatement mShowStmt;
     private SynchronizedStatement mExpandStmt;
-    /** */
+    /** A bookshelf id to use as a filter; i.e. show only books on this bookshelf. */
     private long mFilterOnBookshelfId;
 
     /**
@@ -263,17 +262,17 @@ public class BooklistBuilder
     public BooklistBuilder(@NonNull final Context context,
                            @NonNull final BooklistStyle style) {
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
-            Logger.info(this, "instances: " +
-                    mDebugInstanceCounter.incrementAndGet());
+            Logger.info(this,
+                        "instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet());
         }
         // Allocate ID
-        mBooklistBuilderId = mIdCounter.incrementAndGet();
+        mBooklistBuilderId = ID_COUNTER.incrementAndGet();
 
         mContext = context;
 
         // Get the database and create a statements collection
         mDb = new DBA(mContext);
-        mSyncedDb = mDb.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing();
+        mSyncedDb = mDb.getUnderlyingDatabase();
         mStatements = new SqlStatementManager(mSyncedDb);
         // Save the requested style
         mStyle = style;
@@ -305,27 +304,15 @@ public class BooklistBuilder
     }
 
     /**
-     * Clones the Temporary table definitions and append the ID to make new names in case
+     * Clones the table definitions and append the ID to make new names in case
      * more than one view is open.
      */
     private void buildTableDefinitions() {
 
         mListTable = TBL_BOOK_LIST.clone();
-        if (DEBUG_SWITCHES.TEMP_TABLES_ARE_STANDARD && BuildConfig.DEBUG) {
-            mListTable.setType(TableTypes.Standard);
-        } else {
-            //RELEASE Make sure is TEMPORARY
-            mListTable.setType(TableTypes.Temporary);
-        }
         mListTable.setName(mListTable.getName() + '_' + mBooklistBuilderId);
 
         mNavTable = TBL_ROW_NAVIGATOR.clone();
-        if (DEBUG_SWITCHES.TEMP_TABLES_ARE_STANDARD && BuildConfig.DEBUG) {
-            mNavTable.setType(TableTypes.Standard);
-        } else {
-            //RELEASE Make sure is TEMPORARY
-            mNavTable.setType(TableTypes.Temporary);
-        }
         mNavTable.setName(mNavTable.getName() + '_' + mBooklistBuilderId);
         mNavTable.addReference(mListTable, DOM_REAL_ROW_ID);
     }
@@ -335,19 +322,19 @@ public class BooklistBuilder
      */
     @NonNull
     public FlattenedBooklist createFlattenedBooklist() {
-        int flatId = mFlatListIdCounter.getAndIncrement();
+        int flatId = FLAT_LIST_ID_COUNTER.getAndIncrement();
 
         TableDefinition flat = TBL_ROW_NAVIGATOR_FLATTENED.clone();
         flat.setName(flat.getName() + '_' + flatId);
-        //RELEASE Make sure is TEMPORARY
-        flat.setType(TableTypes.Temporary);
+        // no indexes, no constraints!
         flat.create(mSyncedDb, false);
 
-        String sql = flat.getInsert(DOM_PK_ID, DOM_FK_BOOK_ID) +
-                " SELECT " + mNavTable.dot(DOM_PK_ID) + ',' + mListTable.dot(DOM_FK_BOOK_ID) +
-                " FROM " + mListTable.ref() + mListTable.join(mNavTable) +
-                " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + " NOT NULL " +
-                " ORDER BY " + mNavTable.dot(DOM_PK_ID);
+        String sql = flat.getInsert(false, DOM_PK_ID, DOM_FK_BOOK_ID)
+                + " SELECT " + mNavTable.dot(DOM_PK_ID)
+                + ',' + mListTable.dot(DOM_FK_BOOK_ID)
+                + " FROM " + mListTable.ref() + mListTable.join(mNavTable)
+                + " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + " NOT NULL"
+                + " ORDER BY " + mNavTable.dot(DOM_PK_ID);
         mSyncedDb.execSQL(sql);
         return new FlattenedBooklist(mSyncedDb, flat);
     }
@@ -389,8 +376,8 @@ public class BooklistBuilder
             }
             if (!ok) {
                 throw new IllegalStateException(
-                        "Required domain '" + domain.name + '\'' +
-                                " added with differing source expression");
+                        "Required domain '" + domain.name + '\''
+                                + " added with differing source expression");
             }
         } else {
             mExtraDomains.put(domain.name, info);
@@ -434,12 +421,11 @@ public class BooklistBuilder
      */
     @NonNull
     private String localDateExpression(@NonNull final String fieldSpec) {
-        return "Case" +
-                " When " + fieldSpec +
-                " glob '*-*-* *' " +
-                " Then datetime(" + fieldSpec + ", 'localtime')" +
-                " Else " + fieldSpec +
-                " End";
+        return "Case"
+                + " When " + fieldSpec + " glob '*-*-* *' "
+                + " Then datetime(" + fieldSpec + ", 'localtime')"
+                + " Else " + fieldSpec
+                + " End";
     }
 
     /**
@@ -458,11 +444,11 @@ public class BooklistBuilder
         if (toLocal) {
             fieldSpec = localDateExpression(fieldSpec);
         }
-        return "Case" +
-                " When " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]*'" +
-                "  Then substr(" + fieldSpec + ", 1, 4)" +
-                "  Else '" + mUnknown + '\'' +
-                " End";
+        return "Case"
+                + " When " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]*'"
+                + "  Then substr(" + fieldSpec + ", 1, 4)"
+                + "  Else '" + mUnknown + '\''
+                + " End";
     }
 
     /**
@@ -482,13 +468,13 @@ public class BooklistBuilder
         if (toLocal) {
             fieldSpec = localDateExpression(fieldSpec);
         }
-        return "Case" +
-                " When " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]-[0123456789][01234567890]*'" +
-                "  Then substr(" + fieldSpec + ", 6, 2)" +
-                " When " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]-[0123456789]*'" +
-                "  Then substr(" + fieldSpec + ", 6, 1)" +
-                "  Else '" + mUnknown + '\'' +
-                " End";
+        return "Case"
+                + " When " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]-[0123456789][01234567890]*'"
+                + "  Then substr(" + fieldSpec + ", 6, 2)"
+                + " When " + fieldSpec + " glob '[0123456789][01234567890][01234567890][01234567890]-[0123456789]*'"
+                + "  Then substr(" + fieldSpec + ", 6, 1)"
+                + "  Else '" + mUnknown + '\''
+                + " End";
     }
 
     /**
@@ -510,17 +496,17 @@ public class BooklistBuilder
         }
         // Just look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
         // We don't care about anything else.
-        return "Case " +
-                " When " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789][0123456789]-[0123456789][0123456789]*'" +
-                "  Then substr(" + fieldSpec + ", 9, 2)" +
-                " When " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789]-[0123456789][0123456789]*'" +
-                "  Then substr(" + fieldSpec + ", 8, 2)" +
-                " When " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789][0123456789]-[0123456789]*'" +
-                "  Then substr(" + fieldSpec + ", 9, 1)" +
-                " When " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789]-[0123456789]*'" +
-                "  Then substr(" + fieldSpec + ", 8, 1)" +
-                " Else " + fieldSpec +
-                " End";
+        return "Case "
+                + " When " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789][0123456789]-[0123456789][0123456789]*'"
+                + "  Then substr(" + fieldSpec + ", 9, 2)"
+                + " When " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789]-[0123456789][0123456789]*'"
+                + "  Then substr(" + fieldSpec + ", 8, 2)"
+                + " When " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789][0123456789]-[0123456789]*'"
+                + "  Then substr(" + fieldSpec + ", 9, 1)"
+                + " When " + fieldSpec + " glob '[0123456789][0123456789][0123456789][0123456789]-[0123456789]-[0123456789]*'"
+                + "  Then substr(" + fieldSpec + ", 8, 1)"
+                + " Else " + fieldSpec
+                + " End";
     }
 
     /**
@@ -543,7 +529,7 @@ public class BooklistBuilder
 
     /**
      * Set the filter for only books loaned to the named person (exact name).
-     *
+     * <p>
      * An empty filter will silently be rejected.
      *
      * @param filter the exact name of the person we loaned books to.
@@ -554,11 +540,11 @@ public class BooklistBuilder
                 @Override
                 @NonNull
                 public String getExpression(@Nullable final String uuid) {
-                    return "EXISTS(SELECT NULL FROM " + TBL_LOAN.ref() +
-                            " WHERE " +
-                            TBL_LOAN.dot(DOM_LOANED_TO) + "='" + DBA.encodeString(
-                            filter) + '\'' +
-                            " AND " + TBL_LOAN.fkMatch(TBL_BOOKS) + ')';
+                    return "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
+                            + " WHERE "
+                            + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + "='" + DBA.encodeString(
+                            filter) + '\''
+                            + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ')';
                 }
             });
         }
@@ -566,7 +552,7 @@ public class BooklistBuilder
 
     /**
      * Set the filter for only books with named author (family or given) with added wildcards.
-     *
+     * <p>
      * An empty filter will silently be rejected.
      *
      * @param filter the author (family or given) to limit the search for.
@@ -581,7 +567,7 @@ public class BooklistBuilder
                             + " LIKE '%" + DBA.encodeString(filter) + "%'"
                             + " OR "
                             + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
-                            + " LIKE '%" + DBA.encodeString(filter) + "%')" ;
+                            + " LIKE '%" + DBA.encodeString(filter) + "%')";
                 }
             });
         }
@@ -589,7 +575,7 @@ public class BooklistBuilder
 
     /**
      * Set the filter for only books with named title with added wildcards.
-     *
+     * <p>
      * An empty filter will silently be rejected.
      *
      * @param filter the title to limit the search for.
@@ -602,7 +588,7 @@ public class BooklistBuilder
 
     /**
      * Set the filter for only books in named series with added wildcards.
-     *
+     * <p>
      * An empty filter will silently be rejected.
      *
      * @param filter the series to limit the search for.
@@ -625,7 +611,7 @@ public class BooklistBuilder
 
     /**
      * Adds the FTS book table for a keyword match.
-     *
+     * <p>
      * An empty filter will silently be rejected.
      *
      * @param filter book details must in some way contain the passed text
@@ -653,7 +639,7 @@ public class BooklistBuilder
     /**
      * The where clause will add a "AND books._id IN (list)".
      * Be careful when combining with other criteria as you might get less then expected
-     *
+     * <p>
      * An empty filter will silently be rejected.
      *
      * @param filter a list of book id's.
@@ -680,7 +666,7 @@ public class BooklistBuilder
             @SuppressWarnings("UnusedAssignment")
             final long t0 = System.currentTimeMillis();
 
-            buildTableDefinitions();
+            //buildTableDefinitions();
 
             SummaryBuilder summary = new SummaryBuilder();
 
@@ -701,8 +687,11 @@ public class BooklistBuilder
             summary.addDomain(DOM_BL_BOOK_COUNT, "1",
                               SummaryBuilder.FLAG_NONE);
 
-            // We can not use triggers to fill in headings in API < 8 since SQLite 3.5.9 is broken.
+            // We can not use triggers to fill in headings in API < 8 since
+            // SQLite 3.5.9 (2008-05-14) is broken.
             // Allow for the user preferences to override in case another build is broken.
+            // 2019-01-20: v200 is targeting API 21, which would be SqLite 3.8 (2013-08-26)
+            //ENHANCE: time to remove sqlite pre-trigger use logic ?
             final int listMode = getCompatibilityMode();
 
             /*
@@ -712,7 +701,7 @@ public class BooklistBuilder
                 PREF_COMPATIBILITY_MODE_DEFAULT = 4; // default
              */
             // we'll always use triggers unless we're in 'ancient' mode
-            final boolean useTriggers = (listMode != PREF_COMPATIBILITY_MODE_OLD_STYLE);
+            final boolean useTriggers = listMode != PREF_COMPATIBILITY_MODE_OLD_STYLE;
 
             // nestedTriggers is ignored unless useTriggers is set to true.
             final boolean nestedTriggers =
@@ -723,7 +712,7 @@ public class BooklistBuilder
 
             // Build a sort mask based on if triggers are used;
             // we can not reverse sort if they are not used.
-            final int sortDescendingMask = (useTriggers ? SummaryBuilder.FLAG_SORT_DESCENDING : 0);
+            final int sortDescendingMask = useTriggers ? SummaryBuilder.FLAG_SORT_DESCENDING : 0;
 
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
                 Logger.info(this, "listMode          : " + listMode);
@@ -761,8 +750,8 @@ public class BooklistBuilder
                                     + TBL_BOOK_BOOKSHELF.ref() + ' '
                                     + TBL_BOOK_BOOKSHELF.join(TBL_BOOKS)
                                     + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF_ID)
-                                    + '=' + mFilterOnBookshelfId +
-                                    ')';
+                                    + '=' + mFilterOnBookshelfId
+                                    + ')';
                         } else {
                             return '(' + TBL_BOOKSHELF.dot(
                                     DOM_PK_ID) + '=' + mFilterOnBookshelfId + ')';
@@ -783,9 +772,7 @@ public class BooklistBuilder
                                   SummaryBuilder.FLAG_NONE);
             }
 
-            // TOMF: this is already added earlier ?
-            summary.addDomain(DOM_BL_NODE_LEVEL, null,
-                              SummaryBuilder.FLAG_SORTED);
+            summary.addDomain(DOM_BL_NODE_LEVEL, null, SummaryBuilder.FLAG_SORTED);
 
             // Finished. Ensure any caller-specified extras (eg. title) are added at the end.
             for (Entry<String, ExtraDomainDetails> d : mExtraDomains.entrySet()) {
@@ -829,57 +816,55 @@ public class BooklistBuilder
 
             @SuppressWarnings("UnusedAssignment")
             final long t6_build_where = System.currentTimeMillis();
-            /*
-             * Check if the collation we use is case sensitive; bug introduced in ICS was to
-             * make UNICODE not CI.
-             * Due to bugs in other language sorting, we are now forced to use a different
-             * collation anyway, but we still check if it is CI.
-             */
+
+            // Check if the collation we use is case sensitive.
             boolean collationIsCs = mSyncedDb.isCollationCaseSensitive();
 
             processSortColumns(summary.getSortedColumns(), buildInfoHolder, collationIsCs);
 
             // unused
             // Process the group-by columns suitable for a group-by statement or index
-//			{
-//				final StringBuilder groupCols = new StringBuilder();
-//                for (DomainDefinition d: summary.cloneGroups()) {
-//					groupCols.append(d.name);
-//					groupCols.append(DBA.COLLATION);
-//					groupCols.append(", ");
-//				}
-//				groupCols.append( DOM_BL_NODE_LEVEL.name );
-//				//mGroupColumnList = groupCols.toString();
-//			}
+//            {
+//                final StringBuilder groupCols = new StringBuilder();
+//                for (DomainDefinition d : summary.cloneGroups()) {
+//                    groupCols.append(d.name);
+//                    groupCols.append(DBA.COLLATION);
+//                    groupCols.append(", ");
+//                }
+//                groupCols.append(DOM_BL_NODE_LEVEL.name);
+//                //mGroupColumnList = groupCols.toString();
+//            }
 
             @SuppressWarnings("UnusedAssignment")
             final long t7_sortColumns_processed = System.currentTimeMillis();
 
-            String ix1Sql = "CREATE INDEX " + mListTable + "_IX1 ON " + mListTable +
-                    '(' + buildInfoHolder.sortIndexColumnList + ')';
+            String ix1Sql = "CREATE INDEX " + mListTable + "_IX1 ON " + mListTable
+                    + '(' + buildInfoHolder.sortIndexColumnList + ')';
 
-			/* Indexes that were tried. None had a substantial impact with 800 books.
-			String ix1aSql = "CREATE INDEX " + mListTable + "_IX1a ON " + mListTable +
-			        "(" + DOM_BL_NODE_LEVEL + ", " + mSortColumnList + ")";
-			String ix2Sql = "Create Unique Index " + mListTable + "_IX2 ON " + mListTable +
-			        "(" + DOM_FK_BOOK_ID + ", " + DOM_PK_ID + ")";
-			String ix3Sql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-			        + "(" + mGroupColumnList + ")";
-			String ix3aSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable +
-			        "(" + DOM_BL_NODE_LEVEL + "," + mGroupColumnList + ")";
-			String ix3bSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable +
-			        "(" + mGroupColumnList +  "," + DOM_BL_NODE_LEVEL + ")";
-			String ix3cSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable +
-			        "(" + mGroupColumnList +  "," + DOM_ROOT_KEY +
-			        DBA.COLLATION + ")";
-			String ix3dSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable +
-			        "(" + DOM_BL_NODE_LEVEL + "," + mGroupColumnList +  "," + DOM_ROOT_KEY + ")";
-			String ix3eSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable +
-			        "(" + mGroupColumnList +  "," + DOM_ROOT_KEY + "," + DOM_BL_NODE_LEVEL + ")";
-			String ix4Sql = "CREATE INDEX " + mListTable + "_IX4 ON " + mListTable +
-			         "(" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_EXPANDED + "," +
-			         DOM_ROOT_KEY + ")";
-			*/
+            // Indexes that were tried. None had a substantial impact with 800 books.
+//            String ix1aSql = "CREATE INDEX " + mListTable + "_IX1a ON " + mListTable
+//                    + '(' + DOM_BL_NODE_LEVEL + ", " + buildInfoHolder.sortIndexColumnList + ')';
+//            String ix2Sql = "Create Unique Index " + mListTable + "_IX2 ON " + mListTable
+//                    + '(' + DOM_FK_BOOK_ID + ", " + DOM_PK_ID + ')';
+//            String ix3Sql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + buildInfoHolder.sortIndexColumnList + ')';
+//            String ix3aSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + DOM_BL_NODE_LEVEL + ',' + buildInfoHolder.sortIndexColumnList + ')';
+//            String ix3bSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + buildInfoHolder.sortIndexColumnList + ',' + DOM_BL_NODE_LEVEL + ')';
+//            String ix3cSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + buildInfoHolder.sortIndexColumnList
+//                    + ',' + DOM_ROOT_KEY + DBA.COLLATION + ')';
+//            String ix3dSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + DOM_BL_NODE_LEVEL + ',' + buildInfoHolder.sortIndexColumnList
+//                    + ',' + DOM_ROOT_KEY + ')';
+//            String ix3eSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + buildInfoHolder.sortIndexColumnList + ',' + DOM_ROOT_KEY
+//                    + ',' + DOM_BL_NODE_LEVEL + ')';
+//            String ix4Sql = "CREATE INDEX " + mListTable + "_IX4 ON " + mListTable
+//                    + '(' + DOM_BL_NODE_LEVEL + ',' + DOM_BL_NODE_EXPANDED
+//                    + ',' + DOM_ROOT_KEY + ')';
+
 
             @SuppressWarnings("UnusedAssignment")
             final long t8_index_build = System.currentTimeMillis();
@@ -969,10 +954,10 @@ public class BooklistBuilder
 
                     mBaseBuildStmt = mStatements.add(
                             "mBaseBuildStmt",
-                            "INSERT INTO " + tgt + '(' + sqlCmp.destinationColumns + ") " +
-                                    sqlCmp.select +
-                                    " FROM " + sqlCmp.join + sqlCmp.where +
-                                    " ORDER BY " + buildInfoHolder.sortColNameList);
+                            "INSERT INTO " + tgt + '(' + sqlCmp.destinationColumns + ") "
+                                    + sqlCmp.select
+                                    + " FROM " + sqlCmp.join + sqlCmp.where
+                                    + " ORDER BY " + buildInfoHolder.sortColNameList);
 
                     mBaseBuildStmt.executeInsert();
                 } else {
@@ -1005,26 +990,32 @@ public class BooklistBuilder
 
                 // TODO: Rebuild with state preserved is SLOWEST option
                 // Need a better way to preserve state.
-                String insSql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_BL_NODE_LEVEL,
-                                                    DOM_ROOT_KEY, DOM_BL_NODE_VISIBLE,
-                                                    DOM_BL_NODE_EXPANDED) +
-                        " SELECT " + mListTable.dot(DOM_PK_ID) + ',' +
-                        mListTable.dot(DOM_BL_NODE_LEVEL) + ',' +
-                        mListTable.dot(DOM_ROOT_KEY) + ',' +
-                        "\n Case" +
-                        " When " + DOM_BL_NODE_LEVEL + "=1" +
-                        " Then 1" +
-                        " When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " is null" +
-                        "  Then 0  Else 1" +
-                        " End," +
-                        "\n Case" +
-                        " When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " is null" +
-                        "  Then 0 Else 1" +
-                        " End" +
-                        "\n FROM " + mListTable.ref() + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_SETTINGS.ref() +
-                        "  ON " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + '=' + mListTable.dot(DOM_ROOT_KEY) +
-                        "	AND " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND) + '=' + mStyle.getGroupKindAt(0) +
-                        " ORDER BY " + sortExpression;
+                String insSql = mNavTable.getInsert(false,
+                                                    DOM_REAL_ROW_ID,
+                                                    DOM_BL_NODE_LEVEL,
+                                                    DOM_ROOT_KEY,
+                                                    DOM_BL_NODE_VISIBLE,
+                                                    DOM_BL_NODE_EXPANDED)
+                        + " SELECT " + mListTable.dot(DOM_PK_ID)
+                        + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
+                        + ',' + mListTable.dot(DOM_ROOT_KEY)
+                        + ',' + "\n Case"
+                        + " When " + DOM_BL_NODE_LEVEL + "=1"
+                        + " Then 1"
+                        + " When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " IS NULL"
+                        + "  Then 0  Else 1"
+                        + " End,"
+                        + "\n Case"
+                        + " When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " IS NULL"
+                        + "  Then 0 Else 1"
+                        + " End"
+                        + "\n FROM " + mListTable.ref()
+                        + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_SETTINGS.ref()
+                        + "  ON " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY)
+                        + '=' + mListTable.dot(DOM_ROOT_KEY)
+                        + "	AND " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND)
+                        + '=' + mStyle.getGroupKindAt(0)
+                        + " ORDER BY " + sortExpression;
 
                 // Always save the state-preserving navigator for rebuilds
                 SynchronizedStatement navStmt = mStatements.add("mNavTable.insert", insSql);
@@ -1038,34 +1029,40 @@ public class BooklistBuilder
                 switch (preferredState) {
                     case PREF_LIST_REBUILD_ALWAYS_COLLAPSED:
                         mSyncedDb.execSQL(
-                                mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_BL_NODE_LEVEL,
-                                                    DOM_ROOT_KEY, DOM_BL_NODE_VISIBLE,
-                                                    DOM_BL_NODE_EXPANDED) +
-                                        " SELECT " + mListTable.dot(DOM_PK_ID) + ',' +
-                                        mListTable.dot(DOM_BL_NODE_LEVEL) + ',' +
-                                        mListTable.dot(DOM_ROOT_KEY) + ',' +
-                                        "\n Case" +
-                                        " When " + DOM_BL_NODE_LEVEL + "=1" +
-                                        "  Then 1" +
-                                        "  Else 0" +
-                                        " End," +
-                                        " 0" +
-                                        " FROM " + mListTable.ref() +
-                                        " ORDER BY " + sortExpression);
+                                mNavTable.getInsert(false,
+                                                    DOM_REAL_ROW_ID,
+                                                    DOM_BL_NODE_LEVEL,
+                                                    DOM_ROOT_KEY,
+                                                    DOM_BL_NODE_VISIBLE,
+                                                    DOM_BL_NODE_EXPANDED)
+                                        + " SELECT " + mListTable.dot(DOM_PK_ID)
+                                        + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
+                                        + ',' + mListTable.dot(DOM_ROOT_KEY)
+                                        + ',' + "\n Case"
+                                        + " When " + DOM_BL_NODE_LEVEL + "=1"
+                                        + "  Then 1"
+                                        + "  Else 0"
+                                        + " End"
+                                        + ",0"
+                                        + " FROM " + mListTable.ref()
+                                        + " ORDER BY " + sortExpression);
                         break;
 
                     case PREF_LIST_REBUILD_ALWAYS_EXPANDED:
                         mSyncedDb.execSQL(
-                                mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_BL_NODE_LEVEL,
-                                                    DOM_ROOT_KEY, DOM_BL_NODE_VISIBLE,
-                                                    DOM_BL_NODE_EXPANDED) +
-                                        " SELECT " + mListTable.dot(DOM_PK_ID) + ',' +
-                                        mListTable.dot(DOM_BL_NODE_LEVEL) + ',' +
-                                        mListTable.dot(DOM_ROOT_KEY) + ',' +
-                                        " 1," +
-                                        " 1" +
-                                        " FROM " + mListTable.ref() +
-                                        " ORDER BY " + sortExpression);
+                                mNavTable.getInsert(false,
+                                                    DOM_REAL_ROW_ID,
+                                                    DOM_BL_NODE_LEVEL,
+                                                    DOM_ROOT_KEY,
+                                                    DOM_BL_NODE_VISIBLE,
+                                                    DOM_BL_NODE_EXPANDED)
+                                        + " SELECT " + mListTable.dot(DOM_PK_ID)
+                                        + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
+                                        + ',' + mListTable.dot(DOM_ROOT_KEY)
+                                        + ",1"
+                                        + ",1"
+                                        + " FROM " + mListTable.ref()
+                                        + " ORDER BY " + sortExpression);
                         break;
 
                     default:
@@ -1076,81 +1073,64 @@ public class BooklistBuilder
 
                 @SuppressWarnings("UnusedAssignment")
                 final long t12_nav_table_build = System.currentTimeMillis();
-                {
-                    // Create index on nav table
-                    String navIx1Sql = "CREATE INDEX " + mNavTable + "_IX1" +
-                            " ON " + mNavTable +
-                            '(' + DOM_BL_NODE_LEVEL + ',' +
-                            DOM_BL_NODE_EXPANDED + ',' +
-                            DOM_ROOT_KEY + ')';
 
-                    SynchronizedStatement ixStmt = mStatements.add("navIx1", navIx1Sql);
+                // Create index on nav table
+                SynchronizedStatement ixStmt1 = mStatements.add(
+                        "navIx1", "CREATE INDEX " + mNavTable + "_IX1"
+                                + " ON " + mNavTable
+                                + '(' + DOM_BL_NODE_LEVEL
+                                + ',' + DOM_BL_NODE_EXPANDED
+                                + ',' + DOM_ROOT_KEY + ')');
 
-                    if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-                        Logger.info(this, "Adding index navIx1 to mLevelBuildStmts");
-                        Logger.info(this, ixStmt.toString());
-                    }
-                    mLevelBuildStmts.add(ixStmt);
-                    ixStmt.execute();
+                if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+                    Logger.info(this, "Adding index navIx1 to mLevelBuildStmts");
+                    Logger.info(this, ixStmt1.toString());
                 }
+                mLevelBuildStmts.add(ixStmt1);
+                ixStmt1.execute();
 
                 @SuppressWarnings("UnusedAssignment")
                 final long t13_nav_table_index_IX1_created = System.currentTimeMillis();
-                {
-                    // Essential for main query! If not present, will make getCount() take
-                    // ages because main query is a cross with no index.
-                    String navIx2Sql = "CREATE UNIQUE INDEX " + mNavTable + "_IX2" +
-                            " ON " + mNavTable + '(' + DOM_REAL_ROW_ID + ')';
 
-                    SynchronizedStatement ixStmt = mStatements.add("navIx2", navIx2Sql);
+                // Essential for main query! If not present, will make getCount() take
+                // ages because main query is a cross with no index.
+                SynchronizedStatement ixStmt2 = mStatements.add(
+                        "navIx2", "CREATE UNIQUE INDEX " + mNavTable + "_IX2"
+                                + " ON " + mNavTable + '(' + DOM_REAL_ROW_ID + ')');
 
-                    if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-                        Logger.info(this, "Adding index navIx2 to mLevelBuildStmts");
-                        Logger.info(this, ixStmt.toString());
-                    }
-                    mLevelBuildStmts.add(ixStmt);
-                    ixStmt.execute();
+                if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+                    Logger.info(this, "Adding index navIx2 to mLevelBuildStmts");
+                    Logger.info(this, ixStmt2.toString());
                 }
+                mLevelBuildStmts.add(ixStmt2);
+                ixStmt2.execute();
+
 
                 @SuppressWarnings("UnusedAssignment")
                 final long t14_nav_table_index_IX2_created = System.currentTimeMillis();
                 mSyncedDb.execSQL("analyze " + mNavTable);
 
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    Logger.info(this, "T1: " +
-                            (t1_basic_setup_done - t0));
-                    Logger.info(this, "T2: " +
-                            (t2_groups_processed - t1_basic_setup_done));
-                    Logger.info(this, "T3: " +
-                            (t3 - t2_groups_processed));
+                    Logger.info(this, "T1: " + (t1_basic_setup_done - t0));
+                    Logger.info(this, "T2: " + (t2_groups_processed - t1_basic_setup_done));
+                    Logger.info(this, "T3: " + (t3 - t2_groups_processed));
 
-                    Logger.info(this, "T4: " +
-                            (t4_buildSqlComponents - t3));
-                    Logger.info(this, "T5: " +
-                            (t5_build_join - t4_buildSqlComponents));
-                    Logger.info(this, "T6: " +
-                            (t6_build_where - t5_build_join));
+                    Logger.info(this, "T4: " + (t4_buildSqlComponents - t3));
+                    Logger.info(this, "T5: " + (t5_build_join - t4_buildSqlComponents));
+                    Logger.info(this, "T6: " + (t6_build_where - t5_build_join));
 
-                    Logger.info(this, "T7: " +
-                            (t7_sortColumns_processed - t6_build_where));
-                    Logger.info(this, "T8: " +
-                            (t8_index_build - t7_sortColumns_processed));
-                    Logger.info(this, "T9: " +
-                            (t9 - t8_index_build));
-                    Logger.info(this, "T10: " +
-                            (t10_BaseBuild_executed - t9));
-                    Logger.info(this, "T11: " +
-                            (t11_table_optimized - t10_BaseBuild_executed));
-                    Logger.info(this, "T12: " +
-                            (t12_nav_table_build - t11_table_optimized));
-                    Logger.info(this, "T13: " +
-                            (t13_nav_table_index_IX1_created - t12_nav_table_build));
-                    Logger.info(this, "T14: " +
-                            (t14_nav_table_index_IX2_created
-                                    - t13_nav_table_index_IX1_created));
-                    Logger.info(this, "T15: " +
-                            (System.currentTimeMillis()
-                                    - t14_nav_table_index_IX2_created));
+                    Logger.info(this, "T7: " + (t7_sortColumns_processed - t6_build_where));
+                    Logger.info(this, "T8: " + (t8_index_build - t7_sortColumns_processed));
+                    Logger.info(this, "T9: " + (t9 - t8_index_build));
+                    Logger.info(this, "T10: " + (t10_BaseBuild_executed - t9));
+                    Logger.info(this, "T11: " + (t11_table_optimized - t10_BaseBuild_executed));
+                    Logger.info(this, "T12: " + (t12_nav_table_build - t11_table_optimized));
+                    Logger.info(this,
+                                "T13: " + (t13_nav_table_index_IX1_created - t12_nav_table_build));
+                    Logger.info(this, "T14: " + (t14_nav_table_index_IX2_created
+                            - t13_nav_table_index_IX1_created));
+                    Logger.info(this, "T15: " + (System.currentTimeMillis()
+                            - t14_nav_table_index_IX2_created));
                     Logger.info(this, "============================");
                     Logger.info(this, "Total time: "
                             + (System.currentTimeMillis() - t0));
@@ -1258,25 +1238,22 @@ public class BooklistBuilder
                 collatedCols.append(' ').append(d.name).append(DBA.COLLATION);
             }
             // Construct the sum statement for this group
-            String summarySql = "INSERT INTO " + mListTable +
-                    " (" + DOM_BL_NODE_LEVEL + ',' +
-                    DOM_BL_NODE_ROW_KIND + cols + ',' +
-                    DOM_ROOT_KEY + ')' +
-
-                    " SELECT " +
-                    levelId + " AS " + DOM_BL_NODE_LEVEL + ',' +
-                    group.getKind() + " AS " + DOM_BL_NODE_ROW_KIND + cols + ',' +
-                    DOM_ROOT_KEY +
-                    " FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + '=' + (levelId + 1) +
-                    " GROUP BY " + collatedCols + ',' + DOM_ROOT_KEY + DBA.COLLATION;
+            String summarySql = "INSERT INTO " + mListTable
+                    + " (" + DOM_BL_NODE_LEVEL
+                    + ',' + DOM_BL_NODE_ROW_KIND + cols
+                    + ',' + DOM_ROOT_KEY + ')'
+                    + " SELECT " + levelId + " AS " + DOM_BL_NODE_LEVEL
+                    + ',' + group.getKind() + " AS " + DOM_BL_NODE_ROW_KIND + cols
+                    + ',' + DOM_ROOT_KEY
+                    + " FROM " + mListTable + " WHERE " + DOM_BL_NODE_LEVEL + '=' + (levelId + 1)
+                    + " GROUP BY " + collatedCols + ',' + DOM_ROOT_KEY + DBA.COLLATION;
             //" GROUP BY " + DOM_BL_NODE_LEVEL + ", " + DOM_BL_NODE_ROW_KIND + collatedCols;
 
             // Save, compile and run this statement
             SynchronizedStatement stmt = mStatements.add("L" + i, summarySql);
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-                Logger.info(this,
-                            "Adding summarySql L" + i + " to mLevelBuildStmts: " +
-                                    stmt.toString());
+                Logger.info(this, "Adding summarySql L" + i + " to mLevelBuildStmts: "
+                        + stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.executeInsert();
@@ -1303,8 +1280,8 @@ public class BooklistBuilder
                     int i = 0; i < mStyle.groupCount();
                 //noinspection UnusedAssignment
                     i++) {
-                Logger.info(this, "t_style[" + i + "]: " +
-                        (t_style[i] - t_style[i - 1]));
+                Logger.info(this,
+                            "t_style[" + i + "]: " + (t_style[i] - t_style[i - 1]));
             }
         }
     }
@@ -1398,12 +1375,12 @@ public class BooklistBuilder
                 // We want a counter of how many books use the series as a primary series,
                 // so we can skip some series
                 summary.addDomain(DOM_BL_PRIMARY_SERIES_COUNT,
-                                  "Case" +
-                                          " When Coalesce(" + TBL_BOOK_SERIES.dot(
-                                          DOM_BOOK_SERIES_POSITION) + ",1)==1" +
-                                          "  Then 1" +
-                                          "  Else 0" +
-                                          " End",
+                                  "Case"
+                                          + " When Coalesce("
+                                          + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + ",1)==1"
+                                          + "  Then 1"
+                                          + "  Else 0"
+                                          + " End",
                                   SummaryBuilder.FLAG_NONE);
                 break;
 
@@ -1411,22 +1388,23 @@ public class BooklistBuilder
                 // Saved for later to indicate group was present
                 buildInfoHolder.hasGroupLOANED = true;
                 summary.addDomain(DOM_LOANED_TO_SORT,
-                                  "Case" +
-                                          " When " + TBL_LOAN.dot(DOM_LOANED_TO) + " is null" +
-                                          "  Then 1" +
-                                          "  Else 0" +
-                                          " End",
+                                  "Case"
+                                          + " When " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
+                                          + "  Then 1"
+                                          + "  Else 0"
+                                          + " End",
                                   SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 
                 summary.addDomain(
-                        DOM_LOANED_TO,
-                        "Case" +
-                                " When " + TBL_LOAN.dot(DOM_LOANED_TO) + " is null" +
-                                "  Then '" + BookCatalogueApp.getResString(
-                                R.string.loan_book_available) + '\'' +
-                                "  Else '" + BookCatalogueApp.getResString(
-                                R.string.loaned_to_short) + "' || " + TBL_LOAN.dot(DOM_LOANED_TO) +
-                                " End",
+                        DOM_LOANEE,
+                        "Case"
+                                + " When " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " IS NULL"
+                                + "  Then '" + BookCatalogueApp
+                                .getResString(R.string.loan_book_available) + '\''
+                                + "  Else '" + BookCatalogueApp
+                                .getResString(R.string.loaned_to_short) + "' || "
+                                + TBL_BOOK_LOANEE.dot(DOM_LOANEE)
+                                + " End",
                         SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
                 break;
 
@@ -1512,62 +1490,72 @@ public class BooklistBuilder
             case BooklistGroup.RowKind.DATE_PUBLISHED_YEAR:
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                // | sortDescendingMask);
                 break;
 
             case BooklistGroup.RowKind.DATE_PUBLISHED_MONTH:
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                // | sortDescendingMask);
                 break;
 
             case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_YEAR:
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   yearGlob(TBL_BOOKS.dot(DOM_FIRST_PUBLICATION), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                // | sortDescendingMask);
                 break;
 
             case BooklistGroup.RowKind.DATE_FIRST_PUBLICATION_MONTH:
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   monthGlob(TBL_BOOKS.dot(DOM_FIRST_PUBLICATION), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                // | sortDescendingMask);
                 break;
 
             case BooklistGroup.RowKind.DATE_READ_YEAR:
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   yearGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                // | sortDescendingMask);
                 break;
 
             case BooklistGroup.RowKind.DATE_READ_MONTH:
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   monthGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                // | sortDescendingMask);
                 break;
 
             case BooklistGroup.RowKind.DATE_READ_DAY:
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   dayGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                // | sortDescendingMask);
                 break;
 
 
             case BooklistGroup.RowKind.DATE_ACQUIRED_YEAR:
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   yearGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                // | sortDescendingMask);
                 break;
 
             case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   monthGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                // | sortDescendingMask);
                 break;
 
             case BooklistGroup.RowKind.DATE_ACQUIRED_DAY:
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true),
-                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED); // | sortDescendingMask);
+                                  SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+                // | sortDescendingMask);
                 break;
 
             case BooklistGroup.RowKind.DATE_ADDED_YEAR:
@@ -1646,26 +1634,26 @@ public class BooklistBuilder
         // Otherwise, start with the BOOKS table.
         if (buildInfoHolder.hasGroupBOOKSHELF || (mFilterOnBookshelfId > 0)) {
             join = new JoinContext(TBL_BOOKSHELF)
-                    .start()
                     .join(TBL_BOOK_BOOKSHELF)
                     .join(TBL_BOOKS);
         } else {
-            join = new JoinContext(TBL_BOOKS)
-                    .start();
+            join = new JoinContext(TBL_BOOKS);
         }
 
         // If a LOANED level is present, we are ONLY interested in loaned books. So cross it here.
         if (buildInfoHolder.hasGroupLOANED) {
-            join.leftOuterJoin(TBL_LOAN);
+            join.leftOuterJoin(TBL_BOOK_LOANEE);
         }
 
         // Now join with author; we must specify a parent in the join, because the last table
         // joined was one of BOOKS or LOAN and we don't know which. So we explicitly use books.
         join.join(TBL_BOOKS, TBL_BOOK_AUTHOR);
+
         // If there is no author group, or the user only wants primary author, get primary only
         if (buildInfoHolder.authorGroup == null || !buildInfoHolder.authorGroup.showAllAuthors()) {
             join.append(" AND " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + " == 1");
         }
+
         // Join with authors to make the names available
         join.join(TBL_AUTHORS);
 
@@ -1677,6 +1665,7 @@ public class BooklistBuilder
         if (buildInfoHolder.seriesGroup == null || !buildInfoHolder.seriesGroup.showAllSeries()) {
             join.append(" AND " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + "==1");
         }
+
         // Join with series to get name
         join.leftOuterJoin(TBL_SERIES);
 
@@ -1684,7 +1673,7 @@ public class BooklistBuilder
     }
 
     private boolean isNonBlank(@Nullable final String s) {
-        return (s != null && !s.trim().isEmpty());
+        return s != null && !s.trim().isEmpty();
     }
 
     /**
@@ -1723,6 +1712,9 @@ public class BooklistBuilder
         }
     }
 
+    private static final String DELETE_BOOK_LIST_NODE_SETTINGS_BY_KIND =
+            "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE " + DOM_BL_NODE_ROW_KIND + "=?";
+
     /**
      * Clear the list of expanded nodes in the current view.
      */
@@ -1736,10 +1728,10 @@ public class BooklistBuilder
 
             int kind = mStyle.getGroupKindAt(0);
             if (mDeleteListNodeSettingsStmt == null) {
+
                 mDeleteListNodeSettingsStmt =
                         mStatements.add("mDeleteListNodeSettingsStmt",
-                                        "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS +
-                                                " WHERE " + DOM_BL_NODE_ROW_KIND + "=?");
+                                        DELETE_BOOK_LIST_NODE_SETTINGS_BY_KIND);
             }
             mDeleteListNodeSettingsStmt.bindLong(1, kind);
             mDeleteListNodeSettingsStmt.executeUpdateDelete();
@@ -1826,19 +1818,19 @@ public class BooklistBuilder
             final int levelId = i + 1;
             // Create an INSERT statement for the next level up
             StringBuilder insertSql = new StringBuilder(
-                    "INSERT INTO " + mListTable +
-                            " (" + DOM_BL_NODE_LEVEL + ',' +
-                            DOM_BL_NODE_ROW_KIND + ',' +
-                            DOM_ROOT_KEY + '\n');
+                    "INSERT INTO " + mListTable
+                            + " (" + DOM_BL_NODE_LEVEL
+                            + ',' + DOM_BL_NODE_ROW_KIND
+                            + ',' + DOM_ROOT_KEY + '\n');
 
             // Create the VALUES statement for the next level up
-            StringBuilder valuesSql = new StringBuilder(
-                    " VALUES(" + levelId + ", " + group.getKind() + ", " +
-                            "new." + DOM_ROOT_KEY + '\n');
+            StringBuilder valuesSql = new StringBuilder(" VALUES(" + levelId
+                                                                + ',' + group.getKind()
+                                                                + ",new." + DOM_ROOT_KEY + '\n');
 
             // Create the conditional to detect if next level up is already defined
             // (by checking the 'current' record/table)
-            StringBuilder conditionSql = new StringBuilder();// "l." + DOM_BL_NODE_LEVEL + " = " + levelId + "\n";
+            StringBuilder conditionSql = new StringBuilder();
             // Update the statement components
             //noinspection ConstantConditions
             for (DomainDefinition groupDomain : group.getDomains()) {
@@ -1849,26 +1841,28 @@ public class BooklistBuilder
                     if (conditionSql.length() > 0) {
                         conditionSql.append(" AND ");
                     }
-                    conditionSql.append("Coalesce(l.").append(groupDomain).append(
-                            ",'') = Coalesce(new.").append(groupDomain).append(",'') ").append(
-                            DBA.COLLATION).append('\n');
+                    conditionSql.append("Coalesce(l.").append(groupDomain)
+                                .append(",'') = Coalesce(new.").append(groupDomain).append(",'')")
+                                .append(DBA.COLLATION).append('\n');
                 }
             }
-            insertSql.append(")\n").append(valuesSql).append(')');
+            insertSql.append(")\n")
+                     .append(valuesSql)
+                     .append(')');
 
+            // (re)Create the trigger
             String tgName = "header_A_tgL" + i;
-            // Drop trigger if necessary
             mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + tgName);
-
-            // Create the trigger
-            String tgSql = "CREATE TEMP TRIGGER " + tgName +
-                    " before INSERT ON " + mListTable + " for each row\n" +
-                    " when new." + DOM_BL_NODE_LEVEL + '=' + (levelId + 1) + '\n' +
-                    "      AND NOT EXISTS(SELECT 1 FROM " + currTblName + " l WHERE " + conditionSql + ")\n" +
-                    "	Begin\n" +
-                    "		" + insertSql + ";\n" +
-                    "	End";
+            String tgSql = "CREATE TEMP TRIGGER " + tgName
+                    + " BEFORE INSERT ON " + mListTable + " FOR EACH ROW\n"
+                    + " when new." + DOM_BL_NODE_LEVEL + '=' + (levelId + 1) + '\n'
+                    + "     AND NOT EXISTS(SELECT 1 FROM " + currTblName + " l"
+                    + "                    WHERE " + conditionSql + ")\n"
+                    + " Begin\n"
+                    + "     " + insertSql + ";\n"
+                    + " End";
             SynchronizedStatement stmt = mStatements.add("TG " + tgName, tgSql);
+
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
                 Logger.info(this, "Adding " + tgName + " to mLevelBuildStmts");
                 Logger.info(this, stmt.toString());
@@ -1880,14 +1874,15 @@ public class BooklistBuilder
         // Create a trigger to maintain the 'current' value -- just delete and insert
         String currentValueTriggerName = mListTable + "_TG_ZZZ";
         mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + currentValueTriggerName);
-        String tgSql = "CREATE TEMP TRIGGER " + currentValueTriggerName +
-                " after INSERT ON " + mListTable + " for each row\n" +
-                " when new." + DOM_BL_NODE_LEVEL + '=' + mStyle.groupCount() +
-                //" and not exists(Select 1 From " + currTblName + " l where " + conditionSql + ")\n" +
-                "	Begin\n" +
-                "		DELETE FROM " + currTblName + ";\n" +
-                "		INSERT INTO " + currTblName + " VALUES (" + currInsertSql + ");\n" +
-                "	End";
+        String tgSql = "CREATE TEMP TRIGGER " + currentValueTriggerName
+                + " after INSERT ON " + mListTable + " for each row\n"
+                + " when new." + DOM_BL_NODE_LEVEL + '=' + mStyle.groupCount()
+                // + " and not exists(Select 1 From " + currTblName + " l"
+                // + " WHERE " + conditionSql + ")\n"
+                + "	Begin\n"
+                + "	    DELETE FROM " + currTblName + ";\n"
+                + "	    INSERT INTO " + currTblName + " VALUES (" + currInsertSql + ");\n"
+                + " End";
 
         SynchronizedStatement stmt = mStatements.add(currentValueTriggerName, tgSql);
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
@@ -1947,9 +1942,9 @@ public class BooklistBuilder
 
         // We just create one big trigger
         StringBuilder oneBigTrigger = new StringBuilder(
-                "CREATE TRIGGER " + tgForwardName +
-                        " instead of insert ON " + viewTblName + " for each row \n" +
-                        "	Begin\n");
+                "CREATE TRIGGER " + tgForwardName
+                        + " instead of insert ON " + viewTblName + " for each row\n"
+                        + " Begin\n");
 
         // List of cols we sort by
         StringBuilder sortedCols = new StringBuilder();
@@ -1989,23 +1984,23 @@ public class BooklistBuilder
             final BooklistGroup group = mStyle.getGroupAt(i);
             // Get the level number for this group
             final int levelId = i + 1;
-            // Create an INSERT statement for the next level up
+            // Create an INSERT statement for the next level up. Not complete, more to be added.
             StringBuilder insertSql = new StringBuilder(
-                    "INSERT INTO " + mListTable +
-                            "( " + DOM_BL_NODE_LEVEL + ',' +
-                            DOM_BL_NODE_ROW_KIND + ',' +
-                            DOM_ROOT_KEY + '\n');
+                    "INSERT INTO " + mListTable
+                            + " (" + DOM_BL_NODE_LEVEL
+                            + ',' + DOM_BL_NODE_ROW_KIND
+                            + ',' + DOM_ROOT_KEY + '\n');
 
-            // Create the VALUES statement for the next level up
+            // Create the VALUES statement for the next level up. Not complete, more to be added.
             StringBuilder valuesSql = new StringBuilder(
-                    " SELECT " +
-                            levelId + ',' +
-                            group.getKind() + ',' +
-                            "new." + DOM_ROOT_KEY + '\n');
+                    " SELECT "
+                            + levelId
+                            + ',' + group.getKind()
+                            + ',' + "new." + DOM_ROOT_KEY + '\n');
 
             // Create the conditional to detect if next level up is already defined
             // (by checking the 'current' record/table)
-            StringBuilder conditionSql = new StringBuilder();// "booklistGroup." + DOM_BL_NODE_LEVEL + " = " + levelId + "\n";
+            StringBuilder conditionSql = new StringBuilder();
             // Update the statement components
             //noinspection ConstantConditions
             for (DomainDefinition d : group.getDomains()) {
@@ -2016,34 +2011,35 @@ public class BooklistBuilder
                     if (conditionSql.length() > 0) {
                         conditionSql.append("	AND ");
                     }
-                    conditionSql.append("Coalesce(l.").append(d).append(
-                            ", '') = Coalesce(new.").append(d).append(",'') ").append(
-                            DBA.COLLATION).append('\n');
+                    conditionSql.append("Coalesce(l.").append(d)
+                                .append(",'') = Coalesce(new.").append(d)
+                                .append(",'')")
+                                .append(DBA.COLLATION).append('\n');
                 }
             }
             //insertSql += ")\n	Select " + valuesSql + " Where not exists(Select 1 From " + mListTable + " l where " + conditionSql + ")";
             //tgLines[i] = insertSql;
 
             insertSql.append(")\n").append(valuesSql).append(
-                    " WHERE NOT EXISTS(SELECT 1 FROM ").append(currTblName).append(
-                    " l WHERE ").append(
-                    conditionSql).append(")\n");
+                    " WHERE NOT EXISTS(SELECT 1 FROM ").append(currTblName)
+                     .append(" l WHERE ").append(conditionSql).append(")\n");
+
             oneBigTrigger.append("		").append(insertSql).append(";\n");
         }
 
         // Finalize the main trigger; insert the full row and update the 'current' header
         oneBigTrigger.append("		").append(fullInsert).append('\n')
                      .append("		DELETE FROM ").append(currTblName).append(";\n")
-                     .append("		INSERT INTO ").append(currTblName).append(" VALUES (").append(
-                currInsertSql).append(");\n")
+                     .append("		INSERT INTO ").append(currTblName)
+                     .append(" VALUES (").append(currInsertSql).append(");\n")
                      .append("	End");
 
-        {
-            // rebuild(): SQLiteException: trigger book_list_tmp_2_TG_AAA already exists (code 1):
-            //2018-11-12: added DROP to mLevelBuildStmts
-            // but... then it fails with
-            // SQLiteException: Cannot execute this statement because it might modify the
-            // database but the connection is read-only.
+
+        // rebuild(): SQLiteException: trigger book_list_tmp_2_TG_AAA already exists (code 1):
+        //2018-11-12: added DROP to mLevelBuildStmts
+        // but... then it fails with
+        // SQLiteException: Cannot execute this statement because it might modify the
+        // database but the connection is read-only.
 //            SynchronizedStatement dropStmt = mStatements.add("Drop_" + tgForwardName,
 //                    "DROP TRIGGER IF EXISTS " + tgForwardName);
 //            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
@@ -2053,15 +2049,14 @@ public class BooklistBuilder
 //            mLevelBuildStmts.add(dropStmt);
 //            dropStmt.execute();
 
-            SynchronizedStatement stmt = mStatements.add("Create_" + tgForwardName,
-                                                         oneBigTrigger.toString());
-            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-                Logger.info(this, "Adding " + tgForwardName + " to mLevelBuildStmts");
-                Logger.info(this, stmt.toString());
-            }
-            mLevelBuildStmts.add(stmt);
-            stmt.execute();
+        SynchronizedStatement stmt = mStatements.add("Create_" + tgForwardName,
+                                                     oneBigTrigger.toString());
+        if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+            Logger.info(this, "Adding " + tgForwardName + " to mLevelBuildStmts");
+            Logger.info(this, stmt.toString());
         }
+        mLevelBuildStmts.add(stmt);
+        stmt.execute();
 
         return viewTblName;
     }
@@ -2081,10 +2076,10 @@ public class BooklistBuilder
             if (mDeleteListNodeSettingStmt == null) {
                 mDeleteListNodeSettingStmt = mStatements.add(
                         "mDeleteListNodeSettingStmt",
-                        "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS +
-                                " WHERE " + DOM_BL_NODE_ROW_KIND + "=? AND " +
-                                DOM_ROOT_KEY + " IN (SELECT DISTINCT " + DOM_ROOT_KEY +
-                                " FROM " + mNavTable + " WHERE " + DOM_PK_ID + "=?)");
+                        "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS
+                                + " WHERE " + DOM_BL_NODE_ROW_KIND + "=? AND "
+                                + DOM_ROOT_KEY + " IN (SELECT DISTINCT " + DOM_ROOT_KEY
+                                + " FROM " + mNavTable + " WHERE " + DOM_PK_ID + "=?)");
             }
             mDeleteListNodeSettingStmt.bindLong(1, kind);
             mDeleteListNodeSettingStmt.bindLong(2, rowId);
@@ -2112,11 +2107,12 @@ public class BooklistBuilder
             if (mSaveAllListNodeSettingsStmt == null) {
                 mSaveAllListNodeSettingsStmt = mStatements.add(
                         "mSaveAllListNodeSettingsStmt",
-                        TBL_BOOK_LIST_NODE_SETTINGS.getInsert(
-                                DOM_BL_NODE_ROW_KIND,
-                                DOM_ROOT_KEY) +
-                                " SELECT DISTINCT ?, " + DOM_ROOT_KEY + " FROM " + mNavTable +
-                                " WHERE " + DOM_BL_NODE_EXPANDED + "=1 AND " + DOM_BL_NODE_LEVEL + "=1");
+                        TBL_BOOK_LIST_NODE_SETTINGS.getInsert(false,
+                                                              DOM_BL_NODE_ROW_KIND,
+                                                              DOM_ROOT_KEY)
+                                + " SELECT DISTINCT ?," + DOM_ROOT_KEY + " FROM " + mNavTable
+                                + " WHERE " + DOM_BL_NODE_EXPANDED + "=1"
+                                + " AND " + DOM_BL_NODE_LEVEL + "=1");
             }
             int kind = mStyle.getGroupKindAt(0);
 
@@ -2145,12 +2141,15 @@ public class BooklistBuilder
             deleteListNodeSetting(rowId);
 
             if (mSaveListNodeSettingStmt == null) {
-                String sql = TBL_BOOK_LIST_NODE_SETTINGS.getInsert(DOM_BL_NODE_ROW_KIND,
-                                                                   DOM_ROOT_KEY) +
-                        " SELECT ?, " + DOM_ROOT_KEY + " FROM " + mNavTable +
-                        " WHERE " + DOM_BL_NODE_EXPANDED + "=1 AND " + DOM_BL_NODE_LEVEL + "=1" +
-                        " AND " + DOM_PK_ID + "=?";
-                mSaveListNodeSettingStmt = mStatements.add("mSaveListNodeSettingStmt", sql);
+                mSaveListNodeSettingStmt = mStatements.add(
+                        "mSaveListNodeSettingStmt",
+                        TBL_BOOK_LIST_NODE_SETTINGS.getInsert(false,
+                                                              DOM_BL_NODE_ROW_KIND,
+                                                              DOM_ROOT_KEY)
+                                + " SELECT ?, " + DOM_ROOT_KEY + " FROM " + mNavTable
+                                + " WHERE " + DOM_BL_NODE_EXPANDED + "=1"
+                                + " AND " + DOM_BL_NODE_LEVEL + "=1"
+                                + " AND " + DOM_PK_ID + "=?");
             }
             int kind = mStyle.getGroupKindAt(0);
 
@@ -2173,10 +2172,10 @@ public class BooklistBuilder
      */
     @Nullable
     public ArrayList<BookRowInfo> getBookAbsolutePositions(final long bookId) {
-        String sql = "SELECT " + mNavTable.dot(DOM_PK_ID) + ',' +
-                mNavTable.dot(DOM_BL_NODE_VISIBLE) +
-                " FROM " + mListTable + " bl " + mListTable.join(mNavTable) +
-                " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + "=?";
+        String sql = "SELECT " + mNavTable.dot(DOM_PK_ID)
+                + ',' + mNavTable.dot(DOM_BL_NODE_VISIBLE)
+                + " FROM " + mListTable + " bl " + mListTable.join(mNavTable)
+                + " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + "=?";
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
             ArrayList<BookRowInfo> rows = new ArrayList<>();
@@ -2225,13 +2224,12 @@ public class BooklistBuilder
         }
 
         // Build the SQL, adding ABS POS.
-        final String sql = "SELECT " +
-                domains +
-                " (" + mNavTable.dot(DOM_PK_ID) + " - 1) AS " + DOM_ABSOLUTE_POSITION +
-                " FROM " + mListTable.ref() + mListTable.join(mNavTable) +
-                " WHERE " + mNavTable.dot(DOM_BL_NODE_VISIBLE) + "=1 ORDER BY " + mNavTable.dot(
-                DOM_PK_ID) +
-                " LIMIT " + size + " OFFSET " + position;
+        final String sql = "SELECT " + domains
+                + " (" + mNavTable.dot(DOM_PK_ID) + " - 1) AS " + DOM_ABSOLUTE_POSITION
+                + " FROM " + mListTable.ref() + mListTable.join(mNavTable)
+                + " WHERE " + mNavTable.dot(DOM_BL_NODE_VISIBLE) + "=1"
+                + " ORDER BY " + mNavTable.dot(DOM_PK_ID)
+                + " LIMIT " + size + " OFFSET " + position;
 
         // Get and return the cursor
         return (BooklistCursor) mSyncedDb.rawQueryWithFactory(mBooklistCursorFactory, sql,
@@ -2248,12 +2246,13 @@ public class BooklistBuilder
 
     /**
      * All pseudo list cursors work with the static data in the temp table.
-     * Get the logical count of rows using a simple query rather than scanning the entire result set.
+     * Get the logical count of rows using a simple query rather than scanning
+     * the entire result set.
      */
     int getPseudoCount() {
         return pseudoCount("NavTable",
-                           "SELECT COUNT(*) FROM " + mNavTable +
-                                   " WHERE " + DOM_BL_NODE_VISIBLE + "=1");
+                           "SELECT COUNT(*) FROM " + mNavTable
+                                   + " WHERE " + DOM_BL_NODE_VISIBLE + "=1");
     }
 
     /**
@@ -2261,9 +2260,10 @@ public class BooklistBuilder
      */
     int getBookCount() {
         return pseudoCount("ListTableBooks",
-                           "SELECT COUNT(*)" +
-                                   " FROM " + mListTable +
-                                   " WHERE " + DOM_BL_NODE_LEVEL + '=' + (mStyle.groupCount() + 1));
+                           "SELECT COUNT(*)"
+                                   + " FROM " + mListTable
+                                   + " WHERE "
+                                   + DOM_BL_NODE_LEVEL + '=' + (mStyle.groupCount() + 1));
     }
 
     /**
@@ -2271,9 +2271,10 @@ public class BooklistBuilder
      */
     int getUniqueBookCount() {
         return pseudoCount("ListTableUniqueBooks",
-                           "SELECT COUNT(DISTINCT " + DOM_FK_BOOK_ID + ')' +
-                                   " FROM " + mListTable +
-                                   " WHERE " + DOM_BL_NODE_LEVEL + '=' + (mStyle.groupCount() + 1));
+                           "SELECT COUNT(DISTINCT " + DOM_FK_BOOK_ID + ')'
+                                   + " FROM " + mListTable
+                                   + " WHERE " + DOM_BL_NODE_LEVEL
+                                   + '=' + (mStyle.groupCount() + 1));
     }
 
     /**
@@ -2292,8 +2293,8 @@ public class BooklistBuilder
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             Logger.info(this,
-                        "Pseudo-count (" + name + ") = " + count +
-                                " completed in " + (System.currentTimeMillis() - t0) + "ms");
+                        "Pseudo-count (" + name + ") = " + count
+                                + " completed in " + (System.currentTimeMillis() - t0) + "ms");
         }
         return count;
     }
@@ -2330,8 +2331,8 @@ public class BooklistBuilder
         if (mGetPositionCheckVisibleStmt == null) {
             mGetPositionCheckVisibleStmt =
                     mStatements.add("mGetPositionCheckVisibleStmt",
-                                    "SELECT " + DOM_BL_NODE_VISIBLE + " FROM " + mNavTable +
-                                            " WHERE " + DOM_PK_ID + "=?");
+                                    "SELECT " + DOM_BL_NODE_VISIBLE + " FROM " + mNavTable
+                                            + " WHERE " + DOM_PK_ID + "=?");
         }
         // Check the absolute position is visible
         final long rowId = absolutePosition + 1;
@@ -2341,8 +2342,9 @@ public class BooklistBuilder
         if (mGetPositionStmt == null) {
             mGetPositionStmt =
                     mStatements.add("mGetPositionStmt",
-                                    "SELECT COUNT(*) FROM " + mNavTable +
-                                            " WHERE " + DOM_BL_NODE_VISIBLE + "=1 AND " + DOM_PK_ID + " < ?");
+                                    "SELECT COUNT(*) FROM " + mNavTable
+                                            + " WHERE " + DOM_BL_NODE_VISIBLE + "=1"
+                                            + " AND " + DOM_PK_ID + "<?");
         }
         // Count the number of *visible* rows *before* the specified one.
         mGetPositionStmt.bindLong(1, rowId);
@@ -2370,10 +2372,10 @@ public class BooklistBuilder
         if (mGetNodeRootStmt == null) {
             mGetNodeRootStmt = mStatements.add(
                     "mGetNodeRootStmt",
-                    "SELECT " + DOM_PK_ID + "||'/'||" + DOM_BL_NODE_EXPANDED +
-                            " FROM " + mNavTable +
-                            " WHERE " + DOM_BL_NODE_LEVEL + "=1 AND " + DOM_PK_ID + " <= ?" +
-                            " ORDER BY " + DOM_PK_ID + " DESC LIMIT 1");
+                    "SELECT " + DOM_PK_ID + "||'/'||" + DOM_BL_NODE_EXPANDED
+                            + " FROM " + mNavTable
+                            + " WHERE " + DOM_BL_NODE_LEVEL + "=1 AND " + DOM_PK_ID + "<=?"
+                            + " ORDER BY " + DOM_PK_ID + " DESC LIMIT 1");
         }
 
         // Get the root node, and expanded flag
@@ -2399,35 +2401,33 @@ public class BooklistBuilder
         if (mGetNodeLevelStmt == null) {
             mGetNodeLevelStmt = mStatements.add(
                     "mGetNodeLevelStmt",
-                    "SELECT " + DOM_BL_NODE_LEVEL + "||'/'||" + DOM_BL_NODE_EXPANDED +
-                            " FROM " + mNavTable.ref() + " WHERE " + mNavTable.dot(
-                            DOM_PK_ID) + "=?");
+                    "SELECT " + DOM_BL_NODE_LEVEL + "||'/'||" + DOM_BL_NODE_EXPANDED
+                            + " FROM " + mNavTable.ref()
+                            + " WHERE " + mNavTable.dot(DOM_PK_ID) + "=?");
         }
         if (mGetNextAtSameLevelStmt == null) {
             mGetNextAtSameLevelStmt = mStatements.add(
                     "mGetNextAtSameLevelStmt",
-                    "SELECT Coalesce( max(" + DOM_PK_ID + "), -1) FROM " +
-                            "(SELECT " + DOM_PK_ID + " FROM " + mNavTable.ref() +
-                            " WHERE " + mNavTable.dot(
-                            DOM_PK_ID) + " > ? AND " + mNavTable.dot(
-                            DOM_BL_NODE_LEVEL) + "=?" +
-                            " ORDER BY " + DOM_PK_ID + " LIMIT 1" +
-                            ')' +
-                            " zzz");
+                    "SELECT Coalesce( max(" + DOM_PK_ID + "),-1) FROM "
+                            + "(SELECT " + DOM_PK_ID + " FROM " + mNavTable.ref()
+                            + " WHERE " + mNavTable.dot(DOM_PK_ID) + ">? AND "
+                            + mNavTable.dot(DOM_BL_NODE_LEVEL) + "=?"
+                            + " ORDER BY " + DOM_PK_ID + " LIMIT 1"
+                            + ") zzz");
         }
         if (mShowStmt == null) {
             mShowStmt = mStatements.add(
                     "mShowStmt",
-                    "UPDATE " + mNavTable +
-                            " SET " + DOM_BL_NODE_VISIBLE + "=?," + DOM_BL_NODE_EXPANDED + "=?" +
-                            " WHERE " + DOM_PK_ID + " > ?" +
-                            " AND " + DOM_BL_NODE_LEVEL + " > ? AND " + DOM_PK_ID + " < ?");
+                    "UPDATE " + mNavTable
+                            + " SET " + DOM_BL_NODE_VISIBLE + "=?," + DOM_BL_NODE_EXPANDED + "=?"
+                            + " WHERE " + DOM_PK_ID + " > ?"
+                            + " AND " + DOM_BL_NODE_LEVEL + " > ? AND " + DOM_PK_ID + " < ?");
         }
         if (mExpandStmt == null) {
             mExpandStmt = mStatements.add(
                     "mExpandStmt",
-                    "UPDATE " + mNavTable + " SET " + DOM_BL_NODE_EXPANDED + "=?" +
-                            " WHERE " + DOM_PK_ID + "=?");
+                    "UPDATE " + mNavTable + " SET " + DOM_BL_NODE_EXPANDED + "=?"
+                            + " WHERE " + DOM_PK_ID + "=?");
         }
     }
 
@@ -2440,21 +2440,21 @@ public class BooklistBuilder
         @SuppressWarnings("UnusedAssignment")
         final long t0 = System.currentTimeMillis();
         if (expand) {
-            String sql = "UPDATE " + mNavTable + " SET " +
-                    DOM_BL_NODE_EXPANDED + "=1," +
-                    DOM_BL_NODE_VISIBLE + "=1";
+            String sql = "UPDATE " + mNavTable + " SET "
+                    + DOM_BL_NODE_EXPANDED + "=1,"
+                    + DOM_BL_NODE_VISIBLE + "=1";
             mSyncedDb.execSQL(sql);
             saveListNodeSettings();
         } else {
-            String sql = "UPDATE " + mNavTable + " SET " +
-                    DOM_BL_NODE_EXPANDED + "=0," +
-                    DOM_BL_NODE_VISIBLE + "=0" +
-                    " WHERE " + DOM_BL_NODE_LEVEL + ">1";
+            String sql = "UPDATE " + mNavTable + " SET "
+                    + DOM_BL_NODE_EXPANDED + "=0,"
+                    + DOM_BL_NODE_VISIBLE + "=0"
+                    + " WHERE " + DOM_BL_NODE_LEVEL + ">1";
             mSyncedDb.execSQL(sql);
 
-            sql = "UPDATE " + mNavTable + " SET " +
-                    DOM_BL_NODE_EXPANDED + "=0" +
-                    " WHERE " + DOM_BL_NODE_LEVEL + "=1";
+            sql = "UPDATE " + mNavTable + " SET "
+                    + DOM_BL_NODE_EXPANDED + "=0"
+                    + " WHERE " + DOM_BL_NODE_LEVEL + "=1";
             mSyncedDb.execSQL(sql);
             deleteListNodeSettings();
         }
@@ -2579,7 +2579,7 @@ public class BooklistBuilder
             if (!mDebugReferenceDecremented) {
                 // Only de-reference once!
                 Logger.info(this,
-                            "instances left: " + mDebugInstanceCounter.decrementAndGet());
+                            "instances left: " + DEBUG_INSTANCE_COUNTER.decrementAndGet());
             }
             mDebugReferenceDecremented = true;
         }
@@ -3000,10 +3000,10 @@ public class BooklistBuilder
 //
 //			case RowKind.LOANED:
 //				hasLevelLOANED = true;
-//				l.displayDomain = DOM_LOANED_TO;
-//				summary.addDomain(DOM_LOANED_TO, LOANED_TO_EXPRESSION, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | SummaryBuilder.FLAG_KEY);
-//				//summary.addKeyComponents("'l'", DatabaseDefinitions.TBL_LOAN.dot(DOM_LOANED_TO));
-//				l.setKeyComponents("l", DOM_LOANED_TO);
+//				l.displayDomain = DOM_LOANEE;
+//				summary.addDomain(DOM_LOANEE, LOANED_TO_EXPRESSION, SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED | SummaryBuilder.FLAG_KEY);
+//				//summary.addKeyComponents("'l'", DatabaseDefinitions.TBL_BOOK_LOANEE.dot(DOM_LOANEE));
+//				l.setKeyComponents("l", DOM_LOANEE);
 //				break;
 //
 //			case RowKind.TITLE_LETTER:
@@ -3077,7 +3077,7 @@ public class BooklistBuilder
 //
 //		// If a LOANED level is present, we are ONLY interested in loaned books. So cross it here.
 //		if (hasLevelLOANED) {
-//			join.join(TBL_LOAN);
+//			join.join(TBL_BOOK_LOANEE);
 //		}
 //		
 //		// Specify a parent in the join, because the last table joined was one of BOOKS or LOAN.
@@ -3131,9 +3131,9 @@ public class BooklistBuilder
 //		if (!loaned_to.equals("")) {
 //			if (!where.equals(""))
 //				where += " and ";
-//			where += "Exists(Select NULL From " + TBL_LOAN.ref() + " Where " + TBL_LOAN.dot(DOM_LOANED_TO) + " = '" + encodeString(loaned_to) + "'" +
-//					" and " + TBL_LOAN.fkMatch(TBL_BOOKS) + ")";
-//					// .and()    .op(TBL_LOAN.dot(DOM_FK_BOOK_ID), "=", TBL_BOOKS.dot(DOM_PK_ID)) + ")";
+//			where += "Exists(Select NULL From " + TBL_BOOK_LOANEE.ref() + " Where " + TBL_BOOK_LOANEE.dot(DOM_LOANEE) + " = '" + encodeString(loaned_to) + "'" +
+//					" and " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ")";
+//					// .and()    .op(TBL_BOOK_LOANEE.dot(DOM_FK_BOOK_ID), "=", TBL_BOOKS.dot(DOM_PK_ID)) + ")";
 //		}
 //		if (!seriesName.equals("")) {
 //			if (!where.equals(""))
@@ -3371,8 +3371,8 @@ public class BooklistBuilder
 //			sql = mNavTable.getInsert(DOM_REAL_ROW_ID, DOM_BL_NODE_LEVEL, DOM_ROOT_KEY, DOM_BL_NODE_VISIBLE, DOM_BL_NODE_EXPANDED) +
 //					" Select " + mListTable.dot(DOM_PK_ID) + "," + mListTable.dot(DOM_BL_NODE_LEVEL) + "," + mListTable.dot(DOM_ROOT_KEY) +
 //					" ,\n	Case When " + DOM_BL_NODE_LEVEL + " = 1 Then 1 \n" +
-//					"	When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " is null Then 0\n	Else 1 end,\n "+ 
-//					"	Case When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " is null Then 0 Else 1 end\n"+
+//					"	When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " IS NULL Then 0\n	Else 1 end,\n "+
+//					"	Case When " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " IS NULL Then 0 Else 1 end\n"+
 //					" From " + mListTable.ref() + "\n	left outer join " + TBL_BOOK_LIST_NODE_SETTINGS.ref() + 
 //					"\n		On " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_ROOT_KEY) + " = " + mListTable.dot(DOM_ROOT_KEY) +
 //					"\n			And " + TBL_BOOK_LIST_NODE_SETTINGS.dot(DOM_BL_NODE_ROW_KIND) + " = " + mLevels.get(0).kind +

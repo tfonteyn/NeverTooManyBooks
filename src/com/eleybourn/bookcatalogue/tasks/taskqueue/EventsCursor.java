@@ -29,7 +29,6 @@ import androidx.annotation.NonNull;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
 import java.util.Date;
@@ -120,7 +119,7 @@ public class EventsCursor
         Event event;
         try {
             event = SerializationUtils.deserializeObject(blob);
-        } catch (RTE.DeserializationException de) {
+        } catch (SerializationUtils.DeserializationException de) {
             event = new LegacyEvent();
         }
         event.setId(getId());

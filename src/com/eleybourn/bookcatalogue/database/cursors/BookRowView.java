@@ -86,9 +86,9 @@ public class BookRowView
 
     public final String getLoanedTo() {
         if (mLoanedToCol < 0) {
-            mLoanedToCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_LOANED_TO.name);
+            mLoanedToCol = mCursor.getColumnIndex(DatabaseDefinitions.DOM_LOANEE.name);
             if (mLoanedToCol < 0) {
-                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_LOANED_TO.name);
+                throw new DBExceptions.ColumnNotPresent(DatabaseDefinitions.DOM_LOANEE.name);
             }
         }
         return mCursor.getString(mLoanedToCol);

@@ -61,17 +61,4 @@ public class RTE {
         }
     }
 
-    /**
-     * Catchall class for errors in serialization.
-     */
-    public static class DeserializationException
-            extends Exception {
-
-        private static final long serialVersionUID = -2040548134317746620L;
-
-        DeserializationException(@Nullable final Exception e) {
-            super();
-            initCause(e);
-        }
-    }
 }

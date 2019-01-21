@@ -40,8 +40,8 @@ public class Synchronizer {
     /** Condition fired when a reader releases a lock. */
     private final Condition mReleased = mLock.newCondition();
     /** Collection of threads that have shared locks. */
-    private final Map<Thread, Integer> mSharedOwners = Collections.synchronizedMap(
-        new HashMap<Thread, Integer>());
+    private final Map<Thread, Integer> mSharedOwners =
+            Collections.synchronizedMap(new HashMap<Thread, Integer>());
     /** Lock used to pass back to consumers of shared locks. */
     private final SharedLock mSharedLock = new SharedLock();
     /** Lock used to pass back to consumers of exclusive locks. */
@@ -196,7 +196,8 @@ public class Synchronizer {
 
     /** Enum of lock types supported. */
     public enum LockType {
-        shared, exclusive
+        shared,
+        exclusive
     }
 
     /**

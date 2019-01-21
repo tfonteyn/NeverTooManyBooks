@@ -27,6 +27,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -241,6 +242,34 @@ public class BookCatalogueApp
      */
     public static String[] getResStringArray(@ArrayRes final int resId) {
         return mInstance.getApplicationContext().getResources().getStringArray(resId);
+    }
+
+    /**
+     * Reads the application version from the manifest.
+     *
+     * @return the versionCode.
+     */
+    public static long getVersion() {
+            // versionCode deprecated and new method in API: 28, till then ignore...
+        PackageInfo packageInfo = getPackageInfo(0);
+        if (packageInfo != null) {
+            return (long) packageInfo.versionCode;
+        }
+        return 0;
+    }
+
+    @Nullable
+    public static PackageInfo getPackageInfo(final int flags) {
+        PackageInfo packageInfo = null;
+        try {
+            Context context = getAppContext();
+            // Get app info from the manifest
+            PackageManager manager = context.getPackageManager();
+            packageInfo = manager.getPackageInfo(context.getPackageName(), flags);
+        } catch (PackageManager.NameNotFoundException e) {
+            Logger.error(e, "Failed to get package version code?");
+        }
+        return packageInfo;
     }
 
     /**

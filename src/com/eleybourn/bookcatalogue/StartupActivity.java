@@ -91,6 +91,7 @@ public class StartupActivity
     private static boolean mIsReallyStartup = true;
     /** Flag indicating Amazon hint should be shown. */
     private static boolean mShowAmazonHint;
+    /** Self reference for use during upgrades. */
     private static WeakReference<StartupActivity> mStartupActivity = null;
     /** Handler to post run'ables to UI thread. */
     private final Handler mHandler = new Handler();
@@ -103,7 +104,8 @@ public class StartupActivity
      * API: 26 this is a global requirement: ProgressDialog is deprecated
      * https://developer.android.com/reference/android/app/ProgressDialog
      * Suggested: ProgressBar or Notification.
-     * Alternative maybe: SnackBar (recommended replacement for Toast)
+     * https://materialdoc.com/components/progress
+     * https://materialdoc.com/patterns/notifications/
      */
     @Nullable
     @Deprecated
@@ -133,17 +135,6 @@ public class StartupActivity
 
     public static boolean getShowAmazonHint() {
         return mShowAmazonHint;
-    }
-
-    /**
-     * Will be called during database creation, so at very first start we don't get an 'upgrade'
-     * message.
-     * <p>
-     * Note: this replaces the semi-reverse mechanism from pre-v200.
-     */
-    public void setNewInstallDone() {
-        mUpgradeMessageShown = true;
-        UpgradeMessageManager.setUpgradeAcknowledged();
     }
 
     @Override

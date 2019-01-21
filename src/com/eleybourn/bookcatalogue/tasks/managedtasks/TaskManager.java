@@ -385,6 +385,7 @@ public class TaskManager {
     }
 
     @Override
+    @NonNull
     public String toString() {
         return "TaskManager{" +
                 "mMessageSenderId=" + mMessageSenderId +
@@ -451,6 +452,7 @@ public class TaskManager {
         }
 
         @Override
+        @NonNull
         public String toString() {
             return "TaskFinishedMessage{" +
                     "mManager=" + mManager +
@@ -486,6 +488,7 @@ public class TaskManager {
         }
 
         @Override
+        @NonNull
         public String toString() {
             return "TaskProgressMessage{" +
                     "mCount=" + mCount +
@@ -516,6 +519,7 @@ public class TaskManager {
         }
 
         @Override
+        @NonNull
         public String toString() {
             return "TaskUserMessage{" +
                     "mMessage='" + mMessage + '\'' +

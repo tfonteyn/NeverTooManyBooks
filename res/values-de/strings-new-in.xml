@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="new_in_42"><![CDATA[
+    <string name="new_in_420"><![CDATA[
 <p><b>Neu in 4.2</b>\n\n
         * Datumswähler unterstützt Datumsangaben ab dem Jahr 0 und unvollständige Datumsangaben\n\n
         * Beschreibungen in HTML werden korrekt dargestellt und bearbeitet\n\n

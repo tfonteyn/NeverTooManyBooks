@@ -324,13 +324,13 @@ public class BooksOnBookshelf
         Bookshelf bookshelf;
         if (bookshelfName == null || bookshelfName.isEmpty()) {
             // pref not set, start with initial shelf
-            bookshelf = new Bookshelf(Bookshelf.DEFAULT_ID, getString(R.string.initial_bookshelf));
+            return new Bookshelf(Bookshelf.DEFAULT_ID, getString(R.string.initial_bookshelf));
         } else {
-            // try to get the id of the preferred shelf
+            // try to get the preferred shelf
             bookshelf = mDb.getBookshelfByName(bookshelfName);
             if (bookshelf == null) {
                 // shelf must have been deleted, switch to 'all book'
-                bookshelf = new Bookshelf(Bookshelf.ALL_BOOKS, getString(R.string.all_books));
+                return new Bookshelf(Bookshelf.ALL_BOOKS, getString(R.string.all_books));
             }
         }
         return bookshelf;

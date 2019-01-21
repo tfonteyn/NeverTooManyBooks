@@ -33,8 +33,8 @@ import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,6 +43,11 @@ import java.util.regex.Pattern;
 
 /**
  * Class to hold book-related series data.
+ * <p>
+ * Note:
+ * A Series as defined in the database is just id+name.
+ * The number is of course related to the book itself.
+ * So this class does not represent a Series, but a "BookInSeries"
  *
  * @author Philip Warner
  */
@@ -64,34 +69,22 @@ public class Series
             };
 
     /**
-     * Trim extraneous punctuation and whitespace from the titles and authors
-     *
-     * Original code had:
-     * "\\s*([0-9\\.\\-]+|[ivxlcm\\.\\-]+)\\s*$";
-     *
-     * Android Studio:
-     * Reports character escapes that are replaceable with the unescaped character without a
-     * change in meaning. Note that inside the square brackets of a character class, many
-     * escapes are unnecessary that would be necessary outside of a character class.
-     * For example the regex [\.] is identical to [.]
+     * Trim extraneous punctuation and whitespace from the name.
      */
     private static final String SERIES_REGEX_SUFFIX =
             BookCatalogueApp.getResString(R.string.series_number_prefixes)
                     + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
     private static final String SERIES_REGEX_1 = "^\\s*" + SERIES_REGEX_SUFFIX;
     private static final String SERIES_REGEX_2 = "(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX;
+    @SuppressWarnings("FieldCanBeLocal")
+    private static final Pattern PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
     /** Pattern used to recognize series numbers embedded in names. */
     private static Pattern mSeriesPat;
     /** Pattern used to remove extraneous text from series positions. */
     private static Pattern mSeriesPosCleanupPat;
     private static Pattern mSeriesIntegerPat;
-    @SuppressWarnings("FieldCanBeLocal")
-    private static final Pattern PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
     /*
-        A Series as defined in the database is really just id+name.
-        The number is of course related to the book itself.
 
-        ENHANCE: This class does not represent a Series, but a "BookInSeries"
      */
     public long id;
     public String name;
@@ -173,21 +166,20 @@ public class Series
             return null;
         }
         SeriesDetails details = null;
-        int last = title.lastIndexOf('(');
+        int openBracket = title.lastIndexOf('(');
         // We want a title that does not START with a bracket!
-        if (last >= 1) {
-            int close = title.lastIndexOf(')');
-            if (close > -1 && last < close) {
-                details = new SeriesDetails();
-                details.name = title.substring(last + 1, close);
-                details.startChar = last;
+        if (openBracket >= 1) {
+            int closeBracket = title.lastIndexOf(')');
+            if (closeBracket > -1 && openBracket < closeBracket) {
+                details = new SeriesDetails(title.substring(openBracket + 1, closeBracket),
+                                            openBracket);
                 if (mSeriesPat == null) {
                     mSeriesPat = Pattern.compile(SERIES_REGEX_2,
                                                  Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
                 }
-                Matcher matcher = mSeriesPat.matcher(details.name);
+                Matcher matcher = mSeriesPat.matcher(details.getName());
                 if (matcher.find()) {
-                    details.name = matcher.group(1);
+                    details.setName(matcher.group(1));
                     details.position = matcher.group(4);
                 }
             }
@@ -203,10 +195,12 @@ public class Series
      * @return the series number (remember: it's really alphanumeric)
      */
     @NonNull
-    private static String cleanupSeriesPosition(@Nullable String position) {
+    private static String cleanupSeriesPosition(@Nullable final String position) {
         if (position == null) {
             return "";
         }
+
+        String pos = position.trim();
 
         if (mSeriesPosCleanupPat == null) {
             mSeriesPosCleanupPat = Pattern.compile(SERIES_REGEX_1,
@@ -217,27 +211,23 @@ public class Series
             mSeriesIntegerPat = Pattern.compile(numericExp);
         }
 
-        position = position.trim();
-        Matcher matcher = mSeriesPosCleanupPat.matcher(position);
+        Matcher matcher = mSeriesPosCleanupPat.matcher(pos);
         if (matcher.find()) {
             // Try to remove leading zeros.
-            String pos = matcher.group(2);
-            Matcher intMatch = mSeriesIntegerPat.matcher(pos);
-            if (intMatch.find()) {
+            pos = matcher.group(2);
+            if (mSeriesIntegerPat.matcher(pos).find()) {
                 return Long.parseLong(pos) + "";
-            } else {
-                return pos;
             }
-        } else {
-            return position;
         }
+
+        return pos;
     }
 
     /**
      * Remove series from the list where the names are the same, but one entry has a
      * null or empty position.
      * eg. the following list should be processed as indicated:
-     *
+     * <p>
      * fred(5)
      * fred <-- delete
      * bill <-- delete
@@ -245,56 +235,68 @@ public class Series
      * bill(1)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean pruneSeriesList(@Nullable final List<Series> list) {
-        Objects.requireNonNull(list);
+    public static boolean pruneSeriesList(@NonNull final List<Series> list) {
 
-        List<Series> toDelete = new ArrayList<>();
-        Map<String, Series> index = new HashMap<>();
+        Map<String, Series> map = new HashMap<>();
 
-        for (Series s : list) {
-            final String lcName = s.name.trim().toLowerCase();
-            if (!index.containsKey(lcName)) {
+        // will be set to true if we deleted items.
+        boolean didDeletes = false;
+
+        Iterator<Series> it = list.iterator();
+        while (it.hasNext()) {
+            Series series = it.next();
+
+            final String name = series.name.trim().toLowerCase();
+            if (!map.containsKey(name)) {
                 // Just add and continue
-                index.put(lcName, s);
+                map.put(name, series);
             } else {
                 // See if we can purge either
-                if (s.mNumber == null || s.mNumber.trim().isEmpty()) {
+                if (series.mNumber == null || series.mNumber.trim().isEmpty()) {
                     // Always delete series with empty numbers if an equally or more
                     // specific one exists
-                    toDelete.add(s);
+                    it.remove();
+                    didDeletes = true;
                 } else {
                     // See if the one in 'index' also has a num
-                    Series orig = index.get(lcName);
+                    Series orig = map.get(name);
+                    Objects.requireNonNull(orig);
                     if (orig.mNumber == null || orig.mNumber.trim().isEmpty()) {
-                        // Replace with this one, and add original to the delete list
-                        index.put(lcName, s);
-                        toDelete.add(orig);
+                        // Replace with this one, and delete the original
+                        map.put(name, series);
+                        it.remove();
+                        didDeletes = true;
                     } else {
                         // Both have numbers. See if they are the same.
-                        if (s.mNumber.trim().toLowerCase().equals(
-                                orig.mNumber.trim().toLowerCase())) {
+                        if (series.mNumber.trim().toLowerCase()
+                                          .equals(orig.mNumber.trim().toLowerCase())) {
                             // Same exact series, delete this one
-                            toDelete.add(s);
+                            it.remove();
+                            didDeletes = true;
                         } //else {
-                        // Nothing to do: this is a different series position
+                        // Nothing to do: same series, but different series position
                         //}
                     }
                 }
             }
         }
 
-        for (Series s : toDelete) {
-            list.remove(s);
-        }
-
-        return toDelete.size() > 0;
+        return didDeletes;
 
     }
 
+    /**
+     * Sets the 'complete' status of the series.
+     *
+     * @param db         database
+     * @param id         series id
+     * @param isComplete Flag indicating the user considers this series to be 'complete'
+     *
+     * @return <tt>true</tt> for success
+     */
     public static boolean setComplete(@NonNull final DBA db,
                                       final long id,
-                                      final boolean isComplete
-    ) {
+                                      final boolean isComplete) {
         Series series = null;
         try {
             // load from database
@@ -313,14 +315,23 @@ public class Series
         }
     }
 
+    /**
+     * Sets the 'complete' status of the series.
+     * @param isComplete Flag indicating the user considers this series to be 'complete'
+     */
+    public void setComplete(final boolean isComplete) {
+        this.isComplete = isComplete;
+    }
+
+    /**
+     *
+     * @return <tt>true</tt> if the series is complete
+     */
     public boolean isComplete() {
         return isComplete;
     }
 
-    public void setComplete(final boolean complete) {
-        isComplete = complete;
-    }
-
+    /** {@link Parcelable}. */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags
@@ -338,6 +349,10 @@ public class Series
         return 0;
     }
 
+    /**
+     *
+     * @return User visible name; consisting of "name" or "name (nr)"
+     */
     @NonNull
     public String getDisplayName() {
         if (mNumber != null && !mNumber.isEmpty()) {
@@ -360,7 +375,7 @@ public class Series
      * Support for encoding to a text file.
      *
      * @return the object encoded as a String.
-     *
+     * <p>
      * "name (number)"
      * or
      * "name"
@@ -390,8 +405,8 @@ public class Series
 
     @Override
     public long fixupId(@NonNull final DBA db) {
-        this.id = db.getSeriesId(this);
-        return this.id;
+        id = db.getSeriesId(this);
+        return id;
     }
 
     /**
@@ -405,11 +420,11 @@ public class Series
 
     /**
      * Equality.
-     *
+     * <p>
      * - it's the same Object duh..
      * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
      * AND all their other fields are equal
-     *
+     * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
@@ -441,10 +456,27 @@ public class Series
      */
     public static class SeriesDetails {
 
-        public String name;
+        @NonNull
+        private String mName;
+
         @Nullable
         public String position;
-        public int startChar;
+
+        public final int startChar;
+
+        SeriesDetails(@NonNull final String name, final int startChar) {
+            mName = name;
+            this.startChar = startChar;
+        }
+
+        @NonNull
+        public String getName() {
+            return mName;
+        }
+
+        public void setName(@NonNull final String name) {
+            mName = name;
+        }
     }
 
 }

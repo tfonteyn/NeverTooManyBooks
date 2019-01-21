@@ -348,16 +348,16 @@ public final class CoversDBA
 
         try (Cursor cursor = mSyncedDb.query(TBL_IMAGE.getName(),
                                              new String[]{DOM_IMAGE.name},
-                                             DOM_FILENAME + "=? AND " + DOM_DATE + " > ?",
-                                             new String[]{filename, DateUtils.utcSqlDateTime(
-                                                     lastModified)},
+                                             DOM_FILENAME + "=? AND " + DOM_DATE + ">?",
+                                             new String[]{filename,
+                                                          DateUtils.utcSqlDateTime(lastModified)},
                                              null,
                                              null,
                                              null)) {
-            if (!cursor.moveToFirst()) {
-                return null;
+            if (cursor.moveToFirst()) {
+                return cursor.getBlob(0);
             }
-            return cursor.getBlob(0);
+            return null;
         }
     }
 

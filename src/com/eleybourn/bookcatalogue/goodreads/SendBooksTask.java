@@ -10,7 +10,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.GoodreadsTask;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 import java.io.IOException;
 
@@ -49,7 +49,7 @@ public abstract class SendBooksTask
         //  throw new IOException();
         //}
 
-        if (Utils.isNetworkAvailable(context)) {
+        if (NetworkUtils.isNetworkAvailable(context)) {
             GoodreadsManager grManager = new GoodreadsManager();
             // Ensure we are allowed
             if (grManager.hasValidCredentials()) {

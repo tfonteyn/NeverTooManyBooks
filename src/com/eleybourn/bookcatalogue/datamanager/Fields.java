@@ -57,11 +57,11 @@ import com.eleybourn.bookcatalogue.database.DBExceptions;
 import com.eleybourn.bookcatalogue.datamanager.datavalidators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.RTE;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -1252,7 +1252,7 @@ public class Fields
                     list.add(BookCatalogueApp.getResString(Book.EDITIONS.get(edition)));
                 }
             }
-            return Utils.toDisplayString(list);
+            return Csv.toDisplayString(list);
         }
 
         @NonNull

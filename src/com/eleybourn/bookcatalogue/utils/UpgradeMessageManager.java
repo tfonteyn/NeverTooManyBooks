@@ -19,7 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
-import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 
 import androidx.annotation.NonNull;
@@ -28,10 +27,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
-import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
-
-import java.util.ArrayList;
 
 /**
  * Class to manage the message that is displayed when the application is upgraded.
@@ -40,34 +36,43 @@ import java.util.ArrayList;
  * {@link #getUpgradeMessage()} method returns a non-empty string. When the message has been
  * acknowledged by the user, the startup activity should call {@link #setUpgradeAcknowledged()}
  * to store the current app version in preferences and so prevent re-display of the messages.
- *
- * @author pjw
  */
 public final class UpgradeMessageManager {
 
     /**
      * List of version-specific messages.
+     * 2019-01-18: messages up to 3.x deleted.
+     * Message 4.0.0 to 4.1 moved to the resource file, and added here.
      */
-    private static final UpgradeMessages UPGRADE_MESSAGES = new UpgradeMessages()
+    private static final int[][] UPGRADE_MESSAGES = {
+            // 4.0.0 is from mar/apr 2012 and was database version 72/73
+            {76, R.string.new_in_400},
+            {78, R.string.new_in_401},
+            {81, R.string.new_in_403},
+            {84, R.string.new_in_404},
+            {88, R.string.new_in_406},
+            {92, R.string.new_in_410},
+            {124, R.string.new_in_420},
+            {125, R.string.new_in_421},
+            {126, R.string.new_in_422},
+            {128, R.string.new_in_423},
+            {134, R.string.new_in_424},
 
-            .add(124, R.string.new_in_42)
-            .add(125, R.string.new_in_421)
-            .add(126, R.string.new_in_422)
-            .add(128, R.string.new_in_423)
-            .add(134, R.string.new_in_424)
-            .add(142, R.string.new_in_500)
-            .add(145, R.string.new_in_502)
-            .add(146, R.string.new_in_503)
-            .add(147, R.string.new_in_504)
-            .add(149, R.string.new_in_505)
-            .add(152, R.string.new_in_508)
-            .add(154, R.string.new_in_509)
-            .add(162, R.string.new_in_510)
-            .add(166, R.string.new_in_511)
-            .add(171, R.string.new_in_520)
-            .add(179, R.string.new_in_522)
+            // 5.0.0 is from Feb/Mar 2013 and was database version 80
+            {142, R.string.new_in_500},
+            {145, R.string.new_in_502},
+            {146, R.string.new_in_503},
+            {147, R.string.new_in_504},
+            {149, R.string.new_in_505},
+            {152, R.string.new_in_508},
+            {154, R.string.new_in_509},
+            {162, R.string.new_in_510},
+            {166, R.string.new_in_511},
+            {171, R.string.new_in_520},
+            {179, R.string.new_in_522},
 
-            .add(200, R.string.new_in_600);
+            {200, R.string.new_in_600},
+            };
 
     /** The message generated for this instance; will be set first time it is generated. */
     @Nullable
@@ -91,25 +96,17 @@ public final class UpgradeMessageManager {
         // Builder for message
         final StringBuilder message = new StringBuilder();
 
-        // See if we have a saved version id. If not, it's an pre-98 install.
+        // See if we have a saved version id; if it's 0, it's an upgrade from a pre-98 install.
         long lastVersion = Prefs.getPrefs().getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
-        if (lastVersion == 0) {
-            // It was an old install using old database-based message system
-            // set the version to the last installed version that used the old method.
-            lastVersion = 98;
-            if (!DBHelper.getMessage().isEmpty()) {
-                message.append("<p>").append(DBHelper.getMessage()).append("</p>");
-            }
-        }
 
         boolean first = true;
-        for (UpgradeMessage msg : UPGRADE_MESSAGES) {
-            if (msg.isApplicable(lastVersion)) {
+        for (int[] msg : UPGRADE_MESSAGES) {
+            if (msg[0] > lastVersion) {
                 if (!first) {
                     message.append('\n');
                 }
-                message.append(msg.getLocalizedMessage());
                 first = false;
+                message.append(BookCatalogueApp.getResString(msg[1]));
             }
         }
 
@@ -118,61 +115,9 @@ public final class UpgradeMessageManager {
     }
 
     public static void setUpgradeAcknowledged() {
-        try {
-            Context context = BookCatalogueApp.getAppContext();
-            // versionCode deprecated and new method in API: 28, till then ignore...
-            long currVersion = context.getPackageManager()
-                                      .getPackageInfo(context.getPackageName(), 0)
-                    .versionCode;
-
-            Prefs.getPrefs().edit()
-                 .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, currVersion).apply();
-        } catch (NameNotFoundException e) {
-            Logger.error(e, "Failed to get package version code");
-        }
-    }
-
-    /**
-     * Class to store one version-specific message.
-     *
-     * @author pjw
-     */
-    private static class UpgradeMessage {
-
-        private final long mVersion;
-        private final int mMessageId;
-
-        UpgradeMessage(final long version,
-                       final int messageId) {
-            mVersion = version;
-            mMessageId = messageId;
-        }
-
-        boolean isApplicable(final long lastVersion) {
-            return mVersion > lastVersion;
-        }
-
-        @NonNull
-        public String getLocalizedMessage() {
-            return BookCatalogueApp.getResString(mMessageId);
-        }
-    }
-
-    /**
-     * Class to manage a list of class-specific messages.
-     *
-     * @author pjw
-     */
-    private static class UpgradeMessages
-            extends ArrayList<UpgradeMessage> {
-
-        private static final long serialVersionUID = 3562347511212587059L;
-
-        @NonNull
-        public UpgradeMessages add(final long version,
-                                   final int messageId) {
-            add(new UpgradeMessage(version, messageId));
-            return this;
-        }
+            Prefs.getPrefs()
+                 .edit()
+                 .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, BookCatalogueApp.getVersion())
+                 .apply();
     }
 }

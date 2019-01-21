@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
 import java.util.Date;
@@ -188,10 +187,10 @@ public final class TasksCursor
      *
      * @return TaskException object
      *
-     * @throws RTE.DeserializationException f
+     * @throws SerializationUtils.DeserializationException f
      */
     public Exception getException()
-            throws RTE.DeserializationException {
+            throws SerializationUtils.DeserializationException {
         if (mExceptionCol == -1) {
             mExceptionCol = this.getColumnIndex(DOM_EXCEPTION);
         }
@@ -207,7 +206,7 @@ public final class TasksCursor
         byte[] blob = getBlob(mTaskCol);
         try {
             task = SerializationUtils.deserializeObject(blob);
-        } catch (RTE.DeserializationException de) {
+        } catch (SerializationUtils.DeserializationException de) {
             task = new LegacyTask();
         }
         task.setId(this.getId());

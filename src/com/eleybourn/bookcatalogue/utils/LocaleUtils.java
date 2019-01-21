@@ -9,9 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -141,7 +139,7 @@ public final class LocaleUtils {
 
     /**
      * Try to convert a DisplayName to an ISO3 code.
-     * At installation (or upgrade to v83) we generated the users System Locale + Locale.ENGLISH
+     * At installation (or upgrade to v200) we generated the users System Locale + Locale.ENGLISH
      * Each time the user switches language, we generate an additional set.
      * That probably covers a lot if not all.
      *
@@ -187,21 +185,6 @@ public final class LocaleUtils {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Write a key-value pair to our mapping file (a separate SharedPreferences file).
-     *
-     * @param displayName key
-     * @param iso         value
-     */
-    public static void cacheLanguage(@NonNull final String displayName,
-                                     @NonNull final String iso) {
-        getLanguageCache().edit().putString(displayName, iso).apply();
-        if (BuildConfig.DEBUG) {
-            Logger.info(LocaleUtils.class,
-                        "caching `" + displayName + "`=`" + iso + '`');
-        }
     }
 
     private static SharedPreferences getLanguageCache() {

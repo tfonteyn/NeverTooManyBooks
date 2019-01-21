@@ -22,7 +22,7 @@ public class ListOfValuesFilter<T>
     @NonNull
     private final DomainDefinition mDomain;
 
-    /** CSV list of values */
+    /** CSV list of (escaped) values. */
     @NonNull
     private final String mCriteria;
 

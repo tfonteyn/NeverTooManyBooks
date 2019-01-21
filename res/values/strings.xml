@@ -849,6 +849,22 @@
     <string name="lbl_details_have_changed">Details have changed</string>
 
     <!-- ####################################################################################### -->
+    <!-- == Book format names. Used to unify terminology from internet search sites.  == -->
+    <!-- ####################################################################################### -->
+    <!--  book format -->
+    <string name="book_format_hardcover">Hardcover</string>
+    <!--  book format -->
+    <string name="book_format_trade_paperback">Trade Paperback</string>
+    <!--  book format -->
+    <string name="book_format_paperback">Paperback</string>
+    <!--  book format -->
+    <string name="book_format_digest">Digest</string>
+    <!--  book format string used if a search site indicates it's an eBook -->
+    <string name="book_format_ebook">eBook</string>
+    <!-- book format string used if a search site indicates it's some sort of Audio (tape, cd, etc..) -->
+    <string name="book_format_audiobook">AudioBook</string>
+
+    <!-- ####################################################################################### -->
     <!-- == Build in styles == -->
     <!-- ####################################################################################### -->
 
@@ -1181,10 +1197,7 @@
 
     <!-- Name of the 'Default' bookshelf, created when app first installed. Needs to be short. -->
     <string name="initial_bookshelf">Default</string>
-    <!--  book format string used if a search site indicates in any form it's an eBook -->
-    <string name="book_format_ebook">eBook</string>
-    <!-- book format string used if a search site indicates in any form it's some sort of Audio (tape, cd, etc..) -->
-    <string name="book_format_audiobook">AudioBook</string>
+
 
     <string name="debug" translatable="false">Debug</string>
     <string name="history">History</string>

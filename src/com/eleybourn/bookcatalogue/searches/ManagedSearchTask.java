@@ -111,13 +111,13 @@ public abstract class ManagedSearchTask
         String bookTitle = mBookData.getString(UniqueId.KEY_TITLE);
         if (bookTitle != null) {
             SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
-            if (details != null && !details.name.isEmpty()) {
+            if (details != null && !details.getName().isEmpty()) {
                 ArrayList<Series> list = mBookData.getParcelableArrayList(
                         UniqueId.BKEY_SERIES_ARRAY);
                 if (list == null) {
                     list = new ArrayList<>();
                 }
-                list.add(new Series(details.name, details.position));
+                list.add(new Series(details.getName(), details.position));
                 // store Series back
                 mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
                 // remove series info from the book title.

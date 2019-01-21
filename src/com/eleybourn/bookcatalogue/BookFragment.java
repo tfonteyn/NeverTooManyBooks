@@ -440,7 +440,7 @@ public class BookFragment
      * @param bookId of the loaned book
      */
     private void populateLoanedToField(final long bookId) {
-        String personLoanedTo = mDb.getLoanByBookId(bookId);
+        String personLoanedTo = mDb.getLoaneeByBookId(bookId);
         if (personLoanedTo != null) {
             personLoanedTo = getString(R.string.loan_book_details_readonly_loaned_to,
                                        personLoanedTo);

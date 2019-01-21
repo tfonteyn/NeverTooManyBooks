@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class Bookshelf
         for (Bookshelf bookshelf : list) {
             allNames.add(bookshelf.name);
         }
-        return Utils.toDisplayString(allNames);
+        return Csv.toDisplayString(allNames);
     }
 
     @Override

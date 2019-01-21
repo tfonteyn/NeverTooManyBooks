@@ -19,8 +19,6 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,13 +28,21 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TOCEntry;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Provides a number of static methods to manipulate string lists.
+ * <p>
+ * Can also be instantiated to allow the use of generic elements in the lists.
+ * Contains some pre-defined static method for specific types; e.g. {@link Author} etc...
+ *
+ * @param <T>
+ */
 public class StringList<T> {
 
-    public static final char MULTI_STRING_SEPARATOR = '|';
-
+    private static final char MULTI_STRING_SEPARATOR = '|';
     @Nullable
     private static StringList<Bookshelf> mBookshelfUtils;
     @Nullable
@@ -45,12 +51,19 @@ public class StringList<T> {
     private static StringList<Series> mSeriesUtils;
     @Nullable
     private static StringList<TOCEntry> mTOCUtils;
-
     private Factory<T> mFactory;
 
+    /**
+     * Public constructor to roll your own.
+     */
     public StringList() {
     }
 
+    /**
+     * Private constructor to support pre-defined types.
+     *
+     * @param factory that can produce an object based on a single string value.
+     */
     private StringList(@NonNull final Factory<T> factory) {
         mFactory = factory;
     }
@@ -194,91 +207,13 @@ public class StringList<T> {
         return list;
     }
 
-    /**
-     * @see #encodeListItem(char, String).
-     */
-    @NonNull
-    public static String encodeListItem(@NonNull final String s) {
-        return encodeListItem(MULTI_STRING_SEPARATOR, s);
-    }
+
 
     /**
-     * Convert a string by 'escaping' all instances of: '|', '\', \r, \n.
-     * The escape char is '\'.
-     * <p>
-     * This is used to build text lists separated by the passed delimiter.
-     *
-     * @param delim The list delimiter to encode (if found).
-     * @param s     String to convert
-     *
-     * @return Converted string(trimmed)
-     */
-    @NonNull
-    public static String encodeListItem(final char delim,
-                                        @NonNull final String s) {
-        StringBuilder ns = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            switch (c) {
-                case '\\':
-                    ns.append("\\\\");
-                    break;
-                case '\r':
-                    ns.append("\\r");
-                    break;
-                case '\n':
-                    ns.append("\\n");
-                    break;
-                default:
-                    if (c == delim) {
-                        ns.append('\\');
-                    }
-                    ns.append(c);
-            }
-        }
-        return ns.toString().trim();
-    }
-
-    /**
-     * Add the value to the collection if not present,
-     * otherwise append the value to the list.
-     *
-     * @param bundle to add to
-     * @param key    for value to add
-     * @param value  to add
-     */
-    public static void addOrAppend(@NonNull final Bundle bundle,
-                                   @Nullable final String key,
-                                   @NonNull final String value) {
-        String s = encodeListItem(value);
-        if (!bundle.containsKey(key) || bundle.getString(key, "").isEmpty()) {
-            bundle.putString(key, s);
-        } else {
-            String curr = bundle.getString(key);
-            bundle.putString(key, curr + MULTI_STRING_SEPARATOR + s);
-        }
-    }
-
-    /**
-     * Add the value to the list if the value is actually 'real'.
-     *
-     * @param list  to add to
-     * @param value to add
-     */
-    public static void addIfHasValue(@NonNull final List<String> list,
-                                     @Nullable String value) {
-        if (value != null) {
-            value = value.trim();
-            if (!value.isEmpty()) {
-                list.add(value);
-            }
-        }
-    }
-
-    /**
-     * Decode a string list separated by '|' and encoded by {@link #encodeListItem(String)}.
+     * Decode a string list separated by '|' and encoded by {@link #escapeListItem}.
      *
      * @param stringList String representing the list
+     * @param allowBlank Flag to allow adding empty (non-null) strings
      *
      * @return Array of strings resulting from list
      */
@@ -290,9 +225,11 @@ public class StringList<T> {
 
     /**
      * Decode a string list separated by 'delim' and
-     * encoded by {@link #encodeListItem(char, String)}.
+     * encoded by {@link #escapeListItem(char, String)}.
      *
+     * @param delim      delimiter to use
      * @param stringList String representing the list
+     * @param allowBlank Flag to allow adding empty (non-null) strings
      *
      * @return Array of strings resulting from list
      */
@@ -357,8 +294,6 @@ public class StringList<T> {
         return list;
     }
 
-    /* ------------------------------------------------------------------------------------------ */
-
     /**
      * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n.
      * The escape char is '\'.
@@ -393,13 +328,50 @@ public class StringList<T> {
         StringBuilder ns = new StringBuilder();
         Iterator<T> si = list.iterator();
         if (si.hasNext()) {
-            ns.append(encodeListItem(delim, si.next().toString()));
+            ns.append(escapeListItem(delim, si.next().toString()));
             while (si.hasNext()) {
                 ns.append(delim);
-                ns.append(encodeListItem(delim, si.next().toString()));
+                ns.append(escapeListItem(delim, si.next().toString()));
             }
         }
         return ns.toString();
+    }
+
+    /**
+     * Convert a string by 'escaping' all instances of: '|', '\', \r, \n.
+     * The escape char is '\'.
+     * <p>
+     * This is used to build text lists separated by the passed delimiter.
+     *
+     * @param delim The list delimiter to encode (if found).
+     * @param s     String to convert
+     *
+     * @return Converted string(trimmed)
+     */
+    @NonNull
+    public static String escapeListItem(final char delim,
+                                        @NonNull final String s) {
+        StringBuilder ns = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '\\':
+                    ns.append("\\\\");
+                    break;
+                case '\r':
+                    ns.append("\\r");
+                    break;
+                case '\n':
+                    ns.append("\\n");
+                    break;
+                default:
+                    if (c == delim) {
+                        ns.append('\\');
+                    }
+                    ns.append(c);
+            }
+        }
+        return ns.toString().trim();
     }
 
     @NonNull

@@ -37,7 +37,8 @@ public final class DEBUG_SWITCHES {
     /** enable timers for performance measurements. */
     public static final boolean TIMERS = false;
 
-    public static final boolean DUMP_STYLE = true;
+    /** dump the style each time it is accessed. */
+    public static final boolean DUMP_STYLE = false;
 
     /** dump the sql string to the log. */
     public static final boolean SQL = false;
@@ -113,13 +114,16 @@ public final class DEBUG_SWITCHES {
      */
     public static final boolean DUMP_HTTP_RESPONSE = false;
     /**
-     * The Temporary database tables wil be created as Standard if set to true.
+     * The Temporary database tables wil be created as Standard if set.
      */
     public static final boolean TEMP_TABLES_ARE_STANDARD = false;
     /**
      * all things XML related.
      */
     public static final boolean XML = false;
+
+    /** Dump the SQL and the rowsAffected for a DELETE & UPDATE */
+    public static final boolean DB_SYNC_ROWS_AFFECTED = true;
 
     private DEBUG_SWITCHES() {
     }

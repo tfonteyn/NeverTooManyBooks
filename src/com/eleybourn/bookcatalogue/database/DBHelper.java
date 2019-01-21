@@ -15,55 +15,40 @@ import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
-import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.ColumnInfo;
+import com.eleybourn.bookcatalogue.database.definitions.IndexDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
+import com.eleybourn.bookcatalogue.database.definitions.TableInfo;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
 import java.io.File;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_AUTHOR_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_TOC_ENTRY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
@@ -77,9 +62,9 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_AUTHOR;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_TOC_ENTRIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_LOAN;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_ENTRIES;
 
@@ -90,21 +75,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_E
  * <p>
  * This used to be an inner class of {@link DBA}
  * Externalised because of the size of the class. ONLY used by {@link DBA}
- * <p>
- * <p>
- * NOTE: ***BEFORE*** changing any CREATE TABLE statement:
- * <p>
- * Making changes:
- * 1. copy the create statement to a renamed version in {@link UpgradeDatabase#doUpgrade}
- * 2. Find all uses in {@link UpgradeDatabase} and make sure upgrades use the
- * 'old/renamed' version of the statement
- * 3. modify the current statement, and if not already so, make it 'private'.
- * (tables that have never changed since conception will be package-private)
- * 4. modify {@link DomainDefinition} if needed to reflect the new version
- * 5. Check and check again, that *everything* EXCEPT {@link UpgradeDatabase} is using
- * the current version
- *
- * @author evan
  */
 public class DBHelper
         extends SQLiteOpenHelper {
@@ -120,162 +90,25 @@ public class DBHelper
     private static final String DATABASE_NAME = "book_catalogue";
 
     /**
-     * Database creation sql statement.
-     */
-    private static final String DATABASE_CREATE_BOOK_AUTHOR =
-            "CREATE TABLE " + TBL_BOOK_AUTHOR + '('
-                    + DOM_FK_BOOK_ID.def()
-                    + ',' + DOM_FK_AUTHOR_ID.def()
-                    + ',' + DOM_BOOK_AUTHOR_POSITION.def()
-                    //TODO: check PRIMARY KEY usage for all 'link' tables.
-                    + ',' + "PRIMARY KEY(" + DOM_FK_BOOK_ID + ',' + DOM_BOOK_AUTHOR_POSITION + ')'
-                    + ')';
-
-    /**
-     * Database creation sql statement.
-     */
-    private static final String DATABASE_CREATE_BOOK_SERIES =
-            "CREATE TABLE " + TBL_BOOK_SERIES + '('
-                    + DOM_FK_BOOK_ID.def()
-                    + ',' + DOM_FK_SERIES_ID.def()
-                    + ',' + DOM_BOOK_SERIES_NUM.def()
-                    + ',' + DOM_BOOK_SERIES_POSITION.def()
-                    + ',' + "PRIMARY KEY(" + DOM_FK_BOOK_ID + ',' + DOM_BOOK_SERIES_POSITION + ')'
-                    + ')';
-
-    /**
-     * Database creation sql statement.
-     */
-    private static final String DATABASE_CREATE_BOOKS =
-            "CREATE TABLE " + TBL_BOOKS + " (" + DOM_PK_ID.def()
-                    + ',' + DOM_TITLE.def()
-                    + ',' + DOM_BOOK_UUID.def()
-
-                    + ',' + DOM_BOOK_ISBN.def()
-                    + ',' + DOM_BOOK_PUBLISHER.def()
-                    + ',' + DOM_BOOK_DATE_PUBLISHED.def()
-                    + ',' + DOM_FIRST_PUBLICATION.def()
-                    + ',' + DOM_BOOK_EDITION_BITMASK.def()
-                    + ',' + DOM_BOOK_ANTHOLOGY_BITMASK.def()
-
-                    + ',' + DOM_BOOK_PRICE_LISTED.def()
-                    + ',' + DOM_BOOK_PRICE_LISTED_CURRENCY.def()
-                    + ',' + DOM_BOOK_PRICE_PAID.def()
-                    + ',' + DOM_BOOK_PRICE_PAID_CURRENCY.def()
-                    + ',' + DOM_BOOK_DATE_ACQUIRED.def()
-
-                    + ',' + DOM_BOOK_FORMAT.def()
-                    + ',' + DOM_BOOK_GENRE.def()
-                    + ',' + DOM_BOOK_LANGUAGE.def()
-                    + ',' + DOM_BOOK_LOCATION.def()
-                    + ',' + DOM_BOOK_PAGES.def()
-
-                    + ',' + DOM_BOOK_READ.def()
-                    + ',' + DOM_BOOK_READ_START.def()
-                    + ',' + DOM_BOOK_READ_END.def()
-
-                    + ',' + DOM_BOOK_SIGNED.def()
-                    + ',' + DOM_BOOK_RATING.def()
-
-                    + ',' + DOM_BOOK_DESCRIPTION.def()
-                    + ',' + DOM_BOOK_NOTES.def()
-
-                    + ',' + DOM_BOOK_ISFDB_ID.def()
-                    + ',' + DOM_BOOK_LIBRARY_THING_ID.def()
-                    + ',' + DOM_BOOK_GOODREADS_BOOK_ID.def()
-                    + ',' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE.def()
-
-                    + ',' + DOM_BOOK_DATE_ADDED.def()
-                    + ',' + DOM_LAST_UPDATE_DATE.def()
-                    + ')';
-
-    /**
-     * Database creation sql statement.
-     */
-    private static final String DATABASE_CREATE_TOC_ENTRIES =
-            "CREATE TABLE " + TBL_TOC_ENTRIES + " (" + DOM_PK_ID.def()
-                    // if an Author is deleted, set the id to null but keep the row.
-                    + ',' + DOM_FK_AUTHOR_ID.def() + " REFERENCES " + TBL_AUTHORS
-                    + " ON DELETE SET NULL ON UPDATE CASCADE"
-                    + ')';
-
-    /**
-     * All the indexes.
+     * Indexes which have not been added to the TBL definitions yet.
      */
     private static final String[] DATABASE_CREATE_INDICES = {
-            "CREATE INDEX IF NOT EXISTS authors_given_names ON " + TBL_AUTHORS
-                    + " (" + DOM_AUTHOR_GIVEN_NAMES + ')',
+            // for now, there is no API to add an index with a collation suffix.
             "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS
                     + " (" + DOM_AUTHOR_GIVEN_NAMES + DBA.COLLATION + ')',
-
-            "CREATE INDEX IF NOT EXISTS authors_family_name ON " + TBL_AUTHORS
-                    + " (" + DOM_AUTHOR_FAMILY_NAME + ')',
+            // for now, there is no API to add an index with a collation suffix.
             "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS
                     + " (" + DOM_AUTHOR_FAMILY_NAME + DBA.COLLATION + ')',
 
-
-            "CREATE INDEX IF NOT EXISTS books_title ON " + TBL_BOOKS
-                    + " (" + DOM_TITLE + ')',
+            // for now, there is no API to add an index with a collation suffix.
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
                     + " (" + DOM_TITLE + DBA.COLLATION + ')',
-
-            "CREATE INDEX IF NOT EXISTS books_isbn ON " + TBL_BOOKS
-                    + " (" + DOM_BOOK_ISBN + ')',
-            "CREATE INDEX IF NOT EXISTS books_publisher ON " + TBL_BOOKS
-                    + " (" + DOM_BOOK_PUBLISHER + ')',
-            "CREATE UNIQUE INDEX IF NOT EXISTS books_uuid ON " + TBL_BOOKS
-                    + " (" + DOM_BOOK_UUID + ')',
-
-            "CREATE INDEX IF NOT EXISTS books_gr_book ON " + TBL_BOOKS
-                    + " (" + DOM_BOOK_GOODREADS_BOOK_ID + ')',
-            "CREATE INDEX IF NOT EXISTS books_isfdb_book ON " + TBL_BOOKS
-                    + " (" + DOM_BOOK_ISFDB_ID + ')',
-
-
-            "CREATE UNIQUE INDEX IF NOT EXISTS loan_book_loaned_to ON " + TBL_LOAN
-                    + " (" + DOM_FK_BOOK_ID + ')',
-
-
-            "CREATE INDEX IF NOT EXISTS anthology_author ON " + TBL_TOC_ENTRIES
-                    + " (" + DOM_FK_AUTHOR_ID + ')',
-            "CREATE INDEX IF NOT EXISTS anthology_title ON " + TBL_TOC_ENTRIES
-                    + " (" + DOM_TITLE + ')',
-            "CREATE UNIQUE INDEX IF NOT EXISTS anthology_pk_idx ON " + TBL_TOC_ENTRIES
-                    + " (" + DOM_FK_AUTHOR_ID + ',' + DOM_TITLE + ')',
-
-
-            "CREATE INDEX IF NOT EXISTS book_anthology_anthology ON " + TBL_BOOK_TOC_ENTRIES
-                    + " (" + DOM_FK_TOC_ENTRY_ID + ')',
-            "CREATE INDEX IF NOT EXISTS book_anthology_book ON " + TBL_BOOK_TOC_ENTRIES
-                    + " (" + DOM_FK_BOOK_ID + ')',
-
-
-            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_book ON " + TBL_BOOK_BOOKSHELF
-                    + " (" + DOM_FK_BOOK_ID + ')',
-            "CREATE INDEX IF NOT EXISTS book_bookshelf_weak_bookshelf ON " + TBL_BOOK_BOOKSHELF
-                    + " (" + DOM_FK_BOOKSHELF_ID + ')',
-
-
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_author ON " + TBL_BOOK_AUTHOR
-                    + " (" + DOM_FK_AUTHOR_ID + ',' + DOM_FK_BOOK_ID + ')',
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_author_book ON " + TBL_BOOK_AUTHOR
-                    + " (" + DOM_FK_BOOK_ID + ',' + DOM_FK_AUTHOR_ID + ')',
-
-
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_series ON " + TBL_BOOK_SERIES
-                    + " (" + DOM_FK_SERIES_ID + ','
-                    + DOM_FK_BOOK_ID + ','
-                    + DOM_BOOK_SERIES_NUM + ')',
-            "CREATE UNIQUE INDEX IF NOT EXISTS book_series_book ON " + TBL_BOOK_SERIES
-                    + " (" + DOM_FK_BOOK_ID + ','
-                    + DOM_FK_SERIES_ID + ','
-                    + DOM_BOOK_SERIES_NUM + ')',
             };
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /** Readers/Writer lock for this database */
     private static Synchronizer mSynchronizer;
-    private static String mMessage = "";
 
     /**
      * Constructor.
@@ -293,10 +126,6 @@ public class DBHelper
         mSynchronizer = synchronizer;
     }
 
-    public static String getMessage() {
-        return mMessage;
-    }
-
     /**
      * @param context caller context
      *
@@ -307,6 +136,70 @@ public class DBHelper
     }
 
     /**
+     * Provide a safe table copy method that is insulated from risks associated with
+     * column reordering. This method will copy ALL columns from the source to the destination;
+     * if columns do not exist in the destination, an error will occur. Columns in the
+     * destination that are not in the source will be defaulted or set to NULL if no default
+     * is defined.
+     *
+     * @param sdb      the database
+     * @param from     from table
+     * @param to       to table
+     * @param toRemove (optional) List of fields to be removed from the source table
+     *                 (skipped in copy)
+     */
+    static void copyTableSafely(@NonNull final SynchronizedDb sdb,
+                                @SuppressWarnings("SameParameterValue") @NonNull final String from,
+                                @NonNull final String to,
+                                @NonNull final String... toRemove) {
+        // Get the source info
+        TableInfo src = new TableInfo(sdb, from);
+        // Build the column list
+        StringBuilder cols = new StringBuilder();
+        boolean first = true;
+        for (ColumnInfo ci : src) {
+            boolean isNeeded = true;
+            for (String s : toRemove) {
+                if (s.equalsIgnoreCase(ci.name)) {
+                    isNeeded = false;
+                    break;
+                }
+            }
+            if (isNeeded) {
+                if (first) {
+                    first = false;
+                } else {
+                    cols.append(',');
+                }
+                cols.append(ci.name);
+            }
+        }
+        String colList = cols.toString();
+        String sql = "INSERT INTO " + to + '(' + colList + ") SELECT " + colList + " FROM " + from;
+        sdb.execSQL(sql);
+    }
+
+    /**
+     * Renames the original table, recreates it, and loads the data into the new table.
+     *
+     * @param db              the database
+     * @param tableToRecreate the table
+     * @param toRemove        (optional) List of fields to be removed from the source table
+     */
+    private static void recreateAndReloadTable(@NonNull final SynchronizedDb db,
+                                               @SuppressWarnings("SameParameterValue")
+                                               @NonNull final TableDefinition tableToRecreate,
+                                               @NonNull final String... toRemove) {
+        final String tableName = tableToRecreate.getName();
+        final String tempName = "recreate_tmp";
+        db.execSQL("ALTER TABLE " + tableName + " RENAME TO " + tempName);
+        tableToRecreate.createAll(db);
+        // This handles re-ordered fields etc.
+        copyTableSafely(db, tempName, tableName, toRemove);
+        db.execSQL("DROP TABLE " + tempName);
+    }
+
+    /**
      * This function is called when the database is first created.
      *
      * @param db The database to be created
@@ -314,113 +207,126 @@ public class DBHelper
     @Override
     @CallSuper
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        StartupActivity startup = StartupActivity.getActiveActivity();
-
         Logger.info(this, "Creating database: " + db.getPath());
 
         SynchronizedDb syncedDb = new SynchronizedDb(db, mSynchronizer);
 
-        // RELEASE: Make sure these are always DATABASE_CREATE_table WITHOUT VERSIONS
+        TableDefinition.createTables(syncedDb,
+                                     TBL_BOOKSHELF,
+                                     TBL_AUTHORS,
+                                     TBL_SERIES,
+                                     TBL_BOOKS,
+                                     TBL_TOC_ENTRIES,
 
-        TBL_BOOKSHELF.createAll(syncedDb);
+                                     TBL_BOOK_TOC_ENTRIES,
+                                     TBL_BOOK_AUTHOR,
+                                     TBL_BOOK_BOOKSHELF,
+                                     TBL_BOOK_SERIES,
+                                     TBL_BOOK_LOANEE,
+
+                                     TBL_BOOKLIST_STYLES,
+
+                                     TBL_BOOK_LIST_NODE_SETTINGS);
+
+        // create the indexes not covered in the calls above.
+        createIndices(syncedDb, false);
+
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
-        db.execSQL("INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ") VALUES ('"
+        db.execSQL("INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ')'
+                           + " VALUES ('"
                            + BookCatalogueApp.getResString(R.string.initial_bookshelf)
                            + "')");
-
-
-        // the createAll() calls will also do the indexes, the create() calls not.
-        TBL_AUTHORS.create(syncedDb);
-        TBL_SERIES.createAll(syncedDb);
-        db.execSQL(DATABASE_CREATE_TOC_ENTRIES);
-        db.execSQL(DATABASE_CREATE_BOOKS);
-
-        TBL_LOAN.create(syncedDb);
-        TBL_BOOK_TOC_ENTRIES.create(syncedDb);
-        db.execSQL(DATABASE_CREATE_BOOK_AUTHOR);
-        TBL_BOOK_BOOKSHELF.create(syncedDb);
-        db.execSQL(DATABASE_CREATE_BOOK_SERIES);
-        // create the indexes not covered in the create() calls above.
-        createIndices(db);
-
-        TBL_BOOKLIST_STYLES.createAll(syncedDb);
-        TBL_BOOK_LIST_NODE_SETTINGS.createAll(syncedDb);
 
         //reminder: FTS columns don't need a type nor constraints
         TBL_BOOKS_FTS.create(syncedDb, false);
 
         createTriggers(syncedDb);
 
-        if (startup != null) {
-            startup.setNewInstallDone();
-        }
+        // 'Upgrade' from not being install.
+        UpgradeMessageManager.setUpgradeAcknowledged();
     }
 
     /**
-     * Create the database triggers. Currently only one, and the implementation needs refining!
+     * Create the database triggers.
      */
     private void createTriggers(@NonNull final SynchronizedDb db) {
-        String name = "books_tg_reset_goodreads";
-        String body = " after update of " + DOM_BOOK_ISBN + " ON " + TBL_BOOKS + " for each row\n"
-                + " When New." + DOM_BOOK_ISBN + " <> Old." + DOM_BOOK_ISBN + '\n'
-                + " Begin \n"
-                + "     UPDATE " + TBL_BOOKS + " SET \n"
-                + "         " + DOM_BOOK_GOODREADS_BOOK_ID + "=0,\n"
-                + "         " + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=''\n"
-                + "     WHERE\n"
-                + "         " + DOM_PK_ID + " = new." + DOM_PK_ID + ";\n"
-                + " End";
-        db.execSQL("DROP TRIGGER if Exists " + name);
-        db.execSQL("CREATE TRIGGER " + name + body);
+        String name;
+
+        // deleting a bookshelf will delete the link in TBL_BOOK_BOOKSHELF.
+        // Trigger an update of the books last-update-date (aka 'set dirty')
+//        name = TBL_BOOKS + "_tg_set_last_update_date";
+//        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+//        db.execSQL("CREATE TRIGGER " + name
+//                           + "\n AFTER DELETE ON " + TBL_BOOK_BOOKSHELF
+//                           + "\n FOR EACH ROW"
+//                           + "\n BEGIN"
+//                           + "\n    UPDATE " + TBL_BOOKS + " SET"
+//                           + "\n    " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+//                           + "\n    WHERE"
+//                           + "\n    " + DOM_PK_ID + "=old." + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOK_ID)
+//                           + ";\n END");
+
+        // If the ISBN of a book is changed, reset the GoodReads id and sync date.
+        name = TBL_BOOKS + "_tg_reset_goodreads";
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("CREATE TRIGGER " + name
+                           + "\n AFTER UPDATE OF " + DOM_BOOK_ISBN + " ON " + TBL_BOOKS
+                           + "\n FOR EACH ROW"
+                           + "\n WHEN New." + DOM_BOOK_ISBN + " <> Old." + DOM_BOOK_ISBN
+                           + "\n BEGIN"
+                           + "\n    UPDATE " + TBL_BOOKS + " SET"
+                           + "\n    " + DOM_BOOK_GOODREADS_BOOK_ID + "=0,"
+                           + "\n    " + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
+                           + "\n    WHERE"
+                           + "\n    " + DOM_PK_ID + "=new." + DOM_PK_ID
+                           + ";\n END");
     }
 
-    private void createIndices(@NonNull final SQLiteDatabase db) {
-        //delete all indices first
-        String sql = "SELECT name FROM sqlite_master WHERE type = 'index' AND sql is not null;";
-        try (Cursor current = db.rawQuery(sql, null)) {
-            while (current.moveToNext()) {
-                String indexName = current.getString(0);
-                String deleteSql = "DROP INDEX " + indexName;
-                try {
-                    db.execSQL(deleteSql);
-                } catch (SQLException e) {
-                    // bad sql is a developer issue... die!
-                    Logger.error(e);
-                    throw new IllegalArgumentException(e);
-                } catch (RuntimeException e) {
-                    Logger.error(e, "Index deletion failed (probably not a problem)");
-                }
+    /**
+     * This method should only be called at the *END* of onCreate/onUpdate.
+     * <p>
+     * (re)Creates the indexes as defined on the tables,
+     * followed by the {@link #DATABASE_CREATE_INDICES} set of indexes.
+     *
+     * @param db       the database
+     * @param recreate if <tt>true</tt> will delete all indexes first, and recreate them.
+     */
+    private void createIndices(@NonNull final SynchronizedDb db,
+                               final boolean recreate) {
+
+        if (recreate) {
+            // clean slate
+            IndexDefinition.dropAllIndexes(db);
+            // recreate the ones that are defined with the TableDefinition's
+            for (TableDefinition table : DatabaseDefinitions.ALL_TABLES.values()) {
+                table.createIndices(db);
             }
         }
 
+        // create/recreate the indexes with collation / which we have not added to
+        // the TableDefinition's yet
         for (String index : DATABASE_CREATE_INDICES) {
-            // Avoid index creation killing an upgrade because this method may be called by any
-            // upgrade script and some tables may not yet exist. We probably still want indexes.
-            //
-            // Ideally, whenever an upgrade script is written, the 'createIndices()' call
-            // from prior upgrades should be removed saved and used and a new version of this
-            // script written for the new DB.
             try {
                 db.execSQL(index);
             } catch (SQLException e) {
                 // bad sql is a developer issue... die!
                 Logger.error(e);
-                throw new IllegalArgumentException(e);
+                throw e;
             } catch (RuntimeException e) {
-                // Expected on multi-version upgrades.
-                Logger.error(e, "Index creation failed (probably not a problem),"
-                        + " definition was: " + index);
+                Logger.error(e, "Index creation failed: " + index);
             }
         }
         db.execSQL("analyze");
     }
 
     /**
-     * This function is called each time the database is upgraded. The function will run all
-     * upgrade scripts between the oldVersion and the newVersion.
+     * This function is called each time the database is upgraded.
+     * It will run all upgrade scripts between the oldVersion and the newVersion.
+     * Minimal application version 4.0.0 (database version 71)
+     *
      * <p>
-     * REMINDER: do not use [column].ref() here. The 'current' definition might not match the
-     * upgraded definition!
+     * REMINDER: do not use [column].ref() or [table].create/createAll.
+     * The 'current' definition might not match the upgraded definition!
      *
      * @param db         The database to be upgraded
      * @param oldVersion The current version number of the database
@@ -432,38 +338,41 @@ public class DBHelper
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
                           final int newVersion) {
+
+        Logger.info(this, "Old database version: " + oldVersion);
         Logger.info(this, "Upgrading database: " + db.getPath());
 
-        int curVersion = oldVersion;
-
         StartupActivity startup = StartupActivity.getActiveActivity();
+
+        if (oldVersion < 71) {
+            String fatal = "Cannot upgrade from a version older than 4.0.0";
+            if (startup != null) {
+                startup.updateProgress(fatal);
+            }
+            throw new IllegalStateException(fatal);
+        }
+
         if (startup != null) {
             startup.updateProgress(R.string.progress_msg_upgrading);
         }
 
         if (oldVersion != newVersion) {
-            StorageUtils.exportFile(db.getPath(),
-                                    "DbUpgrade-" + oldVersion + '-' + newVersion);
+            StorageUtils.exportFile(db.getPath(), "DbUpgrade-" + oldVersion + '-' + newVersion);
         }
 
-        if (curVersion < 11) {
-            onCreate(db);
-        }
-
+        int curVersion = oldVersion;
         SynchronizedDb syncedDb = new SynchronizedDb(db, mSynchronizer);
 
         // older version upgrades archived/execute in UpgradeDatabase
         if (curVersion < 82) {
             curVersion = UpgradeDatabase.doUpgrade(db, syncedDb, curVersion);
-            mMessage += UpgradeDatabase.getMessage();
         }
 
-        // db82 == app179 == 5.2.2
+        // db82 == app179 == 5.2.2 == last official version.
         if (curVersion < newVersion && curVersion == 82) {
-            // db100 == app200 == 6.0.0; next upgrades do a  curVersion++
+            // db100 == app200 == 6.0.0;
             //noinspection UnusedAssignment
             curVersion = 100;
-            mMessage += "Major upgrade; restart to see what's new\n\n";
 
             /* move cover files to a sub-folder.
             Only files with matching rows in 'books' are moved. */
@@ -488,7 +397,7 @@ public class DBHelper
                     .edit().clear().apply();
 
 
-            //TEST a proper upgrade from 82 to 83 with non-clean data
+            //TEST a proper upgrade from 82 to 100 with non-clean data
             // Due to a number of code remarks, and some observation... do a clean of some columns.
 
             // these two are due to a remark in the CSV exporter that (at one time?)
@@ -544,21 +453,26 @@ public class DBHelper
                                + " WHERE " + DOM_BOOKSHELF + " IS NULL");
 
             // this better work....
-            UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_BOOKS.getName(),
-                                                   DATABASE_CREATE_BOOKS);
+            recreateAndReloadTable(syncedDb, TBL_BOOKS);
 
             // anthology-titles are now cross-book;
             // e.g. one 'story' can be present in multiple books
-            TBL_BOOK_TOC_ENTRIES.create(syncedDb);
+            db.execSQL("CREATE TABLE " + TBL_BOOK_TOC_ENTRIES + " ("
+                               + DOM_PK_ID.def()
+                               + ',' + DOM_FK_BOOK_ID + " integer REFERENCES "
+                               + TBL_BOOKS + " ON DELETE CASCADE ON UPDATE CASCADE"
+                               + ',' + DOM_FK_TOC_ENTRY_ID + " integer REFERENCES "
+                               + TBL_TOC_ENTRIES + " ON DELETE CASCADE ON UPDATE CASCADE"
+                               + ',' + DOM_BOOK_TOC_ENTRY_POSITION + " integer not null" +
+                               ')');
+
             // move the existing book-anthology links to the new table
             db.execSQL("INSERT INTO " + TBL_BOOK_TOC_ENTRIES
                                + " SELECT " + DOM_FK_BOOK_ID + ',' + DOM_PK_ID + ','
                                + DOM_BOOK_TOC_ENTRY_POSITION + " FROM " + TBL_TOC_ENTRIES);
 
             // reorganise the original table
-            UpgradeDatabase.recreateAndReloadTable(syncedDb,
-                                                   TBL_TOC_ENTRIES.getName(),
-                                                   DATABASE_CREATE_TOC_ENTRIES,
+            recreateAndReloadTable(syncedDb, TBL_TOC_ENTRIES,
                     /* remove fields: */ DOM_FK_BOOK_ID.name, DOM_BOOK_TOC_ENTRY_POSITION.name);
 
 
@@ -566,7 +480,7 @@ public class DBHelper
             db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
                                + " ADD " + DOM_UUID + " text not null default ''");
 
-            // convert user styles
+            // convert user styles from serialized storage to SharedPreference xml.
             try (Cursor stylesCursor = db.rawQuery("SELECT " + DOM_PK_ID + ",style"
                                                            + " FROM " + TBL_BOOKLIST_STYLES,
                                                    null)) {
@@ -582,13 +496,13 @@ public class DBHelper
                                            + " SET " + DOM_UUID + "='" + style.getUuid() + '\''
                                            + " WHERE " + DOM_PK_ID + '=' + id);
 
-                    } catch (RTE.DeserializationException e) {
+                    } catch (SerializationUtils.DeserializationException e) {
                         Logger.error(e, "BooklistStyle id=" + id);
                     }
                 }
             }
-            // reorganise the original table
-            UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_BOOKLIST_STYLES,
+            // drop the serialized field.
+            recreateAndReloadTable(syncedDb, TBL_BOOKLIST_STYLES,
                     /* remove field */ "style");
 
             /* all books with a list price are assumed to be USD based on the only search up to v82
@@ -604,7 +518,7 @@ public class DBHelper
         }
 
         // Rebuild all indices
-        createIndices(db);
+        createIndices(syncedDb, true);
         // Rebuild all triggers
         createTriggers(syncedDb);
     }

@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.database.definitions;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -9,6 +8,7 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.Csv;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,12 +53,12 @@ public class TableDefinition
     private final List<DomainDefinition> mPrimaryKey = new ArrayList<>();
 
     /** List of parent tables (tables referred to by foreign keys on this table). */
-    private final Map<TableDefinition, FkReference> mParents = Collections.synchronizedMap(
-            new HashMap<TableDefinition, FkReference>());
+    private final Map<TableDefinition, FkReference> mParents =
+            Collections.synchronizedMap(new HashMap<TableDefinition, FkReference>());
 
     /** List of child tables (tables referring to by foreign keys to this table). */
-    private final Map<TableDefinition, FkReference> mChildren = Collections.synchronizedMap(
-            new HashMap<TableDefinition, FkReference>());
+    private final Map<TableDefinition, FkReference> mChildren =
+            Collections.synchronizedMap(new HashMap<TableDefinition, FkReference>());
 
     /** Table name. */
     private String mName;
@@ -76,22 +76,22 @@ public class TableDefinition
      */
     public TableDefinition(@NonNull final String name,
                            @NonNull final DomainDefinition... domains) {
-        this.mName = name;
-        this.mAlias = name;
-        this.mDomains = new ArrayList<>();
-        this.mDomains.addAll(Arrays.asList(domains));
+        mName = name;
+        mAlias = name;
+        // take a COPY
+        mDomains = new ArrayList<>(Arrays.asList(domains));
     }
 
     /**
-     * Constructor (empty table).
+     * Constructor (empty table). Used for cloning.
      */
     private TableDefinition() {
-        this.mName = "";
-        this.mDomains = new ArrayList<>();
+        mName = "";
+        mDomains = new ArrayList<>();
     }
 
     /**
-     * Given arrays of table and index definitions, create the database.
+     * Given a list of table, create the database (tables + indexes).
      *
      * @param db     Blank database
      * @param tables Table list
@@ -101,9 +101,23 @@ public class TableDefinition
         for (TableDefinition table : tables) {
             table.create(db);
             for (IndexDefinition index : table.getIndexes()) {
-                db.execSQL(index.getCreateStatement());
+                index.create(db);
             }
         }
+    }
+
+    /**
+     * Drop the passed table, if it exists.
+     *
+     * @param db   the database
+     * @param name name of the table to drop
+     */
+    private static void drop(@NonNull final SynchronizedDb db,
+                             @NonNull final String name) {
+        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+            Logger.info(TableDefinition.class, "Dropping TABLE " + name);
+        }
+        db.execSQL("DROP TABLE IF EXISTS " + name);
     }
 
     /**
@@ -129,7 +143,7 @@ public class TableDefinition
         List<TableDefinition> tmpParents = new ArrayList<>();
         for (Map.Entry<TableDefinition, FkReference> fkEntry : mParents.entrySet()) {
             FkReference fk = fkEntry.getValue();
-            tmpParents.add(fk.parent);
+            tmpParents.add(fk.mParent);
         }
         for (TableDefinition parent : tmpParents) {
             removeReference(parent);
@@ -139,7 +153,7 @@ public class TableDefinition
         List<TableDefinition> tmpChildren = new ArrayList<>();
         for (Map.Entry<TableDefinition, FkReference> fkEntry : mChildren.entrySet()) {
             FkReference fk = fkEntry.getValue();
-            tmpChildren.add(fk.child);
+            tmpChildren.add(fk.mChild);
         }
         for (TableDefinition child : tmpChildren) {
             child.removeReference(this);
@@ -161,15 +175,15 @@ public class TableDefinition
 
         for (Map.Entry<TableDefinition, FkReference> fkEntry : mParents.entrySet()) {
             FkReference fk = fkEntry.getValue();
-            newTbl.addReference(fk.parent, fk.domains);
+            newTbl.addReference(fk.mParent, fk.mDomains);
         }
         for (Map.Entry<TableDefinition, FkReference> fkEntry : mChildren.entrySet()) {
             FkReference fk = fkEntry.getValue();
-            fk.child.addReference(newTbl, fk.domains);
+            fk.mChild.addReference(newTbl, fk.mDomains);
         }
         for (Map.Entry<String, IndexDefinition> e : mIndexes.entrySet()) {
-            IndexDefinition i = e.getValue();
-            newTbl.addIndex(e.getKey(), i.getUnique(), i.getDomains());
+            IndexDefinition index = e.getValue();
+            newTbl.addIndex(e.getKey(), index.getUnique(), index.getDomains());
         }
         return newTbl;
     }
@@ -200,7 +214,7 @@ public class TableDefinition
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public TableDefinition setName(@NonNull final String newName) {
-        this.mName = newName;
+        mName = newName;
         return this;
     }
 
@@ -295,6 +309,8 @@ public class TableDefinition
 
     /**
      * Set the primary key domains.
+     * <p>
+     * Do not use this on a table which already has a standard column PK _id
      *
      * @param domains List of domains in PK
      *
@@ -308,21 +324,6 @@ public class TableDefinition
     }
 
     /**
-     * Set the primary key domains.
-     *
-     * @param domains List of domains in PK
-     *
-     * @return TableDefinition (for chaining)
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    private TableDefinition setPrimaryKey(@NonNull final List<DomainDefinition> domains) {
-        mPrimaryKey.clear();
-        mPrimaryKey.addAll(domains);
-        return this;
-    }
-
-    /**
      * Common code to add a foreign key (FK) references to another (parent) table.
      *
      * @param fk The FK object
@@ -331,18 +332,18 @@ public class TableDefinition
      */
     @NonNull
     private TableDefinition addReference(@NonNull final FkReference fk) {
-        if (fk.child != this) {
+        if (fk.mChild != this) {
             throw new IllegalArgumentException("Foreign key does not include this table as child");
         }
-        mParents.put(fk.parent, fk);
-        fk.parent.addChild(this, fk);
+        mParents.put(fk.mParent, fk);
+        fk.mParent.addChild(this, fk);
         return this;
     }
 
     /**
      * Add a foreign key (FK) references to another (parent) table.
      *
-     * @param parent  The referenced table
+     * @param parent  The referenced table (with the PK)
      * @param domains Domains in this table that reference Primary Key (PK) in parent
      *
      * @return TableDefinition (for chaining)
@@ -357,7 +358,7 @@ public class TableDefinition
     /**
      * Add a foreign key (FK) references to another (parent) table.
      *
-     * @param parent  The referenced table
+     * @param parent  The referenced table (with the PK)
      * @param domains Domains in this table that reference Primary Key (PK) in parent
      *
      * @return TableDefinition (for chaining)
@@ -477,6 +478,7 @@ public class TableDefinition
      * Add an index to this table.
      *
      * @param localName unique name, local for this table, to give this index. Alphanumeric Only.
+     *                  The full name will become: tableName_IXi_localName
      * @param unique    FLag indicating index is UNIQUE
      * @param domains   List of domains index
      *
@@ -486,22 +488,32 @@ public class TableDefinition
     public TableDefinition addIndex(@NonNull final String localName,
                                     final boolean unique,
                                     @NonNull final DomainDefinition... domains) {
+        return addIndex(localName, unique, Arrays.asList(domains));
+    }
+
+    /**
+     * Add an index to this table.
+     *
+     * @param localName unique name, local for this table, to give this index. Alphanumeric Only.
+     *                  The full name will become: tableName_IXi_localName
+     * @param unique    FLag indicating index is UNIQUE
+     * @param domains   List of domains index
+     *
+     * @return TableDefinition (for chaining)
+     */
+    @NonNull
+    private TableDefinition addIndex(@NonNull final String localName,
+                                     final boolean unique,
+                                     @NonNull final List<DomainDefinition> domains) {
         // Make sure not already defined
         if (mIndexes.containsKey(localName)) {
             throw new IllegalStateException(
                     "Index with local name '" + localName + "' already defined");
         }
         // Construct the full index name
-        String name = this.mName + "_IX" + (mIndexes.size() + 1) + '_' + localName;
+        String name = mName + "_IX" + (mIndexes.size() + 1) + '_' + localName;
         mIndexes.put(localName, new IndexDefinition(name, unique, this, domains));
         return this;
-    }
-
-    /**
-     * delete all rows from this table.
-     */
-    public void deleteAllRows(@NonNull final SynchronizedDb db) {
-        db.execSQL("DELETE FROM " + this.mName);
     }
 
     /**
@@ -517,17 +529,6 @@ public class TableDefinition
     }
 
     /**
-     * Static method to drop the passed table, if it exists.
-     */
-    private static void drop(@NonNull final SynchronizedDb db,
-                             @NonNull final String name) {
-        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            Logger.info(TableDefinition.class, "Dropping TABLE " + name);
-        }
-        db.execSQL("DROP TABLE If Exists " + name);
-    }
-
-    /**
      * Create this table.
      *
      * @param db Database in which to create table
@@ -537,7 +538,7 @@ public class TableDefinition
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public TableDefinition create(@NonNull final SynchronizedDb db) {
-        db.execSQL(getSqlCreateTable(mName, true, false));
+        db.execSQL(getSqlCreateStatement(mName, true, false));
         return this;
     }
 
@@ -553,7 +554,7 @@ public class TableDefinition
     @NonNull
     public TableDefinition create(@NonNull final SynchronizedDb db,
                                   final boolean withConstraints) {
-        db.execSQL(getSqlCreateTable(mName, withConstraints, false));
+        db.execSQL(getSqlCreateStatement(mName, withConstraints, false));
         return this;
     }
 
@@ -567,7 +568,7 @@ public class TableDefinition
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public TableDefinition createAll(@NonNull final SynchronizedDb db) {
-        db.execSQL(getSqlCreateTable(mName, true, false));
+        db.execSQL(getSqlCreateStatement(mName, true, false));
         createIndices(db);
         return this;
     }
@@ -580,8 +581,8 @@ public class TableDefinition
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition createIfNecessary(@NonNull final SynchronizedDb db) {
-        db.execSQL(getSqlCreateTable(mName, true, true));
+    public TableDefinition createIfNotExists(@NonNull final SynchronizedDb db) {
+        db.execSQL(getSqlCreateStatement(mName, true, true));
         return this;
     }
 
@@ -590,21 +591,25 @@ public class TableDefinition
      * <p>
      * format: INSERT into [table-name] ( [domain-list] )
      *
-     * @param domains List of domains to use
+     * @param withValues set to <tt>true</tt> to add the VALUES(?,..?) part
+     * @param domains    List of domains to use
      *
      * @return SQL fragment
      */
     @NonNull
-    public String getInsert(@NonNull final DomainDefinition... domains) {
-        StringBuilder s = new StringBuilder("INSERT INTO ");
-        s.append(mName);
-        s.append(" (");
-        s.append(domains[0]);
-        for (int i = 1; i < domains.length; i++) {
-            s.append(',');
-            s.append(domains[i]);
+    public String getInsert(final boolean withValues,
+                            @NonNull final DomainDefinition... domains) {
+        StringBuilder s = new StringBuilder("INSERT INTO ")
+                .append(mName)
+                .append(" (")
+                .append(Csv.csv(",", Arrays.asList(domains)))
+                .append(')');
+
+        if (withValues) {
+            s.append(" VALUES (")
+             .append(Csv.csv(",",domains.length, "?"))
+             .append(')');
         }
-        s.append(')');
         return s.toString();
     }
 
@@ -622,15 +627,13 @@ public class TableDefinition
      */
     @NonNull
     public String allColumns() {
-        final StringBuilder s = new StringBuilder(dot(mDomains.get(0)));
-
-        for (int i = 1; i < mDomains.size(); i++) {
-            s.append(',');
-            s.append(dot(mDomains.get(i)));
-        }
-        return s.toString();
+        return Csv.csv(",", mDomains, new Csv.Formatter<DomainDefinition>() {
+            @Override
+            public String format(@NonNull final DomainDefinition element) {
+                return dot(element);
+            }
+        });
     }
-
 
     /**
      * Return a base list of fields for this table using the passed list of domains.
@@ -644,17 +647,13 @@ public class TableDefinition
      * @see #dotAs
      */
     @NonNull
-    public String columnsRefAs(@Nullable final DomainDefinition... domains) {
-        if (domains == null || domains.length == 0) {
-            throw new IllegalStateException();
-        }
-
-        final StringBuilder s = new StringBuilder(dotAs(domains[0]));
-        for (int i = 1; i < domains.length; i++) {
-            s.append(',');
-            s.append(dotAs(domains[i]));
-        }
-        return s.toString();
+    public String columnsRefAs(@NonNull final DomainDefinition... domains) {
+        return Csv.csv(",", Arrays.asList(domains), new Csv.Formatter<DomainDefinition>() {
+            @Override
+            public String format(@NonNull final DomainDefinition element) {
+                return dotAs(element);
+            }
+        });
     }
 
     /**
@@ -668,46 +667,13 @@ public class TableDefinition
      */
     @NonNull
     public String getUpdate(@NonNull final DomainDefinition... domains) {
-        StringBuilder s = new StringBuilder("UPDATE ");
-        s.append(mName);
-        s.append(" SET ");
-        s.append(domains[0]);
-        s.append("=?");
-        for (int i = 1; i < domains.length; i++) {
-            s.append(',');
-            s.append(domains[i]);
-            s.append("=?");
-        }
-        return s.toString();
-    }
-
-    /**
-     * Return a base 'INSERT or REPLACE' statement for this table using the passed list of domains.
-     * <p>
-     * format: INSERT or REPLACE INTO [table-name] ( [domain-1] ) Values (?, ..., ?)
-     *
-     * @param domains List of domains to use
-     *
-     * @return SQL fragment
-     */
-    @NonNull
-    public String getInsertOrReplaceValues(@NonNull final DomainDefinition... domains) {
-        StringBuilder s = new StringBuilder("INSERT OR REPLACE INTO ");
-        StringBuilder sPlaceholders = new StringBuilder("?");
-        s.append(mName);
-        s.append(" ( ");
-        s.append(domains[0]);
-
-        for (int i = 1; i < domains.length; i++) {
-            s.append(", ");
-            s.append(domains[i]);
-
-            sPlaceholders.append(",?");
-        }
-        s.append(") VALUES (");
-        s.append(sPlaceholders);
-        s.append(')');
-        return s.toString();
+        return "UPDATE " + mName + " SET " +
+                Csv.csv(",", Arrays.asList(domains), new Csv.Formatter<DomainDefinition>() {
+                    @Override
+                    public String format(@NonNull final DomainDefinition element) {
+                        return element + "=?";
+                    }
+                });
     }
 
     /**
@@ -736,28 +702,34 @@ public class TableDefinition
      * Return the SQL that can be used to define this table.
      *
      * @param name            Name to use for table
-     * @param withConstraints Flag indicating domain constraints should be applied
-     * @param ifNecessary     Flag indicating if creation should not be done if table exists
+     * @param withConstraints Flag indicating constraints should be applied.
+     *                        This includes domain constraints and table foreign key constraints.
+     * @param ifNotExists     Flag indicating that creation should not be done if the table exists
      *
      * @return SQL to create table
      */
     @NonNull
-    private String getSqlCreateTable(@NonNull final String name,
-                                     final boolean withConstraints,
-                                     final boolean ifNecessary) {
+    private String getSqlCreateStatement(@NonNull final String name,
+                                         final boolean withConstraints,
+                                         final boolean ifNotExists) {
         StringBuilder sql = new StringBuilder("CREATE")
-                .append(mType.getCreateModifier()).append(" TABLE ");
-        if (ifNecessary) {
+                .append(mType.getCreateModifier())
+                .append(" TABLE");
+        if (ifNotExists) {
             if (mType.isVirtual()) {
                 throw new IllegalStateException(
                         "'if not exists' can not be used when creating virtual tables");
             }
-            sql.append(" if not exists ");
+            sql.append(" if not exists");
         }
 
-        sql.append(name).append(mType.getUsingModifier());
+        sql.append(' ')
+           .append(name)
+           .append(mType.getUsingModifier())
+           .append("\n(");
 
-        sql.append(" (");
+        // add the columns
+        boolean hasPrimaryKey = false;
         boolean first = true;
         for (DomainDefinition domain : mDomains) {
             if (first) {
@@ -766,13 +738,33 @@ public class TableDefinition
                 sql.append(',');
             }
             sql.append(domain.def(withConstraints));
+            // remember if we added a primary key column.
+            hasPrimaryKey = hasPrimaryKey || domain.isPrimaryKey();
         }
+
+        // add the primary key if not already added / needed.
+        if (!hasPrimaryKey && !mPrimaryKey.isEmpty()) {
+            sql.append("\n,PRIMARY KEY (")
+               .append(Csv.csv(",", mPrimaryKey))
+               .append(')');
+        }
+
+        // add foreign key constraints if allowed/needed.
+        if (withConstraints && !mParents.isEmpty()) {
+            sql.append(',')
+               .append(Csv.csv(",", mParents.values(), new Csv.Formatter<FkReference>() {
+                @Override
+                public String format(@NonNull final FkReference element) {
+                    return element.def();
+                }
+            }));
+        }
+
+        // end of column/constraint list
         sql.append(')');
 
-        //TOMF FIXME: PRIMARY and FOREIGN KEY definitions are missing.
-
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, "getSqlCreateTable: " + sql.toString());
+        if (/* always log */ BuildConfig.DEBUG) {
+            Logger.info(this, "getSqlCreateStatement:\n" + sql.toString());
         }
         return sql.toString();
     }
@@ -808,7 +800,7 @@ public class TableDefinition
         } else {
             fk = mParents.get(to);
         }
-        Objects.requireNonNull(fk, "No foreign key between '" + this.getName()
+        Objects.requireNonNull(fk, "No foreign key between '" + getName()
                 + "' and '" + to.getName() + '\'');
 
         return fk.getPredicate();
@@ -822,6 +814,21 @@ public class TableDefinition
     @NonNull
     private List<DomainDefinition> getPrimaryKey() {
         return mPrimaryKey;
+    }
+
+    /**
+     * Set the primary key domains.
+     *
+     * @param domains List of domains in PK
+     *
+     * @return TableDefinition (for chaining)
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    private TableDefinition setPrimaryKey(@NonNull final List<DomainDefinition> domains) {
+        mPrimaryKey.clear();
+        mPrimaryKey.addAll(domains);
+        return this;
     }
 
     /**
@@ -847,15 +854,15 @@ public class TableDefinition
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    private TableDefinition createIndices(@NonNull final SynchronizedDb db) {
-        for (IndexDefinition i : getIndexes()) {
-            db.execSQL(i.getCreateStatement());
+    public TableDefinition createIndices(@NonNull final SynchronizedDb db) {
+        for (IndexDefinition index : getIndexes()) {
+            index.create(db);
         }
         return this;
     }
 
     /**
-     * Check if the table exists within the passed DB.
+     * @return <tt>true</tt> if the table exists
      */
     public boolean exists(@NonNull final SynchronizedDb db) {
         try (SynchronizedStatement stmt = db.compileStatement(EXISTS_SQL)) {
@@ -885,7 +892,7 @@ public class TableDefinition
                 case Temporary:
                     return " Temporary";
                 default:
-                    return " ";
+                    return "";
             }
         }
 
@@ -906,29 +913,30 @@ public class TableDefinition
      */
     private static class FkReference {
 
-        /** Owner of primary key in FK reference. */
+        /** Owner of primary key that the FK references. */
         @NonNull
-        private final TableDefinition parent;
+        private final TableDefinition mParent;
         /** Table owning FK. */
         @NonNull
-        private final TableDefinition child;
+        private final TableDefinition mChild;
         /** Domains in the FK that reference the parent PK. */
         @NonNull
-        private final List<DomainDefinition> domains;
+        private final List<DomainDefinition> mDomains;
 
         /**
          * Constructor.
          *
-         * @param parent  Parent table (one with PK that FK references)
+         * @param parent  Parent table (one with PK that the FK references)
          * @param child   Child table (owner of the FK)
          * @param domains Domains in child table that reference PK in parent
          */
         FkReference(@NonNull final TableDefinition parent,
                     @NonNull final TableDefinition child,
                     @NonNull final DomainDefinition... domains) {
-            this.domains = new ArrayList<>(Arrays.asList(domains));
-            this.parent = parent;
-            this.child = child;
+            // take a COPY
+            mDomains = new ArrayList<>(Arrays.asList(domains));
+            mParent = parent;
+            mChild = child;
         }
 
         /**
@@ -941,9 +949,10 @@ public class TableDefinition
         FkReference(@NonNull final TableDefinition parent,
                     @NonNull final TableDefinition child,
                     @NonNull final List<DomainDefinition> domains) {
-            this.domains = new ArrayList<>(domains);
-            this.parent = parent;
-            this.child = child;
+            // take a COPY
+            mDomains = new ArrayList<>(domains);
+            mParent = parent;
+            mChild = child;
         }
 
         /**
@@ -955,21 +964,49 @@ public class TableDefinition
          */
         @NonNull
         String getPredicate() {
-            List<DomainDefinition> pk = parent.getPrimaryKey();
+            List<DomainDefinition> pk = mParent.getPrimaryKey();
+            if (BuildConfig.DEBUG) {
+                if (pk.isEmpty()) {
+                    throw new IllegalStateException("no primary key on table: " + mParent);
+                }
+            }
             StringBuilder sql = new StringBuilder();
             for (int i = 0; i < pk.size(); i++) {
                 if (i > 0) {
                     sql.append(" AND ");
                 }
-                sql.append(parent.getAlias());
+                sql.append(mParent.getAlias());
                 sql.append('.');
                 sql.append(pk.get(i).name);
                 sql.append('=');
-                sql.append(child.getAlias());
+                sql.append(mChild.getAlias());
                 sql.append('.');
-                sql.append(domains.get(i).name);
+                sql.append(mDomains.get(i).name);
             }
             return sql.toString();
+        }
+
+        /**
+         * Construct the definition string. Format:
+         * "FOREIGN KEY ([domain-list]) REFERENCES [pkTable] ([pk-list])"
+         *
+         * @return the definition
+         */
+        @NonNull
+        String def() {
+            return "FOREIGN KEY (" + Csv.csv(",", mDomains) +
+                    ") REFERENCES " + mParent +
+                    '(' + Csv.csv(",", mParent.getPrimaryKey()) + ')';
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "FkReference{" +
+                    "mParent=" + mParent +
+                    ", mChild=" + mChild +
+                    ", mDomains=" + mDomains +
+                    '}';
         }
     }
 }

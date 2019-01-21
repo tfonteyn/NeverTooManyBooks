@@ -71,7 +71,7 @@ public class FlattenedBooklist
             //RELEASE Make sure is TEMPORARY
             flat.setType(TableTypes.Temporary);
         }
-        init(db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing(), flat);
+        init(db.getUnderlyingDatabase(), flat);
     }
 
     /**

@@ -72,7 +72,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
@@ -141,7 +141,7 @@ public class CsvExporter
                     + '"' + DOM_BOOK_READ_END + "\","
                     + '"' + DOM_BOOK_FORMAT + "\","
                     + '"' + DOM_BOOK_SIGNED + "\","
-                    + '"' + DOM_LOANED_TO + "\","
+                    + '"' + DOM_LOANEE + "\","
                     + '"' + CSV_COLUMN_TOC + "\","
                     + '"' + DOM_BOOK_DESCRIPTION + "\","
                     + '"' + DOM_BOOK_GENRE + "\","
@@ -248,7 +248,7 @@ public class CsvExporter
                             .append(bookshelf.id)
                             .append(Bookshelf.SEPARATOR);
                     bookshelvesNameStringList
-                            .append(StringList.encodeListItem(Bookshelf.SEPARATOR, bookshelf.name))
+                            .append(StringList.escapeListItem(Bookshelf.SEPARATOR, bookshelf.name))
                             .append(Bookshelf.SEPARATOR);
                 }
 

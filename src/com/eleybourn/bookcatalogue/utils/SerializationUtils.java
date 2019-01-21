@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -66,16 +67,16 @@ public final class SerializationUtils {
     /**
      * Deserialize the passed byte array.
      *
-     * @throws RTE.DeserializationException on failure
+     * @throws DeserializationException on failure
      */
     @SuppressWarnings("unchecked")
     @NonNull
     public static <T> T deserializeObject(@NonNull final byte[] o)
-            throws RTE.DeserializationException {
+            throws DeserializationException {
         try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(o))) {
             return (T) in.readObject();
         } catch (@NonNull ClassCastException | ClassNotFoundException | IOException e) {
-            throw new RTE.DeserializationException(e);
+            throw new DeserializationException(e);
         }
     }
 
@@ -85,8 +86,21 @@ public final class SerializationUtils {
     @SuppressWarnings("unused")
     @NonNull
     public static <T extends Serializable> T cloneObject(@NonNull final T o)
-            throws RTE.DeserializationException {
+            throws DeserializationException {
         return deserializeObject(serializeObject(o));
     }
 
+    /**
+     * Catchall class for errors in serialization.
+     */
+    public static class DeserializationException
+            extends Exception {
+
+        private static final long serialVersionUID = -2040548134317746620L;
+
+        DeserializationException(@Nullable final Exception e) {
+            super();
+            initCause(e);
+        }
+    }
 }

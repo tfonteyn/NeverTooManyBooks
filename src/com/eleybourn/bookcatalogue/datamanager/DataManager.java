@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.datamanager.datavalidators.OrValidator;
 import com.eleybourn.bookcatalogue.datamanager.datavalidators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.RTE;
-import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -586,20 +585,6 @@ public class DataManager {
     @Override
     public String toString() {
         return Datum.toString(mBundle);
-    }
-
-    /**
-     * Append a string to a {@link StringList} value in this collection.
-     */
-    public void appendOrAdd(@NonNull final String key,
-                            @NonNull final String value) {
-        String s = StringList.encodeListItem(value);
-        if (!containsKey(key) || getString(key).isEmpty()) {
-            putString(key, s);
-        } else {
-            String curr = getString(key);
-            putString(key, curr + StringList.MULTI_STRING_SEPARATOR + s);
-        }
     }
 
     /**

@@ -65,11 +65,9 @@ public class About
 
         /* Version Number */
         TextView view = findViewById(R.id.version);
-        try {
-            PackageInfo info = this.getPackageManager().getPackageInfo(this.getPackageName(), 0);
-            view.setText(info.versionName);
-        } catch (NameNotFoundException e) {
-            Logger.error(e);
+        PackageInfo packageInfo = BookCatalogueApp.getPackageInfo(0);
+        if (packageInfo != null) {
+            view.setText(packageInfo.versionName);
         }
 
         view = findViewById(R.id.website);

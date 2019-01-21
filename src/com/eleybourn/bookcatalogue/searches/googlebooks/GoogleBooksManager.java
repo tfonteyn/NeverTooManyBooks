@@ -9,9 +9,9 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import org.xml.sax.SAXException;
 
@@ -112,7 +112,7 @@ public final class GoogleBooksManager {
         try {
             URL url = new URL(urlText);
             SAXParser parser = factory.newSAXParser();
-            parser.parse(Utils.getInputStreamWithTerminator(url), handler);
+            parser.parse(NetworkUtils.getInputStreamWithTerminator(url), handler);
 
             ArrayList<String> urlList = handler.getUrlList();
             if (urlList.size() > 0) {
@@ -120,7 +120,7 @@ public final class GoogleBooksManager {
                 urlText = urlList.get(0);
                 url = new URL(urlText);
                 parser = factory.newSAXParser();
-                parser.parse(Utils.getInputStreamWithTerminator(url), entryHandler);
+                parser.parse(NetworkUtils.getInputStreamWithTerminator(url), entryHandler);
             }
 
             // only catch exceptions related to the parsing, others will be caught by the caller.

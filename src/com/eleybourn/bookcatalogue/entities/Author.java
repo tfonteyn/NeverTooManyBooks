@@ -330,8 +330,8 @@ public class Author
     public String toString() {
         // Always use givenNames even if blanks because we need to KNOW they are blank.
         // There is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
-        return StringList.encodeListItem(SEPARATOR, mFamilyName) + SEPARATOR + ' ' + StringList
-                .encodeListItem(SEPARATOR, mGivenNames);
+        return StringList.escapeListItem(SEPARATOR, mFamilyName) + SEPARATOR + ' ' + StringList
+                .escapeListItem(SEPARATOR, mGivenNames);
     }
 
     /**

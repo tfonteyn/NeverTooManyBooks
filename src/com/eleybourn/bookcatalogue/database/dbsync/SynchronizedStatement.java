@@ -33,9 +33,8 @@ public class SynchronizedStatement
     private final SQLiteStatement mStatement;
     /** Indicates this is a 'read-only' statement. */
     private final boolean mIsReadOnly;
-    /** Copy of SQL used for debugging. */
-    @NonNull
-    private final String mSql;
+    /** Indicates this is a 'count' statement. */
+    private final boolean mIsCount;
     /** Indicates close() has been called. */
     private boolean mIsClosed = false;
 
@@ -45,10 +44,9 @@ public class SynchronizedStatement
     SynchronizedStatement(@NonNull final SynchronizedDb db,
                           @NonNull final String sql) {
         mSync = db.getSynchronizer();
-        mSql = sql;
-
         mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
-        mStatement = db.getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing().compileStatement(sql);
+        mIsCount = sql.trim().toUpperCase().startsWith("SELECT COUNT(");
+        mStatement = db.getUnderlyingDatabase().compileStatement(sql);
 
         if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
             Logger.info(this, sql + "\n\n");
@@ -181,7 +179,7 @@ public class SynchronizedStatement
      */
     public long count() {
         if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
-            if (!mSql.toUpperCase().startsWith("SELECT COUNT(")) {
+            if (!mIsCount) {
                 Logger.debug("count statement not a count?");
             }
         }
@@ -249,8 +247,8 @@ public class SynchronizedStatement
             mStatement.execute();
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(mStatement.toString() + '\n' + e);
-            throw new IllegalArgumentException(e);
+            Logger.error(e,mStatement.toString());
+            throw e;
         } finally {
             txLock.unlock();
         }
@@ -268,11 +266,16 @@ public class SynchronizedStatement
     public int executeUpdateDelete() {
         Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
         try {
-            return mStatement.executeUpdateDelete();
+            int rowsAffected =  mStatement.executeUpdateDelete();
+            if (DEBUG_SWITCHES.DB_SYNC_ROWS_AFFECTED && BuildConfig.DEBUG) {
+                Logger.info(this, "executeUpdateDelete|" + mStatement.toString());
+                Logger.info(this, "executeUpdateDelete|rowsAffected=" + rowsAffected);
+            }
+            return rowsAffected;
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(mStatement.toString() + '\n' + e);
-            throw new IllegalArgumentException(e);
+            Logger.error(e,mStatement.toString());
+            throw e;
         } finally {
             exclusiveLock.unlock();
         }
@@ -292,8 +295,8 @@ public class SynchronizedStatement
             return mStatement.executeInsert();
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(mStatement.toString() + '\n' + e);
-            throw new IllegalArgumentException(e);
+            Logger.error(e,mStatement.toString());
+            throw e;
         } finally {
             exclusiveLock.unlock();
         }
@@ -306,7 +309,7 @@ public class SynchronizedStatement
         if (!mIsClosed && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
             Logger.info(this, "Finalizing non-closed statement (potential error/small)");
             if (DEBUG_SWITCHES.SQL) {
-                Logger.debug(mSql);
+                Logger.debug(mStatement.toString());
             }
         }
 
@@ -319,9 +322,8 @@ public class SynchronizedStatement
     }
 
     @Override
+    @NonNull
     public String toString() {
-        return "SynchronizedStatement{" +
-            "mSql='" + mSql + '\'' +
-            '}';
+        return "SynchronizedStatement{" + mStatement.toString() + '}';
     }
 }

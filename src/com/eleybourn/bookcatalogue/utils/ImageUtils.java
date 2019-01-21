@@ -246,13 +246,13 @@ public final class ImageUtils {
                                               @NonNull final String name) {
         boolean success = false;
         final File file = StorageUtils.getTempCoverFile(name);
-        try (InputStream in = Utils.getInputStreamWithTerminator(new URL(urlText))) {
+        try (InputStream in = NetworkUtils.getInputStreamWithTerminator(new URL(urlText))) {
             if (in != null) {
                 success = StorageUtils.saveInputStreamToFile(in, file);
             } else {
                 Logger.error("InputStream was null");
             }
-        } catch (@NonNull IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.error(e);
         }
 
@@ -268,39 +268,23 @@ public final class ImageUtils {
      */
     @Nullable
     public static byte[] getBytesFromUrl(@NonNull final String urlText) {
-        InputStream in = null;
-        ByteArrayOutputStream out = null;
-        try {
-            in = Utils.getInputStreamWithTerminator(new URL(urlText));
+        try (InputStream in = NetworkUtils.getInputStreamWithTerminator(new URL(urlText))) {
             if (in != null) {
-                out = new ByteArrayOutputStream();
-                // Save the output to a byte output stream
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int len;
-                while ((len = in.read(buffer)) >= 0) {
-                    out.write(buffer, 0, len);
+                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                    // Save the output to a byte output stream
+                    byte[] buffer = new byte[BUFFER_SIZE];
+                    int len;
+                    while ((len = in.read(buffer)) >= 0) {
+                        out.write(buffer, 0, len);
+                    }
+                    return out.toByteArray();
                 }
-                return out.toByteArray();
             } else {
                 Logger.error("InputStream was null");
             }
-        } catch (@NonNull IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.error(e);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ignore) {
-                }
-            }
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException ignore) {
-                }
-            }
         }
-
         return null;
     }
 

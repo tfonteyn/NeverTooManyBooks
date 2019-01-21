@@ -48,7 +48,6 @@ import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.io.File;
 import java.io.IOException;
@@ -322,11 +321,26 @@ public class ImportAllTask
     private List<String> extractIsbnList(@NonNull final Bundle review) {
 
         List<String> list = new ArrayList<>();
-        StringList.addIfHasValue(list, review.getString(ListReviewsFieldNames.ISBN13));
-        StringList.addIfHasValue(list, review.getString(UniqueId.KEY_BOOK_ISBN));
+        addIfHasValue(list, review.getString(ListReviewsFieldNames.ISBN13));
+        addIfHasValue(list, review.getString(UniqueId.KEY_BOOK_ISBN));
         return list;
     }
 
+    /**
+     * Add the value to the list if the value is actually 'real'.
+     *
+     * @param list  to add to
+     * @param value to add
+     */
+    private static void addIfHasValue(@NonNull final List<String> list,
+                                      @Nullable final String value) {
+        if (value != null) {
+            String v = value.trim();
+            if (!v.isEmpty()) {
+                list.add(v);
+            }
+        }
+    }
     /**
      * Update the book using the GR data.
      */
@@ -502,12 +516,12 @@ public class ImportAllTask
         }
 
         /*
-         * Cleanup the title by removing series name, if present
+         * Cleanup the title by removing series name, if present.
          */
         if (book.containsKey(UniqueId.KEY_TITLE)) {
             String thisTitle = book.getString(UniqueId.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
-            if (details != null && !details.name.isEmpty()) {
+            if (details != null && !details.getName().isEmpty()) {
                 ArrayList<Series> allSeries;
                 if (bookCursorRow == null) {
                     allSeries = new ArrayList<>();
@@ -515,7 +529,7 @@ public class ImportAllTask
                     allSeries = db.getBookSeriesList(bookCursorRow.getId());
                 }
 
-                allSeries.add(new Series(details.name, details.position));
+                allSeries.add(new Series(details.getName(), details.position));
                 book.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
 
                 Series.pruneSeriesList(allSeries);
@@ -524,7 +538,7 @@ public class ImportAllTask
         }
 
         /*
-         * Process any bookshelves
+         * Process any bookshelves.
          */
         if (review.containsKey(ListReviewsFieldNames.SHELVES)) {
             ArrayList<Bundle> shelves = review.getParcelableArrayList(

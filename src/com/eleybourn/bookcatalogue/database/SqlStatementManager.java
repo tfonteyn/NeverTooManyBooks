@@ -20,40 +20,43 @@
 
 package com.eleybourn.bookcatalogue.database;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Objects;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * Manages the construction and closure of persisted SQLiteStatement objects.
- *
- * (As I understand it, the purpose is not the actual caching (Android does that anyhow) but
+ * <p>
+ * (tf: As I understand it, the purpose is not the actual caching (Android does that anyhow) but
  * the handling of properly closing statements).
  *
  * @author Philip Warner
  */
 public class SqlStatementManager
-    implements AutoCloseable {
+        implements AutoCloseable {
 
     @NonNull
-    private final Hashtable<String, SynchronizedStatement> mStatements;
+    private final Map<String, SynchronizedStatement> mStatements =
+            // not sure sync is needed. But this used to be a HashTable.
+            Collections.synchronizedMap(new HashMap<String, SynchronizedStatement>());
     @Nullable
     private final SynchronizedDb mSyncedDb;
 
     SqlStatementManager() {
-        this(null);
+        mSyncedDb = null;
     }
 
     public SqlStatementManager(@Nullable final SynchronizedDb db) {
         mSyncedDb = db;
-        mStatements = new Hashtable<>();
     }
 
     public SynchronizedStatement get(@NonNull final String name) {
@@ -81,18 +84,13 @@ public class SqlStatementManager
         return stmt;
     }
 
-    /**
-     * DEBUG help.
-     *
-     * @return list of all the names of the managed statements
-     */
-    @NonNull
-    public List<String> getNames() {
-        return new ArrayList<>(mStatements.keySet());
+    public int size() {
+        return mStatements.size();
     }
 
+
     /**
-     * RuntimeException are caught and fully ignored.
+     * RuntimeException are caught and ignored.
      */
     @Override
     public void close() {
@@ -107,7 +105,14 @@ public class SqlStatementManager
         }
     }
 
-    public int size() {
-        return mStatements.size();
+    /**
+     * DEBUG help.
+     *
+     * @return list of all the names of the managed statements
+     */
+    @NonNull
+    public List<String> getNames() {
+        return new ArrayList<>(mStatements.keySet());
     }
+
 }

@@ -22,7 +22,7 @@ import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.SearchManager;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 import java.util.Objects;
 
@@ -105,7 +105,7 @@ public abstract class BookSearchBaseFragment
             LibraryThingManager.showLtAlertIfNecessary(mActivity, false, "search");
         }
 
-        if (!Utils.isNetworkAvailable(mActivity)) {
+        if (!NetworkUtils.isNetworkAvailable(mActivity)) {
             StandardDialogs.showUserMessage(mActivity, R.string.error_no_internet_connection);
         }
     }

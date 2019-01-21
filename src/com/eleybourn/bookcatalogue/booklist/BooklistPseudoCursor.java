@@ -386,6 +386,7 @@ public class BooklistPseudoCursor
     }
 
     @Override
+    @NonNull
     public String toString() {
         return "BooklistPseudoCursor{" +
                 "mCursors=" + mCursors +

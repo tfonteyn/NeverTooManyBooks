@@ -69,7 +69,7 @@ public class UpdateFieldsFromInternetTask
     @NonNull
     private final Map<String, Fields.FieldUsage> mFields;
 
-    //** Lock help by pop and by push when an item was added to an empty stack. */
+    /** Lock help by pop and by push when an item was added to an empty stack. */
     private final ReentrantLock mSearchLock = new ReentrantLock();
     /** Signal for available items. */
     private final Condition mSearchDone = mSearchLock.newCondition();
@@ -106,11 +106,7 @@ public class UpdateFieldsFromInternetTask
 //        }
 //    };
 
-    /**
-     * where clause to use in cursor, none by default, but.
-     *
-     * @see #setBookId(long)
-     */
+    /** WHERE clause to use in cursor, none by default, but see {@link #setBookId(long)}. */
     @NonNull
     private String mBookWhereClause = "";
 
@@ -187,8 +183,8 @@ public class UpdateFieldsFromInternetTask
     public void setBookId(final long bookId) {
         //TODO: not really happy exposing the DOM's here, but it will do for now.
         // Ideally the sql behind this becomes static and uses binds
-        mBookWhereClause = DatabaseDefinitions.TBL_BOOKS.dot(
-                DatabaseDefinitions.DOM_PK_ID) + '=' + bookId;
+        mBookWhereClause =
+                DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID) + '=' + bookId;
     }
 
     @Override
@@ -198,8 +194,8 @@ public class UpdateFieldsFromInternetTask
         // the 'order by' makes sure we update the 'oldest' book to 'newest'
         // So if we get interrupted, we can pick up the thread (arf...) again later.
         try (Cursor books = mDb.fetchBooksWhere(mBookWhereClause, null,
-                                                DatabaseDefinitions.TBL_BOOKS.dot(
-                                                        DatabaseDefinitions.DOM_PK_ID))) {
+                                                DatabaseDefinitions.TBL_BOOKS
+                                                        .dot(DatabaseDefinitions.DOM_PK_ID))) {
 
             mTaskManager.setMaxProgress(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
@@ -501,14 +497,17 @@ public class UpdateFieldsFromInternetTask
                 UpdateFieldsFromInternetTask.<Author>merge(usage.fieldId,
                                                            originalBookData, newBookData);
                 break;
+
             case UniqueId.BKEY_SERIES_ARRAY:
                 UpdateFieldsFromInternetTask.<Series>merge(usage.fieldId,
                                                            originalBookData, newBookData);
                 break;
+
             case UniqueId.BKEY_TOC_TITLES_ARRAY:
                 UpdateFieldsFromInternetTask.<TOCEntry>merge(usage.fieldId,
                                                              originalBookData, newBookData);
                 break;
+
             default:
                 // No idea how to handle this for non-arrays
                 throw new RTE.IllegalTypeException("Illegal usage '" + usage.usage
@@ -533,6 +532,7 @@ public class UpdateFieldsFromInternetTask
                     }
                 }
                 break;
+
             case UniqueId.BKEY_SERIES_ARRAY:
                 if (originalBookData.containsKey(usage.fieldId)) {
                     ArrayList<Series> list =
@@ -542,6 +542,7 @@ public class UpdateFieldsFromInternetTask
                     }
                 }
                 break;
+
             case UniqueId.BKEY_TOC_TITLES_ARRAY:
                 if (originalBookData.containsKey(usage.fieldId)) {
                     ArrayList<TOCEntry> list =
@@ -551,6 +552,7 @@ public class UpdateFieldsFromInternetTask
                     }
                 }
                 break;
+
             default:
                 // If the original was non-blank, erase from list
                 String value = originalBookData.getString(usage.fieldId);

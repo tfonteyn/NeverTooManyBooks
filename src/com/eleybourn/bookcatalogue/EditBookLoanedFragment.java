@@ -120,7 +120,7 @@ public class EditBookLoanedFragment
         Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
-        String friend = mDb.getLoanByBookId(getBookManager().getBook().getBookId());
+        String friend = mDb.getLoaneeByBookId(getBookManager().getBook().getBookId());
         if (friend == null) {
             showLoanTo();
         } else {

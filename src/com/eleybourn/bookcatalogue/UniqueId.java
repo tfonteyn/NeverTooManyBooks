@@ -43,7 +43,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
@@ -157,7 +157,7 @@ public final class UniqueId {
     public static final String KEY_BOOK_LIBRARY_THING_ID = DOM_BOOK_LIBRARY_THING_ID.name;
     public static final String KEY_BOOK_ISFDB_ID = DOM_BOOK_ISFDB_ID.name;
     public static final String KEY_BOOK_GR_LAST_SYNC_DATE = DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name;
-    public static final String KEY_LOAN_LOANED_TO = DOM_LOANED_TO.name;
+    public static final String KEY_LOAN_LOANED_TO = DOM_LOANEE.name;
     static final int REQ_BOOK_EDIT = 2_000;
     static final int REQ_BOOK_DUPLICATE = 2_001;
     // Build-in system.

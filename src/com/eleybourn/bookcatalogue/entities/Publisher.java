@@ -89,7 +89,7 @@ public class Publisher
     @Override
     @NonNull
     public String toString() {
-        return StringList.encodeListItem(SEPARATOR, mName);
+        return StringList.escapeListItem(SEPARATOR, mName);
     }
 
     /**

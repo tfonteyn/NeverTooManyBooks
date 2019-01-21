@@ -43,8 +43,8 @@ import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.booklist.prefs.PString;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -413,7 +413,7 @@ public class BooklistStyle
 
         mFilterLoaned = new BooleanFilter(R.string.pk_bob_filter_loaned, mUuid,
                                           DatabaseDefinitions.TBL_BOOKS,
-                                          DatabaseDefinitions.DOM_LOANED_TO);
+                                          DatabaseDefinitions.DOM_LOANEE);
         mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
     }
 
@@ -722,7 +722,7 @@ public class BooklistStyle
      */
     @NonNull
     public String getGroupListDisplayNames() {
-        return Utils.toDisplayString(mStyleGroups.getGroups());
+        return Csv.toDisplayString(mStyleGroups.getGroups());
     }
 
     /**
@@ -954,8 +954,7 @@ public class BooklistStyle
     public void save(@NonNull final DBA db) {
         // negative id == builtin style
         if (mId < 0) {
-            throw new IllegalArgumentException(
-                    "Builtin Style is not stored in the database, can not be saved");
+            throw new IllegalStateException("Builtin Style cannot be saved to database");
         }
 
         // check if the style already exists.
@@ -977,8 +976,7 @@ public class BooklistStyle
     public void delete(@NonNull final DBA db) {
         // cannot delete a builtin or a 'new' style(id==0)
         if (mId <= 0) {
-            throw new IllegalArgumentException(
-                    "Style is not stored in the database, can not be deleted");
+            throw new IllegalArgumentException("Builtin Style cannot be deleted");
         }
         db.deleteBooklistStyle(mId);
         // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences(mUuid);
@@ -986,6 +984,7 @@ public class BooklistStyle
     }
 
     @Override
+    @NonNull
     public String toString() {
         return "\nBooklistStyle{" +
                 "id=" + mId +
@@ -1120,6 +1119,7 @@ public class BooklistStyle
         }
 
         @Override
+        @NonNull
         public String toString() {
             return "PStyleGroups{" +
                     "mGroups=" + mGroups +

@@ -26,6 +26,7 @@ public class JoinContext {
     public JoinContext(@NonNull final TableDefinition table) {
         mCurrentTable = table;
         mSql = new StringBuilder();
+        mSql.append(mCurrentTable.getName()).append(' ').append(mCurrentTable.getAlias());
     }
 
     /**
@@ -70,7 +71,7 @@ public class JoinContext {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public JoinContext leftOuterJoin(@NonNull final TableDefinition to) {
-        mSql.append(" LEFT OUTER ");
+        mSql.append(" LEFT OUTER");
         return join(to);
     }
 
@@ -86,19 +87,8 @@ public class JoinContext {
     @NonNull
     public JoinContext leftOuterJoin(@NonNull final TableDefinition from,
                                      @NonNull final TableDefinition to) {
-        mSql.append(" LEFT OUTER ");
+        mSql.append(" LEFT OUTER");
         return join(from, to);
-    }
-
-    /**
-     * Begin building the join using the current table.
-     *
-     * @return Join object (for chaining)
-     */
-    @NonNull
-    public JoinContext start() {
-        mSql.append(mCurrentTable.getName()).append(' ').append(mCurrentTable.getAlias());
-        return this;
     }
 
     /**

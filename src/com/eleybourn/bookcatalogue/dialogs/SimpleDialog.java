@@ -421,6 +421,7 @@ public final class SimpleDialog {
          * Get the underlying object as a string.
          */
         @Override
+        @NonNull
         public String toString() {
             return mRawValue.toString();
         }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="new_in_42">
+<string name="new_in_420">
 <![CDATA[
     <p><b>Novedades en la versión 4.2</b>\n\n
 			* Introducción de fecha que soporta fechas desde 0AD así como fechas parciales\n\n

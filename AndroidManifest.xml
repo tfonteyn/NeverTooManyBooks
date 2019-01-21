@@ -19,8 +19,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- for the 'loan' functionality -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <!-- to be able to check network access ?? FIXME: do we really need this ? -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <!-- supportsRtl: to satisfy lint -->
     <application

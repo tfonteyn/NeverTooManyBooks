@@ -28,6 +28,7 @@ import java.lang.reflect.Field;
 public class SynchronizedDb {
 
     private static final String ERROR_UPDATE_INSIDE_SHARED_TX = "Update inside shared TX";
+    private static Boolean mIsCollationCaseSensitive;
     /** Underlying database. */
     @NonNull
     private final SQLiteDatabase mSqlDb;
@@ -39,8 +40,6 @@ public class SynchronizedDb {
     /** Currently held transaction lock, if any. */
     @Nullable
     private Synchronizer.SyncLock mTxLock;
-
-    private Boolean mIsCollationCaseSensitive;
 
     /**
      * Constructor. Use of this method is not recommended. It is better to use
@@ -127,6 +126,14 @@ public class SynchronizedDb {
         }
     }
 
+    /**
+     * Check if the collation we use is case sensitive.
+     * ; bug introduced in ICS was to make UNICODE not CI.
+     * Due to bugs in other language sorting, we are now forced to use a different
+     * collation anyway, but we still check if it is CI.
+     *
+     * @return <tt>true</tt> if case-sensitive (i.e. up to "you" to add lower/upper calls)
+     */
     public boolean isCollationCaseSensitive() {
         if (mIsCollationCaseSensitive == null) {
             mIsCollationCaseSensitive = checkIfCollationIsCaseSensitive();
@@ -141,9 +148,22 @@ public class SynchronizedDb {
      * Call the passed database opener with retries to reduce risks of access conflicts
      * causing crashes.
      *
+     * About the SQLite version:
+     *    https://developer.android.com/reference/android/database/sqlite/package-summary
+     * API 27	3.19
+     * API 26	3.18
+     * API 24	3.9
+     * API 21	3.8 <=
+     * API 11	3.7
+     * API 8	3.6
+     * API 3	3.5
+     * API 1	3.4
+     * But some device manufacturers include different versions of SQLite on their devices.
+     *
+     *
      * @param opener SQLiteOpenHelper interface
      *
-     * @return The opened database
+     * @return a writable database
      */
     @NonNull
     private SQLiteDatabase openWithRetries(@NonNull final SQLiteOpenHelper opener) {
@@ -156,7 +176,15 @@ public class SynchronizedDb {
             Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {
                 SQLiteDatabase db = opener.getWritableDatabase();
-                Logger.info(this, db.getPath() + "|retriesLeft=" + retriesLeft);
+                String sqliteVersion = "";
+                    String sql = "select sqlite_version() AS sqlite_version";
+                    try (Cursor cursor = db.rawQuery(sql, null)) {
+                        if (cursor.moveToNext()) {
+                            sqliteVersion = cursor.getString(0);
+                        }
+                    }
+                Logger.info(this, db.getPath()
+                        + "|version=" + sqliteVersion + "|retriesLeft=" + retriesLeft);
                 return db;
             } catch (RuntimeException e) {
                 exclusiveLock.unlock();
@@ -232,8 +260,8 @@ public class SynchronizedDb {
             }
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(sql + '\n' + e);
-            throw new IllegalArgumentException(e);
+            Logger.error(e,sql);
+            throw e;
         }
     }
 
@@ -287,7 +315,7 @@ public class SynchronizedDb {
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(e);
-            throw new IllegalArgumentException(e);
+            throw e;
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -320,7 +348,7 @@ public class SynchronizedDb {
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(e);
-            throw new IllegalArgumentException(e);
+            throw e;
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -354,7 +382,7 @@ public class SynchronizedDb {
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(e);
-            throw new IllegalArgumentException(e);
+            throw e;
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -420,10 +448,12 @@ public class SynchronizedDb {
     }
 
     /**
+     * DO NOT CALL THIS UNLESS YOU REALLY NEED TO. DATABASE ACCESS SHOULD GO THROUGH THIS CLASS.
+     *
      * @return the underlying SQLiteDatabase object.
      */
     @NonNull
-    public SQLiteDatabase getUnderlyingDatabaseIfYouAreSureWhatYouAreDoing() {
+    public SQLiteDatabase getUnderlyingDatabase() {
         return mSqlDb;
     }
 
@@ -543,7 +573,7 @@ public class SynchronizedDb {
      * <p>
      * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
      * <p>
-     * Now the code has been generalized to allow for arbitrary changes to choice of collation.
+     * FIXME: Generalize code to allow for arbitrary changes to choice of collation.
      *
      * @author Philip Warner
      */
@@ -569,7 +599,7 @@ public class SynchronizedDb {
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(e);
-            throw new IllegalArgumentException(e);
+            throw e;
         } finally {
             try {
                 mSqlDb.execSQL("DROP TABLE If Exists collation_cs_check");

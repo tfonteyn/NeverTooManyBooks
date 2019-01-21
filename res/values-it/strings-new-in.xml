@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="new_in_42">
+    <string name="new_in_420">
 <![CDATA[
     <p><b>Novità nella versione 4.2</b>\n\n
 			* Gestore di Date che supporta date fino all\'anno 0 a.C. e date parziali\n\n
