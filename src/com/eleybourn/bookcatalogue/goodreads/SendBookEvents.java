@@ -42,9 +42,7 @@ import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -132,7 +130,7 @@ final class SendBookEvents {
                                     @NonNull final BindableItemCursor cursor,
                                     @NonNull final ViewGroup parent) {
             View view = LayoutInflater.from(context)
-                                      .inflate(R.layout.row_book_event_info, parent,false);
+                                      .inflate(R.layout.row_book_event_info, parent, false);
             ViewTagger.setTag(view, R.id.TAG_EVENT, this);
             BookEventHolder holder = new BookEventHolder();
             holder.event = this;
@@ -168,7 +166,7 @@ final class SendBookEvents {
             holder.event = this;
             holder.rowId = eventsCursor.getId();
 
-            ArrayList<Author> authors = db.getBookAuthorList(mBookId);
+            ArrayList<Author> authors = db.getAuthorsByBookId(mBookId);
             String author;
             if (authors.size() > 0) {
                 author = authors.get(0).getDisplayName();
@@ -185,8 +183,7 @@ final class SendBookEvents {
             }
 
             holder.titleView.setText(title);
-            holder.authorView.setText(
-                    String.format(context.getString(R.string.lbl_by_authors), author));
+            holder.authorView.setText(String.format(context.getString(R.string.lbl_by_authors), author));
             holder.errorView.setText(this.getDescription());
 
             String date = String.format(context.getString(R.string.gr_tq_occurred_at),
@@ -207,21 +204,15 @@ final class SendBookEvents {
             });
 
             // get book details
-            try (BookCursor bookCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
-                // Hide parts of view based on current book details.
-                if (bookCursor.moveToFirst()) {
-                    final BookRowView bookCursorRow = bookCursor.getCursorRow();
-                    if (bookCursorRow.getIsbn().isEmpty()) {
-                        holder.retryView.setVisibility(View.GONE);
-                    } else {
-                        holder.retryView.setVisibility(View.VISIBLE);
-                        ViewTagger.setTag(holder.retryView, this);
-                        holder.retryView.setOnClickListener(mRetryButtonListener);
-                    }
-                } else {
-                    holder.retryView.setVisibility(View.GONE);
-                }
+            String isbn = db.getBookIsbn(mBookId);
+            // Hide parts of view based on current book having an isbn or not..
+            if (isbn != null && !isbn.isEmpty()) {
+                holder.retryView.setVisibility(View.VISIBLE);
+                ViewTagger.setTag(holder.retryView, this);
+                holder.retryView.setOnClickListener(mRetryButtonListener);
+                return;
             }
+            holder.retryView.setVisibility(View.GONE);
         }
 
         /**
@@ -272,7 +263,7 @@ final class SendBookEvents {
 //                                                       GoodreadsSearchCriteriaActivity.class);
 //                            intent.putExtra(
 //                                    GoodreadsSearchCriteriaActivity.REQUEST_BKEY_BOOK_ID,
-//                                    holder.event.getBookId());
+//                                    holder.event.getId());
 //                            context.startActivity(intent);
 //                        }
 //                    }));
@@ -289,29 +280,24 @@ final class SendBookEvents {
                             }));
 
             // RETRY EVENT
-            try (BookCursor bookCursor = db.fetchBookForGoodreadsCursor(mBookId)) {
-                final BookRowView bookCursorRow = bookCursor.getCursorRow();
-                if (bookCursor.moveToFirst()) {
-                    if (!bookCursorRow.getIsbn().isEmpty()) {
-                        items.add(
-                                new ContextDialogItem(
-                                        context.getString(R.string.retry),
-                                        new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                try {
-                                                    GrSendBookEvent event =
-                                                            ViewTagger.getTagOrThrow(
-                                                                    view, R.id.TAG_EVENT);
-                                                    event.retry();
-                                                    QueueManager.getQueueManager().deleteEvent(id);
-                                                } catch (RuntimeException ignore) {
-                                                    // not a book event?
-                                                }
-                                            }
-                                        }));
-                    }
-                }
+            String isbn = db.getBookIsbn(mBookId);
+            if (isbn != null && !isbn.isEmpty()) {
+                items.add(
+                        new ContextDialogItem(
+                                context.getString(R.string.retry),
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            GrSendBookEvent event =
+                                                    ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
+                                            event.retry();
+                                            QueueManager.getQueueManager().deleteEvent(id);
+                                        } catch (RuntimeException ignore) {
+                                            // not a book event?
+                                        }
+                                    }
+                                }));
             }
         }
 
@@ -319,6 +305,7 @@ final class SendBookEvents {
          * Class to implement the 'holder' model for view we create.
          */
         static class BookEventHolder {
+
             long rowId;
             GrSendBookEvent event;
             TextView titleView;
@@ -346,6 +333,7 @@ final class SendBookEvents {
         }
 
         @Override
+        @StringRes
         public int getHint() {
             return R.string.gr_explain_goodreads_no_match;
         }
@@ -367,6 +355,7 @@ final class SendBookEvents {
         }
 
         @Override
+        @StringRes
         public int getHint() {
             return R.string.gr_explain_goodreads_no_isbn;
         }

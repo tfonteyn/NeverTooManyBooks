@@ -27,8 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DBExceptions;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -36,8 +35,13 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
+
 /**
- * Class to hold author data. Used in lists and import/export.
+ * Class to hold author data.
  *
  * @author Philip Warner
  */
@@ -58,10 +62,12 @@ public class Author
                 }
             };
 
-    private static final char SEPARATOR = ',';
+    /** String encoding use. */
+    private static final char FIELD_SEPARATOR = ',';
+
     /**
      * ENHANCE: author middle name; needs internationalisation ?
-     *
+     * <p>
      * Ursula Le Guin
      * Marianne De Pierres
      * A. E. Van Vogt
@@ -70,9 +76,9 @@ public class Author
     private static final Pattern FAMILY_NAME_PREFIX = Pattern.compile("[LlDd]e|[Vv][oa]n");
     /**
      * ENHANCE: author name suffixes; needs internationalisation ? probably not.
-     *
+     * <p>
      * j/s lower or upper case
-     *
+     * <p>
      * Foo Bar Jr.
      * Foo Bar Jr
      * Foo Bar Junior
@@ -81,18 +87,18 @@ public class Author
      * Foo Bar Senior
      * Foo Bar II
      * Charles Emerson Winchester III
-     *
+     * <p>
      * same as above, but with comma:
      * Foo Bar, Jr.
-     *
-     *
+     * <p>
+     * <p>
      * Not covered yet, and seen in the wild:
      * "James jr. Tiptree" -> suffix as a middle name.
      * "Dr. Asimov" -> titles... pre or suffixed
      */
     private static final Pattern FAMILY_NAME_SUFFIX = Pattern
             .compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
-    public long id;
+    private long mId;
     /** Family name(s). */
     private String mFamilyName;
     /** Given name(s). */
@@ -101,22 +107,15 @@ public class Author
     private boolean mIsComplete;
 
     /**
-     * Constructor that will attempt to parse a single string into an author name.
-     */
-    public Author(@NonNull final String name) {
-        fromString(name);
-    }
-
-    /**
-     * Constructor without ID.
+     * Constructor.
      *
      * @param familyName Family name
      * @param givenNames Given names
      */
     public Author(@NonNull final String familyName,
-                  @NonNull final String givenNames
-    ) {
-        this(0L, familyName, givenNames, false);
+                  @NonNull final String givenNames) {
+        mFamilyName = familyName.trim();
+        mGivenNames = givenNames.trim();
     }
 
     /**
@@ -129,12 +128,15 @@ public class Author
      */
     public Author(@NonNull final String familyName,
                   @NonNull final String givenNames,
-                  final boolean isComplete
-    ) {
-        this(0L, familyName, givenNames, isComplete);
+                  final boolean isComplete) {
+        mFamilyName = familyName.trim();
+        mGivenNames = givenNames.trim();
+        mIsComplete = isComplete;
     }
 
     /**
+     * Full constructor.
+     *
      * @param id         ID of author in DB (0 if not in DB)
      * @param familyName Family name
      * @param givenNames Given names
@@ -144,56 +146,83 @@ public class Author
     public Author(final long id,
                   @NonNull final String familyName,
                   @NonNull final String givenNames,
-                  final boolean isComplete
-    ) {
-        this.id = id;
+                  final boolean isComplete) {
+        mId = id;
         mFamilyName = familyName.trim();
         mGivenNames = givenNames.trim();
         mIsComplete = isComplete;
     }
 
+    /**
+     * Full constructor.
+     *
+     * @param mapper for the cursor.
+     */
+    public Author(@NonNull final ColumnMapper mapper) {
+        mId = mapper.getLong(DOM_PK_ID);
+        mFamilyName = mapper.getString(DOM_AUTHOR_FAMILY_NAME);
+        mGivenNames = mapper.getString(DOM_AUTHOR_GIVEN_NAMES);
+        mIsComplete = mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE);
+    }
+
+    /** {@link Parcelable}. */
     protected Author(@NonNull final Parcel in) {
-        id = in.readLong();
+        mId = in.readLong();
         mFamilyName = in.readString();
         mGivenNames = in.readString();
         mIsComplete = in.readByte() != 0;
-    }
-
-    public static boolean setComplete(@NonNull final DBA db,
-                                      final long id,
-                                      final boolean isComplete) {
-        Author author = null;
-        try {
-            // load from database
-            author = db.getAuthor(id);
-            //noinspection ConstantConditions
-            author.setComplete(isComplete);
-            return db.updateAuthor(author) == 1;
-        } catch (DBExceptions.UpdateException e) {
-            // log but ignore
-            Logger.error(e, "failed to set Author id=" + id
-                    + " to complete=" + isComplete);
-            // rollback
-            if (author != null) {
-                author.setComplete(!isComplete);
-            }
-            return false;
-        }
-    }
-
-    public void setComplete(final boolean complete) {
-        mIsComplete = complete;
     }
 
     public boolean isComplete() {
         return mIsComplete;
     }
 
+    public static boolean setComplete(@NonNull final DBA db,
+                                      final long id,
+                                      final boolean isComplete) {
+        // load from database
+        Author author = db.getAuthor(id);
+        Objects.requireNonNull(author);
+        author.setComplete(isComplete);
+        int rowsAffected = db.updateAuthor(author);
+        if (rowsAffected != 1) {
+            // rollback
+            author.setComplete(!isComplete);
+            return false;
+        }
+        return true;
+    }
+
+    public void setComplete(final boolean complete) {
+        mIsComplete = complete;
+    }
+
+    @Override
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(final long id) {
+        mId = id;
+    }
+
+    /**
+     * Syntax sugar to set the names in one call.
+     *
+     * @param familyName Family name
+     * @param givenNames Given names
+     */
+    public void setName(@NonNull final String familyName,
+                        @NonNull final String givenNames) {
+        mFamilyName = familyName;
+        mGivenNames = givenNames;
+    }
+
+    /** {@link Parcelable}. */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags
-    ) {
-        dest.writeLong(id);
+                              final int flags) {
+        dest.writeLong(mId);
         dest.writeString(mFamilyName);
         dest.writeString(mGivenNames);
         dest.writeByte((byte) (mIsComplete ? 1 : 0));
@@ -207,28 +236,28 @@ public class Author
     }
 
     /**
-     * This will parse a string into a family/given name pair.
+     * Parse a string into a family/given name pair.
      * The name can be in either "family, given" or "given family" format.
-     *
+     * <p>
      * Special rules, see {@link #FAMILY_NAME_PREFIX} and {@link #FAMILY_NAME_SUFFIX}
-     *
+     * <p>
      * Not covered are people with multiple, and not concatenated, last names.
-     *
+     * <p>
      * TODO: would be nice to redo with a rules based approach.
      *
      * @param name a String containing the name
      */
-    private void fromString(@NonNull String name) {
-        int commaIndex = name.indexOf(',');
+    public static Author fromString(@NonNull String name) {
+        //TODO: use the stringlist decode after we detect a comma ?
+        // check easy case first: "family, given"
+        int commaIndex = name.indexOf(FIELD_SEPARATOR);
         if (commaIndex > 0) {
             String beforeComma = name.substring(0, commaIndex).trim();
             String behindComma = name.substring(commaIndex + 1).trim();
             Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(behindComma);
             if (!matchSuffix.find()) {
                 // not a suffix, assume the names are already formatted.
-                mFamilyName = beforeComma;
-                mGivenNames = behindComma;
-                return;
+                return new Author(beforeComma, behindComma);
             } else {
                 // concatenate without the comma. Further processing will take care of the suffix.
                 name = beforeComma + ' ' + behindComma;
@@ -239,13 +268,9 @@ public class Author
         // two easy cases
         switch (names.length) {
             case 1:
-                mFamilyName = names[0];
-                mGivenNames = "";
-                return;
+                return new Author(names[0], "");
             case 2:
-                mFamilyName = names[1];
-                mGivenNames = names[0];
-                return;
+                return new Author(names[1], names[0]);
         }
 
         // we have 3 or more parts, check the family name for suffixes and prefixes
@@ -278,8 +303,7 @@ public class Author
             buildGivenNames.append(names[i]).append(' ');
         }
 
-        mFamilyName = buildFamilyName.toString().trim();
-        mGivenNames = buildGivenNames.toString().trim();
+        return new Author(buildFamilyName.toString(), buildGivenNames.toString());
     }
 
     public String getFamilyName() {
@@ -318,38 +342,51 @@ public class Author
         }
     }
 
+
+    @Override
+    @NonNull
+    public String toString() {
+        return stringEncoded();
+    }
+
     /**
      * Support for encoding to a text file.
      *
      * @return the object encoded as a String.
-     *
+     * <p>
      * "familyName, givenName"
      */
-    @Override
-    @NonNull
-    public String toString() {
-        // Always use givenNames even if blanks because we need to KNOW they are blank.
+    public String stringEncoded() {
+        // Always use givenNames even if blank because we need to KNOW they are blank.
         // There is a slim chance that family name may contain spaces (eg. 'Anonymous Anarchists').
-        return StringList.escapeListItem(SEPARATOR, mFamilyName) + SEPARATOR + ' ' + StringList
-                .escapeListItem(SEPARATOR, mGivenNames);
+        return StringList.escapeListItem(FIELD_SEPARATOR, mFamilyName)
+                + FIELD_SEPARATOR + ' '
+                + StringList.escapeListItem(FIELD_SEPARATOR, mGivenNames);
     }
 
     /**
      * Replace local details from another author.
      *
-     * @param source Author to copy
+     * @param source Author to copy from
      */
     public void copyFrom(@NonNull final Author source) {
         mFamilyName = source.mFamilyName;
         mGivenNames = source.mGivenNames;
         mIsComplete = source.mIsComplete;
-        id = source.id;
     }
 
+    /**
+     * Finds the Author by using all fields except the id.
+     * Then 'fixup' the local id with the id from the database.
+     *
+     * @param db database
+     *
+     * @return the id.
+     */
     @Override
     public long fixupId(@NonNull final DBA db) {
-        this.id = db.getAuthorIdByName(this.mFamilyName, this.mGivenNames);
-        return this.id;
+        mId = db.getAuthorIdByName(mFamilyName, mGivenNames);
+        return mId;
     }
 
     /**
@@ -362,11 +399,11 @@ public class Author
 
     /**
      * Equality.
-     *
+     * <p>
      * - it's the same Object duh..
      * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
      * AND all their other fields are equal
-     *
+     * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
@@ -378,23 +415,17 @@ public class Author
             return false;
         }
         Author that = (Author) obj;
-        if (this.id != 0 && that.id != 0 && this.id != that.id) {
+        if (this.mId != 0 && that.mId != 0 && this.mId != that.mId) {
             return false;
         }
 
-        return Objects.equals(this.mFamilyName, that.mFamilyName)
-                && Objects.equals(this.mGivenNames, that.mGivenNames)
-                && (this.mIsComplete == that.mIsComplete);
+        return Objects.equals(mFamilyName, that.mFamilyName)
+                && Objects.equals(mGivenNames, that.mGivenNames)
+                && (mIsComplete == that.mIsComplete);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, mFamilyName, mGivenNames);
-    }
-
-    public void copy(@NonNull final Author that) {
-        mFamilyName = that.getFamilyName();
-        mGivenNames = that.getGivenNames();
-        mIsComplete = that.isComplete();
+        return Objects.hash(mId, mFamilyName, mGivenNames);
     }
 }

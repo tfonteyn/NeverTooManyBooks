@@ -24,7 +24,17 @@ public class PString extends PPrefBase<String> {
         if (mUuid == null) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            return Prefs.getPrefs(mUuid).getString(getKey(), mDefaultValue);
+            // guard against the pref being there, but with value null.
+            String tmp = Prefs.getPrefs(mUuid).getString(getKey(), mDefaultValue);
+            return tmp != null ? tmp : mDefaultValue;
         }
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PString{" + super.toString()
+                + ",value=`" + get() + '`'
+                + '}';
     }
 }

@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -115,16 +116,27 @@ public final class HintManager {
     /** Reset all hints to that they will be displayed again. */
     public static void resetHints() {
         for (Hint h : mHints.values()) {
-            h.setVisibility(true);
-            h.setHasBeenDisplayed(false);
+            h.reset();
         }
     }
 
-    public static boolean shouldBeShown(@StringRes final int id) {
-        return mHints.get(id).shouldBeShown();
+    /**
+     * Convenience method so the main code is not polluted with the rather long arguments.
+     *
+     * @param inflater to use.
+     */
+    public static void showAmazonHint(@NonNull final LayoutInflater inflater) {
+        Context context = inflater.getContext();
+        displayHint(inflater, R.string.hint_amazon_links_blurb, null,
+                    context.getString(R.string.menu_amazon_books_by_author),
+                    context.getString(R.string.menu_amazon_books_in_series),
+                    context.getString(R.string.menu_amazon_books_by_author_in_series),
+                    context.getString(R.string.app_name));
     }
 
-    /** Display the passed hint, if the user has not disabled it. */
+    /**
+     * Display the passed hint, if the user has not disabled it.
+     */
     public static void displayHint(@NonNull final LayoutInflater inflater,
                                    @StringRes final int stringId,
                                    @Nullable final Runnable postRun,
@@ -142,53 +154,12 @@ public final class HintManager {
             }
             return;
         }
-
-        // Build the hint dialog
-        final View root = inflater.inflate(R.layout.dialog_hint, null);
-
-        // Setup the message
-        final TextView msgField = root.findViewById(R.id.hint);
-        if (msgField != null) {
-            String hintText = BookCatalogueApp.getResString(stringId, args);
-            msgField.setText(Utils.linkifyHtml(hintText));
-
-            // Automatically start a browser (or whatever)
-            msgField.setMovementMethod(LinkMovementMethod.getInstance());
-        }
-
-        final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
-                .setView(root)
-                .setTitle(R.string.hint)
-                .create();
-
-        //noinspection ConstantConditions
-        root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dialog.dismiss();
-                if (postRun != null) {
-                    postRun.run();
-                }
-            }
-        });
-
-        //noinspection ConstantConditions
-        root.findViewById(R.id.hint_do_not_show_again).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dialog.dismiss();
-                hint.setVisibility(false);
-                if (postRun != null) {
-                    postRun.run();
-                }
-            }
-        });
-        dialog.show();
-        hint.setHasBeenDisplayed(true);
+        hint.display(inflater, stringId, args, postRun);
     }
 
     public interface HintOwner {
 
+        @StringRes
         int getHint();
     }
 
@@ -211,17 +182,7 @@ public final class HintManager {
          * @param key Preferences key suffix specific to this hint
          */
         private Hint(@NonNull final String key) {
-            mKey = key;
-        }
-
-        /**
-         * Get the preference name for this hint.
-         *
-         * @return Fully qualified preference name
-         */
-        @NonNull
-        private String getFullPrefName() {
-            return PREF_HINT + mKey;
+            mKey = PREF_HINT + key;
         }
 
         /**
@@ -230,22 +191,76 @@ public final class HintManager {
          * @param visible Flag indicating future visibility
          */
         private void setVisibility(final boolean visible) {
-            Prefs.getPrefs().edit().putBoolean(getFullPrefName(), visible).apply();
+            Prefs.getPrefs().edit().putBoolean(mKey, visible).apply();
         }
 
         /**
          * Check if this hint should be shown.
          */
         private boolean shouldBeShown() {
-            return !hasBeenDisplayed() && Prefs.getPrefs().getBoolean(getFullPrefName(), true);
+            return !mHasBeenDisplayed && Prefs.getPrefs().getBoolean(mKey, true);
         }
 
-        private boolean hasBeenDisplayed() {
-            return mHasBeenDisplayed;
+        /**
+         * display the hint.
+         *
+         * @param inflater  to use
+         * @param stringId  for the message
+         * @param args      for the message
+         * @param postRun   Runnable to start afterwards
+         */
+        void display(@NonNull final LayoutInflater inflater,
+                     @StringRes final int stringId,
+                     @Nullable final Object[] args,
+                     @Nullable final Runnable postRun) {
+
+            // Build the hint dialog
+            final View root = inflater.inflate(R.layout.dialog_hint, null);
+
+            // Setup the message
+            final TextView messageView = root.findViewById(R.id.hint);
+            if (messageView != null) {
+                String hintText = BookCatalogueApp.getResString(stringId, args);
+                // allow links
+                messageView.setText(Utils.linkifyHtml(hintText));
+                // clicking a link, start a browser (or whatever)
+                messageView.setMovementMethod(LinkMovementMethod.getInstance());
+            }
+
+            final AlertDialog dialog = new AlertDialog.Builder(inflater.getContext())
+                    .setView(root)
+                    .setTitle(R.string.hint)
+                    .create();
+
+            //noinspection ConstantConditions
+            root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(@NonNull final View v) {
+                    dialog.dismiss();
+                    if (postRun != null) {
+                        postRun.run();
+                    }
+                }
+            });
+
+            //noinspection ConstantConditions
+            root.findViewById(R.id.hint_do_not_show_again).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(@NonNull final View v) {
+                    dialog.dismiss();
+                    setVisibility(false);
+                    if (postRun != null) {
+                        postRun.run();
+                    }
+                }
+            });
+            dialog.show();
+            mHasBeenDisplayed = true;
         }
 
-        private void setHasBeenDisplayed(final boolean hasBeenDisplayed) {
-            mHasBeenDisplayed = hasBeenDisplayed;
+        public void reset() {
+            setVisibility(true);
+            mHasBeenDisplayed = false;
         }
     }
 }

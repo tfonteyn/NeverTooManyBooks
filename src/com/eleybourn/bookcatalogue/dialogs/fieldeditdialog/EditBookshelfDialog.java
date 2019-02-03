@@ -35,37 +35,46 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 
 /**
- * Dialog to edit a single bookshelf.
+ * Dialog to edit an existing or new bookshelf.
  * <p>
  * Calling point is a List.
+ *
+ * Don't move this to the {@link com.eleybourn.bookcatalogue.EditBookshelfListActivity}.
+ * The intention is to allow editing 'on the fly' wherever a bookshelf is used.
  */
 public class EditBookshelfDialog {
 
     @NonNull
-    private final Activity mContext;
+    private final Activity mActivity;
     @NonNull
     private final DBA mDb;
-    @NonNull
-    private final Runnable mOnChanged;
+    @Nullable
+    private final OnChanged mOnChanged;
 
+    /**
+     *
+     * @param activity  hosting activity (needed for user messages)
+     * @param db        the database
+     * @param onChanged (optional) class/method to run if something was changed
+     */
     public EditBookshelfDialog(@NonNull final Activity activity,
                                @NonNull final DBA db,
-                               @NonNull final Runnable onChanged) {
+                               @Nullable final OnChanged onChanged) {
         mDb = db;
-        mContext = activity;
+        mActivity = activity;
         mOnChanged = onChanged;
     }
 
-    public void edit(@NonNull final Bookshelf bookshelf) {
+    public void edit(@NonNull final Bookshelf source) {
         // Build the base dialog
-        final View root = mContext.getLayoutInflater()
-                                  .inflate(R.layout.dialog_edit_bookshelf, null);
+        final View root = mActivity.getLayoutInflater()
+                                   .inflate(R.layout.dialog_edit_bookshelf, null);
 
         final EditText nameView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
-        nameView.setText(bookshelf.name);
+        nameView.setText(source.getName());
 
-        final AlertDialog dialog = new AlertDialog.Builder(mContext)
+        final AlertDialog dialog = new AlertDialog.Builder(mActivity)
                 .setView(root)
                 .setTitle(R.string.menu_edit_bookshelf)
                 .create();
@@ -76,25 +85,45 @@ public class EditBookshelfDialog {
             public void onClick(@NonNull final View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showUserMessage(mContext, R.string.warning_required_name);
+                    StandardDialogs.showUserMessage(mActivity, R.string.warning_required_name);
                     return;
                 }
 
-                // check if already exists (null if not)
+                // check if a shelf with this name already exists (null if not)
                 Bookshelf existingShelf = mDb.getBookshelfByName(newName);
 
-                // adding a new Bookshelf, and trying to use an existing name?
-                if ((bookshelf.id == 0) && (existingShelf != null)) {
+                // are we adding a new Bookshelf but trying to use an existing name?
+                if ((source.getId() == 0) && (existingShelf != null)) {
                     StandardDialogs.showUserMessage(
-                            mContext,
-                            mContext.getString(R.string.warning_thing_already_exists,
-                                               mContext.getString(
-                                                       R.string.lbl_bookshelf)));
+                            mActivity,
+                            mActivity.getString(R.string.warning_thing_already_exists,
+                                                mActivity.getString(R.string.lbl_bookshelf)));
                     return;
                 }
 
                 dialog.dismiss();
-                confirmEdit(bookshelf, newName, existingShelf);
+
+                // check if there was something changed at all.
+                if (source.getName().equals(newName)) {
+                    return;
+                }
+
+                // At this point, we know changes were made.
+                // Create a new Bookshelf as a holder for the changes.
+                Bookshelf newBookshelf = new Bookshelf(newName, source.getStyle(mDb).getId());
+
+                // copy new values
+                source.copyFrom(newBookshelf);
+
+                if (existingShelf != null) {
+                    mergeShelves(source, existingShelf);
+                } else {
+                    if (mDb.updateOrInsertBookshelf(source)) {
+                        if (mOnChanged != null) {
+                            mOnChanged.onChanged(source.getId(), 0);
+                        }
+                    }
+                }
             }
         });
 
@@ -109,31 +138,15 @@ public class EditBookshelfDialog {
         dialog.show();
     }
 
-    private void confirmEdit(@NonNull final Bookshelf bookshelf,
-                             @NonNull final String newName,
-                             @Nullable final Bookshelf existingShelf) {
-        // case sensitive equality
-        if (bookshelf.name.equals(newName)) {
-            return;
-        }
+    private void mergeShelves(@NonNull final Bookshelf source,
+                              @NonNull final Bookshelf destination) {
 
-        // copy new values
-        bookshelf.name = newName;
-        // shelf did not exist, so go for it.
-        if (existingShelf == null) {
-            long id = mDb.insertOrUpdateBookshelf(bookshelf);
-            mOnChanged.run();
-            return;
-        }
-
-        // we are renaming 'from' to 'to' which already exists.
-        // check if we should merge them.
-        final AlertDialog dialog = new AlertDialog.Builder(mContext)
+        final AlertDialog dialog = new AlertDialog.Builder(mActivity)
                 .setTitle(R.string.menu_edit_bookshelf)
-                .setMessage(R.string.warning_merge_bookshelves)
+                .setMessage(R.string.confirm_merge_bookshelves)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, mContext.getString(R.string.btn_merge),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, mActivity.getString(R.string.btn_merge),
                          new DialogInterface.OnClickListener() {
                              @Override
                              public void onClick(@NonNull final DialogInterface dialog,
@@ -141,13 +154,16 @@ public class EditBookshelfDialog {
                                  dialog.dismiss();
 
                                  // move all books from bookshelf to existingShelf
-                                 mDb.mergeBookshelves(bookshelf.id, existingShelf.id);
-                                 mOnChanged.run();
+                                 int booksMoved = mDb.mergeBookshelves(source.getId(),
+                                                                       destination.getId());
+                                 if (mOnChanged != null) {
+                                     mOnChanged.onChanged(destination.getId(), booksMoved);
+                                 }
                              }
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         mContext.getString(android.R.string.cancel),
+                         mActivity.getString(android.R.string.cancel),
                          new DialogInterface.OnClickListener() {
                              @Override
                              public void onClick(@NonNull final DialogInterface dialog,
@@ -156,5 +172,17 @@ public class EditBookshelfDialog {
                              }
                          });
         dialog.show();
+    }
+
+    public interface OnChanged {
+
+        /**
+         * Called after the user confirms a change.
+         *
+         * @param bookshelfId the id of the updated shelf, or of the newly inserted shelf.
+         * @param booksMoved  if a merge took place, the amount of books moved (or 0).
+         */
+        void onChanged(long bookshelfId,
+                       int booksMoved);
     }
 }

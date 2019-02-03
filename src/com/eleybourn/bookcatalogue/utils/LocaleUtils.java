@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -25,7 +26,7 @@ public final class LocaleUtils {
     private static final String LANGUAGE_MAP = "language2iso3";
 
     /** The locale used at startup; so that we can revert to system locale if we want to. */
-    private static final Locale INITIAL_LOCALE;
+    private static final Locale SYSTEM_INITIAL_LOCALE;
 
     /**
      * A Map to translate currency symbols to their official ISO3 code.
@@ -82,10 +83,13 @@ public final class LocaleUtils {
     /* static constructor. */
     static {
         // preserve startup==system Locale
-        INITIAL_LOCALE = Locale.getDefault();
+        SYSTEM_INITIAL_LOCALE = Locale.getDefault();
 
         loadPreferred();
         mLastLocale = mCurrentLocale;
+
+        Logger.info(LocaleUtils.class,"SYSTEM_INITIAL_LOCALE=" + SYSTEM_INITIAL_LOCALE);
+        Logger.info(LocaleUtils.class,"mCurrentLocale=" + mCurrentLocale);
     }
 
     private LocaleUtils() {
@@ -97,6 +101,7 @@ public final class LocaleUtils {
      */
     @SuppressWarnings("EmptyMethod")
     public static void init() {
+
     }
 
     /**
@@ -104,7 +109,7 @@ public final class LocaleUtils {
      */
     @NonNull
     public static Locale getSystemLocal() {
-        return INITIAL_LOCALE;
+        return SYSTEM_INITIAL_LOCALE;
     }
 
     /**
@@ -177,7 +182,7 @@ public final class LocaleUtils {
         if (loc != null && !loc.isEmpty()) {
             mCurrentLocale = LocaleUtils.getLocaleFromCode(loc);
         } else {
-            mCurrentLocale = INITIAL_LOCALE;
+            mCurrentLocale = SYSTEM_INITIAL_LOCALE;
         }
 
         if (!mCurrentLocale.equals(mLastLocale)) {

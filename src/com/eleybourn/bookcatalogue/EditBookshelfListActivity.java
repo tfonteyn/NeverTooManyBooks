@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +36,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -54,9 +56,9 @@ import java.util.ArrayList;
 public class EditBookshelfListActivity
         extends BaseListActivity {
 
-    private DBA mDb;
     private ArrayList<Bookshelf> mList;
 
+    @Override
     protected int getLayoutId() {
         return R.layout.activity_edit_list_bookshelf;
     }
@@ -71,6 +73,9 @@ public class EditBookshelfListActivity
         populateList();
     }
 
+    /**
+     * populate / refresh the list view.
+     */
     private void populateList() {
         mList = mDb.getBookshelves();
         ArrayAdapter<Bookshelf> adapter = new ArrayAdapter<>(this, R.layout.row_bookshelf,
@@ -89,7 +94,7 @@ public class EditBookshelfListActivity
                                            @NonNull final View view,
                                            final int position,
                                            final long id) {
-                String menuTitle = mList.get(position).name;
+                String menuTitle = mList.get(position).getName();
 
                 // legal trick to get an instance of Menu.
                 mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
@@ -123,8 +128,8 @@ public class EditBookshelfListActivity
                 return true;
 
             case R.id.MENU_DELETE:
-                if (bookshelf.id != 1) {
-                    mDb.deleteBookshelf(bookshelf.id);
+                if (!bookshelf.isDefault()) {
+                    mDb.deleteBookshelf(bookshelf.getId());
                     populateList();
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
@@ -162,7 +167,8 @@ public class EditBookshelfListActivity
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_INSERT:
-                doEditDialog(new Bookshelf(""));
+                doEditDialog(new Bookshelf("",
+                                           BooklistStyles.getDefaultStyle(mDb).getId()));
                 return true;
 
             default:
@@ -188,22 +194,19 @@ public class EditBookshelfListActivity
      * @param bookshelf to edit
      */
     private void doEditDialog(@NonNull final Bookshelf bookshelf) {
-        EditBookshelfDialog d = new EditBookshelfDialog(this, mDb, new Runnable() {
-            @Override
-            public void run() {
-                populateList();
-                setResult(Activity.RESULT_OK);
-            }
-        });
-        d.edit(bookshelf);
-    }
+        EditBookshelfDialog d =
+                new EditBookshelfDialog(this, mDb,
+                                        new EditBookshelfDialog.OnChanged() {
 
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
+                                            @Override
+                                            public void onChanged(final long bookshelfId,
+                                                                  final int booksMoved) {
+                                                populateList();
+                                                Intent data = new Intent();
+                                                data.putExtra(UniqueId.KEY_ID, bookshelfId);
+                                                setResult(Activity.RESULT_OK, data);
+                                            }
+                                        });
+        d.edit(bookshelf);
     }
 }

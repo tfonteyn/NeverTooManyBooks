@@ -63,6 +63,7 @@ public class BooleanFilter
     }
 
     @Override
+    @NonNull
     public String toString() {
         return "BooleanFilter{"
                 + "table=" + mTable

@@ -158,16 +158,16 @@ public class Datum {
      *
      * @return Boolean value
      *
-     * @throws IllegalArgumentException when the string does not contain a valid boolean.
+     * @throws NumberFormatException when the string does not contain a valid boolean.
      */
     public static boolean toBoolean(@Nullable final String s,
                                     final boolean emptyIsFalse)
-            throws IllegalArgumentException {
+            throws NumberFormatException {
         if (s == null || s.trim().isEmpty()) {
             if (emptyIsFalse) {
                 return false;
             } else {
-                throw new IllegalArgumentException("Invalid boolean, s=`" + s + '`');
+                throw new NumberFormatException("Invalid boolean, s=`" + s + '`');
             }
         } else {
             switch (s.trim().toLowerCase()) {
@@ -187,7 +187,7 @@ public class Datum {
                     try {
                         return Integer.parseInt(s) != 0;
                     } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException("Invalid boolean, s=`" + s + '`');
+                        throw new NumberFormatException("Invalid boolean, s=`" + s + '`');
                     }
             }
         }
@@ -199,8 +199,12 @@ public class Datum {
      * @param o Object
      *
      * @return Resulting value
+     *
+     * @throws NumberFormatException if the Object was not boolean compatible.
      */
-    public static boolean toBoolean(@NonNull final Object o) {
+    @SuppressWarnings("WeakerAccess")
+    public static boolean toBoolean(@NonNull final Object o)
+        throws NumberFormatException {
         if (o instanceof Boolean) {
             return (Boolean) o;
         }
@@ -231,7 +235,7 @@ public class Datum {
     /**
      * Accessor. Protected against being set twice.
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
     @NonNull
     public Datum addValidator(@NonNull final DataValidator validator) {
         if (mValidator != null && validator != mValidator) {
@@ -241,6 +245,7 @@ public class Datum {
         return this;
     }
 
+    @SuppressWarnings("unused")
     boolean hasValidator() {
         return mValidator != null;
     }
@@ -254,7 +259,7 @@ public class Datum {
     /**
      * Accessor. Protected against being set twice.
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
     @NonNull
     public Datum addAccessor(@NonNull final DataAccessor accessor) {
         if (mAccessor != null && accessor != mAccessor) {

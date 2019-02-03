@@ -29,8 +29,6 @@ import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
@@ -79,7 +77,7 @@ public final class TasksCursor
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e"
             + " WHERE e." + DOM_TASK_ID + "=t." + DOM_ID + ") AS " + DOM_EVENT_COUNT
             + " FROM " + TBL_TASK + " t "
-            + " WHERE NOT " + DOM_STATUS_CODE + " In ('S','F') %1$s"
+            + " WHERE NOT " + DOM_STATUS_CODE + " IN ('S','F') %1$s"
             + " ORDER BY " + DOM_ID + " DESC";
 
     /** Column number of ID column. */
@@ -117,7 +115,8 @@ public final class TasksCursor
     static TasksCursor fetchTasks(@NonNull final SQLiteDatabase db,
                                   final long category) {
         return (TasksCursor) db.rawQueryWithFactory(
-                CURSOR_FACTORY, String.format(ACTIVE_TASKS_QUERY, " AND " + DOM_CATEGORY + "=?"),
+                CURSOR_FACTORY,
+                String.format(ACTIVE_TASKS_QUERY, " AND " + DOM_CATEGORY + "=?"),
                 new String[]{String.valueOf(category)}, "");
     }
 
@@ -153,7 +152,7 @@ public final class TasksCursor
     @NonNull
     Date getRetryDate() {
         if (mRetryDateCol < 0) {
-            mRetryDateCol = this.getColumnIndex(DOM_RETRY_DATE);
+            mRetryDateCol = getColumnIndex(DOM_RETRY_DATE);
         }
 
         Date date = DateUtils.parseDate(getString(mRetryDateCol));
@@ -165,7 +164,7 @@ public final class TasksCursor
 
     String getStatusCode() {
         if (mStatusCodeCol < 0) {
-            mStatusCodeCol = this.getColumnIndex(DOM_STATUS_CODE);
+            mStatusCodeCol = getColumnIndex(DOM_STATUS_CODE);
         }
         return getString(mStatusCodeCol);
     }
@@ -177,7 +176,7 @@ public final class TasksCursor
      */
     public String getReason() {
         if (mReasonCol == -1) {
-            mReasonCol = this.getColumnIndex(DOM_FAILURE_REASON);
+            mReasonCol = getColumnIndex(DOM_FAILURE_REASON);
         }
         return getString(mReasonCol);
     }
@@ -192,15 +191,23 @@ public final class TasksCursor
     public Exception getException()
             throws SerializationUtils.DeserializationException {
         if (mExceptionCol == -1) {
-            mExceptionCol = this.getColumnIndex(DOM_EXCEPTION);
+            mExceptionCol = getColumnIndex(DOM_EXCEPTION);
         }
         return (Exception) SerializationUtils.deserializeObject(getBlob(mExceptionCol));
     }
 
+    int getNoteCount() {
+        if (mNoteCountCol < 0) {
+            mNoteCountCol = getColumnIndex(DOM_EVENT_COUNT);
+        }
+        return getInt(mNoteCountCol);
+    }
+
     @NonNull
-    private Task getTask() {
+    @Override
+    public BindableItemCursorAdapter.BindableItem getBindableItem() {
         if (mTaskCol < 0) {
-            mTaskCol = this.getColumnIndex(DOM_TASK);
+            mTaskCol = getColumnIndex(DOM_TASK);
         }
         Task task;
         byte[] blob = getBlob(mTaskCol);
@@ -211,18 +218,5 @@ public final class TasksCursor
         }
         task.setId(this.getId());
         return task;
-    }
-
-    int getNoteCount() {
-        if (mNoteCountCol < 0) {
-            mNoteCountCol = this.getColumnIndex(DOM_EVENT_COUNT);
-        }
-        return getInt(mNoteCountCol);
-    }
-
-    @NonNull
-    @Override
-    public BindableItemCursorAdapter.BindableItem getBindableItem() {
-        return getTask();
     }
 }

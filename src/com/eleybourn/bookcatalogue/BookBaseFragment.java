@@ -23,7 +23,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -45,8 +44,8 @@ import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
+import com.eleybourn.bookcatalogue.datamanager.DataViewer;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.AfterFieldChangeListener;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
@@ -61,7 +60,6 @@ import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFra
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.settings.FieldVisibilitySettingsFragment;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
 import java.util.ArrayList;
@@ -71,20 +69,13 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Based class for {@link BookFragment} and all fragments that appear in {@link EditBookActivity}.
- * <p>
- * Full list:
- * {@link BookFragment}
- * {@link EditBookFieldsFragment}
- * {@link EditBookNotesFragment}
- * {@link EditBookLoanedFragment}
- * {@link EditBookTOCFragment}
+ * Based class for {@link BookFragment} and {@link EditBookBaseFragment}.
  *
  * @author pjw
  */
 public abstract class BookBaseFragment
         extends Fragment
-        implements DataEditor {
+        implements DataViewer {
 
     private static final int REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET = 100;
     /** Database instance. */
@@ -97,8 +88,8 @@ public abstract class BookBaseFragment
     private void setActivityTitle(@NonNull final Book book) {
         ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
-            if (book.getBookId() > 0) {
-                // editing an existing book
+            if (book.getId() > 0) {
+                // an existing book
                 actionBar.setTitle(book.getString(UniqueId.KEY_TITLE));
                 actionBar.setSubtitle(book.getAuthorTextShort());
             } else {
@@ -119,50 +110,14 @@ public abstract class BookBaseFragment
 
     //<editor-fold desc="Fragment startup">
 
-//    /**
-//     * Ensure activity supports interface.
-//     */
-//    @Override
-//    @CallSuper
-//    public void onAttach(@NonNull final Context context) {
-//        super.onAttach(context);
-//    }
-
-    /**
-     * Called to do initial creation of a fragment. This is called after
-     * {@link #onAttach(Activity)} and before
-     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     *
-     * <p>Note that this can be called while the fragment's activity is
-     * still in the process of being created.  As such, you can not rely
-     * on things like the activity's content view hierarchy being initialized
-     * at this point.  If you want to do work once the activity itself is
-     * created, see {@link #onActivityCreated(Bundle)}.
-     *
-     * <p>Any restored child fragments will be created before the base
-     * <code>Fragment.onCreate</code> method returns.</p>
-     *
-     * @param savedInstanceState If the fragment is being re-created from
-     *                           a previous saved state, this is the state.
-     */
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // make sure {@link #onCreateOptionsMenu} is called
-        this.setHasOptionsMenu(true);
-        Tracker.exitOnCreate(this);
+        setHasOptionsMenu(true);
     }
-
-//    @Nullable
-//    @Override
-//    public View onCreateView(@NonNull final LayoutInflater inflater,
-//                             @Nullable final ViewGroup container,
-//                             @Nullable final Bundle savedInstanceState) {
-//        return super.onCreateView(inflater, container, savedInstanceState);
-//    }
 
     /**
      * If we (the Fragment) is a {@link BookManager} then load the {@link Book}.
@@ -177,14 +132,20 @@ public abstract class BookBaseFragment
 
         mDb = new DBA(mActivity);
 
-        Bundle args = getArguments();
-
         if (this instanceof BookManager) {
-            // load the Book from (in order) savedInstanceState; arg; database; or a new book
-            long bookId = BundleUtils.getLongFromBundles(UniqueId.KEY_ID,
-                                                         savedInstanceState, args);
-            Bundle bookData = BundleUtils.getBundleFromBundles(UniqueId.BKEY_BOOK_DATA,
-                                                               savedInstanceState, args);
+            long bookId;
+            Bundle bookData;
+
+            if (savedInstanceState != null) {
+                bookId = savedInstanceState.getLong(UniqueId.KEY_ID, 0);
+                bookData = savedInstanceState.getBundle(UniqueId.BKEY_BOOK_DATA);
+            } else {
+                Bundle args = getArguments();
+                //noinspection ConstantConditions
+                bookId = args.getLong(UniqueId.KEY_ID, 0);
+                bookData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
+            }
+
             Book book = Book.getBook(mDb, bookId, bookData);
             getBookManager().setBook(book);
         }
@@ -268,11 +229,11 @@ public abstract class BookBaseFragment
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
-        Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
+        Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         if (!setAllFrom) {
             mFields.setAllFrom(book);
         }
-        Tracker.exitOnLoadFieldsFromBook(this, book.getBookId());
+        Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
 
     //</editor-fold>
@@ -280,38 +241,6 @@ public abstract class BookBaseFragment
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment shutdown">
-
-    /**
-     * Here we trigger the Fragment to save it's Fields to the Book.
-     */
-    @Override
-    @CallSuper
-    public void onPause() {
-        // This is now done in onPause() since the view may have been deleted when this is called
-        saveFieldsTo(getBookManager().getBook());
-        super.onPause();
-    }
-
-    /**
-     * This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}
-     * (just for consistency with the load process).
-     */
-    @Override
-    public final <T extends DataManager> void saveFieldsTo(@NonNull final T dataManager) {
-        onSaveFieldsToBook((Book) dataManager);
-    }
-
-    /**
-     * Default implementation of code to save existing data to the Book object.
-     * We simply copy all {@link Field} into the {@link DataManager} e.g. the {@link Book}
-     * <p>
-     * Override as needed, calling super if needed.
-     */
-    protected void onSaveFieldsToBook(@NonNull final Book book) {
-        Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
-        mFields.putAllInto(book);
-        Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
-    }
 
     @Override
     @CallSuper
@@ -337,6 +266,15 @@ public abstract class BookBaseFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
+        /*
+         * Only one of these two is made visible (or none if the book is not persisted yet).
+         */
+        menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
+        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
+
+        /*
+         * MENU_GROUP_BOOK is shown only when the book is persisted in the database.
+         */
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete_book)
             .setIcon(R.drawable.ic_delete);
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate_book)
@@ -344,15 +282,19 @@ public abstract class BookBaseFragment
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0,
                  R.string.menu_internet_update_fields)
             .setIcon(R.drawable.ic_search);
-        /* TODO: Consider allowing Tweets (or other sharing methods) to work on un-added books. */
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
             .setIcon(R.drawable.ic_share);
 
+        if (Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
+            /*
+             * Only one of these two is made visible (or none if the book is not persisted yet).
+             */
+            menu.add(R.id.MENU_BOOK_EDIT_LOAN, R.id.MENU_BOOK_EDIT_LOAN, 0,
+                     R.string.menu_loan_lend_book);
+            menu.add(R.id.MENU_BOOK_LOAN_RETURNED, R.id.MENU_BOOK_EDIT_LOAN, 0,
+                     R.string.menu_loan_return_book);
+        }
         MenuHandler.addAmazonSearchSubMenu(menu);
-
-        // same menu, but different visibility/group
-        menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
-        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -368,20 +310,24 @@ public abstract class BookBaseFragment
         super.onPrepareOptionsMenu(menu);
         Book book = getBookManager().getBook();
 
-        boolean bookExists = book.getBookId() != 0;
+        boolean bookExists = book.getId() != 0;
         menu.setGroupVisible(R.id.MENU_GROUP_BOOK, bookExists);
 
-        boolean isRead = (0 != book.getInt(UniqueId.KEY_BOOK_READ));
+        boolean isRead = 0 != book.getInt(UniqueId.KEY_BOOK_READ);
         menu.setGroupVisible(R.id.MENU_BOOK_READ, bookExists && !isRead);
         menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
 
-        boolean hasAuthor = book.getAuthorList().size() > 0;
-        boolean hasSeries = book.getSeriesList().size() > 0;
-        menu.setGroupVisible(R.id.SUBMENU_AMAZON_SEARCH, hasAuthor || hasSeries);
+        if (Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
+            boolean isAvailable = null == mDb.getLoaneeByBookId(book.getId());
+            menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
+            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
+        }
+
+        MenuHandler.prepareAmazonSearchSubMenu(menu, book);
     }
 
     /**
-     * This will be called when a menu item is selected.
+     * Called when a menu item is selected.
      *
      * @param item The item selected
      *
@@ -396,7 +342,7 @@ public abstract class BookBaseFragment
             case R.id.MENU_BOOK_DELETE:
                 @StringRes
                 int errorMsgId = StandardDialogs.deleteBookAlert(
-                        mActivity, mDb, book.getBookId(),
+                        mActivity, mDb, book.getId(),
                         new Runnable() {
                             @Override
                             public void run() {
@@ -417,9 +363,9 @@ public abstract class BookBaseFragment
                 return true;
 
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
-                Intent intentUpdateFields = new Intent(requireActivity(),
+                Intent intentUpdateFields = new Intent(mActivity,
                                                        UpdateFieldsFromInternetActivity.class);
-                intentUpdateFields.putExtra(UniqueId.KEY_ID, book.getBookId());
+                intentUpdateFields.putExtra(UniqueId.KEY_ID, book.getId());
                 intentUpdateFields.putExtra(UniqueId.KEY_TITLE,
                                             book.getString(UniqueId.KEY_TITLE));
                 intentUpdateFields.putExtra(UniqueId.KEY_AUTHOR_FORMATTED,
@@ -432,9 +378,22 @@ public abstract class BookBaseFragment
                                                    getString(R.string.share)));
                 return true;
 
+            case R.id.MENU_BOOK_EDIT_LOAN:
+                boolean isAvailable = null == mDb.getLoaneeByBookId(book.getId());
+                if (isAvailable) {
+                    Intent intentLoan = new Intent(mActivity, EditBookActivity.class);
+                    intentLoan.putExtra(UniqueId.KEY_ID, book.getId());
+                    intentLoan.putExtra(EditBookFragment.REQUEST_BKEY_TAB,
+                                        EditBookFragment.TAB_EDIT_LOANS);
+                    mActivity.startActivityForResult(intentLoan, BooksOnBookshelf.REQ_BOOK_EDIT);
+                } else {
+                    mDb.deleteLoan(book.getId());
+                }
+                return true;
+
             case R.id.MENU_BOOK_READ:
                 // toggle 'read' status
-                boolean isRead = (0 != book.getInt(UniqueId.KEY_BOOK_READ));
+                boolean isRead = 0 != book.getInt(UniqueId.KEY_BOOK_READ);
                 if (book.setRead(mDb, !isRead)) {
                     // reverse value obv.
                     mFields.getField(R.id.read).setValue(isRead ? "0" : "1");
@@ -476,7 +435,7 @@ public abstract class BookBaseFragment
 
         // Get the list to use in the AutoCompleteTextView
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line,
+                new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line,
                                    list);
         mFields.setAdapter(field.id, adapter);
 
@@ -486,7 +445,7 @@ public abstract class BookBaseFragment
             @Override
             public void onClick(@NonNull final View v) {
                 SimpleDialog.selectObjectDialog(
-                        requireActivity().getLayoutInflater(),
+                        mActivity.getLayoutInflater(),
                         getString(dialogTitleId), field, list,
                         new SimpleDialog.OnClickListener() {
                             @Override
@@ -524,7 +483,7 @@ public abstract class BookBaseFragment
             public void onClick(@NonNull final View v) {
                 TextFieldEditorDialogFragment frag = new TextFieldEditorDialogFragment();
                 Bundle args = new Bundle();
-                args.putString(UniqueId.BKEY_CALLER_ID, callerTag);
+                args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
                 args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
                 args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
                 args.putString(TextFieldEditorDialogFragment.BKEY_TEXT,
@@ -562,12 +521,12 @@ public abstract class BookBaseFragment
                 }
 
                 if (DEBUG_SWITCHES.DATETIME && BuildConfig.DEBUG) {
-                    Logger.info(this, "initPartialDatePicker date.toString(): " + date);
+                    Logger.info(this, "initPartialDatePicker", "date.toString(): " + date);
                 }
 
                 PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
                 Bundle args = new Bundle();
-                args.putString(UniqueId.BKEY_CALLER_ID, callerTag);
+                args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
                 args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
                 args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
                 args.putString(PartialDatePickerDialogFragment.BKEY_DATE, date);
@@ -598,7 +557,7 @@ public abstract class BookBaseFragment
             public void onClick(@NonNull final View v) {
                 CheckListEditorDialogFragment<T> frag = new CheckListEditorDialogFragment<>();
                 Bundle args = new Bundle();
-                args.putString(UniqueId.BKEY_CALLER_ID, callerTag);
+                args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
                 args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
                 args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
                 args.putParcelableArrayList(CheckListEditorDialogFragment.BKEY_CHECK_LIST,

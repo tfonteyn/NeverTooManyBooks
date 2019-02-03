@@ -26,6 +26,8 @@ import java.util.Set;
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
 
+    public static final String TAG = "BookSearchByTextFragment";
+
     /** A list of author names we have already searched for in this session. */
     @NonNull
     private final ArrayList<String> mAuthorNames = new ArrayList<>();
@@ -48,7 +50,6 @@ public class BookSearchByTextFragment
 
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -86,7 +87,6 @@ public class BookSearchByTextFragment
             HintManager.displayHint(this.getLayoutInflater(), R.string.hint_book_search_by_text,
                                     null);
         }
-        Tracker.exitOnActivityCreated(this);
     }
 
     private void prepareSearch() {
@@ -190,15 +190,10 @@ public class BookSearchByTextFragment
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
-        Tracker.enterOnSaveInstanceState(this, outState);
-
-        // Save the current search details as this may be called as a result of a
-        // rotate during an alert dialog.
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
         outState.putString(UniqueId.KEY_TITLE, mTitleSearchText);
 
         super.onSaveInstanceState(outState);
-        Tracker.exitOnSaveInstanceState(this, outState);
     }
 
     /**

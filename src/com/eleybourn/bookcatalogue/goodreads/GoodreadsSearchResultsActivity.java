@@ -64,7 +64,6 @@ public class GoodreadsSearchResultsActivity
 
     public static final String BKEY_SEARCH_CRITERIA = "criteria";
     private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("Goodreads-GetImageTask");
-    private DBA mDb;
     private List<GoodreadsWork> mList = new ArrayList<>();
 
     @Override
@@ -134,48 +133,34 @@ public class GoodreadsSearchResultsActivity
     /**
      * Handle user clicking on a book.
      * This should show editions and allow the user to select a specific edition.
-     * Waiting on approval for API access.
-     *
-     * @param view View that was clicked.
+     * ENHANCE: Waiting on approval for API access.
      */
-    private void doItemClick(@NonNull final View view) {
-        ListHolder holder = ViewTagger.getTag(view);
-        Objects.requireNonNull(holder);
-
+    private void doItemClick(@NonNull final Holder holder) {
         // TODO: Implement edition lookup - requires access to work.editions API from GR
-        Logger.debug("Not implemented: see " + holder.title + " by " + holder.author);
+        Logger.debug("Not implemented: see " + holder.titleView + " by " + holder.authorView);
         StandardDialogs.showUserMessage(this,
-                                        "Not implemented: see " + holder.title
-                                                + " by " + holder.author);
+                                        "Not implemented: see " + holder.titleView
+                                                + " by " + holder.authorView);
         //Intent i = new Intent(this, GoodreadsW)
-    }
-
-    @Override
-    @CallSuper
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     /**
      * Class used in implementing holder pattern for search results.
-     * <p>
-     * cover made final for use as lock
      *
      * @author Philip Warner
      */
-    private static class ListHolder {
+    private static class Holder {
 
+        /** must be final as we'll use it as a LOCK */
         @NonNull
-        final ImageView cover;
-        GoodreadsWork work;
-        TextView title;
-        TextView author;
+        final ImageView coverView;
 
-        ListHolder(@NonNull final ImageView cover) {
-            this.cover = cover;
+        GoodreadsWork work;
+        TextView titleView;
+        TextView authorView;
+
+        Holder(@NonNull final ImageView coverView) {
+            this.coverView = coverView;
         }
     }
 
@@ -196,15 +181,15 @@ public class GoodreadsSearchResultsActivity
         public View getView(final int position,
                             @Nullable View convertView,
                             @NonNull final ViewGroup parent) {
-            ListHolder holder;
+            Holder holder;
             if (convertView == null) {
                 // Not recycling, get a new View and make the holder for it.
                 convertView = LayoutInflater.from(getContext())
                                             .inflate(R.layout.goodreads_work_item, parent, false);
 
-                holder = new ListHolder((ImageView) convertView.findViewById(R.id.coverImage));
-                holder.author = convertView.findViewById(R.id.author);
-                holder.title = convertView.findViewById(R.id.title);
+                holder = new Holder((ImageView) convertView.findViewById(R.id.coverImage));
+                holder.authorView = convertView.findViewById(R.id.author);
+                holder.titleView = convertView.findViewById(R.id.title);
 
                 // Save the holder
                 ViewTagger.setTag(convertView, holder);
@@ -213,7 +198,9 @@ public class GoodreadsSearchResultsActivity
                 convertView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
-                        doItemClick(v);
+                        Holder holder = ViewTagger.getTag(v);
+                        Objects.requireNonNull(holder);
+                        doItemClick(holder);
                     }
                 });
 
@@ -222,15 +209,15 @@ public class GoodreadsSearchResultsActivity
                 holder = ViewTagger.getTagOrThrow(convertView);
             }
 
-            synchronized (holder.cover) {
+            synchronized (holder.coverView) {
                 // Save the work details
                 holder.work = mList.get(position);
                 // get the cover (or put it in background task)
-                holder.work.fillImageView(mTaskQueue, holder.cover);
+                holder.work.fillImageView(mTaskQueue, holder.coverView);
 
                 // Update the views based on the work
-                holder.author.setText(holder.work.authorName);
-                holder.title.setText(holder.work.title);
+                holder.authorView.setText(holder.work.authorName);
+                holder.titleView.setText(holder.work.title);
             }
 
             return convertView;

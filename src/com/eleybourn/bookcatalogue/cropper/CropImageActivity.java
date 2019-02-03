@@ -44,7 +44,6 @@ import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -493,7 +492,7 @@ public class CropImageActivity
         } else {
             // save to the URI in a background task
             final Bitmap bitmap = croppedImage;
-            CropUtil.startBackgroundJob(this, null, getString(R.string.saving_image),
+            CropUtil.startBackgroundJob(this, null, getString(R.string.progress_msg_saving_image),
                                         new Runnable() {
                                             public void run() {
                                                 saveOutput(bitmap);
@@ -504,29 +503,27 @@ public class CropImageActivity
 
     private void saveOutput(@NonNull final Bitmap croppedImage) {
         Bundle extras = new Bundle();
-        if (mOptionSaveUri != null) {
+        if (mOptionSaveUri == null) {
+            // we were not asked to save anything, but we're ok with that
+            setResult(Activity.RESULT_OK);
+        } else {
             Intent intent = new Intent(mOptionSaveUri.toString());
             intent.putExtras(extras);
-
             try (OutputStream outputStream = getContentResolver().openOutputStream(
                     mOptionSaveUri)) {
                 if (outputStream != null) {
                     croppedImage.compress(defaultCompressFormat, 75, outputStream);
                 }
-            } catch (IOException e) {
+                // we saved the image
+                setResult(Activity.RESULT_OK, intent);
+
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
                 Logger.error(e);
                 setResult(Activity.RESULT_CANCELED);
             }
-
-            // we saved the image
-            setResult(Activity.RESULT_OK, intent);
-        } else {
-            // we were not asked to save anything, but we're ok with that
-            setResult(Activity.RESULT_OK);
         }
-
+        // clean up and quit.
         croppedImage.recycle();
-
         finish();
     }
 

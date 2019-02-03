@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +49,7 @@ public class SqlStatementManager
     private final Map<String, SynchronizedStatement> mStatements =
             // not sure sync is needed. But this used to be a HashTable.
             Collections.synchronizedMap(new HashMap<String, SynchronizedStatement>());
+
     @Nullable
     private final SynchronizedDb mSyncedDb;
 
@@ -59,10 +61,27 @@ public class SqlStatementManager
         mSyncedDb = db;
     }
 
+    /**
+     * Get a statement from the cache.
+     *
+     * @param name of the statement
+     *
+     * @return the statement, or null if it did not exist.
+     */
+    @Nullable
     public SynchronizedStatement get(@NonNull final String name) {
         return mStatements.get(name);
     }
 
+    /**
+     * Add a statement to the cache.
+     * If already present, will close the old one and replace it with the new one.
+     *
+     * @param name of the statement
+     * @param sql of the statement
+     *
+     * @return the statement
+     */
     @NonNull
     public SynchronizedStatement add(@NonNull final String name,
                                      @NonNull final String sql) {
@@ -71,16 +90,25 @@ public class SqlStatementManager
         return add(mSyncedDb, name, sql);
     }
 
+    /**
+     * Add a statement to the cache.
+     * If already present, will close the old one and replace it with the new one.
+     *
+     * @param name of the statement
+     * @param sql of the statement
+     *
+     * @return the statement
+     */
     @NonNull
     public SynchronizedStatement add(@NonNull final SynchronizedDb db,
                                      @NonNull final String name,
                                      @NonNull final String sql) {
-        SynchronizedStatement stmt = db.compileStatement(sql);
         SynchronizedStatement old = mStatements.get(name);
-        mStatements.put(name, stmt);
         if (old != null) {
             old.close();
         }
+        SynchronizedStatement stmt = db.compileStatement(sql);
+        mStatements.put(name, stmt);
         return stmt;
     }
 
@@ -103,6 +131,16 @@ public class SqlStatementManager
             }
             mStatements.clear();
         }
+    }
+
+    @Override
+    protected void finalize()
+            throws Throwable {
+        if (!mStatements.isEmpty()) {
+            Logger.info(this,"Finalizer closing statements.");
+            close();
+        }
+        super.finalize();
     }
 
     /**

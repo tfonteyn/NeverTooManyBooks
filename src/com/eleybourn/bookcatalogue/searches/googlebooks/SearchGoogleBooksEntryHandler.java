@@ -261,7 +261,7 @@ class SearchGoogleBooksEntryHandler
                 break;
 
             case XML_AUTHOR:
-                mAuthors.add(new Author(mBuilder.toString()));
+                mAuthors.add( Author.fromString(mBuilder.toString()));
                 break;
 
             case XML_PUBLISHER:
@@ -298,7 +298,7 @@ class SearchGoogleBooksEntryHandler
             default:
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                     // see what we are missing.
-                    Logger.info(this,
+                    Logger.info(this,"endElement",
                                 "Skipping: " + localName + "->'" + mBuilder + '\'');
                 }
 

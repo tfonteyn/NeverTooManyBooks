@@ -25,12 +25,10 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.entities.TOCEntry;
+import com.eleybourn.bookcatalogue.entities.TocEntry;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Provides a number of static methods to manipulate string lists.
@@ -38,9 +36,9 @@ import java.util.List;
  * Can also be instantiated to allow the use of generic elements in the lists.
  * Contains some pre-defined static method for specific types; e.g. {@link Author} etc...
  *
- * @param <T>
+ * @param <E>
  */
-public class StringList<T> {
+public class StringList<E> {
 
     private static final char MULTI_STRING_SEPARATOR = '|';
     @Nullable
@@ -50,74 +48,128 @@ public class StringList<T> {
     @Nullable
     private static StringList<Series> mSeriesUtils;
     @Nullable
-    private static StringList<TOCEntry> mTOCUtils;
-    private Factory<T> mFactory;
+    private static StringList<TocEntry> mTOCUtils;
+
+    @NonNull
+    private final Factory<E> mFactory;
 
     /**
-     * Public constructor to roll your own.
+     * Constructor.
+     * <p>
+     * The elements need to be able to be cast to a String for decoding,
+     * and have a .toString() method for encoding.
      */
     public StringList() {
+        mFactory = new Factory<E>() {
+            @NonNull
+            @Override
+            public E decode(@NonNull final String element) {
+                return (E) element;
+            }
+
+            @NonNull
+            @Override
+            public String encode(@NonNull final E element) {
+                return element.toString();
+            }
+        };
     }
 
     /**
-     * Private constructor to support pre-defined types.
+     * Constructor.
      *
-     * @param factory that can produce an object based on a single string value.
+     * @param factory that can encode/decode strings to objects and vice versa.
      */
-    private StringList(@NonNull final Factory<T> factory) {
+    public StringList(@NonNull final Factory<E> factory) {
         mFactory = factory;
     }
 
+    /**
+     * @return StringList with Bookshelf factory.
+     */
     @NonNull
-    public static StringList<Bookshelf> getBookshelfUtils() {
+    public static StringList<Bookshelf> getBookshelfCoder() {
         if (mBookshelfUtils == null) {
             mBookshelfUtils = new StringList<>(new Factory<Bookshelf>() {
                 @Override
                 @NonNull
-                public Bookshelf get(@NonNull final String stringList) {
-                    return new Bookshelf(stringList);
+                public Bookshelf decode(@NonNull final String element) {
+                    return Bookshelf.fromString(element);
+                }
+
+                @NonNull
+                @Override
+                public String encode(@NonNull final Bookshelf element) {
+                    return element.stringEncoded();
                 }
             });
         }
         return mBookshelfUtils;
     }
 
+    /**
+     * @return StringList with Author factory.
+     */
     @NonNull
-    public static StringList<Author> getAuthorUtils() {
+    public static StringList<Author> getAuthorCoder() {
         if (mAuthorUtils == null) {
             mAuthorUtils = new StringList<>(new Factory<Author>() {
                 @Override
                 @NonNull
-                public Author get(@NonNull final String stringList) {
-                    return new Author(stringList);
+                public Author decode(@NonNull final String element) {
+                    return Author.fromString(element);
+                }
+
+                @NonNull
+                @Override
+                public String encode(@NonNull final Author element) {
+                    return element.stringEncoded();
                 }
             });
         }
         return mAuthorUtils;
     }
 
+    /**
+     * @return StringList with Series factory.
+     */
     @NonNull
-    public static StringList<Series> getSeriesUtils() {
+    public static StringList<Series> getSeriesCoder() {
         if (mSeriesUtils == null) {
             mSeriesUtils = new StringList<>(new Factory<Series>() {
                 @Override
                 @NonNull
-                public Series get(@NonNull final String stringList) {
-                    return new Series(stringList);
+                public Series decode(@NonNull final String element) {
+                    return Series.fromString(element);
+                }
+
+                @NonNull
+                @Override
+                public String encode(@NonNull final Series element) {
+                    return element.stringEncoded();
                 }
             });
         }
         return mSeriesUtils;
     }
 
+    /**
+     * @return StringList with TocEntry factory.
+     */
     @NonNull
-    public static StringList<TOCEntry> getTOCUtils() {
+    public static StringList<TocEntry> getTocCoder() {
         if (mTOCUtils == null) {
-            mTOCUtils = new StringList<>(new Factory<TOCEntry>() {
+            mTOCUtils = new StringList<>(new Factory<TocEntry>() {
                 @Override
                 @NonNull
-                public TOCEntry get(@NonNull final String stringList) {
-                    return new TOCEntry(stringList);
+                public TocEntry decode(@NonNull final String element) {
+                    return TocEntry.fromString(element);
+                }
+
+                @NonNull
+                @Override
+                public String encode(@NonNull final TocEntry element) {
+                    return element.stringEncoded();
                 }
             });
         }
@@ -126,88 +178,59 @@ public class StringList<T> {
 
     /* ------------------------------------------------------------------------------------------ */
 
-    /**
-     * This is a static convenience method, to hand <String> as the type,
-     * avoiding to have a {@link Factory} produce a String.
-     * <p>
-     * Decode a text list separated by '|'
-     *
-     * @param stringList String representing the list
-     *
-     * @return Array of strings resulting from list
-     */
     @NonNull
-    public static ArrayList<String> decode(@NonNull final String stringList) {
-        return decode(MULTI_STRING_SEPARATOR, stringList);
+    public static String escapeListItem(final char delim,
+                                        @NonNull final String s) {
+        return escapeListItem(delim, "", s);
     }
 
     /**
-     * This is a static convenience method, to hand <String> as the type.
-     * avoiding to have a {@link Factory} produce a String.
+     * Convert a string by 'escaping' all instances of: '|', '\', \r, \n.
+     * The escape char is '\'.
      * <p>
-     * Decode a text list separated by 'delim'
+     * We also escape '(' as we use that to append extra info to string.
+     * <p>
+     * This is used to build text lists separated by the passed delimiter.
      *
      * @param delim      delimiter used in stringList
-     * @param stringList String representing the list
+     * @param alsoEscape string with characters to escape. Case sensitive!
+     * @param s          String representing the list
      *
-     * @return Array of strings(trimmed) resulting from list
+     * @return Converted string(trimmed)
      */
     @NonNull
-    public static ArrayList<String> decode(final char delim,
-                                           @Nullable final String stringList) {
-        StringBuilder ns = new StringBuilder();
-        ArrayList<String> list = new ArrayList<>();
-        if (stringList == null) {
-            return list;
-        }
+    public static String escapeListItem(final char delim,
+                                        @NonNull final String alsoEscape,
+                                        @NonNull final String s) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '\\':
+                    sb.append("\\\\");
+                    break;
 
-        boolean inEsc = false;
-        for (int i = 0; i < stringList.length(); i++) {
-            char c = stringList.charAt(i);
-            if (inEsc) {
-                switch (c) {
-                    case '\\':
-                        ns.append(c);
-                        break;
-                    case 'r':
-                        ns.append('\r');
-                        break;
-                    case 't':
-                        ns.append('\t');
-                        break;
-                    case 'n':
-                        ns.append('\n');
-                        break;
-                    default:
-                        ns.append(c);
-                        break;
-                }
-                inEsc = false;
-            } else {
-                switch (c) {
-                    case '\\':
-                        inEsc = true;
-                        break;
-                    default:
-                        if (c == delim) {
-                            String source = ns.toString().trim();
-                            list.add(source);
-                            ns.setLength(0);
-                            break;
-                        } else {
-                            ns.append(c);
-                            break;
-                        }
-                }
+                case '\r':
+                    sb.append("\\r");
+                    break;
+
+                case '\n':
+                    sb.append("\\n");
+                    break;
+
+                case '\t':
+                    sb.append("\\t");
+                    break;
+
+                default:
+                    if (c == delim || alsoEscape.indexOf(c) > -1) {
+                        sb.append('\\');
+                    }
+                    sb.append(c);
             }
         }
-        // It's important to send back even an empty item.
-        String source = ns.toString().trim();
-        list.add(source);
-        return list;
+        return sb.toString().trim();
     }
-
-
 
     /**
      * Decode a string list separated by '|' and encoded by {@link #escapeListItem}.
@@ -218,14 +241,14 @@ public class StringList<T> {
      * @return Array of strings resulting from list
      */
     @NonNull
-    public ArrayList<T> decode(@Nullable final String stringList,
+    public ArrayList<E> decode(@Nullable final String stringList,
                                final boolean allowBlank) {
         return decode(MULTI_STRING_SEPARATOR, stringList, allowBlank);
     }
 
     /**
      * Decode a string list separated by 'delim' and
-     * encoded by {@link #escapeListItem(char, String)}.
+     * encoded by {@link #escapeListItem}.
      *
      * @param delim      delimiter to use
      * @param stringList String representing the list
@@ -233,13 +256,12 @@ public class StringList<T> {
      *
      * @return Array of strings resulting from list
      */
-    @SuppressWarnings("SameParameterValue")
     @NonNull
-    public ArrayList<T> decode(final char delim,
+    public ArrayList<E> decode(final char delim,
                                @Nullable final String stringList,
                                final boolean allowBlank) {
-        StringBuilder ns = new StringBuilder();
-        ArrayList<T> list = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        ArrayList<E> list = new ArrayList<>();
         if (stringList == null) {
             return list;
         }
@@ -250,19 +272,23 @@ public class StringList<T> {
             if (inEsc) {
                 switch (c) {
                     case '\\':
-                        ns.append(c);
+                        sb.append(c);
                         break;
+
                     case 'r':
-                        ns.append('\r');
+                        sb.append('\r');
                         break;
+
                     case 't':
-                        ns.append('\t');
+                        sb.append('\t');
                         break;
+
                     case 'n':
-                        ns.append('\n');
+                        sb.append('\n');
                         break;
+
                     default:
-                        ns.append(c);
+                        sb.append(c);
                         break;
                 }
                 inEsc = false;
@@ -273,115 +299,60 @@ public class StringList<T> {
                         break;
                     default:
                         if (c == delim) {
-                            String source = ns.toString().trim();
+                            String source = sb.toString().trim();
                             if (allowBlank || !source.isEmpty()) {
-                                list.add(get(source));
+                                list.add(mFactory.decode(source));
                             }
-                            ns.setLength(0);
+                            sb.setLength(0);
                             break;
                         } else {
-                            ns.append(c);
+                            sb.append(c);
                             break;
                         }
                 }
             }
         }
+
         // It's important to send back even an empty item.
-        String source = ns.toString().trim();
+        String source = sb.toString().trim();
         if (allowBlank || !source.isEmpty()) {
-            list.add(get(source));
+            list.add(mFactory.decode(source));
         }
         return list;
     }
 
-    /**
-     * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n.
-     * The escape char is '\'.
-     * <p>
-     * This is used to build text lists separated by 'delim'.
-     *
-     * @param list String to convert
-     *
-     * @return Converted string
-     */
     @NonNull
-    public String encode(@NonNull final List<T> list) {
-        return encode(MULTI_STRING_SEPARATOR, list);
+    public String encode(@NonNull final Collection<E> list) {
+        return encode(MULTI_STRING_SEPARATOR,list);
     }
 
     /**
-     * Encode a list of strings by 'escaping' all instances of: delim, '\', \r, \n.
-     * The escape char is '\'.
-     * <p>
      * This is used to build text lists separated by 'delim'.
-     * <p>
-     * Note: if you don't need escaping, then use {@link android.text.TextUtils#join}
      *
-     * @param list to convert, objects are converted to String with their toString() method.
+     * @param delim      delimiter to use.
+     * @param list       to convert
      *
      * @return Converted string
      */
-    @SuppressWarnings({"SameParameterValue", "WeakerAccess"})
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public String encode(final char delim,
-                         @NonNull final List<T> list) {
-        StringBuilder ns = new StringBuilder();
-        Iterator<T> si = list.iterator();
-        if (si.hasNext()) {
-            ns.append(escapeListItem(delim, si.next().toString()));
-            while (si.hasNext()) {
-                ns.append(delim);
-                ns.append(escapeListItem(delim, si.next().toString()));
+                         @NonNull final Collection<E> list) {
+
+        return Csv.join(delim, list, new Csv.Formatter<E>() {
+            @Override
+            public String format(@NonNull final E element) {
+                return mFactory.encode(element);
             }
-        }
-        return ns.toString();
+        });
     }
 
-    /**
-     * Convert a string by 'escaping' all instances of: '|', '\', \r, \n.
-     * The escape char is '\'.
-     * <p>
-     * This is used to build text lists separated by the passed delimiter.
-     *
-     * @param delim The list delimiter to encode (if found).
-     * @param s     String to convert
-     *
-     * @return Converted string(trimmed)
-     */
-    @NonNull
-    public static String escapeListItem(final char delim,
-                                        @NonNull final String s) {
-        StringBuilder ns = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            switch (c) {
-                case '\\':
-                    ns.append("\\\\");
-                    break;
-                case '\r':
-                    ns.append("\\r");
-                    break;
-                case '\n':
-                    ns.append("\\n");
-                    break;
-                default:
-                    if (c == delim) {
-                        ns.append('\\');
-                    }
-                    ns.append(c);
-            }
-        }
-        return ns.toString().trim();
-    }
-
-    @NonNull
-    private T get(@NonNull final String stringList) {
-        return mFactory.get(stringList);
-    }
-
-    public interface Factory<T> {
+    public interface Factory<E> {
 
         @NonNull
-        T get(@NonNull String stringList);
+        E decode(@NonNull String element);
+
+        @NonNull
+        String encode(@NonNull E element);
     }
 }

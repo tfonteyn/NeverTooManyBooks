@@ -54,7 +54,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     /**
      * Bypass the real type
      */
-    public void set(@NonNull final Set<String> value) {
+    public void set(@Nullable final Set<String> value) {
         if (mUuid == null) {
             throw new IllegalArgumentException("uuid was null");
         }
@@ -69,7 +69,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
 
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
-                    @NonNull final T value) {
+                    @Nullable final T value) {
         if (value != null) {
             ed.putString(getKey(), TextUtils.join(DELIM, value));
         } else {
@@ -78,7 +78,8 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     public void clear() {
-        if (mUuid == null) {
+        if (mUuid == null ) {
+            //noinspection ConstantConditions
             mNonPersistedValue.clear();
         } else {
             Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
@@ -92,6 +93,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      */
     public void add(@NonNull final E value) {
         if (mUuid == null) {
+            //noinspection ConstantConditions
             mNonPersistedValue.add(value);
         } else {
             String sValues = Prefs.getPrefs(mUuid).getString(getKey(), null);
@@ -106,6 +108,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
 
     public void remove(@NonNull final E value) {
         if (mUuid == null) {
+            //noinspection ConstantConditions
             mNonPersistedValue.remove(value);
         } else {
             String sValues = Prefs.getPrefs(mUuid).getString(getKey(), null);
@@ -131,6 +134,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         if (mUuid == null) {
             // builtin ? then write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
+            //noinspection ConstantConditions
             dest.writeList(new ArrayList<>(mNonPersistedValue));
         } else {
             // write the actual value, this could be the default if we have no value, but that

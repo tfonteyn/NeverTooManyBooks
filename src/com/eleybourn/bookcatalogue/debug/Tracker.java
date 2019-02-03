@@ -54,17 +54,17 @@ public final class Tracker {
         handleEvent(a, States.Enter, "onCreate");
 
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(a, "onCreate|" + States.Enter
+            Logger.info(a, "onCreate", States.Enter
                     + "|savedInstanceState=" + savedInstanceState);
 
             if (a instanceof Activity) {
                 @SuppressWarnings("UnusedAssignment")
                 Bundle extras = ((Activity) a).getIntent().getExtras();
                 if (extras != null) {
-                    Logger.info(a, "onCreate|" + Tracker.States.Running
+                    Logger.info(a, "onCreate", Tracker.States.Running
                             + "|extras=" + extras);
                     if (extras.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                        Logger.info(a, "onCreate|" + Tracker.States.Running
+                        Logger.info(a, "onCreate", Tracker.States.Running
                                 + "|extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
                     }
                 }
@@ -88,15 +88,15 @@ public final class Tracker {
         handleEvent(fragment, States.Enter, "onActivityCreated");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
             Logger.info(fragment,
-                        "onActivityCreated|" + States.Enter
+                        "onActivityCreated", States.Enter
                                 + "|savedInstanceState=" + savedInstanceState);
             @SuppressWarnings("UnusedAssignment")
             Bundle args = fragment.getArguments();
             if (args != null) {
-                Logger.info(fragment, "onActivityCreated|" + Tracker.States.Running
+                Logger.info(fragment, "onActivityCreated", Tracker.States.Running
                         + "|args=" + args);
                 if (args.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                    Logger.info(fragment, "onActivityCreated|" + Tracker.States.Running
+                    Logger.info(fragment, "onActivityCreated", Tracker.States.Running
                             + "|args=" + args.getBundle(
                             UniqueId.BKEY_BOOK_DATA));
                 }
@@ -114,14 +114,13 @@ public final class Tracker {
                                              final int requestCode,
                                              final int resultCode,
                                              @Nullable final Intent data) {
-        handleEvent(a, States.Enter, "onActivityResult|" + requestCode + '|' + resultCode);
+        handleEvent(a, States.Enter, "onActivityResult" + requestCode + '|' + resultCode);
 
         if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(a,
-                        "onActivityResult|" + States.Enter
-                                + "|requestCode=" + requestCode
-                                + "|resultCode=" + resultCode
-                                + "|data=" + data);
+            Logger.info(a, "onActivityResult", States.Enter
+                    + "|requestCode=" + requestCode
+                    + "|resultCode=" + resultCode
+                    + "|data=" + data);
         }
     }
 
@@ -134,7 +133,7 @@ public final class Tracker {
                                                 @NonNull final Bundle outState) {
         handleEvent(a, States.Enter, "onSaveInstanceState");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveInstanceState|" + States.Enter
+            Logger.info(a, "onSaveInstanceState",States.Enter
                     + "|outState=" + outState);
         }
     }
@@ -143,7 +142,7 @@ public final class Tracker {
                                                @NonNull final Bundle outState) {
         handleEvent(a, States.Exit, "onSaveInstanceState");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveInstanceState|" + States.Exit
+            Logger.info(a, "onSaveInstanceState", States.Exit
                     + "|outState=" + outState);
         }
     }
@@ -152,7 +151,7 @@ public final class Tracker {
                                                  final long bookId) {
         handleEvent(a, States.Enter, "onLoadFieldsFromBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onLoadFieldsFromBook|" + States.Enter
+            Logger.info(a, "onLoadFieldsFromBook",States.Enter
                     + "|bookId=" + bookId);
         }
     }
@@ -161,7 +160,7 @@ public final class Tracker {
                                                 final long bookId) {
         handleEvent(a, States.Exit, "onLoadFieldsFromBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onLoadFieldsFromBook|" + States.Exit
+            Logger.info(a, "onLoadFieldsFromBook", States.Exit
                     + "|bookId=" + bookId);
         }
     }
@@ -170,7 +169,7 @@ public final class Tracker {
                                                final long bookId) {
         handleEvent(a, States.Enter, "onSaveFieldsToBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveFieldsToBook|" + States.Enter
+            Logger.info(a, "onSaveFieldsToBook",States.Enter
                     + "|bookId=" + bookId);
         }
     }
@@ -179,7 +178,7 @@ public final class Tracker {
                                               final long bookId) {
         handleEvent(a, States.Exit, "onSaveFieldsToBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveFieldsToBook|" + States.Exit
+            Logger.info(a, "onSaveFieldsToBook",States.Exit
                     + "|bookId=" + bookId);
         }
     }
@@ -276,6 +275,7 @@ public final class Tracker {
         Event(@NonNull final Object clazz,
               @NonNull final States state,
               @NonNull final String message) {
+            //noinspection ConstantConditions
             this.clazz = clazz.getClass().getCanonicalName();
             this.message = message;
             this.state = state;

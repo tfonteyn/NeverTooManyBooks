@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
@@ -79,8 +79,8 @@ public class SendAllBooksTask
 
         // Use the app context; the calling activity may go away
         try (DBA db = new DBA(context.getApplicationContext());
-             BookCursor bookCursor = db.fetchBooksForGoodreadsCursor(mLastId, mUpdatesOnly)) {
-            final BookRowView bookCursorRow = bookCursor.getCursorRow();
+             BookCursor bookCursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
+            final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
             mTotalBooks = bookCursor.getCount() + mCount;
             boolean needsRetryReset = true;
             while (bookCursor.moveToNext()) {

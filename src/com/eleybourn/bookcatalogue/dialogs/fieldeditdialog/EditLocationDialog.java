@@ -34,7 +34,8 @@ public class EditLocationDialog
     public EditLocationDialog(@NonNull final Activity activity,
                               @NonNull final DBA db,
                               @NonNull final Runnable onChanged) {
-        super(activity, db, onChanged);
+        super(activity, db, android.R.layout.simple_dropdown_item_1line, db.getLocations(),
+              onChanged);
     }
 
     @CallSuper
@@ -43,13 +44,8 @@ public class EditLocationDialog
     }
 
     @Override
-    protected void confirmEdit(@NonNull final String from,
+    protected void saveChanges(@NonNull final String from,
                                @NonNull final String to) {
-        // case sensitive equality
-        if (to.equals(from)) {
-            return;
-        }
-        mDb.globalReplaceLocation(from, to);
-        mOnChanged.run();
+        mDb.updateLocation(from, to);
     }
 }

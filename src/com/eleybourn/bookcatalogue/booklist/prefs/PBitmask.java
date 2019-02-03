@@ -22,8 +22,9 @@ public class PBitmask
     implements PInt {
 
     public PBitmask(@StringRes final int key,
-                    @Nullable final String uuid) {
-        super(key, uuid, 0x0000);
+                    @Nullable final String uuid,
+                    final int defaultValue) {
+        super(key, uuid, defaultValue);
     }
 
     /**
@@ -46,7 +47,7 @@ public class PBitmask
      */
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
-                    @NonNull final Integer value) {
+                    @Nullable final Integer value) {
         if (value != null) {
             ed.putStringSet(getKey(), toStringSet(value));
         } else {
@@ -93,5 +94,13 @@ public class PBitmask
             tmp = tmp >> 1;
         }
         return set;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PBitmask{" + super.toString()
+                + ",value=`" + toStringSet(get()) + '`'
+                + '}';
     }
 }

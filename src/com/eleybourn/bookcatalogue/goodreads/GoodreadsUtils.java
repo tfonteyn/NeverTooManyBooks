@@ -25,7 +25,28 @@ public final class GoodreadsUtils {
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
 
+    /** can be part of an image 'name' from Goodreads indicating there is no cover image. */
+    private static final String NO_COVER = "nocover";
+
     private GoodreadsUtils() {
+    }
+
+    /**
+     * @param imageName to check
+     *
+     * @return <tt>true</tt> if the name does NOT contain the string 'nocover'
+     */
+    public static boolean hasCover(final String imageName) {
+        return imageName != null && !imageName.toLowerCase().contains(NO_COVER);
+    }
+
+    /**
+     * @param imageName to check
+     *
+     * @return <tt>true</tt> if the name DOES contain the string 'nocover'
+     */
+    public static boolean hasNoCover(final String imageName) {
+        return imageName != null && imageName.toLowerCase().contains(NO_COVER);
     }
 
     /**
@@ -357,4 +378,5 @@ public final class GoodreadsUtils {
                 .newInstance(context, R.string.progress_msg_connecting_to_web_site,
                              task, true, 0);
     }
+
 }

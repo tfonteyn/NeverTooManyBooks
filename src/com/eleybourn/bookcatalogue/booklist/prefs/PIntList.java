@@ -55,4 +55,11 @@ public class PIntList
         }
         return list;
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PIntList{" + super.toString() + '}'
+                + ",value=`" + get() + '`';
+    }
 }

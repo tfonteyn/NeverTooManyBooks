@@ -51,6 +51,7 @@ import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBCleaner;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.OnTaskFinishListener;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
@@ -78,8 +79,6 @@ public class StartupActivity
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     public static final String PREFS_STARTUP_COUNTDOWN = "Startup.StartCountdown";
-    /** Flag to indicate FTS rebuild is required at startup. */
-    public static final String PREF_STARTUP_FTS_REBUILD_REQUIRED = "Startup.FtsRebuildRequired";
     /** Number of app startup's between offers to backup. */
     private static final int PROMPT_WAIT_BACKUP = 5;
     /** Number of app startup's between displaying the Amazon hint. */
@@ -87,12 +86,17 @@ public class StartupActivity
 
     /** Indicates the upgrade message has been shown. */
     private static boolean mUpgradeMessageShown;
-    /** Flag set to <tt>true</tt> on first call. */
-    private static boolean mIsReallyStartup = true;
     /** Flag indicating Amazon hint should be shown. */
     private static boolean mShowAmazonHint;
-    /** Self reference for use during upgrades. */
-    private static WeakReference<StartupActivity> mStartupActivity = null;
+
+    /**
+     * Flag to ensure tasks are only ever started once (at real startup).
+     */
+    private static boolean mStartupTasksShouldBeStarted = true;
+    /**
+     * Self reference for use during upgrades.
+     */
+    private static WeakReference<StartupActivity> mStartupActivity;
     /** Handler to post run'ables to UI thread. */
     private final Handler mHandler = new Handler();
     /** Queue for executing startup tasks, if any. */
@@ -101,7 +105,9 @@ public class StartupActivity
     /**
      * Progress Dialog for startup tasks.
      * <p>
-     * API: 26 this is a global requirement: ProgressDialog is deprecated
+     * @deprecated
+     * API: 26 this is a global requirement:
+     * ProgressDialog is deprecated
      * https://developer.android.com/reference/android/app/ProgressDialog
      * Suggested: ProgressBar or Notification.
      * https://materialdoc.com/components/progress
@@ -109,7 +115,7 @@ public class StartupActivity
      */
     @Nullable
     @Deprecated
-    private ProgressDialog mProgress;
+    private ProgressDialog mProgressDialog;
 
     /** Flag indicating a backup is required after startup. */
     private boolean mBackupRequired;
@@ -117,11 +123,6 @@ public class StartupActivity
     private Thread mUiThread;
     /** stage the startup is at. */
     private int mStartupStage;
-
-    /** Set the flag to indicate an FTS rebuild is required. */
-    public static void scheduleFtsRebuild() {
-        Prefs.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
-    }
 
     /**
      * Kludge to get a reference to the currently running StartupActivity, if defined.
@@ -133,7 +134,7 @@ public class StartupActivity
         return mStartupActivity != null ? mStartupActivity.get() : null;
     }
 
-    public static boolean getShowAmazonHint() {
+    public static boolean showAmazonHint() {
         return mShowAmazonHint;
     }
 
@@ -150,7 +151,7 @@ public class StartupActivity
             // been requested at install time. The SecurityException will never be thrown
             // but the API requires catching it.
             try {
-                StorageUtils.initSharedDirectories();
+                int msgId = StorageUtils.initSharedDirectories();
             } catch (SecurityException ignore) {
             }
             startNextStage();
@@ -164,11 +165,37 @@ public class StartupActivity
             ActivityCompat.requestPermissions(
                     this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS);
+                    UniqueId.REQ_ANDROID_PERMISSIONS);
             return;
         }
-        StorageUtils.initSharedDirectories();
+        int msgId = StorageUtils.initSharedDirectories();
+        if (msgId != 0) {
+            StandardDialogs.showUserMessage(msgId);
+        }
         startNextStage();
+    }
+
+    private void openProgressDialog() {
+        mProgressDialog = ProgressDialog.show(
+                this,
+                getString(R.string.lbl_application_startup),
+                getString(R.string.progress_msg_starting_up),
+                true,
+                true,
+                new OnCancelListener() {
+                    @Override
+                    public void onCancel(@NonNull final DialogInterface dialog) {
+                        // Cancelling the list cancels the activity.
+                        StartupActivity.this.finish();
+                    }
+                });
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
     /**
@@ -183,26 +210,14 @@ public class StartupActivity
             case 1:
                 // Create a progress dialog; we may not use it...
                 // but we need it to be created in the UI thread.
-                mProgress = ProgressDialog.show(this,
-                                                getString(R.string.lbl_application_startup),
-                                                getString(R.string.progress_msg_starting_up),
-                                                true,
-                                                true, new OnCancelListener() {
-                            @Override
-                            public void onCancel(@NonNull final DialogInterface dialog) {
-                                // Cancelling the list cancels the activity.
-                                StartupActivity.this.finish();
-                            }
-                        });
+                openProgressDialog();
                 startTasks();
                 break;
 
             case 2:
                 // Get rid of the progress dialog
-                if (mProgress != null) {
-                    mProgress.dismiss();
-                    mProgress = null;
-                }
+                closeProgressDialog();
+
                 checkForUpgrades();
                 break;
 
@@ -226,21 +241,21 @@ public class StartupActivity
 
         mUiThread = Thread.currentThread();
 
-        if (mIsReallyStartup) {
+        if (mStartupTasksShouldBeStarted) {
             mStartupActivity = new WeakReference<>(this);
 
-            updateProgress(R.string.starting);
+            updateProgress(R.string.progress_msg_starting_up);
 
             SimpleTaskQueue q = getQueue();
-            q.enqueue(new RebuildFtsTask());
             q.enqueue(new BuildLanguageMappingsTask());
-            q.enqueue(new AnalyzeDbTask());
             q.enqueue(new DBCleanerTask());
+            q.enqueue(new RebuildFtsTask());
+            q.enqueue(new AnalyzeDbTask());
 
             // Remove old logs
             Logger.clearLog();
             // Clear the flag
-            mIsReallyStartup = false;
+            mStartupTasksShouldBeStarted = false;
 
             // ENHANCE: add checks for new Events/crashes
         }
@@ -263,8 +278,8 @@ public class StartupActivity
      * Update the progress dialog, if it has not been dismissed.
      */
     public void updateProgress(@NonNull final String message) {
-        // If mProgress is null, it has been dismissed. Don't update.
-        if (mProgress == null) {
+        // If mProgressDialog is null, it has been dismissed. Don't update.
+        if (mProgressDialog == null) {
             return;
         }
 
@@ -276,9 +291,9 @@ public class StartupActivity
             // See http://code.google.com/p/android/issues/detail?id=3953
             if (!isFinishing()) {
                 try {
-                    mProgress.setMessage(message);
-                    if (!mProgress.isShowing()) {
-                        mProgress.show();
+                    mProgressDialog.setMessage(message);
+                    if (!mProgressDialog.isShowing()) {
+                        mProgressDialog.show();
                     }
                 } catch (RuntimeException e) {
                     Logger.error(e);
@@ -296,7 +311,7 @@ public class StartupActivity
     }
 
     /**
-     * Called in the UI thread when any startup task completes. If no more tasks, start stage 2.
+     * Called in the UI thread when any startup task completes. If no more tasks, start next stage.
      * Because it is in the UI thread, it is not possible for this code to be called until after
      * onCreate() completes, so a race condition is not possible. Equally well, tasks should only
      * be queued in onCreate().
@@ -371,7 +386,7 @@ public class StartupActivity
     private void backupRequired() {
         mBackupRequired = false;
 
-        if (proposeBackup()) {
+        if (decreaseStartupCounters()) {
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage(R.string.backup_request)
                     .setTitle(R.string.lbl_backup_dialog)
@@ -413,7 +428,7 @@ public class StartupActivity
      *
      * @return <tt>true</tt> when counter reached 0
      */
-    private boolean proposeBackup() {
+    private boolean decreaseStartupCounters() {
         int opened = Prefs.getPrefs().getInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
         int startCount = Prefs.getPrefs().getInt(PREF_STARTUP_COUNT, 0) + 1;
 
@@ -426,7 +441,7 @@ public class StartupActivity
         ed.putInt(PREF_STARTUP_COUNT, startCount);
         ed.apply();
 
-        mShowAmazonHint = ((startCount % PROMPT_WAIT_AMAZON) == 0);
+        mShowAmazonHint = (startCount % PROMPT_WAIT_AMAZON) == 0;
         return opened == 0;
     }
 
@@ -483,7 +498,7 @@ public class StartupActivity
         //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[]
         // must be checked in parallel
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS:
+            case UniqueId.REQ_ANDROID_PERMISSIONS:
                 if (grantResults.length > 0
                         && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     initStorage();
@@ -516,7 +531,7 @@ public class StartupActivity
 
             // generate initial language2iso mappings.
             LocaleUtils.createLanguageMappingCache(LocaleUtils.getSystemLocal());
-            // the one the user has configured our app into using
+            // the one the user has configured our app into using (set at earliest app startup code)
             LocaleUtils.createLanguageMappingCache(Locale.getDefault());
             // and English
             LocaleUtils.createLanguageMappingCache(Locale.ENGLISH);
@@ -550,7 +565,7 @@ public class StartupActivity
                     String iso = LocaleUtils.getISO3Language(name);
                     Logger.info(this, "Global language update of `" + name + "` to `" + iso + '`');
                     if (!iso.equals(name)) {
-                        db.globalReplaceLanguage(name, iso);
+                        db.updateLanguage(name, iso);
                     }
                 }
             }
@@ -578,10 +593,10 @@ public class StartupActivity
             // Get a DB to make sure the FTS rebuild flag is set appropriately,
             // do not close the database!
             DBA db = taskContext.getDb();
-            if (Prefs.getPrefs().getBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
+            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
                 updateProgress(R.string.progress_msg_rebuilding_search_index);
                 db.rebuildFts();
-                Prefs.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED,
+                Prefs.getPrefs().edit().putBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
                                                    false).apply();
             }
         }
@@ -603,7 +618,7 @@ public class StartupActivity
 
             // Get a connection, do not close the databases!
             DBA db = taskContext.getDb();
-            db.analyzeDb();
+            db.analyze();
 
             if (BooklistBuilder.thumbnailsAreCached()) {
                 CoversDBA coversDBAdapter = taskContext.getCoversDb();

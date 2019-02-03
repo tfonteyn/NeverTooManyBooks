@@ -71,8 +71,6 @@ public class AdvancedLocalSearchActivity
     private EditText mAuthorView;
     private EditText mTitleView;
     private EditText mCSearchView;
-    private Button mShowResultsBtn;
-    private Button mFtsRebuildBtn;
     private DBA mDb;
     /** Handle the 'FTS Rebuild' button. */
     private final OnClickListener mFtsRebuildListener = new OnClickListener() {
@@ -88,7 +86,7 @@ public class AdvancedLocalSearchActivity
         @Override
         public void onClick(@NonNull final View v) {
             Intent data = new Intent();
-            data.putExtra(UniqueId.BKEY_BOOK_ID_LIST, mBookIdsFound);
+            data.putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
             setResult(Activity.RESULT_OK, data);
             finish();
         }
@@ -168,8 +166,6 @@ public class AdvancedLocalSearchActivity
         mDb = new DBA(this);
 
         mBooksFound = this.findViewById(R.id.books_found);
-        mShowResultsBtn = this.findViewById(R.id.search);
-        mFtsRebuildBtn = this.findViewById(R.id.rebuild);
 
         // If the user touches anything, it's not idle
         findViewById(R.id.root).setOnTouchListener(mOnTouchListener);
@@ -180,8 +176,10 @@ public class AdvancedLocalSearchActivity
         mCSearchView.addTextChangedListener(mTextWatcher);
 
         // Handle button presses
-        mFtsRebuildBtn.setOnClickListener(mFtsRebuildListener);
-        mShowResultsBtn.setOnClickListener(mShowResultsListener);
+        Button ftsRebuildBtn = this.findViewById(R.id.rebuild);
+        ftsRebuildBtn.setOnClickListener(mFtsRebuildListener);
+        Button showResultsBtn = this.findViewById(R.id.search);
+        showResultsBtn.setOnClickListener(mShowResultsListener);
 
         // Note: Timer will be started in OnResume().
         Tracker.exitOnCreate(this);

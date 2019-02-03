@@ -1,10 +1,8 @@
-package com.eleybourn.bookcatalogue.database.cursors;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
-
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
 
 public interface BindableItemCursor
         extends Cursor {

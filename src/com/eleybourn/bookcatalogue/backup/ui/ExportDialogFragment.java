@@ -9,7 +9,6 @@ import android.widget.Checkable;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -66,11 +65,11 @@ public class ExportDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // savedInstanceState not used.
         Bundle args = getArguments();
-        Objects.requireNonNull(args);
+        //noinspection ConstantConditions
         settings.file = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
-        View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_export_options,
-                                                                  null);
+        View root = requireActivity().getLayoutInflater()
+                                     .inflate(R.layout.dialog_export_options, null);
 
         root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
@@ -104,6 +103,7 @@ public class ExportDialogFragment
     private void updateOptions() {
         Dialog dialog = this.getDialog();
         // what to export. All checked == ExportSettings.ALL
+        //noinspection ConstantConditions
         if (((Checkable) dialog.findViewById(R.id.xml_tables_check)).isChecked()) {
             settings.what |= ExportSettings.XML_TABLES;
         }
@@ -126,35 +126,16 @@ public class ExportDialogFragment
             settings.dateFrom = null;
 
         } else if (radioSinceDate.isChecked()) {
-            EditText v = dialog.findViewById(R.id.txtDate);
+            EditText dateSinceView = dialog.findViewById(R.id.txtDate);
             try {
                 settings.what |= ExportSettings.EXPORT_SINCE;
-                settings.dateFrom = DateUtils.parseDate(v.getText().toString().trim());
+                settings.dateFrom = DateUtils.parseDate(dateSinceView.getText().toString().trim());
             } catch (RuntimeException e) {
                 //Snackbar.make(v, R.string.no_date, Snackbar.LENGTH_LONG).show();
-                StandardDialogs.showUserMessage(requireActivity(), R.string.no_date);
+                StandardDialogs.showUserMessage(requireActivity(), R.string.warning_date_not_set);
                 settings.what = ExportSettings.NOTHING;
             }
         }
-    }
-
-    /**
-     * Sets the OnClickListener for a given view to change a checkbox.
-     *
-     * @param cbId  Checkable view id
-     * @param relId Related view id
-     */
-    private void setRelatedView(@NonNull final View root,
-                                @IdRes final int cbId,
-                                @IdRes final int relId) {
-        final Checkable cb = root.findViewById(cbId);
-        final View rel = root.findViewById(relId);
-        rel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                cb.setChecked(!cb.isChecked());
-            }
-        });
     }
 
     /**

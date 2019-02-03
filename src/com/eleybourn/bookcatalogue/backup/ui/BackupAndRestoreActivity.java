@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserBaseActivity;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment;
 import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask;
@@ -80,12 +79,9 @@ public class BackupAndRestoreActivity
     @CallSuper
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         setTitle(isSave() ? R.string.lbl_backup : R.string.lbl_import_from_archive);
-
-        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -272,6 +268,11 @@ public class BackupAndRestoreActivity
             case TASK_ID_READ_FROM_ARCHIVE:
                 handleReadFromArchiveResults(success, cancelled, (ImportSettings) resultSettings);
                 break;
+
+            case 0:
+                // don't care.
+                break;
+
             default:
                 Logger.error("Unknown taskId=" + taskId);
                 break;
@@ -306,7 +307,7 @@ public class BackupAndRestoreActivity
         }
 
         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-            Logger.info(this, "Imported: " + resultSettings);
+            Logger.info(this, "handleReadFromArchiveResults", "Imported: " + resultSettings);
         }
         // see if there are any pre-200 preferences that need migrating.
         if ((resultSettings.what & ImportSettings.PREFERENCES) != 0) {

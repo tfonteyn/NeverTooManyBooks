@@ -42,23 +42,24 @@ public abstract class BaseSettingsFragment
 
         SharedPreferences.Editor ed = destinationPrefs.edit();
         Map<String, ?> all = sourcePrefs.getAll();
-        for (Map.Entry<String, ?> x : all.entrySet()) {
+        for (Map.Entry<String, ?> entry : all.entrySet()) {
 
-            if (x.getValue() instanceof Boolean) {
-                ed.putBoolean(x.getKey(), (Boolean) x.getValue());
-            } else if (x.getValue() instanceof Float) {
-                ed.putFloat(x.getKey(), (Float) x.getValue());
-            } else if (x.getValue() instanceof Integer) {
-                ed.putInt(x.getKey(), (Integer) x.getValue());
-            } else if (x.getValue() instanceof Long) {
-                ed.putLong(x.getKey(), (Long) x.getValue());
-            } else if (x.getValue() instanceof String) {
-                ed.putString(x.getKey(), (String) x.getValue());
-            } else if (x.getValue() instanceof Set) {
+            if (entry.getValue() instanceof Boolean) {
+                ed.putBoolean(entry.getKey(), (Boolean) entry.getValue());
+            } else if (entry.getValue() instanceof Float) {
+                ed.putFloat(entry.getKey(), (Float) entry.getValue());
+            } else if (entry.getValue() instanceof Integer) {
+                ed.putInt(entry.getKey(), (Integer) entry.getValue());
+            } else if (entry.getValue() instanceof Long) {
+                ed.putLong(entry.getKey(), (Long) entry.getValue());
+            } else if (entry.getValue() instanceof String) {
+                ed.putString(entry.getKey(), (String) entry.getValue());
+            } else if (entry.getValue() instanceof Set) {
                 //noinspection unchecked
-                ed.putStringSet(x.getKey(), (Set<String>) x.getValue());
+                ed.putStringSet(entry.getKey(), (Set<String>) entry.getValue());
             } else {
-                Logger.error(x.getValue().getClass().getCanonicalName());
+                //noinspection ConstantConditions
+                Logger.error(entry.getValue().getClass().getCanonicalName());
             }
         }
         ed.apply();
@@ -99,7 +100,19 @@ public abstract class BaseSettingsFragment
             MultiSelectListPreference msp = (MultiSelectListPreference) preference;
             StringBuilder text = new StringBuilder();
             for (String s : msp.getValues()) {
-                text.append(msp.getEntries()[msp.findIndexOfValue(s)]).append('\n');
+                int index = msp.findIndexOfValue(s);
+//                    if (index == -1) {
+//                        Logger.debug("MultiSelectListPreference:"
+//                                             + "\n s=" + s
+//                                             + "\n key=" + msp.getKey()
+//                                             + "\n entries=" + Csv.join(",", msp.getEntries())
+//                                             + "\n entryValues=" + Csv.join(",", msp.getEntryValues())
+//                                             + "\n values=" + msp.getValues()
+//
+//                        );
+//                    } else {
+                text.append(msp.getEntries()[index]).append('\n');
+//                    }
             }
             return text;
         } else if (preference instanceof PreferenceScreen) {
@@ -118,32 +131,31 @@ public abstract class BaseSettingsFragment
                                           @NonNull final String key) {
         setSummary(key);
     }
-
-    /**
-     * reload our fragment, but with the new root key.
-     *
-     * @param preferenceScreen to load.
-     */
-    @Override
-    public void onNavigateToScreen(@NonNull final PreferenceScreen preferenceScreen) {
-        Fragment frag;
-        try {
-            frag = this.getClass().newInstance();
-        } catch (java.lang.InstantiationException | IllegalAccessException ignore) {
-            throw new IllegalStateException();
-        }
-
-        Bundle args = new Bundle();
-        args.putAll(getArguments());
-        args.putString(ARG_PREFERENCE_ROOT, preferenceScreen.getKey());
-
-        frag.setArguments(args);
-        getFragmentManager()
-                .beginTransaction()
-                .replace(getId(), frag)
-                .addToBackStack(preferenceScreen.getKey())
-                .commit();
-    }
+//    @Override
+//    public boolean onPreferenceStartScreen(final PreferenceFragmentCompat caller,
+//                                           final PreferenceScreen pref) {
+//        // get a new instance of this fragment
+//        Fragment frag;
+//        try {
+//            frag = this.getClass().newInstance();
+//        } catch (java.lang.InstantiationException | IllegalAccessException ignore) {
+//            throw new IllegalStateException();
+//        }
+//
+//        // and set it to start with the new root key (screen)
+//        Bundle args = new Bundle();
+//        args.putAll(getArguments());
+//        args.putString(ARG_PREFERENCE_ROOT, pref.getKey());
+//
+//        frag.setArguments(args);
+//        getFragmentManager()
+//                .beginTransaction()
+//                .add(getId(), frag, pref.getKey())
+//                .addToBackStack(null)
+//                .commit();
+//
+//        return true;
+//    }
 
     @Override
     public void onResume() {

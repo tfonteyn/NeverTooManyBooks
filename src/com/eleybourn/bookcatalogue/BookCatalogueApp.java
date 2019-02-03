@@ -144,6 +144,9 @@ public class BookCatalogueApp
         Intent intent = new Intent(context, StartupActivity.class);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        // The PendingIntent to launch our activity if the user selects this notification
+        PendingIntent pendingIntent = PendingIntent.getActivity(mInstance.getApplicationContext(),
+                                                                0, intent, 0);
 
         Notification notification = new Notification.Builder(mInstance.getApplicationContext())
                 .setSmallIcon(R.drawable.ic_info_outline)
@@ -151,9 +154,7 @@ public class BookCatalogueApp
                 .setContentText(message)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
-                // The PendingIntent to launch our activity if the user selects this notification
-                .setContentIntent(
-                        PendingIntent.getActivity(mInstance.getApplicationContext(), 0, intent, 0))
+                .setContentIntent(pendingIntent)
                 .build();
 
         mNotifier.notify(NOTIFICATION_ID, notification);
@@ -250,7 +251,7 @@ public class BookCatalogueApp
      * @return the versionCode.
      */
     public static long getVersion() {
-            // versionCode deprecated and new method in API: 28, till then ignore...
+        // versionCode deprecated and new method in API: 28, till then ignore...
         PackageInfo packageInfo = getPackageInfo(0);
         if (packageInfo != null) {
             return (long) packageInfo.versionCode;

@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -98,6 +99,7 @@ public abstract class FileChooserBaseActivity
             FileChooserFragment frag = getChooserFragment();
             fragmentManager
                     .beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .replace(R.id.browser_fragment, frag, FileChooserFragment.TAG)
                     .commit();
         }

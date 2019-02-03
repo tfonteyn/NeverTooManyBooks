@@ -24,7 +24,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -35,9 +34,9 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsAuthorizationResultCheckTask;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
@@ -288,18 +287,7 @@ public class GoodreadsManager {
      */
     @Nullable
     public static Date getLastSyncDate() {
-
-        String last = Prefs.getPrefs().getString(PREFS_LAST_SYNC_DATE, null);
-        if (last == null || last.isEmpty()) {
-            return null;
-        } else {
-            try {
-                return DateUtils.parseDate(last);
-            } catch (RuntimeException e) {
-                Logger.error(e);
-                return null;
-            }
-        }
+        return DateUtils.parseDate(Prefs.getPrefs().getString(PREFS_LAST_SYNC_DATE, null));
     }
 
     /**
@@ -565,8 +553,8 @@ public class GoodreadsManager {
             int page = 1;
             while (true) {
                 Bundle result = handler.run(page);
-                List<Bundle> shelves = result.getParcelableArrayList(
-                        BookshelfListFieldNames.SHELVES);
+                List<Bundle> shelves =
+                        result.getParcelableArrayList(BookshelfListFieldNames.SHELVES);
                 if (shelves == null || shelves.isEmpty()) {
                     break;
                 }
@@ -576,8 +564,8 @@ public class GoodreadsManager {
                     map.put(shelf.getName(), shelf);
                 }
 
-                if (result.getLong(BookshelfListFieldNames.END) >= result.getLong(
-                        BookshelfListFieldNames.TOTAL)) {
+                if (result.getLong(BookshelfListFieldNames.END)
+                        >= result.getLong(BookshelfListFieldNames.TOTAL)) {
                     break;
                 }
 
@@ -643,10 +631,19 @@ public class GoodreadsManager {
      */
     @NonNull
     public ExportDisposition sendOneBook(@NonNull final DBA db,
-                                         @NonNull final BookRowView bookCursorRow)
+                                         @NonNull final BookCursorRow bookCursorRow)
             throws NotAuthorizedException,
                    IOException,
                    BookNotFoundException {
+
+        /* summary what the cursor row has to have:
+         * - id
+         * - goodreads id
+         * - isbn
+         * - read
+         * - readEndDate
+         * - rating
+         */
 
         long bookId = bookCursorRow.getId();
         Bundle grBook = null;
@@ -663,7 +660,7 @@ public class GoodreadsManager {
             grId = bookCursorRow.getGoodreadsBookId();
             if (grId != 0) {
                 // Get the book details to make sure we have a valid book ID
-                grBook = this.getBookById(grId);
+                grBook = getBookById(grId);
             }
         } catch (BookNotFoundException | NotAuthorizedException | IOException e) {
             grId = 0;
@@ -679,7 +676,7 @@ public class GoodreadsManager {
 
             try {
                 // Get the book details using ISBN
-                grBook = this.getBookByIsbn(isbn);
+                grBook = getBookByIsbn(isbn);
                 if (grBook.containsKey(ShowBookFieldNames.BOOK_ID)) {
                     grId = grBook.getLong(ShowBookFieldNames.BOOK_ID);
                 }
@@ -696,8 +693,12 @@ public class GoodreadsManager {
         }
 
         // If we found a goodreads book, update it
-        long reviewId = 0;
-        if (grId != 0) {
+        if (grId == 0) {
+            return ExportDisposition.noIsbn;
+        } else {
+
+            long reviewId = 0;
+
             // Get the review ID if we have the book details. For new books, it will not be present.
             if (!isNew && grBook.containsKey(ShowBookFieldNames.REVIEW_ID)) {
                 reviewId = grBook.getLong(ShowBookFieldNames.REVIEW_ID);
@@ -709,19 +710,16 @@ public class GoodreadsManager {
 
             // Build the list of shelves that we have in the local database for the book
             int exclusiveCount = 0;
-            try (Cursor shelfCsr = db.fetchBookshelvesByBookId(bookId)) {
-                int shelfCol = shelfCsr.getColumnIndexOrThrow(
-                        DatabaseDefinitions.DOM_BOOKSHELF.name);
-                // Collect all shelf names for this book
-                while (shelfCsr.moveToNext()) {
-                    final String shelfName = shelfCsr.getString(shelfCol);
-                    final String canonicalShelfName = canonicalizeBookshelfName(shelfName);
-                    shelves.add(shelfName);
-                    canonicalShelves.add(canonicalShelfName);
-                    // Count how many of these shelves are exclusive in goodreads.
-                    if (grShelfList.isExclusive(canonicalShelfName)) {
-                        exclusiveCount++;
-                    }
+            for (Bookshelf bookshelf : db.getBookshelvesByBookId(bookId)) {
+                final String shelfName = bookshelf.getName();
+                shelves.add(shelfName);
+
+                final String canonicalShelfName = canonicalizeBookshelfName(shelfName);
+                canonicalShelves.add(canonicalShelfName);
+
+                // Count how many of these shelves are exclusive in goodreads.
+                if (grShelfList.isExclusive(canonicalShelfName)) {
+                    exclusiveCount++;
                 }
             }
 
@@ -757,7 +755,7 @@ public class GoodreadsManager {
                     try {
                         // Goodreads does not seem to like removing books from the special shelves.
                         if (!(grShelfList.isExclusive(grShelf))) {
-                            this.removeBookFromShelf(grShelf, grId);
+                            removeBookFromShelf(grShelf, grId);
                         }
                     } catch (BookNotFoundException e) {
                         // Ignore for now; probably means book not on shelf anyway
@@ -776,7 +774,7 @@ public class GoodreadsManager {
                         canonicalShelfName));
                 if (okToSend && !grShelves.contains(canonicalShelfName)) {
                     try {
-                        reviewId = this.addBookToShelf(shelf, grId);
+                        reviewId = addBookToShelf(shelf, grId);
                     } catch (BookNotFoundException | IOException | NotAuthorizedException e) {
                         return ExportDisposition.error;
                     }
@@ -793,7 +791,7 @@ public class GoodreadsManager {
              */
             if (reviewId == 0) {
                 try {
-                    reviewId = this.addBookToShelf("Default", grId);
+                    reviewId = addBookToShelf("Default", grId);
                 } catch (BookNotFoundException | IOException | NotAuthorizedException e) {
                     return ExportDisposition.error;
                 }
@@ -801,20 +799,21 @@ public class GoodreadsManager {
             // Now update the remaining review details.
             try {
                 // Do not sync Notes<->Review. We will add a 'Review' field later.
-                //this.updateReview(reviewId, books.isRead(), books.getReadEnd(),
+                //updateReview(reviewId, books.isRead(), books.getReadEnd(),
                 //                  books.getNotes(), ((int)books.getRating()) );
-                this.updateReview(reviewId, bookCursorRow.isRead(), bookCursorRow.getReadEnd(),
-                                  null, ((int) bookCursorRow.getRating()));
+                // -> 'notes' has been disabled from the SQL.
+                updateReview(reviewId,
+                             bookCursorRow.isRead(),
+                             bookCursorRow.getReadEnd(),
+                             null,
+                             ((int) bookCursorRow.getRating()));
 
             } catch (BookNotFoundException e) {
                 return ExportDisposition.error;
             }
 
             return ExportDisposition.sent;
-        } else {
-            return ExportDisposition.noIsbn;
         }
-
     }
 
     /**
@@ -835,8 +834,7 @@ public class GoodreadsManager {
             // search will check on non-empty args
             List<GoodreadsWork> list = search(author + ' ' + title);
             if (list.size() > 0) {
-                GoodreadsWork w = list.get(0);
-                return getBookById(w.bookId);
+                return getBookById(list.get(0).bookId);
             } else {
                 return new Bundle();
             }
@@ -907,7 +905,6 @@ public class GoodreadsManager {
 
     /** developer check. */
     public boolean isAvailable() {
-
         boolean gotKey = !DEV_KEY.isEmpty() && !DEV_SECRET.isEmpty();
         if (!gotKey) {
             Logger.info(this, "Goodreads keys not available");
@@ -917,12 +914,9 @@ public class GoodreadsManager {
 
     /**
      * Return the public developer key, used for GET queries.
-     *
-     * @author Philip Warner
      */
     @NonNull
     public String getDevKey() {
-
         return DEV_KEY;
     }
 
@@ -1005,16 +999,14 @@ public class GoodreadsManager {
         }
 
         if (DEBUG_SWITCHES.GOODREADS && BuildConfig.DEBUG) {
-            Logger.info(this,
-                        "requestAuthorization authUrl: " + authUrl);
+            Logger.info(this,"requestAuthorization","authUrl: " + authUrl);
         }
         //TEST: double check if this ever gives issues!
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
             // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;
             if (DEBUG_SWITCHES.GOODREADS && BuildConfig.DEBUG) {
-                Logger.info(this,
-                            "requestAuthorization: replacing with: " + authUrl);
+                Logger.info(this,"requestAuthorization","replacing with: " + authUrl);
             }
         }
 
@@ -1088,19 +1080,17 @@ public class GoodreadsManager {
         @NonNull
         private final Bundle mBundle;
 
-        GoodreadsBookshelf(@NonNull final Bundle b) {
-
-            mBundle = b;
+        GoodreadsBookshelf(@NonNull final Bundle bundle) {
+            mBundle = bundle;
         }
 
-        @Nullable
+        @NonNull
         String getName() {
-
+            //noinspection ConstantConditions
             return mBundle.getString(BookshelfListFieldNames.NAME);
         }
 
         boolean isExclusive() {
-
             return mBundle.getBoolean(BookshelfListFieldNames.EXCLUSIVE);
         }
     }
@@ -1108,16 +1098,14 @@ public class GoodreadsManager {
     private static class GoodreadsBookshelves {
 
         @NonNull
-        private final Map<String, GoodreadsBookshelf> mBookshelfList;
+        private final Map<String, GoodreadsBookshelf> mList;
 
         GoodreadsBookshelves(@NonNull final Map<String, GoodreadsBookshelf> list) {
-
-            mBookshelfList = list;
+            mList = list;
         }
 
         boolean isExclusive(@Nullable final String name) {
-
-            return mBookshelfList.containsKey(name) && mBookshelfList.get(name).isExclusive();
+            return mList.containsKey(name) && mList.get(name).isExclusive();
         }
     }
 }

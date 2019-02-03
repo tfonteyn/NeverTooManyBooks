@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
@@ -113,6 +114,8 @@ final class MenuHandler {
     /**
      * Add SubMenu for Amazon searches.
      *
+     * Normally called from your {@link Fragment#onCreateOptionsMenu}.
+     *
      * @param menu Root menu
      */
     static void addAmazonSearchSubMenu(@NonNull final Menu menu) {
@@ -132,6 +135,21 @@ final class MenuHandler {
         subMenu.add(R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.id.MENU_AMAZON_BOOKS_IN_SERIES, Menu.NONE,
                     R.string.menu_amazon_books_in_series)
                .setIcon(R.drawable.ic_search);
+    }
+
+    /**
+     * Set visibility of the Amazon menus.
+     *
+     * Normally called from your {@link Fragment#onPrepareOptionsMenu(Menu)}.
+     *
+     * @param menu  Root menu
+     * @param book  the current book
+     */
+    static void prepareAmazonSearchSubMenu(final Menu menu,
+                                                  final Book book) {
+        boolean hasAuthor = book.getAuthorList().size() > 0;
+        boolean hasSeries = book.getSeriesList().size() > 0;
+        menu.setGroupVisible(R.id.SUBMENU_AMAZON_SEARCH, hasAuthor || hasSeries);
     }
 
     /**
@@ -176,4 +194,6 @@ final class MenuHandler {
                 return false;
         }
     }
+
+
 }

@@ -25,7 +25,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -41,8 +40,7 @@ public abstract class BaseActivity
         extends AppCompatActivity
         implements
         NavigationView.OnNavigationItemSelectedListener,
-        SharedPreferences.OnSharedPreferenceChangeListener,
-        CanBeDirty {
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     /** The side/navigation panel. */
     @Nullable
@@ -53,17 +51,11 @@ public abstract class BaseActivity
     /** when a locale or theme is changed, a restart of the activity is needed. */
     private boolean mRestartActivityOnResume;
 
-    /** universal flag used to indicate something was changed and not saved (yet). */
-    private boolean mIsDirty;
-
-    public boolean isDirty() {
-        return mIsDirty;
-    }
-
-    public void setDirty(final boolean isDirty) {
-        this.mIsDirty = isDirty;
-    }
-
+    /**
+     * Override this and return the id you need.
+     *
+     * @return the layout id for this activity, or 0 for no layout.
+     */
     protected int getLayoutId() {
         return 0;
     }
@@ -77,16 +69,7 @@ public abstract class BaseActivity
 
         super.onCreate(savedInstanceState);
 
-        int layoutId = 0;
-
-        Bundle extras = this.getIntent().getExtras();
-        if (extras != null) {
-            layoutId = extras.getInt(UniqueId.BKEY_LAYOUT, 0);
-        }
-        if (layoutId == 0) {
-            layoutId = getLayoutId();
-        }
-
+        int layoutId = getLayoutId();
         if (layoutId != 0) {
             setContentView(layoutId);
         }
@@ -103,6 +86,9 @@ public abstract class BaseActivity
         Tracker.exitOnCreate(this);
     }
 
+    /**
+     * Setup the application toolbar to show either 'Home/Hamburger' or 'Up' button.
+     */
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -194,7 +180,7 @@ public abstract class BaseActivity
     }
 
     /**
-     * This will be called when a menu item is selected.
+     * Called when a menu item is selected.
      *
      * @param item selected
      *
@@ -206,7 +192,7 @@ public abstract class BaseActivity
         switch (item.getItemId()) {
             // Default handler for home icon
             case android.R.id.home:
-                // the home icon is only a hamburger at the top level
+                // the home icon is only == hamburger menu, at the top level
                 if (isTaskRoot()) {
                     if (mDrawerLayout != null) {
                         mDrawerLayout.openDrawer(GravityCompat.START);
@@ -214,7 +200,7 @@ public abstract class BaseActivity
                     }
                 }
                 // otherwise, home is an 'up' event.
-                finishIfClean();
+                onBackPressed();
                 return true;
 
             default:
@@ -234,20 +220,20 @@ public abstract class BaseActivity
         switch (requestCode) {
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this,
-                                "navigation panel REQ_NAV_PANEL_EDIT_BOOKSHELVES");
+                    Logger.info(this, "onActivityResult",
+                                "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
             case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this,
-                                "navigation panel REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
+                    Logger.info(this,"onActivityResult",
+                                "REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
                 }
                 return;
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this,
-                                "navigation panel REQ_NAV_PANEL_ADMIN");
+                    Logger.info(this,"onActivityResult",
+                                "REQ_NAV_PANEL_ADMIN");
                 }
                 return;
 
@@ -255,7 +241,7 @@ public abstract class BaseActivity
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
                     // lowest level of our Activities, see if we missed anything
                     // that we should not miss.
-                    Logger.info(this, "onActivityResult|NOT HANDLED:"
+                    Logger.info(this, "onActivityResult","NOT HANDLED:"
                             + " requestCode=" + requestCode + ','
                             + " resultCode=" + resultCode);
                 }
@@ -264,34 +250,6 @@ public abstract class BaseActivity
         }
 
         Tracker.exitOnActivityResult(this);
-    }
-
-    /**
-     * When the user clicks 'back/up', check if we're clean to leave.
-     */
-    @Override
-    @CallSuper
-    public void onBackPressed() {
-        finishIfClean();
-    }
-
-    /**
-     * Check if edits need saving, and finish the activity if not.
-     */
-    public void finishIfClean() {
-        if (isDirty()) {
-            StandardDialogs.showConfirmUnsavedEditsDialog(
-                    this,
-                    /* run if user clicks 'exit' */
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            finish();
-                        }
-                    });
-        } else {
-            finish();
-        }
     }
 
     /**
@@ -305,7 +263,7 @@ public abstract class BaseActivity
 
         if (mRestartActivityOnResume) {
             if (/* always show debug */ BuildConfig.DEBUG) {
-                Logger.info(this, "Restarting");
+                Logger.info(this, "onResume","Restarting");
             }
             finish();
             startActivity(getIntent());

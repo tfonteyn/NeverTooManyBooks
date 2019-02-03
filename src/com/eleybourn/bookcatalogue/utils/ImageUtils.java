@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDialog;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -252,7 +253,7 @@ public final class ImageUtils {
             } else {
                 Logger.error("InputStream was null");
             }
-        } catch (@NonNull final IOException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
             Logger.error(e);
         }
 
@@ -282,7 +283,7 @@ public final class ImageUtils {
             } else {
                 Logger.error("InputStream was null");
             }
-        } catch (@NonNull final IOException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
             Logger.error(e);
         }
         return null;
@@ -315,7 +316,7 @@ public final class ImageUtils {
     /**
      * Read UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY.
      * If there are images, pick the largest one, rename it, and delete the others.
-     * Finally, remove the key and set UniqueId.BKEY_HAVE_THUMBNAIL to true
+     * Finally, remove the key and set UniqueId.BKEY_THUMBNAIL to true
      */
     public static void cleanupThumbnails(@Nullable final Bundle /* in/out */ bookData) {
         if (bookData == null) {
@@ -368,7 +369,7 @@ public final class ImageUtils {
         // Finally, cleanup the data
         bookData.remove(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
         // and indicate we got a file with the default name
-        bookData.putBoolean(UniqueId.BKEY_HAVE_THUMBNAIL, true);
+        bookData.putBoolean(UniqueId.BKEY_THUMBNAIL, true);
     }
 
     /**
@@ -381,7 +382,7 @@ public final class ImageUtils {
 
         // Check if we have a file and/or it is valid
         if (thumbFile == null || !thumbFile.exists()) {
-            StandardDialogs.showUserMessage(activity, R.string.warning_cover_not_set);
+            StandardDialogs.showUserMessage(activity, R.string.warning_cover_field_not_set);
         } else {
             BitmapFactory.Options opt = new BitmapFactory.Options();
             opt.inJustDecodeBounds = true;
@@ -393,8 +394,7 @@ public final class ImageUtils {
             } else {
 //                final Dialog dialog = new AlertDialog.Builder(activity, R.style.zoomedCoverImage)
 //                        .create();
-                final Dialog dialog = new StandardDialogs.BasicDialog(activity,
-                                                                      R.style.zoomedCoverImage);
+                final Dialog dialog = new AppCompatDialog(activity, R.style.zoomedCoverImage);
 
                 final ImageView cover = new ImageView(activity);
                 fetchFileIntoImageView(cover, thumbFile, thumbSizes.large, thumbSizes.large, true);

@@ -150,7 +150,7 @@ public class EditBooklistStyleGroupsActivity
         mStyle.updatePreferences(allPreferences);
 
         if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
-            Logger.info(this, "onSave|" + mStyle.toString());
+            Logger.info(this, "onSave", mStyle.toString());
         }
         data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
         setResult(Activity.RESULT_OK, data);

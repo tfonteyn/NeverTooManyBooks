@@ -34,7 +34,6 @@ import androidx.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
@@ -55,9 +54,6 @@ public abstract class GoodreadsTask
         implements Serializable {
 
 
-    private static final String STATUS_COMPLETE = "S";
-    private static final String STATUS_FAILED = "F";
-    private static final String STATUS_QUEUED = "Q";
     private static final long serialVersionUID = -4388499226374546985L;
 
     public GoodreadsTask(@NonNull final String description) {

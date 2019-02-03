@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.adapters;
+package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.HashMap;
@@ -118,15 +117,15 @@ public class BindableItemCursorAdapter
             return mLastItemViewType;
         }
 
-        // Get the Event object
         BindableItemCursor cursor = (BindableItemCursor) getCursor();
         cursor.moveToPosition(position);
-        BindableItem bindable = cursor.getBindableItem();
+        BindableItem item = cursor.getBindableItem();
 
         // Use the class name to generate a layout number
-        String s = bindable.getClass().toString();
+        String s = item.getClass().toString();
         int resType;
         if (mItemTypeLookups.containsKey(s)) {
+            //noinspection ConstantConditions
             resType = mItemTypeLookups.get(s);
         } else {
             mItemTypeCount++;
@@ -143,7 +142,7 @@ public class BindableItemCursorAdapter
         //
         mLastItemViewTypePos = position;
         mLastItemViewType = resType;
-        mLastItemViewTypeEvent = bindable;
+        mLastItemViewTypeEvent = item;
 
         // And return
         return resType;
@@ -155,7 +154,7 @@ public class BindableItemCursorAdapter
      */
     @Override
     public int getViewTypeCount() {
-        // Add 1 to allow for the LegacyEvent object.
+        // Add 1 to allow for the Legacy object.
         return mBinder.getBindableItemTypeCount() + 1;
     }
 
@@ -167,20 +166,20 @@ public class BindableItemCursorAdapter
         BindableItemCursor cursor = (BindableItemCursor) this.getCursor();
         cursor.moveToPosition(position);
 
-        BindableItem bindable;
+        BindableItem item;
         // Optimization to avoid unnecessary de-serializations.
         if (mLastItemViewTypePos == position) {
-            bindable = mLastItemViewTypeEvent;
+            item = mLastItemViewTypeEvent;
         } else {
-            bindable = cursor.getBindableItem();
+            item = cursor.getBindableItem();
         }
 
         if (convertView == null) {
-            convertView = bindable.newListItemView(mContext, cursor, parent);
+            convertView = item.newListItemView(mContext, cursor, parent);
         }
 
         // Bind it, and we are done!
-        mBinder.bindViewToItem(mContext, convertView, cursor, bindable);
+        mBinder.bindViewToItem(mContext, convertView, cursor, item);
 
         return convertView;
     }

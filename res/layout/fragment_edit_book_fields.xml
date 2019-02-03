@@ -374,7 +374,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="web"
-            android:hint="@string/not_set"
+            android:hint="@string/field_not_set"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textIsSelectable="true" />
     </LinearLayout>

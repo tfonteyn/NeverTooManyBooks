@@ -33,15 +33,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
-import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
-import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.EventActions;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.OnEventChangeListener;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -57,20 +51,7 @@ public class EventQueueListActivity
 
     /** Key to store optional task ID when activity is started. */
     public static final String REQUEST_BKEY_TASK_ID = "EventQueueListActivity.TaskId";
-    /**
-     * Listener to handle Event add/change/delete.
-     */
-    private final OnEventChangeListener mOnEventChangeListener = new OnEventChangeListener() {
-        @Override
-        public void onEventChange(@Nullable final Event event,
-                                  @NonNull final EventActions action) {
-            //When any Event is added/changed/deleted, update the list. Lazy, yes.
-            EventQueueListActivity.this.refreshData();
-        }
-    };
-    /** DB connection. */
-    private DBA mDb;
-    private BindableItemCursor mCursor;
+
     /** Task ID, if provided in intent. */
     private long mTaskId;
 
@@ -82,7 +63,6 @@ public class EventQueueListActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        mDb = new DBA(this);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -92,7 +72,7 @@ public class EventQueueListActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.gr_tq_title_task_errors);
 
-        QueueManager.getQueueManager().registerEventListener(mOnEventChangeListener);
+        QueueManager.getQueueManager().registerEventListener(mOnChangeListener);
 
         Button cleanupBtn = findViewById(R.id.cleanup);
         cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_events);
@@ -111,16 +91,6 @@ public class EventQueueListActivity
     }
 
     /**
-     * Refresh data; some other activity may have changed relevant data (eg. a book)
-     */
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        refreshData();
-    }
-
-    /**
      * Build a context menu dialogue when an item is clicked.
      */
     @Override
@@ -128,66 +98,39 @@ public class EventQueueListActivity
                                 @NonNull final View v,
                                 final int position,
                                 final long id) {
-        // get the event object
-        final Event event = ViewTagger.getTag(v, R.id.TAG_EVENT);
 
-        // If it owns a hint, display it
+        final Event event = ViewTagger.getTagOrThrow(v, R.id.TAG_EVENT);
+
+        // If it owns a hint, display it first
         if (event instanceof HintOwner) {
-            // Show the hint if necessary; fall through to the runnable
             HintManager.displayHint(this.getLayoutInflater(), ((HintOwner) event).getHint(),
                                     new Runnable() {
                                         @Override
                                         public void run() {
-                                            doContextMenu(parent, v, position, id);
+                                            doContextMenu(parent, v, event, position, id);
                                         }
                                     });
         } else {
             // Just display context menu
-            doContextMenu(parent, v, position, id);
+            doContextMenu(parent, v, event, position, id);
         }
     }
 
     private void doContextMenu(@NonNull final AdapterView<?> parent,
                                @NonNull final View v,
+                               @NonNull final Event event,
                                final int position,
                                final long id) {
-        final Event event = ViewTagger.getTagOrThrow(v, R.id.TAG_EVENT);
-        final List<ContextDialogItem> items = new ArrayList<>();
-
+        List<ContextDialogItem> items = new ArrayList<>();
         event.addContextMenuItems(this, parent, v, position, id, items, mDb);
-
-        if (items.size() > 0) {
-            showContextDialogue(R.string.title_select_an_action, items);
-        }
+        ContextDialogItem.showContextDialog(this, R.string.title_select_an_action, items);
     }
 
     @Override
     @CallSuper
     protected void onDestroy() {
-        try {
-            if (mCursor != null) {
-                mCursor.close();
-            }
-        } catch (RuntimeException ignore) {
-        }
-
-        try {
-            QueueManager.getQueueManager().unregisterEventListener(mOnEventChangeListener);
-        } catch (RuntimeException ignore) {
-        }
-
-        if (mDb != null) {
-            mDb.close();
-        }
+        QueueManager.getQueueManager().unregisterEventListener(mOnChangeListener);
         super.onDestroy();
-    }
-
-    /**
-     * Paranoid overestimate of the number of event types we use.
-     */
-    @Override
-    public int getBindableItemTypeCount() {
-        return 50;
     }
 
     /**
@@ -207,13 +150,11 @@ public class EventQueueListActivity
      */
     @NonNull
     @Override
-    protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
+    protected BindableItemCursor getBindableItemCursor() {
         if (mTaskId == 0) {
-            mCursor = QueueManager.getQueueManager().getAllEvents();
+            return QueueManager.getQueueManager().getAllEvents();
         } else {
-            mCursor = QueueManager.getQueueManager().getTaskEvents(mTaskId);
+            return QueueManager.getQueueManager().getTaskEvents(mTaskId);
         }
-
-        return mCursor;
     }
 }

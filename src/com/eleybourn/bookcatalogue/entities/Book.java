@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue.entities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -86,6 +85,11 @@ public class Book
     public static final Map<Integer, Integer> EDITIONS = new HashMap<>();
 
     /**
+     * Rating goes from 0 to 5 stars, in 0.5 increments.
+     */
+    public static final int RATING_STARS = 5;
+
+    /*
      * {@link DatabaseDefinitions#DOM_BOOK_EDITION_BITMASK}.
      * <p>
      * 0%00000001 = first edition
@@ -96,41 +100,28 @@ public class Book
      * <p>
      * NEWKIND: edition
      */
+    //private static final int EDITION_NOTHING_SPECIAL = 0;
+
+    /** first edition ever of this content. */
     private static final int EDITION_FIRST = 1;
+    /** First printing of the 'this' edition. */
     private static final int EDITION_FIRST_IMPRESSION = 1 << 1;
+    /** This edition had a limited run. (Numbered or not). */
     private static final int EDITION_LIMITED = 1 << 2;
+    /** It's a bookclub edition. boooo.... */
     private static final int EDITION_BOOK_CLUB = 1 << 7;
-//    /**
-//     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_EDITION_BITMASK}.
-//     * Type: Boolean
-//     */
-//    private static final String IS_FIRST_EDITION = "+IsFirstEdition";
-//    /**
-//     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_EDITION_BITMASK}.
-//     * Type: Boolean
-//     */
-//    private static final String IS_FIRST_IMPRESSION = "+IsFirstImpression";
-//    /**
-//     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_EDITION_BITMASK}.
-//     * Type: Boolean
-//     */
-//    private static final String IS_LIMITED = "+LimitedEdition";
-//    /**
-//     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_EDITION_BITMASK}.
-//     * Type: Boolean
-//     */
-//    private static final String IS_BOOK_CLUB_EDITION = "+IsBookClubEdition";
 
     /* NEWKIND: edition. */
     static {
         EDITIONS.put(EDITION_FIRST, R.string.lbl_edition_first_edition);
         EDITIONS.put(EDITION_FIRST_IMPRESSION, R.string.lbl_edition_first_impression);
         EDITIONS.put(EDITION_LIMITED, R.string.lbl_edition_limited);
+
         EDITIONS.put(EDITION_BOOK_CLUB, R.string.lbl_edition_book_club);
     }
 
     /**
-     * Public Constructor. All overloaded constructors MUST call this();
+     * Public Constructor.
      */
     public Book() {
         initValidatorsAndAccessors();
@@ -142,22 +133,11 @@ public class Book
      * Either load from database if existing book, or a new Book.
      */
     private Book(@NonNull final DBA db,
-                 final long bookId
-    ) {
-        this();
+                 final long bookId) {
+        initValidatorsAndAccessors();
         if (bookId > 0) {
             reload(db, bookId);
         }
-    }
-
-    /**
-     * Public Constructor.
-     *
-     * @param cursor with book data
-     */
-    public Book(@NonNull final Cursor cursor) {
-        this();
-        putAll(cursor);
     }
 
     /**
@@ -167,9 +147,8 @@ public class Book
      * @param bookData Bundle with book data
      */
     private Book(final long bookId,
-                 @NonNull final Bundle bookData
-    ) {
-        this();
+                 @NonNull final Bundle bookData) {
+        initValidatorsAndAccessors();
         putAll(bookData);
     }
 
@@ -191,8 +170,7 @@ public class Book
     @NonNull
     public static Book getBook(@NonNull final DBA db,
                                final long bookId,
-                               @Nullable final Bundle bookData
-    ) {
+                               @Nullable final Bundle bookData) {
         // if we have a populated bundle, use that.
         if (bookData != null) {
             return new Book(bookId, bookData);
@@ -208,16 +186,14 @@ public class Book
      */
     @NonNull
     public static Book getBook(@NonNull final DBA db,
-                               final long bookId
-    ) {
+                               final long bookId) {
         return new Book(db, bookId);
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public static boolean setRead(@NonNull final DBA db,
                                   final long bookId,
-                                  final boolean isRead
-    ) {
+                                  final boolean isRead) {
         // load from database
         Book book = getBook(db, bookId);
         book.putBoolean(UniqueId.KEY_BOOK_READ, isRead);
@@ -243,12 +219,14 @@ public class Book
         //remove trailing 0's
         String ratingString = "";
         if (rating > 0) {
+            // force rounding
             int ratingTmp = (int) rating;
+            // get fraction
             double decimal = rating - ratingTmp;
             if (decimal > 0) {
-                ratingString = rating + "/5";
+                ratingString = String.valueOf(rating) + '/' + RATING_STARS;
             } else {
-                ratingString = ratingTmp + "/5";
+                ratingString = String.valueOf(ratingTmp) + '/' + RATING_STARS;
             }
         }
 
@@ -265,8 +243,8 @@ public class Book
         // TEST: There's a problem with the facebook app in android,
         // so despite it being shown on the list it will not post any text unless the user types it.
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        String text = activity
-                .getString(R.string.share_book_im_reading, title, author, series, ratingString);
+        String text = activity.getString(R.string.info_share_book_im_reading,
+                                         title, author, series, ratingString);
         shareIntent.putExtra(Intent.EXTRA_TEXT, text);
         shareIntent.putExtra(Intent.EXTRA_STREAM, coverURI);
         shareIntent.setType("text/plain");
@@ -356,15 +334,14 @@ public class Book
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean setRead(@NonNull final DBA db,
-                           final boolean isRead
-    ) {
+                           final boolean isRead) {
         int prevRead = getInt(UniqueId.KEY_BOOK_READ);
         String prevReadEnd = getString(UniqueId.KEY_BOOK_READ_END);
 
         putInt(UniqueId.KEY_BOOK_READ, isRead ? 1 : 0);
         putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
 
-        if (db.updateBook(getBookId(), this, 0) != 1) {
+        if (db.updateBook(getId(), this, 0) != 1) {
             //rollback
             putInt(UniqueId.KEY_BOOK_READ, prevRead);
             putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
@@ -385,13 +362,15 @@ public class Book
 
     /**
      * Convenience Accessor.
+     *
+     * @return the book id.
      */
-    public long getBookId() {
+    public long getId() {
         return this.getLong(UniqueId.KEY_ID);
     }
 
     public void reload(@NonNull final DBA db) {
-        reload(db, this.getBookId());
+        reload(db, this.getId());
     }
 
     /**
@@ -400,8 +379,7 @@ public class Book
      * @param bookId of book (may be 0 for new, in which case we do nothing)
      */
     public void reload(@NonNull final DBA db,
-                       final long bookId
-    ) {
+                       final long bookId) {
         // If ID = 0, no details in DB
         if (bookId == 0) {
             return;
@@ -413,9 +391,9 @@ public class Book
                 putAll(book);
                 // load lists (or init with empty lists)
                 putBookshelfList(db.getBookshelvesByBookId(bookId));
-                putAuthorList(db.getBookAuthorList(bookId));
-                putSeriesList(db.getBookSeriesList(bookId));
-                putTOC(db.getTOCEntriesByBook(bookId));
+                putAuthorList(db.getAuthorsByBookId(bookId));
+                putSeriesList(db.getSeriesByBookId(bookId));
+                putTOC(db.getTocEntryByBook(bookId));
             }
         }
     }
@@ -462,6 +440,7 @@ public class Book
 
         ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
         for (Integer edition : EDITIONS.keySet()) {
+            //noinspection ConstantConditions
             list.add(new EditionCheckListItem(
                     edition, EDITIONS.get(edition),
                     (edition & getInt(UniqueId.KEY_BOOK_EDITION_BITMASK)) != 0));
@@ -552,7 +531,7 @@ public class Book
     @Nullable
     public String getPrimarySeries() {
         ArrayList<Series> list = getSeriesList();
-        return list.size() > 0 ? list.get(0).name : null;
+        return list.size() > 0 ? list.get(0).getName() : null;
     }
 
     /**
@@ -585,11 +564,11 @@ public class Book
     /**
      * TODO: use {@link DataAccessor}.
      *
-     * @return Table Of Content (a TOCEntry list)
+     * @return Table Of Content (a TocEntry list)
      */
     @NonNull
     @CallSuper
-    public ArrayList<TOCEntry> getTOC() {
+    public ArrayList<TocEntry> getTOCList() {
         return super.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
     }
 
@@ -597,7 +576,7 @@ public class Book
      * Special Accessor.
      */
     @CallSuper
-    public void putTOC(@NonNull final ArrayList<TOCEntry> list) {
+    public void putTOC(@NonNull final ArrayList<TocEntry> list) {
         super.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, list);
     }
 
@@ -609,7 +588,7 @@ public class Book
     }
 
     /**
-     * Get the underlying raw data.
+     * @return the underlying raw data.
      * DO NOT UPDATE THIS! IT SHOULD BE USED FOR READING DATA ONLY.
      */
     @NonNull
@@ -637,8 +616,28 @@ public class Book
          * Does not handle 'multiple authors' */
         addAccessor(HAS_MULTIPLE_WORKS,
                     new BitmaskDataAccessor(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                                            DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_WORKS));
+                                            TocEntry.Type.MULTIPLE_WORKS));
 
+    }
+
+    /**
+     * Loan this book to someone.
+     *
+     * @param db     the database
+     * @param loanee person to lend to
+     */
+    public void loan(final DBA db,
+                     final String loanee) {
+        db.insertLoan(getId(), loanee);
+    }
+
+    /**
+     * A loaned book is returned.
+     *
+     * @param db the database
+     */
+    public void loanReturned(final DBA db) {
+        db.deleteLoan(getId());
     }
 
     public static class EditionCheckListItem
@@ -666,8 +665,7 @@ public class Book
 
         EditionCheckListItem(@NonNull final Integer bit,
                              @StringRes final int labelId,
-                             final boolean selected
-        ) {
+                             final boolean selected) {
             super(bit, selected);
             mLabelId = labelId;
         }
@@ -680,8 +678,7 @@ public class Book
 
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags
-        ) {
+                                  final int flags) {
             super.writeToParcel(dest, flags);
             dest.writeInt(mLabelId);
             dest.writeInt(item);
@@ -725,15 +722,14 @@ public class Book
 
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags
-        ) {
+                                  final int flags) {
             super.writeToParcel(dest, flags);
             dest.writeParcelable(item, flags);
         }
 
         @NonNull
         public String getLabel() {
-            return getItem().name;
+            return getItem().getName();
         }
     }
 }

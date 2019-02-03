@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DBExceptions;
+import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 import java.lang.reflect.Field;
@@ -127,39 +127,20 @@ public class SynchronizedDb {
     }
 
     /**
-     * Check if the collation we use is case sensitive.
-     * ; bug introduced in ICS was to make UNICODE not CI.
-     * Due to bugs in other language sorting, we are now forced to use a different
-     * collation anyway, but we still check if it is CI.
-     *
-     * @return <tt>true</tt> if case-sensitive (i.e. up to "you" to add lower/upper calls)
-     */
-    public boolean isCollationCaseSensitive() {
-        if (mIsCollationCaseSensitive == null) {
-            mIsCollationCaseSensitive = checkIfCollationIsCaseSensitive();
-            if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                Logger.info(this, "isCollationCaseSensitive=" + mIsCollationCaseSensitive);
-            }
-        }
-        return mIsCollationCaseSensitive;
-    }
-
-    /**
      * Call the passed database opener with retries to reduce risks of access conflicts
      * causing crashes.
-     *
+     * <p>
      * About the SQLite version:
-     *    https://developer.android.com/reference/android/database/sqlite/package-summary
-     * API 27	3.19
-     * API 26	3.18
-     * API 24	3.9
-     * API 21	3.8 <=
-     * API 11	3.7
-     * API 8	3.6
-     * API 3	3.5
-     * API 1	3.4
+     * https://developer.android.com/reference/android/database/sqlite/package-summary
+     * API 27   3.19
+     * API 26   3.18
+     * API 24   3.9
+     * API 21   3.8 <=
+     * API 11   3.7
+     * API 8    3.6
+     * API 3    3.5
+     * API 1    3.4
      * But some device manufacturers include different versions of SQLite on their devices.
-     *
      *
      * @param opener SQLiteOpenHelper interface
      *
@@ -176,15 +157,8 @@ public class SynchronizedDb {
             Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {
                 SQLiteDatabase db = opener.getWritableDatabase();
-                String sqliteVersion = "";
-                    String sql = "select sqlite_version() AS sqlite_version";
-                    try (Cursor cursor = db.rawQuery(sql, null)) {
-                        if (cursor.moveToNext()) {
-                            sqliteVersion = cursor.getString(0);
-                        }
-                    }
-                Logger.info(this, db.getPath()
-                        + "|version=" + sqliteVersion + "|retriesLeft=" + retriesLeft);
+                Logger.info(this, db.getPath() + "|retriesLeft=" + retriesLeft);
+                //getInfo(db);
                 return db;
             } catch (RuntimeException e) {
                 exclusiveLock.unlock();
@@ -207,61 +181,19 @@ public class SynchronizedDb {
                 }
             }
         } while (true);
-
     }
 
-    /**
-     * Locking-aware wrapper for underlying database method.
-     * <p>
-     * lint says this cursor is not always closed.
-     * 2019-01-14: the only place it's not closed is in
-     * {@link com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider}
-     * where it seems not possible to close it ourselves.
-     */
-    @NonNull
-    public SynchronizedCursor rawQuery(@NonNull final String sql,
-                                       @Nullable final String[] selectionArgs) {
-        Synchronizer.SyncLock txLock = null;
-        if (mTxLock == null) {
-            txLock = mSync.getSharedLock();
-        }
-
-        try {
-            return (SynchronizedCursor) mSqlDb.rawQueryWithFactory(mCursorFactory, sql,
-                                                                   selectionArgs, "");
-        } finally {
-            if (txLock != null) {
-                txLock.unlock();
-            }
-        }
-    }
-
-    /**
-     * Locking-aware wrapper for underlying database method.
-     */
-    public void execSQL(@NonNull final String sql) {
-        if (DEBUG_SWITCHES.SQL && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-            Logger.debug(sql);
-        }
-
-        try {
-            if (mTxLock != null) {
-                if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
-                    throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
-                }
-                mSqlDb.execSQL(sql);
-            } else {
-                Synchronizer.SyncLock l = mSync.getExclusiveLock();
-                try {
-                    mSqlDb.execSQL(sql);
-                } finally {
-                    l.unlock();
+    public void getInfo(@NonNull final SQLiteDatabase db) {
+        String[] sql = {"select sqlite_version() AS sqlite_version",
+                        "PRAGMA encoding",
+                        "PRAGMA collation_list",
+                        };
+        for (String s : sql) {
+            try (Cursor cursor = db.rawQuery(s, null)) {
+                if (cursor.moveToNext()) {
+                    Logger.info(this, s + " => " + cursor.getString(0));
                 }
             }
-        } catch (SQLException e) {
-            // bad sql is a developer issue... die!
-            Logger.error(e,sql);
-            throw e;
         }
     }
 
@@ -302,7 +234,7 @@ public class SynchronizedDb {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
-                throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
         } else {
             txLock = mSync.getExclusiveLock();
@@ -311,7 +243,11 @@ public class SynchronizedDb {
         // reminder: insert does not throw exceptions for the actual insert.
         // but it can throw other exceptions.
         try {
-            return mSqlDb.insert(table, nullColumnHack, cv);
+            long id = mSqlDb.insert(table, nullColumnHack, cv);
+            if (id == -1) {
+                Logger.error("Insert failed");
+            }
+            return id;
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
             Logger.error(e);
@@ -325,6 +261,9 @@ public class SynchronizedDb {
 
     /**
      * Locking-aware wrapper for underlying database method.
+     * <p>
+     * Note: as far as I can tell, the Statement behind this call is not cached.
+     * So this is fine for single-action inserts, but not for loops (should use a prepared stmt).
      *
      * @return the number of rows affected
      */
@@ -335,7 +274,7 @@ public class SynchronizedDb {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
-                throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
         } else {
             txLock = mSync.getExclusiveLock();
@@ -358,6 +297,9 @@ public class SynchronizedDb {
 
     /**
      * Locking-aware wrapper for underlying database method.
+     * <p>
+     * Note: as far as I can tell, the Statement behind this call is not cached.
+     * So this is fine for single-action inserts, but not for loops (should use a prepared stmt).
      *
      * @return the number of rows affected if a whereClause is passed in, 0
      * otherwise. To remove all rows and get a count pass "1" as the
@@ -369,7 +311,7 @@ public class SynchronizedDb {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
-                throw new DBExceptions.TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
         } else {
             txLock = mSync.getExclusiveLock();
@@ -383,6 +325,32 @@ public class SynchronizedDb {
             // bad sql is a developer issue... die!
             Logger.error(e);
             throw e;
+        } finally {
+            if (txLock != null) {
+                txLock.unlock();
+            }
+        }
+    }
+
+    /**
+     * Locking-aware wrapper for underlying database method.
+     * <p>
+     * lint says this cursor is not always closed.
+     * 2019-01-14: the only place it's not closed is in
+     * {@link com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider}
+     * where it seems not possible to close it ourselves.
+     */
+    @NonNull
+    public SynchronizedCursor rawQuery(@NonNull final String sql,
+                                       @Nullable final String[] selectionArgs) {
+        Synchronizer.SyncLock txLock = null;
+        if (mTxLock == null) {
+            txLock = mSync.getSharedLock();
+        }
+
+        try {
+            return (SynchronizedCursor) mSqlDb.rawQueryWithFactory(mCursorFactory, sql,
+                                                                   selectionArgs, "");
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -427,12 +395,41 @@ public class SynchronizedDb {
     /**
      * Locking-aware wrapper for underlying database method.
      */
+    public void execSQL(@NonNull final String sql) {
+        if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
+            Logger.info(this, sql);
+        }
+
+        try {
+            if (mTxLock != null) {
+                if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
+                    throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
+                }
+                mSqlDb.execSQL(sql);
+            } else {
+                Synchronizer.SyncLock l = mSync.getExclusiveLock();
+                try {
+                    mSqlDb.execSQL(sql);
+                } finally {
+                    l.unlock();
+                }
+            }
+        } catch (SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(e, sql);
+            throw e;
+        }
+    }
+
+    /**
+     * Locking-aware wrapper for underlying database method.
+     */
     @NonNull
     public SynchronizedStatement compileStatement(@NonNull final String sql) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
-                throw new DBExceptions.TransactionException("Compile inside shared TX");
+                throw new TransactionException("Compile inside shared TX");
             }
         } else {
             txLock = mSync.getExclusiveLock();
@@ -467,10 +464,26 @@ public class SynchronizedDb {
         return mSqlDb.getPath();
     }
 
+    /**
+     * Run 'analyse' on the whole database.
+     */
     public void analyze() {
         // Don't do VACUUM -- it's a complete rebuild
-        //mSyncedDb.execSQL("vacuum");
-        execSQL("analyze");
+        //execSQL("vacuum");
+        try {
+            execSQL("analyze");
+        } catch (RuntimeException e) {
+            Logger.error(e, "Analyze failed");
+        }
+    }
+
+    /**
+     * Run 'analyse' on a table.
+     *
+     * @param table to analyse.
+     */
+    public void analyze(@NonNull final TableDefinition table) {
+        execSQL("analyze " + table);
     }
 
     /**
@@ -512,7 +525,7 @@ public class SynchronizedDb {
             }
         } catch (RuntimeException e) {
             txLock.unlock();
-            throw new DBExceptions.TransactionException(
+            throw new TransactionException(
                     "Unable to start database transaction: " + e.getLocalizedMessage(), e);
         }
         mTxLock = txLock;
@@ -526,11 +539,11 @@ public class SynchronizedDb {
      */
     public void endTransaction(@NonNull final Synchronizer.SyncLock txLock) {
         if (mTxLock == null) {
-            throw new DBExceptions.TransactionException(
+            throw new TransactionException(
                     "Ending a transaction when none is started");
         }
         if (!mTxLock.equals(txLock)) {
-            throw new DBExceptions.TransactionException(
+            throw new TransactionException(
                     "Ending a transaction with wrong transaction lock");
         }
 
@@ -552,10 +565,21 @@ public class SynchronizedDb {
     }
 
     /**
-     * Wrapper for underlying database method.
+     * Check if the collation we use is case sensitive.
+     * ; bug introduced in ICS was to make UNICODE not CI.
+     * Due to bugs in other language sorting, we are now forced to use a different
+     * collation anyway, but we still check if it is CI.
+     *
+     * @return <tt>true</tt> if case-sensitive (i.e. up to "you" to add lower/upper calls)
      */
-    public boolean isOpen() {
-        return mSqlDb.isOpen();
+    public boolean isCollationCaseSensitive() {
+        if (mIsCollationCaseSensitive == null) {
+            mIsCollationCaseSensitive = checkIfCollationIsCaseSensitive();
+            if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
+                Logger.info(this, "isCollationCaseSensitive=" + mIsCollationCaseSensitive);
+            }
+        }
+        return mIsCollationCaseSensitive;
     }
 
     /**
@@ -579,7 +603,7 @@ public class SynchronizedDb {
      */
     private boolean checkIfCollationIsCaseSensitive() {
         // Drop and create table
-        mSqlDb.execSQL("DROP TABLE If Exists collation_cs_check");
+        mSqlDb.execSQL("DROP TABLE IF EXISTS collation_cs_check");
         mSqlDb.execSQL("CREATE TABLE collation_cs_check (t text, i integer)");
         try {
             // Row that *should* be returned first assuming 'a' <=> 'A'
@@ -602,7 +626,7 @@ public class SynchronizedDb {
             throw e;
         } finally {
             try {
-                mSqlDb.execSQL("DROP TABLE If Exists collation_cs_check");
+                mSqlDb.execSQL("DROP TABLE IF EXISTS collation_cs_check");
             } catch (SQLException e) {
                 Logger.error(e);
             }

@@ -16,7 +16,7 @@ import java.io.Closeable;
 
 /**
  * Wrapper for statements that ensures locking is used.
- *
+ * <p>
  * Represents a statement that can be executed against a database.  The statement
  * cannot return multiple rows or columns, but single value (1 x 1) result sets
  * are supported.
@@ -36,21 +36,20 @@ public class SynchronizedStatement
     /** Indicates this is a 'count' statement. */
     private final boolean mIsCount;
     /** Indicates close() has been called. */
-    private boolean mIsClosed = false;
+    private boolean mIsClosed;
 
     /**
      * Constructor.
+     *
+     * @param db the database
+     * @param sql the sql for this statement
      */
-    SynchronizedStatement(@NonNull final SynchronizedDb db,
-                          @NonNull final String sql) {
+    public SynchronizedStatement(@NonNull final SynchronizedDb db,
+                                 @NonNull final String sql) {
         mSync = db.getSynchronizer();
         mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
         mIsCount = sql.trim().toUpperCase().startsWith("SELECT COUNT(");
         mStatement = db.getUnderlyingDatabase().compileStatement(sql);
-
-        if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
-            Logger.info(this, sql + "\n\n");
-        }
     }
 
     /**
@@ -88,6 +87,7 @@ public class SynchronizedStatement
     /**
      * Wrapper for underlying method on SQLiteStatement.
      */
+    @SuppressWarnings("unused")
     void bindBlob(final int index,
                   @Nullable final byte[] value) {
         if (value == null) {
@@ -107,6 +107,7 @@ public class SynchronizedStatement
     /**
      * Wrapper for underlying method on SQLiteStatement.
      */
+    @SuppressWarnings("unused")
     public void clearBindings() {
         mStatement.clearBindings();
     }
@@ -122,7 +123,7 @@ public class SynchronizedStatement
 
     /**
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     *
+     * <p>
      * Execute a statement that returns a 1 by 1 table with a numeric value.
      *
      * @return The result of the query.
@@ -130,12 +131,13 @@ public class SynchronizedStatement
      * @throws SQLiteDoneException if the query returns zero rows
      */
     public long simpleQueryForLong()
-        throws SQLiteDoneException {
+            throws SQLiteDoneException {
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             long result = mStatement.simpleQueryForLong();
             if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
-                Logger.debug("simpleQueryForLong got: " + result);
+                Logger.info(this, "simpleQueryForLong", mStatement.toString());
+                Logger.info(this, "simpleQueryForLong","result: " + result);
             }
             return result;
         } finally {
@@ -145,9 +147,9 @@ public class SynchronizedStatement
 
     /**
      * Syntax sugar. Converts an SQLiteDoneException into returning 0.
-     *
+     * <p>
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     *
+     * <p>
      * Execute a statement that returns a 1 by 1 table with a numeric value.
      *
      * @return The result of the query, or 0 when no rows found
@@ -157,7 +159,8 @@ public class SynchronizedStatement
         try {
             long result = mStatement.simpleQueryForLong();
             if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
-                Logger.debug("simpleQueryForLongOrZero got: " + result);
+                Logger.info(this, "simpleQueryForLongOrZero", mStatement.toString());
+                Logger.info(this, "simpleQueryForLongOrZero","result: " + result);
             }
             return result;
         } catch (SQLiteDoneException ignore) {
@@ -169,9 +172,9 @@ public class SynchronizedStatement
 
     /**
      * Syntax sugar to identify SELECT COUNT(..) statements
-     *
+     * <p>
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     *
+     * <p>
      * Execute a statement that returns a 1 by 1 table with a numeric value.
      * For example, SELECT COUNT(*) FROM table;
      *
@@ -188,7 +191,7 @@ public class SynchronizedStatement
 
     /**
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     *
+     * <p>
      * Execute a statement that returns a 1 by 1 table with a text value.
      *
      * @return The result of the query.
@@ -197,7 +200,7 @@ public class SynchronizedStatement
      */
     @NonNull
     public String simpleQueryForString()
-        throws SQLiteDoneException {
+            throws SQLiteDoneException {
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             return mStatement.simpleQueryForString();
@@ -208,9 +211,9 @@ public class SynchronizedStatement
 
     /**
      * Syntax sugar. Converts an SQLiteDoneException into returning null.
-     *
+     * <p>
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     *
+     * <p>
      * Execute a statement that returns a 1 by 1 table with a text value.
      *
      * @return The result of the query, or null if not found.
@@ -222,7 +225,7 @@ public class SynchronizedStatement
             return mStatement.simpleQueryForString();
         } catch (SQLiteDoneException e) {
             if (/* always print debug */ BuildConfig.DEBUG) {
-                Logger.error(e, "simpleQueryForStringOrNull got NULL");
+                Logger.info(this, "simpleQueryForStringOrNull","NULL");
             }
             return null;
         } finally {
@@ -232,7 +235,7 @@ public class SynchronizedStatement
 
     /**
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     *
+     * <p>
      * Execute this SQL statement, if it is not a SELECT / INSERT / DELETE / UPDATE, for example
      * CREATE / DROP table, view, trigger, index etc.
      */
@@ -244,10 +247,13 @@ public class SynchronizedStatement
             txLock = mSync.getExclusiveLock();
         }
         try {
+            if (DEBUG_SWITCHES.DB_SYNC_EXECUTE && BuildConfig.DEBUG) {
+                Logger.info(this, "execute", mStatement.toString());
+            }
             mStatement.execute();
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(e,mStatement.toString());
+            Logger.error(e, mStatement.toString());
             throw e;
         } finally {
             txLock.unlock();
@@ -256,7 +262,7 @@ public class SynchronizedStatement
 
     /**
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     *
+     * <p>
      * Execute this SQL statement, if the number of rows affected by execution of this SQL
      * statement is of any importance to the caller - for example, UPDATE / DELETE SQL statements.
      *
@@ -266,15 +272,15 @@ public class SynchronizedStatement
     public int executeUpdateDelete() {
         Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
         try {
-            int rowsAffected =  mStatement.executeUpdateDelete();
+            int rowsAffected = mStatement.executeUpdateDelete();
             if (DEBUG_SWITCHES.DB_SYNC_ROWS_AFFECTED && BuildConfig.DEBUG) {
-                Logger.info(this, "executeUpdateDelete|" + mStatement.toString());
-                Logger.info(this, "executeUpdateDelete|rowsAffected=" + rowsAffected);
+                Logger.info(this, "executeUpdateDelete", mStatement.toString());
+                Logger.info(this, "executeUpdateDelete","rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(e,mStatement.toString());
+            Logger.error(e, mStatement.toString());
             throw e;
         } finally {
             exclusiveLock.unlock();
@@ -283,7 +289,7 @@ public class SynchronizedStatement
 
     /**
      * Wrapper that uses a lock before calling underlying method on SQLiteStatement.
-     *
+     * <p>
      * Execute this SQL statement and return the ID of the row inserted due to this call.
      * The SQL statement should be an INSERT for this to be a useful call.
      *
@@ -292,10 +298,19 @@ public class SynchronizedStatement
     public long executeInsert() {
         Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
         try {
-            return mStatement.executeInsert();
+            long id = mStatement.executeInsert();
+
+            if (DEBUG_SWITCHES.DB_SYNC_EXECUTE_INSERT && BuildConfig.DEBUG) {
+                Logger.info(this, "executeInsert", mStatement.toString());
+                Logger.info(this, "executeInsert","id=" + id);
+            }
+            if (id == -1) {
+                Logger.error("Insert failed");
+            }
+            return id;
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(e,mStatement.toString());
+            Logger.error(e, mStatement.toString());
             throw e;
         } finally {
             exclusiveLock.unlock();
@@ -306,18 +321,11 @@ public class SynchronizedStatement
     @CallSuper
     protected void finalize()
             throws Throwable {
-        if (!mIsClosed && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-            Logger.info(this, "Finalizing non-closed statement (potential error/small)");
-            if (DEBUG_SWITCHES.SQL) {
-                Logger.debug(mStatement.toString());
-            }
+        if (!mIsClosed && BuildConfig.DEBUG) {
+            Logger.info(this, "Finalizing non-closed statement (potential error/small)\n"
+                    + mStatement.toString());
         }
-
-        try {
-            mStatement.close();
-        } catch (RuntimeException ignore) {
-            // Ignore; may have been finalized
-        }
+        mStatement.close();
         super.finalize();
     }
 

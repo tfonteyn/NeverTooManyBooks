@@ -40,7 +40,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.util.ArrayList;
@@ -140,10 +139,10 @@ public abstract class EditObjectListActivity<T extends Parcelable>
             onListChanged();
         }
     };
-    protected DBA mDb;
+
     @Nullable
     protected String mBookTitle;
-    /** Row ID... mainly used (if list is from a book) to know if book is new. */
+    /** Row ID... mainly used (if list is from a book) to know if the object is new. */
     protected long mRowId = 0;
 
     /**
@@ -209,9 +208,13 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         ArrayList<T> list = null;
 
         if (key != null) {
-            list = BundleUtils.getParcelableArrayList(key, savedInstanceState,
-                                                      getIntent().getExtras());
+            if (savedInstanceState != null) {
+                list = savedInstanceState.getParcelableArrayList(key);
+            } else {
+                list = getIntent().getParcelableArrayListExtra(key);
+            }
         }
+
         if (list != null) {
             return list;
         }
@@ -326,6 +329,10 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * <p>
      * Can be overridden to perform other checks.
      *
+     * IMPORTANT: Individual items on the list might have been saved to the database
+     * depending on the child class needs.
+     * The list itself is (normally) NOT SAVED -> we only return it in the result.
+     *
      * @param data A newly created Intent to store output if necessary.
      *             Comes pre-populated with data.putExtra(mBKey, mList);
      *
@@ -407,32 +414,23 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         super.onSaveInstanceState(outState);
     }
 
-    /**
-     * This is totally bizarre. Without this piece of code, under Android 1.6, the
-     * native onRestoreInstanceState() fails to restore custom classes, throwing
-     * a ClassNotFoundException, when the activity is resumed.
-     * <p>
-     * To test this, remove this line, edit a custom style, and save it. App will
-     * crash in AVD under Android 1.6.
-     * <p>
-     * It is not entirely clear how this happens but since the Bundle has a classLoader
-     * it is fair to surmise that the code that creates the bundle determines the class
-     * loader to use based (somehow) on the class being called, and if we don't implement
-     * this method, then in Android 1.6, the class is a basic android class NOT and app
-     * class.
-     */
-    @Override
-    @CallSuper
-    public void onRestoreInstanceState(@Nullable final Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
-    }
+//    /**
+//     * This is totally bizarre. Without this piece of code, under Android 1.6, the
+//     * native onRestoreInstanceState() fails to restore custom classes, throwing
+//     * a ClassNotFoundException, when the activity is resumed.
+//     * <p>
+//     * To test this, remove this line, edit a custom style, and save it. App will
+//     * crash in AVD under Android 1.6.
+//     * <p>
+//     * It is not entirely clear how this happens but since the Bundle has a classLoader
+//     * it is fair to surmise that the code that creates the bundle determines the class
+//     * loader to use based (somehow) on the class being called, and if we don't implement
+//     * this method, then in Android 1.6, the class is a basic android class NOT and app
+//     * class.
+//     */
+//    @Override
+//    @CallSuper
+//    public void onRestoreInstanceState(@Nullable final Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+//    }
 }

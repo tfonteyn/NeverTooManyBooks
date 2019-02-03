@@ -93,6 +93,9 @@ public final class CoversDBA
                 }
             };
 
+    /** Statement names. */
+    private static final String STMT_EXISTS = "mExistsStmt";
+
     /* Domain definitions. */
     /** TBL_IMAGE. */
     private static final DomainDefinition DOM_ID =
@@ -125,7 +128,7 @@ public final class CoversDBA
      */
     private static final String SQL_COUNT_ID =
             "SELECT COUNT(" + DOM_ID + ") FROM " + TBL_IMAGE
-            + " WHERE " + DOM_FILENAME + "=?";
+                    + " WHERE " + DOM_FILENAME + "=?";
 
     /** all tables. */
     private static final TableDefinition[] TABLES = new TableDefinition[]{TBL_IMAGE};
@@ -137,6 +140,7 @@ public final class CoversDBA
     private static final AtomicInteger INSTANCE_COUNTER = new AtomicInteger();
     /** Compresses images to 70%. */
     private static final int QUALITY_PERCENTAGE = 70;
+
 
     /**
      * We *try* to connect in the Constructor. But this can fail.
@@ -157,9 +161,6 @@ public final class CoversDBA
 
     /** List of statements we create so we can clean them when the instance is closed. */
     private final SqlStatementManager mStatements = new SqlStatementManager();
-    /** {@link #saveFile(String, int, int, byte[])}. */
-    @Nullable
-    private SynchronizedStatement mExistsStmt;
 
     private CoversDBA() {
     }
@@ -346,14 +347,10 @@ public final class CoversDBA
             return null;
         }
 
-        try (Cursor cursor = mSyncedDb.query(TBL_IMAGE.getName(),
-                                             new String[]{DOM_IMAGE.name},
-                                             DOM_FILENAME + "=? AND " + DOM_DATE + ">?",
-                                             new String[]{filename,
-                                                          DateUtils.utcSqlDateTime(lastModified)},
-                                             null,
-                                             null,
-                                             null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(
+                "SELECT " + DOM_IMAGE + " FROM " + TBL_IMAGE
+                        + " WHERE " + DOM_FILENAME + "=? AND " + DOM_DATE + ">?",
+                new String[]{filename, DateUtils.utcSqlDateTime(lastModified)})) {
             if (cursor.moveToFirst()) {
                 return cursor.getBlob(0);
             }
@@ -364,36 +361,29 @@ public final class CoversDBA
     /**
      * Save the passed bitmap to a 'file' in the covers database.
      * Compresses to QUALITY_PERCENTAGE first.
-     *
-     * @return the row ID of the newly inserted row, or -1 if an error occurred,
-     * or 1 for a successful update
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public long saveFile(@NonNull final Bitmap bitmap,
+    public void saveFile(@NonNull final Bitmap bitmap,
                          @NonNull final String filename) {
         if (mSyncedDb == null) {
-            return -1L;
+            return;
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY_PERCENTAGE, out);
         byte[] bytes = out.toByteArray();
 
-        return saveFile(filename, bitmap.getHeight(), bitmap.getWidth(), bytes);
+        saveFile(filename, bitmap.getHeight(), bitmap.getWidth(), bytes);
     }
 
     /**
      * Save the passed encoded image data to a 'file'.
-     *
-     * @return the row ID of the newly inserted row, or -1 if an error occurred,
-     * or 1 for a successful update
      */
-    private long saveFile(@NonNull final String filename,
+    private void saveFile(@NonNull final String filename,
                           final int height,
                           final int width,
                           @NonNull final byte[] bytes) {
         if (mSyncedDb == null) {
-            return -1L;
+            return;
         }
 
         ContentValues cv = new ContentValues();
@@ -406,16 +396,18 @@ public final class CoversDBA
         cv.put(DOM_HEIGHT.name, width);
         cv.put(DOM_SIZE.name, bytes.length);
 
-        if (mExistsStmt == null) {
-            mExistsStmt = mStatements.add(mSyncedDb, "mExistsStmt", SQL_COUNT_ID);
+        SynchronizedStatement existsStmt = mStatements.get(STMT_EXISTS);
+        if (existsStmt == null) {
+            existsStmt = mStatements.add(mSyncedDb, STMT_EXISTS, SQL_COUNT_ID);
         }
-        mExistsStmt.bindString(1, filename);
+        existsStmt.bindString(1, filename);
 
-        if (mExistsStmt.count() == 0) {
-            return mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
+        if (existsStmt.count() == 0) {
+            mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
         } else {
-            return mSyncedDb.update(TBL_IMAGE.getName(), cv, DOM_FILENAME.name + "=?",
-                                    new String[]{filename});
+            mSyncedDb.update(TBL_IMAGE.getName(), cv,
+                             DOM_FILENAME.name + "=?",
+                             new String[]{filename});
         }
     }
 

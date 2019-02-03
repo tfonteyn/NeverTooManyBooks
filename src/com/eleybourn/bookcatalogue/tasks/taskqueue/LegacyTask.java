@@ -33,7 +33,6 @@ import androidx.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
@@ -83,7 +82,7 @@ public class LegacyTask
                          @NonNull final BindableItemCursor cursor,
                          @NonNull final DBA db) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
-                .setText("Legacy Task Placeholder for Task #" + this.getId());
+                .setText("Legacy Placeholder for Task #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
                 .setText("This task is obsolete and can not be recovered."
                                  + " It is probably advisable to delete it.");

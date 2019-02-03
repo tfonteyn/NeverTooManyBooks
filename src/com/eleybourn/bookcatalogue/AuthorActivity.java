@@ -14,20 +14,17 @@ import com.eleybourn.bookcatalogue.adapters.TOCAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.entities.TOCEntry;
+import com.eleybourn.bookcatalogue.entities.TocEntry;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * Display all TOCEntries for an Author.
+ * Display all TocEntry's for an Author.
  * Selecting an entry will take you to the book(s) that contain that entry.
  */
 public class AuthorActivity
         extends BaseListActivity {
-
-    /** The database. */
-    private DBA mDb;
 
     @Override
     protected int getLayoutId() {
@@ -45,18 +42,18 @@ public class AuthorActivity
         mDb = new DBA(this);
 
         final Author author = mDb.getAuthor(authorId);
-        Objects.requireNonNull(author);
+        //noinspection ConstantConditions
         setTitle(author.getDisplayName());
 
         // the list of TOC entries.
-        final ArrayList<TOCEntry> list = mDb.getTOCEntriesByAuthor(author);
+        final ArrayList<TocEntry> list = mDb.getTocEntryByAuthor(author);
 
-        final ArrayAdapter<TOCEntry> adapter = new TOCAdapter(this, R.layout.row_anthology, list);
+        final ArrayAdapter<TocEntry> adapter = new TOCAdapter(this, R.layout.row_anthology, list);
         setListAdapter(adapter);
     }
 
     /**
-     * User tapped ona an entry; get the book(s) for that entry and display.
+     * User tapped on an entry; get the book(s) for that entry and display.
      *
      * @param parent   The AdapterView where the click happened.
      * @param view     The view within the AdapterView that was clicked (this
@@ -69,24 +66,15 @@ public class AuthorActivity
                             @NonNull final View view,
                             final int position,
                             final long id) {
-        final TOCEntry entry = (TOCEntry) parent.getItemAtPosition(position);
+        final TocEntry entry = (TocEntry) parent.getItemAtPosition(position);
         // see note on dba method about Integer vs. Long
-        final ArrayList<Integer> books = mDb.getBookIdsByTOCEntry(entry.getId());
+        final ArrayList<Integer> books = mDb.getBookIdsByTocEntry(entry.getId());
         Intent intent = new Intent(this, BooksOnBookshelf.class);
         // clear the back-stack. We want to keep BooksOnBookshelf on top
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // bring up list, filtered on the book id's
-        intent.putExtra(UniqueId.BKEY_BOOK_ID_LIST, books);
+        intent.putExtra(UniqueId.BKEY_ID_LIST, books);
         startActivity(intent);
         finish();
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 }

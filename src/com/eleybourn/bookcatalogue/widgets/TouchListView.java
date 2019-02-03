@@ -110,7 +110,7 @@ public class TouchListView
     private int mItemHeightNormal = -1;
     //private int mItemHeightExpanded=-1;
     @IdRes
-    private int grabberId = -1;
+    private int grabberId;
     /** Color.TRANSPARENT by default. */
     @ColorInt
     private final int dragndropBackgroundColor;
@@ -607,18 +607,18 @@ public class TouchListView
 
     public interface OnDragListener {
 
-        void onDrag(final int fromPosition,
-                    final int toPosition);
+        void onDrag(int fromPosition,
+                    int toPosition);
     }
 
     public interface OnDropListener {
 
-        void onDrop(final int fromPosition,
-                    final int toPosition);
+        void onDrop(int fromPosition,
+                    int toPosition);
     }
 
     public interface OnRemoveListener {
 
-        void onRemove(final int position);
+        void onRemove(int position);
     }
 }

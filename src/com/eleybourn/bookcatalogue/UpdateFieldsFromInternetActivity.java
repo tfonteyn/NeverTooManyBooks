@@ -50,6 +50,7 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -171,7 +172,7 @@ public class UpdateFieldsFromInternetActivity
                      R.string.lbl_title, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.KEY_BOOK_ISBN,
                      R.string.lbl_isbn, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.BKEY_HAVE_THUMBNAIL,
+        addIfVisible(UniqueId.BKEY_THUMBNAIL,
                      R.string.lbl_cover, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES,
                      R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
@@ -281,12 +282,13 @@ public class UpdateFieldsFromInternetActivity
         }
 
         // If they have selected thumbnails, check if they want to download ALL
-        Fields.FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL);
+        final Fields.FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_THUMBNAIL);
         // but don't ask if its a single book only; just download it.
+        //noinspection ConstantConditions
         if (mBookId == 0 && coversWanted.isSelected()) {
             // Verify - this can be a dangerous operation
             AlertDialog dialog = new AlertDialog.Builder(UpdateFieldsFromInternetActivity.this)
-                    .setMessage(R.string.overwrite_thumbnail)
+                    .setMessage(R.string.confirm_overwrite_thumbnail)
                     .setTitle(R.string.lbl_update_fields)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .create();
@@ -297,8 +299,7 @@ public class UpdateFieldsFromInternetActivity
                     new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
-                            mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL).usage =
-                                    Fields.FieldUsage.Usage.Overwrite;
+                            coversWanted.usage = Fields.FieldUsage.Usage.Overwrite;
                             startUpdate(mBookId);
                         }
                     });
@@ -318,8 +319,7 @@ public class UpdateFieldsFromInternetActivity
                     new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
-                            mFieldUsages.get(UniqueId.BKEY_HAVE_THUMBNAIL).usage =
-                                    Fields.FieldUsage.Usage.CopyIfBlank;
+                            coversWanted.usage = Fields.FieldUsage.Usage.CopyIfBlank;
                             startUpdate(mBookId);
                         }
                     });
@@ -409,6 +409,8 @@ public class UpdateFieldsFromInternetActivity
     }
 
     /**
+     * TODO: allow the use of {@link UpdateFieldsFromInternetTask#setBookId(List)}.
+     *
      * @param bookId 0 for all books, or a valid book id for one book
      */
     private void startUpdate(final long bookId) {

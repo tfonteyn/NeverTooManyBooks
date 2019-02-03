@@ -33,8 +33,7 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.entities.TOCEntry;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
+import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 import java.util.ArrayList;
@@ -80,12 +79,22 @@ public class BookFragment
         mBook = book;
     }
 
+    /**
+     * We're read only.
+     *
+     * @return <tt>false</tt>
+     */
     public boolean isDirty() {
-        return mActivity.isDirty();
+        return false;
     }
 
+    /**
+     * We're read only.
+     *
+     * @param isDirty ignored.
+     */
     public void setDirty(final boolean isDirty) {
-        mActivity.setDirty(isDirty);
+        // ignore
     }
 
     //</editor-fold>
@@ -106,26 +115,25 @@ public class BookFragment
      * All storage interaction is done via:
      * {@link BookManager#getBook()}
      * {@link #onLoadFieldsFromBook(Book, boolean)} from base class onResume
-     * {@link #onSaveFieldsToBook(Book)} from base class onPause
      */
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this, savedInstanceState);
         // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
 
         super.onActivityCreated(savedInstanceState);
 
-        initBooklist(getArguments(), savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            initBooklist(args, savedInstanceState);
+        }
 
         if (savedInstanceState == null) {
             HintManager.displayHint(mActivity.getLayoutInflater(),
                                     R.string.hint_view_only_help,
                                     null);
         }
-
-        Tracker.exitOnActivityCreated(this);
     }
 
     /**
@@ -133,7 +141,7 @@ public class BookFragment
      */
     private void setDefaultActivityResult() {
         Intent data = new Intent();
-        data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
+        data.putExtra(UniqueId.KEY_ID, getBook().getId());
         mActivity.setResult(Activity.RESULT_OK, data);
     }
 
@@ -192,7 +200,7 @@ public class BookFragment
                .setFormatter(dateFormatter);
 
         // defined, but handled manually
-        Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_HAVE_THUMBNAIL);
+        Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_THUMBNAIL);
         mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
                                          coverField, mFields.getField(R.id.isbn));
 
@@ -223,7 +231,7 @@ public class BookFragment
         mFields.add(R.id.bookshelves, "", UniqueId.KEY_BOOKSHELF_NAME);
 
         // defined, but handled manually
-        mFields.add(R.id.loaned_to, "", UniqueId.KEY_LOAN_LOANED_TO);
+        mFields.add(R.id.loaned_to, "", UniqueId.KEY_BOOK_LOANEE);
     }
 
     /**
@@ -234,7 +242,7 @@ public class BookFragment
     public void onResume() {
         Tracker.enterOnResume(this);
         // we need the book before the super will load the fields
-        long bookId = getBook().getBookId();
+        long bookId = getBook().getId();
         if (bookId != 0) {
             getBook().reload(mDb, bookId);
         }
@@ -254,7 +262,7 @@ public class BookFragment
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
-        Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
+        Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         populateAuthorListField(book);
@@ -267,7 +275,7 @@ public class BookFragment
         // handle 'text' DoNotFetch fields
         mFields.getField(R.id.bookshelves).setValue(
                 Bookshelf.toDisplayString(book.getBookshelfList()));
-        populateLoanedToField(book.getBookId());
+        populateLoanedToField(book.getId());
 
         // handle composite fields
         populatePublishingSection(book);
@@ -287,7 +295,7 @@ public class BookFragment
             //showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
         }
 
-        Tracker.exitOnLoadFieldsFromBook(this, book.getBookId());
+        Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
 
     //</editor-fold>
@@ -299,11 +307,8 @@ public class BookFragment
     /**
      * If we are passed a flat book list, get it and validate it.
      */
-    private void initBooklist(@Nullable final Bundle args,
+    private void initBooklist(@NonNull final Bundle args,
                               @Nullable final Bundle savedInstanceState) {
-        if (args == null) {
-            return;
-        }
 
         String list = args.getString(REQUEST_BKEY_FLATTENED_BOOKLIST);
         if (list == null || list.isEmpty()) {
@@ -322,18 +327,22 @@ public class BookFragment
         }
 
         // ok, we absolutely have a list, get the position we need to be on.
-        int pos = BundleUtils.getIntFromBundles(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION,
-                                                savedInstanceState, args);
+        int pos;
+        if (savedInstanceState != null) {
+            pos = savedInstanceState.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, 0);
+        } else {
+            pos = args.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, 0);
+        }
 
         mFlattenedBooklist.moveTo(pos);
         // the book might have moved around. So see if we can find it.
-        while (mFlattenedBooklist.getBookId() != getBook().getBookId()) {
+        while (mFlattenedBooklist.getBookId() != getBook().getId()) {
             if (!mFlattenedBooklist.moveNext()) {
                 break;
             }
         }
 
-        if (mFlattenedBooklist.getBookId() != getBook().getBookId()) {
+        if (mFlattenedBooklist.getBookId() != getBook().getId()) {
             // book not found ? eh? give up...
             mFlattenedBooklist.close();
             mFlattenedBooklist = null;
@@ -442,7 +451,7 @@ public class BookFragment
     private void populateLoanedToField(final long bookId) {
         String personLoanedTo = mDb.getLoaneeByBookId(bookId);
         if (personLoanedTo != null) {
-            personLoanedTo = getString(R.string.loan_book_details_readonly_loaned_to,
+            personLoanedTo = getString(R.string.lbl_loaned_to_name,
                                        personLoanedTo);
         } else {
             personLoanedTo = "";
@@ -460,7 +469,8 @@ public class BookFragment
                    public void onCreateContextMenu(@NonNull final ContextMenu menu,
                                                    @NonNull final View v,
                                                    @NonNull final ContextMenu.ContextMenuInfo menuInfo) {
-                       menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0, R.string.loan_returned)
+                       menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0,
+                                R.string.menu_loan_return_book)
                            .setIcon(R.drawable.ic_people);
                    }
                });
@@ -471,7 +481,7 @@ public class BookFragment
      */
     private void populateTOC(@NonNull final Book book) {
         //ENHANCE: add to mFields?
-        ArrayList<TOCEntry> list = book.getTOC();
+        ArrayList<TocEntry> list = book.getTOCList();
 
         // only show if: field in use + it's flagged as an ant + the ant has titles
         boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK)
@@ -482,7 +492,7 @@ public class BookFragment
             //noinspection ConstantConditions
             final ListView contentSection = getView().findViewById(R.id.toc);
 
-            ArrayAdapter<TOCEntry> adapter =
+            ArrayAdapter<TocEntry> adapter =
                     new TOCAdapter(mActivity, R.layout.row_toc_entry_with_author, list);
             contentSection.setAdapter(adapter);
 
@@ -534,24 +544,10 @@ public class BookFragment
         super.onPause();
     }
 
-    /**
-     * At this point we're told to save our local (to the fragment) fields to the Book.
-     * This method deliberately does not call the super of course, as we don't want a save.
-     *
-     * @param book to save to
-     */
-    @Override
-    protected void onSaveFieldsToBook(@NonNull final Book book) {
-        Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
-        // don't call super, Don't save!
-        // and don't remove this method... or the super *would* do the save!
-        Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
-    }
-
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
-        outState.putLong(UniqueId.KEY_ID, getBook().getBookId());
+        outState.putLong(UniqueId.KEY_ID, getBook().getId());
         outState.putBundle(UniqueId.BKEY_BOOK_DATA, getBook().getRawData());
         if (mFlattenedBooklist != null) {
             outState.putInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION,
@@ -570,8 +566,7 @@ public class BookFragment
     public boolean onContextItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_LOAN_RETURNED:
-                Book book = getBook();
-                mDb.deleteLoan(book.getBookId(), false);
+                getBook().loanReturned(mDb);
                 return true;
 
             default:
@@ -596,7 +591,7 @@ public class BookFragment
     }
 
     /**
-     * This will be called when a menu item is selected.
+     * Called when a menu item is selected.
      *
      * @param item The item selected
      *
@@ -608,7 +603,7 @@ public class BookFragment
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_EDIT:
                 Intent intent = new Intent(this.getContext(), EditBookActivity.class);
-                intent.putExtra(UniqueId.KEY_ID, getBook().getBookId());
+                intent.putExtra(UniqueId.KEY_ID, getBook().getId());
                 intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
@@ -678,7 +673,7 @@ public class BookFragment
                 if (moved) {
                     long bookId = mFlattenedBooklist.getBookId();
                     // only reload if it's a new book
-                    if (bookId != getBook().getBookId()) {
+                    if (bookId != getBook().getId()) {
                         getBook().reload(mDb, bookId);
                         populateFieldsFromBook();
                     }

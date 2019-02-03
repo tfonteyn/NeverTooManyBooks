@@ -312,6 +312,7 @@ public class SimpleXmlFilter {
         c.finishHandler = handler;
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     SimpleXmlFilter booleanBody(@NonNull final String fieldName) {
         setCollector(mBooleanHandler, fieldName);
@@ -371,16 +372,16 @@ public class SimpleXmlFilter {
     public interface XmlListener {
 
         @SuppressWarnings("EmptyMethod")
-        void onStart(@NonNull final SimpleXmlFilter.BuilderContext bc,
-                     @NonNull final ElementContext c);
+        void onStart(@NonNull SimpleXmlFilter.BuilderContext bc,
+                     @NonNull ElementContext c);
 
-        void onFinish(@NonNull final SimpleXmlFilter.BuilderContext bc,
-                      @NonNull final ElementContext c);
+        void onFinish(@NonNull SimpleXmlFilter.BuilderContext bc,
+                      @NonNull ElementContext c);
     }
 
     public interface DataStoreProvider {
 
-        void addArrayItem(@NonNull final Bundle bundle);
+        void addArrayItem(@NonNull Bundle bundle);
 
         @NonNull
         Bundle getData();

@@ -23,8 +23,6 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
-
 import java.io.Serializable;
 
 /**
@@ -44,13 +42,19 @@ import java.io.Serializable;
 public abstract class Task
         implements Serializable, BindableItemCursorAdapter.BindableItem {
 
+    public static final int CAT_LEGACY = 0;
     public static final int CAT_GOODREADS_AUTH_RESULT = 2;
     public static final int CAT_GOODREADS_IMPORT_ALL = 3;
     public static final int CAT_GOODREADS_EXPORT_ALL = 4;
     public static final int CAT_GOODREADS_EXPORT_ONE = 5;
-    static final int CAT_LEGACY = 0;
+
+    static final String STATUS_COMPLETE = "S";
+    static final String STATUS_FAILED = "F";
+    static final String STATUS_QUEUED = "Q";
+
+
     private static final long serialVersionUID = -1735892871810069L;
-    private final int mRetryLimit = 17;
+    private final int mRetryLimit = 15;
     @NonNull
     private final String mDescription;
     private long mId;
@@ -69,7 +73,7 @@ public abstract class Task
     }
 
     /**
-     * Return an application-defined category for the task; a default of 0 is provided.
+     * Return an application-defined category for the task.
      * <p>
      * The category can be used to lookup queued tasks based on category, for example to
      * allow an application to ensure only one job of a particular category is queued, or

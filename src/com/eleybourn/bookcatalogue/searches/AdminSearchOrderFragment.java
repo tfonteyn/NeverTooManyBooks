@@ -17,13 +17,11 @@ import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Ideally should use {@link EditObjectListActivity} but that needs to be converted
@@ -49,10 +47,9 @@ public class AdminSearchOrderFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
         Bundle args = getArguments();
-        Objects.requireNonNull(args);
+        //noinspection ConstantConditions
         mList = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES);
 
         mListAdapter = new SearchSiteListAdapter(requireContext(), mList);
@@ -63,8 +60,6 @@ public class AdminSearchOrderFragment
         // Do not add handler for 'onDrop' from the TouchListView;
         // we'll get what we need when we're ready to save.
         ((TouchListView) mListView).setOnDropListener(this);
-
-        Tracker.exitOnActivityCreated(this);
     }
 
     /**

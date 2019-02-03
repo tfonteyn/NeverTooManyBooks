@@ -34,10 +34,9 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
+import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -100,7 +99,7 @@ public final class StorageUtils {
      * Filenames *STARTING* with this prefix are considered purgeable.
      */
     private static final String[] PURGEABLE_FILE_PREFIXES = new String[]{
-            "DbUpgrade", "DbExport", "error.log", "tmp"};
+            "DbUpgrade", "DbExport", ERROR_LOG_FILE, "tmp"};
     /**
      * Loop all mount points for '/bookCatalogue' directory and collect a list of all CSV files.
      */
@@ -132,23 +131,23 @@ public final class StorageUtils {
      * Only called from StartupActivity, after permissions have been granted.
      */
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    public static void initSharedDirectories()
+    @StringRes
+    public static int initSharedDirectories()
             throws SecurityException {
 
         int msgId = StorageUtils.getMediaStateMessageId();
         // tell user if needed.
         if (msgId != 0) {
-            StandardDialogs.showUserMessage(msgId);
-            return;
+            return msgId;
         }
 
         // need root first (duh)
         if (!createDir(SHARED_STORAGE_PATH)) {
-            return;
+            return R.string.error_storage_not_writable;
         }
         // then log dir!
         if (!createDir(LOG_FILE_PATH)) {
-            return;
+            return R.string.error_storage_not_writable;
         }
 
         // from here on, we have a log file..
@@ -160,15 +159,16 @@ public final class StorageUtils {
         // in the gallery (thanks Brandon)
         try {
             //noinspection ResultOfMethodCallIgnored
-            new File(
-                    SHARED_STORAGE_PATH + File.separator +
-                            MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
+            new File(SHARED_STORAGE_PATH + File.separator
+                             + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
             //noinspection ResultOfMethodCallIgnored
-            new File(
-                    COVER_FILE_PATH + File.separator +
-                            MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
+            new File(COVER_FILE_PATH + File.separator
+                             + MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
+
+            return 0;
         } catch (IOException e) {
             Logger.error(e, "Failed to create .nomedia files");
+            return R.string.error_storage_not_writable;
         }
     }
 
@@ -388,7 +388,7 @@ public final class StorageUtils {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
             Logger.error(e, "Failed to open/scan/read /proc/mounts");
         }
 
@@ -519,7 +519,7 @@ public final class StorageUtils {
             // All OK, so rename to real output file
             renameFile(temp, out);
             return true;
-        } catch (IOException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
             Logger.error(e);
         } finally {
             deleteFile(temp);
@@ -557,9 +557,8 @@ public final class StorageUtils {
     public static boolean renameFile(@NonNull final File src,
                                      @NonNull final File dst) {
         if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(StorageUtils.class,
-                        "renameFile|src=" + src.getAbsolutePath() +
-                                "|dst=" + dst.getAbsolutePath());
+            Logger.info(StorageUtils.class, "renameFile|src=" + src.getAbsolutePath()
+                    + "|dst=" + dst.getAbsolutePath());
         }
         if (src.exists()) {
             try {
@@ -573,7 +572,7 @@ public final class StorageUtils {
     }
 
     /**
-     * Create a copy of the databases into the Shared Storage location
+     * Create a copy of the databases into the Shared Storage location.
      */
     public static void exportDatabaseFiles(@NonNull final Context context) {
         exportFile(DBHelper.getDatabasePath(context),
@@ -669,7 +668,7 @@ public final class StorageUtils {
     public static long getSharedStorageFreeSpace() {
         try {
             StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
-            return (stat.getAvailableBlocksLong() * stat.getBlockSizeLong());
+            return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
         } catch (IllegalArgumentException e) {
             Logger.error(e);
             return ERROR_CANNOT_STAT;
@@ -715,7 +714,7 @@ public final class StorageUtils {
         private final int mDirection;
 
         /**
-         * Constructor
+         * Constructor.
          */
         FileDateComparator(@SuppressWarnings("SameParameterValue") final int direction) {
             mDirection = direction < 0 ? -1 : 1;

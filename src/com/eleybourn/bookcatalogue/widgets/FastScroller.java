@@ -531,7 +531,7 @@ public class FastScroller {
     public interface SectionIndexerV2 {
 
         @Nullable
-        String[] getSectionTextForPosition(final int position);
+        String[] getSectionTextForPosition(int position);
     }
 
     class ScrollFade

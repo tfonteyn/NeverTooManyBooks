@@ -375,7 +375,7 @@ public class SimpleTaskQueue {
      */
     public interface OnTaskStartListener {
 
-        void onTaskStart(@NonNull final SimpleTask task);
+        void onTaskStart(@NonNull SimpleTask task);
     }
 
     /**
@@ -383,8 +383,8 @@ public class SimpleTaskQueue {
      */
     public interface OnTaskFinishListener {
 
-        void onTaskFinish(@NonNull final SimpleTask task,
-                          @Nullable final Exception e);
+        void onTaskFinish(@NonNull SimpleTask task,
+                          @Nullable Exception e);
     }
 
     /**
@@ -398,7 +398,7 @@ public class SimpleTaskQueue {
         /**
          * Method called in queue thread to perform the background task.
          */
-        void run(@NonNull final SimpleTaskContext taskContext)
+        void run(@NonNull SimpleTaskContext taskContext)
                 throws Exception;
 
         /**
@@ -406,7 +406,7 @@ public class SimpleTaskQueue {
          *
          * @param e the exception (if any) thrown in the run()
          */
-        void onFinish(@Nullable final Exception e);
+        void onFinish(@Nullable Exception e);
     }
 
     public interface SimpleTaskContext {
@@ -417,7 +417,7 @@ public class SimpleTaskQueue {
         @NonNull
         CoversDBA getCoversDb();
 
-        void setRequiresFinish(final boolean requiresFinish);
+        void setRequiresFinish(boolean requiresFinish);
 
         boolean isTerminating();
     }

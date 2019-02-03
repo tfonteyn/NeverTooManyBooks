@@ -15,9 +15,9 @@ public interface BookManager {
     @NonNull
     Book getBook();
 
-    void setBook(@NonNull final Book book);
+    void setBook(@NonNull Book book);
 
     boolean isDirty();
 
-    void setDirty(final boolean isDirty);
+    void setDirty(boolean isDirty);
 }

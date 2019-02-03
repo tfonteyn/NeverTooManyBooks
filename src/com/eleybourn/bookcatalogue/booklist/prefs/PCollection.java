@@ -18,7 +18,7 @@ public interface PCollection<E> {
     /**
      *  This call allows by-passing the real type for write-through.
      */
-    void set(@NonNull final Set<String> value);
+    void set(@NonNull Set<String> value);
 
     @NonNull
     Collection<E> get();

@@ -53,7 +53,8 @@ public final class SerializationUtils {
      * @throws IllegalStateException upon failure.
      */
     @NonNull
-    public static byte[] serializeObject(@NonNull final Serializable o) {
+    public static byte[] serializeObject(@NonNull final Serializable o)
+            throws IllegalStateException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(o);

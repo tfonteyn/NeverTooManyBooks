@@ -19,15 +19,12 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
-import android.content.pm.PackageManager.NameNotFoundException;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Class to manage the message that is displayed when the application is upgraded.

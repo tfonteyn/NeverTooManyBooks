@@ -89,7 +89,7 @@ public class XmlResponseParser
         super.startElement(uri, localName, qName, attributes);
 
         if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
-            Logger.info(this, "startElement|localName=`" + localName + '`');
+            Logger.info(this, "startElement","localName=`" + localName + '`');
         }
         // Create a new context for this new tag saving the current inter-tag text for later
         ElementContext tag = new ElementContext(uri, localName, qName, attributes,

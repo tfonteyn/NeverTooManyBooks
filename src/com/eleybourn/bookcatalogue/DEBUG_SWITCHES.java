@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
 
@@ -22,37 +23,21 @@ import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragm
 public final class DEBUG_SWITCHES {
 
     public static final boolean TMP_ANTHOLOGY = false;
-    /** dumps the raw Bundle at insert time of a book - LARGE! , not recommended during imports. */
-    public static final boolean DUMP_BOOK_BUNDLE_AT_INSERT = false;
-    /** dumps the raw Bundle at update time of a book - LARGE! */
-    public static final boolean DUMP_BOOK_BUNDLE_AT_UPDATE = false;
 
-    public static final boolean BOOKLIST_BUILDER = false;
+
+    public static final boolean BOOKLIST_BUILDER = true;
 
     /** specific to debugging the broken {@link BooklistBuilder#rebuild()}. */
-    public static final boolean BOOKLIST_BUILDER_REBUILD = false;
+    public static final boolean BOOKLIST_BUILDER_REBUILD = true;
 
-    public static final boolean BOOKS_ON_BOOKSHELF = false;
+    public static final boolean BOOKS_ON_BOOKSHELF = true;
 
     /** enable timers for performance measurements. */
     public static final boolean TIMERS = false;
 
     /** dump the style each time it is accessed. */
-    public static final boolean DUMP_STYLE = false;
+    public static final boolean DUMP_STYLE = true;
 
-    /** dump the sql string to the log. */
-    public static final boolean SQL = false;
-
-    /** {@link DBA}. */
-    public static final boolean DB_ADAPTER = false;
-
-    /** {@link com.eleybourn.bookcatalogue.database.dbsync}. */
-    public static final boolean DB_SYNC = false;
-    /** {@link com.eleybourn.bookcatalogue.database.dbsync}. */
-    public static final boolean DB_SYNC_QUERY_FOR_LONG = false;
-
-    /** {@link com.eleybourn.bookcatalogue.database.cursors.TrackedCursor}. */
-    public static final boolean TRACKED_CURSOR = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager}. */
     public static final boolean LIBRARY_THING_MANAGER = false;
@@ -88,7 +73,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean SIMPLE_TASKS = false;
 
     /** reading/writing a backup file. */
-    public static final boolean BACKUP = true;
+    public static final boolean BACKUP = false;
 
     /** all things that can happen during startup only. */
     public static final boolean STARTUP = false;
@@ -113,17 +98,80 @@ public final class DEBUG_SWITCHES {
      * WARNING: can abort the function it's in.
      */
     public static final boolean DUMP_HTTP_RESPONSE = false;
-    /**
-     * The Temporary database tables wil be created as Standard if set.
-     */
-    public static final boolean TEMP_TABLES_ARE_STANDARD = false;
+
     /**
      * all things XML related.
      */
     public static final boolean XML = false;
 
-    /** Dump the SQL and the rowsAffected for a DELETE & UPDATE */
+
+    /* ****************************************************************************************** */
+
+    /**
+     * The Temporary database tables wil be created as Standard if set.
+     */
+    public static final boolean TEMP_TABLES_ARE_STANDARD = false;
+
+    /** {@link com.eleybourn.bookcatalogue.database.cursors.TrackedCursor}. */
+    public static final boolean TRACKED_CURSOR = false;
+
+    /** {@link DBA}. */
+    public static final boolean DB_ADAPTER = false;
+
+    /** {@link com.eleybourn.bookcatalogue.database.dbsync}. */
+    public static final boolean DB_SYNC = false;
+
+    /**
+     * Dump the SQL and the result.
+     * {@link SynchronizedStatement#simpleQueryForLong()}
+     * {@link SynchronizedStatement#simpleQueryForLongOrZero()}
+     */
+    public static final boolean DB_SYNC_QUERY_FOR_LONG = false;
+
+    /** dump *all* SQL strings to the log. */
+    public static final boolean SQL = false;
+
+    /**
+     * Dump SQL CREATE TABLE strings to the log.
+     * {@link com.eleybourn.bookcatalogue.database.definitions.TableDefinition}
+     */
+    public static final boolean SQL_CREATE_TABLE = false;
+
+    /**
+     * Dump SQL CREATE INDEX strings to the log.
+     * {@link com.eleybourn.bookcatalogue.database.definitions.IndexDefinition}
+     */
+    public static final boolean SQL_CREATE_INDEX = false;
+
+    /**
+     * Dump the SQL.
+     * {@link SynchronizedStatement#execute()}
+     */
+    public static final boolean DB_SYNC_EXECUTE = false;
+
+    /**
+     * Dump the SQL.
+     * {@link SynchronizedStatement#executeInsert()}
+     */
+    public static final boolean DB_SYNC_EXECUTE_INSERT = true;
+
+    /**
+     * Dump the SQL and the rowsAffected.
+     * {@link SynchronizedStatement#executeUpdateDelete()}
+     */
     public static final boolean DB_SYNC_ROWS_AFFECTED = true;
+
+    /* ****************************************************************************************** */
+
+    /**
+     * Dump the raw Bundle at insert time of a book - LARGE! , not recommended during imports.
+     */
+    public static final boolean DUMP_BOOK_BUNDLE_AT_INSERT = false;
+
+    /**
+     * Dump the raw Bundle at update time of a book - LARGE!
+     */
+    public static final boolean DUMP_BOOK_BUNDLE_AT_UPDATE = false;
 
     private DEBUG_SWITCHES() {
     }

@@ -28,9 +28,8 @@ import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.Exporter;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
@@ -56,6 +55,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
@@ -72,12 +72,14 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
 /**
  * Implementation of Exporter that creates a CSV file.
+ * <p>
+ * 2019-02-01 : no longer exporting bookshelf id's. They were not used during csv import anyhow.
+ * Use xml export if you want id's.
  *
  * @author pjw
  */
@@ -87,7 +89,7 @@ public class CsvExporter
     /** standard export file. */
     public static final String EXPORT_FILE_NAME = "export.csv";
     /** standard temp export file, first we write here, then rename to csv. */
-    public static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
+    static final String EXPORT_TEMP_FILE_NAME = "export.tmp";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_TOC = "anthology_titles";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
@@ -120,9 +122,6 @@ public class CsvExporter
                     + '"' + DOM_FIRST_PUBLICATION + "\","
                     + '"' + DOM_BOOK_EDITION_BITMASK + "\","
                     + '"' + DOM_BOOK_RATING + "\","
-                    // this should be UniqueId.DOM_FK_BOOKSHELF_ID but it was misnamed originally
-                    // but in fact, FIXME: it's not actually used during import anyway
-                    + '"' + "bookshelf_id\","
                     + '"' + DOM_BOOKSHELF + "\","
                     + '"' + DOM_BOOK_READ + "\","
                     + '"' + CSV_COLUMN_SERIES + "\","
@@ -141,7 +140,7 @@ public class CsvExporter
                     + '"' + DOM_BOOK_READ_END + "\","
                     + '"' + DOM_BOOK_FORMAT + "\","
                     + '"' + DOM_BOOK_SIGNED + "\","
-                    + '"' + DOM_LOANEE + "\","
+                    + '"' + DOM_BOOK_LOANEE + "\","
                     + '"' + CSV_COLUMN_TOC + "\","
                     + '"' + DOM_BOOK_DESCRIPTION + "\","
                     + '"' + DOM_BOOK_GENRE + "\","
@@ -201,12 +200,11 @@ public class CsvExporter
         int numberOfBooksExported = 0;
         final StringBuilder row = new StringBuilder();
 
-        try (BookCursor bookCursor = mDb.fetchFlattenedBooks(mSettings.dateFrom);
-             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream,
-                                                                            StandardCharsets.UTF_8),
-                                                     BUFFER_SIZE)) {
+        try (BookCursor bookCursor = mDb.fetchBooksForExport(mSettings.dateFrom);
+             BufferedWriter out = new BufferedWriter(
+                     new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), BUFFER_SIZE)) {
 
-            final BookRowView bookCursorRow = bookCursor.getCursorRow();
+            final BookCursorRow bookCursorRow = bookCursor.getCursorRow();
             int totalBooks = bookCursor.getCount();
 
             if (listener.isCancelled()) {
@@ -220,8 +218,9 @@ public class CsvExporter
                 numberOfBooksExported++;
                 long bookId = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(DOM_PK_ID.name));
 
-                String authorStringList = StringList.getAuthorUtils().encode(
-                        mDb.getBookAuthorList(bookId));
+                String authorStringList = StringList.getAuthorCoder()
+                                                    .encode(mDb.getAuthorsByBookId(bookId));
+
                 // Sanity check: ensure author is non-blank. This HAPPENS.
                 // Probably due to constraint failures.
                 if (authorStringList.trim().isEmpty()) {
@@ -236,22 +235,6 @@ public class CsvExporter
                     title = UNKNOWN;
                 }
 
-                // For the names, could use this of course:
-                //   StringList.getBookshelfUtils().encode( mDb.getBookshelvesByBookId(bookId));
-                // but we also want a list of the id's.
-                // so....
-                // the selected bookshelves: two CSV columns with CSV id's + CSV names
-                StringBuilder bookshelvesIdStringList = new StringBuilder();
-                StringBuilder bookshelvesNameStringList = new StringBuilder();
-                for (Bookshelf bookshelf : mDb.getBookshelvesByBookId(bookId)) {
-                    bookshelvesIdStringList
-                            .append(bookshelf.id)
-                            .append(Bookshelf.SEPARATOR);
-                    bookshelvesNameStringList
-                            .append(StringList.escapeListItem(Bookshelf.SEPARATOR, bookshelf.name))
-                            .append(Bookshelf.SEPARATOR);
-                }
-
                 row.setLength(0);
                 row.append(formatCell(bookId))
                    .append(formatCell(authorStringList))
@@ -263,11 +246,11 @@ public class CsvExporter
                    .append(formatCell(bookCursorRow.getEditionBitMask()))
 
                    .append(formatCell(bookCursorRow.getRating()))
-                   .append(formatCell(bookshelvesIdStringList.toString()))
-                   .append(formatCell(bookshelvesNameStringList.toString()))
+                   .append(formatCell(StringList.getBookshelfCoder()
+                                                .encode(mDb.getBookshelvesByBookId(bookId))))
                    .append(formatCell(bookCursorRow.getRead()))
-                   .append(formatCell(
-                           StringList.getSeriesUtils().encode(mDb.getBookSeriesList(bookId))))
+                   .append(formatCell(StringList.getSeriesCoder()
+                                                .encode(mDb.getSeriesByBookId(bookId))))
                    .append(formatCell(bookCursorRow.getPages()))
                    .append(formatCell(bookCursorRow.getNotes()))
 
@@ -284,9 +267,8 @@ public class CsvExporter
                    .append(formatCell(bookCursorRow.getFormat()))
                    .append(formatCell(bookCursorRow.getSigned()))
                    .append(formatCell(bookCursorRow.getLoanedTo()))
-                   .append(
-                           formatCell(StringList.getTOCUtils().encode(
-                                   mDb.getTOCEntriesByBook(bookId))))
+                   .append(formatCell(StringList.getTocCoder()
+                                                .encode(mDb.getTocEntryByBook(bookId))))
                    .append(formatCell(bookCursorRow.getDescription()))
                    .append(formatCell(bookCursorRow.getGenre()))
                    .append(formatCell(bookCursorRow.getLanguageCode()))
@@ -333,7 +315,7 @@ public class CsvExporter
      *
      * @param tempFile to rename
      */
-    public void renameFiles(@NonNull final File tempFile) {
+    void renameFiles(@NonNull final File tempFile) {
         File fLast = StorageUtils.getFile(String.format(EXPORT_CSV_FILES_PATTERN, COPIES));
         StorageUtils.deleteFile(fLast);
 

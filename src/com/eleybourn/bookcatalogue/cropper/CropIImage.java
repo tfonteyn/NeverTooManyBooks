@@ -36,19 +36,19 @@ public interface CropIImage {
 
     /** Get the bitmap for the full size image. */
     @NonNull
-    Bitmap fullSizeBitmap(final int minSideLength,
-                          final int maxNumberOfPixels);
+    Bitmap fullSizeBitmap(int minSideLength,
+                          int maxNumberOfPixels);
 
     @NonNull
-    Bitmap fullSizeBitmap(final int minSideLength,
-                          final int maxNumberOfPixels,
-                          final boolean rotateAsNeeded);
+    Bitmap fullSizeBitmap(int minSideLength,
+                          int maxNumberOfPixels,
+                          boolean rotateAsNeeded);
 
     @NonNull
-    Bitmap fullSizeBitmap(final int minSideLength,
-                          final int maxNumberOfPixels,
-                          final boolean rotateAsNeeded,
-                          final boolean useNative);
+    Bitmap fullSizeBitmap(int minSideLength,
+                          int maxNumberOfPixels,
+                          boolean rotateAsNeeded,
+                          boolean useNative);
 
     int getDegreesRotated();
 
@@ -69,7 +69,7 @@ public interface CropIImage {
     String getTitle();
 
     /** Get/Set the title of the image. */
-    void setTitle(@NonNull final String name);
+    void setTitle(@NonNull String name);
 
     /** Get metadata of the image. */
     long getDateTaken();
@@ -91,7 +91,7 @@ public interface CropIImage {
 
     /** Get the bitmap/uri of the medium thumbnail. */
     @NonNull
-    Bitmap thumbBitmap(final boolean rotateAsNeeded);
+    Bitmap thumbBitmap(boolean rotateAsNeeded);
 
     @NonNull
     Uri thumbUri();
@@ -101,6 +101,6 @@ public interface CropIImage {
     Bitmap miniThumbBitmap();
 
     /** Rotate the image. */
-    boolean rotateImageBy(final int degrees);
+    boolean rotateImageBy(int degrees);
 
 }

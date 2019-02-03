@@ -98,7 +98,7 @@ public abstract class BaseActivityWithTasks
                                    @NonNull final ManagedTask task) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(BaseActivityWithTasks.this,
-                            "|onTaskFinished|task=`" + task.getName());
+                            "onTaskFinished","task=`" + task.getName());
             }
             // Just pass this one on. This will allow sub classes to override the base method,
             // and as such get informed.
@@ -117,8 +117,8 @@ public abstract class BaseActivityWithTasks
                 String dbgMsg = "onProgress: " + count + '/' + max + ", '"
                         + message.replace("\n", "\\n") + '\'';
                 Tracker.handleEvent(BaseActivityWithTasks.this, States.Running,
-                                    "|onProgress|msg=" + dbgMsg);
-                Logger.info(BaseActivityWithTasks.this,"|onProgress|msg=" + dbgMsg);
+                                    "onProgress|msg=" + dbgMsg);
+                Logger.info(BaseActivityWithTasks.this,"onProgress","msg=" + dbgMsg);
             }
 
             // Save the details
@@ -148,7 +148,7 @@ public abstract class BaseActivityWithTasks
         public void onUserMessage(@NonNull final String message) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(BaseActivityWithTasks.this,
-                            "|onUserMessage|msg=`" + message);
+                            "onUserMessage","msg=`" + message);
             }
             StandardDialogs.showUserMessage(BaseActivityWithTasks.this, message);
         }

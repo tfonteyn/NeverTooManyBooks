@@ -76,7 +76,7 @@ public class BooleanValidator
                 value = false;
             }
             data.putBoolean(datum, value);
-        } catch (RuntimeException e) {
+        } catch (NumberFormatException e) {
             throw new ValidatorException(R.string.vldt_boolean_expected,
                                          new Object[]{datum.getKey()});
         }

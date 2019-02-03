@@ -51,6 +51,8 @@ import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
+import com.eleybourn.bookcatalogue.settings.FieldVisibilitySettingsFragment;
+import com.eleybourn.bookcatalogue.settings.GlobalSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.SettingsActivity;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueListActivity;
@@ -90,21 +92,16 @@ public class AdminActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.menu_administration_long);
-        setupAdminPage();
-        Tracker.exitOnCreate(this);
-    }
 
-    /**
-     * This function builds the Administration page in 4 sections.
-     * 1. General management functions
-     * 2. Import / Export
-     * 3. Credentials
-     * 4. Advanced Options
-     */
-    private void setupAdminPage() {
+        /*
+         * This function builds the Administration page in 4 sections.
+         * 1. General management functions
+         * 2. Import / Export
+         * 3. Credentials
+         * 4. Advanced Options
+         */
 
         /* Manage Field Visibility */
         View v = findViewById(R.id.lbl_field_visibility);
@@ -115,8 +112,7 @@ public class AdminActivity
             public void onClick(@NonNull final View v) {
                 Intent intent = new Intent(AdminActivity.this,
                                            SettingsActivity.class);
-                intent.putExtra(UniqueId.FRAGMENT_ID,
-                                SettingsActivity.FRAGMENT_FIELD_VISIBILITY);
+                intent.putExtra(UniqueId.BKEY_FRAGMENT_TAG, FieldVisibilitySettingsFragment.TAG);
                 startActivity(intent);
             }
         });
@@ -131,8 +127,7 @@ public class AdminActivity
             public void onClick(@NonNull final View v) {
                 Intent intent = new Intent(AdminActivity.this,
                                            SettingsActivity.class);
-                intent.putExtra(UniqueId.FRAGMENT_ID,
-                                SettingsActivity.FRAGMENT_GLOBAL_SETTINGS);
+                intent.putExtra(UniqueId.BKEY_FRAGMENT_TAG, GlobalSettingsFragment.TAG);
                 startActivity(intent);
             }
         });

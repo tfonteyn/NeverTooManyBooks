@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.TaskActions;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueDBAdapter.ScheduledTask;
 
 import java.lang.ref.WeakReference;
@@ -44,7 +43,7 @@ class Queue
     @NonNull
     private final String mName;
     /** TaskQueueDBAdapter used internally. */
-    private TaskQueueDBAdapter mDb;
+    private TaskQueueDBAdapter mTQdba;
 
     /** Currently running task. */
     private WeakReference<Task> mTask;
@@ -74,7 +73,7 @@ class Queue
     }
 
     /**
-     * Return the bare queue name, as opposed to the thread name.
+     * @return the bare queue name, as opposed to the thread name.
      */
     @NonNull
     String getQueueName() {
@@ -94,16 +93,14 @@ class Queue
      */
     public void run() {
         try {
-            // Get a database adapter
-            mDb = new TaskQueueDBAdapter();
-            // Run until we're told not to or until we decide not to.
+            mTQdba = new TaskQueueDBAdapter();
             while (!mTerminate) {
                 ScheduledTask scheduledTask;
                 Task task;
                 // All queue manipulation needs to be synchronized on the manager, as does
                 // assignments of 'active' tasks in queues.
                 synchronized (mManager) {
-                    scheduledTask = mDb.getNextTask(mName);
+                    scheduledTask = mTQdba.getNextTask(mName);
                     if (scheduledTask == null) {
                         // No more tasks. Remove from manager and terminate.
                         mTerminate = true;
@@ -132,12 +129,12 @@ class Queue
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
             Logger.error(e);
         } finally {
             try {
-                if (mDb != null) {
-                    mDb.getDb().close();
+                if (mTQdba != null) {
+                    mTQdba.getDb().close();
                 }
                 // Just in case (the queue manager does check the queue before doing the delete).
                 synchronized (mManager) {
@@ -157,7 +154,7 @@ class Queue
         try {
             task.setException(null);
             // notify here, as we allow mManager.runTask to be overridden
-            mManager.notifyTaskChange(task, TaskActions.running);
+            mManager.notifyTaskChange();
             result = mManager.runTask(task);
             requeue = !result;
         } catch (RuntimeException e) {
@@ -180,34 +177,26 @@ class Queue
     private void handleTaskResult(@NonNull final Task task,
                                   final boolean result,
                                   final boolean requeue) {
-        TaskActions message;
         synchronized (mManager) {
 
             if (task.isAborting()) {
-                mDb.deleteTask(task.getId());
-                message = TaskActions.completed;
-
+                mTQdba.deleteTask(task.getId());
             } else if (result) {
-                mDb.setTaskOk(task);
-                message = TaskActions.completed;
-
+                mTQdba.setTaskOk(task);
             } else if (requeue) {
-                mDb.setTaskRequeue(task);
-                message = TaskActions.waiting;
-
+                mTQdba.setTaskRequeue(task);
             } else {
                 Exception e = task.getException();
                 String msg = null;
                 if (e != null) {
                     msg = e.getLocalizedMessage();
                 }
-                mDb.setTaskFail(task, "Unhandled exception while running task: " + msg);
-                message = TaskActions.completed;
+                mTQdba.setTaskFail(task, "Unhandled exception while running task: " + msg);
             }
             mTask.clear();
             mTask = null;
         }
-        mManager.notifyTaskChange(task, message);
+        mManager.notifyTaskChange();
     }
 
     @Nullable

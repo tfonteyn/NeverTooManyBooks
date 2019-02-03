@@ -33,15 +33,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
-import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
-import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.OnTaskChangeListener;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Listeners.TaskActions;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
@@ -55,20 +48,6 @@ import java.util.List;
 public class TaskQueueListActivity
         extends BindableItemListActivity {
 
-    /**
-     * Listener to handle Event add/change/delete.
-     */
-    private final OnTaskChangeListener mOnTaskChangeListener = new OnTaskChangeListener() {
-        @Override
-        public void onTaskChange(@Nullable final Task task,
-                                 @NonNull final TaskActions action) {
-            TaskQueueListActivity.this.refreshData();
-        }
-    };
-
-    private DBA mDb;
-    private TasksCursor mCursor;
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_message_queue_list;
@@ -77,14 +56,11 @@ public class TaskQueueListActivity
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.gr_tq_menu_background_tasks);
 
-        mDb = new DBA(this);
-
-        //When any Event is added/changed/deleted, update the list. Lazy, yes.
-        QueueManager.getQueueManager().registerTaskListener(mOnTaskChangeListener);
+        //When any task is added/changed/deleted, update the list. Lazy, yes.
+        QueueManager.getQueueManager().registerTaskListener(mOnChangeListener);
 
         Button cleanupBtn = findViewById(R.id.cleanup);
         cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_tasks);
@@ -98,17 +74,6 @@ public class TaskQueueListActivity
         if (savedInstanceState == null) {
             HintManager.displayHint(this.getLayoutInflater(), R.string.hint_background_tasks, null);
         }
-        Tracker.exitOnCreate(this);
-    }
-
-    /**
-     * Refresh data; some other activity may have changed relevant data (eg. a book)
-     */
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        refreshData();
     }
 
     /**
@@ -122,34 +87,20 @@ public class TaskQueueListActivity
         Task task = ViewTagger.getTagOrThrow(v, R.id.TAG_TASK);
         List<ContextDialogItem> items = new ArrayList<>();
 
-        items.add(new ContextDialogItem(getString(R.string.gr_tq_show_events_ellipsis),
-                                        new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                doShowTaskEvents(id);
-                                            }
-                                        }));
+        items.add(new ContextDialogItem(
+                getString(R.string.gr_tq_show_events_ellipsis),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(TaskQueueListActivity.this,
+                                                   EventQueueListActivity.class);
+                        intent.putExtra(EventQueueListActivity.REQUEST_BKEY_TASK_ID, id);
+                        startActivity(intent);
+                    }
+                }));
 
         task.addContextMenuItems(this, parent, v, position, id, items, mDb);
-
-        if (items.size() > 0) {
-            showContextDialogue(R.string.title_select_an_action, items);
-        }
-    }
-
-    private void doShowTaskEvents(final long taskId) {
-        Intent intent = new Intent(this, EventQueueListActivity.class);
-        intent.putExtra(EventQueueListActivity.REQUEST_BKEY_TASK_ID, taskId);
-        startActivity(intent);
-    }
-
-    /**
-     * Return the number of task types we might return. 50 is just paranoia.
-     * RELEASE: Keep checking this value!
-     */
-    @Override
-    public int getBindableItemTypeCount() {
-        return 50;
+        ContextDialogItem.showContextDialog(this, R.string.title_select_an_action, items);
     }
 
     /**
@@ -171,29 +122,14 @@ public class TaskQueueListActivity
      */
     @NonNull
     @Override
-    protected BindableItemCursor getBindableItemCursor(@Nullable final Bundle savedInstanceState) {
-        mCursor = QueueManager.getQueueManager().getTasks();
-        return mCursor;
+    protected BindableItemCursor getBindableItemCursor() {
+        return QueueManager.getQueueManager().getTasks();
     }
 
     @Override
     @CallSuper
     protected void onDestroy() {
-        try {
-            QueueManager.getQueueManager().unregisterTaskListener(mOnTaskChangeListener);
-        } catch (RuntimeException ignore) {
-        }
-
-        try {
-            if (mCursor != null) {
-                mCursor.close();
-            }
-        } catch (RuntimeException ignore) {
-        }
-
-        if (mDb != null) {
-            mDb.close();
-        }
+        QueueManager.getQueueManager().unregisterTaskListener(mOnChangeListener);
         super.onDestroy();
     }
 }

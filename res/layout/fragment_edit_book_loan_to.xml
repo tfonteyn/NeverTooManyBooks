@@ -8,7 +8,7 @@
         android:id="@+id/lbl_loan"
         style="@style/lbl_editField"
         android:paddingTop="@dimen/padding_border"
-        android:text="@string/loan_to" />
+        android:text="@string/lbl_loan_to" />
 
     <AutoCompleteTextView
         android:id="@+id/loaned_to"

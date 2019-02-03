@@ -21,7 +21,6 @@ package com.eleybourn.bookcatalogue.datamanager;
 
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 
@@ -43,7 +42,6 @@ import com.eleybourn.bookcatalogue.utils.RTE;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -165,7 +163,7 @@ public class DataManager {
     }
 
     /** Get a double value. */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public double getDouble(@NonNull final String key) {
         return mData.get(key).getDouble(this, mBundle);
     }
@@ -195,7 +193,7 @@ public class DataManager {
     }
 
     /** Store a float value. */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
     @NonNull
     public DataManager putFloat(@NonNull final String key,
                                 final float value) {
@@ -342,19 +340,26 @@ public class DataManager {
         for (int i = 0; i < cursor.getColumnCount(); i++) {
             final String name = cursor.getColumnName(i);
             switch (cursor.getType(i)) {
-                case SQLiteCursor.FIELD_TYPE_STRING:
+                case Cursor.FIELD_TYPE_STRING:
                     putString(name, cursor.getString(i));
                     break;
-                case SQLiteCursor.FIELD_TYPE_INTEGER:
+
+                case Cursor.FIELD_TYPE_INTEGER:
                     putLong(name, cursor.getLong(i));
                     break;
-                case SQLiteCursor.FIELD_TYPE_FLOAT:
+
+                case Cursor.FIELD_TYPE_FLOAT:
                     putDouble(name, cursor.getDouble(i));
                     break;
-                case SQLiteCursor.FIELD_TYPE_NULL:
+
+                case Cursor.FIELD_TYPE_NULL:
+                    // no action for nulls.
                     break;
-                case SQLiteCursor.FIELD_TYPE_BLOB:
-                    throw new RTE.IllegalTypeException("blob");
+
+                case Cursor.FIELD_TYPE_BLOB:
+                    putSerializable(name, cursor.getBlob(i));
+                    break;
+
                 default:
                     throw new RTE.IllegalTypeException("" + cursor.getType(i));
             }
@@ -371,6 +376,7 @@ public class DataManager {
      *
      * @return The data
      */
+    @SuppressWarnings("unused")
     @Nullable
     protected <T extends Serializable> T getSerializable(@NonNull final String key) {
         return mData.get(key).getSerializable(this, mBundle);
@@ -385,7 +391,7 @@ public class DataManager {
      *
      * @return The data manager for chaining
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
     @NonNull
     public DataManager putSerializable(@NonNull final String key,
                                        @NonNull final Serializable value) {
@@ -553,24 +559,22 @@ public class DataManager {
     /**
      * Retrieve the text message associated with the validation exceptions (if any).
      *
-     * @return res The resource manager to use when looking up strings.
+     * @param res The resource manager to use when looking up strings.
+     *
+     * @return a user displayable list of error messages, or null if none
      */
-    @NonNull
+    @SuppressWarnings("unused")
+    @Nullable
     public String getValidationExceptionMessage(@NonNull final Resources res) {
         if (mValidationExceptions.size() == 0) {
-            return "No error";
+            return null;
         } else {
             StringBuilder message = new StringBuilder();
-            Iterator<ValidatorException> iterator = mValidationExceptions.iterator();
-            int cnt = 1;
-            if (iterator.hasNext()) {
-                message.append('(').append(cnt).append(") ").append(
-                        iterator.next().getFormattedMessage(res));
-            }
-            while (iterator.hasNext()) {
-                cnt++;
-                message.append(" (").append(cnt).append(") ").append(
-                        iterator.next().getFormattedMessage(res)).append('\n');
+            int cnt = 0;
+            for (ValidatorException e : mValidationExceptions) {
+                message.append(" (").append(++cnt).append(") ")
+                       .append(e.getFormattedMessage(res))
+                       .append('\n');
             }
             return message.toString();
         }

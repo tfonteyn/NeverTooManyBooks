@@ -137,7 +137,10 @@ public class BooklistStyle
     /** the amount of details to show in the header. */
     public static final Integer SUMMARY_SHOW_LEVEL_2 = 1 << 2;
     /** the amount of details to show in the header. */
-    public static final Integer SUMMARY_SHOW_ALL = 0xff;
+    public static final Integer SUMMARY_SHOW_ALL =
+            SUMMARY_SHOW_COUNT
+                    | SUMMARY_SHOW_LEVEL_1
+                    | SUMMARY_SHOW_LEVEL_2;
 
     /** Scaling of text and images. */
     @SuppressWarnings("WeakerAccess")
@@ -149,11 +152,6 @@ public class BooklistStyle
     @SuppressWarnings("WeakerAccess")
     public static final int SCALE_SIZE_LARGER = 3;
 
-    /**
-     * Preferred styles / menu order.
-     * Stored in global shared preferences as a CSV String of id's.
-     */
-    public static final String PREF_BL_PREFERRED_STYLES = "BookList.Style.Preferred.Order";
     /** version field used in serialized data reading from file, see {@link #readObject}. */
     static final long realSerialVersion = 5;
     /**
@@ -163,6 +161,7 @@ public class BooklistStyle
      * (this is not a PPref, as we'd need the uuid to store the uuid....)
      */
     private static final String PREF_STYLE_UUID = "BookList.Style.uuid";
+
     /** serialization id for the plain class data. */
     private static final long serialVersionUID = 6615877148246388549L;
     /**
@@ -382,11 +381,12 @@ public class BooklistStyle
 
         mIsPreferred = new PBoolean(R.string.pk_bob_preferred_style, mUuid);
         mScaleSize = new PInteger(R.string.pk_bob_item_size, mUuid);
-        mShowHeaderInfo = new PBitmask(R.string.pk_bob_header, mUuid);
+        mShowHeaderInfo = new PBitmask(R.string.pk_bob_header, mUuid, SUMMARY_SHOW_ALL);
 
         mSortAuthor = new PBoolean(R.string.pk_bob_sort_author_name, mUuid);
 
-        mExtraShowThumbnails = new PBoolean(R.string.pk_bob_thumbnails_show, mUuid);
+        mExtraShowThumbnails = new PBoolean(R.string.pk_bob_thumbnails_show, mUuid, true);
+
         mExtraLargeThumbnails = new PBoolean(R.string.pk_bob_thumbnails_show_large, mUuid);
         mExtraShowBookshelves = new PBoolean(R.string.pk_bob_show_bookshelves, mUuid);
         mExtraShowLocation = new PBoolean(R.string.pk_bob_show_location, mUuid);
@@ -413,7 +413,7 @@ public class BooklistStyle
 
         mFilterLoaned = new BooleanFilter(R.string.pk_bob_filter_loaned, mUuid,
                                           DatabaseDefinitions.TBL_BOOKS,
-                                          DatabaseDefinitions.DOM_LOANEE);
+                                          DatabaseDefinitions.DOM_BOOK_LOANEE);
         mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
     }
 
@@ -508,6 +508,13 @@ public class BooklistStyle
     }
 
     /**
+     * store the current style as the global default one.
+     */
+    public void setDefault() {
+        Prefs.getPrefs().edit().putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT, mId).apply();
+    }
+
+    /**
      * Get all of the preferences of this Style and its groups/filters.
      *
      * @param all if false, then only the 'flat' Preferences
@@ -578,6 +585,24 @@ public class BooklistStyle
 
     public int getShowHeaderInfo() {
         return mShowHeaderInfo.get();
+    }
+
+    /**
+     * Check if the style can show the passed level.
+     *
+     * @param level to check, range 1,2
+     *
+     * @return <tt>true</tt> if this style can show the desired level
+     */
+    public boolean showLevel(@IntRange(from = 1, to = 2) final int level) {
+        switch (level) {
+            case 2:
+                return (mShowHeaderInfo.get() & BooklistStyle.SUMMARY_SHOW_LEVEL_2) != 0;
+            case 1:
+                return (mShowHeaderInfo.get() & BooklistStyle.SUMMARY_SHOW_LEVEL_1) != 0;
+            default:
+                return false;
+        }
     }
 
     public float getScaleSize() {
@@ -722,7 +747,12 @@ public class BooklistStyle
      */
     @NonNull
     public String getGroupListDisplayNames() {
-        return Csv.toDisplayString(mStyleGroups.getGroups());
+        return Csv.toDisplayString(mStyleGroups.getGroups(), new Csv.Formatter<BooklistGroup>() {
+            @Override
+            public String format(@NonNull final BooklistGroup element) {
+                return element.getName();
+            }
+        });
     }
 
     /**
@@ -736,7 +766,7 @@ public class BooklistStyle
      * @return the group at the passed index.
      */
     @NonNull
-    BooklistGroup getGroupAt(final int index) {
+    public BooklistGroup getGroupAt(final int index) {
         return mStyleGroups.getGroupAt(index);
     }
 
@@ -975,9 +1005,10 @@ public class BooklistStyle
      */
     public void delete(@NonNull final DBA db) {
         // cannot delete a builtin or a 'new' style(id==0)
-        if (mId <= 0) {
+        if (mId <= 0 || mUuid == null) {
             throw new IllegalArgumentException("Builtin Style cannot be deleted");
         }
+
         db.deleteBooklistStyle(mId);
         // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences(mUuid);
         Prefs.getPrefs(mUuid).edit().clear().apply();
@@ -1007,8 +1038,9 @@ public class BooklistStyle
                 "\nmExtraShowPublisher=" + mExtraShowPublisher +
                 "\nmExtraShowFormat=" + mExtraShowFormat +
 
+                "\nmStyleGroups=" + mStyleGroups +
                 "\nmFilters=\n" + mFilters +
-                "\nmStyleGroups=\n" + mStyleGroups +
+
                 '}';
     }
 
@@ -1121,11 +1153,9 @@ public class BooklistStyle
         @Override
         @NonNull
         public String toString() {
-            return "PStyleGroups{" +
-                    "mGroups=" + mGroups +
-                    ", mNonPersistedValue=" + mNonPersistedValue +
-                    ", defaultValue=" + mDefaultValue +
-                    '}';
+            return "PStyleGroups{" + super.toString()
+                    + ",mGroups=" + mGroups
+                    + '}';
         }
     }
 }

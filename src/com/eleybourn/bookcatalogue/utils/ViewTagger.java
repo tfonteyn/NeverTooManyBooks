@@ -31,7 +31,7 @@ import java.util.Objects;
 
 /**
  * Using View.setTag(int, Object) causes a memory leak if the tag refers, by a strong reference
- * chain, to the view itself (ie. it uses the 'Holder' pattern).
+ * chain, to the view itself (i.e. it uses the 'Holder' pattern).
  * This bug is documented here:
  * <p>
  * http://code.google.com/p/android/issues/detail?id=18273
@@ -94,27 +94,11 @@ public final class ViewTagger {
 
     /**
      * Static method to get the bare tag from the view.
-     * Use this method if the tag *could* be there
-     *
-     * @param view View from which to retrieve tag
-     *
-     * @see #getTagOrThrow(View)
-     */
-    @Nullable
-    public static <T> T getTag(@NonNull final View view) {
-        ViewTagger tagger = getTagger(view, false);
-        if (tagger == null) {
-            return null;
-        }
-        //noinspection unchecked
-        return (T) tagger.get();
-    }
-
-    /**
-     * Static method to get the bare tag from the view.
      * Use this method if the tag *should* be there
      *
      * @param view View from which to retrieve tag
+     *
+     * @return Object with specified tag, never null
      *
      * @see #getTag(View)
      */
@@ -122,27 +106,6 @@ public final class ViewTagger {
     public static <T> T getTagOrThrow(@NonNull final View view) {
         //noinspection unchecked
         return (T) Objects.requireNonNull(getTag(view), "tag  was null");
-    }
-
-    /**
-     * Static method to get the tag matching the ID from the view.
-     * Use this method if the tag *could* be there
-     *
-     * @param view View from which to retrieve tag
-     * @param key  Key of required tag
-     *
-     * @return Object with specified tag, or null if not found
-     *
-     * @throws NullPointerException if the tagger was null
-     * @see #getTagOrThrow(View, int)
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public static <T> T getTag(@NonNull final View view,
-                               @IdRes final int key) {
-        ViewTagger tagger = getTagger(view, false);
-        Objects.requireNonNull(tagger, "view has no tagger");
-        return (T) tagger.get(key);
     }
 
     /**
@@ -161,6 +124,46 @@ public final class ViewTagger {
     public static <T> T getTagOrThrow(@NonNull final View view,
                                       @IdRes final int key) {
         return (T) Objects.requireNonNull(getTag(view, key), "tag " + key + " was null");
+    }
+
+    /**
+     * Static method to get the bare tag from the view.
+     * Use this method if the tag *could* be there
+     *
+     * @param view View from which to retrieve tag
+     *
+     * @return Object with specified tag, or null if not found
+     *
+     * @see #getTagOrThrow(View)
+     */
+    @Nullable
+    public static <T> T getTag(@NonNull final View view) {
+        ViewTagger tagger = getTagger(view, false);
+        if (tagger == null) {
+            return null;
+        }
+        //noinspection unchecked
+        return (T) tagger.get();
+    }
+
+    /**
+     * Static method to get the tag matching the ID from the view.
+     * Use this method if the tag *could* be there
+     *
+     * @param view View from which to retrieve tag
+     * @param key  Key of required tag
+     *
+     * @return Object with specified tag, or null if not found
+     *
+     * @see #getTagOrThrow(View, int)
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static <T> T getTag(@NonNull final View view,
+                               @IdRes final int key) {
+        ViewTagger tagger = getTagger(view, false);
+        Objects.requireNonNull(tagger, "view has no tagger");
+        return (T) tagger.get(key);
     }
 
     /**

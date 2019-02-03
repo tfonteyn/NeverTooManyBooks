@@ -173,11 +173,11 @@ public final class SimpleDialog {
     public interface SimpleDialogItem {
 
         @NonNull
-        View getView(@NonNull final LayoutInflater inflater);
+        View getView(@NonNull LayoutInflater inflater);
 
         /** optional, mostly for visual effects only. */
         @Nullable
-        CompoundButton getSelector(@NonNull final View view);
+        CompoundButton getSelector(@NonNull View view);
     }
 
     /**
@@ -185,7 +185,7 @@ public final class SimpleDialog {
      */
     public interface OnClickListener {
 
-        void onClick(@NonNull final SimpleDialogItem item);
+        void onClick(@NonNull SimpleDialogItem item);
     }
 
     /**
@@ -206,9 +206,9 @@ public final class SimpleDialog {
          * @param menu     to display
          * @param menuInfo information about the menu, e.g. the 'title', 'position'
          */
-        void onCreateListViewContextMenu(@NonNull final View view,
-                                         @NonNull final Menu menu,
-                                         @NonNull final ContextMenuInfo menuInfo);
+        void onCreateListViewContextMenu(@NonNull View view,
+                                         @NonNull Menu menu,
+                                         @NonNull ContextMenuInfo menuInfo);
 
         /**
          * @param menuItem that was selected
@@ -217,8 +217,8 @@ public final class SimpleDialog {
          * @return <tt>true</tt> if the selection was handled.
          */
         @SuppressWarnings("UnusedReturnValue")
-        boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                              final int position);
+        boolean onListViewContextItemSelected(@NonNull MenuItem menuItem,
+                                              int position);
     }
 
     /**
@@ -234,16 +234,16 @@ public final class SimpleDialog {
          *
          * @param view on which the context menu is set
          */
-        void initContextMenuOnView(@NonNull final View view);
+        void initContextMenuOnView(@NonNull View view);
 
         /**
          * @param view     on which the context menu is set
          * @param menu     to display
          * @param menuInfo information about the menu, e.g. the 'title'
          */
-        void onCreateViewContextMenu(@NonNull final View view,
-                                     @NonNull final Menu menu,
-                                     @NonNull final ContextMenuInfo menuInfo);
+        void onCreateViewContextMenu(@NonNull View view,
+                                     @NonNull Menu menu,
+                                     @NonNull ContextMenuInfo menuInfo);
 
         /**
          * @param view     on which the context menu is set. Passed here because we *could*
@@ -253,8 +253,8 @@ public final class SimpleDialog {
          * @return <tt>true</tt> if the selection was handled.
          */
         @SuppressWarnings("UnusedReturnValue")
-        boolean onViewContextItemSelected(@NonNull final View view,
-                                          @NonNull final MenuItem menuItem);
+        boolean onViewContextItemSelected(@NonNull View view,
+                                          @NonNull MenuItem menuItem);
     }
 
     /**

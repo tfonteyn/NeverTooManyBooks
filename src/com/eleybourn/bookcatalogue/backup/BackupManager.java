@@ -102,10 +102,13 @@ public final class BackupManager {
                 BackupContainer bkp = new TarBackupContainer(tempFile);
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                     Logger.info(this,
-                                "backup|starting|file=" + tempFile.getAbsolutePath());
+                                "backup","starting|file=" + tempFile.getAbsolutePath());
                 }
                 try (BackupWriter wrt = bkp.newWriter()) {
                     try {
+                        // do a cleanup first.
+                        taskContext.getDb().purge();
+
                         // go go go...
                         wrt.backup(settings, new BackupWriter.BackupWriterListener() {
 
@@ -116,8 +119,7 @@ public final class BackupManager {
 
                             @Override
                             public void onProgressStep(@Nullable final String message,
-                                                       final int delta
-                            ) {
+                                                       final int delta) {
                                 fragment.onProgressStep(message, delta);
                             }
 
@@ -138,7 +140,7 @@ public final class BackupManager {
                         // cancelled
                         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                             Logger.info(this,
-                                        "backup|cancelling|file="
+                                        "backup","cancelling|file="
                                                 + settings.file.getAbsolutePath());
                         }
                         StorageUtils.deleteFile(tempFile);
@@ -150,7 +152,7 @@ public final class BackupManager {
 
                         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                             Logger.info(this,
-                                        "backup|finished|file="
+                                        "backup","finished|file="
                                                 + settings.file.getAbsolutePath()
                                                 + ", size = " + settings.file.length());
                         }
@@ -161,8 +163,7 @@ public final class BackupManager {
             @Override
             @CallSuper
             public void onFinish(@NonNull final TaskWithProgressDialogFragment fragment,
-                                 @Nullable final Exception e
-            ) {
+                                 @Nullable final Exception e) {
                 // show the user the exception if there was one, and clean up
                 super.onFinish(fragment, e);
                 if (e != null) {
@@ -213,7 +214,7 @@ public final class BackupManager {
                     throws Exception {
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                     Logger.info(this,
-                                "restore|starting|file=" + settings.file.getAbsolutePath());
+                                "restore","starting|file=" + settings.file.getAbsolutePath());
                 }
                 try (BackupReader reader = readFrom(settings.file)) {
                     Objects.requireNonNull(reader);
@@ -225,8 +226,7 @@ public final class BackupManager {
 
                         @Override
                         public void onProgressStep(@NonNull final String message,
-                                                   final int delta
-                        ) {
+                                                   final int delta) {
                             fragment.onProgressStep(message, delta);
                         }
 

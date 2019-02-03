@@ -53,7 +53,7 @@ import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.DBExceptions;
+import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
 import com.eleybourn.bookcatalogue.datamanager.datavalidators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -320,7 +320,7 @@ public class Fields
      *
      * @param cursor with data to load.
      *
-     * @throws DBExceptions.ColumnNotPresent if the Cursor does not have a required column
+     * @throws ColumnNotPresentException if the Cursor does not have a required column
      */
     @SuppressWarnings("unused")
     public void setAllFrom(@NonNull final Cursor cursor) {
@@ -521,8 +521,8 @@ public class Fields
     public interface AfterFieldChangeListener
             extends Serializable {
 
-        void afterFieldChange(@NonNull final Field field,
-                              @Nullable final String newValue);
+        void afterFieldChange(@NonNull Field field,
+                              @Nullable String newValue);
     }
 
     /**
@@ -533,8 +533,7 @@ public class Fields
      * <p>
      * This is an alternate method of applying cross-validation.
      * 2018-11-11: the original code never actively used this.
-     * <p>
-     * It basically seems {@link DataManager} replaced/implemented validation instead
+     * It seems {@link DataManager} replaced/implemented validation instead.
      *
      * @author Philip Warner
      */
@@ -552,10 +551,10 @@ public class Fields
          *
          * @throws ValidatorException For any validation failure.
          */
-        void validate(@NonNull final Fields fields,
-                      @NonNull final Field field,
-                      @NonNull final Bundle values,
-                      final boolean crossValidating)
+        void validate(@NonNull Fields fields,
+                      @NonNull Field field,
+                      @NonNull Bundle values,
+                      boolean crossValidating)
                 throws ValidatorException;
     }
 
@@ -576,8 +575,8 @@ public class Fields
          *
          * @throws ValidatorException For any validation failure.
          */
-        void validate(@NonNull final Fields fields,
-                      @NonNull final Bundle values)
+        void validate(@NonNull Fields fields,
+                      @NonNull Bundle values)
                 throws ValidatorException;
     }
 
@@ -597,8 +596,8 @@ public class Fields
          *
          * @throws CursorIndexOutOfBoundsException if the cursor does not have a required column
          */
-        void setFieldValueFrom(@NonNull final Field field,
-                               @NonNull final Cursor cursor)
+        void setFieldValueFrom(@NonNull Field field,
+                               @NonNull Cursor cursor)
                 throws CursorIndexOutOfBoundsException;
 
         /**
@@ -607,8 +606,8 @@ public class Fields
          * @param field  which defines the View details
          * @param values with data to load.
          */
-        void setFieldValueFrom(@NonNull final Field field,
-                               @NonNull final Bundle values);
+        void setFieldValueFrom(@NonNull Field field,
+                               @NonNull Bundle values);
 
         /**
          * Passed a Field and a DataManager get the column from the DataManager and
@@ -617,8 +616,8 @@ public class Fields
          * @param field  which defines the View details
          * @param values with data to load.
          */
-        void setFieldValueFrom(@NonNull final Field field,
-                               @NonNull final DataManager values);
+        void setFieldValueFrom(@NonNull Field field,
+                               @NonNull DataManager values);
 
         /**
          * Passed a Field and a String, use the string to set the view value.
@@ -626,8 +625,8 @@ public class Fields
          * @param field which defines the View details
          * @param value to set.
          */
-        void set(@NonNull final Field field,
-                 @NonNull final String value);
+        void set(@NonNull Field field,
+                 @NonNull String value);
 
         /**
          * Get the value from the view associated with Field and store a native version
@@ -636,8 +635,8 @@ public class Fields
          * @param field  associated with the View object
          * @param values Collection to save value into.
          */
-        void putFieldValueInto(@NonNull final Field field,
-                               @NonNull final Bundle values);
+        void putFieldValueInto(@NonNull Field field,
+                               @NonNull Bundle values);
 
         /**
          * Get the value from the view associated with Field and store a native version
@@ -646,8 +645,8 @@ public class Fields
          * @param field  associated with the View object
          * @param values Collection to save value into.
          */
-        void putFieldValueInto(@NonNull final Field field,
-                               @NonNull final DataManager values);
+        void putFieldValueInto(@NonNull Field field,
+                               @NonNull DataManager values);
 
         /**
          * Get the value from the view associated with Field and return it as an Object.
@@ -657,7 +656,7 @@ public class Fields
          * @return The most natural value to associate with the View value.
          */
         @NonNull
-        Object get(@NonNull final Field field);
+        Object get(@NonNull Field field);
     }
 
     /**
@@ -675,8 +674,8 @@ public class Fields
          * @return The formatted value. If the source is null, should return "" (and log an error)
          */
         @NonNull
-        String format(@NonNull final Field field,
-                      @Nullable final String source);
+        String format(@NonNull Field field,
+                      @Nullable String source);
 
         /**
          * This method is intended to be called from a {@link FieldDataAccessor}.
@@ -688,8 +687,8 @@ public class Fields
          * @return The extracted value
          */
         @NonNull
-        String extract(@NonNull final Field field,
-                       @NonNull final String source);
+        String extract(@NonNull Field field,
+                       @NonNull String source);
     }
 
     /**
@@ -880,7 +879,7 @@ public class Fields
             if (value != null) {
                 try {
                     cb.setChecked(Datum.toBoolean(field.format(value), true));
-                } catch (RuntimeException e) {
+                } catch (NumberFormatException e) {
                     cb.setChecked(false);
                 }
             } else {
@@ -1031,7 +1030,7 @@ public class Fields
 
     /**
      * Formatter for date fields.
-     *
+     * <p>
      * Can be shared among multiple fields.
      */
     public static class DateFieldFormatter
@@ -1046,13 +1045,12 @@ public class Fields
             if (source == null || source.isEmpty()) {
                 return "";
             }
-            try {
-                Date d = DateUtils.parseDate(source);
-                if (d != null) {
-                    return DateUtils.toPrettyDate(d);
-                }
-            } catch (RuntimeException ignore) {
+
+            Date d = DateUtils.parseDate(source);
+            if (d != null) {
+                return DateUtils.toPrettyDate(d);
             }
+
             return source;
         }
 
@@ -1062,12 +1060,9 @@ public class Fields
         @NonNull
         public String extract(@NonNull final Field field,
                               @NonNull final String source) {
-            try {
-                Date d = DateUtils.parseDate(source);
-                if (d != null) {
-                    return DateUtils.utcSqlDate(d);
-                }
-            } catch (RuntimeException ignore) {
+            Date d = DateUtils.parseDate(source);
+            if (d != null) {
+                return DateUtils.utcSqlDate(d);
             }
             return source;
         }
@@ -1104,7 +1099,7 @@ public class Fields
             try {
                 boolean val = Datum.toBoolean(source, false);
                 return mContext.getString(val ? R.string.yes : R.string.no);
-            } catch (IllegalArgumentException e) {
+            } catch (NumberFormatException e) {
                 return source;
             }
         }
@@ -1117,7 +1112,7 @@ public class Fields
                               @NonNull final String source) {
             try {
                 return Datum.toBoolean(source, false) ? "1" : "0";
-            } catch (IllegalArgumentException e) {
+            } catch (NumberFormatException e) {
                 return source;
             }
         }
@@ -1538,6 +1533,7 @@ public class Fields
                     addTouchSignalsDirty(view);
 
                 } else {
+                    //noinspection ConstantConditions
                     throw new RTE.IllegalTypeException(view.getClass().getCanonicalName());
                 }
                 mIsVisible = Fields.isVisible(group);
@@ -1598,7 +1594,7 @@ public class Fields
          *
          * @return field (for chaining)
          */
-        @SuppressWarnings("UnusedReturnValue")
+        @SuppressWarnings({"UnusedReturnValue", "unused"})
         public Field setDoNotFetch(final boolean doNoFetch) {
             this.mDoNoFetch = doNoFetch;
             return this;
@@ -1732,14 +1728,14 @@ public class Fields
          * Set the value of this field from the passed cursor.
          * Useful for getting access to raw data values from the database.
          *
-         * @throws DBExceptions.ColumnNotPresent if the cursor does not have a required column
+         * @throws ColumnNotPresentException if the cursor does not have a required column
          */
         void setValueFrom(@NonNull final Cursor cursor) {
             if (!mColumn.isEmpty() && !mDoNoFetch) {
                 try {
                     mFieldDataAccessor.setFieldValueFrom(this, cursor);
                 } catch (CursorIndexOutOfBoundsException e) {
-                    throw new DBExceptions.ColumnNotPresent(mColumn, e);
+                    throw new ColumnNotPresentException(mColumn, e);
                 }
             }
         }

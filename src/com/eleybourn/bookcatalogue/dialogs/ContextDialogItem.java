@@ -20,26 +20,28 @@
 
 package com.eleybourn.bookcatalogue.dialogs;
 
-import androidx.annotation.NonNull;
+import android.content.Context;
+import android.content.DialogInterface;
 
-import com.eleybourn.bookcatalogue.baseactivity.BindableItemListActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+
+import java.util.List;
+
 
 /**
- * Class to make building a 'context menu' from an AlertDialog a little easier.
- * Used in {@link BindableItemListActivity} and related.
+ * Class to make building a 'context menu' for an AlertDialog a little easier.
  * <p>
- * Basically links a menu choice string to a Runnable
- * <p>
- * Move code using this to {@link SimpleDialog.SimpleDialogMenuItem}
+ * Basically links a menu choice string to a Runnable.
  *
  * @author Philip Warner
  */
-@Deprecated
 public class ContextDialogItem
         implements CharSequence {
 
     @NonNull
-    public final Runnable mHandler;
+    private final Runnable mHandler;
     @NonNull
     private final String mName;
 
@@ -47,6 +49,33 @@ public class ContextDialogItem
                              @NonNull final Runnable handler) {
         mName = name;
         mHandler = handler;
+    }
+
+    /**
+     * Displays an array of ContextDialogItems in an alert.
+     *
+     * @param title Title of Alert
+     * @param items Items to display
+     */
+    public static void showContextDialog(@NonNull final Context context,
+                                         @StringRes final int title,
+                                         @NonNull final List<ContextDialogItem> items) {
+        if (items.size() > 0) {
+            final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
+            items.toArray(itemArray);
+
+            AlertDialog dialog = new AlertDialog.Builder(context)
+                    .setTitle(title)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setItems(itemArray, new DialogInterface.OnClickListener() {
+                        public void onClick(@NonNull final DialogInterface dialog,
+                                            final int which) {
+                            itemArray[which].mHandler.run();
+                        }
+                    }).create();
+
+            dialog.show();
+        }
     }
 
     @NonNull

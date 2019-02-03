@@ -2,11 +2,11 @@ package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.preference.ListPreference;
 import androidx.preference.PreferenceManager;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -15,10 +15,11 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
+import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 
 import java.util.ArrayList;
@@ -51,24 +52,47 @@ public final class Prefs {
         return BookCatalogueApp.getAppContext().getSharedPreferences(uuid, Context.MODE_PRIVATE);
     }
 
-    /** Convenience wrapper - Get a GLOBAL preference. */
+    /**
+     * @return boolean global preference
+     */
     public static boolean getBoolean(@StringRes final int keyId,
                                      final boolean defaultValue) {
         return getPrefs().getBoolean(BookCatalogueApp.getResString(keyId), defaultValue);
     }
 
-    /** Convenience wrapper - Get a GLOBAL preference. */
+    /**
+     * {@link ListPreference} store the selected value as a String.
+     * But they are really Integer values. Hence this transmogrification....
+     *
+     * @return int (stored as String) global preference
+     */
+    public static int getIntString(@StringRes final int keyId,
+                                   final int defaultValue) {
+        String sValue = getPrefs().getString(BookCatalogueApp.getResString(keyId), null);
+        if (sValue != null && !sValue.isEmpty()) {
+            return Integer.parseInt(sValue);
+        }
+        return defaultValue;
+    }
+
+    /**
+     * @return int (stored as int) global preference
+     */
     public static int getInt(@StringRes final int keyId,
                              final int defaultValue) {
         return getPrefs().getInt(BookCatalogueApp.getResString(keyId), defaultValue);
     }
 
-    /** Convenience wrapper - Get a GLOBAL preference. */
+    /**
+     * @return String global preference
+     */
     @Nullable
     public static String getString(@StringRes final int keyId,
                                    @Nullable final String defaultValue) {
         return getPrefs().getString(BookCatalogueApp.getResString(keyId), defaultValue);
     }
+
+    /* ****************************************************************************************** */
 
     /**
      * DEBUG method.
@@ -107,146 +131,155 @@ public final class Prefs {
 
         // note that strings could be empty. Check if needed
         for (String key : oldMap.keySet()) {
+            Object oldValue = oldMap.get(key);
+            if (oldValue == null) {
+                continue;
+            }
             try {
                 switch (key) {
-                    case "ScannerManager.PreferredScanner":
-                        ed.putInt(key, ((Integer) oldMap.get(key)) - 1);
-                        break;
-
-                    case "UpgradeMessages.LastMessage":
-                        int v = (Integer) oldMap.get(key);
-                        ed.putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, v);
-                        break;
-
-                    case "state_opened":
-                        ed.putInt(StartupActivity.PREFS_STARTUP_COUNTDOWN,
-                                  (Integer) oldMap.get(key));
-                        break;
-
-                    case StartupActivity.PREF_STARTUP_COUNT:
-                        ed.putInt(key, (Integer) oldMap.get(key));
-                        break;
-
-                    case StartupActivity.PREF_STARTUP_FTS_REBUILD_REQUIRED:
-                        ed.putBoolean(key, (Boolean) oldMap.get(key));
-                        break;
-
-                    case "lt_devkey":
-                        String tmpDevKey = (String) oldMap.get(key);
-                        if (!tmpDevKey.isEmpty()) {
-                            ed.putString(LibraryThingManager.PREFS_DEV_KEY,
-                                         (String) oldMap.get(key));
+                    /*
+                     * User defined preferences.
+                     */
+                    case "App.Locale":
+                        String tmp = (String) oldValue;
+                        if (!tmp.isEmpty()) {
+                            ed.putString(key, tmp);
                         }
-                        break;
-
-                    case "App.AutorotateCameraImages":
-                        ed.putInt(BookCatalogueApp.getResString(
-                                R.string.pk_thumbnails_rotate_auto),
-                                  (Integer) oldMap.get(key));
-                        break;
-
-                    case "App.CropFrameWholeImage":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_thumbnails_crop_frame_is_whole_image),
-                                      (Boolean) oldMap.get(key));
-                        break;
-
-                    case "App.UseExternalImageCropper":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_thumbnails_external_cropper),
-                                      (Boolean) oldMap.get(key));
-                        break;
-
-                    case "SoundManager.BeepIfScannedIsbnInvalid":
-                        ed.putBoolean(key, (Boolean) oldMap.get(key));
-                        break;
-
-                    case "SoundManager.BeepIfScannedIsbnValid":
-                        ed.putBoolean(key, (Boolean) oldMap.get(key));
-                        break;
-
-                    case "App.BooklistGenerationMode":
-                        int compatMode = (Integer) oldMap.get(key);
-                        switch (compatMode) {
-                            case 4:
-                                compatMode = BooklistBuilder.PREF_COMPATIBILITY_MODE_DEFAULT;
-                                break;
-                            case 3:
-                                compatMode = BooklistBuilder.PREF_COMPATIBILITY_MODE_NESTED_TRIGGERS;
-                                break;
-                            case 2:
-                                compatMode = BooklistBuilder.PREF_COMPATIBILITY_MODE_FLAT_TRIGGERS;
-                                break;
-                            case 1:
-                                compatMode = BooklistBuilder.PREF_COMPATIBILITY_MODE_OLD_STYLE;
-                                break;
-                            default:
-                                compatMode = BooklistBuilder.PREF_COMPATIBILITY_MODE_DEFAULT;
-                        }
-                        ed.putInt(
-                                BookCatalogueApp.getResString(
-                                        R.string.pk_bob_list_generation), compatMode);
                         break;
 
                     case "App.OpenBookReadOnly":
                         ed.putBoolean(BookCatalogueApp.getResString(
                                 R.string.pk_bob_open_book_read_only),
-                                      (Boolean) oldMap.get(key));
-                        break;
-
-                    case "BooksOnBookshelf.BOOKSHELF":
-                        String tmpBookshelf = (String) oldMap.get(key);
-                        if (!tmpBookshelf.isEmpty()) {
-                            ed.putString(BooksOnBookshelf.PREF_BOB_CURRENT_BOOKSHELF, tmpBookshelf);
-                        }
-                        break;
-
-                    case "BooksOnBookshelf.TOP_ROW":
-                        ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW,
-                                  (Integer) oldMap.get(key));
-                        break;
-
-                    case "BooksOnBookshelf.TOP_ROW_TOP":
-                        ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW_OFFSET,
-                                  (Integer) oldMap.get(key));
+                                      (Boolean) oldValue);
                         break;
 
                     case "BookList.Global.BooklistState":
-                        ed.putInt(
-                                BookCatalogueApp.getResString(R.string.pk_bob_list_state),
-                                (Integer) oldMap.get(key) - 1);
+                        ed.putString(BookCatalogueApp.getResString(R.string.pk_bob_list_state),
+                                     String.valueOf((Integer) oldValue - 1));
                         break;
 
-                    case "BookList.Global.BackgroundThumbnails":
+                    case "App.BooklistGenerationMode":
+                        int compatMode = (Integer) oldValue;
+                        switch (compatMode) {
+                            case 4:
+                                compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_DEFAULT;
+                                break;
+                            case 3:
+                                compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_NESTED_TRIGGERS;
+                                break;
+                            case 2:
+                                compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_FLAT_TRIGGERS;
+                                break;
+                            case 1:
+                                compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_OLD_STYLE;
+                                break;
+                            default:
+                                compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_DEFAULT;
+                        }
+                        ed.putString(
+                                BookCatalogueApp.getResString(R.string.pk_bob_list_generation),
+                                String.valueOf(compatMode));
+                        break;
+
+                    case "SoundManager.BeepIfScannedIsbnInvalid":
+                        ed.putBoolean(key, (Boolean) oldValue);
+                        break;
+
+                    case "SoundManager.BeepIfScannedIsbnValid":
+                        ed.putBoolean(key, (Boolean) oldValue);
+                        break;
+
+                    case "ScannerManager.PreferredScanner":
+                        ed.putString(key, String.valueOf((Integer) oldValue - 1));
+                        break;
+
+                    case "App.CropFrameWholeImage":
                         ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_thumbnails_generating_mode),
-                                      (Boolean) oldMap.get(key));
+                                R.string.pk_thumbnails_crop_frame_is_whole_image),
+                                      (Boolean) oldValue);
+                        break;
+
+                    case "App.UseExternalImageCropper":
+                        ed.putBoolean(BookCatalogueApp.getResString(
+                                R.string.pk_thumbnails_external_cropper),
+                                      (Boolean) oldValue);
                         break;
 
                     case "BookList.Global.CacheThumbnails":
                         ed.putBoolean(BookCatalogueApp.getResString(
                                 R.string.pk_bob_thumbnails_cache_resized),
-                                      (Boolean) oldMap.get(key));
+                                      (Boolean) oldValue);
+                        break;
+
+                    case "BookList.Global.BackgroundThumbnails":
+                        ed.putBoolean(BookCatalogueApp.getResString(
+                                R.string.pk_bob_thumbnails_generating_mode),
+                                      (Boolean) oldValue);
+                        break;
+
+                    case "App.AutorotateCameraImages":
+                        ed.putString(BookCatalogueApp.getResString(
+                                R.string.pk_thumbnails_rotate_auto),
+                                     String.valueOf(oldValue));
+                        break;
+
+                    /*
+                     * User credentials
+                     */
+                    case "lt_devkey":
+                        String tmpDevKey = (String) oldValue;
+                        if (!tmpDevKey.isEmpty()) {
+                            ed.putString(LibraryThingManager.PREFS_DEV_KEY, (String) oldValue);
+                        }
+                        break;
+
+                    /*
+                     * Internal settings
+                     */
+                    case "state_opened":
+                        ed.putInt(StartupActivity.PREFS_STARTUP_COUNTDOWN,
+                                  (Integer) oldValue);
+                        break;
+
+                    case StartupActivity.PREF_STARTUP_COUNT:
+                        ed.putInt(key, (Integer) oldValue);
+                        break;
+
+                    case "BooksOnBookshelf.BOOKSHELF":
+                        String tmpBookshelf = (String) oldValue;
+                        if (!tmpBookshelf.isEmpty()) {
+                            ed.putString(Bookshelf.PREF_BOOKSHELF_CURRENT, tmpBookshelf);
+                        }
+                        break;
+
+                    case "BooksOnBookshelf.TOP_ROW":
+                        ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW,
+                                  (Integer) oldValue);
+                        break;
+
+                    case "BooksOnBookshelf.TOP_ROW_TOP":
+                        ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW_OFFSET,
+                                  (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.LIST_STYLE":
-                        String entry = (String) oldMap.get(key);
+                        String entry = (String) oldValue;
                         ed.putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
                                    BooklistStyles.getStyleId(
                                            entry.substring(0, entry.length() - 2)));
                         break;
 
                     case "BooklistStyles.Menu.Items":
-                        // set to eliminate duplicates
+                        // using a set to eliminate duplicates
                         Set<Long> styleIds = new LinkedHashSet<>();
-                        for (String styleStringList : StringList.decode((String) oldMap.get(key))) {
+                        String[] styles = ((String) oldValue).split(",");
+                        for (String styleStringList : styles) {
                             styleIds.add(BooklistStyles.getStyleId(
                                     styleStringList.substring(0, styleStringList.length() - 2)));
                         }
-                        ed.putString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
-                                     TextUtils.join(",", styleIds));
+                        ed.putString(BooklistStyles.PREF_BL_PREFERRED_STYLES,
+                                     Csv.join(",", styleIds));
                         break;
-
 
                     // skip obsolete keys
                     case "StartupActivity.FAuthorSeriesFixupRequired":
@@ -257,6 +290,10 @@ public final class Prefs {
                     case "state_current_group_count":
                     case "state_sort":
                     case "state_bookshelf":
+                        // skip keys that make no sense to copy
+                    case "UpgradeMessages.LastMessage":
+                    case UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED:
+
                         // skip all global style settings; for now all is local to a style.
                     case "App.BooklistStyle":
                     case "APP.DisplayFirstThenLast":
@@ -273,30 +310,31 @@ public final class Prefs {
                         break;
 
                     default:
-
-                        if (key.startsWith("GoodReads")
-                                || key.startsWith("Backup")
-                                || "App.Locale".equals(key)
-                        ) {
-                            String tmp = (String) oldMap.get(key);
-                            if (!tmp.isEmpty()) {
-                                ed.putString(key, tmp);
+                        if (key.startsWith("GoodReads")) {
+                            String tmp1 = (String) oldValue;
+                            if (!tmp1.isEmpty()) {
+                                ed.putString(key, tmp1);
+                            }
+                        } else if (key.startsWith("Backup")) {
+                            String tmp1 = (String) oldValue;
+                            if (!tmp1.isEmpty()) {
+                                ed.putString(key, tmp1);
                             }
                         } else if (key.startsWith("HintManager")) {
-                            ed.putBoolean(key, (Boolean) oldMap.get(key));
+                            ed.putBoolean(key, (Boolean) oldValue);
 
                         } else if (key.startsWith("lt_hide_alert_")) {
                             ed.putString(key.replace("lt_hide_alert_",
                                                      LibraryThingManager.PREFS_HIDE_ALERT),
-                                         (String) oldMap.get(key));
+                                         (String) oldValue);
                         } else if (key.startsWith("field_visibility_")) {
                             ed.putBoolean(key.replace("field_visibility_",
                                                       Fields.PREFS_FIELD_VISIBILITY),
-                                          (Boolean) oldMap.get(key));
+                                          (Boolean) oldValue);
                         } else if (!key.startsWith("state_current_group")) {
 
                             Logger.info(Prefs.class, "unknown|key=" + key
-                                    + "|value=" + oldMap.get(key).toString());
+                                    + "|value=" + oldValue.toString());
                         }
                         break;
                 }
@@ -308,4 +346,5 @@ public final class Prefs {
         }
         ed.apply();
     }
+
 }

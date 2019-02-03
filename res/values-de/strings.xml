@@ -70,25 +70,25 @@
     <string name="about_lbl_upgrade">Seit der letzten Aktualisierung</string>
     <string name="menu_edit_book">Buch bearbeiten</string>
     <string name="menu_edit_book_notes">Kommentar</string>
-    <string name="menu_edit_book_loan">Buch verleihen</string>
+    <string name="menu_loan_lend_book">Buch verleihen…</string>
     <string name="error_unknown">Es ist ein unbekannter Fehler aufgetreten</string>
     <string name="lbl_notes">Notizen</string>
-    <string name="loaned_to_long">Dieses Buch wurde verliehen an:</string>
-    <string name="loaned_to_nobody">Niemand</string>
-    <string name="loan_to">Verleihe Buch an:</string>
-    <string name="loan_returned">Zurückgegeben</string>
+    <string name="lbl_loaned_to_long">Dieses Buch wurde verliehen an:</string>
+    <string name="nobody">Niemand</string>
+    <string name="lbl_loan_to">Verleihe Buch an:</string>
+    <string name="btn_loan_returned">Zurückgegeben</string>
     <string name="name">Name</string>
     <string name="about_lbl_website">Webseite:</string>
     <string name="about_lbl_sourcecode">Quellcode:</string>
     <string name="about_lbl_contacts">Kontakt:</string>
     <string name="about_lbl_donate">Spenden</string>
-    <string name="menu_about">Über diese App</string>
+    <string name="lbl_about">Über diese App</string>
     <string name="lbl_price_listed">Preis</string>
     <string name="lbl_update_fields">Automatische Aktualisierung der Felder</string>
     <string name="lbl_update_fields_to_update">Felder für Aktualisierung auswählen</string>
     <string name="info_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet
         aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
-    <string name="overwrite_thumbnail">Die ausgewählten Felder werden wie gezeigt aktualisiert.
+    <string name="confirm_overwrite_thumbnail">Die ausgewählten Felder werden wie gezeigt aktualisiert.
         Die Cover-Bilder können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle
         bestehenden Cover-Bilder überschrieben werden?
         Warnung, die Aktualisierung kann lange dauern. </string>
@@ -123,7 +123,7 @@
     <string name="lbl_read_start">Datum mit Lesen begonnen</string>
     <string name="lbl_read_end">Datum Lesen beendet</string>
     <string name="title_duplicate_book">Doppeltes Buch</string>
-    <string name="warning_duplicate_book_message">Das hinzuzufügende Buch besteht bereits in
+    <string name="confirm_duplicate_book_message">Das hinzuzufügende Buch besteht bereits in
         der Datenbank. Sind Sie sicher, dass Sie noch eine Kopie hinzufügen möchten?</string>
     <string name="menu_cover_add_from_gallery">Aus der Fotogalerie…</string>
     <string name="backup_request">Möchten Sie ihre Datenbank auf SD-Karte sichern?</string>
@@ -135,7 +135,7 @@
     <string name="lbl_format">Ausgaben</string>
     <string name="lbl_description">Beschreibung</string>
     <string name="lbl_genre">Genre</string>
-    <string name="not_set">Nicht gesetzt</string>
+    <string name="field_not_set">Nicht gesetzt</string>
     <string name="menu_search_books">Suche Bücher</string>
     <string name="hint_book_search_by_text">Das Hinzufügen der Bücher per ISBN ist genauer als
         das Hinzufügen per Autor und Titel und sollte im Allgemeinen bevorzugt werden.
@@ -162,7 +162,7 @@
     <string name="btn_confirm_add">Hinzufügen</string>
     <string name="info_no_authors_yet">Es wurde kein Autor für dieses Buch eingetragen. Bitte fügen Sie einen Autor über das Textfeld und den Knopf oben auf diesem Bildschirm hinzu.</string>
     <string name="info_no_series_yet">Es besteht keine Serie für dieses Buch. Sie können eine Serie über das Textfeld und den Knopf oben auf dieser Seite hinzufügen.</string>
-    <string name="warning_cover_not_set">Das Cover wurde nicht gesetzt</string>
+    <string name="warning_cover_field_not_set">Das Cover wurde nicht gesetzt</string>
     <string name="warning_cover_corrupt">Das Cover ist unbrauchbar</string>
     <string name="title_cover_detail">Coverdetails</string>
     <string name="title_select_image">Bild auswählen</string>
@@ -191,19 +191,19 @@
     <string name="menu_edit_author">Autor bearbeiten…</string>
     <string name="menu_edit_series">Serie bearbeiten…</string>
     <string name="title_delete_series">Serie löschen</string>
-    <string name="warning_really_delete_series">Soll die Serie \'%s\' gelöscht werden?\n\nDie Bücher werden nicht gelöscht.\n\nBerücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können, um die Daten der Serie zu behalten.</string>
+    <string name="confirm_really_delete_series">Soll die Serie \'%s\' gelöscht werden?\n\nDie Bücher werden nicht gelöscht.\n\nBerücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können, um die Daten der Serie zu behalten.</string>
     <string name="title_edit_series">Einzelheiten der Serie bearbeiten</string>
     <string name="title_select_cover">Cover auswählen</string>
     <string name="warning_no_isbn_no_editions">Für ein Buch ohne ISBN können keine Ausgaben ermittelt werden</string>
     <string name="unsaved_edits">Es bestehen nicht gespeicherte Änderungen. Sind Sie sicher, dass sie fortfahren wollen?</string>
     <string name="unsaved_edits_title">Ungespeicherte Änderungen</string>
-    <string name="changed_author_how_apply">Der Autor wurde geändert von\n  \'%1$s\' in \n  \'%2$s\'\nWie wollen Sie diese Änderung übernehmen?\nHinweis: Die Auswahl \'%3$s\' wird sofort übernommen.</string>
+    <string name="confirm_apply_author_changed">Der Autor wurde geändert von\n  \'%1$s\' in \n  \'%2$s\'\nWie wollen Sie diese Änderung übernehmen?\nHinweis: Die Auswahl \'%3$s\' wird sofort übernommen.</string>
     <string name="btn_this_book">Dieses Buch</string>
     <string name="title_scope_of_change">Umfang der Änderung</string>
-    <string name="changed_series_how_apply">Die Serie wurde geändert von\n  \'%1$s\' in \n  \'%2$s\'\nWie wollen Sie diese Änderung übernehmen?\nHinweis: Die Auswahl \'%3$s\' wird sofort übernommen.</string>
+    <string name="confirm_apply_series_changed">Die Serie wurde geändert von\n  \'%1$s\' in \n  \'%2$s\'\nWie wollen Sie diese Änderung übernehmen?\nHinweis: Die Auswahl \'%3$s\' wird sofort übernommen.</string>
     <string name="warning_unable_to_find_book">Das angegebene Buch wurde nicht gefunden</string>
     <string name="list_and">und</string>
-    <string name="warning_really_delete_book">Dieser Vorgang löscht das Buch mit dem Titel \'%1$s\' von %2$s vollständig. Wollen Sie das Buch löschen?</string>
+    <string name="confirm_really_delete_book">Dieser Vorgang löscht das Buch mit dem Titel \'%1$s\' von %2$s vollständig. Wollen Sie das Buch löschen?</string>
     <string name="warning_editions_require_isbn">Um andere Ausgaben abzurufen, ist eine ISBN notwendig</string>
     <string name="warning_no_editions">Keine Ausgaben vorhanden</string>
     <string name="title_finding_editions">Suche Ausgaben…</string>
@@ -244,7 +244,7 @@
         Dieser Vorgang erstellt eine Sicherheitskopie Ihrer gesamten Datenbank und der Log-Dateien.
         Wenn Sie eine dieser Dateien nicht verschicken wollen, löschen Sie diese vor dem
         Senden aus dem Anhang.</string>
-    <string name="send_info">Sende Informationen</string>
+    <string name="about_send_info">Sende Informationen</string>
     <string name="info_cleanup_files_text">Die Dateien belegen %s Speicherplatz auf der SD-Karte.
         Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder
         wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese
@@ -270,7 +270,7 @@
     <string name="gr_tq_menu_delete_event">Ereignis löschen</string>
     <string name="gr_tq_menu_delete_task">Aufgabe löschen</string>
     <string name="my_books">Meine Bücher</string>
-    <string name="loan_return_book">Buch verleihen, zurückgeben oder bearbeiten</string>
+    <string name="loan_return_edit_book">Buch verleihen, zurückgeben oder bearbeiten</string>
     <string name="menu_admin_and_prefs">Verwaltung und Einstellungen</string>
     <string name="gr_menu_send_to_goodreads">Zu Goodreads senden</string>
     <string name="gr_auth_blurb_part1">Goodreads ist eine Website, deren ausgewiesener Zweck
@@ -313,8 +313,8 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="gr_auth_check">Autorisierungsprüfung für Goodreads</string>
     <string name="gr_auth_failed">Autorisierung bei Goodreads fehlgeschlagen</string>
     <string name="gr_auth_successful">Autorisierung bei Goodreads erfolgreich</string>
-    <string name="authorized">Autorisiert</string>
-    <string name="not_authorized">Nicht autorisiert</string>
+    <string name="info_authorized">Autorisiert</string>
+    <string name="info_not_authorized">Nicht autorisiert</string>
     <string name="gr_auth_error">Die Autorisierung bei Goodreads endete fehlerhaft</string>
     <string name="error_if_the_problem_persists">Wenn das Problem weiterhin besteht, kontaktieren Sie den Support über das Menü "Hilfe"</string>
     <string name="warning_book_no_longer_exists">Das gewünschte Buch existiert nicht mehr</string>
@@ -334,7 +334,7 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="acra_resDialogOkToast">Danke!</string>
     <string name="lbl_read">Gelesen</string>
     <string name="lbl_unread">Ungelesen</string>
-    <string name="no_date">(kein Datum)</string>
+    <string name="warning_date_not_set">(kein Datum)</string>
     <string name="style_builtin_author_series">Autor, danach Serie</string>
     <string name="style_builtin_series">Serie</string>
     <string name="style_builtin_title_first_letter">Erster Buchstabe des Titels</string>
@@ -344,7 +344,7 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den "Zurück
     <string name="style_builtin_publication_date">Datum der Veröffentlichung</string>
     <string name="style_builtin_added_date">Erfassungsdatum</string>
     <string name="style_builtin_author_year">Autor und Jahr</string>
-    <string name="not_set_with_brackets">(leer)</string>
+    <string name="field_not_set_with_brackets">(leer)</string>
     <string name="menu_preferences_booklist">Einstellungen der Bücherliste</string>
     <string name="lbl_bookshelves_long">Bücherregale</string>
     <string name="lbl_bookshelves">Regale</string>
@@ -479,7 +479,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="updated">Geändert</string>
     <string name="import_error_csv_file_not_found">Keine Exportdatei gefunden</string>
     <string name="import_warning_select_csv_file">Mehr als eine Exportdatei gefunden. Bitte wählen Sie eine aus der nachstehenden Liste</string>
-    <string name="problem_starting_import_arg">Problem beim Start des Imports: %1$s</string>
+    <string name="error_starting_import_arg">Problem beim Start des Imports: %1$s</string>
     <string name="hint_booklist_style_menu">Hier können Sie den Stil der Liste wählen.
         \n\nSie können auch dieses Menü anpassen und Ihre eigenen Stile erzeugen. Klicken Sie dafür auf \'Anpassen\' am Ende der Liste.
         </string>
@@ -505,7 +505,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="lbl_read_day">Tag</string>
     <string name="style_builtin_read_date">Gelesen am</string>
     <string name="lbl_details_have_changed">Details wurden geändert</string>
-    <string name="warning_unsaved_changes">Einige Änderungen wurden noch nicht gespeichert. Beim Beenden gehen diese Änderungen verloren.</string>
+    <string name="confirm_unsaved_changes">Einige Änderungen wurden noch nicht gespeichert. Beim Beenden gehen diese Änderungen verloren.</string>
     <string name="btn_confirm_exit">Beenden</string>
     <string name="btn_continue_editing">Bearbeiten fortsetzen</string>
     <string name="warning_title_already_exists">Der Titel existiert bereits</string>
@@ -703,7 +703,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
 
     <string name="pt_ui_system_locale">System Locale</string>
 
-    <string name="loaned_to_short">→</string>
+    <string name="lbl_loaned_to_short">→</string>
     <string name="tab_lbl_content">Inhalt</string>
     <string name="warning_thing_already_exists">%1$s existiert bereits</string>
     <string name="info_tap_to_edit">Tippen Sie hier, um den Namen zu bearbeiten</string>
@@ -720,7 +720,7 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="lbl_edition_limited">Limitierte Auflage</string>
     <string name="lbl_x_pages">%1$s seiten</string>
     <string name="lbl_location_long">Ort des Buches</string>
-    <string name="loan_book_details_readonly_loaned_to">Leihgabe an %1$s</string>
+    <string name="lbl_loaned_to_name">Leihgabe an %1$s</string>
     <string name="lbl_signed">Signiert</string>
     <string name="tab_lbl_notes">Hinweise</string>
     <string name="lbl_lending">Ausleihen</string>
@@ -755,18 +755,18 @@ Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN überprüfen) ode
     <string name="menu_internet_update_fields">Felder aktualisieren</string>
     <string name="tab_lbl_search_sites">Suchmaschinen</string>
     <string name="progress_msg_process_booklist_style">Bücherlistenstile…</string>
-    <string name="history">Historie</string>
     <string name="usage_skip">Überspringen</string>
-    <string name="saving_image">Bild speichern</string>
+    <string name="progress_msg_saving_image">Bild speichern…</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="pt_bob_preferred_style">Bevorzugt</string>
-    <string name="starting">Beginnend</string>
     <string name="lbl_books">Bücher</string>
     <string name="title_edit_genre">Genre-Details bearbeiten</string>
     <string name="title_edit_language">Sprachdetails bearbeiten</string>
     <string name="title_edit_location">Standortdetails bearbeiten</string>
+    <string name="menu_loan_return_book">Geliehenes Buch ist zurück</string>
+    <string name="error_google_play_missing">Google Play / Market ist nicht installiert</string>
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 

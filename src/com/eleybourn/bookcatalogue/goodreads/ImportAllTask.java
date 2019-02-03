@@ -30,10 +30,11 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -119,6 +120,22 @@ public class ImportAllTask
             }
         } else {
             mUpdatesAfter = null;
+        }
+    }
+
+    /**
+     * Add the value to the list if the value is actually 'real'.
+     *
+     * @param list  to add to
+     * @param value to add
+     */
+    private static void addIfHasValue(@NonNull final List<String> list,
+                                      @Nullable final String value) {
+        if (value != null) {
+            String v = value.trim();
+            if (!v.isEmpty()) {
+                list.add(v);
+            }
         }
     }
 
@@ -232,7 +249,7 @@ public class ImportAllTask
             }
         }
         try {
-            db.analyzeDb();
+            db.analyze();
         } catch (RuntimeException e) {
             // Do nothing. Not a critical step.
             Logger.error(e);
@@ -250,38 +267,38 @@ public class ImportAllTask
 
         // Find the books in our database - NOTE: may be more than one!
         // First look by goodreads book ID
-        BookCursor c = db.fetchBooksByGoodreadsBookId(grId);
+        BookCursor cursor = db.fetchBooksByGoodreadsBookId(grId);
         try {
-            boolean found = c.moveToFirst();
+            boolean found = cursor.moveToFirst();
             if (!found) {
                 // Not found by GR id, look via ISBNs
-                c.close();
-                c = null;
+                cursor.close();
+                cursor = null;
 
                 List<String> list = extractIsbnList(review);
                 if (list.size() > 0) {
-                    c = db.fetchBooksByIsbnList(list);
-                    found = c.moveToFirst();
+                    cursor = db.fetchBooksByIsbnList(list);
+                    found = cursor.moveToFirst();
                 }
             }
 
             if (found) {
                 // If found, update ALL related books
-                BookRowView bookCursorRow = c.getCursorRow();
+                BookCursorRow bookCursorRow = cursor.getCursorRow();
                 do {
                     // Check for abort
                     if (this.isAborting()) {
                         break;
                     }
                     updateBook(db, bookCursorRow, review);
-                } while (c.moveToNext());
+                } while (cursor.moveToNext());
             } else {
                 // Create the book
                 insertBook(db, review);
             }
         } finally {
-            if (c != null) {
-                c.close();
+            if (cursor != null) {
+                cursor.close();
             }
         }
     }
@@ -304,8 +321,10 @@ public class ImportAllTask
         }
         if (mBookshelfLookup == null) {
             mBookshelfLookup = new HashMap<>();
-            for (Bookshelf b : db.getBookshelves()) {
-                mBookshelfLookup.put(GoodreadsManager.canonicalizeBookshelfName(b.name), b.name);
+            for (Bookshelf bookshelf : db.getBookshelves()) {
+                mBookshelfLookup.put(
+                        GoodreadsManager.canonicalizeBookshelfName(bookshelf.getName()),
+                        bookshelf.getName());
             }
         }
 
@@ -327,25 +346,10 @@ public class ImportAllTask
     }
 
     /**
-     * Add the value to the list if the value is actually 'real'.
-     *
-     * @param list  to add to
-     * @param value to add
-     */
-    private static void addIfHasValue(@NonNull final List<String> list,
-                                      @Nullable final String value) {
-        if (value != null) {
-            String v = value.trim();
-            if (!v.isEmpty()) {
-                list.add(v);
-            }
-        }
-    }
-    /**
      * Update the book using the GR data.
      */
     private void updateBook(@NonNull final DBA db,
-                            @NonNull final BookRowView bookCursorRow,
+                            @NonNull final BookCursorRow bookCursorRow,
                             @NonNull final Bundle review) {
         // Get last date book was sent to GR (may be null)
         final String lastGrSync = bookCursorRow.getDateLastSyncedWithGoodreads();
@@ -377,7 +381,7 @@ public class ImportAllTask
         Book book = buildBundle(db, null, review);
         long id = db.insertBook(book);
         if (id > 0) {
-            if (book.getBoolean(UniqueId.BKEY_HAVE_THUMBNAIL)) {
+            if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
                 String uuid = db.getBookUuid(id);
                 // get the temporary downloaded file
                 File source = StorageUtils.getTempCoverFile();
@@ -395,7 +399,7 @@ public class ImportAllTask
      */
     @NonNull
     private Book buildBundle(@NonNull final DBA db,
-                             @Nullable final BookRowView bookCursorRow,
+                             @Nullable final BookCursorRow bookCursorRow,
                              @NonNull final Bundle review) {
 
         Book book = new Book();
@@ -472,13 +476,13 @@ public class ImportAllTask
             authors = new ArrayList<>();
         } else {
             // it's an update. Get current authors.
-            authors = db.getBookAuthorList(bookCursorRow.getId());
+            authors = db.getAuthorsByBookId(bookCursorRow.getId());
         }
 
         for (Bundle grAuthor : grAuthors) {
             String name = grAuthor.getString(ListReviewsFieldNames.AUTHOR_NAME_GF);
             if (name != null && !name.trim().isEmpty()) {
-                authors.add(new Author(name));
+                authors.add(Author.fromString(name));
             }
         }
         book.putAuthorList(authors);
@@ -492,10 +496,9 @@ public class ImportAllTask
 
             String largeImage = review.getString(ListReviewsFieldNames.LARGE_IMAGE);
             String smallImage = review.getString(ListReviewsFieldNames.SMALL_IMAGE);
-            if (largeImage != null && !largeImage.toLowerCase().contains(UniqueId.BKEY_NO_COVER)) {
+            if (GoodreadsUtils.hasCover(largeImage)) {
                 thumbnail = largeImage;
-            } else if (smallImage != null && !smallImage.toLowerCase().contains(
-                    UniqueId.BKEY_NO_COVER)) {
+            } else if (GoodreadsUtils.hasCover(smallImage)) {
                 thumbnail = smallImage;
             } else {
                 thumbnail = null;
@@ -505,8 +508,9 @@ public class ImportAllTask
                 String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail,
                                                                   GoodreadsUtils.FILENAME_SUFFIX);
                 if (fileSpec != null) {
-                    ArrayList<String> imageList = book.getStringArrayList(
-                            UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                    ArrayList<String> imageList =
+                            book.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+
                     imageList.add(fileSpec);
                     book.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
                 }
@@ -519,18 +523,20 @@ public class ImportAllTask
          * Cleanup the title by removing series name, if present.
          */
         if (book.containsKey(UniqueId.KEY_TITLE)) {
-            String thisTitle = book.getString(UniqueId.KEY_TITLE);
-            Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
+            String bookTitle = book.getString(UniqueId.KEY_TITLE);
+            Series.SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
             if (details != null && !details.getName().isEmpty()) {
                 ArrayList<Series> allSeries;
                 if (bookCursorRow == null) {
                     allSeries = new ArrayList<>();
                 } else {
-                    allSeries = db.getBookSeriesList(bookCursorRow.getId());
+                    allSeries = db.getSeriesByBookId(bookCursorRow.getId());
                 }
 
-                allSeries.add(new Series(details.getName(), details.position));
-                book.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar - 1));
+                Series newSeries = new Series(details.getName());
+                newSeries.setNumber(details.getPosition());
+                allSeries.add(newSeries);
+                book.putString(UniqueId.KEY_TITLE, bookTitle.substring(0, details.startChar - 1));
 
                 Series.pruneSeriesList(allSeries);
                 book.putSeriesList(allSeries);
@@ -549,10 +555,12 @@ public class ImportAllTask
             }
             ArrayList<Bookshelf> bsList = new ArrayList<>();
             for (Bundle shelfBundle : shelves) {
-                String bookshelfName = translateBookshelf(db, shelfBundle.getString(
-                        ListReviewsFieldNames.SHELF));
+                String bookshelfName =
+                        translateBookshelf(db, shelfBundle.getString(ListReviewsFieldNames.SHELF));
+
                 if (bookshelfName != null && !bookshelfName.isEmpty()) {
-                    bsList.add(new Bookshelf(bookshelfName));
+                    bsList.add(new Bookshelf(bookshelfName,
+                                             BooklistStyles.getDefaultStyle(db).getId()));
                 }
             }
             book.putBookshelfList(bsList);

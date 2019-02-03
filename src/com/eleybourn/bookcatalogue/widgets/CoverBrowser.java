@@ -41,6 +41,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDialog;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -57,6 +58,7 @@ import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskC
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.io.File;
@@ -129,7 +131,7 @@ public class CoverBrowser
         // Create an object to manage the downloaded files
         mFileManager = new FileManager();
 
-        mDialog = new StandardDialogs.BasicDialog(mActivity);
+        mDialog = new AppCompatDialog(mActivity, ThemeUtils.getDialogThemeResId());
 //        mDialog = new AlertDialog.Builder(mActivity).create();
     }
 
@@ -259,7 +261,7 @@ public class CoverBrowser
      */
     public interface OnImageSelectedListener {
 
-        void onImageSelected(@NonNull final String fileSpec);
+        void onImageSelected(@NonNull String fileSpec);
     }
 
     /**

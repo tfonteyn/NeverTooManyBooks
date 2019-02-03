@@ -47,7 +47,7 @@ public class BooklistCursor
     private final BooklistBuilder mBuilder;
     /** Cached RowView for this cursor. */
     @Nullable
-    private BooklistRowView mRowView;
+    private BooklistCursorRow mRowView;
 
     /**
      * Constructor.
@@ -55,14 +55,14 @@ public class BooklistCursor
      * @param driver    Part of standard cursor constructor.
      * @param editTable Part of standard cursor constructor.
      * @param query     Part of standard cursor constructor.
-     * @param builder   BooklistBuilder used to make the query on which this cursor is based.
      * @param sync      Synchronizer object
+     * @param builder   BooklistBuilder used to make the query on which this cursor is based.
      */
     public BooklistCursor(@NonNull final SQLiteCursorDriver driver,
                           @NonNull final String editTable,
                           @NonNull final SQLiteQuery query,
-                          @NonNull final BooklistBuilder builder,
-                          @NonNull final Synchronizer sync) {
+                          @NonNull final Synchronizer sync,
+                          @NonNull final BooklistBuilder builder) {
         super(driver, editTable, query, sync);
         mBuilder = builder;
     }
@@ -79,9 +79,9 @@ public class BooklistCursor
      * @return a RowView for this cursor. Constructs one if necessary.
      */
     @NonNull
-    public BooklistRowView getCursorRow() {
+    public BooklistCursorRow getCursorRow() {
         if (mRowView == null) {
-            mRowView = new BooklistRowView(this, mBuilder);
+            mRowView = new BooklistCursorRow(this, mBuilder);
         }
         return mRowView;
     }

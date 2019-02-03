@@ -41,4 +41,12 @@ public class PInteger
             return Integer.parseInt(sValue);
         }
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PInteger{" + super.toString()
+                + ",value=`" + get() + '`'
+                + '}';
+    }
 }

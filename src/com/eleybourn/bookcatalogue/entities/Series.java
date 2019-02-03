@@ -29,8 +29,8 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DBExceptions;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
+import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import java.util.HashMap;
@@ -41,11 +41,17 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_IS_COMPLETE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+
 /**
  * Class to hold book-related series data.
  * <p>
  * Note:
- * A Series as defined in the database is just id+name.
+ * A Series as defined in the database is just id+name (ans isComplete)
+ * <p>
  * The number is of course related to the book itself.
  * So this class does not represent a Series, but a "BookInSeries"
  *
@@ -68,97 +74,121 @@ public class Series
                 }
             };
 
-    /**
-     * Trim extraneous punctuation and whitespace from the name.
-     */
+    /** Trim extraneous punctuation and whitespace from the name. Locale specific. */
     private static final String SERIES_REGEX_SUFFIX =
             BookCatalogueApp.getResString(R.string.series_number_prefixes)
                     + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
-    private static final String SERIES_REGEX_1 = "^\\s*" + SERIES_REGEX_SUFFIX;
-    private static final String SERIES_REGEX_2 = "(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX;
-    @SuppressWarnings("FieldCanBeLocal")
-    private static final Pattern PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
-    /** Pattern used to recognize series numbers embedded in names. */
-    private static Pattern mSeriesPat;
-    /** Pattern used to remove extraneous text from series positions. */
-    private static Pattern mSeriesPosCleanupPat;
-    private static Pattern mSeriesIntegerPat;
-    /*
 
-     */
-    public long id;
-    public String name;
-    public boolean isComplete;
+    /** Parse a string into name + number. */
+    private static final Pattern FROM_STRING_PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
 
+    /** Parse series name/numbers embedded in a book title. */
+    private static final Pattern SERIES_FROM_BOOK_TITLE_PATTERN =
+            Pattern.compile("(.*?)(,|\\s)\\s*" + SERIES_REGEX_SUFFIX,
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /** Remove extraneous text from series position. */
+    private static final Pattern POS_CLEANUP_PATTERN =
+            Pattern.compile("^\\s*" + SERIES_REGEX_SUFFIX,
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /** Remove any leading zeros from series position. */
+    private static final Pattern POS_REMOVE_LEADING_ZEROS_PATTERN = Pattern.compile("^[0-9]+$");
+
+    private long mId;
+    @NonNull
+    private String mName;
+    /** whether we have all we want from this Series / if the series is finished. */
+    private boolean mIsComplete;
+    /** number (alphanumeric) of a book in this series. */
     private String mNumber;
 
     /**
-     * Constructor that will attempt to parse a single string into a Series name and number.
+     * Constructor.
+     *
+     * @param name of the series
      */
-    public Series(@NonNull final String encodedName) {
-        java.util.regex.Matcher m = PATTERN.matcher(encodedName);
-        if (m.find()) {
-            this.name = m.group(1).trim();
-            this.mNumber = cleanupSeriesPosition(m.group(2));
-        } else {
-            this.name = encodedName.trim();
-            this.mNumber = "";
-        }
-        this.id = 0L;
+    public Series(@NonNull final String name) {
+        mName = name;
+        mNumber = "";
     }
 
     /**
-     * @param name   of the series
-     * @param number number of this book in the series
-     */
-    public Series(@NonNull final String name,
-                  @Nullable final String number
-    ) {
-        this(0L, name, false, number);
-    }
-
-    /**
+     * Constructor.
+     *
      * @param name       of the series
      * @param isComplete whether a Series is completed, i.e if the user has all
      *                   they want from this Series.
-     * @param number     number of this book in the series
      */
     public Series(@NonNull final String name,
-                  final boolean isComplete,
-                  @Nullable final String number
-    ) {
-        this(0L, name, isComplete, number);
+                  final boolean isComplete) {
+        mName = name;
+        mIsComplete = isComplete;
+        mNumber = "";
     }
 
     /**
+     * Full constructor.
+     *
      * @param id         of the series
      * @param name       of the series
      * @param isComplete whether a Series is completed, i.e if the user has all
      *                   they want from this Series.
-     * @param number     number of this book in the series
      */
     public Series(final long id,
                   @NonNull final String name,
-                  final boolean isComplete,
-                  @Nullable final String number
-    ) {
-        this.id = id;
-        this.name = name.trim();
-        this.isComplete = isComplete;
-        this.mNumber = cleanupSeriesPosition(number);
+                  final boolean isComplete) {
+        mId = id;
+        mName = name.trim();
+        mIsComplete = isComplete;
+        mNumber = "";
     }
 
-    protected Series(Parcel in) {
-        id = in.readLong();
-        name = in.readString();
-        isComplete = in.readByte() != 0;
+    /**
+     * Full constructor with book number.
+     *
+     * @param mapper for the cursor.
+     */
+    public Series(@NonNull final ColumnMapper mapper) {
+        mId = mapper.getLong(DOM_PK_ID);
+        mName = mapper.getString(DOM_SERIES_NAME);
+        mIsComplete = mapper.getBoolean(DOM_SERIES_IS_COMPLETE);
+        mNumber = mapper.getString(DOM_BOOK_SERIES_NUM);
+    }
+
+    /** {@link Parcelable}. */
+    protected Series(@NonNull final Parcel in) {
+        mId = in.readLong();
+        //noinspection ConstantConditions
+        mName = in.readString();
+        mIsComplete = in.readByte() != 0;
         mNumber = in.readString();
+    }
+
+    /**
+     * Constructor that will attempt to parse a single string into a Series name and number.
+     *
+     * @param fromString string to decode
+     *
+     * @return the series
+     */
+    public static Series fromString(@NonNull final String fromString) {
+        Matcher m = FROM_STRING_PATTERN.matcher(fromString);
+        if (m.find()) {
+            Series newSeries = new Series(m.group(1).trim());
+            newSeries.setNumber(cleanupSeriesPosition(m.group(2)));
+            return newSeries;
+        } else {
+            return new Series(fromString.trim());
+        }
     }
 
     /**
      * Try to extract a series from a book title.
      *
      * @param title Book title to parse
+     *
+     * @return structure with parsed details of the Series
      */
     @Nullable
     public static SeriesDetails findSeriesFromBookTitle(@Nullable final String title) {
@@ -173,14 +203,11 @@ public class Series
             if (closeBracket > -1 && openBracket < closeBracket) {
                 details = new SeriesDetails(title.substring(openBracket + 1, closeBracket),
                                             openBracket);
-                if (mSeriesPat == null) {
-                    mSeriesPat = Pattern.compile(SERIES_REGEX_2,
-                                                 Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-                }
-                Matcher matcher = mSeriesPat.matcher(details.getName());
+
+                Matcher matcher = SERIES_FROM_BOOK_TITLE_PATTERN.matcher(details.getName());
                 if (matcher.find()) {
                     details.setName(matcher.group(1));
-                    details.position = matcher.group(4);
+                    details.setPosition(matcher.group(4));
                 }
             }
         }
@@ -195,28 +222,18 @@ public class Series
      * @return the series number (remember: it's really alphanumeric)
      */
     @NonNull
-    private static String cleanupSeriesPosition(@Nullable final String position) {
+    public static String cleanupSeriesPosition(@Nullable final String position) {
         if (position == null) {
             return "";
         }
 
         String pos = position.trim();
 
-        if (mSeriesPosCleanupPat == null) {
-            mSeriesPosCleanupPat = Pattern.compile(SERIES_REGEX_1,
-                                                   Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-        }
-        if (mSeriesIntegerPat == null) {
-            String numericExp = "^[0-9]+$";
-            mSeriesIntegerPat = Pattern.compile(numericExp);
-        }
-
-        Matcher matcher = mSeriesPosCleanupPat.matcher(pos);
+        Matcher matcher = POS_CLEANUP_PATTERN.matcher(pos);
         if (matcher.find()) {
-            // Try to remove leading zeros.
             pos = matcher.group(2);
-            if (mSeriesIntegerPat.matcher(pos).find()) {
-                return Long.parseLong(pos) + "";
+            if (POS_REMOVE_LEADING_ZEROS_PATTERN.matcher(pos).find()) {
+                return String.valueOf(Long.parseLong(pos));
             }
         }
 
@@ -233,6 +250,10 @@ public class Series
      * bill <-- delete
      * bill <-- delete
      * bill(1)
+     *
+     * @param list to check
+     *
+     * @return <tt>true</tt> is the list was modified in any way.
      */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean pruneSeriesList(@NonNull final List<Series> list) {
@@ -240,13 +261,13 @@ public class Series
         Map<String, Series> map = new HashMap<>();
 
         // will be set to true if we deleted items.
-        boolean didDeletes = false;
+        boolean modified = false;
 
         Iterator<Series> it = list.iterator();
         while (it.hasNext()) {
             Series series = it.next();
 
-            final String name = series.name.trim().toLowerCase();
+            final String name = series.mName.trim().toLowerCase();
             if (!map.containsKey(name)) {
                 // Just add and continue
                 map.put(name, series);
@@ -256,7 +277,7 @@ public class Series
                     // Always delete series with empty numbers if an equally or more
                     // specific one exists
                     it.remove();
-                    didDeletes = true;
+                    modified = true;
                 } else {
                     // See if the one in 'index' also has a num
                     Series orig = map.get(name);
@@ -265,14 +286,14 @@ public class Series
                         // Replace with this one, and delete the original
                         map.put(name, series);
                         it.remove();
-                        didDeletes = true;
+                        modified = true;
                     } else {
                         // Both have numbers. See if they are the same.
                         if (series.mNumber.trim().toLowerCase()
                                           .equals(orig.mNumber.trim().toLowerCase())) {
                             // Same exact series, delete this one
                             it.remove();
-                            didDeletes = true;
+                            modified = true;
                         } //else {
                         // Nothing to do: same series, but different series position
                         //}
@@ -280,9 +301,7 @@ public class Series
                 }
             }
         }
-
-        return didDeletes;
-
+        return modified;
     }
 
     /**
@@ -297,48 +316,42 @@ public class Series
     public static boolean setComplete(@NonNull final DBA db,
                                       final long id,
                                       final boolean isComplete) {
-        Series series = null;
-        try {
-            // load from database
-            series = db.getSeries(id);
-            Objects.requireNonNull(series);
-            series.setComplete(isComplete);
-            return db.updateSeries(series) == 1;
-        } catch (DBExceptions.UpdateException e) {
-            // log but ignore
-            Logger.error(e, "failed to set Series id=" + id + " to complete=" + isComplete);
+        // load from database
+        Series series = db.getSeries(id);
+        Objects.requireNonNull(series);
+        series.setComplete(isComplete);
+        int rowsAffected = db.updateSeries(series);
+        if (rowsAffected != 1) {
             // rollback
-            if (series != null) {
-                series.setComplete(!isComplete);
-            }
+            series.setComplete(!isComplete);
             return false;
         }
+        return true;
+    }
+
+    /**
+     * @return <tt>true</tt> if the series is complete
+     */
+    public boolean isComplete() {
+        return mIsComplete;
     }
 
     /**
      * Sets the 'complete' status of the series.
+     *
      * @param isComplete Flag indicating the user considers this series to be 'complete'
      */
     public void setComplete(final boolean isComplete) {
-        this.isComplete = isComplete;
-    }
-
-    /**
-     *
-     * @return <tt>true</tt> if the series is complete
-     */
-    public boolean isComplete() {
-        return isComplete;
+        this.mIsComplete = isComplete;
     }
 
     /** {@link Parcelable}. */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags
-    ) {
-        dest.writeLong(id);
-        dest.writeString(name);
-        dest.writeByte((byte) (isComplete ? 1 : 0));
+                              final int flags) {
+        dest.writeLong(mId);
+        dest.writeString(mName);
+        dest.writeByte((byte) (mIsComplete ? 1 : 0));
         dest.writeString(mNumber);
     }
 
@@ -349,26 +362,68 @@ public class Series
         return 0;
     }
 
+    @Override
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(final long id) {
+        mId = id;
+    }
+
     /**
-     *
      * @return User visible name; consisting of "name" or "name (nr)"
      */
     @NonNull
     public String getDisplayName() {
         if (mNumber != null && !mNumber.isEmpty()) {
-            return name + " (" + mNumber + ')';
+            return mName + " (" + mNumber + ')';
         } else {
-            return name;
+            return mName;
         }
     }
 
+    /**
+     * @return the name suitable for sorting (on screen)
+     */
     @NonNull
     public String getSortName() {
         return getDisplayName();
     }
 
+    /**
+     * @return the unformatted name
+     */
+    @NonNull
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(@NonNull final String name) {
+        mName = name;
+    }
+
+    /**
+     * @return the unformatted number
+     */
     public String getNumber() {
         return mNumber;
+    }
+
+    /**
+     * Set the unformatted number; as entered manually by the user.
+     *
+     * @param number to use, cannot be null.
+     */
+    public void setNumber(@NonNull final String number) {
+        mNumber = number;
+    }
+
+
+    @Override
+    @NonNull
+    public String toString() {
+        return stringEncoded();
     }
 
     /**
@@ -380,33 +435,33 @@ public class Series
      * or
      * "name"
      */
-    @Override
     @NonNull
-    public String toString() {
+    public String stringEncoded() {
+        String numberStr;
         if (mNumber != null && !mNumber.isEmpty()) {
-            // start with a space !
-            return name + " (" + mNumber + ')';
+            // for display reasons, start the number part with a space !
+            numberStr = " (" + mNumber + ')';
         } else {
-            return name;
+            numberStr = "";
         }
+        return StringList.escapeListItem('(', mName) + numberStr;
     }
 
     /**
      * Replace local details from another series.
      *
-     * @param source Series to copy
+     * @param source Series to copy from
      */
     public void copyFrom(@NonNull final Series source) {
-        name = source.name;
+        mName = source.mName;
+        mIsComplete = source.mIsComplete;
         mNumber = source.mNumber;
-        isComplete = source.isComplete;
-        id = source.id;
     }
 
     @Override
     public long fixupId(@NonNull final DBA db) {
-        id = db.getSeriesId(this);
-        return id;
+        mId = db.getSeriesId(this);
+        return mId;
     }
 
     /**
@@ -436,46 +491,67 @@ public class Series
             return false;
         }
         Series that = (Series) obj;
-        if ((this.id != 0) && (that.id != 0) && (this.id != that.id)) {
+        if ((this.mId != 0) && (that.mId != 0) && (this.mId != that.mId)) {
             return false;
         }
-        return Objects.equals(this.name, that.name)
-                && (this.isComplete == that.isComplete)
+        return Objects.equals(this.mName, that.mName)
+                && (this.mIsComplete == that.mIsComplete)
                 && Objects.equals(this.mNumber, that.mNumber);
 
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(mId, mName);
     }
-
 
     /**
      * Data class giving resulting series info after parsing a series name.
      */
     public static class SeriesDetails {
 
+        public final int startChar;
+        @NonNull
+        private String mPosition = "";
         @NonNull
         private String mName;
 
-        @Nullable
-        public String position;
-
-        public final int startChar;
-
-        SeriesDetails(@NonNull final String name, final int startChar) {
+        SeriesDetails(@NonNull final String name,
+                      final int startChar) {
             mName = name;
             this.startChar = startChar;
         }
 
+        /**
+         * @return series name
+         */
         @NonNull
         public String getName() {
             return mName;
         }
 
+        /**
+         * @param name of series
+         */
         public void setName(@NonNull final String name) {
             mName = name;
+        }
+
+        /**
+         * @return the position, aka the 'number' of the book in this series
+         */
+        @NonNull
+        public String getPosition() {
+            return mPosition;
+        }
+
+        /**
+         * Clean and store the position of a book.
+         *
+         * @param position the position/number of a book in this series; can be null
+         */
+        public void setPosition(@Nullable final String position) {
+            mPosition = cleanupSeriesPosition(position);
         }
     }
 

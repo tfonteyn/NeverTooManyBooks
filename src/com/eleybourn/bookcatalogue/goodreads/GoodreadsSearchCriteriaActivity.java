@@ -36,7 +36,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 
 /**
@@ -94,7 +94,7 @@ public class GoodreadsSearchCriteriaActivity
                     finish();
                     return;
                 }
-                final BookRowView bookCursorRow = cursor.getCursorRow();
+                final BookCursorRow bookCursorRow = cursor.getCursorRow();
                 String s;
 
                 s = bookCursorRow.getPrimaryAuthorNameFormattedGivenFirst();

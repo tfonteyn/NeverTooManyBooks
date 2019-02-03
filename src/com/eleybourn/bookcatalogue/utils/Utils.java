@@ -31,6 +31,8 @@ import androidx.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.entities.Series;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -49,9 +51,9 @@ public final class Utils {
      * Passed a list of Objects, remove duplicates based on the toString result.
      * (case insensitive + trimmed)
      * <p>
-     * ENHANCE: Add author_aliases table to allow further pruning
+     * ENHANCE: Add {@link Author} aliases table to allow further pruning
      * (eg. Joe Haldeman == Joe W Haldeman).
-     * ENHANCE: Add series_aliases table to allow further pruning
+     * ENHANCE: Add {@link Series} aliases table to allow further pruning
      * (eg. 'Amber Series' <==> 'Amber').
      *
      * @param db   Database connection to lookup IDs
@@ -61,33 +63,44 @@ public final class Utils {
      */
     public static <T extends ItemWithIdFixup> boolean pruneList(@NonNull final DBA db,
                                                                 @NonNull final List<T> list) {
+        // weeding out duplicate ids
         Set<Long> ids = new HashSet<>();
+        // weeding out duplicate uniqueNames.
         Set<String> names = new HashSet<>();
-        // will be set to true if we deleted items.
-        boolean didDeletes = false;
+        // will be set to true if we modify the list.
+        boolean modified = false;
 
         Iterator<T> it = list.iterator();
         while (it.hasNext()) {
             T item = it.next();
-            Long id = item.fixupId(db);
-            String name = item.toString().trim().toUpperCase();
+            // try to find the item.
+            item.fixupId(db);
 
-            // Series special case - same name different series number.
-            // This means different series positions will have the same ID but will have
-            // different names; so ItemWithIdFixup contains the 'isUniqueById()' method.
-            if (ids.contains(id) && !names.contains(name) && !item.isUniqueById()) {
-                ids.add(id);
-                names.add(name);
-            } else if (names.contains(name) || (id != 0 && ids.contains(id))) {
+            String uniqueName = item.toString().trim().toUpperCase();
+
+            // Series special case: same name + different number.
+            // This means different series positions will have the same id+name but will have
+            // different numbers; so ItemWithIdFixup 'isUniqueById()' returns 'false'.
+            if (ids.contains(item.getId()) && !item.isUniqueById()
+                    && !names.contains(uniqueName)) {
+                // unique item in the list: id+name matched, but other fields might be diff.
+                ids.add(item.getId());
+                names.add(uniqueName);
+
+            } else if (names.contains(uniqueName)
+                    || (item.getId() != 0 && ids.contains(item.getId()))) {
+
                 it.remove();
-                didDeletes = true;
+                modified = true;
+
             } else {
-                ids.add(id);
-                names.add(name);
+                // unique item in the list.
+                ids.add(item.getId());
+                names.add(uniqueName);
             }
         }
 
-        return didDeletes;
+        return modified;
     }
 
     /**
@@ -158,10 +171,34 @@ public final class Utils {
         }
     }
 
+    /**
+     * An entity (item) in the database which is capable of finding itself in the database
+     * without using its id.
+     */
     public interface ItemWithIdFixup {
 
-        long fixupId(@NonNull final DBA db);
+        /**
+         * Tries to find the item in the database using all it's fields (except the id).
+         * If found, sets the item's id with the id found in the database.
+         *
+         * If the item has 'sub' items, then it should call fixup on those as well.
+         *
+         * @param db the database
+         *
+         * @return the item id (also set on the item).
+         */
+        long fixupId(@NonNull DBA db);
 
+        /**
+         * Convenience method to get the id of the item.
+         *
+         * @return item id.
+         */
+        long getId();
+
+        /**
+         * @return <tt>true</tt> if comparing ONLY by id ensures uniqueness.
+         */
         boolean isUniqueById();
     }
 

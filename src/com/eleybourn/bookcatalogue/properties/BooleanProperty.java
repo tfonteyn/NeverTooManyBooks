@@ -453,6 +453,7 @@ public class BooleanProperty
             }
 
             @Override
+            @NonNull
             public String toString() {
                 return "CheckboxTriState.SavedState{"
                         + Integer.toHexString(System.identityHashCode(this))

@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.GoodreadsTask;
@@ -85,7 +85,7 @@ public abstract class SendBooksTask
                         @NonNull final Context context,
                         @NonNull final GoodreadsManager grManager,
                         @NonNull final DBA db,
-                        final BookRowView bookCursorRow) {
+                        final BookCursorRow bookCursorRow) {
         GoodreadsManager.ExportDisposition disposition;
         Exception exportException = null;
         try {
@@ -97,21 +97,23 @@ public abstract class SendBooksTask
             exportException = e;
         }
 
+        long bookId = bookCursorRow.getId();
+
         // Handle the result
         switch (disposition) {
             case sent:
                 // Record the change
-                db.setGoodreadsSyncDate(bookCursorRow.getId());
+                db.setGoodreadsSyncDate(bookId);
                 mSent++;
                 break;
 
             case noIsbn:
-                storeEvent(new SendBookEvents.GrNoIsbnEvent(context, bookCursorRow.getId()));
+                storeEvent(new SendBookEvents.GrNoIsbnEvent(context, bookId));
                 mNoIsbn++;
                 break;
 
             case notFound:
-                storeEvent(new SendBookEvents.GrNoMatchEvent(context, bookCursorRow.getId()));
+                storeEvent(new SendBookEvents.GrNoMatchEvent(context, bookId));
                 mNotFound++;
                 break;
 

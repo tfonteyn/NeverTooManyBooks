@@ -240,9 +240,10 @@ public final class DateUtils {
      */
     @Nullable
     public static Date parseDate(@Nullable final String dateString) {
-        if (dateString == null) {
+        if (dateString == null || dateString.isEmpty()) {
             return null;
         }
+
         // First try to parse using strict rules
         Date d = parseDate(dateString, false);
         if (d != null) {
@@ -262,11 +263,8 @@ public final class DateUtils {
      * @return Resulting date if successfully parsed, otherwise null
      */
     @Nullable
-    private static Date parseDate(@Nullable final String dateString,
+    private static Date parseDate(@NonNull final String dateString,
                                   final boolean lenient) {
-        if (dateString == null) {
-            return null;
-        }
         // try all formats until one fits.
         for (SimpleDateFormat sdf : PARSE_DATE_FORMATS) {
             try {

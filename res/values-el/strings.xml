@@ -61,24 +61,24 @@
     <string name="about_lbl_upgrade">Από την τελευταία σας αναβάθμιση.</string>
     <string name="menu_edit_book">Επεξεργασία βιβλίου</string>
     <string name="menu_edit_book_notes">Τα σχόλια μου</string>
-    <string name="menu_edit_book_loan">Δανεισμός βιβλίου</string>
+    <string name="menu_loan_lend_book">Δανεισμός βιβλίου…</string>
     <string name="error_unknown">Ένα άγνωστο σφάλμα συνέβη.</string>
     <string name="lbl_notes">Σημειώσεις</string>
-    <string name="loaned_to_long">Αυτο το βιβλία έχει δανειστεί στον/στην:</string>
-    <string name="loaned_to_nobody">Κανείς</string>
-    <string name="loan_to">Δανεισμός βιβλίου στον/στην:</string>
-    <string name="loan_returned">Έχει επιστραφεί</string>
+    <string name="lbl_loaned_to_long">Αυτο το βιβλία έχει δανειστεί στον/στην:</string>
+    <string name="nobody">Κανείς</string>
+    <string name="lbl_loan_to">Δανεισμός βιβλίου στον/στην:</string>
+    <string name="btn_loan_returned">Έχει επιστραφεί</string>
     <string name="name">Όνομα</string>
     <string name="about_lbl_website">Ιστοσελίδα:</string>
     <string name="about_lbl_sourcecode">Πηγαίος Κώδικας:</string>
     <string name="about_lbl_contacts">Επαφές:</string>
     <string name="about_lbl_donate">Δωρεά</string>
-    <string name="menu_about">Σχετικά με την εφαρμογή</string>
+    <string name="lbl_about">Σχετικά με την εφαρμογή</string>
     <string name="lbl_price_listed">List Price</string>
     <string name="lbl_update_fields">Αυτόματη ενημέρωση πεδίων</string>
     <string name="lbl_update_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
     <string name="info_select_fields_to_update">Τα επιλεγμένα πεδία θα ενημερωθούν από το διαδίκτυο. Τα μη επιλεγμένα θα μείνουν ως έχει.</string>
-    <string name="overwrite_thumbnail">Τα επιλεγμένα πεδία θα ενημερωθούν όπως φαίνεται, αλλά οι Μικρογραφίες μπορούν να κατέβουν προαιρετικά για ΌΛΑ τα βιβλία.\n\nΘέλετε να αντικαταστήσετε όλες τις υπάρχουσες μικρογραφίες; Προσοχή, θα χρειαστεί πολύς χρόνος. </string>
+    <string name="confirm_overwrite_thumbnail">Τα επιλεγμένα πεδία θα ενημερωθούν όπως φαίνεται, αλλά οι Μικρογραφίες μπορούν να κατέβουν προαιρετικά για ΌΛΑ τα βιβλία.\n\nΘέλετε να αντικαταστήσετε όλες τις υπάρχουσες μικρογραφίες; Προσοχή, θα χρειαστεί πολύς χρόνος. </string>
     <string name="yes">Ναι</string>
     <string name="no">Όχι</string>
     <string name="error_search_failed">Η αναζήτηση του βιβλίου απέτυχε. Παρακαλούμε ελέγξτε τις ρυθμίσεις δικτύου.</string>
@@ -107,7 +107,7 @@
     <string name="lbl_read_end">Ημερομηνία Λήξης Ανάγνωσης</string>
     <string name="lbl_location_long">Τοποθεσία του βιβλίου</string>
     <string name="title_duplicate_book">Διπλοεγγραφή Βιβλίου</string>
-    <string name="warning_duplicate_book_message">Το βιβλίο που προσπαθείτε να προσθέσετε υπάρχει ήδη στη βάση δεδομένων, είστε σίγουροι ότι θέλετε να προσθέσετε και άλλο αντίγραφο;</string>
+    <string name="confirm_duplicate_book_message">Το βιβλίο που προσπαθείτε να προσθέσετε υπάρχει ήδη στη βάση δεδομένων, είστε σίγουροι ότι θέλετε να προσθέσετε και άλλο αντίγραφο;</string>
     <string name="menu_cover_add_from_gallery">Από φωτογραφίες…</string>
     <string name="backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
     <string name="lbl_backup_dialog">Δημιουργία αντιγράφου;</string>
@@ -118,7 +118,7 @@
     <string name="lbl_format">Μορφή</string>
     <string name="lbl_description">Περιγραφή</string>
     <string name="lbl_genre">Είδος</string>
-    <string name="not_set">Μη ορισμένο</string>
+    <string name="field_not_set">Μη ορισμένο</string>
     <string name="menu_search_books">Αναζήτηση βιβλίων</string>
     <string name="hint_book_search_by_text">Η προσθήκη βιβλίων με ISBN είναι πολύ πιο ακριβής από την προσθήκη με συγγραφέα και τίτλο και γενικά είναι η προτεινομενη μέθοδος. Παρακαλούμε να θυμάστε ότι μερικές φορές το σωστό barcode βρίσκεται στην εσωτερική πλευρά του εξωφύλλου. \n\n</string>
     <string name="about_help_click_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>
@@ -141,7 +141,7 @@
     <string name="btn_confirm_add">Προσθήκη</string>
     <string name="info_no_authors_yet">Δεν υπάρχουν συγγραφείς για αυτό το Βιβλίο. Μπορείτε να προσθέσετε εσείς χρησιμοποιώντας το πεδίο κειμένο και το κουμπί στη ανω πλευρά της οθόνης.Please add some using the text area and button at the top of this screen.</string>
     <string name="info_no_series_yet">>Δεν υπάρχουν σειρές για αυτό το Βιβλίο. Μπορείτε να προσθέσετε εσείς χρησιμοποιώντας το πεδίο κειμένο και το κουμπί στη ανω πλευρά της οθόνης.</string>
-    <string name="warning_cover_not_set">Το εξώφυλλο δεν έχει οριστεί</string>
+    <string name="warning_cover_field_not_set">Το εξώφυλλο δεν έχει οριστεί</string>
     <string name="warning_cover_corrupt">Το εξώφυλλο είναι κατεστραμμένο</string>
     <string name="title_cover_detail">Λεπτομέρειες εξωφύλλου</string>
     <string name="title_select_image">Επιλογή εικόνας</string>
@@ -170,19 +170,19 @@
     <string name="menu_edit_author">Επεξεργασία Συγγραφέα…</string>
     <string name="menu_edit_series">Επεξεργασία Σειράς…</string>
     <string name="title_delete_series">Διαγραφή Σειράς</string>
-    <string name="warning_really_delete_series">Θέλετε να διαγραφεί η σειρά \'%s\';\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
+    <string name="confirm_really_delete_series">Θέλετε να διαγραφεί η σειρά \'%s\';\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
     <string name="title_edit_series">Επεξεργασία λεπτομερειών Σειράς</string>
     <string name="title_select_cover">Επιλογή εξωφύλλου</string>
     <string name="warning_no_isbn_no_editions">Δεν μπορούν να ληφθούν εκδόσεις για βιβλίο χωρίς ISBN</string>
     <string name="unsaved_edits">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
     <string name="unsaved_edits_title">Μη αποθηκευμένες αλλαγές</string>
-    <string name="changed_author_how_apply">Αλλάξατε τον συγγραφέα από:\n  \'%1$s\' σε \n  \'%2$s\'\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή \'%3$s\' θα εφαρμοστεί στιγμιαία.</string>
+    <string name="confirm_apply_author_changed">Αλλάξατε τον συγγραφέα από:\n  \'%1$s\' σε \n  \'%2$s\'\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή \'%3$s\' θα εφαρμοστεί στιγμιαία.</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="title_scope_of_change">Πεδίο εφαρμογής της αλλαγής</string>
-    <string name="changed_series_how_apply">Αλλάξατε την σειρά από:\n  \'%1$s\' σε \n  \'%2$s\'\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή \'%3$s\' θα εφαρμοστεί στιγμιαία.</string>
+    <string name="confirm_apply_series_changed">Αλλάξατε την σειρά από:\n  \'%1$s\' σε \n  \'%2$s\'\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή \'%3$s\' θα εφαρμοστεί στιγμιαία.</string>
     <string name="warning_unable_to_find_book">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
     <string name="list_and">και</string>
-    <string name="warning_really_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο \'%1$s\' από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
+    <string name="confirm_really_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο \'%1$s\' από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
     <string name="warning_editions_require_isbn">Η ανάκτηση άλλων εκδόσεων απαιτεί ISBN</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
     <string name="title_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
@@ -209,7 +209,7 @@
     <string name="lt_reset_messages_info">Ανά τακτά χρονικά διαστήματα αυτή η εφαρμογή θα εμφανίζει μηνύματα σχετικά με το LibraryThing. Πατήστε το παρακάτω κουμπί για να επαναφέρετε όποια από αυτά τα μυνήματα έχουν απενεργοποιηθεί.</string>
     <string name="btn_reset">Επαναφορά</string>
     <string name="debug_send_info_text">Πατήστε στο παρακάτω κουμπί για να αποστείλετε αναφορά σφαλμάτων και προβλημάτων σε κάποιον προγραμματιστή μας. Θα δημιουργηθεί αντίγραφο ολόκληρης της βάσης δεδομένων σας καθώς και των αρχείων log. Εαν δεν θέλετε να στείλετε αυτά τα αρχεία διαγράψτε τα επισυναπτόμενα αρχεία του email πριν την αποστολή.</string>
-    <string name="send_info">Αποστολή πληροφοριών</string>
+    <string name="about_send_info">Αποστολή πληροφοριών</string>
     <string name="info_cleanup_files_text">Τα προσωρινά αρχεία χρησιμοποιούν %s στην κάρτα SD. Αρχεία καταγραφής και άλλων δεδομένων αποθηκεύονται στην κάρτα SD σε κάθε ενημέρωση, όταν γινονται αντίγραφα ασφαλείας της βάσης δεδομένων και όταν η εφαρμογή σταματάει να λειτουργεί. Πατήστε το παρακάτω κουμπί για να καθαρίσετε αυτά τα αρχεία από την κάρτα SD. Εαν αντιμετωπίζετε διακοπές λειτουργίας ή άλλα σφάλματα, παρακαλούμε σκεφτείτε να πατήσετε πρώτα το κουμπί \'Αποστολή πληροφοριών\'.</string>
     <string name="cleanup_files">Εκκαθάριση αρχείων</string>
     <string name="megabytes">%.2fMB</string>
@@ -231,7 +231,7 @@
     <string name="gr_tq_menu_delete_task">Διαγραφή Εργασίας</string>
 
     <string name="my_books">Τα βιβλία μου</string>
-    <string name="loan_return_book">Δανεισμός, Επιστροφή ή Επεξεργασία Βιβλίου</string>
+    <string name="loan_return_edit_book">Δανεισμός, Επιστροφή ή Επεξεργασία Βιβλίου</string>
     <string name="menu_admin_and_prefs">Διαχείριση και προτιμήσεις</string>
     <string name="gr_menu_send_to_goodreads">Αποστολή στο Goodreads</string>
     <string name="gr_auth_blurb_part1">Το Goodreads είναι μια ιστοσελίδα με αποστολή «να βοηθήσει τους ανθρώπους να βρουν και να μοιραστούν τα βιβλία που αγαπούν».
@@ -270,8 +270,8 @@
     <string name="gr_auth_check">Ελεγχος αδειοδότησης Goodreads</string>
     <string name="gr_auth_failed">Απέτυχε η αδειοδότηση Goodreads</string>
     <string name="gr_auth_successful">Επιτυχής η αδειοδότηση Goodreads</string>
-    <string name="authorized">Έχει άδεια</string>
-    <string name="not_authorized">Χωρίς άδεια</string>
+    <string name="info_authorized">Έχει άδεια</string>
+    <string name="info_not_authorized">Χωρίς άδεια</string>
     <string name="gr_auth_error">Η αδειοδότηση του Goodreads οδήγησε σε λάθος.</string>
     <string name="error_if_the_problem_persists">Εαν το πρόβλημα συνεχίζεται, επικοινωνήστε με την υποστήρηξη μέσω της Βοήθειας στο κέντρικό μενού.</string>
     <string name="warning_book_no_longer_exists">Το συγκεκριμένο βιβλίο δεν υπάρχει πλέον.</string>
@@ -292,7 +292,7 @@
     <string name="acra_resDialogOkToast">Ευχαριστούμε!</string>
     <string name="lbl_read">Αναγνωσμένα</string>
     <string name="lbl_unread">Μη αναγνωσμένα</string>
-    <string name="no_date">(χωρίς ημερομηνία)</string>
+    <string name="warning_date_not_set">(χωρίς ημερομηνία)</string>
     <string name="style_builtin_author_series">Συγγραφέας μετά σειρά</string>
     <string name="style_builtin_series">Σειρά</string>
     <string name="style_builtin_title_first_letter">Πρώτο γράμμα τίτλου</string>
@@ -302,7 +302,7 @@
     <string name="style_builtin_publication_date">Ημερομηνία έκδοσης</string>
     <string name="style_builtin_added_date">Ημερομηνία προσθήκης</string>
     <string name="style_builtin_author_year">Συγγραφέας και χρονιά</string>
-    <string name="not_set_with_brackets">(άδειο)</string>
+    <string name="field_not_set_with_brackets">(άδειο)</string>
 
     <string name="menu_preferences_booklist">Προτιμήσεις λίστας βιβλίων</string>
     <string name="lbl_bookshelves_long">Ράφια Βιβλιοθήκης</string>
@@ -432,7 +432,7 @@
     <string name="updated">Ενημερωμένο</string>
     <string name="import_error_csv_file_not_found">Δε βρέθηκαν αρχεία για εξαγωγή</string>
     <string name="import_warning_select_csv_file">Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω</string>
-    <string name="problem_starting_import_arg">Υπήρξε ένα πρόβλημα στην έναρξη της εισαγωγής: %1$s</string>
+    <string name="error_starting_import_arg">Υπήρξε ένα πρόβλημα στην έναρξη της εισαγωγής: %1$s</string>
     <string name="hint_booklist_style_menu">Σε αυτό το μενού μπορείτε να επιλέξετε το στυλ της λίστας.
     								\n\nΜπορείτε επίσης να προσαρμόσετε και αυτό το μενού, καθώς και να δημιουργήσετε το δικό σας στυλ για λίστες, πατώντας \'Προσαρμογή\' στο τέλος της λίστας.</string>
     <string name="menu_edit_format">Επεξεργασία Μορφής…</string>
@@ -457,7 +457,7 @@
     <string name="lbl_read_day">Ημέρα Ανάγνωσης</string>
     <string name="style_builtin_read_date">Ημερομηνία Ανάγνωσης</string>
     <string name="lbl_details_have_changed">Κάποιες λεπτομέρειες έχουν αλλάξει</string>
-    <string name="warning_unsaved_changes">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
+    <string name="confirm_unsaved_changes">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
     <string name="btn_confirm_exit">Έξοδος</string>
     <string name="btn_continue_editing">Συνέχεια Επεξεργασίας</string>
     <string name="warning_title_already_exists">Αυτός ο τίτλος υπάρχει ήδη</string>
@@ -478,7 +478,7 @@
     <string name="lbl_publishing">Εκδόσεις</string>
     <string name="lbl_by_author">από</string>
     <string name="lbl_x_pages">%1$s σελίδες</string>
-    <string name="loan_book_details_readonly_loaned_to">Δανεισμένο σε %1$s</string>
+    <string name="lbl_loaned_to_name">Δανεισμένο σε %1$s</string>
 
     <string name="warning_bad_scanner">Η εφαρμογή για σκανάρισμα barcode που έχετε δεν είναι συμβατή με το &APP_NAME;. Προτείνουμε να εγκαταστήσετε την εφαρμογή Zxing barcode scanner, και αν είναι ήδη εγκατεστημένη, προτείνουμε να την απεγκαταστήσετε και να την ξαναεγκαταστήσετε.</string>
 
@@ -659,12 +659,15 @@
 
     <!-- Preference name (fairly short) for preferred language -->
     <string name="tab_lbl_content">περιεχόμενο</string>
-    <string name="loaned_to_short">→</string>
+    <string name="lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="starting">Εκκίνηση</string>
     <string name="lbl_books">Βιβλία</string>
     <string name="title_edit_genre">Επεξεργασία λεπτομερειών για το είδος</string>
+    <string name="menu_loan_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
+    <string name="progress_msg_saving_image">Αποθήκευση της εικόνας…</string>
+    <string name="error_google_play_missing">Το Google Play / Market δεν είναι εγκατεστημένο</string>
 
 </resources>

@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 
 import java.util.List;
@@ -83,7 +82,7 @@ public class LegacyEvent
                          @NonNull final BindableItemCursor cursor,
                          @NonNull final DBA db) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
-                .setText("Legacy Event Placeholder for Event #" + this.getId());
+                .setText("Legacy Placeholder for Event #" + this.getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
                 .setText("This event is obsolete and can not be recovered."
                                  + " It is probably advisable to delete it.");

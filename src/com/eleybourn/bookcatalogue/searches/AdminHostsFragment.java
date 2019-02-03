@@ -12,11 +12,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 
+/**
+ * Allows editing the host url for some of the search sites.
+ *
+ * Note that Amazon is bypassed as it uses a proxy, but we have the plumbing in place.
+ *
+ * ISFDB is currently only a single url, but the site people make the source/data freely
+ * available, so someone could setup a new site/mirror.
+ */
 public class AdminHostsFragment
         extends Fragment {
 
@@ -38,7 +45,6 @@ public class AdminHostsFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
@@ -52,12 +58,11 @@ public class AdminHostsFragment
         isfdb_url.setText(ISFDBManager.getBaseURL());
 
         isCreated = true;
-        Tracker.exitOnActivityCreated(this);
     }
 
+    //TODO: add sanity checks on the url's
     void saveSettings() {
         if (isCreated) {
-            //TODO: add sanity checks
             String newAmazon = amazon_url.getText().toString().trim();
             if (!newAmazon.isEmpty()) {
                 AmazonManager.setBaseURL(newAmazon);

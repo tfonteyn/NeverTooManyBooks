@@ -21,7 +21,7 @@ import com.eleybourn.bookcatalogue.booklist.filters.BooleanFilter;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BookRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -77,7 +77,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANEE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
@@ -87,7 +87,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIE
 
 /**
  * There are two types of XML here.
- *
+ * <p>
  * Type based, where the tag name is the type. Used by:
  * {@link BackupInfo}
  * {@link android.content.SharedPreferences}
@@ -96,7 +96,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIE
  * - more or less flat objects (Bundle or Bundle-like)
  * - can be generically written (and read), so future adding/remove entries requires no changes here
  * - really only useful to the application itself.
- *
+ * <p>
  * Database column name based. Used by:
  * {@link Bookshelf}
  * {@link Author}
@@ -229,8 +229,8 @@ public class XmlExporter
 
         for (Bookshelf bookshelf : list) {
             out.append('<' + XmlUtils.XML_BOOKSHELF)
-               .append(XmlUtils.id(bookshelf.id))
-               .append(XmlUtils.attr(DOM_BOOKSHELF.name, bookshelf.name))
+               .append(XmlUtils.id(bookshelf.getId()))
+               .append(XmlUtils.attr(DOM_BOOKSHELF.name, bookshelf.getName()))
                .append("/>\n");
             count++;
         }
@@ -262,6 +262,7 @@ public class XmlExporter
             while (cursor.moveToNext()) {
                 out.append('<' + XmlUtils.XML_AUTHOR)
                    .append(XmlUtils.id(mapper.getLong(DOM_PK_ID)))
+
                    .append(XmlUtils.attr(DOM_AUTHOR_FAMILY_NAME.name,
                                          mapper.getString(DOM_AUTHOR_FAMILY_NAME)))
                    .append(XmlUtils.attr(DOM_AUTHOR_GIVEN_NAMES.name,
@@ -312,7 +313,7 @@ public class XmlExporter
 
     /**
      * 'loan_to' is included here, might still change.
-     *
+     * <p>
      * Write out {@link com.eleybourn.bookcatalogue.database.DatabaseDefinitions#TBL_BOOKS}.
      *
      * @param out      writer
@@ -330,8 +331,8 @@ public class XmlExporter
            .append(XmlUtils.version(XML_EXPORTER_BOOKS_VERSION))
            .append(">\n");
 
-        try (BookCursor bookCursor = mDb.fetchFlattenedBooks(mSettings.dateFrom)) {
-            BookRowView bookCursorRow = bookCursor.getCursorRow();
+        try (BookCursor bookCursor = mDb.fetchBooksForExport(mSettings.dateFrom)) {
+            BookCursorRow bookCursorRow = bookCursor.getCursorRow();
             while (bookCursor.moveToNext()) {
                 // basic ID
                 out.append('<' + XmlUtils.XML_BOOK)
@@ -414,7 +415,7 @@ public class XmlExporter
                                          bookCursorRow.getBookUuid()))
                    .append("\n")
 
-                   .append(XmlUtils.attr(DOM_LOANEE.name,
+                   .append(XmlUtils.attr(DOM_BOOK_LOANEE.name,
                                          bookCursorRow.getLoanedTo()))
                    .append(">\n");
 
@@ -597,8 +598,7 @@ public class XmlExporter
 
 
     @Override
-    public void close()
-            throws IOException {
+    public void close() {
         if (mDb != null) {
             mDb.close();
         }
@@ -624,7 +624,7 @@ public class XmlExporter
 
         /**
          * When we do not have a list, this method should return 'false'.
-         *
+         * <p>
          * When there is a list, then:
          * - the first element should be set to the 'current'
          * - a loop should be (is) implemented with:
@@ -634,7 +634,7 @@ public class XmlExporter
          * } while (hasMore());
          *
          * </code>
-         *
+         * <p>
          * See {@link XmlImporter.StylesReader} for an example
          */
         boolean hasMore();
@@ -812,7 +812,7 @@ public class XmlExporter
 
     /**
      * Supports a list of Styles.
-     *
+     * <p>
      * - 'flat' preferences for the style.
      * --- This includes the actual groups of the style: a CSV String of id's (kinds)
      * - Filters and Groups are flattened.
@@ -891,7 +891,7 @@ public class XmlExporter
         @Override
         public Object get(@NonNull final String key) {
             if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
-                Logger.info(this, "uuid=" + current.getUuid() + "|name=" + key);
+                Logger.info(this, "get","uuid=" + current.getUuid() + "|name=" + key);
             }
             return currentPPrefs.get(key).get();
         }

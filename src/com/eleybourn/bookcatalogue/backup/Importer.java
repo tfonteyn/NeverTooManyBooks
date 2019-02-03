@@ -44,9 +44,9 @@ public interface Importer {
      * @throws IOException on any error
      */
     @SuppressWarnings({"UnusedReturnValue", "SameReturnValue"})
-    int doImport(@NonNull final InputStream importStream,
-                 @Nullable final CoverFinder coverFinder,
-                 @NonNull final ImportListener listener)
+    int doImport(@NonNull InputStream importStream,
+                 @Nullable CoverFinder coverFinder,
+                 @NonNull ImportListener listener)
             throws IOException;
 
     /**
@@ -57,11 +57,11 @@ public interface Importer {
      */
     interface CoverFinder {
 
-        void copyOrRenameCoverFile(@NonNull final String uuidFromFile)
+        void copyOrRenameCoverFile(@NonNull String uuidFromFile)
                 throws IOException;
 
-        void copyOrRenameCoverFile(final long srcId,
-                                   @NonNull final String uuidFromBook)
+        void copyOrRenameCoverFile(long srcId,
+                                   @NonNull String uuidFromBook)
                 throws IOException;
     }
 
@@ -73,7 +73,7 @@ public interface Importer {
         /**
          * @param max value (can be estimated) for the progress counter
          */
-        void setMax(final int max);
+        void setMax(int max);
 
         /**
          * Report progress in absolute position.
@@ -81,12 +81,13 @@ public interface Importer {
          * @param message  to display
          * @param position absolute position for the progress counter
          */
-        void onProgress(@NonNull final String message,
-                        final int position);
+        void onProgress(@NonNull String message,
+                        int position);
 
         /**
          * @return <tt>true</tt> if we are cancelled.
          */
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         boolean isCancelled();
     }
 }

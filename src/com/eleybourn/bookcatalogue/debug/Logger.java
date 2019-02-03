@@ -54,12 +54,12 @@ import java.util.Date;
  */
 public final class Logger {
 
-    private static final String TAG = "BC_Logger";
+    private static final int OUTPUT_BUFFER = 8192;
 
+    private static final String TAG = "BC_Logger";
     @SuppressLint("SimpleDateFormat")
     private static final DateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    static final int OUTPUT_BUFFER = 8192;
 
     private Logger() {
     }
@@ -90,6 +90,7 @@ public final class Logger {
         writeToErrorLog(msg);
     }
 
+
     /**
      * Pure info, no stacktrace.
      * <p>
@@ -97,15 +98,28 @@ public final class Logger {
      */
     public static void info(@NonNull final Object object,
                             @Nullable final String message) {
+        info(object,"",message);
+    }
+
+    /**
+     * Pure info, no stacktrace.
+     * <p>
+     * For instance callers
+     */
+    public static void info(@NonNull final Object object,
+                            @NonNull final String methodName,
+                            @Nullable final String message) {
         Class clazz = object.getClass();
-        String msg;
-        if (clazz.isAnonymousClass()) {
-            msg = "INFO|AnonymousClass|" + message;
-        } else {
-            msg = "INFO|" + clazz.getCanonicalName() + '|' + message;
+        StringBuilder msg = new StringBuilder("INFO|");
+        msg.append(clazz.isAnonymousClass() ? "AnonymousClass" : clazz.getCanonicalName());
+        msg.append('|');
+        if (!methodName.isEmpty()) {
+            msg.append(methodName).append('|');
         }
-        Log.e(TAG, msg);
-        writeToErrorLog(msg);
+        msg.append(message);
+        String m = msg.toString();
+        Log.e(TAG, m);
+        writeToErrorLog(m);
     }
 
     /**
@@ -158,7 +172,7 @@ public final class Logger {
         // Log the exception to the console in full when in debug, but only the message
         // when deployed. Either way, the exception will be in the physical logfile.
         if (/* always log */ BuildConfig.DEBUG) {
-            Log.e(TAG, error + stacktrace);
+            Log.e(TAG, error + '\n' + stacktrace);
         } else {
             Log.e(TAG, message);
         }
@@ -175,7 +189,7 @@ public final class Logger {
                             StandardCharsets.UTF_8), OUTPUT_BUFFER);
             out.write(message);
             out.close();
-        } catch (Exception ignored) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignored) {
             // do nothing - we can't log an error in the error logger.
             // (and we don't want to CF the app)
         }
@@ -186,24 +200,15 @@ public final class Logger {
      */
     public static void clearLog() {
         try {
-            try {
-                File logFile = new File(StorageUtils.getErrorLog());
-                if (logFile.exists() && logFile.length() > 0) {
-                    File backup = new File(StorageUtils.getErrorLog() + ".bak");
-                    StorageUtils.renameFile(logFile, backup);
-                }
-            } catch (Exception ignore) {
-                // Ignore backup failure...
+            File logFile = new File(StorageUtils.getErrorLog());
+            if (logFile.exists() && logFile.length() > 0) {
+                File backup = new File(StorageUtils.getErrorLog() + ".bak");
+                StorageUtils.renameFile(logFile, backup);
             }
-            BufferedWriter out = new BufferedWriter(
-                    new OutputStreamWriter(
-                            new FileOutputStream(StorageUtils.getErrorLog()),
-                            StandardCharsets.UTF_8), OUTPUT_BUFFER);
-            out.write("");
-            out.close();
-        } catch (Exception ignore) {
-            // do nothing - we can't log an error in the error logger.
-            // (and we don't want to CF the app)
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
+            // Ignore backup failure...
+        } finally {
+            writeToErrorLog("");
         }
     }
 

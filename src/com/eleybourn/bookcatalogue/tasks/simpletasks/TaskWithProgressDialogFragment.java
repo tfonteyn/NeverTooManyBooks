@@ -45,7 +45,6 @@ import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskC
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Fragment Class to wrap a trivial progress dialog around (generally) a single task.
@@ -274,7 +273,6 @@ public class TaskWithProgressDialogFragment
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // Control whether a fragment instance is retained across Activity
@@ -284,7 +282,6 @@ public class TaskWithProgressDialogFragment
 
         //noinspection ConstantConditions
         mTaskId = getArguments().getInt(BKEY_TASK_ID);
-        Tracker.exitOnCreate(this);
     }
 
     @Override
@@ -314,33 +311,33 @@ public class TaskWithProgressDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // savedInstanceState not used
         Bundle args = getArguments();
-        Objects.requireNonNull(args);
+        @Deprecated
+        ProgressDialog progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(true);
+        progressDialog.setCanceledOnTouchOutside(false);
 
-        ProgressDialog dialog = new ProgressDialog(getActivity());
-        dialog.setCancelable(true);
-        dialog.setCanceledOnTouchOutside(false);
-
+        //noinspection ConstantConditions
         int messageId = args.getInt(BKEY_MESSAGE);
         if (messageId != 0) {
-            dialog.setMessage(requireActivity().getString(messageId));
+            progressDialog.setMessage(requireActivity().getString(messageId));
         }
 
         boolean isIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
-        dialog.setIndeterminate(isIndeterminate);
-        dialog.setProgressStyle(isIndeterminate ? ProgressDialog.STYLE_SPINNER
-                                                : ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setIndeterminate(isIndeterminate);
+        progressDialog.setProgressStyle(isIndeterminate ? ProgressDialog.STYLE_SPINNER
+                                                        : ProgressDialog.STYLE_HORIZONTAL);
 
         // We can't use "this.requestUpdateProgress()" because getDialog() will still return null
         if (!isIndeterminate) {
-            dialog.setMax(mMax);
-            dialog.setProgress(mProgress);
+            progressDialog.setMax(mMax);
+            progressDialog.setProgress(mProgress);
             if (mMessage != null) {
-                dialog.setMessage(mMessage);
+                progressDialog.setMessage(mMessage);
             }
-            dialog.setProgressNumberFormat(mNumberFormat);
+            progressDialog.setProgressNumberFormat(mNumberFormat);
         }
 
-        return dialog;
+        return progressDialog;
     }
 
     @Override
@@ -426,25 +423,26 @@ public class TaskWithProgressDialogFragment
      * Method, run in the UI thread, that updates the various dialog fields.
      */
     private void updateProgress() {
-        ProgressDialog dialog = (ProgressDialog) getDialog();
-        if (dialog != null) {
+        @Deprecated
+        ProgressDialog progressDialog = (ProgressDialog) getDialog();
+        if (progressDialog != null) {
             synchronized (this) {
                 if (mMaxChanged) {
-                    dialog.setMax(mMax);
+                    progressDialog.setMax(mMax);
                     mMaxChanged = false;
                 }
                 if (mNumberFormatChanged) {
                     // Called in a separate function so we can set API attributes
-                    dialog.setProgressNumberFormat(mNumberFormat);
+                    progressDialog.setProgressNumberFormat(mNumberFormat);
                     mNumberFormatChanged = false;
                 }
                 if (mMessageChanged) {
-                    dialog.setMessage(mMessage);
+                    progressDialog.setMessage(mMessage);
                     mMessageChanged = false;
                 }
 
                 if (mProgressChanged) {
-                    dialog.setProgress(mProgress);
+                    progressDialog.setProgress(mProgress);
                     mProgressChanged = false;
                 }
 
@@ -494,7 +492,7 @@ public class TaskWithProgressDialogFragment
      */
     private interface TaskMessage {
 
-        void deliver(@NonNull final Activity activity);
+        void deliver(@NonNull Activity activity);
     }
 
     /**
@@ -502,11 +500,11 @@ public class TaskWithProgressDialogFragment
      */
     public interface OnTaskFinishedListener {
 
-        void onTaskFinished(@NonNull final TaskWithProgressDialogFragment fragment,
-                            final int taskId,
-                            final boolean success,
-                            final boolean cancelled,
-                            @NonNull final FragmentTask task);
+        void onTaskFinished(@NonNull TaskWithProgressDialogFragment fragment,
+                            int taskId,
+                            boolean success,
+                            boolean cancelled,
+                            @NonNull FragmentTask task);
     }
 
     /**
@@ -515,10 +513,10 @@ public class TaskWithProgressDialogFragment
     public interface OnAllTasksFinishedListener {
 
         @SuppressWarnings("EmptyMethod")
-        void onAllTasksFinished(@NonNull final TaskWithProgressDialogFragment fragment,
-                                final int taskId,
-                                final boolean success,
-                                final boolean cancelled);
+        void onAllTasksFinished(@NonNull TaskWithProgressDialogFragment fragment,
+                                int taskId,
+                                boolean success,
+                                boolean cancelled);
     }
 
     /**
@@ -534,22 +532,22 @@ public class TaskWithProgressDialogFragment
         /**
          * Run the task in it's own thread.
          */
-        void run(@NonNull final TaskWithProgressDialogFragment fragment,
-                 @NonNull final SimpleTaskContext taskContext)
+        void run(@NonNull TaskWithProgressDialogFragment fragment,
+                 @NonNull SimpleTaskContext taskContext)
                 throws Exception;
 
         /**
          * Called in UI thread after task complete.
          */
-        void onFinish(@NonNull final TaskWithProgressDialogFragment fragment,
-                      @Nullable final Exception e);
+        void onFinish(@NonNull TaskWithProgressDialogFragment fragment,
+                      @Nullable Exception e);
 
         /** get an optional generic tag. */
         @Nullable
         Object getTag();
 
         /** set an optional generic tag. */
-        void setTag(@Nullable final Object tag);
+        void setTag(@Nullable Object tag);
     }
 
     /**

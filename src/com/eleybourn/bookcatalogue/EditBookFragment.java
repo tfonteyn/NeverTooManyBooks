@@ -35,7 +35,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -43,7 +42,6 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.google.android.material.tabs.TabLayout;
 
@@ -57,8 +55,8 @@ import java.io.File;
  * 4. Loan Book -> ENHANCE: remove this from this activity into a DialogFragment
  */
 public class EditBookFragment
-        extends BookBaseFragment
-        implements BookManager {
+        extends EditBookBaseFragment
+        implements BookManager, DataEditor {
 
     public static final String TAG = "EditBookFragment";
 
@@ -67,15 +65,18 @@ public class EditBookFragment
      */
     public static final String REQUEST_BKEY_TAB = "tab";
     public static final int TAB_EDIT = 0;
+    @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_NOTES = 1;
+    @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_LOANS = 2;
+    @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_ANTHOLOGY = 3;
 
     /** the one and only book we're editing. */
     private Book mBook;
 
     /** cache our activity to avoid multiple requireActivity and casting. */
-    private BaseActivity mActivity;
+    private EditBookActivity mActivity;
 
     /** The tabs. */
     private TabLayout mTabLayout;
@@ -104,10 +105,20 @@ public class EditBookFragment
         mBook = book;
     }
 
+    /**
+     * Delegate to the Activity which handles the 'back' button.
+     *
+     * @return <tt>true</tt> if our data was changed.
+     */
     public boolean isDirty() {
         return mActivity.isDirty();
     }
 
+    /**
+     * Delegate to the Activity which handles the 'back' button.
+     *
+     * @param isDirty set to <tt>true</tt> if our data was changed.
+     */
     public void setDirty(final boolean isDirty) {
         mActivity.setDirty(isDirty);
     }
@@ -130,11 +141,11 @@ public class EditBookFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnActivityCreated(this, savedInstanceState);
         // cache to avoid multiple calls to requireActivity()
-        mActivity = (BaseActivity) requireActivity();
+        mActivity = (EditBookActivity) requireActivity();
 
         super.onActivityCreated(savedInstanceState);
 
-        boolean isExistingBook = (getBook().getBookId() > 0);
+        boolean isExistingBook = (getBook().getId() > 0);
         initTabs(isExistingBook, savedInstanceState);
 
         //noinspection ConstantConditions
@@ -149,7 +160,7 @@ public class EditBookFragment
                     public void onPositive() {
                         saveBook();
                         Intent data = new Intent();
-                        data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
+                        data.putExtra(UniqueId.KEY_ID, getBook().getId());
                         mActivity.setResult(Activity.RESULT_OK, data);
                         mActivity.finish();
                     }
@@ -220,7 +231,7 @@ public class EditBookFragment
         addTOCTab(getBook().getBoolean(Book.HAS_MULTIPLE_WORKS));
 
         // can't loan out a new book yet (or user does not like loaning)
-        if (isExistingBook && Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
+        if (isExistingBook && Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
             fragmentHolder = new FragmentHolder();
             fragmentHolder.fragment = new EditBookLoanedFragment();
             fragmentHolder.tag = EditBookLoanedFragment.TAG;
@@ -228,10 +239,15 @@ public class EditBookFragment
             mTabLayout.addTab(tab);
         }
 
-
-        Bundle args = getArguments();
         // any specific tab desired as 'selected' ?
-        int tabWanted = BundleUtils.getIntFromBundles(REQUEST_BKEY_TAB, savedInstanceState, args);
+        int tabWanted;
+        if (savedInstanceState != null) {
+            tabWanted = savedInstanceState.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
+        } else {
+            Bundle args = getArguments();
+            //noinspection ConstantConditions
+            tabWanted = args.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
+        }
 
         int showTab = TAB_EDIT;
         switch (tabWanted) {
@@ -241,7 +257,7 @@ public class EditBookFragment
                 break;
 
             case TAB_EDIT_LOANS:
-                if (Fields.isVisible(UniqueId.KEY_LOAN_LOANED_TO)) {
+                if (Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
                     showTab = tabWanted;
                 }
                 break;
@@ -347,7 +363,7 @@ public class EditBookFragment
     /**
      * Called when the user clicks 'save'.
      * <p>
-     * This will save a book into the database, by either updating or created a book.
+     * Save a book into the database, by either updating or created a book.
      * <p>
      * It will check if the book already exists (isbn search) if you are creating a book;
      * if so the user will be prompted to confirm.
@@ -388,10 +404,10 @@ public class EditBookFragment
             return;
         }
 
-        if (book.getBookId() == 0) {
+        if (book.getId() == 0) {
             String isbn = book.getString(UniqueId.KEY_BOOK_ISBN);
             /* Check if the book currently exists */
-            if (!isbn.isEmpty() && ((mDb.getIdFromIsbn(isbn, true) > 0))) {
+            if (!isbn.isEmpty() && ((mDb.getBookIdFromIsbn(isbn, true) > 0))) {
                 StandardDialogs.confirmSaveDuplicateBook(requireContext(), nextStep);
                 return;
             }
@@ -406,7 +422,7 @@ public class EditBookFragment
         StorageUtils.deleteTempCoverFile();
 
         Intent data = new Intent();
-        data.putExtra(UniqueId.KEY_ID, getBook().getBookId());
+        data.putExtra(UniqueId.KEY_ID, getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.
         mActivity.setResult(Activity.RESULT_OK, data);
         mActivity.finishIfClean();
@@ -417,11 +433,11 @@ public class EditBookFragment
      */
     private void saveBook() {
         Book book = getBook();
-        if (book.getBookId() == 0) {
+        if (book.getId() == 0) {
             long id = mDb.insertBook(book);
             if (id > 0) {
                 // if we got a cover while searching the internet, make it permanent
-                if (book.getBoolean(UniqueId.BKEY_HAVE_THUMBNAIL)) {
+                if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
                     String uuid = mDb.getBookUuid(id);
                     // get the temporary downloaded file
                     File source = StorageUtils.getTempCoverFile();
@@ -431,7 +447,7 @@ public class EditBookFragment
                 }
             }
         } else {
-            mDb.updateBook(book.getBookId(), book, 0);
+            mDb.updateBook(book.getId(), book, 0);
         }
     }
 

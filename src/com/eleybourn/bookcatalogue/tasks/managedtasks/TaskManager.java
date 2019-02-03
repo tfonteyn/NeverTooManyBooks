@@ -417,14 +417,14 @@ public class TaskManager {
      */
     public interface TaskManagerListener {
 
-        void onProgress(final int count,
-                        final int max,
-                        @NonNull final String message);
+        void onProgress(int count,
+                        int max,
+                        @NonNull String message);
 
-        void onUserMessage(@NonNull final String message);
+        void onUserMessage(@NonNull String message);
 
-        void onTaskFinished(@NonNull final TaskManager manager,
-                            @NonNull final ManagedTask task);
+        void onTaskFinished(@NonNull TaskManager manager,
+                            @NonNull ManagedTask task);
     }
 
     public static class TaskFinishedMessage
@@ -444,7 +444,7 @@ public class TaskManager {
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                Logger.info(this, "Delivering 'TaskFinishedMessage' to listener: " + listener +
+                Logger.info(this, "deliver","'TaskFinishedMessage' to listener: " + listener +
                         "\n mTask=`" + mTask + '`');
             }
             listener.onTaskFinished(mManager, mTask);
@@ -480,7 +480,7 @@ public class TaskManager {
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                Logger.info(this, "Delivering 'TaskProgressMessage' to listener: " + listener +
+                Logger.info(this, "deliver","'TaskProgressMessage' to listener: " + listener +
                         "\n mMessage=`" + mMessage + '`');
             }
             listener.onProgress(mCount, mMax, mMessage);
@@ -511,7 +511,7 @@ public class TaskManager {
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                Logger.info(this, "Delivering 'TaskUserMessage' to listener: " + listener +
+                Logger.info(this, "deliver","'TaskUserMessage' to listener: " + listener +
                         "\n mMessage=`" + mMessage + '`');
             }
             listener.onUserMessage(mMessage);

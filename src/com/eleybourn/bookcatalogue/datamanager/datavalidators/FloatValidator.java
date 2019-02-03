@@ -63,6 +63,7 @@ public class FloatValidator
             } else if (o instanceof Integer) {
                 value = ((Integer) o).floatValue();
             } else {
+                //noinspection ConstantConditions
                 value = Float.parseFloat(o.toString());
             }
             data.putFloat(datum, value);

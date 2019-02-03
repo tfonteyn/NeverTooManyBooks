@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface ISFDBResultsListener {
 
-    void onGotISFDBEditions(@NonNull final List<String> editions);
+    void onGotISFDBEditions(@NonNull List<String> editions);
 
-    void onGotISFDBBook(@NonNull final Bundle bookData);
+    void onGotISFDBBook(@NonNull Bundle bookData);
 
 }

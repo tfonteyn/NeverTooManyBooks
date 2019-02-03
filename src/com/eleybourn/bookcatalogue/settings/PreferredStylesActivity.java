@@ -136,7 +136,8 @@ public class PreferredStylesActivity
                                      R.string.menu_edit_booklist_style)
                                 .setIcon(R.drawable.ic_edit);
         }
-        mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_CLONE, 0, R.string.menu_clone_style)
+        mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_CLONE, 0,
+                                 R.string.menu_clone_style)
                             .setIcon(R.drawable.ic_content_copy);
 
         // display the menu
@@ -187,10 +188,10 @@ public class PreferredStylesActivity
      */
     private void editStyle(@NonNull final BooklistStyle style) {
         if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
-            Logger.info(this, "editStyle|" + style.toString());
+            Logger.info(this, "editStyle", style.toString());
         }
         Intent intent = new Intent(this, SettingsActivity.class);
-        intent.putExtra(UniqueId.FRAGMENT_ID, SettingsActivity.FRAGMENT_BOOKLIST_SETTINGS);
+        intent.putExtra(UniqueId.BKEY_FRAGMENT_TAG, BooklistStyleSettingsFragment.TAG);
         intent.putExtra(BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE, (Parcelable) style);
         startActivityForResult(intent, REQ_EDIT_STYLE);
     }
@@ -201,7 +202,7 @@ public class PreferredStylesActivity
         // we save the order after each change.
         BooklistStyles.savePreferredStyleMenuOrder(mList);
         // and make sure the results flags up we changed something.
-        setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStylesActivity);
+        setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStyles);
     }
 
     @Override
@@ -213,13 +214,13 @@ public class PreferredStylesActivity
         switch (requestCode) {
             case REQ_EDIT_STYLE: {
                 switch (resultCode) {
-                    case UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity: {
+                    case UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties: {
                         Objects.requireNonNull(data);
                         BooklistStyle style = data.getParcelableExtra(
                                 BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE);
                         handleStyleChange(style);
                         // need to send up the chain as-is
-                        setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity,
+                        setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties,
                                   data);
                         break;
                     }

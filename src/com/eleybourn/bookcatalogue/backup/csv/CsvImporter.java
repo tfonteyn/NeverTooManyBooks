@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup.csv;
 
+import android.database.sqlite.SQLiteDoneException;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -37,7 +38,7 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.entities.TOCEntry;
+import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -54,7 +55,7 @@ import java.util.List;
 
 /**
  * Implementation of Importer that reads a CSV file.
- *
+ * <p>
  * reminder: use UniqueId.KEY, not DOM. We are reading from file, putting into objects.
  *
  * @author pjw
@@ -72,6 +73,7 @@ public class CsvImporter
 
     /** as used in older versions, or from arbitrarily constructed CSV files. */
     private static final String OLD_STYLE_AUTHOR_NAME = "author_name";
+    private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
 
     @NonNull
     private final DBA mDb;
@@ -120,7 +122,8 @@ public class CsvImporter
         final List<String> importedList = new ArrayList<>();
 
         final BufferedReader in =
-                new BufferedReader(new InputStreamReader(importStream, StandardCharsets.UTF_8), BUFFER_SIZE);
+                new BufferedReader(new InputStreamReader(importStream, StandardCharsets.UTF_8),
+                                   BUFFER_SIZE);
         String line;
         while ((line = in.readLine()) != null) {
             importedList.add(line);
@@ -155,7 +158,7 @@ public class CsvImporter
         // ENHANCE: Do a search if mandatory columns missing
         // (eg. allow 'import' of a list of ISBNs).
         // ENHANCE: Only make some columns mandatory if the ID is not in import, or not in DB
-        // (ie. if not an update)
+        // (i.e. if not an update)
         // ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
 
         // need either ID or UUID
@@ -280,9 +283,11 @@ public class CsvImporter
                         }
                     }
                 } catch (IOException e) {
-                    Logger.error(e, "Cover import failed at row " + row);
+                    Logger.error(e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                } catch (SQLiteDoneException e) {
+                    Logger.error(e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 } catch (RuntimeException e) {
-                    Logger.error(e, "Import failed at row " + row);
+                    Logger.error(e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 
                 long now = System.currentTimeMillis();
@@ -309,26 +314,22 @@ public class CsvImporter
             }
         }
 
+        // minus 1 for the headers.
         Logger.info(this,
-                    "Csv Import successful: rows processed: " + row +
+                    "Csv Import successful: rows processed: " + (row - 1) +
                             ", created:" + mCreated + ", updated: " + mUpdated);
         return row;
     }
 
     @Override
-    public void close()
-            throws IOException {
-        if (mDb != null) {
-            try {
-                // now do some cleaning
-                mDb.purgeAuthors();
-                mDb.purgeSeries();
-                mDb.analyzeDb();
-            } catch (RuntimeException e) {
-                Logger.error(e);
-            }
-            mDb.close();
+    public void close() {
+        try {
+            // do some cleaning
+            mDb.purge();
+        } catch (RuntimeException e) {
+            Logger.error(e);
         }
+        mDb.close();
     }
 
     /**
@@ -392,46 +393,29 @@ public class CsvImporter
     private boolean updateOnlyIfNewer(@NonNull final DBA db,
                                       @NonNull final Book book,
                                       final long bookId) {
-        String bookDateStr = db.getBookLastUpdateDate(bookId);
 
-        Date bookDate = null;
-        if (bookDateStr != null && !bookDateStr.isEmpty()) {
-            try {
-                bookDate = DateUtils.parseDate(bookDateStr);
-            } catch (RuntimeException ignore) {
-                // Treat as if never updated
-            }
-        }
+        Date bookDate = DateUtils.parseDate(db.getBookLastUpdateDate(bookId));
+        Date importDate = DateUtils.parseDate(book.getString(UniqueId.KEY_LAST_UPDATE_DATE));
 
-        String importDateStr = book.getString(UniqueId.KEY_LAST_UPDATE_DATE);
-
-        Date importDate = null;
-        if (!importDateStr.isEmpty()) {
-            try {
-                importDate = DateUtils.parseDate(importDateStr);
-            } catch (RuntimeException ignore) {
-                // Treat as if never updated
-            }
-        }
         return importDate != null && (bookDate == null || importDate.compareTo(bookDate) > 0);
     }
 
     /**
      * The "bookshelf_id" column is not used at all (similar to how author etc is done).
      */
-    private void handleBookshelves(@SuppressWarnings("unused") @NonNull final DBA db,
+    private void handleBookshelves(@NonNull final DBA db,
                                    @NonNull final Book book) {
         String encodedList = book.getString(UniqueId.KEY_BOOKSHELF_NAME);
-
-        book.putBookshelfList(StringList.getBookshelfUtils()
-                                        .decode(Bookshelf.SEPARATOR, encodedList, false));
+        book.putBookshelfList(StringList.getBookshelfCoder()
+                                        .decode(Bookshelf.MULTI_SHELF_SEPARATOR, encodedList,
+                                                false));
 
         book.remove(UniqueId.KEY_BOOKSHELF_NAME);
     }
 
     /**
      * Database access is strictly limited to fetching id's.
-     *
+     * <p>
      * Ignore the actual value of the UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK! it will be
      * 'reset' to mirror what we actually have when storing the book data
      */
@@ -440,7 +424,7 @@ public class CsvImporter
 
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
         if (!encodedList.isEmpty()) {
-            ArrayList<TOCEntry> list = StringList.getTOCUtils().decode(encodedList, false);
+            ArrayList<TocEntry> list = StringList.getTocCoder().decode(encodedList, false);
             if (!list.isEmpty()) {
                 // fixup the id's
                 Utils.pruneList(db, list);
@@ -454,7 +438,7 @@ public class CsvImporter
 
     /**
      * Database access is strictly limited to fetching id's.
-     *
+     * <p>
      * Get the list of series from whatever source is available.
      */
     private void handleSeries(@NonNull final DBA db,
@@ -473,7 +457,7 @@ public class CsvImporter
             }
         }
         // Handle the series
-        final ArrayList<Series> list = StringList.getSeriesUtils().decode(encodedList, false);
+        final ArrayList<Series> list = StringList.getSeriesCoder().decode(encodedList, false);
         Series.pruneSeriesList(list);
         Utils.pruneList(db, list);
         book.putSeriesList(list);
@@ -482,7 +466,7 @@ public class CsvImporter
 
     /**
      * Database access is strictly limited to fetching id's.
-     *
+     * <p>
      * Get the list of authors from whatever source is available.
      */
     private void handleAuthors(@NonNull final DBA db,
@@ -520,7 +504,7 @@ public class CsvImporter
         }
 
         // Now build the array for authors
-        final ArrayList<Author> list = StringList.getAuthorUtils().decode(encodedList, false);
+        final ArrayList<Author> list = StringList.getAuthorCoder().decode(encodedList, false);
         Utils.pruneList(db, list);
         book.putAuthorList(list);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);

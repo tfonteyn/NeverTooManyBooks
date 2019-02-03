@@ -60,14 +60,8 @@ public class EditLanguageDialog
     }
 
     @Override
-    protected void confirmEdit(@NonNull final String from,
+    protected void saveChanges(@NonNull final String from,
                                @NonNull final String to) {
-        // case sensitive equality
-        if (to.equals(from)) {
-            return;
-        }
-
-        mDb.globalReplaceLanguage(from, LocaleUtils.getISO3Language(to));
-        mOnChanged.run();
+        mDb.updateLanguage(from, LocaleUtils.getISO3Language(to));
     }
 }

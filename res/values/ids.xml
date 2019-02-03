@@ -74,6 +74,7 @@
 
     <!-- debug options for the options menu; only shown in debug mode. -->
     <item name="MENU_DEBUG_DUMP_PREFS" type="id"/>
+    <item name="MENU_DEBUG_DUMP_STYLE" type="id"/>
     <item name="MENU_DEBUG_DUMP_TRACKER" type="id"/>
 
 
@@ -104,6 +105,7 @@
     <item name="SLA_ROW" type="id" />
     <item name="SLA_ROW_DETAILS" type="id" />
     <item name="SLA_ROW_DELETE" type="id"/>
+    <item name="SLA_ROW_TAG" type="id"/>
     <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
 
     <!-- used by {@link BooksMultiTypeListHandler} for the row details (book, level 1,2,3) -->

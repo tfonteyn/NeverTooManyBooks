@@ -105,6 +105,7 @@ public class BackupInfo
     }
 
     protected BackupInfo(@NonNull final Parcel in) {
+        //noinspection ConstantConditions
         mBundle = in.readBundle(getClass().getClassLoader());
     }
 

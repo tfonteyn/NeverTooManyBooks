@@ -25,13 +25,13 @@ public class FlattenedBooklist
         implements AutoCloseable {
 
     /** Name for the 'next' statement. */
-    private static final String NEXT_STMT_NAME = "next";
+    private static final String STMT_NEXT = "next";
     /** Name for the 'prev' statement. */
-    private static final String PREV_STMT_NAME = "prev";
+    private static final String STMT_PREV = "prev";
     /** Name for the 'move-to' statement. */
-    private static final String MOVE_STMT_NAME = "move";
+    private static final String STMT_MOVE = "move";
     /** Name for the 'absolute-position' statement. */
-    private static final String POSITION_STMT_NAME = "position";
+    private static final String STMT_POSITION = "position";
 
     /** Underlying temporary table definition. */
     private TableDefinition mTable;
@@ -130,7 +130,7 @@ public class FlattenedBooklist
      * @return <tt>true</tt>if successful
      */
     public boolean moveNext() {
-        SynchronizedStatement stmt = mStatements.get(NEXT_STMT_NAME);
+        SynchronizedStatement stmt = mStatements.get(STMT_NEXT);
         if (stmt == null) {
             String sql = "SELECT "
                     + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "|| '/' || "
@@ -139,7 +139,7 @@ public class FlattenedBooklist
                     + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + ">?"
                     + " AND " + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
                     + " ORDER BY " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " ASC LIMIT 1";
-            stmt = mStatements.add(NEXT_STMT_NAME, sql);
+            stmt = mStatements.add(STMT_NEXT, sql);
         }
         stmt.bindLong(1, mPosition);
         if (mBookId != 0) {
@@ -157,7 +157,7 @@ public class FlattenedBooklist
      * @return <tt>true</tt>if successful
      */
     public boolean movePrev() {
-        SynchronizedStatement stmt = mStatements.get(PREV_STMT_NAME);
+        SynchronizedStatement stmt = mStatements.get(STMT_PREV);
         if (stmt == null) {
             String sql = "SELECT "
                     + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "|| '/' || "
@@ -166,7 +166,7 @@ public class FlattenedBooklist
                     + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "<?"
                     + " AND " + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
                     + " ORDER BY " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " DESC LIMIT 1";
-            stmt = mStatements.add(PREV_STMT_NAME, sql);
+            stmt = mStatements.add(STMT_PREV, sql);
         }
         stmt.bindLong(1, mPosition);
         if (mBookId != 0) {
@@ -186,14 +186,14 @@ public class FlattenedBooklist
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean moveTo(final int position) {
-        SynchronizedStatement stmt = mStatements.get(MOVE_STMT_NAME);
+        SynchronizedStatement stmt = mStatements.get(STMT_MOVE);
         if (stmt == null) {
             String sql = "SELECT "
                     + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "|| '/' || "
                     + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
                     + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "=?";
-            stmt = mStatements.add(MOVE_STMT_NAME, sql);
+            stmt = mStatements.add(STMT_MOVE, sql);
         }
         stmt.bindLong(1, position);
         // Get a pair of ID's separated by a '/'
@@ -247,11 +247,11 @@ public class FlattenedBooklist
      */
     @SuppressWarnings("unused")
     public long getAbsolutePosition() {
-        SynchronizedStatement stmt = mStatements.get(POSITION_STMT_NAME);
+        SynchronizedStatement stmt = mStatements.get(STMT_POSITION);
         if (stmt == null) {
             String sql = "SELECT COUNT(*) FROM " + mTable.ref()
                     + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "<=?";
-            stmt = mStatements.add(POSITION_STMT_NAME, sql);
+            stmt = mStatements.add(STMT_POSITION, sql);
         }
         stmt.bindLong(1, mPosition);
         return stmt.count();
@@ -271,7 +271,7 @@ public class FlattenedBooklist
      */
     public void deleteData() {
         mTable.drop(mSyncedDb);
-        mTable.close();
+        mTable.clear();
     }
 
     /**

@@ -272,7 +272,7 @@ public class XmlFilter {
     /** Interface definition for filter handlers. */
     public interface XmlHandler {
 
-        void process(@NonNull final ElementContext context);
+        void process(@NonNull ElementContext context);
     }
 
     /**
@@ -289,10 +289,13 @@ public class XmlFilter {
         /** Attributes on this tag. */
         public final Attributes attributes;
         /** not used for now. */
+        @SuppressWarnings("unused")
         private final String uri;
         /** not used for now. */
+        @SuppressWarnings("unused")
         private final String qName;
         /** the inner-tag text. */
+        @NonNull
         private final String text;
         /** the body/text between start and end of the tag. */
         public String body;
@@ -312,11 +315,11 @@ public class XmlFilter {
         public ElementContext(@NonNull final XmlFilter filter) {
             this.filter = filter;
 
-            this.uri = null;
-            this.localName = null;
-            this.qName = null;
-            this.attributes = null;
-            this.text = null;
+            uri = null;
+            localName = null;
+            qName = null;
+            attributes = null;
+            text = "";
         }
 
         /**

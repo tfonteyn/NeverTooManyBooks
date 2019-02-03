@@ -26,14 +26,13 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.utils.StringList;
-
 import java.util.Objects;
 
 /**
  * Class to hold Publisher data. Used in lists.
- *
+ * <p>
  * ENHANCE: use a dedicated table with the publishers
+ * Any reference to 'id' in this class is meant for future implementation.
  */
 public class Publisher
         implements Parcelable {
@@ -51,17 +50,25 @@ public class Publisher
                     return new Publisher[size];
                 }
             };
-    private static final char SEPARATOR = ',';
+
+    /** Publisher name. */
     private String mName;
 
+    /**
+     * Constructor.
+     *
+     * @param name of publisher.
+     */
     public Publisher(@NonNull final String name) {
         this.mName = name.trim();
     }
 
+    /** {@link Parcelable}. */
     protected Publisher(@NonNull final Parcel in) {
         mName = in.readString();
     }
 
+    /** {@link Parcelable}. */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -75,27 +82,21 @@ public class Publisher
         return 0;
     }
 
+    @NonNull
     public String getName() {
         return mName;
     }
 
-    /**
-     * Support for encoding to a text file.
-     *
-     * @return the object encoded as a String.
-     *
-     * "mName"
-     */
     @Override
     @NonNull
     public String toString() {
-        return StringList.escapeListItem(SEPARATOR, mName);
+        return mName;
     }
 
     /**
      * Replace local details from another publisher.
      *
-     * @param source publisher to copy
+     * @param source publisher to copy from
      */
     public void copyFrom(@NonNull final Publisher source) {
         mName = source.mName;
@@ -103,11 +104,11 @@ public class Publisher
 
     /**
      * Equality.
-     *
+     * <p>
      * - it's the same Object duh..
      * - one or both of them is 'new' (e.g. id == 0) or their id's are the same
      * AND all their other fields are equal
-     *
+     * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes.
      */
     @Override
@@ -119,11 +120,8 @@ public class Publisher
             return false;
         }
         Publisher that = (Publisher) obj;
-        //ENHANCE: uncomment the 3 lines once(if) we start using ids
-//        if (this.id == 0 || that.id == 0 || this.id == that.id) {
+
         return Objects.equals(this.mName, that.mName);
-//        }
-//        return false;
     }
 
     @Override

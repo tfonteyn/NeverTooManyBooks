@@ -75,6 +75,10 @@ public class Help
         initCleanupButton();
     }
 
+    /**
+     * The cleanup button allows purging temporary/old files.
+     * It's shown when there are some of those files.
+     */
     private void initCleanupButton() {
 
         final Button cleanupBtn = findViewById(R.id.cleanup_button);

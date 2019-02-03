@@ -52,6 +52,7 @@ public class ImportSettings {
     }
 
     @Override
+    @NonNull
     public String toString() {
         return "ImportSettings{" +
             "what=0%" + Integer.toBinaryString(what) +

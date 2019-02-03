@@ -22,8 +22,6 @@ package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
-
 import java.io.Serializable;
 
 

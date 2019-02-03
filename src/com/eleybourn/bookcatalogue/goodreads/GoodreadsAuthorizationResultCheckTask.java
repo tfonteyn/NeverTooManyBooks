@@ -75,23 +75,23 @@ public class GoodreadsAuthorizationResultCheckTask
             if (grMgr.hasValidCredentials()) {
                 Logger.info(this, "hasValidCredentials==true");
 
-                BookCatalogueApp.showNotification(context, context.getString(R.string.authorized),
+                BookCatalogueApp.showNotification(context, context.getString(R.string.info_authorized),
                                                   context.getString(R.string.gr_auth_successful));
             } else {
                 Logger.info(this, "hasValidCredentials==false");
                 BookCatalogueApp.showNotification(context,
-                                                  context.getString(R.string.not_authorized),
+                                                  context.getString(R.string.info_not_authorized),
                                                   context.getString(R.string.gr_auth_failed));
             }
         } catch (NotAuthorizedException e) {
             Logger.error(e);
-            BookCatalogueApp.showNotification(context, context.getString(R.string.not_authorized),
+            BookCatalogueApp.showNotification(context, context.getString(R.string.info_not_authorized),
                                               context.getString(R.string.gr_auth_failed));
         } catch (IOException e) {
             Logger.error(e);
             BookCatalogueApp.showNotification(
                     context,
-                    context.getString(R.string.not_authorized),
+                    context.getString(R.string.info_not_authorized),
                     context.getString(R.string.gr_auth_error) + ' '
                             + context.getString(R.string.error_if_the_problem_persists));
         }

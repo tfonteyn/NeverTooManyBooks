@@ -35,7 +35,6 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment.FragmentTask;
@@ -62,7 +61,6 @@ public class LibraryThingAdminActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.library_thing);
 
@@ -157,7 +155,5 @@ public class LibraryThingAdminActivity
 
         // hide soft keyboard at first
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        Tracker.exitOnCreate(this);
     }
 }

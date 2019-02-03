@@ -2,6 +2,7 @@ package com.eleybourn.bookcatalogue.baseactivity;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ContextMenu;
@@ -17,12 +18,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 
 import java.util.Objects;
 
 /**
- * This has now become a copy from {@link ListActivity} but extending {@link BaseActivity}.
+ * This has now become a modified copy from {@link ListActivity} but extending {@link BaseActivity}.
  * <p>
  * You must have a layout with the file name
  * res/layout/list_activity.xml
@@ -74,8 +76,21 @@ public abstract class BaseListActivity
 
     private final Handler mHandler = new Handler();
     protected Menu mListViewContextMenu;
+    /**
+     * The database. It's up to the child classes to initialise it,
+     * but most if not all need one. This base class DOES take care of closing it in
+     * {@link #onDestroy()}
+     */
+    protected DBA mDb;
+    /**
+     * The adapter for the list.
+     */
     private ListAdapter mListAdapter;
+    /**
+     * the View for the list.
+     */
     private ListView mListView;
+
     private final Runnable mRequestFocus = new Runnable() {
         public void run() {
             mListView.focusableViewAvailable(mListView);
@@ -101,8 +116,21 @@ public abstract class BaseListActivity
     @Override
     @CallSuper
     protected void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
         mHandler.removeCallbacks(mRequestFocus);
         super.onDestroy();
+    }
+
+    /** close a cursor and ignore failures. */
+    protected void closeCursor(@Nullable final Cursor cursor) {
+        try {
+            if (cursor != null) {
+                cursor.close();
+            }
+        } catch (RuntimeException ignore) {
+        }
     }
 
     /**

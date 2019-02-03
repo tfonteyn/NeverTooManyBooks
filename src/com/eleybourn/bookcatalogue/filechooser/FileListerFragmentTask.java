@@ -81,8 +81,7 @@ public abstract class FileListerFragmentTask
      */
     public interface FileListerListener {
 
-        void onGotFileList(@NonNull final File root,
-                           @NonNull final ArrayList<FileDetails> list);
+        void onGotFileList(@NonNull File root,
+                           @NonNull ArrayList<FileDetails> list);
     }
-
 }

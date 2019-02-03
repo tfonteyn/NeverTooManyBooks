@@ -25,9 +25,9 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.Objects;
 
@@ -64,7 +64,6 @@ public class BookSearchActivity
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
@@ -72,14 +71,19 @@ public class BookSearchActivity
         String searchBy = extras.getString(REQUEST_BKEY_BY, BY_ISBN);
 
         Fragment frag;
+        String tag;
         switch (searchBy) {
             case BY_SCAN:
             case BY_ISBN:
                 frag = new BookSearchByIsbnFragment();
+                tag = BookSearchByIsbnFragment.TAG;
                 break;
+
             case BY_TEXT:
                 frag = new BookSearchByTextFragment();
+                tag = BookSearchByTextFragment.TAG;
                 break;
+
             default:
                 throw new IllegalStateException();
         }
@@ -87,9 +91,8 @@ public class BookSearchActivity
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_fragment, frag)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.main_fragment, frag, tag)
                 .commit();
-
-        Tracker.exitOnCreate(this);
     }
 }

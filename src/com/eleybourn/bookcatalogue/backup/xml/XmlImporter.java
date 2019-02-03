@@ -82,8 +82,7 @@ public class XmlImporter
     @Override
     public int doImport(@NonNull final InputStream importStream,
                         @Nullable final CoverFinder coverFinder,
-                        @NonNull final ImportListener listener)
-            throws IOException {
+                        @NonNull final ImportListener listener) {
         throw new UnsupportedOperationException();
     }
 
@@ -429,9 +428,14 @@ public class XmlImporter
     }
 
     @Override
-    public void close()
-            throws IOException {
+    public void close() {
         if (mDb != null) {
+            try {
+                // now do some cleaning
+                mDb.purge();
+            } catch (RuntimeException e) {
+                Logger.error(e);
+            }
             mDb.close();
         }
     }
@@ -507,13 +511,11 @@ public class XmlImporter
     static class TagInfo {
 
         /** attribute with the key into the collection. */
-        @NonNull
         String name;
         /**
          * - backward compatibility: the type attribute of a generic 'item' tag.
          * - current use: the type of the element as set by the tag itself.
          */
-        @NonNull
         String type;
 
         /**

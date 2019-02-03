@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -40,35 +41,31 @@ import java.util.regex.Pattern;
  * <p>
  * Note:
  * these are always insert/update'd ONLY when a book is insert/update'd
- * Hence writes are always a List<TOCEntry> in one go. This circumvents the 'position' column
+ * Hence writes are always a List<TocEntry> in one go. This circumvents the 'position' column
  * as the update will simply insert in-order and auto increment position.
  * Retrieving by bookId is always done ordered by position.
  *
  * @author pjw
  */
-public class TOCEntry
+public class TocEntry
         implements Parcelable, Utils.ItemWithIdFixup {
 
     /** {@link Parcelable}. */
-    public static final Creator<TOCEntry> CREATOR =
-            new Creator<TOCEntry>() {
+    public static final Creator<TocEntry> CREATOR =
+            new Creator<TocEntry>() {
                 @Override
-                public TOCEntry createFromParcel(@NonNull final Parcel source) {
-                    return new TOCEntry(source);
+                public TocEntry createFromParcel(@NonNull final Parcel source) {
+                    return new TocEntry(source);
                 }
 
                 @Override
-                public TOCEntry[] newArray(final int size) {
-                    return new TOCEntry[size];
+                public TocEntry[] newArray(final int size) {
+                    return new TocEntry[size];
                 }
             };
-    /**
-     * import/export etc...
-     * <p>
-     * "anthology title (year) * author ","anthology title (year) * author ",...
-     */
-    private static final char SEPARATOR = ',';
-    private static final char TITLE_AUTHOR_DELIM = '*';
+
+    /** String encoding use. */
+    private static final char FIELD_SEPARATOR = '*';
 
     /**
      * Find the publication year in a string like "some title (1960)".
@@ -84,33 +81,43 @@ public class TOCEntry
     private Author mAuthor;
     private String mTitle;
     @NonNull
-    private String mFirstPublicationDate = "";
-
-    /**
-     * Constructor that will attempt to parse a single string into an TOCEntry.
-     */
-    public TOCEntry(@NonNull final String fromString) {
-        fromString(fromString);
-    }
+    private String mFirstPublicationDate;
 
     /**
      * Constructor.
      *
-     * @param id     row id
      * @param author Author of title
      * @param title  Title
+     * @param publicationDate year of first publication
      */
-    public TOCEntry(final long id,
-                    @NonNull final Author author,
+    public TocEntry(@NonNull final Author author,
                     @NonNull final String title,
                     @NonNull final String publicationDate) {
-        this.mId = id;
         mAuthor = author;
         mTitle = title.trim();
         mFirstPublicationDate = publicationDate;
     }
 
-    protected TOCEntry(@NonNull final Parcel in) {
+    /**
+     * Full constructor.
+     *
+     * @param id     row id
+     * @param author Author of title
+     * @param title  Title
+     * @param publicationDate year of first publication
+     */
+    public TocEntry(final long id,
+                    @NonNull final Author author,
+                    @NonNull final String title,
+                    @NonNull final String publicationDate) {
+        mId = id;
+        mAuthor = author;
+        mTitle = title.trim();
+        mFirstPublicationDate = publicationDate;
+    }
+
+    /** {@link Parcelable}. */
+    protected TocEntry(@NonNull final Parcel in) {
         mId = in.readLong();
         mAuthor = in.readParcelable(getClass().getClassLoader());
         mTitle = in.readString();
@@ -121,13 +128,14 @@ public class TOCEntry
     /**
      * Helper to check if all titles in a list have the same author.
      */
-    public static boolean hasMultipleAuthors(@NonNull final List<TOCEntry> results) {
+    public static boolean hasMultipleAuthors(@NonNull final List<TocEntry> list) {
         // check if its all the same author or not
         boolean singleAuthor = true;
-        if (results.size() > 1) {
-            Author author = results.get(0).getAuthor();
-            for (TOCEntry t : results) { // yes, we check 0 twice.. oh well.
-                singleAuthor = author.equals(t.getAuthor());
+        if (list.size() > 1) {
+            Author author = list.get(0).getAuthor();
+            // yes, we check 0 twice.. oh well.
+            for (TocEntry tocEntry : list) {
+                singleAuthor = author.equals(tocEntry.getAuthor());
                 if (!singleAuthor) {
                     break;
                 }
@@ -136,6 +144,7 @@ public class TOCEntry
         return !singleAuthor;
     }
 
+    /** {@link Parcelable}. */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -153,26 +162,34 @@ public class TOCEntry
     }
 
     /**
-     * Support for decoding from a text file.
+     * Constructor that will attempt to parse a single string into an TocEntry.
      */
-    private void fromString(@NonNull final String encodedString) {
+    public static TocEntry fromString(@NonNull final String encodedString) {
         // V82: Giants In The Sky * Blish, James
         // V83: Giants In The Sky (1952) * Blish, James
+        List<String> list = new StringList<String>()
+                .decode(FIELD_SEPARATOR, encodedString, false);
 
-        List<String> list = StringList.decode(TITLE_AUTHOR_DELIM, encodedString);
-        mAuthor = new Author(list.get(1));
+        Author author =  Author.fromString(list.get(1));
         String title = list.get(0);
 
         //FIXME: fine for now, but should be made foolproof for full dates
         // (via DateUtils) instead of just the 4 digit year
-        Matcher matcher = TOCEntry.YEAR_FROM_STRING.matcher(title);
+        Matcher matcher = TocEntry.YEAR_FROM_STRING.matcher(title);
         if (matcher.find()) {
-            mFirstPublicationDate = matcher.group(1);
-            mTitle = title.replace(matcher.group(0), "").trim();
+            return new TocEntry(author,
+                                title.replace(matcher.group(0), "").trim(),
+                                matcher.group(1));
         } else {
-            mFirstPublicationDate = "";
-            mTitle = title;
+            return new TocEntry(author, title, "");
         }
+    }
+
+
+    @Override
+    @NonNull
+    public String toString() {
+        return stringEncoded();
     }
 
     /**
@@ -185,9 +202,7 @@ public class TOCEntry
      * else:
      * "Giants In The Sky * Blish, James"
      */
-    @Override
-    @NonNull
-    public String toString() {
+    public String stringEncoded() {
         String yearStr;
         if (!mFirstPublicationDate.isEmpty()) {
             // start with a space !
@@ -195,12 +210,17 @@ public class TOCEntry
         } else {
             yearStr = "";
         }
-        return StringList.escapeListItem(SEPARATOR, mTitle) + yearStr
-                + ' ' + TITLE_AUTHOR_DELIM + ' ' + mAuthor;
+        return StringList.escapeListItem(FIELD_SEPARATOR, "(", mTitle) + yearStr
+                + ' ' + FIELD_SEPARATOR + ' '
+                + mAuthor.stringEncoded();
     }
 
     public long getId() {
         return mId;
+    }
+
+    public void setId(final long id) {
+        mId = id;
     }
 
     @NonNull
@@ -232,13 +252,13 @@ public class TOCEntry
 
     @Override
     public long fixupId(@NonNull final DBA db) {
-        mAuthor.id = db.getAuthorIdByName(mAuthor.getFamilyName(), mAuthor.getGivenNames());
-        this.mId = db.getTOCEntryId(mAuthor.id, mTitle);
-        return this.mId;
+        mAuthor.fixupId(db);
+        mId = db.getTOCEntryId(mAuthor.getId(), mTitle);
+        return mId;
     }
 
     /**
-     * Each TOCEntry is defined exactly by a unique ID.
+     * Each TocEntry is defined exactly by a unique ID.
      */
     @Override
     public boolean isUniqueById() {
@@ -262,7 +282,7 @@ public class TOCEntry
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        TOCEntry that = (TOCEntry) obj;
+        TocEntry that = (TocEntry) obj;
         if (this.mId == 0 || that.mId == 0) {
             return Objects.equals(this.mAuthor, that.mAuthor)
                     && Objects.equals(this.mTitle, that.mTitle)
@@ -281,31 +301,74 @@ public class TOCEntry
     public enum Type {
         no, singleAuthor, multipleAuthors;
 
+        /**
+         * The original code was a bit vague on the exact meaning of the 'anthology mask'.
+         * So this information was mainly written for myself.
+         * <p>
+         * Original, it looked like this was the meaning:
+         * 0%00 == book by single author
+         * 0%01 == anthology by one author
+         * 0%11 == anthology by multiple authors.
+         * which would mean it missed books with a single story, but multiple authors; e.g. the 0%10
+         * <p>
+         * A more complete definition below.
+         * <p>
+         * {@link DatabaseDefinitions#DOM_BOOK_ANTHOLOGY_BITMASK}
+         * <p>
+         * 0%00 = contains one 'work' and is written by a single author.
+         * 0%01 = multiple 'work' and is written by a single author (anthology from ONE author)
+         * 0%10 = multiple authors cooperating on a single 'work'
+         * 0%11 = multiple authors and multiple 'work's (it's an anthology from multiple author)
+         * <p>
+         * or in other words:
+         * * bit 0 indicates if a book has one (bit unset) or multiple (bit set) works
+         * * bit 1 indicates if a book has one (bit unset) or multiple (bit set) authors.
+         * <p>
+         * Having said all that, the 0%10 should not actually occur, as this is a simple case of
+         * collaborating authors which is covered without the use of
+         * {@link DatabaseDefinitions#DOM_BOOK_ANTHOLOGY_BITMASK}
+         * <p>
+         * Which of course brings it back full-circle to the original and correct meaning.
+         * <p>
+         * Leaving all this here, as it will remind myself (and maybe others) of the 'missing' bit.
+         * <p>
+         * ENHANCE: Think about actually updating the column to 0%10 as a cache for a book
+         * having multiple authors without the need to 'count' them in the book_author table ?
+         */
+        public static final int SINGLE_AUTHOR_SINGLE_WORK = 0;
+        public static final int MULTIPLE_WORKS = 1;
+        public static final int MULTIPLE_AUTHORS = 1 << 1;
+
         public int getBitmask() {
             switch (this) {
                 case no:
-                    return 0x00;
+                    return SINGLE_AUTHOR_SINGLE_WORK;
+
                 case singleAuthor:
-                    return 0x01;
+                    return MULTIPLE_WORKS;
+
                 case multipleAuthors:
-                    return 0x11;
+                    return MULTIPLE_WORKS | MULTIPLE_AUTHORS;
+
                 //noinspection UnnecessaryDefault
                 default:
-                    return 0x00;
+                    return SINGLE_AUTHOR_SINGLE_WORK;
             }
         }
 
         public Type get(final int bitmask) {
             switch (bitmask) {
-                case 0x00:
+                case SINGLE_AUTHOR_SINGLE_WORK:
                     return no;
-                case 0x01:
+
+                case MULTIPLE_WORKS:
                     return singleAuthor;
 
                 // cover legacy bad data.
                 case 0x10:
-                case 0x11:
+                case MULTIPLE_WORKS | MULTIPLE_AUTHORS:
                     return multipleAuthors;
+
                 default:
                     throw new RTE.IllegalTypeException("" + bitmask);
             }

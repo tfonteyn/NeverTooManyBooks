@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/pg_ui">
+        <!-- the list contains 2-char strings in contrast to other ListPreference -->
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="en"
             android:entries="@array/pe_ui_language"
             android:entryValues="@array/pv_ui_language"
             android:icon="@drawable/ic_language"

@@ -219,12 +219,14 @@
     <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all -->
     <string-array name="pe_bob_header">
         <item>Show number of books</item>
-        <item>Show first level heading</item>
+        <item>Show 1st level heading</item>
+        <item>Show 2nd level heading</item>
     </string-array>
     <!-- multi-select: use bitmask values: 1,2,4,8,...-->
     <string-array name="pv_bob_header">
         <item translatable="false">1</item>
         <item translatable="false">2</item>
+        <item translatable="false">4</item>
     </string-array>
 
     <!-- Preference - Show thumbnail image for each book -->

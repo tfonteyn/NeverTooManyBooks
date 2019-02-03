@@ -118,7 +118,7 @@ public abstract class BackupReaderAbstract
             // process each entry based on type, unless we are cancelled, as in Nikita
             while (entity != null && !mProgressListener.isCancelled()) {
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                    Logger.info(this, "reading|entity=" + entity.getName());
+                    Logger.info(this, "restore","entity=" + entity.getName());
                 }
                 switch (entity.getType()) {
                     case Cover:
@@ -298,6 +298,9 @@ public abstract class BackupReaderAbstract
         try {
             // deserialization will take care of writing the v200+ SharedPreference file
             style = entity.getSerializable();
+            if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
+                Logger.info(this, style.toString());
+            }
         } catch (DeserializationException e) {
             Logger.error(e, "Unable to restore style");
         }

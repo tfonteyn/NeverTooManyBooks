@@ -31,6 +31,6 @@ import com.eleybourn.bookcatalogue.datamanager.DataManager;
  */
 public interface DataCrossValidator {
 
-    void validate(@NonNull final DataManager data)
+    void validate(@NonNull DataManager data)
             throws ValidatorException;
 }

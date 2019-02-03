@@ -27,6 +27,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.EditSeriesListActivity;
@@ -36,44 +37,44 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Series;
 
 /**
- * Dialog to edit a single series.
+ * Dialog to edit an existing single series.
  * <p>
  * Calling point is a List; see {@link EditSeriesListActivity} for book
  */
 public class EditSeriesDialog {
 
     @NonNull
-    private final Activity mContext;
-    @NonNull
-    private final ArrayAdapter<String> mSeriesAdapter;
+    private final Activity mActivity;
     @NonNull
     private final DBA mDb;
-    @NonNull
+    @Nullable
     private final Runnable mOnChanged;
+    @NonNull
+    private final ArrayAdapter<String> mAdapter;
 
     public EditSeriesDialog(@NonNull final Activity activity,
                             @NonNull final DBA db,
-                            @NonNull final Runnable onChanged) {
+                            @Nullable final Runnable onChanged) {
         mDb = db;
-        mContext = activity;
-        mSeriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_dropdown_item_1line,
-                                            mDb.getAllSeriesNames());
+        mActivity = activity;
         mOnChanged = onChanged;
+        mAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line,
+                                      mDb.getAllSeriesNames());
     }
 
-    public void edit(@NonNull final Series series) {
+    public void edit(@NonNull final Series source) {
         // Build the base dialog
-        final View root = mContext.getLayoutInflater()
-                                  .inflate(R.layout.dialog_edit_series, null);
+        final View root = mActivity.getLayoutInflater()
+                                   .inflate(R.layout.dialog_edit_series, null);
 
         final AutoCompleteTextView seriesView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
-        seriesView.setText(series.name);
-        seriesView.setAdapter(mSeriesAdapter);
+        seriesView.setText(source.getName());
+        seriesView.setAdapter(mAdapter);
         final Checkable isCompleteView = root.findViewById(R.id.is_complete);
-        isCompleteView.setChecked(series.isComplete);
+        isCompleteView.setChecked(source.isComplete());
 
-        final AlertDialog dialog = new AlertDialog.Builder(mContext)
+        final AlertDialog dialog = new AlertDialog.Builder(mActivity)
                 .setView(root)
                 .setTitle(R.string.title_edit_series)
                 .create();
@@ -84,12 +85,22 @@ public class EditSeriesDialog {
             public void onClick(@NonNull final View v) {
                 String newName = seriesView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showUserMessage(mContext, R.string.warning_required_series);
+                    StandardDialogs.showUserMessage(mActivity, R.string.warning_required_name);
                     return;
                 }
                 boolean isComplete = isCompleteView.isChecked();
-                confirmEdit(series, new Series(newName, isComplete, ""));
                 dialog.dismiss();
+
+                if (source.getName().equals(newName)
+                        && source.isComplete() == isComplete) {
+                    return;
+                }
+                source.setName(newName);
+                source.setComplete(isComplete);
+                mDb.updateOrInsertSeries(source);
+                if (mOnChanged != null) {
+                    mOnChanged.run();
+                }
             }
         });
 
@@ -102,31 +113,5 @@ public class EditSeriesDialog {
         });
 
         dialog.show();
-    }
-
-    private void confirmEdit(@NonNull final Series from,
-                             @NonNull final Series to) {
-        // case sensitive equality
-        if (to.equals(from)) {
-            return;
-        }
-
-        // Get their id's TODO: this call is not needed I think
-        from.id = mDb.getSeriesId(from);
-        to.id = mDb.getSeriesId(to);
-
-        // Case: series is the same
-        if (to.id == from.id) {
-            // Just update with the most recent spelling and format
-            from.copyFrom(to);
-            if (from.id == 0) {
-                from.id = mDb.getSeriesId(from);
-            }
-            mDb.insertOrUpdateSeries(from);
-        } else {
-            mDb.globalReplaceSeries(from, to);
-            from.copyFrom(to);
-        }
-        mOnChanged.run();
     }
 }

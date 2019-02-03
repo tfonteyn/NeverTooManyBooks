@@ -5,5 +5,5 @@ import androidx.annotation.Nullable;
 public interface Filter {
 
     @Nullable
-    String getExpression(@Nullable final String uuid);
+    String getExpression(@Nullable String uuid);
 }

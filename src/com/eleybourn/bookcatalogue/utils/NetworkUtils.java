@@ -141,13 +141,12 @@ public final class NetworkUtils {
                     if (connInfo.connection != null) {
                         connInfo.connection.disconnect();
                     }
-                } catch (Exception e) {
+                } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
                     Logger.error(e);
-
                     if (connInfo.connection != null) {
                         connInfo.connection.disconnect();
                     }
-                    throw new RuntimeException(e);
+                    throw e;
                 }
             }
         }

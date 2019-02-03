@@ -62,27 +62,36 @@ import java.util.Objects;
 // hide on entry, field gets focus, up it pops
 //  getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-
 public class BookSearchByIsbnFragment
         extends BookSearchBaseFragment {
+
+    public static final String TAG = "BookSearchByIsbnFragment";
 
     private static final String BKEY_SCANNER_STARTED = "ScannerStarted";
 
     private static final int REQ_IMAGE_FROM_SCANNER = 0;
 
+    /** all digits allowed in ASIN strings. */
+    private static final String asinDigits =
+            "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+    /** all digits in ISBN strings. */
+    private static final String isbnDigits = "0123456789xX";
+    /** listener/acceptor for all ISBN digits */
+    private static final DigitsKeyListener isbnListener = DigitsKeyListener.getInstance(isbnDigits);
+    /** filter to remove all ASIN digits from ISBN strings (leave xX!) */
+    private static final String ISBN_REGEX = "[qwertyuiopasdfghjklzcvbnmQWERTYUIOPASDFGHJKLZCVBNM]";
+    /** flag indicating we're running in SCAN mode. */
     private boolean scanMode;
-
+    /** flag indicating the scanner is already started. */
     private boolean mScannerStarted;
     /**
      * Flag to indicate the Activity should not 'finish()' because an alert is being displayed.
      * The alert will call finish().
      */
     private boolean mDisplayingAlert;
-
     /** The preferred (or found) scanner. */
     @Nullable
     private Scanner mScanner;
-    /** */
     @Nullable
     private EditText mIsbnView;
     @NonNull
@@ -95,9 +104,11 @@ public class BookSearchByIsbnFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
+        // we need to know if we're in scan mode. If so, we don't have a UI.
         //noinspection ConstantConditions
-        scanMode = BookSearchActivity.BY_SCAN.equals(
-                getArguments().getString(BookSearchActivity.REQUEST_BKEY_BY));
+        scanMode = BookSearchActivity.BY_SCAN
+                .equals(getArguments().getString(BookSearchActivity.REQUEST_BKEY_BY));
+
         if (scanMode) {
             return null;
         }
@@ -158,7 +169,7 @@ public class BookSearchByIsbnFragment
     }
 
     /**
-     * Setup the UI e.g. the keypad etc....
+     * Setup the UI.
      */
     private void initUI(@NonNull final View root) {
         mIsbnView = root.findViewById(R.id.isbn);
@@ -227,27 +238,24 @@ public class BookSearchByIsbnFragment
             public void onCheckedChanged(@NonNull final CompoundButton buttonView,
                                          final boolean isChecked) {
                 if (isChecked) {
-                    mActivity.getWindow().setSoftInputMode(
-                            WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                    mActivity.getWindow()
+                             .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                    // over-optimisation... asin is used less then ISBN
+                    DigitsKeyListener asinListener = DigitsKeyListener.getInstance(asinDigits);
                     //noinspection ConstantConditions
-                    mIsbnView.setKeyListener(DigitsKeyListener.getInstance(
-                            "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"));
-                    mIsbnView.setInputType(
-                            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                    mIsbnView.setKeyListener(asinListener);
                 } else {
-                    mActivity.getWindow().setSoftInputMode(
-                            WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+                    mActivity.getWindow()
+                             .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
                     //noinspection ConstantConditions
-                    mIsbnView.setKeyListener(DigitsKeyListener.getInstance("0123456789xX"));
-                    mIsbnView.setInputType(
-                            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-
+                    mIsbnView.setKeyListener(isbnListener);
+                    // remove invalid digits
                     String txt = mIsbnView.getText().toString();
-                    // leave xX
-                    mIsbnView.setText(
-                            txt.replaceAll("[qwertyuiopasdfghjklzcvbnmQWERTYUIOPASDFGHJKLZCVBNM]",
-                                           ""));
+                    mIsbnView.setText(txt.replaceAll(ISBN_REGEX, ""));
                 }
+
+                mIsbnView.setInputType(
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
             }
         });
     }
@@ -325,7 +333,7 @@ public class BookSearchByIsbnFragment
         }
 
         // See if ISBN already exists in our database, if not then start the search and get details.
-        final long existingId = mDb.getIdFromIsbn(mIsbnSearchText, true);
+        final long existingId = mDb.getBookIdFromIsbn(mIsbnSearchText, true);
         if (existingId == 0) {
             startSearch();
         } else {
@@ -340,7 +348,7 @@ public class BookSearchByIsbnFragment
      */
     private void isbnAlreadyPresent(final long existingId) {
         AlertDialog dialog = new AlertDialog.Builder(mActivity)
-                .setMessage(R.string.warning_duplicate_book_message)
+                .setMessage(R.string.confirm_duplicate_book_message)
                 .setTitle(R.string.title_duplicate_book)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
@@ -464,13 +472,9 @@ public class BookSearchByIsbnFragment
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
-        Tracker.enterOnSaveInstanceState(this, outState);
-
         outState.putString(UniqueId.KEY_BOOK_ISBN, mIsbnSearchText);
         outState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
-
         super.onSaveInstanceState(outState);
-        Tracker.exitOnSaveInstanceState(this, outState);
     }
 
     @Override
@@ -483,14 +487,14 @@ public class BookSearchByIsbnFragment
             case REQ_IMAGE_FROM_SCANNER: {
                 mScannerStarted = false;
                 switch (resultCode) {
-                    case Activity.RESULT_OK: {
+                    case Activity.RESULT_OK:
                         Objects.requireNonNull(data);
                         //noinspection ConstantConditions
                         mIsbnSearchText = mScanner.getBarcode(data);
                         prepareSearch();
                         break;
-                    }
-                    default: {
+
+                    default:
                         // Scanner Cancelled/failed.
                         // Pass the last book we got to our caller and finish here.
                         mActivity.setResult(
@@ -502,7 +506,6 @@ public class BookSearchByIsbnFragment
                             mActivity.finish();
                         }
                         break;
-                    }
                 }
                 // go scan next book until the user cancels scanning.
                 startScannerActivity();

@@ -153,7 +153,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:layout_alignParentStart">true</item>
-        <item name="android:hint">@string/not_set</item>
+        <item name="android:hint">@string/field_not_set</item>
     </style>
 
     <style name="isbnEntryField">
@@ -218,7 +218,7 @@
     <!-- Fields for 'human' names. e.g. Author, Publisher, ... -->
     <style name="personalNameTextEntry" parent="@style/base_localeTextEntry" />
 
-    <!-- Titles of Books, Series, Bookshelf, TOCEntries (Anthology titles) , ... -->
+    <!-- Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
     <style name="titleTextEntry" parent="@style/base_localeTextEntry" />
 
     <!-- The language field. -->

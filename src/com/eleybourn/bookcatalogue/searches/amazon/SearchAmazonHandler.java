@@ -30,7 +30,6 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
@@ -182,6 +181,9 @@ import java.util.Currency;
  *
  * </pre>
  *
+ * "ItemAttributes" section:
+ * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_response_elements.html
+ *
  * @author evan
  */
 public class SearchAmazonHandler
@@ -281,6 +283,22 @@ public class SearchAmazonHandler
     }
 
     /**
+     * Add the value to the Bundle if not present.
+     *
+     * @param bundle to check
+     * @param key    for data to add
+     * @param value  to use
+     */
+    private void addIfNotPresent(@NonNull final Bundle bundle,
+                                        @NonNull final String key,
+                                        @NonNull final String value) {
+        String test = bundle.getString(key);
+        if (test == null || test.isEmpty()) {
+            bundle.putString(key, value.trim());
+        }
+    }
+
+    /**
      * Amount is in the lowest denomination, so for USD, cents, GBP pennies.. etc.
      * <Amount>1234</Amount>
      * <CurrencyCode>USD</CurrencyCode>
@@ -292,9 +310,9 @@ public class SearchAmazonHandler
             // move the decimal point 'digits' up
             double price = ((double) Integer.parseInt(mCurrencyAmount)) / Math.pow(10, decDigits);
             // and format with 'digits' decimal places
-            BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED,
+            addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED,
                                         String.format("%." + decDigits + 'f', price));
-            BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
+            addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
                                         mCurrencyCode);
         } catch (NumberFormatException ignore) {
         }
@@ -382,34 +400,34 @@ public class SearchAmazonHandler
 
         } else if (mInEntry) {
             if (localName.equalsIgnoreCase(XML_AUTHOR)) {
-                mAuthors.add(new Author(mBuilder.toString()));
+                mAuthors.add( Author.fromString(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_TITLE)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
+                addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PUBLISHER)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PUBLISHER,
+                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PUBLISHER,
                                             mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DATE_PUBLISHED,
+                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DATE_PUBLISHED,
                                             mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PAGES)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PAGES,
+                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PAGES,
                                             mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DESCRIPTION)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DESCRIPTION,
+                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DESCRIPTION,
                                             mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_BINDING)) {
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_FORMAT,
+                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_FORMAT,
                                             mBuilder.toString());
 
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 // the language is a 'DisplayName'
-                BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_BOOK_LANGUAGE,
+                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_LANGUAGE,
                                             LocaleUtils.getISO3Language(mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {

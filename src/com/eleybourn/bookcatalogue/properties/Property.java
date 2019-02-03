@@ -170,11 +170,6 @@ public abstract class Property<T> {
     }
 
     @Nullable
-    public String toString() {
-        return (mValue == null ? null : mValue.toString());
-    }
-
-    @Nullable
     public T getValue() {
         return mValue;
     }

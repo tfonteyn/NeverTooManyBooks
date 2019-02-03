@@ -40,6 +40,7 @@ public abstract class BookSearchBaseFragment
     private static final String BKEY_SEARCH_MANAGER_ID = "SearchManagerId";
     /** the last book data (intent) we got from a successful EditBook. */
     private static final String BKEY_LAST_BOOK_INTENT = "LastBookIntent";
+    /** activity request code */
     private static final int REQ_PREFERRED_SEARCH_SITES = 10;
 
     protected BookSearchActivity mActivity;
@@ -90,14 +91,14 @@ public abstract class BookSearchBaseFragment
 
         if (savedInstanceState != null) {
             mSearchManagerId = savedInstanceState.getLong(BKEY_SEARCH_MANAGER_ID);
-            /* optional, use ALL if not there */
+            // optional, use ALL if not there
             mSearchSites = savedInstanceState.getInt(REQUEST_BKEY_SEARCH_SITES,
                                                      SearchSites.Site.SEARCH_ALL);
         } else {
             Bundle args = getArguments();
             //noinspection ConstantConditions
             mSearchManagerId = args.getLong(BKEY_SEARCH_MANAGER_ID);
-            /* optional, use ALL if not there */
+            // optional, use ALL if not there
             mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
         }
 
@@ -134,8 +135,7 @@ public abstract class BookSearchBaseFragment
                 Intent intent = new Intent(this.requireContext(), SearchAdminActivity.class);
                 intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
                                 SearchAdminActivity.TAB_SEARCH_ORDER);
-                startActivityForResult(intent,
-                                       REQ_PREFERRED_SEARCH_SITES);
+                startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
             default:
@@ -176,7 +176,6 @@ public abstract class BookSearchBaseFragment
                     + "|title=" + titleSearchText);
         }
 
-        /* Get the book */
         try {
             // Start the lookup in a background search task.
             final SearchManager searchManager =
@@ -231,15 +230,15 @@ public abstract class BookSearchBaseFragment
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
-            case REQ_PREFERRED_SEARCH_SITES: {
+            case REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
                                                     mSearchSites);
                 }
                 break;
-            }
-            case REQ_BOOK_EDIT: {
+
+            case REQ_BOOK_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
                     // Created a book; save the intent
                     mLastBookData = data;
@@ -251,7 +250,7 @@ public abstract class BookSearchBaseFragment
                     mActivity.setResult(Activity.RESULT_CANCELED);
                 }
                 break;
-            }
+
             default:
                 // lowest level of our Fragment, see if we missed anything
                 Logger.info(this,
@@ -266,13 +265,9 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
-        Tracker.enterOnSaveInstanceState(this, outState);
-
-        // standard stuff we need
         outState.putLong(BKEY_SEARCH_MANAGER_ID, mSearchManagerId);
         outState.putParcelable(BKEY_LAST_BOOK_INTENT, mLastBookData);
 
         super.onSaveInstanceState(outState);
-        Tracker.exitOnSaveInstanceState(this, outState);
     }
 }

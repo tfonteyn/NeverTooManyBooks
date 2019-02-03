@@ -33,7 +33,10 @@ public class DomainDefinition
                 }
             };
 
-    private static final long serialVersionUID = 3635761831854862723L;
+    private static final long serialVersionUID = 3405337543505961871L;
+
+    /** not null constraint string. */
+    private static final String NOT_NULL = "NOT NULL";
     @NonNull
     public final String name;
     @NonNull
@@ -55,7 +58,7 @@ public class DomainDefinition
         this.name = name;
         mType = ColumnInfo.TYPE_INTEGER;
         isPrimaryKey = true;
-        mConstraints.add("NOT NULL");
+        mConstraints.add(NOT_NULL);
     }
 
     /**
@@ -83,7 +86,7 @@ public class DomainDefinition
         this.name = name;
         mType = type;
         if (notNull) {
-            mConstraints.add("NOT NULL");
+            mConstraints.add(NOT_NULL);
         }
     }
 
@@ -100,7 +103,7 @@ public class DomainDefinition
         this.name = name;
         mType = type;
         if (notNull) {
-            mConstraints.add("NOT NULL");
+            mConstraints.add(NOT_NULL);
         }
         if ((constraints != null) && (constraints.length > 0)) {
             mConstraints.addAll(Arrays.asList(constraints));
@@ -108,7 +111,9 @@ public class DomainDefinition
     }
 
     private DomainDefinition(@NonNull final Parcel in) {
+        //noinspection ConstantConditions
         name = in.readString();
+        //noinspection ConstantConditions
         mType = in.readString();
         in.readList(mConstraints, getClass().getClassLoader());
     }
@@ -121,7 +126,7 @@ public class DomainDefinition
      * @return this for chaining.
      */
     @NonNull
-    public DomainDefinition setDefault(final int value) {
+    public DomainDefinition setDefault(final long value) {
         mConstraints.add("DEFAULT " + value);
         return this;
     }
@@ -157,6 +162,7 @@ public class DomainDefinition
      *
      * @return this for chaining.
      */
+    @SuppressWarnings("unused")
     @NonNull
     public DomainDefinition addConstraint(@NonNull final String constraint) {
         mConstraints.add(constraint);
@@ -221,17 +227,7 @@ public class DomainDefinition
     }
 
     /**
-     * @return the SQL used to define this domain.
-     */
-    @NonNull
-    public String def() {
-        return def(true);
-    }
-
-    /**
      * Get the SQL used to define this domain.
-     * <p>
-     * Are you sure you don't want to use {@link #def()} ?
      *
      * @param withConstraints when false, no constraints are applied
      *

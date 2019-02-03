@@ -33,6 +33,8 @@ import java.util.Map;
 
 public final class IsbnUtils {
 
+    private static final String ASIN_DIGITS = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
     private IsbnUtils() {
     }
 
@@ -140,7 +142,7 @@ public final class IsbnUtils {
         boolean foundAlpha = false;
         asin = asin.toUpperCase().trim();
         for (int i = 0; i < asin.length(); i++) {
-            int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(asin.charAt(i));
+            int pos = ASIN_DIGITS.indexOf(asin.charAt(i));
             // Make sure it's a valid char
             if (pos == -1) {
                 return false;

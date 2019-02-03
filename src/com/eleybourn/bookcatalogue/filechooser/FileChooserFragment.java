@@ -144,8 +144,7 @@ public class FileChooserFragment
             onGotFileList(mRootPath, list);
         } else {
             Bundle args = getArguments();
-            Objects.requireNonNull(args);
-
+            //noinspection ConstantConditions
             mRootPath = new File(Objects.requireNonNull(args.getString(BKEY_ROOT_PATH)));
             mFilenameField.setText(args.getString(UniqueId.BKEY_FILE_SPEC));
             mPathField.setText(mRootPath.getAbsolutePath());
@@ -213,7 +212,7 @@ public class FileChooserFragment
      */
     public interface OnPathChangedListener {
 
-        void onPathChanged(@NonNull final File root);
+        void onPathChanged(@NonNull File root);
     }
 
     /**
@@ -226,8 +225,8 @@ public class FileChooserFragment
         @NonNull
         File getFile();
 
-        void onGetView(@NonNull final View convertView,
-                       @NonNull final Context context);
+        void onGetView(@NonNull View convertView,
+                       @NonNull Context context);
     }
 
     /**

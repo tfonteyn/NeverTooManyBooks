@@ -32,5 +32,5 @@
         android:icon="@drawable/ic_info_outline"
         android:menuCategory="secondary"
         android:orderInCategory="3"
-        android:title="@string/menu_about" />
+        android:title="@string/lbl_about" />
 </menu>

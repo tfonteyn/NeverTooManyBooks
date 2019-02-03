@@ -24,9 +24,10 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -43,7 +44,6 @@ public class EditBookActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
@@ -52,17 +52,60 @@ public class EditBookActivity
 
         getSupportFragmentManager()
                 .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
                 .commit();
-        Tracker.exitOnCreate(this);
     }
 
+    /** universal flag used to indicate something was changed and not saved (yet). */
+    private boolean mIsDirty;
+
+    /**
+     *
+     * @return <tt>true</tt> if the data in this activity was changed and should be saved.
+     */
+    public boolean isDirty() {
+        return mIsDirty;
+    }
+
+    /**
+     *
+     * @param isDirty set to <tt>true</tt> if the data in this activity was changed.
+     */
+    public void setDirty(final boolean isDirty) {
+        this.mIsDirty = isDirty;
+    }
+
+    /**
+     * Check if edits need saving.
+     * If they don't, simply finish the activity,
+     * otherwise ask the user.
+     */
+    public void finishIfClean() {
+        if (mIsDirty) {
+            StandardDialogs.showConfirmUnsavedEditsDialog(
+                    this,
+                    /* only runs if user clicks 'exit' */
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    });
+        } else {
+            finish();
+        }
+    }
+
+    /**
+     * When the user clicks 'back/up', check if we're clean to leave.
+     */
     @Override
     @CallSuper
     public void onBackPressed() {
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
 
-        super.onBackPressed();
+        finishIfClean();
     }
 }

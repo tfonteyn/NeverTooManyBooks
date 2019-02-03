@@ -13,6 +13,7 @@ import androidx.preference.PreferenceScreen;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
@@ -30,8 +31,11 @@ public class BooklistStyleSettingsFragment
         implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
+    public static final String TAG = "BooklistStyleSettingsFragment";
+
     /** Parameter used to pass data to this activity. */
     public static final String REQUEST_BKEY_STYLE = "Style";
+
     /** Request code for calling the Activity to edit the Groups of the style. */
     private static final int REQ_EDIT_GROUPS = 0;
     /** Style we are editing. */
@@ -44,13 +48,15 @@ public class BooklistStyleSettingsFragment
         //noinspection ConstantConditions
         mStyle = getArguments().getParcelable(REQUEST_BKEY_STYLE);
         Objects.requireNonNull(mStyle);
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, "after de-parceling\n" + mStyle);
+        if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
+            Logger.info(this, "onCreatePreferences", mStyle.toString());
         }
 
+        // we use the style UUID as the filename for the prefs.
         getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
 
         setPreferencesFromResource(R.xml.preferences_book_style, rootKey);
+
         PreferenceScreen screen = getPreferenceScreen();
 
         // doing this in our base class. TODO: use this for all prefs instead of our own code.
@@ -86,11 +92,11 @@ public class BooklistStyleSettingsFragment
         data.putExtra(UniqueId.KEY_ID, mStyle.getId());
         data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
         requireActivity()
-                .setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStylePropertiesActivity, data);
+                .setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties, data);
     }
 
     /**
-     * Update the summary after a change.
+     * Update the summaries after a change.
      */
     @Override
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
@@ -143,5 +149,4 @@ public class BooklistStyleSettingsFragment
                 super.onActivityResult(requestCode, resultCode, data);
         }
     }
-
 }

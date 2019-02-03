@@ -32,8 +32,19 @@ public class ListOfValuesFilter<T>
         mTable = table;
         mDomain = domain;
 
-        StringList<T> au = new StringList<>();
-        mCriteria = au.encode(list);
+        mCriteria = new StringList<>(new StringList.Factory<T>() {
+            @NonNull
+            @Override
+            public T decode(@NonNull final String element) {
+                throw new UnsupportedOperationException();
+            }
+
+            @NonNull
+            @Override
+            public String encode(@NonNull final T element) {
+                return element.toString();
+            }
+        }).encode(list);
     }
 
     @Override

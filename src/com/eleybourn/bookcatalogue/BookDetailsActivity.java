@@ -24,9 +24,9 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
  * Hosting activity for showing a book.
@@ -42,7 +42,6 @@ public class BookDetailsActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
@@ -51,8 +50,8 @@ public class BookDetailsActivity
 
         getSupportFragmentManager()
                 .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.main_fragment, frag, BookFragment.TAG)
                 .commit();
-        Tracker.exitOnCreate(this);
     }
 }

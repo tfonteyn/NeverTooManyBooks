@@ -49,7 +49,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
@@ -57,7 +56,7 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.entities.TOCEntry;
+import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBResultsListener;
@@ -75,7 +74,7 @@ import java.util.List;
  * have to know about any specific search web site.
  */
 public class EditBookTOCFragment
-        extends BookBaseFragment
+        extends EditBookBaseFragment
         implements ISFDBResultsListener {
 
     public static final String TAG = "EditBookTOCFragment";
@@ -90,7 +89,7 @@ public class EditBookTOCFragment
 
     @Nullable
     private Integer mEditPosition;
-    private ArrayList<TOCEntry> mList;
+    private ArrayList<TocEntry> mList;
     private ListView mListView;
 
     /**
@@ -159,16 +158,16 @@ public class EditBookTOCFragment
                 if (mSingleAuthor.isChecked()) {
                     author = mBookAuthor;
                 }
-                ArrayAdapter<TOCEntry> adapter = EditBookTOCFragment.this.getListAdapter();
+                ArrayAdapter<TocEntry> adapter = EditBookTOCFragment.this.getListAdapter();
 
                 if (mEditPosition == null) {
                     // adding a new entry
-                    adapter.add(new TOCEntry(0, new Author(author), title, pubDate));
+                    adapter.add(new TocEntry(Author.fromString(author), title, pubDate));
                 } else {
                     // editing an existing entry
-                    TOCEntry tocEntry = adapter.getItem(mEditPosition);
+                    TocEntry tocEntry = adapter.getItem(mEditPosition);
                     //noinspection ConstantConditions
-                    tocEntry.setAuthor(new Author(author));
+                    tocEntry.setAuthor( Author.fromString(author));
                     tocEntry.setTitle(title);
                     tocEntry.setFirstPublication(pubDate);
 
@@ -213,7 +212,7 @@ public class EditBookTOCFragment
                                     @NonNull final View view,
                                     final int position,
                                     final long id) {
-                TOCEntry tocEntry = (TOCEntry) parent.getItemAtPosition(position);
+                TocEntry tocEntry = (TocEntry) parent.getItemAtPosition(position);
                 editEntry(tocEntry, position);
             }
         });
@@ -223,7 +222,7 @@ public class EditBookTOCFragment
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
-        Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
+        Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         // populateFields
@@ -233,7 +232,7 @@ public class EditBookTOCFragment
         // Restore default visibility
         //showHideFields(false);
 
-        Tracker.exitOnLoadFieldsFromBook(this, book.getBookId());
+        Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
 
     //</editor-fold>
@@ -244,7 +243,7 @@ public class EditBookTOCFragment
 
     private void populateSingleAuthorStatus(@NonNull final Book book) {
         int bitmask = book.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
-        boolean singleAuthor = (bitmask & DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS) == 0;
+        boolean singleAuthor = (bitmask & TocEntry.Type.MULTIPLE_AUTHORS) == 0;
         mSingleAuthor.setChecked(singleAuthor);
         mAuthorTextView.setVisibility(singleAuthor ? View.GONE : View.VISIBLE);
     }
@@ -254,10 +253,10 @@ public class EditBookTOCFragment
      */
     private void populateContentList() {
         // Get all of the rows from the database and create the item list
-        mList = getBookManager().getBook().getTOC();
+        mList = getBookManager().getBook().getTOCList();
 
         // Now create a simple cursor adapter and set it to display
-        ArrayAdapter<TOCEntry> adapter = new TOCListAdapterForEditing(requireActivity(),
+        ArrayAdapter<TocEntry> adapter = new TOCListAdapterForEditing(requireActivity(),
                                                                       R.layout.row_edit_toc_entry,
                                                                       mList);
         mListView.setAdapter(adapter);
@@ -271,7 +270,7 @@ public class EditBookTOCFragment
     @Override
     @CallSuper
     protected void onSaveFieldsToBook(@NonNull final Book book) {
-        Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
+        Tracker.enterOnSaveFieldsToBook(this, book.getId());
         super.onSaveFieldsToBook(book);
 
         book.putTOC(mList);
@@ -281,13 +280,13 @@ public class EditBookTOCFragment
         // So while this command is 'correct', it does not stop (and does not bother) the user
         // setting it wrong. insert/update into the database will correctly set it by
         // simply looking at the toc itself
-        int type = DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_WORKS;
+        int type = TocEntry.Type.MULTIPLE_WORKS;
         if (!mSingleAuthor.isChecked()) {
-            type |= DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS;
+            type |= TocEntry.Type.MULTIPLE_AUTHORS;
         }
         book.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
 
-        Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
+        Tracker.exitOnSaveFieldsToBook(this, book.getId());
     }
 
     //</editor-fold>
@@ -306,7 +305,7 @@ public class EditBookTOCFragment
     }
 
     /**
-     * This will be called when a menu item is selected.
+     * Called when a menu item is selected.
      *
      * @param item The item selected
      *
@@ -348,7 +347,7 @@ public class EditBookTOCFragment
         switch (item.getItemId()) {
             case R.id.MENU_DELETE_TOC_ENTRY:
                 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-                ArrayAdapter<TOCEntry> adapter = getListAdapter();
+                ArrayAdapter<TocEntry> adapter = getListAdapter();
                 adapter.remove(adapter.getItem((int) info.id));
                 getBookManager().setDirty(true);
                 return true;
@@ -410,14 +409,14 @@ public class EditBookTOCFragment
 
         // finally the TOC itself; not saved here but only put on display for the user to approve
         final int tocBitMask = bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
-        ArrayList<TOCEntry> tocEntries =
+        ArrayList<TocEntry> tocEntries =
                 bookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
         boolean hasTOC = tocEntries != null && !tocEntries.isEmpty();
 
         StringBuilder msg = new StringBuilder();
         if (hasTOC) {
             msg.append(getString(R.string.toc_confirm)).append("\n\n");
-            for (TOCEntry t : tocEntries) {
+            for (TocEntry t : tocEntries) {
                 msg.append(t.getTitle()).append(", ");
             }
         } else {
@@ -439,12 +438,12 @@ public class EditBookTOCFragment
                 .create();
 
         if (hasTOC) {
-            final List<TOCEntry> finalTOCEntries = tocEntries;
+            final List<TocEntry> finalTocEntryList = tocEntries;
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
                              new DialogInterface.OnClickListener() {
                                  public void onClick(@NonNull final DialogInterface dialog,
                                                      final int which) {
-                                     commitISFDBData(tocBitMask, finalTOCEntries);
+                                     commitISFDBData(tocBitMask, finalTocEntryList);
                                  }
                              });
         }
@@ -477,7 +476,7 @@ public class EditBookTOCFragment
      * The user approved, so add the TOC to the list on screen (still not saved to database).
      */
     private void commitISFDBData(final int tocBitMask,
-                                 @NonNull final List<TOCEntry> tocEntries) {
+                                 @NonNull final List<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
             getBookManager().getBook().putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, tocBitMask);
             populateSingleAuthorStatus(getBookManager().getBook());
@@ -494,7 +493,7 @@ public class EditBookTOCFragment
      * copy the selected entry into the edit fields,
      * and set the confirm button to reflect a save (versus add).
      */
-    private void editEntry(@NonNull final TOCEntry item,
+    private void editEntry(@NonNull final TocEntry item,
                            final int position) {
         // temp. debug to see who really calls us while refactoring.
         Logger.debug("editEntry stacktrace");
@@ -507,23 +506,23 @@ public class EditBookTOCFragment
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends ArrayAdapter<TOCEntry>> T getListAdapter() {
+    private <T extends ArrayAdapter<TocEntry>> T getListAdapter() {
         return (T) mListView.getAdapter();
     }
 
     private class TOCListAdapterForEditing
-            extends SimpleListAdapter<TOCEntry> {
+            extends SimpleListAdapter<TocEntry> {
 
         TOCListAdapterForEditing(@NonNull final Context context,
                                  @SuppressWarnings("SameParameterValue")
                                  @LayoutRes final int rowLayoutId,
-                                 @NonNull final ArrayList<TOCEntry> items) {
+                                 @NonNull final ArrayList<TocEntry> items) {
             super(context, rowLayoutId, items);
         }
 
         @Override
         public void onRowClick(@NonNull final View target,
-                               @NonNull final TOCEntry item,
+                               @NonNull final TocEntry item,
                                final int position) {
             editEntry(item, position);
         }
@@ -538,7 +537,7 @@ public class EditBookTOCFragment
 
         @Override
         public void onGetView(@NonNull final View convertView,
-                              @NonNull final TOCEntry item) {
+                              @NonNull final TocEntry item) {
 
             Holder holder = ViewTagger.getTag(convertView);
             if (holder == null) {

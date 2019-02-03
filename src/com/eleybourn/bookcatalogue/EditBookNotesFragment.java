@@ -48,7 +48,7 @@ import java.util.List;
  * This class is called by {@link EditBookFragment} and displays the Notes Tab.
  */
 public class EditBookNotesFragment
-        extends BookBaseFragment
+        extends EditBookBaseFragment
         implements
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Integer>,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
@@ -188,13 +188,13 @@ public class EditBookNotesFragment
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
-        Tracker.enterOnLoadFieldsFromBook(this, book.getBookId());
+        Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         // Restore default visibility
         showHideFields(false);
 
-        Tracker.exitOnLoadFieldsFromBook(this, book.getBookId());
+        Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
 
     //</editor-fold>
@@ -215,9 +215,9 @@ public class EditBookNotesFragment
      */
     @Override
     protected void onSaveFieldsToBook(@NonNull final Book book) {
-        Tracker.enterOnSaveFieldsToBook(this, book.getBookId());
+        Tracker.enterOnSaveFieldsToBook(this, book.getId());
         super.onSaveFieldsToBook(book);
-        Tracker.exitOnSaveFieldsToBook(this, book.getBookId());
+        Tracker.exitOnSaveFieldsToBook(this, book.getId());
     }
 
     //</editor-fold>

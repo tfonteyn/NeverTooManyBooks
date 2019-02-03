@@ -85,8 +85,8 @@ public class IntListPreference
     }
 
     /**
-     * Sets the human-readable entries to be shown in the list. This will be
-     * shown in subsequent dialogs.
+     * Sets the human-readable entries to be shown in the list.
+     * This will be shown in subsequent dialogs.
      * <p>
      * Each entry must have a corresponding index in
      * {@link #setEntryValues(int[])}.
@@ -287,7 +287,7 @@ public class IntListPreference
 
     @Override
     protected void onRestoreInstanceState(@NonNull final Parcelable state) {
-        if (state == null || !state.getClass().equals(SavedState.class)) {
+        if (!state.getClass().equals(SavedState.class)) {
             // Didn't save state for us in onSaveInstanceState
             super.onRestoreInstanceState(state);
             return;

@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -389,6 +388,22 @@ class SearchLibraryThingHandler
         mBookData = bookData;
     }
 
+    /**
+     * Add the value to the Bundle if not present.
+     *
+     * @param bundle to check
+     * @param key    for data to add
+     * @param value  to use
+     */
+    private static void addIfNotPresent(@NonNull final Bundle bundle,
+                                        @NonNull final String key,
+                                        @NonNull final String value) {
+        String test = bundle.getString(key);
+        if (test == null || test.isEmpty()) {
+            bundle.putString(key, value.trim());
+        }
+    }
+
     @Override
     @CallSuper
     public void characters(final char[] ch,
@@ -465,18 +480,18 @@ class SearchLibraryThingHandler
             mFieldType = FieldTypes.None;
 
         } else if (localName.equalsIgnoreCase(XML_AUTHOR)) {
-            mAuthors.add(new Author(mBuilder.toString()));
+            mAuthors.add(Author.fromString(mBuilder.toString()));
 
         } else if (localName.equalsIgnoreCase(XML_FACT)) {
             // Process the XML_FACT according to the active XML_FIELD type.
             switch (mFieldType) {
 
                 case Title:
-                    BundleUtils.addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
+                    addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
                     break;
 
                 case Series:
-                    mSeries.add(new Series(mBuilder.toString()));
+                    mSeries.add(Series.fromString(mBuilder.toString()));
                     break;
 
 //                case Places:

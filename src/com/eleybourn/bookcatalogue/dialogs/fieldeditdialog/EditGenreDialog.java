@@ -34,7 +34,8 @@ public class EditGenreDialog
     public EditGenreDialog(@NonNull final Activity activity,
                            @NonNull final DBA db,
                            @NonNull final Runnable onChanged) {
-        super(activity, db, onChanged);
+        super(activity, db, android.R.layout.simple_dropdown_item_1line, db.getGenres(),
+              onChanged);
     }
 
     @CallSuper
@@ -43,13 +44,8 @@ public class EditGenreDialog
     }
 
     @Override
-    protected void confirmEdit(@NonNull final String from,
+    protected void saveChanges(@NonNull final String from,
                                @NonNull final String to) {
-        // case sensitive equality
-        if (to.equals(from)) {
-            return;
-        }
-        mDb.globalReplaceGenre(from, to);
-        mOnChanged.run();
+        mDb.updateGenre(from, to);
     }
 }

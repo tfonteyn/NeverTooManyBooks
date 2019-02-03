@@ -36,7 +36,7 @@
  * First Data Entry: "books.csv"
  * -----------------------------
  * <p>
- * A CSV export appropriate for the archiver that created the archive. ie. the most recent
+ * A CSV export appropriate for the archiver that created the archive. i.e. the most recent
  * archiver version for the app version that is installed.
  * <p>
  * Optional Data Entries: "books<ArchVersion>.csv"

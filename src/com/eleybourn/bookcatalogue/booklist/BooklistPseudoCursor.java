@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
-import com.eleybourn.bookcatalogue.database.cursors.BooklistRowView;
+import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
@@ -95,7 +95,7 @@ public class BooklistPseudoCursor
     private final int[] mMruList;
     /** Cached RowView for this cursor. */
     @Nullable
-    private BooklistRowView mRowView;
+    private BooklistCursorRow mRowView;
     /** The cursor to use for the last onMove() event. */
     private BooklistCursor mActiveCursor;
     /** Current MRU ring buffer position. */
@@ -132,9 +132,9 @@ public class BooklistPseudoCursor
      * @return a CursorRow for this cursor. Constructs one if necessary.
      */
     @NonNull
-    public BooklistRowView getCursorRow() {
+    public BooklistCursorRow getCursorRow() {
         if (mRowView == null) {
-            mRowView = new BooklistRowView(this, mBuilder);
+            mRowView = new BooklistCursorRow(this, mBuilder);
         }
         return mRowView;
     }
@@ -337,7 +337,7 @@ public class BooklistPseudoCursor
     }
 
     /**
-     * @return the number of levels in the book list.
+     * @return the number of levels in the book list (includes the 'book' level!)
      */
     public int numLevels() {
         return mBuilder.numLevels();

@@ -23,18 +23,33 @@ public final class Csv {
      * @return Resulting string
      */
     @NonNull
-    public static <T> String toDisplayString(@NonNull final List<T> list) {
-        return csv(", ", list);
+    public static <E> String toDisplayString(@NonNull final List<E> list) {
+        return join(", ", list, null);
     }
 
-    public static <E> String csv(@NonNull final String delim,
-                                 @NonNull final E[] collection) {
-        return csv(delim, Arrays.asList(collection), null);
+    @NonNull
+    public static <E> String toDisplayString(@NonNull final List<E> list,
+                                             @Nullable final Formatter<E> formatter) {
+        return join(", ", list, formatter);
     }
 
-    public static <E> String csv(@NonNull final String delim,
-                                 @NonNull final Collection<E> collection) {
-        return csv(delim, collection, null);
+    @NonNull
+    public static <E> String join(@NonNull final CharSequence delim,
+                                  @NonNull final E[] collection) {
+        return join(delim, Arrays.asList(collection), null);
+    }
+
+    @NonNull
+    public static <E> String join(@NonNull final CharSequence delim,
+                                  @NonNull final Collection<E> collection) {
+        return join(delim, collection, null);
+    }
+
+    @NonNull
+    public static <E> String join(final char delim,
+                                  @NonNull final Collection<E> collection,
+                                  @Nullable final Formatter<E> formatter) {
+        return join(String.valueOf(delim), collection, formatter);
     }
 
     /**
@@ -49,9 +64,9 @@ public final class Csv {
      *
      * @return csv string
      */
-    public static <E> String csv(@NonNull final String delim,
-                                 @NonNull final Collection<E> collection,
-                                 @Nullable final Formatter<E> formatter) {
+    public static <E> String join(@NonNull final CharSequence delim,
+                                  @NonNull final Collection<E> collection,
+                                  @Nullable final Formatter<E> formatter) {
         if (collection.isEmpty()) {
             return "";
         }
@@ -82,9 +97,9 @@ public final class Csv {
      *
      * @return csv string
      */
-    public static String csv(final String delim,
-                             final int length,
-                             final String element) {
+    public static String join(final CharSequence delim,
+                              final int length,
+                              final String element) {
         StringBuilder sb = new StringBuilder(element);
         for (int i = 1; i < length; i++) {
             sb.append(delim).append(element);
@@ -94,6 +109,6 @@ public final class Csv {
 
     public interface Formatter<E> {
 
-        String format(@NonNull final E element);
+        String format(@NonNull E element);
     }
 }

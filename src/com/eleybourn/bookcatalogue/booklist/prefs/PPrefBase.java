@@ -3,12 +3,12 @@ package com.eleybourn.bookcatalogue.booklist.prefs;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.utils.Prefs;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 
 /**
  * Base class for a generic Preference.
@@ -16,7 +16,7 @@ import androidx.annotation.StringRes;
  * @param <T> type of the value to store
  */
 public abstract class PPrefBase<T>
-    implements PPref<T> {
+        implements PPref<T> {
 
     /**
      * Copy of the style uuid this Preference belongs to.
@@ -25,15 +25,15 @@ public abstract class PPrefBase<T>
      */
     @Nullable
     protected final String mUuid;
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    final T mDefaultValue;
     /** key for the Preference */
     @StringRes
     private final int mKey;
     /** in memory value used for non-persistence situations. */
     @Nullable
-    protected T mNonPersistedValue;
-    /** in-memory default to use when value==null, or when the backend does not contain the key. */
-    @NonNull
-    protected final T mDefaultValue;
+    T mNonPersistedValue;
 
     /**
      * @param key          key of preference
@@ -43,9 +43,9 @@ public abstract class PPrefBase<T>
     PPrefBase(@StringRes final int key,
               @Nullable final String uuid,
               @NonNull final T defaultValue) {
-        this.mKey = key;
-        this.mUuid = uuid;
-        this.mDefaultValue = defaultValue;
+        mKey = key;
+        mUuid = uuid;
+        mDefaultValue = defaultValue;
     }
 
     @NonNull
@@ -63,7 +63,7 @@ public abstract class PPrefBase<T>
 
     /**
      * for single pref updated.
-     *
+     * <p>
      * Stores the value as a String
      */
     @Override
@@ -79,16 +79,16 @@ public abstract class PPrefBase<T>
 
     /**
      * for batch pref updated.
-     *
+     * <p>
      * Stores the value as a String
      */
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
-                    @NonNull final T value) {
-        if (value == null) {
-            ed.remove(getKey());
-        } else {
+                    @Nullable final T value) {
+        if (value != null) {
             ed.putString(getKey(), value.toString());
+        } else {
+            ed.remove(getKey());
         }
     }
 
@@ -115,12 +115,11 @@ public abstract class PPrefBase<T>
     }
 
     @Override
+    @NonNull
     public String toString() {
-        return "PPrefBase{" +
-            "mKey=" + BookCatalogueApp.getResString(mKey) +
-            ", type=" + mDefaultValue.getClass().getSimpleName() +
-            ", defaultValue=`" + mDefaultValue + '`' +
-            ", mNonPersistedValue=`" + mNonPersistedValue + '`' +
-            '}';
+        return "mKey=" + BookCatalogueApp.getResString(mKey)
+                + ", type=" + mDefaultValue.getClass().getSimpleName()
+                + ", defaultValue=`" + mDefaultValue + '`'
+                + ", mNonPersistedValue=`" + mNonPersistedValue + '`';
     }
 }

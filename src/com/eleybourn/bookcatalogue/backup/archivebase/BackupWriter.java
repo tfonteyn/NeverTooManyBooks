@@ -43,12 +43,12 @@ public interface BackupWriter
      *
      * @throws IOException on failure
      */
-    void backup(@NonNull final ExportSettings settings,
-                @NonNull final BackupWriter.BackupWriterListener listener)
+    void backup(@NonNull ExportSettings settings,
+                @NonNull BackupWriter.BackupWriterListener listener)
             throws IOException;
 
     /**
-     * Get the containing archive.
+     * @return the containing archive.
      */
     @NonNull
     BackupContainer getContainer();
@@ -58,7 +58,7 @@ public interface BackupWriter
      *
      * @throws IOException on failure
      */
-    void putInfo(@NonNull final byte[] bytes)
+    void putInfo(@NonNull byte[] bytes)
             throws IOException;
 
     /**
@@ -66,7 +66,7 @@ public interface BackupWriter
      *
      * @throws IOException on failure
      */
-    void putBooks(@NonNull final File file)
+    void putBooks(@NonNull File file)
             throws IOException;
 
     /**
@@ -74,7 +74,7 @@ public interface BackupWriter
      *
      * @throws IOException on failure
      */
-    void putXmlData(@NonNull final File file)
+    void putXmlData(@NonNull File file)
             throws IOException;
 
     /**
@@ -85,8 +85,8 @@ public interface BackupWriter
      *
      * @throws IOException on failure
      */
-    void putFile(@NonNull final String name,
-                 @NonNull final File file)
+    void putFile(@NonNull String name,
+                 @NonNull File file)
             throws IOException;
 
     /**
@@ -94,7 +94,7 @@ public interface BackupWriter
      *
      * @throws IOException on failure
      */
-    void putBooklistStyles(@NonNull final byte[] bytes)
+    void putBooklistStyles(@NonNull byte[] bytes)
             throws IOException;
 
     /**
@@ -102,7 +102,7 @@ public interface BackupWriter
      *
      * @throws IOException on failure
      */
-    void putPreferences(@NonNull final byte[] bytes)
+    void putPreferences(@NonNull byte[] bytes)
             throws IOException;
 
     /**
@@ -125,16 +125,16 @@ public interface BackupWriter
         /**
          * Set the end point for the progress.
          */
-        void setMax(final int max);
+        void setMax(int max);
 
         /**
          * Advance progress by 'delta'.
          */
-        void onProgressStep(@Nullable final String message,
-                            final int delta);
+        void onProgressStep(@Nullable String message,
+                            int delta);
 
         /**
-         * Check if operation is cancelled.
+         * @return <tt>true</tt> if operation is cancelled.
          */
         boolean isCancelled();
     }

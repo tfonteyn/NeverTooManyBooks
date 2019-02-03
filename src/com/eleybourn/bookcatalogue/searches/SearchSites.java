@@ -227,6 +227,7 @@ public final class SearchSites {
          */
         Site(@NonNull final Parcel in) {
             id = in.readInt();
+            //noinspection ConstantConditions
             name = in.readString();
             enabled = in.readByte() != 0;
             priority = in.readInt();

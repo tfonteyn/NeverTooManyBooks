@@ -13,7 +13,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Format;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.entities.TOCEntry;
+import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -31,9 +31,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_AUTHORS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_WITH_MULTIPLE_WORKS;
 
 public class ISFDBBook
         extends AbstractBase {
@@ -79,22 +76,22 @@ public class ISFDBBook
      * as OMNIBUS publications
      *
      * Put all these together into the Anthology bucket.
-     * After processing DOM_BOOK_WITH_MULTIPLE_AUTHORS is added when needed.
+     * After processing MULTIPLE_AUTHORS is added when needed.
      */
     static {
         // multiple works, one author
-        TYPE_MAP.put("coll", DOM_BOOK_WITH_MULTIPLE_WORKS);
-        TYPE_MAP.put("COLLECTION", DOM_BOOK_WITH_MULTIPLE_WORKS);
+        TYPE_MAP.put("coll", TocEntry.Type.MULTIPLE_WORKS);
+        TYPE_MAP.put("COLLECTION", TocEntry.Type.MULTIPLE_WORKS);
 
         // multiple works, multiple authors
-        TYPE_MAP.put("anth", DOM_BOOK_WITH_MULTIPLE_WORKS | DOM_BOOK_WITH_MULTIPLE_AUTHORS);
-        TYPE_MAP.put("ANTHOLOGY", DOM_BOOK_WITH_MULTIPLE_WORKS | DOM_BOOK_WITH_MULTIPLE_AUTHORS);
+        TYPE_MAP.put("anth", TocEntry.Type.MULTIPLE_WORKS | TocEntry.Type.MULTIPLE_AUTHORS);
+        TYPE_MAP.put("ANTHOLOGY", TocEntry.Type.MULTIPLE_WORKS | TocEntry.Type.MULTIPLE_AUTHORS);
 
         // multiple works that have previously been published independently
-        TYPE_MAP.put("omni", DOM_BOOK_WITH_MULTIPLE_WORKS | DOM_BOOK_WITH_MULTIPLE_AUTHORS);
-        TYPE_MAP.put("OMNIBUS", DOM_BOOK_WITH_MULTIPLE_WORKS | DOM_BOOK_WITH_MULTIPLE_AUTHORS);
+        TYPE_MAP.put("omni", TocEntry.Type.MULTIPLE_WORKS | TocEntry.Type.MULTIPLE_AUTHORS);
+        TYPE_MAP.put("OMNIBUS", TocEntry.Type.MULTIPLE_WORKS | TocEntry.Type.MULTIPLE_AUTHORS);
 
-        TYPE_MAP.put("MAGAZINE", DOM_BOOK_WITH_MULTIPLE_WORKS);
+        TYPE_MAP.put("MAGAZINE", TocEntry.Type.MULTIPLE_WORKS);
 
         // others, treated as a standard book.
 //        TYPE_MAP.put("novel", 0);
@@ -121,7 +118,7 @@ public class ISFDBBook
     @Nullable
     private String mFirstPublication;
     /** ISFDB native book id. */
-    private long mPublicationRecord;
+    private final long mPublicationRecord;
     /** url list of all editions of this book. */
     private List<String> mEditions;
 
@@ -248,7 +245,7 @@ public class ISFDBBook
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            mAuthors.add(new Author(a.text()));
+                            mAuthors.add( Author.fromString(a.text()));
                             //ENHANCE: pass and store these ISFBD id's
 //                            ISFDB_BKEY_AUTHOR_ID_LIST.add(stripNumber(a.attr("href")));
                         }
@@ -286,7 +283,7 @@ public class ISFDBBook
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            mSeries.add(new Series(a.text()));
+                            mSeries.add(Series.fromString(a.text()));
                             //ENHANCE: pass and store these ISFBD id's
 //                            ISFDB_BKEY_SERIES_ID_LIST.add(stripNumber(a.attr("href")));
                         }
@@ -393,7 +390,7 @@ public class ISFDBBook
 //        bookData.putParcelableArrayList(ISFDB_BKEY_SERIES_ID, ISFDB_BKEY_SERIES_ID_LIST);
 
         // the table of content
-        ArrayList<TOCEntry> toc = getTableOfContentList(bookData);
+        ArrayList<TocEntry> toc = getTableOfContentList(bookData);
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, toc);
 
         // store accumulated Series, do this *after* we go the TOC
@@ -401,9 +398,9 @@ public class ISFDBBook
 
         // set Anthology type
         if (toc.size() > 0) {
-            int type = DOM_BOOK_WITH_MULTIPLE_WORKS;
-            if (TOCEntry.hasMultipleAuthors(toc)) {
-                type |= DOM_BOOK_WITH_MULTIPLE_AUTHORS;
+            int type = TocEntry.Type.MULTIPLE_WORKS;
+            if (TocEntry.hasMultipleAuthors(toc)) {
+                type |= TocEntry.Type.MULTIPLE_AUTHORS;
             }
             bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
         }
@@ -498,10 +495,10 @@ public class ISFDBBook
         This method returns the list for easy use, but ALSO adds the data to the book bundle !
      */
     @NonNull
-    private ArrayList<TOCEntry> getTableOfContentList(@NonNull final Bundle /* out */ bookData)
+    private ArrayList<TocEntry> getTableOfContentList(@NonNull final Bundle /* out */ bookData)
             throws SocketTimeoutException {
 
-        final ArrayList<TOCEntry> results = new ArrayList<>();
+        final ArrayList<TocEntry> results = new ArrayList<>();
 
         if (!loadPage()) {
             return results;
@@ -568,11 +565,11 @@ public class ISFDBBook
                     //ENHANCE: tackle 'variant' titles later
 
                 } else if (author == null && href.contains("ea.cgi")) {
-                    author = new Author(cleanUpName(a.text()));
+                    author =  Author.fromString(cleanUpName(a.text()));
 
                 } else if (mSeries.isEmpty() && href.contains("pe.cgi")) {
                     String seriesName = a.text();
-                    String seriesNum = null;
+                    String seriesNum = "";
                     // check for the number; series don't always have a number
                     int start = liAsString.indexOf('[');
                     int end = liAsString.indexOf(']');
@@ -583,10 +580,12 @@ public class ISFDBBook
                         String[] data = tmp.split("&#x2022;");
                         // check if there really was a series number
                         if (data.length > 1) {
-                            seriesNum = data[1];
+                            seriesNum = Series.cleanupSeriesPosition(data[1]);
                         }
                     }
-                    mSeries.add(new Series(seriesName, seriesNum));
+                    Series newSeries = new Series(seriesName);
+                    newSeries.setNumber(seriesNum);
+                    mSeries.add(newSeries);
                 }
             }
 
@@ -609,7 +608,7 @@ public class ISFDBBook
                 mFirstPublication = year;
             }
 
-            TOCEntry tocEntry = new TOCEntry(0, author, title, year);
+            TocEntry tocEntry = new TocEntry(author, title, year);
             results.add(tocEntry);
         }
 

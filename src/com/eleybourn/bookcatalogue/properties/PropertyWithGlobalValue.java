@@ -114,6 +114,7 @@ public abstract class PropertyWithGlobalValue<T> extends Property<T> {
         return this;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isGlobal() {
         return mIsGlobal;
     }

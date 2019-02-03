@@ -20,19 +20,19 @@
 
 package com.eleybourn.bookcatalogue.tasks.taskqueue;
 
+import android.annotation.SuppressLint;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.adapters.BindableItemCursorAdapter;
-import com.eleybourn.bookcatalogue.database.cursors.BindableItemCursor;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
+import java.util.Collections;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -51,7 +51,9 @@ public class EventsCursor
     /** Column number of Exception column. */
     private static int mEventCol = -2;
 
-    private final Map<Long, Boolean> mSelections = new Hashtable<>();
+    @SuppressLint("UseSparseArrays")
+    private final Map<Long, Boolean> mSelections =
+            Collections.synchronizedMap(new HashMap<Long, Boolean>());
 
     /**
      * Constructor, based on SQLiteCursor constructor.
@@ -69,7 +71,7 @@ public class EventsCursor
      */
     public long getId() {
         if (mIdCol < 0) {
-            mIdCol = this.getColumnIndex(TaskQueueDBHelper.DOM_ID);
+            mIdCol = getColumnIndex(TaskQueueDBHelper.DOM_ID);
         }
         return getLong(mIdCol);
     }
@@ -98,6 +100,7 @@ public class EventsCursor
      */
     public boolean isSelected() {
         if (mSelections.containsKey(getId())) {
+            //noinspection ConstantConditions
             return mSelections.get(getId());
         } else {
             return false;

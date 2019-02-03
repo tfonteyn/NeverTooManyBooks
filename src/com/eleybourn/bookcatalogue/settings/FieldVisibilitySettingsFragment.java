@@ -33,13 +33,15 @@ import java.util.Map;
 public class FieldVisibilitySettingsFragment
         extends PreferenceFragmentCompat {
 
+    public static final String TAG = "FieldVisibilitySettingsFragment";
+
     //NEWKIND: new fields visibility
     /** list of all the Fields that support hiding. */
     private static final Map<Integer, String> FIELD_LIST = new LinkedHashMap<>();
 
     static {
         FIELD_LIST.put(R.string.lbl_isbn, UniqueId.KEY_BOOK_ISBN);
-        FIELD_LIST.put(R.string.lbl_cover, UniqueId.BKEY_HAVE_THUMBNAIL);
+        FIELD_LIST.put(R.string.lbl_cover, UniqueId.BKEY_THUMBNAIL);
         FIELD_LIST.put(R.string.lbl_series, UniqueId.KEY_SERIES);
         FIELD_LIST.put(R.string.lbl_series_num, UniqueId.KEY_SERIES_NUM);
         FIELD_LIST.put(R.string.lbl_description, UniqueId.KEY_BOOK_DESCRIPTION);
@@ -58,7 +60,7 @@ public class FieldVisibilitySettingsFragment
 
         // **** PERSONAL FIELDS ****
         FIELD_LIST.put(R.string.lbl_bookshelf, UniqueId.KEY_BOOKSHELF_NAME);
-        FIELD_LIST.put(R.string.lbl_lending, UniqueId.KEY_LOAN_LOANED_TO);
+        FIELD_LIST.put(R.string.lbl_lending, UniqueId.KEY_BOOK_LOANEE);
         FIELD_LIST.put(R.string.lbl_notes, UniqueId.KEY_BOOK_NOTES);
         FIELD_LIST.put(R.string.lbl_location_long, UniqueId.KEY_BOOK_LOCATION);
         FIELD_LIST.put(R.string.lbl_price_paid, UniqueId.KEY_BOOK_PRICE_PAID);

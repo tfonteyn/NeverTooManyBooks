@@ -47,7 +47,7 @@
                 android:id="@+id/send_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/send_info" />
+                android:text="@string/about_send_info" />
 
             <TextView
                 android:id="@+id/cleanup_text"

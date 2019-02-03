@@ -59,24 +59,24 @@
     <string name="about_lbl_upgrade">Son güncellemenizden beri</string>
     <string name="menu_edit_book">Kitap düzenle</string>
     <string name="menu_edit_book_notes">Yorumlarınız</string>
-    <string name="menu_edit_book_loan">Kitabı ödünç ver</string>
+    <string name="menu_loan_lend_book">Kitabı ödünç ver…</string>
     <string name="error_unknown">Bilinmeyen bir hata oluştu</string>
     <string name="lbl_notes">Notlar</string>
-    <string name="loaned_to_long">Kitabın ödünç verildiği kişi:</string>
-    <string name="loaned_to_nobody">Hiç kimse</string>
-    <string name="loan_to">Şuna ödünç ver:</string>
-    <string name="loan_returned">Geri geldi</string>
+    <string name="lbl_loaned_to_long">Kitabın ödünç verildiği kişi:</string>
+    <string name="nobody">Hiç kimse</string>
+    <string name="lbl_loan_to">Şuna ödünç ver:</string>
+    <string name="btn_loan_returned">Geri geldi</string>
     <string name="name">Ad</string>
     <string name="about_lbl_website">İnteret Sayfası</string>
     <string name="about_lbl_sourcecode">Kaynak kodu</string>
     <string name="about_lbl_contacts">İletişim</string>
     <string name="about_lbl_donate">Bağış yap</string>
-    <string name="menu_about">Uygulama hakkında</string>
+    <string name="lbl_about">Uygulama hakkında</string>
     <string name="lbl_price_listed">Fiyatı</string>
     <string name="lbl_update_fields">Alanları kendiliğinden doldur</string>
     <string name="lbl_update_fields_to_update">Güncellenecek alanları seçin</string>
     <string name="info_select_fields_to_update">Seçilen alanlar İnternet\'ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
-    <string name="overwrite_thumbnail">Bu işlem seçili alanları gösterildiği biçimde güncelleyecektir, ancak küçük resimler seçime bağlı olarak tüm kitaplar için de indirilebilir.\n\nVar olan tüm küçük resimlerin üzerine yazmak istiyor musunuz? Bu işlem uzun sürebilir. </string>
+    <string name="confirm_overwrite_thumbnail">Bu işlem seçili alanları gösterildiği biçimde güncelleyecektir, ancak küçük resimler seçime bağlı olarak tüm kitaplar için de indirilebilir.\n\nVar olan tüm küçük resimlerin üzerine yazmak istiyor musunuz? Bu işlem uzun sürebilir. </string>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
     <string name="error_search_failed">Kitap araması başarısız oldu. Ağ ayarlarınızı denetleyiniz.</string>
@@ -104,7 +104,7 @@
     <string name="lbl_read_start">Okumaya başlanan tarih</string>
     <string name="lbl_read_end">Okumanın bittiği tarih</string>
     <string name="title_duplicate_book">Kitabı kopyala</string>
-    <string name="warning_duplicate_book_message">Eklemeye çalıştığınız kitap veritabanında zaten var, tekrar eklemek istediğinizden emin misiniz?</string>
+    <string name="confirm_duplicate_book_message">Eklemeye çalıştığınız kitap veritabanında zaten var, tekrar eklemek istediğinizden emin misiniz?</string>
     <string name="menu_cover_add_from_gallery">Galeriden…</string>
     <string name="backup_request">Veritabanınızı SD karta yedeklemek ister misiniz?</string>
     <string name="lbl_backup_dialog">Yedekle</string>
@@ -114,7 +114,7 @@
     <string name="lbl_format">Biçim</string>
     <string name="lbl_description">Özet</string>
     <string name="lbl_genre">Tür</string>
-    <string name="not_set">Ayarlı değil</string>
+    <string name="field_not_set">Ayarlı değil</string>
     <string name="menu_search_books">Kiatp ara</string>
     <string name="hint_book_search_by_text">Kitapları ISBN ile eklemek kitap adı veya yazar adı ile eklemekten çok daha doğru sonuç verir ve genelde yeğlenir. Unutmayın ki doğru barkodu ön kapağın iç kısmında da bulabilirsiniz\n\n</string>
     <string name="about_help_click_here">Çevrimiçi yardım sayfalarına erişmek için lütfen dokunun</string>
@@ -137,7 +137,7 @@
     <string name="btn_confirm_add">Ekle</string>
     <string name="info_no_authors_yet">Bu kitap için hiçbir yazar eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
     <string name="info_no_series_yet">Bu kitap için hiçbir seri eklenmemiş.  Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak seri ekleyin.</string>
-    <string name="warning_cover_not_set">Kapak yok</string>
+    <string name="warning_cover_field_not_set">Kapak yok</string>
     <string name="warning_cover_corrupt">Kapak hasarlı</string>
     <string name="title_cover_detail">Kapak ayrıntısı</string>
     <string name="title_select_image">Resim seç</string>
@@ -166,19 +166,19 @@
     <string name="menu_edit_author">Yazarı düzenle…</string>
     <string name="menu_edit_series">Serileri düzenle…</string>
     <string name="title_delete_series">Serileri sil</string>
-    <string name="warning_really_delete_series">\'%s\' serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
+    <string name="confirm_really_delete_series">\'%s\' serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="title_edit_series">Seri ayrıntılarını düzenle</string>
     <string name="title_select_cover">Kapak seç</string>
     <string name="warning_no_isbn_no_editions">ISBN\'si olmayan bir kitabın diğer sürümlerine ulaşılamaz</string>
     <string name="unsaved_edits">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="unsaved_edits_title">Kaydedilmemiş değişiklikler</string>
-    <string name="changed_author_how_apply">Yazarı şundan:\n  \'%1$s\' şuna:\n  \'%2$s\' değiştirdiniz.\nDeğişiklikleri nasıl uygulamak istersiniz?\nNot: \'%3$s\' seçimi anında uygulanacaktır.</string>
+    <string name="confirm_apply_author_changed">Yazarı şundan:\n  \'%1$s\' şuna:\n  \'%2$s\' değiştirdiniz.\nDeğişiklikleri nasıl uygulamak istersiniz?\nNot: \'%3$s\' seçimi anında uygulanacaktır.</string>
     <string name="btn_this_book">Bu kitap</string>
     <string name="title_scope_of_change">Değişiklik kapsamı</string>
-    <string name="changed_series_how_apply">Seriyi şundan:\n  \'%1$s\' şuna: \n  \'%2$s\' değiştirdiniz.\nDeğişiklikleri nasıl uygulamak istersiniz?\nNot: \'%3$s\' seçimi anında uygulanacaktır.</string>
+    <string name="confirm_apply_series_changed">Seriyi şundan:\n  \'%1$s\' şuna: \n  \'%2$s\' değiştirdiniz.\nDeğişiklikleri nasıl uygulamak istersiniz?\nNot: \'%3$s\' seçimi anında uygulanacaktır.</string>
     <string name="warning_unable_to_find_book">Belirtilen kitap bulunamıyor</string>
     <string name="list_and">and</string>
-    <string name="warning_really_delete_book">Bu işlem bu kitabı tümüyle silecektir: \'%1$s\' - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
+    <string name="confirm_really_delete_book">Bu işlem bu kitabı tümüyle silecektir: \'%1$s\' - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="warning_editions_require_isbn">Diğer sürümlere ulaşmak bir ISBN gerektirir</string>
     <string name="warning_no_editions">Başka sürüm bulunamadı</string>
     <string name="title_finding_editions">Sürümler bulunuyor…</string>
@@ -204,7 +204,7 @@
     <string name="lt_reset_messages_info">Bazen bu uygulama LibraryThing\'den isteğe bağlı iletiler gösterebilir. Devre dışı kalmış olabilecek bu iletileri sıfırlamak için aşağıdaki düğmeye dokunun.</string>
     <string name="btn_reset">Sıfırla</string>
     <string name="debug_send_info_text">Son zamanda oluşan çökmelerle ilgili bilgi toplamak ve bunu geliştiricilerimizden birine göndermek için aşağıdaki butonu dokunun. Bu veritabanınızın ve oluşturulan günlük dosyalarının bir yedeğini oluşturacaktır. Eğer bu dosyaları bize göndermek istemezseniz göndermeden önce lütfen e-posta eklerinden kaldırın.</string>
-    <string name="send_info">Bilgi gönder</string>
+    <string name="about_send_info">Bilgi gönder</string>
     <string name="info_cleanup_files_text">Temizlenebilir dosyalar şu anda SD kartta %s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle \'Bilgi gönder\' düğmesini kullanmayı deneyin.</string>
     <string name="cleanup_files">Dosyaları temizle</string>
     <string name="megabytes">%.2f MS</string>
@@ -225,7 +225,7 @@
     <string name="gr_tq_menu_delete_event">Olayı sil</string>
     <string name="gr_tq_menu_delete_task">Görevi sil</string>
     <string name="my_books">Kitaplarım</string>
-    <string name="loan_return_book">Ödünç ver, geri al veya kitabı düzenle</string>
+    <string name="loan_return_edit_book">Ödünç ver, geri al veya kitabı düzenle</string>
     <string name="menu_admin_and_prefs">Yönetim ve Seçenekler</string>
     <string name="gr_menu_send_to_goodreads">Goodreads\'e gönder</string>
     <string name="gr_auth_blurb_part1">Goodreads, ağ sayfasında belirtildiği üzere ereği \"kişilerin sevdiği kitapları bulmasına ve paylaşmasına yardımcı olmak\" olan bir servistir.
@@ -262,8 +262,8 @@
     <string name="gr_auth_check">Goodreads yetkilendirme denetimi</string>
     <string name="gr_auth_failed">Goodreads yetkilendirmesi başarısız</string>
     <string name="gr_auth_successful">Goodreads yetkilendirmesi başarılı</string>
-    <string name="authorized">Yetkilendirilmiş</string>
-    <string name="not_authorized">Yetkilendirilmemiş</string>
+    <string name="info_authorized">Yetkilendirilmiş</string>
+    <string name="info_not_authorized">Yetkilendirilmemiş</string>
     <string name="gr_auth_error">Goodreads yetkilendirmesi bir hataya neden oldu</string>
     <string name="error_if_the_problem_persists">Eğer sorun sürerse lütfen ana seçkedeki Yardım bölümünden destek ile iletişime geçin.</string>
     <string name="warning_book_no_longer_exists">Belirtilen kitap artık yok</string>
@@ -283,7 +283,7 @@
     <string name="acra_resDialogOkToast">Sağ olun!</string>
     <string name="lbl_read">Okunmuş</string>
     <string name="lbl_unread">Okunmamış</string>
-    <string name="no_date">(günay yok)</string>
+    <string name="warning_date_not_set">(günay yok)</string>
     <string name="style_builtin_author_series">Önce yazar sonra seri</string>
     <string name="style_builtin_series">Seriler</string>
     <string name="style_builtin_title_first_letter">İlk harf başlık</string>
@@ -293,7 +293,7 @@
     <string name="style_builtin_publication_date">Yayın tarihi</string>
     <string name="style_builtin_added_date">Eklenen günay</string>
     <string name="style_builtin_author_year">Önce yazar sonra yıl</string>
-    <string name="not_set_with_brackets">(boş)</string>
+    <string name="field_not_set_with_brackets">(boş)</string>
     <string name="menu_preferences_booklist">Kitap dizelgesi yeğlenenleri</string>
     <string name="lbl_bookshelves_long">Kitap rafları</string>
     <string name="lbl_bookshelves">Raflar</string>
@@ -417,7 +417,7 @@
     <string name="updated">Güncellenmiş</string>
     <string name="import_error_csv_file_not_found">Herhangi bir dışa aktarma dosyası bulunamadı</string>
     <string name="import_warning_select_csv_file">Birden fazla dışa aktarma dosyası bulundu; lütfen içe aktarmak üzere aşağıdaki dışa aktarma dosyalarından birini seçin</string>
-    <string name="problem_starting_import_arg">İçe aktarmaya başlarken bir hata oluştu: %1$s</string>
+    <string name="error_starting_import_arg">İçe aktarmaya başlarken bir hata oluştu: %1$s</string>
     <string name="hint_booklist_style_menu">Bu seçke size dizelge biçemini seçmenize olanak tanır. 
     								\n\nEk olarak dizelgenin sonundaki \'Kişiselleştir\' düğmesini kullanarak bu seçkeyi kişiselleştirebilir ve hatta kendi dizelge biçemlerinizi oluşturabilirsiniz.</string>
     <string name="menu_edit_format">Biçimi düzenle…</string>
@@ -441,7 +441,7 @@
     <string name="lbl_read_day">Okuma günü</string>
     <string name="style_builtin_read_date">Okunan günay</string>
     <string name="lbl_details_have_changed">Ayrıntılar değiştirildi</string>
-    <string name="warning_unsaved_changes">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
+    <string name="confirm_unsaved_changes">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
     <string name="btn_confirm_exit">Çıkış</string>
     <string name="btn_continue_editing">Düzenlemeyi sürdür</string>
     <string name="warning_title_already_exists">Bu kitap adı zaten var</string>
@@ -461,7 +461,7 @@
     <string name="progress_msg_adding_book">Kitap ekle…</string>
     <string name="lbl_publishing">Yayımlanıyor</string>
     <string name="lbl_by_author">ile</string>
-    <string name="loan_book_details_readonly_loaned_to">%1$s kişisine ödünç verilmiş</string>
+    <string name="lbl_loaned_to_name">%1$s kişisine ödünç verilmiş</string>
     <string name="lbl_x_pages">%1$s bet</string>
 
     <string name="warning_bad_scanner">Görünüşe göre var olan barkod tarayıcı uygulamanız &APP_NAME;
@@ -639,11 +639,14 @@
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="lbl_update_day">Günü güncelle</string>
     <string name="lbl_location_long">Kitabın yeri</string>
-    <string name="loaned_to_short">→</string>
+    <string name="lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="starting">Başlangıç</string>
     <string name="lbl_books">Kitaplar</string>
+    <string name="menu_loan_return_book">Ödünç alınan kitap geri döndü</string>
+    <string name="progress_msg_saving_image">Resim kaydediliyor…</string>
+    <string name="error_google_play_missing">Google Play / Market yüklü değil</string>
 
 </resources>

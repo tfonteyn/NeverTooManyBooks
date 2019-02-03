@@ -356,6 +356,7 @@ public final class XmlUtils {
                                Base64.encodeToString(convertToBytes(value), Base64.DEFAULT));
 
         } else {
+            //noinspection ConstantConditions
             throw new RTE.IllegalTypeException(value.getClass().getCanonicalName());
         }
     }

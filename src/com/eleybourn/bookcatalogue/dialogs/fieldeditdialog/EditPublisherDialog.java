@@ -22,9 +22,12 @@ package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
@@ -33,37 +36,44 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 
 /**
- * Dialog to edit a single publisher.
+ * Dialog to edit an existing publisher.
  * <p>
  * Calling point is a List.
  */
 public class EditPublisherDialog {
 
     @NonNull
-    private final Activity mContext;
+    private final Activity mActivity;
     @NonNull
     private final DBA mDb;
-    @NonNull
+    @Nullable
     private final Runnable mOnChanged;
+
+    /** Adapter for the AutoCompleteTextView field. */
+    private final ArrayAdapter<String> mAdapter;
 
     public EditPublisherDialog(@NonNull final Activity activity,
                                @NonNull final DBA db,
-                               @NonNull final Runnable onChanged) {
+                               @Nullable final Runnable onChanged) {
         mDb = db;
-        mContext = activity;
+        mActivity = activity;
         mOnChanged = onChanged;
+        mAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_dropdown_item_1line,
+                                      db.getPublisherNames());
     }
 
-    public void edit(@NonNull final Publisher publisher) {
+    @CallSuper
+    public void edit(@NonNull final Publisher source) {
         // Build the base dialog
-        final View root = mContext.getLayoutInflater()
-                                  .inflate(R.layout.dialog_edit_publisher, null);
+        final View root = mActivity.getLayoutInflater()
+                                   .inflate(R.layout.dialog_edit_publisher, null);
 
-        final EditText nameView = root.findViewById(R.id.name);
+        final AutoCompleteTextView nameView = root.findViewById(R.id.name);
         //noinspection ConstantConditions
-        nameView.setText(publisher.getName());
+        nameView.setText(source.getName());
+        nameView.setAdapter(mAdapter);
 
-        final AlertDialog dialog = new AlertDialog.Builder(mContext)
+        final AlertDialog dialog = new AlertDialog.Builder(mActivity)
                 .setView(root)
                 .setTitle(R.string.title_edit_publisher)
                 .create();
@@ -74,12 +84,18 @@ public class EditPublisherDialog {
             public void onClick(@NonNull final View v) {
                 String newName = nameView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    StandardDialogs.showUserMessage(mContext, R.string.warning_required_name);
+                    StandardDialogs.showUserMessage(mActivity, R.string.warning_required_name);
                     return;
                 }
-                Publisher newPublisher = new Publisher(newName);
                 dialog.dismiss();
-                confirmEdit(publisher, newPublisher);
+
+                if (newName.equals(source.getName())) {
+                    return;
+                }
+                saveChanges(source.getName(), newName);
+                if (mOnChanged != null) {
+                    mOnChanged.run();
+                }
             }
         });
 
@@ -95,21 +111,12 @@ public class EditPublisherDialog {
     }
 
     /**
-     * ENHANCE: once {@link Publisher} use id's, use code from {@link EditSeriesDialog#confirmEdit}.
-     *
      * @param from the publisher data before editing
-     * @param to the data after editing
+     * @param to   the data after editing
      */
-    private void confirmEdit(@NonNull final Publisher from,
-                             @NonNull final Publisher to) {
-        // case sensitive equality
-        if (to.equals(from)) {
-            return;
-        }
+    private void saveChanges(@NonNull final String from,
+                             @NonNull final String to) {
 
-        mDb.globalReplacePublisher(from, to);
-        from.copyFrom(to);
-
-        mOnChanged.run();
+        mDb.updatePublisher(from, to);
     }
 }

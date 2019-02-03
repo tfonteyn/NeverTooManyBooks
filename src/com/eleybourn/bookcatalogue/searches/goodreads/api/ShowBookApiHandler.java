@@ -365,7 +365,7 @@ public abstract class ShowBookApiHandler
                 if (mAuthors == null) {
                     mAuthors = new ArrayList<>();
                 }
-                mAuthors.add(new Author(mCurrAuthorName));
+                mAuthors.add( Author.fromString(mCurrAuthorName));
                 mCurrAuthorName = null;
             }
         }
@@ -399,9 +399,11 @@ public abstract class ShowBookApiHandler
                     mSeries = new ArrayList<>();
                 }
                 if (mCurrSeriesPosition == null) {
-                    mSeries.add(new Series(mCurrSeriesName, ""));
+                    mSeries.add(new Series(mCurrSeriesName));
                 } else {
-                    mSeries.add(new Series(mCurrSeriesName, mCurrSeriesPosition + ""));
+                    Series newSeries = new Series(mCurrSeriesName);
+                    newSeries.setNumber(Series.cleanupSeriesPosition(String.valueOf(mCurrSeriesPosition)));
+                    mSeries.add(newSeries);
                 }
                 mCurrSeriesName = null;
                 mCurrSeriesPosition = null;
@@ -474,11 +476,9 @@ public abstract class ShowBookApiHandler
             String bestImage = null;
             if (mBookData.containsKey(ShowBookFieldNames.IMAGE)) {
                 bestImage = mBookData.getString(ShowBookFieldNames.IMAGE);
-                if (bestImage != null && bestImage.contains(
-                        UniqueId.BKEY_NO_COVER) && mBookData.containsKey(
-                        ShowBookFieldNames.SMALL_IMAGE)) {
+                if (GoodreadsUtils.hasNoCover(bestImage) && mBookData.containsKey(ShowBookFieldNames.SMALL_IMAGE)) {
                     bestImage = mBookData.getString(ShowBookFieldNames.SMALL_IMAGE);
-                    if (bestImage != null && bestImage.contains(UniqueId.BKEY_NO_COVER)) {
+                    if (GoodreadsUtils.hasNoCover(bestImage)) {
                         bestImage = null;
                     }
                 }
@@ -537,8 +537,11 @@ public abstract class ShowBookApiHandler
                 if (mSeries == null) {
                     mSeries = new ArrayList<>();
                 }
-                mSeries.add(new Series(details.getName(), details.position));
-                // Tempting to replace title with ORIG_TITLE, but that does bad things to translations (it used the original language)
+                Series newSeries = new Series(details.getName());
+                newSeries.setNumber(details.getPosition());
+                mSeries.add(newSeries);
+                // Tempting to replace title with ORIG_TITLE, but that does
+                // bad things to translations (it used the original language)
                 mBookData.putString(UniqueId.KEY_TITLE,
                                     thisTitle.substring(0, details.startChar - 1));
                 //if (mBookData.containsKey(ORIG_TITLE)) {
@@ -554,12 +557,11 @@ public abstract class ShowBookApiHandler
         }
 
         if (mAuthors != null && mAuthors.size() > 0) {
-            //mBookData.putString(UniqueId.BKEY_AUTHOR_STRING_LIST, StringList.getAuthorUtils().encode(mAuthors));
             mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
         }
 
         if (mSeries != null && mSeries.size() > 0) {
-            //mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, StringList.getSeriesUtils().encode(mSeries));
+            //mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, StringList.getSeriesCoder().encode(mSeries));
             mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
         }
 

@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
  */
 public interface PInt {
 
-    void set(@Nullable final Integer value);
+    void set(@Nullable Integer value);
 
     @NonNull
     Integer get();

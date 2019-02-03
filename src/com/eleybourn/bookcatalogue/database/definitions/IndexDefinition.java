@@ -6,6 +6,7 @@ import android.database.SQLException;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Csv;
@@ -110,13 +111,9 @@ public class IndexDefinition {
      * Create the index.
      *
      * @param db Database to use.
-     *
-     * @return IndexDefinition (for chaining)
      */
-    @NonNull
-    public IndexDefinition create(@NonNull final SynchronizedDb db) {
+    public void create(@NonNull final SynchronizedDb db) {
         db.execSQL(getSqlCreateStatement());
-        return this;
     }
 
     /**
@@ -126,15 +123,15 @@ public class IndexDefinition {
      */
     @NonNull
     private String getSqlCreateStatement() {
-        StringBuilder sql = new StringBuilder("CREATE ");
+        StringBuilder sql = new StringBuilder("CREATE");
         if (mIsUnique) {
             sql.append(" UNIQUE");
         }
         sql.append(" INDEX ").append(mName).append(" ON ").append(mTable.getName())
-           .append('(').append(Csv.csv(",", mDomains)).append(')');
+           .append('(').append(Csv.join(",", mDomains)).append(')');
 
-        if (/* always log */ BuildConfig.DEBUG) {
-            Logger.info(this, "getSqlCreateStatement:\n" + sql.toString());
+        if (DEBUG_SWITCHES.SQL_CREATE_INDEX && BuildConfig.DEBUG) {
+            Logger.info(this, "getSqlCreateStatement", sql.toString());
         }
         return sql.toString();
     }

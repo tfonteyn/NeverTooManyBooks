@@ -12,15 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.entities.TOCEntry;
+import com.eleybourn.bookcatalogue.entities.TocEntry;
 
 import java.util.List;
 
 /**
- * A read-only adapter for viewing TOCEntries.
+ * A read-only adapter for viewing TocEntry's.
  */
 public class TOCAdapter
-        extends ArrayAdapter<TOCEntry> {
+        extends ArrayAdapter<TocEntry> {
 
     @LayoutRes
     private final int mRowLayoutId;
@@ -35,7 +35,7 @@ public class TOCAdapter
      */
     public TOCAdapter(@NonNull final Context context,
                       @LayoutRes final int rowLayoutId,
-                      @NonNull final List<TOCEntry> objects) {
+                      @NonNull final List<TocEntry> objects) {
         super(context, rowLayoutId, objects);
         mRowLayoutId = rowLayoutId;
     }
@@ -45,7 +45,7 @@ public class TOCAdapter
     public View getView(final int position,
                         @Nullable View convertView,
                         @NonNull final ViewGroup parent) {
-        final TOCEntry item = this.getItem(position);
+        final TocEntry item = this.getItem(position);
 
         Holder holder;
 

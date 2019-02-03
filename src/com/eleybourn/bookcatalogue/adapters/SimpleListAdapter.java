@@ -67,7 +67,10 @@ import java.util.List;
  *     <item name="SLA_ROW" type="id" />
  *     <item name="SLA_ROW_DETAILS" type="id" />
  *     <item name="SLA_ROW_DELETE" type="id"/>
+ *     <item name="SLA_ROW_TAG" type="id"/>
  *  </pre>
+ *
+ * SLA_ROW_TAG is used to store our tag.
  *
  * @author Philip Warner
  */
@@ -108,10 +111,10 @@ public abstract class SimpleListAdapter<T>
 
             holder.deleteRowButton = convertView.findViewById(R.id.SLA_ROW_DELETE);
 
-            ViewTagger.setTag(convertView, holder);
+            ViewTagger.setTag(convertView, R.id.SLA_ROW_TAG, holder);
 
         } else {
-            holder = ViewTagger.getTagOrThrow(convertView);
+            holder = ViewTagger.getTagOrThrow(convertView, R.id.SLA_ROW_TAG);
         }
 
         if (holder.row != null) {
@@ -174,8 +177,10 @@ public abstract class SimpleListAdapter<T>
     protected void onListChanged() {
     }
 
+    /**
+     * Basic info for each row, stored with tag id: R.id.SLA_ROW_TAG
+     */
     static class SimpleHolder {
-
         @Nullable
         View row;
         @Nullable

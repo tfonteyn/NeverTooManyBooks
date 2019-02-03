@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.cursors.BookRowViewBase;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursorRowBase;
 
 /**
  * Interface for handling the View-related tasks in a multi-type ListView.
@@ -45,10 +45,10 @@ public interface MultiTypeListHandler {
      *
      * @return view type
      */
-    int getItemViewType(@NonNull final Cursor cursor);
+    int getItemViewType(@NonNull Cursor cursor);
 
     /**
-     * Get the total number of view types that can be returned.
+     * @return the total number of view types that can be returned.
      */
     int getViewTypeCount();
 
@@ -64,10 +64,10 @@ public interface MultiTypeListHandler {
      * @return Filled-in view to use.
      */
     @NonNull
-    View getView(@NonNull final Cursor cursor,
-                 @NonNull final LayoutInflater inflater,
-                 @Nullable final View convertView,
-                 @NonNull final ViewGroup parent);
+    View getView(@NonNull Cursor cursor,
+                 @NonNull LayoutInflater inflater,
+                 @Nullable View convertView,
+                 @NonNull ViewGroup parent);
 
     /**
      * Get the text to display in ListView for row at current cursor position.
@@ -76,12 +76,12 @@ public interface MultiTypeListHandler {
      *
      * @return text to display
      */
-    String[] getSectionText(@NonNull final Cursor cursor);
+    String[] getSectionText(@NonNull Cursor cursor);
 
     /**
      * Abstract base class for 'holder' objects in a multi-type list view.
      *
-     * @param <T> Row context passed to each method. Typically a {@link BookRowViewBase}.
+     * @param <T> Row context passed to each method. Typically a {@link BookCursorRowBase}.
      *            Could be a cursor or any other object capable of representing the data
      *            in the current row.
      *
@@ -94,23 +94,23 @@ public interface MultiTypeListHandler {
          * associated with a reusable view that will always be used for rows of the current
          * kind. We avoid having to call findViewById() by doing it once at creation time.
          */
-        public abstract void map(@NonNull final T rowContext,
-                                 @NonNull final View view);
+        public abstract void map(@NonNull T rowContext,
+                                 @NonNull View view);
 
         /**
          * Use the passed rowContext to fill in the actual details for the current row.
          */
-        public abstract void set(@NonNull final T rowContext,
-                                 @NonNull final View view,
-                                 final int level);
+        public abstract void set(@NonNull T rowContext,
+                                 @NonNull View view,
+                                 int level);
 
         /**
-         * Use the passed rowContext to determine the kind of View that is required
-         * and return a new view.
+         * Use the passed rowContext to determine the kind of View that is required.
+         * @return a new view.
          */
-        public abstract View createView(@NonNull final T rowContext,
-                                        @NonNull final LayoutInflater inflater,
-                                        @NonNull final ViewGroup parent,
-                                        final int level);
+        public abstract View createView(@NonNull T rowContext,
+                                        @NonNull LayoutInflater inflater,
+                                        @NonNull ViewGroup parent,
+                                        int level);
     }
 }

@@ -16,6 +16,8 @@ public class GlobalSettingsFragment
         implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
+    public static final String TAG = "GlobalSettingsFragment";
+
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {

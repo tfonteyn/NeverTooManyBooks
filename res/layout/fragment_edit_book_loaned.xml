@@ -9,7 +9,7 @@
         android:id="@+id/lbl_loan"
         style="@style/lbl_editField"
         android:paddingTop="@dimen/padding_border"
-        android:text="@string/loaned_to_long" />
+        android:text="@string/lbl_loaned_to_long" />
 
     <TextView
         android:id="@+id/loaned_to"
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/lbl_loan"
-        android:text="@string/loan_returned" />
+        android:text="@string/btn_loan_returned" />
 
 </RelativeLayout>
 

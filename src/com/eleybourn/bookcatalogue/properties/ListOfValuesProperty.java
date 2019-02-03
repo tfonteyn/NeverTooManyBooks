@@ -220,6 +220,7 @@ public abstract class ListOfValuesProperty<T>
     }
 
     @Override
+    @NonNull
     public String toString() {
         StringBuilder sb = new StringBuilder("ListOfValuesProperty{mList=[");
 

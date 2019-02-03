@@ -15,11 +15,20 @@ import androidx.annotation.NonNull;
 public class SynchronizedCursor
         extends SQLiteCursor {
 
+    /** the database {@link Synchronizer}. */
     @NonNull
     private final Synchronizer mSync;
     /** cached count for the query. */
     private int mCount = -1;
 
+    /**
+     * Constructor.
+     *
+     * @param driver    SQLiteCursorDriver
+     * @param editTable the name of the table used for this query
+     * @param query     the {@link SQLiteQuery} object associated with this cursor object.
+     * @param sync      the database {@link Synchronizer}
+     */
     protected SynchronizedCursor(@NonNull final SQLiteCursorDriver driver,
                                  @NonNull final String editTable,
                                  @NonNull final SQLiteQuery query,

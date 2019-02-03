@@ -43,7 +43,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 
@@ -53,14 +52,14 @@ import java.util.ArrayList;
  * This class is called by {@link EditBookFragment} and displays the Loaned Tab.
  * <p>
  * Users can select a book and, from this activity, select a friend to "loan" the book to.
- * * This will then be saved in the database.
+ * This will then be saved in the database on the fly!
  * <p>
  * So this fragment does NOT participate in
  * {@link #initFields()}
  * {@link #onLoadFieldsFromBook} and {@link #onSaveFieldsToBook}
  */
 public class EditBookLoanedFragment
-        extends BookBaseFragment {
+        extends EditBookBaseFragment {
 
     public static final String TAG = "EditBookLoanedFragment";
 
@@ -84,20 +83,6 @@ public class EditBookLoanedFragment
 
     //<editor-fold desc="Fragment startup">
 
-//    /**
-//     * Ensure activity supports interface.
-//     */
-//    @Override
-//    @CallSuper
-//    public void onAttach(@NonNull final Context context) {
-//        super.onAttach(context);
-//    }
-
-//    @Override
-//    public void onCreate(@Nullable final Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//    }
-
     @Override
     @NonNull
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -117,33 +102,16 @@ public class EditBookLoanedFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
-        String friend = mDb.getLoaneeByBookId(getBookManager().getBook().getBookId());
+        String friend = mDb.getLoaneeByBookId(getBookManager().getBook().getId());
         if (friend == null) {
             showLoanTo();
         } else {
             showLoaned(friend);
         }
-        Tracker.exitOnActivityCreated(this);
     }
 
-//    @Override
-//    protected void initFields() {
-//        super.initFields();
-//    }
-
-//    @CallSuper
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//    }
-
-//    @Override
-//    protected void onLoadFieldsFromBook(@NonNull final Book book, final boolean setAllFrom) {
-//        super.onLoadFieldsFromBook(book, setAllFrom);
-//    }
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -160,9 +128,9 @@ public class EditBookLoanedFragment
 
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             public void onClick(@NonNull final View v) {
-                String friend = mLoanedToView.getText().toString().trim();
-                saveLoan(friend);
-                showLoaned(friend);
+                String loanee = mLoanedToView.getText().toString().trim();
+                getBookManager().getBook().loan(mDb, loanee);
+                showLoaned(loanee);
             }
         });
     }
@@ -179,7 +147,7 @@ public class EditBookLoanedFragment
 
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             public void onClick(@NonNull final View v) {
-                removeLoan();
+                getBookManager().getBook().loanReturned(mDb);
                 showLoanTo();
             }
         });
@@ -197,39 +165,6 @@ public class EditBookLoanedFragment
 
     /* ------------------------------------------------------------------------------------------ */
 
-    //<editor-fold desc="Fragment shutdown">
-
-//    @Override
-//    @CallSuper
-//    public void onPause() {
-//        super.onPause();
-//    }
-
-//    @Override
-//    @CallSuper
-//    protected void onSaveFieldsToBook(@NonNull final Book book) {
-//        super.onSaveFieldsToBook(book);
-//    }
-
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//    }
-    //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    private void saveLoan(@NonNull final String friend) {
-        Book book = getBookManager().getBook();
-        book.putString(UniqueId.KEY_LOAN_LOANED_TO, friend);
-        mDb.insertLoan(book, true);
-    }
-
-    private void removeLoan() {
-        Book book = getBookManager().getBook();
-        mDb.deleteLoan(book.getBookId(), true);
-    }
-
     /**
      * Auto complete list comes from your Contacts.
      */
@@ -241,7 +176,7 @@ public class EditBookLoanedFragment
             ActivityCompat.requestPermissions(
                     requireActivity(),
                     new String[]{Manifest.permission.READ_CONTACTS},
-                    UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS);
+                    UniqueId.REQ_ANDROID_PERMISSIONS);
             return;
         }
         // call secured method
@@ -306,7 +241,7 @@ public class EditBookLoanedFragment
         //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[]
         // must be checked in parallel
         switch (requestCode) {
-            case UniqueId.ACTIVITY_REQUEST_CODE_ANDROID_PERMISSIONS:
+            case UniqueId.REQ_ANDROID_PERMISSIONS:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     setPhoneContactsAdapter();

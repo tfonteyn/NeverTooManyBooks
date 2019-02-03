@@ -23,26 +23,21 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
@@ -106,7 +101,7 @@ public final class StandardDialogs {
                                                      @Nullable final Runnable onConfirm) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.lbl_details_have_changed)
-                .setMessage(R.string.warning_unsaved_changes)
+                .setMessage(R.string.confirm_unsaved_changes)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setCancelable(false)
                 .create();
@@ -146,8 +141,8 @@ public final class StandardDialogs {
                                          @NonNull final Runnable onDeleted) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage(String.format(context.getString(R.string.warning_really_delete_series),
-                                          series.name))
+                .setMessage(String.format(context.getString(R.string.confirm_really_delete_series),
+                                          series.getName()))
                 .setTitle(R.string.title_delete_series)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
@@ -156,8 +151,8 @@ public final class StandardDialogs {
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
-                                 db.deleteSeries(series.id);
                                  dialog.dismiss();
+                                 db.deleteSeries(series.getId());
                                  onDeleted.run();
                              }
                          });
@@ -184,19 +179,11 @@ public final class StandardDialogs {
                                       @NonNull final Runnable onDeleted) {
 
         String UNKNOWN = '<' + BookCatalogueApp.getResString(R.string.unknown_uc) + '>';
-        List<Author> authorList = db.getBookAuthorList(bookId);
+        List<Author> authorList = db.getAuthorsByBookId(bookId);
 
-        // get the book title
-        String title;
-        try (Cursor cursor = db.fetchBookById(bookId)) {
-            if (!cursor.moveToFirst()) {
-                return R.string.warning_unable_to_find_book;
-            }
-
-            title = cursor.getString(cursor.getColumnIndex(DatabaseDefinitions.DOM_TITLE.name));
-            if (title == null || title.isEmpty()) {
-                title = UNKNOWN;
-            }
+        String title = db.getBookTitle(bookId);
+        if (title == null || title.isEmpty()) {
+            title = UNKNOWN;
         }
 
         // Format the list of authors nicely
@@ -216,7 +203,7 @@ public final class StandardDialogs {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setMessage(
-                        (context.getString(R.string.warning_really_delete_book, title, authors)))
+                        (context.getString(R.string.confirm_really_delete_book, title, authors)))
                 .setTitle(R.string.menu_delete_book)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
@@ -225,8 +212,8 @@ public final class StandardDialogs {
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
-                                 db.deleteBook(bookId);
                                  dialog.dismiss();
+                                 db.deleteBook(bookId);
                                  onDeleted.run();
                              }
                          });
@@ -297,7 +284,7 @@ public final class StandardDialogs {
          */
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.title_duplicate_book)
-                .setMessage(context.getString(R.string.warning_duplicate_book_message))
+                .setMessage(context.getString(R.string.confirm_duplicate_book_message))
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
@@ -324,30 +311,9 @@ public final class StandardDialogs {
 
         void onPositive();
 
+        @SuppressWarnings("unused")
         void onNeutral();
 
         void onNegative();
-    }
-
-
-
-    /* ========================================================================================== */
-
-    /**
-     * This class exists temporarily so we use AppCompatDialog in ONE place (here)
-     * Gradually replacing the use.
-     */
-    public static class BasicDialog
-            extends AppCompatDialog {
-
-        public BasicDialog(@NonNull final Context context) {
-            this(context, ThemeUtils.getDialogThemeResId());
-        }
-
-        public BasicDialog(@NonNull final Context context,
-                           @StyleRes final int theme) {
-            super(context, theme);
-
-        }
     }
 }

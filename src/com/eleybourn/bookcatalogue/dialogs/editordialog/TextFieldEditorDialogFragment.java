@@ -34,11 +34,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
- * TODO: as the Dialog is now an inner class, remove the listener between DialogFragment and Dialog.
- * <p>
  * DialogFragment to edit a specific text field.
  *
  * @author pjw
@@ -47,22 +44,10 @@ public class TextFieldEditorDialogFragment
         extends
         EditorDialogFragment<TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener> {
 
-    /* Dialog text/message */
+    /** Argument: Dialog text/message. */
     public static final String BKEY_TEXT = "text";
+    /** Argument: allow multiline text. */
     public static final String BKEY_MULTI_LINE = "multiLine";
-
-    /**
-     * Object to handle changes.
-     */
-    private final TextFieldEditorDialog.OnTextFieldEditorResultsListener mEditListener =
-            new TextFieldEditorDialog.OnTextFieldEditorResultsListener() {
-                @Override
-                public void onTextFieldEditorSave(@NonNull final String newText) {
-                    getFragmentListener()
-                            .onTextFieldEditorSave(TextFieldEditorDialogFragment.this,
-                                                   mDestinationFieldId, newText);
-                }
-            };
 
     /** Currently displayed; null if empty/invalid. */
     @Nullable
@@ -75,7 +60,7 @@ public class TextFieldEditorDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        initStandardArgs(savedInstanceState);
+        super.onCreateDialog(savedInstanceState);
 
         if (savedInstanceState != null) {
             mText = savedInstanceState.getString(BKEY_TEXT, "");
@@ -93,19 +78,7 @@ public class TextFieldEditorDialogFragment
             editor.setTitle(mTitleId);
         }
         editor.setText(mText);
-        editor.setResultsListener(mEditListener);
         return editor;
-    }
-
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        if (mText != null) {
-            outState.putString(BKEY_TEXT, mText);
-        }
-        outState.putBoolean(BKEY_MULTI_LINE, mMultiLine);
-
-        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -121,6 +94,29 @@ public class TextFieldEditorDialogFragment
         super.onPause();
     }
 
+    @Override
+    @CallSuper
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        if (mText != null) {
+            outState.putString(BKEY_TEXT, mText);
+        }
+        outState.putBoolean(BKEY_MULTI_LINE, mMultiLine);
+
+        super.onSaveInstanceState(outState);
+    }
+
+
+    /**
+     * The dialog calls this to report back the user input.
+     *
+     * @param result - the text
+     */
+    private void reportChanges(@NonNull final String result) {
+        getFragmentListener()
+                .onTextFieldEditorSave(TextFieldEditorDialogFragment.this,
+                                       mDestinationFieldId, result);
+    }
+
     /**
      * Listener interface to receive notifications when dialog is closed by any means.
      *
@@ -128,24 +124,33 @@ public class TextFieldEditorDialogFragment
      */
     public interface OnTextFieldEditorResultsListener {
 
-        void onTextFieldEditorSave(@NonNull final TextFieldEditorDialogFragment dialog,
-                                   final int destinationFieldId,
-                                   @NonNull final String newText);
+        /**
+         * reports the results after this dialog was confirmed.
+         *
+         * @param dialog             - the dialog
+         * @param destinationFieldId - the field this dialog is bound to
+         * @param newText            - the text
+         */
+        void onTextFieldEditorSave(@NonNull TextFieldEditorDialogFragment dialog,
+                                   int destinationFieldId,
+                                   @NonNull String newText);
     }
 
 
-    static class TextFieldEditorDialog
+    /**
+     * The custom dialog.
+     */
+    class TextFieldEditorDialog
             extends AlertDialog {
 
         /** View which displays the text. */
         private final EditText mTextView;
-        /** Listener for dialog exit/save/cancel. */
-        private OnTextFieldEditorResultsListener mListener;
 
         /**
          * Constructor.
          *
-         * @param context Calling context
+         * @param context   - Calling context
+         * @param multiLine - set to <tt>true</tt> to allow multi-line text.
          */
         TextFieldEditorDialog(@NonNull final Context context,
                               final boolean multiLine) {
@@ -172,7 +177,7 @@ public class TextFieldEditorDialogFragment
                     new View.OnClickListener() {
                         @Override
                         public void onClick(@NonNull final View v) {
-                            mListener.onTextFieldEditorSave(getText());
+                            TextFieldEditorDialogFragment.this.reportChanges(getText());
                         }
                     }
             );
@@ -197,26 +202,14 @@ public class TextFieldEditorDialogFragment
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
 
-        /** Set the listener. */
-        void setResultsListener(@NonNull final OnTextFieldEditorResultsListener listener) {
-            mListener = listener;
-        }
-
         public String getText() {
             return mTextView.getText().toString().trim();
         }
 
-        /** Set the current text. */
+        /** @param text - the current text to set. */
         public void setText(@Nullable final String text) {
             mTextView.setText(text);
         }
 
-        /**
-         * Listener to receive notifications when dialog is confirmed.
-         */
-        protected interface OnTextFieldEditorResultsListener {
-
-            void onTextFieldEditorSave(@NonNull final String newText);
-        }
     }
 }

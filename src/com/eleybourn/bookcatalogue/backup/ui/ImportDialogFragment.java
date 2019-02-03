@@ -68,7 +68,7 @@ public class ImportDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // savedInstanceState not used.
         Bundle args = getArguments();
-        Objects.requireNonNull(args);
+        //noinspection ConstantConditions
         settings.file = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
 
         View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_import_options,
@@ -111,6 +111,7 @@ public class ImportDialogFragment
     private void updateOptions() {
         Dialog dialog = this.getDialog();
         // what to import. All three checked == ImportSettings.ALL
+        //noinspection ConstantConditions
         if (((Checkable) dialog.findViewById(R.id.books_check)).isChecked()) {
             settings.what |= ImportSettings.BOOK_CSV;
         }
@@ -149,7 +150,7 @@ public class ImportDialogFragment
      */
     public interface OnImportTypeSelectionDialogResultsListener {
 
-        void onImportTypeSelectionDialogResult(@NonNull final ImportSettings settings);
+        void onImportTypeSelectionDialogResult(@NonNull ImportSettings settings);
     }
 
 }

@@ -8,6 +8,7 @@ import android.widget.EditText;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
@@ -20,14 +21,14 @@ import java.util.List;
 abstract class EditStringDialog {
 
     @NonNull
-    protected final DBA mDb;
-    @NonNull
-    final Runnable mOnChanged;
-    @NonNull
     private final Activity mActivity;
+    @NonNull
+    protected final DBA mDb;
+    @Nullable
+    private final Runnable mOnChanged;
 
     /** Adapter for the AutoCompleteTextView field. */
-    private ArrayAdapter<String> mAdapter;
+    private final ArrayAdapter<String> mAdapter;
 
     /**
      * EditText.
@@ -36,10 +37,11 @@ abstract class EditStringDialog {
      */
     EditStringDialog(@NonNull final Activity activity,
                      @NonNull final DBA db,
-                     @NonNull final Runnable onChanged) {
+                     @Nullable final Runnable onChanged) {
         mActivity = activity;
-        mOnChanged = onChanged;
         mDb = db;
+        mOnChanged = onChanged;
+        mAdapter = null;
     }
 
     /**
@@ -51,13 +53,12 @@ abstract class EditStringDialog {
      */
     EditStringDialog(@NonNull final Activity activity,
                      @NonNull final DBA db,
-                     @SuppressWarnings("SameParameterValue")
                      @LayoutRes final int rowLayoutId,
                      @NonNull final List<String> list,
-                     @NonNull final Runnable onChanged) {
+                     @Nullable final Runnable onChanged) {
         mActivity = activity;
-        mOnChanged = onChanged;
         mDb = db;
+        mOnChanged = onChanged;
         mAdapter = new ArrayAdapter<>(activity, rowLayoutId, list);
     }
 
@@ -94,7 +95,15 @@ abstract class EditStringDialog {
                     return;
                 }
                 dialog.dismiss();
-                confirmEdit(currentText, newText);
+                // if there are no differences, just bail out.
+                if (newText.equals(currentText)) {
+                    return;
+                }
+                // ask child class to save
+                saveChanges(currentText, newText);
+                if (mOnChanged != null) {
+                    mOnChanged.run();
+                }
             }
         });
 
@@ -108,6 +117,6 @@ abstract class EditStringDialog {
         dialog.show();
     }
 
-    protected abstract void confirmEdit(@NonNull final String from,
+    protected abstract void saveChanges(@NonNull final String from,
                                         @NonNull final String to);
 }

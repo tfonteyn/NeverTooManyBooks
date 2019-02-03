@@ -40,7 +40,7 @@ public class PBoolean
 
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
-                    @NonNull final Boolean value) {
+                    @Nullable final Boolean value) {
         if (value != null) {
             ed.putBoolean(getKey(), value);
         } else {
@@ -63,5 +63,13 @@ public class PBoolean
      */
     public boolean isTrue() {
         return get();
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PBoolean{" + super.toString()
+                + ",value=`" + get() + '`'
+                + '}';
     }
 }

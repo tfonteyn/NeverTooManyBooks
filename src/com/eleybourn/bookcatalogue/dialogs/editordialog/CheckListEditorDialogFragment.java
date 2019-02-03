@@ -36,12 +36,9 @@ import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
- * TODO: as the Dialog is now an inner class, remove the listener between DialogFragment and Dialog.
- * <p>
- * DialogFragment to edit a list of checkbox options
+ * DialogFragment to edit a list of checkbox options.
  *
  * @param <T> type to use for {@link CheckListItem}
  */
@@ -49,20 +46,10 @@ public class CheckListEditorDialogFragment<T>
         extends
         EditorDialogFragment<CheckListEditorDialogFragment.OnCheckListEditorResultsListener<T>> {
 
+    /** Argument. */
     public static final String BKEY_CHECK_LIST = "list";
-    /**
-     * Object to handle changes.
-     */
-    private final CheckListEditorDialog.OnCheckListEditorResultsListener<T> mEditListener =
-            new CheckListEditorDialog.OnCheckListEditorResultsListener<T>() {
-                @Override
-                public void onCheckListEditorSave(@NonNull final List<CheckListItem<T>> list) {
-                    getFragmentListener()
-                            .onCheckListEditorSave(CheckListEditorDialogFragment.this,
-                                                   mDestinationFieldId, list);
-                }
-            };
 
+    /** The list of items to display. Object + checkbox. */
     @Nullable
     private ArrayList<CheckListItem<T>> mList;
 
@@ -71,27 +58,40 @@ public class CheckListEditorDialogFragment<T>
      */
     @NonNull
     @Override
-    public CheckListEditorDialog<T> onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        initStandardArgs(savedInstanceState);
+    public CheckListEditorDialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        super.onCreateDialog(savedInstanceState);
 
         // Restore saved state info
         if (savedInstanceState != null) {
             mList = savedInstanceState.getParcelableArrayList(BKEY_CHECK_LIST);
         } else {
             Bundle args = getArguments();
-            Objects.requireNonNull(args);
+            //noinspection ConstantConditions
             mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
         }
 
-        CheckListEditorDialog<T> editor = new CheckListEditorDialog<>(requireActivity());
+        CheckListEditorDialog editor = new CheckListEditorDialog(requireActivity());
         if (mTitleId != 0) {
             editor.setTitle(mTitleId);
         }
         if (mList != null) {
             editor.setList(mList);
         }
-        editor.setResultsListener(mEditListener);
         return editor;
+    }
+
+    /**
+     * Make sure data is saved in onPause() because onSaveInstanceState will have lost the views.
+     */
+    @Override
+    @CallSuper
+    public void onPause() {
+        @SuppressWarnings("unchecked")
+        CheckListEditorDialog dialog = (CheckListEditorDialog) getDialog();
+        if (dialog != null) {
+            mList = dialog.getList();
+        }
+        super.onPause();
     }
 
     @Override
@@ -104,56 +104,49 @@ public class CheckListEditorDialogFragment<T>
     }
 
     /**
-     * Make sure data is saved in onPause() because onSaveInstanceState will have lost the views.
+     * The dialog calls this to report back the user input.
+     *
+     * @param result - with options
      */
-    @Override
-    @CallSuper
-    public void onPause() {
-        @SuppressWarnings("unchecked")
-        CheckListEditorDialog<T> dialog = (CheckListEditorDialog<T>) getDialog();
-        if (dialog != null) {
-            mList = dialog.getList();
-        }
-        super.onPause();
+    private void reportChanges(@NonNull final ArrayList<CheckListItem<T>> result) {
+        getFragmentListener().onCheckListEditorSave(this, mDestinationFieldId, result);
     }
 
     /**
      * Listener interface to receive notifications when dialog is closed by any means.
      *
-     * @param <T> type of item in the checklist
+     * @param <T> - type of item in the checklist
      */
     public interface OnCheckListEditorResultsListener<T> {
 
+        /**
+         * reports the results after this dialog was confirmed.
+         *
+         * @param dialog             the dialog
+         * @param destinationFieldId the field this dialog is bound to
+         * @param list               the list of options
+         */
         void onCheckListEditorSave(@NonNull CheckListEditorDialogFragment dialog,
                                    int destinationFieldId,
                                    @NonNull List<CheckListItem<T>> list);
     }
 
-    public static class CheckListEditorDialog<T>
-            extends AlertDialog {
-
-        private final CompoundButton.OnCheckedChangeListener onCheckedChangeListener =
-                new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(@NonNull final CompoundButton buttonView,
-                                                 final boolean isChecked) {
-                        CheckListItem item =
-                                ViewTagger.getTagOrThrow(buttonView, R.id.TAG_DIALOG_ITEM);
-                        item.setSelected(isChecked);
-                    }
-                };
+    /**
+     * The custom dialog.
+     */
+    public class CheckListEditorDialog
+            extends AlertDialog
+            implements CompoundButton.OnCheckedChangeListener {
 
         /** body of the dialog. */
         private final ViewGroup mContent;
         /** the list to display in the content view. */
         private ArrayList<CheckListItem<T>> mList;
-        /** Listener for dialog exit/save/cancel. */
-        private OnCheckListEditorResultsListener<T> mListener;
 
         /**
          * Constructor.
          *
-         * @param context Calling context
+         * @param context - Calling context
          */
         CheckListEditorDialog(@NonNull final Context context) {
             super(context);
@@ -170,7 +163,7 @@ public class CheckListEditorDialogFragment<T>
                     new View.OnClickListener() {
                         @Override
                         public void onClick(@NonNull final View v) {
-                            mListener.onCheckListEditorSave(mList);
+                            CheckListEditorDialogFragment.this.reportChanges(mList);
                         }
                     }
             );
@@ -186,37 +179,38 @@ public class CheckListEditorDialogFragment<T>
             );
         }
 
+        /**
+         * @return the current list
+         */
         @NonNull
         public ArrayList<CheckListItem<T>> getList() {
             return mList;
         }
 
-        /** Set the current list. */
+        /** @param list the current list to use. */
         public void setList(@NonNull final ArrayList<CheckListItem<T>> list) {
             mList = list;
             for (CheckListItem item : mList) {
                 CompoundButton btn = new CheckBox(getContext());
                 btn.setChecked(item.isSelected());
                 btn.setText(item.getLabel());
-                btn.setOnCheckedChangeListener(onCheckedChangeListener);
+                btn.setOnCheckedChangeListener(this);
                 ViewTagger.setTag(btn, R.id.TAG_DIALOG_ITEM, item);
                 mContent.addView(btn);
             }
         }
 
-        /** Set the listener. */
-        void setResultsListener(@NonNull final OnCheckListEditorResultsListener<T> listener) {
-            mListener = listener;
-        }
-
         /**
-         * Listener to receive notifications when dialog is closed by any means.
+         * Called when the user changes a checkbox and updated the list.
          *
-         * @param <T> type of item in the checklist
+         * @param buttonView – The compound button view whose state has changed.
+         * @param isChecked  – The new checked state of buttonView.
          */
-        interface OnCheckListEditorResultsListener<T> {
-
-            void onCheckListEditorSave(@NonNull List<CheckListItem<T>> list);
+        @Override
+        public void onCheckedChanged(final CompoundButton buttonView,
+                                     final boolean isChecked) {
+            CheckListItem item = ViewTagger.getTagOrThrow(buttonView, R.id.TAG_DIALOG_ITEM);
+            item.setSelected(isChecked);
         }
     }
 }

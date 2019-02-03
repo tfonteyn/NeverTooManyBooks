@@ -35,7 +35,6 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.MessageSwitch;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
-import com.eleybourn.bookcatalogue.utils.BundleUtils;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
@@ -210,6 +209,17 @@ public class SearchManager {
     }
 
     /**
+     * Check if passed Bundle contains a non-blank ISBN string. Does not check if the ISBN is valid.
+     *
+     * @param bundle to check
+     * @return Present/absent
+     */
+    private static boolean hasIsbn(@NonNull final Bundle bundle) {
+        String s = bundle.getString(UniqueId.KEY_BOOK_ISBN);
+        return (s != null && !s.trim().isEmpty());
+    }
+
+    /**
      * Start a search.
      *
      * @param searchFlags    bitmask with sites to search,
@@ -330,15 +340,13 @@ public class SearchManager {
         }
         for (String key : bookData.keySet()) {
             if (UniqueId.KEY_BOOK_DATE_PUBLISHED.equals(key)
-                    || UniqueId.KEY_FIRST_PUBLICATION.equals(key)
-                    ) {
+                    || UniqueId.KEY_FIRST_PUBLICATION.equals(key)) {
                 accumulateDates(key, bookData);
 
             } else if (UniqueId.BKEY_AUTHOR_ARRAY.equals(key)
                     || UniqueId.BKEY_SERIES_ARRAY.equals(key)
                     || UniqueId.BKEY_TOC_TITLES_ARRAY.equals(key)
-                    || UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY.equals(key)
-                    ) {
+                    || UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY.equals(key)) {
                 accumulateList(key, bookData);
 
             } else {
@@ -403,6 +411,7 @@ public class SearchManager {
         String currentDateHeld = mBookData.getString(key);
         String dataToAdd = bookData.getString(key);
         // for debug message only
+        @SuppressWarnings("UnusedAssignment")
         boolean skipped = true;
 
         if (currentDateHeld == null || currentDateHeld.isEmpty()) {
@@ -417,6 +426,7 @@ public class SearchManager {
                     if (DateUtils.parseDate(currentDateHeld) == null) {
                         // current date was invalid, use new one.
                         mBookData.putString(key, DateUtils.utcSqlDate(newDate));
+                        //noinspection UnusedAssignment
                         skipped = false;
                         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                             Logger.info(this, "copied: key=" + key);
@@ -647,7 +657,7 @@ public class SearchManager {
     private void handleSearchTaskFinished(@NonNull final ManagedSearchTask managedSearchTask) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this,
-                        "ManagedSearchTask `" + managedSearchTask.getName() + "` finished");
+                        "handleSearchTaskFinished", '`' + managedSearchTask.getName() + '`');
         }
         mCancelledFlg = managedSearchTask.isCancelled();
         final Bundle bookData = managedSearchTask.getBookData();
@@ -661,7 +671,7 @@ public class SearchManager {
                 mSearchingAsin = false;
                 // Clear the 'isbn'
                 mIsbn = "";
-                if (BundleUtils.isNonBlankString(bookData, UniqueId.KEY_BOOK_ISBN)) {
+                if (hasIsbn(bookData)) {
                     // We got an ISBN, so pretend we were searching for an ISBN
                     mWaitingForIsbn = true;
                 } else {
@@ -682,7 +692,7 @@ public class SearchManager {
             }
 
             if (mWaitingForIsbn) {
-                if (BundleUtils.isNonBlankString(bookData, UniqueId.KEY_BOOK_ISBN)) {
+                if (hasIsbn(bookData)) {
 
                     mWaitingForIsbn = false;
                     mIsbn = bookData.getString(UniqueId.KEY_BOOK_ISBN);

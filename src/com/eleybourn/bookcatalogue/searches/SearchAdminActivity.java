@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -116,7 +117,8 @@ public class SearchAdminActivity
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_fragment, frag)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.main_fragment, frag, AdminSearchOrderFragment.TAG)
                 .commit();
     }
 
@@ -215,6 +217,7 @@ public class SearchAdminActivity
             //noinspection ConstantConditions
             getSupportFragmentManager()
                     .beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .replace(R.id.main_fragment, fragmentHolder.fragment, fragmentHolder.tag)
                     .commit();
         }

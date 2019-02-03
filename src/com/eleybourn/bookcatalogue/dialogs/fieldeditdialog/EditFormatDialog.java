@@ -44,13 +44,8 @@ public class EditFormatDialog
     }
 
     @Override
-    protected void confirmEdit(@NonNull final String from,
+    protected void saveChanges(@NonNull final String from,
                                @NonNull final String to) {
-        // case sensitive equality
-        if (from.equals(to)) {
-            return;
-        }
-        mDb.globalReplaceFormat(from, to);
-        mOnChanged.run();
+        mDb.updateFormat(from, to);
     }
 }

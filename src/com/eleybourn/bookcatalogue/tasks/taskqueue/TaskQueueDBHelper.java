@@ -29,9 +29,6 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 
-import java.util.Hashtable;
-import java.util.Map;
-
 /**
  * Standard Android class to handle database open/creation.upgrade.
  *
@@ -42,8 +39,6 @@ class TaskQueueDBHelper
 
     static final String DOM_ID = "_id";
     static final String DOM_CATEGORY = "category";
-
-    // Domain names for fields in tables. Yes, I mix nomenclatures.
     static final String DOM_EXCEPTION = "exception";
     static final String DOM_FAILURE_REASON = "failure_reason";
     static final String DOM_NAME = "name";
@@ -58,15 +53,8 @@ class TaskQueueDBHelper
     static final String DOM_STATUS_CODE = "status_code";
     static final String DOM_TASK = "task";
     static final String DOM_TASK_ID = "task_id";
-    /**
-     * Queue definition. In a future version, implement LIFO and FIFO queues (we just do FIFO in
-     * version 1). Also implement 'strict' queues, where a 'strict' FIFO queue requires that
-     * all entries SUCCEED in order.
-     * <p>
-     * Also in a future version, consider adding inter-job dependencies to avoid the
-     * need for 'strict' queues.
-     * Most jobs can run independently, but some require specific predecessors.
-     */
+
+    /** Queue definition. */
     static final String TBL_QUEUE = "queue";
     /** Scheduled task definition. */
     static final String TBL_TASK = "task";
@@ -76,115 +64,82 @@ class TaskQueueDBHelper
     private static final String DATABASE_NAME = "net.philipwarner.taskqueue.database.db";
     /** RELEASE: Update on new release */
     private static final int DATABASE_VERSION = 2;
-    private static final String DOM_VALUE = "value";
-    private static final String TBL_CONFIG = "config";
-    private static final String TBL_CONFIG_DEFN = DOM_ID + " integer primary key autoincrement,"
-            + DOM_NAME + " text not null,"
-            + DOM_VALUE + "blob not null";
-    private static final String TBL_QUEUE_DEFN = DOM_ID + " integer primary key autoincrement,\n"
-            + DOM_NAME + " text";
-    private static final String[] TBL_QUEUE_IX1 = new String[]{TBL_QUEUE, "UNIQUE", DOM_ID};
-    private static final String[] TBL_QUEUE_IX2 = new String[]{TBL_QUEUE, "UNIQUE", DOM_NAME};
-    private static final String TBL_TASK_DEFN = DOM_ID + " integer primary key autoincrement,\n"
-            + DOM_QUEUE_ID + " integer not null references " + TBL_QUEUE + ",\n"
-            + DOM_QUEUED_DATE + " datetime default current_timestamp,\n"
-            + DOM_PRIORITY + " integer default 0,\n"
-            + DOM_STATUS_CODE + " text default 'Q',\n"
-            + DOM_CATEGORY + " integer default 0 not null,\n"
-            + DOM_RETRY_DATE + " datetime default current_timestamp,\n"
-            + DOM_RETRY_COUNT + " integer default 0,\n"
-            + DOM_FAILURE_REASON + " text,\n"
-            + DOM_EXCEPTION + " blob,\n"
-            + DOM_TASK + " blob not null";
-    private static final String[] TBL_TASK_IX1 =
-            new String[]{TBL_TASK, "UNIQUE", DOM_ID};
-    private static final String[] TBL_TASK_IX2 =
-            new String[]{TBL_TASK, "", DOM_STATUS_CODE, DOM_QUEUE_ID, DOM_RETRY_DATE};
-    private static final String[] TBL_TASK_IX3 =
-            new String[]{TBL_TASK, "", DOM_STATUS_CODE, DOM_QUEUE_ID, DOM_RETRY_DATE, DOM_PRIORITY};
-    private static final String TBL_EVENT_DEFN = DOM_ID + " integer primary key autoincrement,\n"
-            + DOM_TASK_ID + " integer references " + TBL_TASK + ",\n"
-            + DOM_EVENT + " blob not null,\n"
-            + DOM_EVENT_DATE + " datetime default current_timestamp";
-
-    private static final String[] TBL_EVENTS_IX1 =
-            new String[]{TBL_EVENT, "UNIQUE", DOM_ID};
-    private static final String[] TBL_EVENTS_IX2 =
-            new String[]{TBL_EVENT, "UNIQUE", DOM_EVENT_DATE, DOM_ID};
-    private static final String[] TBL_EVENTS_IX3 =
-            new String[]{TBL_EVENT, "", DOM_TASK_ID, DOM_ID};
 
     // Collection of all table definitions
     private static final String[] TABLES = new String[]{
-            TBL_CONFIG, TBL_CONFIG_DEFN,
-            TBL_QUEUE, TBL_QUEUE_DEFN,
-            TBL_TASK, TBL_TASK_DEFN,
-            TBL_EVENT, TBL_EVENT_DEFN,
-            };
+            "CREATE TABLE " + TBL_QUEUE + " ("
+                    + DOM_ID + " integer primary key autoincrement,"
+                    + DOM_NAME + " text)",
 
-    private static final String[][] INDICES = new String[][]{
-            TBL_QUEUE_IX1,
-            TBL_QUEUE_IX2,
-            TBL_TASK_IX1,
-            TBL_TASK_IX2,
-            TBL_TASK_IX3,
-            TBL_EVENTS_IX1,
-            TBL_EVENTS_IX2,
-            TBL_EVENTS_IX3,
-            };
+            "CREATE TABLE " + TBL_TASK + " ("
+                    + DOM_ID + " integer primary key autoincrement,"
+                    + DOM_QUEUE_ID + " integer not null references " + TBL_QUEUE + ','
+                    + DOM_QUEUED_DATE + " datetime default current_timestamp,"
+                    + DOM_PRIORITY + " integer default 0,"
+                    + DOM_STATUS_CODE + " text default '" + Task.STATUS_QUEUED + "',"
+                    + DOM_CATEGORY + " integer default 0 not null,"
+                    + DOM_RETRY_DATE + " datetime default current_timestamp,"
+                    + DOM_RETRY_COUNT + " integer default 0,"
+                    + DOM_FAILURE_REASON + " text,"
+                    + DOM_EXCEPTION + " blob,"
+                    + DOM_TASK + " blob not null)",
+
+            "CREATE TABLE " + TBL_EVENT + " (" + DOM_ID + " integer primary key autoincrement,\n"
+                    + DOM_TASK_ID + " integer references " + TBL_TASK + ','
+                    + DOM_EVENT + " blob not null,"
+                    + DOM_EVENT_DATE + " datetime default current_timestamp)"
+    };
+
+    private static final String[] INDEXES = new String[]{
+            "CREATE UNIQUE INDEX " + TBL_QUEUE + "_IX1 ON " + TBL_QUEUE + " (" + DOM_ID + ')',
+            "CREATE UNIQUE INDEX " + TBL_QUEUE + "_IX2 ON " + TBL_QUEUE + " (" + DOM_NAME + ')',
+
+            "CREATE UNIQUE INDEX " + TBL_TASK + "_IX1 ON " + TBL_TASK + " (" + DOM_ID + ')',
+            "CREATE INDEX " + TBL_TASK + "_IX2 ON " + TBL_TASK + " ("
+                    + DOM_STATUS_CODE
+                    + ',' + DOM_QUEUE_ID
+                    + ',' + DOM_RETRY_DATE + ')',
+            "CREATE INDEX " + TBL_TASK + "_IX3 ON " + TBL_TASK + " ("
+                    + DOM_STATUS_CODE
+                    + ',' + DOM_QUEUE_ID
+                    + ',' + DOM_RETRY_DATE
+                    + ',' + DOM_PRIORITY + ')',
+
+            "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX1 ON " + TBL_EVENT + " (" + DOM_ID + ')',
+            "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX2 ON " + TBL_EVENT + " ("
+                    + DOM_EVENT_DATE
+                    + ',' + DOM_ID + ')',
+            "CREATE INDEX " + TBL_EVENT + "_IX3 ON " + TBL_EVENT + " ("
+                    + DOM_TASK_ID
+                    + ',' + DOM_ID + ')'
+    };
 
     /**
      * Constructor. Call superclass using locally defined name & version.
      *
      * @param context Context
      */
-    TaskQueueDBHelper(Context context) {
+    TaskQueueDBHelper(@NonNull final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     /**
-     * Create tables and indexes; this is perhaps more complex than necessary, but it makes
-     * the definitions easier.
+     * Create tables and indexes.
      */
     @Override
     @CallSuper
-    public void onCreate(@NonNull SQLiteDatabase db) {
-        Logger.info(this, "Creating database: " + db.getPath());
+    public void onCreate(@NonNull final SQLiteDatabase db) {
+        Logger.info(this, "onCreate","database: " + db.getPath());
 
-        for (int i = 0; i < TABLES.length; i = i + 2) {
-            db.execSQL("CREATE TABLE " + TABLES[i] + '(' + TABLES[i + 1] + ')');
+        for (String TABLE : TABLES) {
+            db.execSQL(TABLE);
         }
+
         // Turn on foreign key support so that CASCADE works.
         db.execSQL("PRAGMA foreign_keys = ON");
 
-        // We have one counter per table to manage index numeric suffixes.
-        Map<String, Integer> counters = new Hashtable<>();
-        // Loop through definitions.
-        for (String[] defn : INDICES) {
-            // Get prefix fields
-            final String tbl = defn[0];
-            final String qualifier = defn[1];
-            // See how many are already defined for this table; get next counter value
-            int cnt;
-            if (counters.containsKey(tbl)) {
-                cnt = counters.get(tbl) + 1;
-            } else {
-                cnt = 1;
-            }
-            // Save the value
-            counters.put(tbl, cnt);
-
-            // Start definition using first field.
-            StringBuilder sql = new StringBuilder(
-                    "CREATE " + qualifier + " INDEX " + tbl + "_IX" + cnt + " ON " + tbl + "(\n");
-            sql.append(' ').append(defn[2]);
-            // Loop through remaining fields, if any
-            for (int i = 3; i < defn.length; i++) {
-                sql.append(",\n").append(defn[i]);
-            }
-            sql.append(");\n");
-            // Define it
-            db.execSQL(sql.toString());
+        for (String sql : INDEXES) {
+            db.execSQL(sql);
         }
     }
 
@@ -195,7 +150,7 @@ class TaskQueueDBHelper
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
                           final int newVersion) {
-        Logger.info(this, "Upgrading database: " + db.getPath());
+        Logger.info(this, "onUpgrade","database: " + db.getPath());
 
         int currVersion = oldVersion;
 

@@ -13,7 +13,7 @@
         <item name="android:inputType">textCapWords</item>
     </style>
 
-    <!-- Titles of Books, Series, Bookshelf, TOCEntries (Anthology titles) , ... -->
+    <!-- Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
     <style name="titleTextEntry" parent="@style/base_localeTextEntry" />
 
     <!-- The language field. -->

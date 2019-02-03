@@ -95,7 +95,7 @@ public final class ScannerManager {
     @Nullable
     public static Scanner getScanner(@NonNull final Activity activity) {
         // Find out what the user prefers if any
-        int prefScanner = Prefs.getInt(R.string.pk_scanning_preferred_scanner,
+        int prefScanner = Prefs.getIntString(R.string.pk_scanning_preferred_scanner,
                                        SCANNER_ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
@@ -186,12 +186,12 @@ public final class ScannerManager {
      */
     private interface ScannerFactory {
 
-        /** Create a new scanner of the related type. */
+        /** @return a new scanner of the related type. */
         @NonNull
         Scanner newInstance();
 
-        /** Check if this scanner is available. */
-        boolean isIntentAvailable(@NonNull final Context context);
+        /** @return <tt>true</tt> if this scanner is available. */
+        boolean isIntentAvailable(@NonNull Context context);
     }
 
 }
