@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 import java.util.ArrayList;
@@ -118,14 +117,15 @@ public class AdminSearchOrderFragment
                 holder.name = convertView.findViewById(R.id.name);
                 holder.checkable = convertView.findViewById(R.id.row_check);
                 // Tag the parts that need it
-                ViewTagger.setTag(convertView, holder);
-                ViewTagger.setTag(holder.checkable, holder);
+                convertView.setTag(holder);
+                holder.checkable.setTag(holder);
 
                 // Set the click listener for the 'enable' site checkable
                 holder.checkable.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
-                        Holder h = ViewTagger.getTagOrThrow(v);
+                        Holder h = (Holder) v.getTag();
+                        //noinspection ConstantConditions
                         h.site.enabled = !h.site.enabled;
                         h.checkable.setChecked(h.site.enabled);
                         // no need to update the list, item itself is updated
@@ -134,10 +134,11 @@ public class AdminSearchOrderFragment
                 });
             } else {
                 // Recycling: just get the holder
-                holder = ViewTagger.getTagOrThrow(convertView);
+                holder = (Holder) convertView.getTag();
             }
 
             // Setup the variant fields in the holder
+            //noinspection ConstantConditions
             holder.site = getItem(position);
             //noinspection ConstantConditions
             holder.name.setText(holder.site.name);

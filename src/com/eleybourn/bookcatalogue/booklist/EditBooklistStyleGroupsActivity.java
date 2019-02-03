@@ -46,7 +46,6 @@ import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -244,21 +243,22 @@ public class EditBooklistStyleGroupsActivity
         @Override
         public void onGetView(@NonNull final View convertView,
                               @NonNull final GroupWrapper item) {
-            Holder holder = ViewTagger.getTag(convertView);
+            Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
                 holder.name = convertView.findViewById(R.id.name);
                 holder.checkable = convertView.findViewById(R.id.row_check);
                 // Tag the parts that need it
-                ViewTagger.setTag(convertView, holder);
-                ViewTagger.setTag(holder.checkable, holder);
+                convertView.setTag(holder);
+                holder.checkable.setTag(holder);
 
                 // Handle a click on the CheckedTextView
                 holder.checkable.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull View v) {
-                        Holder h = ViewTagger.getTagOrThrow(v);
+                        Holder h = (Holder) v.getTag();
+                        //noinspection ConstantConditions
                         boolean newStatus = !h.groupWrapper.present;
                         h.groupWrapper.present = newStatus;
                         h.checkable.setChecked(newStatus);

@@ -43,7 +43,6 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.searches.goodreads.api.SearchBooksApiHandler;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -192,13 +191,13 @@ public class GoodreadsSearchResultsActivity
                 holder.titleView = convertView.findViewById(R.id.title);
 
                 // Save the holder
-                ViewTagger.setTag(convertView, holder);
+                convertView.setTag(holder);
 
                 // Set the click listener
                 convertView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
-                        Holder holder = ViewTagger.getTag(v);
+                        Holder holder = (Holder) v.getTag();
                         Objects.requireNonNull(holder);
                         doItemClick(holder);
                     }
@@ -206,9 +205,10 @@ public class GoodreadsSearchResultsActivity
 
             } else {
                 // Recycling: just get the holder
-                holder = ViewTagger.getTagOrThrow(convertView);
+                holder = (Holder) convertView.getTag();
             }
 
+            //noinspection ConstantConditions
             synchronized (holder.coverView) {
                 // Save the work details
                 holder.work = mList.get(position);

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- BEGIN named tags for use with ViewTagger -->
-        <item name="TAG_EVENT" type="id" />
+    <item name="TAG_EVENT" type="id" />
     <item name="TAG_TASK" type="id" />
     <item name="TAG_TASK_HOLDER" type="id" />
     <!-- Goodreads BookEvent Holder -->
@@ -15,7 +14,6 @@
     <item name="TAG_PROPERTY" type="id" />
         <!-- used for tagging items in a list of items used in a selection dialog -->
     <item name="TAG_DIALOG_ITEM" type="id" />
-    <!-- END named tags for use with ViewTagger -->
 
     <!-- BEGIN predefined menu items -->
 

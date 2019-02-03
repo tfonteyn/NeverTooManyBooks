@@ -36,7 +36,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.io.Serializable;
 import java.util.List;
@@ -74,7 +73,7 @@ public abstract class GoodreadsTask
                                 @NonNull final BindableItemCursor cursor,
                                 @NonNull final ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.task_info, parent, false);
-        ViewTagger.setTag(view, R.id.TAG_TASK, this);
+        view.setTag(R.id.TAG_TASK, this);
 
         TaskHolder holder = new TaskHolder();
         holder.description = view.findViewById(R.id.description);
@@ -85,9 +84,8 @@ public abstract class GoodreadsTask
         holder.checkButton = view.findViewById(R.id.checked);
         holder.retryButton = view.findViewById(R.id.retry);
 
-        ViewTagger.setTag(view, R.id.TAG_TASK_HOLDER, holder);
-
-        ViewTagger.setTag(holder.checkButton, R.id.TAG_BOOK_EVENT_HOLDER, holder);
+        view.setTag(R.id.TAG_TASK_HOLDER, holder);
+        holder.checkButton.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
 
         return view;
     }
@@ -100,10 +98,11 @@ public abstract class GoodreadsTask
                          @NonNull final Context context,
                          @NonNull final BindableItemCursor cursor,
                          @NonNull final DBA db) {
-        TaskHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_TASK_HOLDER);
+        TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_TASK_HOLDER);
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
         // Update task info binding
+        //noinspection ConstantConditions
         holder.description.setText(this.getDescription());
         String statusCode = tasksCursor.getStatusCode().toUpperCase();
         String statusText;

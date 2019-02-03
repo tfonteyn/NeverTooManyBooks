@@ -75,10 +75,9 @@ public final class BackupManager {
                               @NonNull final ExportSettings settings) {
 
         // sanity checks
-        if ((settings.what & ExportSettings.MASK) == 0) {
-            throw new IllegalArgumentException("Options must be specified");
+        if ((settings.file == null) || ((settings.what & ExportSettings.MASK) == 0)) {
+            throw new IllegalArgumentException("Options must be specified: " + settings);
         }
-        Objects.requireNonNull(settings.file);
 
         // Ensure the file key extension is what we want
         if (!BackupFileDetails.isArchive(settings.file)) {

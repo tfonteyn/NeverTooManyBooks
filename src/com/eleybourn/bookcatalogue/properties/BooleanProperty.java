@@ -38,7 +38,6 @@ import androidx.annotation.StringRes;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.Objects;
 
@@ -129,7 +128,7 @@ public class BooleanProperty
         setViewValues(holder, getValue());
 
         // tags used
-        ViewTagger.setTag(holder.cb, R.id.TAG_PROPERTY, holder);
+        holder.cb.setTag(R.id.TAG_PROPERTY, holder);
 
         // Setup click handlers for view and checkbox
         root.setOnClickListener(new OnClickListener() {
@@ -142,7 +141,8 @@ public class BooleanProperty
             @Override
             public void onTriStateChange(@NonNull final View v,
                                          @NonNull final Boolean state) {
-                Holder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_PROPERTY);
+                Holder holder = (Holder) v.getTag(R.id.TAG_PROPERTY);
+                //noinspection ConstantConditions
                 holder.property.setValue(state);
                 holder.property.setViewValues(holder, state);
             }

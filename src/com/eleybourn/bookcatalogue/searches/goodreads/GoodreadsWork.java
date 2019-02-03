@@ -29,7 +29,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.lang.ref.WeakReference;
 
@@ -71,7 +70,7 @@ public class GoodreadsWork {
         if (imageView != null) {
             synchronized (imageView) {
                 // Make sure our view is still associated with us
-                if (this.equals(ViewTagger.getTag(imageView, R.id.TAG_GOODREADS_WORK))) {
+                if (this.equals(imageView.getTag(R.id.TAG_GOODREADS_WORK))) {
                     imageView.setImageBitmap(ImageUtils.getBitmapFromBytes(imageBytes));
                 }
             }
@@ -105,13 +104,13 @@ public class GoodreadsWork {
                     }
                 }
                 // Save the work in the View for verification
-                ViewTagger.setTag(imageView, R.id.TAG_GOODREADS_WORK, this);
+                imageView.setTag(R.id.TAG_GOODREADS_WORK, this);
                 //QueueManager.getQueueManager().bringTaskToFront(this.imageTaskId);
             } else {
                 // We already have an image, so just expand it.
                 imageView.setImageBitmap(ImageUtils.getBitmapFromBytes(this.imageBytes));
                 // Clear the work in the View, in case some other job was running
-                ViewTagger.setTag(imageView, R.id.TAG_GOODREADS_WORK, null);
+                imageView.setTag(R.id.TAG_GOODREADS_WORK, null);
             }
         }
     }

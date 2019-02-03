@@ -50,7 +50,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -322,7 +321,7 @@ public class PreferredStylesActivity
         @Override
         public void onGetView(@NonNull final View convertView,
                               @NonNull final BooklistStyle item) {
-            Holder holder = ViewTagger.getTag(convertView);
+            Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
@@ -331,14 +330,15 @@ public class PreferredStylesActivity
                 holder.groupsView = convertView.findViewById(R.id.groups);
                 holder.kindView = convertView.findViewById(R.id.kind);
                 // Tag the parts that need it
-                ViewTagger.setTag(convertView, holder);
-                ViewTagger.setTag(holder.checkableView, holder);
+                convertView.setTag(holder);
+                holder.checkableView.setTag(holder);
 
                 // Handle clicks on the CheckedTextView
                 holder.checkableView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
-                        Holder h = ViewTagger.getTagOrThrow(v);
+                        Holder h = (Holder) v.getTag();
+                        //noinspection ConstantConditions
                         boolean newStatus = !h.style.isPreferred();
                         h.style.setPreferred(newStatus);
                         h.checkableView.setChecked(newStatus);

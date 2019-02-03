@@ -32,7 +32,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -195,7 +194,7 @@ public class CheckListEditorDialogFragment<T>
                 btn.setChecked(item.isSelected());
                 btn.setText(item.getLabel());
                 btn.setOnCheckedChangeListener(this);
-                ViewTagger.setTag(btn, R.id.TAG_DIALOG_ITEM, item);
+                btn.setTag(R.id.TAG_DIALOG_ITEM, item);
                 mContent.addView(btn);
             }
         }
@@ -209,7 +208,8 @@ public class CheckListEditorDialogFragment<T>
         @Override
         public void onCheckedChanged(final CompoundButton buttonView,
                                      final boolean isChecked) {
-            CheckListItem item = ViewTagger.getTagOrThrow(buttonView, R.id.TAG_DIALOG_ITEM);
+            CheckListItem item = (CheckListItem) buttonView.getTag(R.id.TAG_DIALOG_ITEM);
+            //noinspection ConstantConditions
             item.setSelected(isChecked);
         }
     }

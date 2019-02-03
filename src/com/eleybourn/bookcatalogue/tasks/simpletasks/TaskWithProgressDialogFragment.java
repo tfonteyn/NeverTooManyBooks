@@ -547,7 +547,7 @@ public class TaskWithProgressDialogFragment
         Object getTag();
 
         /** set an optional generic tag. */
-        void setTag(@Nullable Object tag);
+        void setTag(@NonNull Object tag);
     }
 
     /**
@@ -558,7 +558,7 @@ public class TaskWithProgressDialogFragment
     public abstract static class FragmentTaskAbstract
             implements FragmentTask {
 
-        private Object mTag = 0;
+        private Object mTag;
 
         @Override
         public void onFinish(@NonNull final TaskWithProgressDialogFragment fragment,
@@ -570,11 +570,12 @@ public class TaskWithProgressDialogFragment
             }
         }
 
+        @NonNull
         public Object getTag() {
             return mTag;
         }
 
-        public void setTag(@Nullable final Object tag) {
+        public void setTag(@NonNull final Object tag) {
             mTag = tag;
         }
     }

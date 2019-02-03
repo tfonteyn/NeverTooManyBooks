@@ -36,7 +36,6 @@ import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -118,7 +117,7 @@ public class GetThumbnailTask
         v.setImageBitmap(null);
 
         // Associate the view with this task
-        ViewTagger.setTag(v, R.id.TAG_GET_THUMBNAIL_TASK, this);
+        v.setTag(R.id.TAG_GET_THUMBNAIL_TASK, this);
     }
 
     /**
@@ -158,9 +157,9 @@ public class GetThumbnailTask
      * overwrites the view.
      */
     public static void clearOldTaskFromView(@NonNull final ImageView imageView) {
-        final GetThumbnailTask oldTask = ViewTagger.getTag(imageView, R.id.TAG_GET_THUMBNAIL_TASK);
+        final GetThumbnailTask oldTask = (GetThumbnailTask) imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK);
         if (oldTask != null) {
-            ViewTagger.setTag(imageView, R.id.TAG_GET_THUMBNAIL_TASK, null);
+            imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
             TASK_QUEUE.remove(oldTask);
         }
     }
@@ -192,7 +191,7 @@ public class GetThumbnailTask
 
         // Make sure the view is still associated with this task.
         // We don't want to overwrite the wrong image in a recycled view.
-        if (!this.equals(ViewTagger.getTag(v, R.id.TAG_GET_THUMBNAIL_TASK))) {
+        if (!this.equals(v.getTag(R.id.TAG_GET_THUMBNAIL_TASK))) {
             mWantFinished = false;
             return;
         }
@@ -230,11 +229,11 @@ public class GetThumbnailTask
         // Make sure the view is still associated with this task.
         // We don't want to overwrite the wrong image in a recycled view.
         final boolean viewIsValid = (view != null
-                && this.equals(ViewTagger.getTag(view, R.id.TAG_GET_THUMBNAIL_TASK)));
+                && this.equals(view.getTag(R.id.TAG_GET_THUMBNAIL_TASK)));
 
         // Clear the view tag
         if (viewIsValid) {
-            ViewTagger.setTag(view, R.id.TAG_GET_THUMBNAIL_TASK, null);
+            view.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
         }
 
         if (mBitmap != null) {

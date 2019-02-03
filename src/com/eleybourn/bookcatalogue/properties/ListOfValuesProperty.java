@@ -39,7 +39,6 @@ import androidx.appcompat.app.AlertDialog;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 
@@ -79,7 +78,7 @@ public abstract class ListOfValuesProperty<T>
         // create Holder -> not needed here
 
         // tags used
-        ViewTagger.setTag(root, R.id.TAG_PROPERTY, this);
+        root.setTag(R.id.TAG_PROPERTY, this);
 
         // Try to find the list item that corresponds to the current stored value.
         ListEntry<T> currentlyEntry = null;
@@ -176,7 +175,9 @@ public abstract class ListOfValuesProperty<T>
             @Override
             public void onClick(@NonNull final View v) {
                 dialog.dismiss();
-                Holder<T> holder = ViewTagger.getTagOrThrow(v);
+                //noinspection unchecked
+                Holder<T> holder = (Holder<T>) v.getTag();
+                //noinspection ConstantConditions
                 setValue(holder.item.value);
                 setValueInView(holder.baseView, holder.item);
             }
@@ -209,7 +210,7 @@ public abstract class ListOfValuesProperty<T>
                 sel.setOnClickListener(clickListener);
 
                 // Set the tags used by the listeners
-                ViewTagger.setTag(sel, new Holder<>(entry, baseView));
+                sel.setTag(new Holder<>(entry, baseView));
 
                 // Add it to the group
                 radioGroup.addView(line);

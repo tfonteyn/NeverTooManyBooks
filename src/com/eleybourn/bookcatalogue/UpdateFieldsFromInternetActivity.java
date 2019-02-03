@@ -47,7 +47,6 @@ import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -258,14 +257,15 @@ public class UpdateFieldsFromInternetActivity
                 public void onClick(@NonNull final View v) {
                     // ENHANCE: The check is really a FOUR-state.
                     final CompoundButton cb = (CompoundButton) v;
-                    final Fields.FieldUsage usage = ViewTagger.getTagOrThrow(cb);
+                    final Fields.FieldUsage usage = (Fields.FieldUsage) cb.getTag();
+                    //noinspection ConstantConditions
                     usage.nextState();
                     cb.setChecked(usage.isSelected());
                     cb.setText(usage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
                 }
             });
 
-            ViewTagger.setTag(cb, usage);
+            cb.setTag(usage);
             mListContainer.addView(row);
         }
     }
@@ -399,7 +399,8 @@ public class UpdateFieldsFromInternetActivity
             View view = mListContainer.getChildAt(i);
             CompoundButton cb = view.findViewById(R.id.usage);
             if (cb != null) {
-                Fields.FieldUsage usage = ViewTagger.getTagOrThrow(cb);
+                Fields.FieldUsage usage = (Fields.FieldUsage) cb.getTag();
+                //noinspection ConstantConditions
                 if (usage.isSelected()) {
                     return true;
                 }

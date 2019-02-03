@@ -59,7 +59,6 @@ import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.io.File;
 import java.util.List;
@@ -223,9 +222,9 @@ public class CoverBrowser
         switcher.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                Object newSpec = ViewTagger.getTag(switcher);
+                String newSpec = (String) switcher.getTag();
                 if (newSpec != null) {
-                    mOnImageSelectedListener.onImageSelected((String) newSpec);
+                    mOnImageSelectedListener.onImageSelected(newSpec);
                 }
                 mDialog.dismiss();
             }
@@ -676,7 +675,7 @@ public class CoverBrowser
                                                           mPreviewSizeHeight * 4,
                                                           true));
                 mSwitcher.setImageDrawable(image);
-                ViewTagger.setTag(mSwitcher, file.getAbsolutePath());
+                mSwitcher.setTag(file.getAbsolutePath());
                 msgVw.setVisibility(View.GONE);
                 mSwitcher.setVisibility(View.VISIBLE);
             } else {

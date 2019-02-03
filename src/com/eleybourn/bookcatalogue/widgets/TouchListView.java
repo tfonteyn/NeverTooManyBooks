@@ -110,7 +110,7 @@ public class TouchListView
     private int mItemHeightNormal = -1;
     //private int mItemHeightExpanded=-1;
     @IdRes
-    private int grabberId;
+    private final int grabberId;
     /** Color.TRANSPARENT by default. */
     @ColorInt
     private final int dragndropBackgroundColor;

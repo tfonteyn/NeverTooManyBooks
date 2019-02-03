@@ -35,7 +35,6 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,9 +83,7 @@ public class TaskQueueListActivity
                                 @NonNull final View v,
                                 final int position,
                                 final long id) {
-        Task task = ViewTagger.getTagOrThrow(v, R.id.TAG_TASK);
         List<ContextDialogItem> items = new ArrayList<>();
-
         items.add(new ContextDialogItem(
                 getString(R.string.gr_tq_show_events_ellipsis),
                 new Runnable() {
@@ -99,6 +96,8 @@ public class TaskQueueListActivity
                     }
                 }));
 
+        Task task = (Task) v.getTag(R.id.TAG_TASK);
+        //noinspection ConstantConditions
         task.addContextMenuItems(this, parent, v, position, id, items, mDb);
         ContextDialogItem.showContextDialog(this, R.string.title_select_an_action, items);
     }
@@ -111,7 +110,7 @@ public class TaskQueueListActivity
                                @NonNull final View convertView,
                                @NonNull final BindableItemCursor cursor,
                                @NonNull final BindableItemCursorAdapter.BindableItem item) {
-        ViewTagger.setTag(convertView, R.id.TAG_TASK, item);
+        convertView.setTag(R.id.TAG_TASK, item);
         item.bindView(convertView, context, cursor, mDb);
     }
 

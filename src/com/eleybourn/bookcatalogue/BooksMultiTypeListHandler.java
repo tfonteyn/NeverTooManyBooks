@@ -80,7 +80,6 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,7 +142,8 @@ public class BooksMultiTypeListHandler
      * @return the *absolute* position of the passed view in the list of books.
      */
     int getAbsolutePosition(@NonNull final View v) {
-        final BooklistHolder holder = ViewTagger.getTagOrThrow(v);
+        final BooklistHolder holder = (BooklistHolder) v.getTag();
+        Objects.requireNonNull(holder);
         return holder.absolutePosition;
     }
 
@@ -228,13 +228,14 @@ public class BooksMultiTypeListHandler
 
             convertView.setPadding((level - 1) * 5, 0, 0, 0);
             holder.map(rowView, convertView);
-            ViewTagger.setTag(convertView, holder);
+            convertView.setTag(holder);
             // Indent based on level; we assume rows of a given type only occur at the same level
         } else {
             // recycling convertView
-            holder = ViewTagger.getTagOrThrow(convertView);
+            holder = (BooklistHolder) convertView.getTag();
         }
 
+        //noinspection ConstantConditions
         holder.absolutePosition = rowView.getAbsolutePosition();
         holder.set(rowView, convertView, level);
         return convertView;

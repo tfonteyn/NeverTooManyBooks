@@ -36,6 +36,7 @@ public final class GoodreadsUtils {
      *
      * @return <tt>true</tt> if the name does NOT contain the string 'nocover'
      */
+    @SuppressWarnings("WeakerAccess")
     public static boolean hasCover(final String imageName) {
         return imageName != null && !imageName.toLowerCase().contains(NO_COVER);
     }
@@ -52,6 +53,7 @@ public final class GoodreadsUtils {
     /**
      * Show the goodreads options list.
      */
+    @SuppressWarnings("unused")
     public static void showGoodreadsOptions(@NonNull final BaseActivity activity) {
         LayoutInflater inf = activity.getLayoutInflater();
         @SuppressLint("InflateParams")
@@ -165,7 +167,7 @@ public final class GoodreadsUtils {
                     @Override
                     public void onFinish(@NonNull final TaskWithProgressDialogFragment fragment,
                                          @Nullable final Exception e) {
-                        final Integer msg = (Integer) getTag();
+                        final int msg = (Integer) getTag();
                         if (msg == -1) {
                             fragment.post(new Runnable() {
 

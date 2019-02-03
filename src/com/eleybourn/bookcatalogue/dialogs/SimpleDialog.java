@@ -23,7 +23,6 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -68,7 +67,7 @@ public final class SimpleDialog {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                SimpleDialogItem item = ViewTagger.getTag(v, R.id.TAG_DIALOG_ITEM);
+                SimpleDialogItem item = (SimpleDialogItem) v.getTag(R.id.TAG_DIALOG_ITEM);
                 // For a consistent UI, make sure the selector is checked as well.
                 // NOT mandatory from a functional point of view, just consistent
                 if (item != null && !(v instanceof Checkable)) {
@@ -92,12 +91,12 @@ public final class SimpleDialog {
             view.setOnClickListener(listener);
             view.setBackgroundResource(android.R.drawable.list_selector_background);
 
-            ViewTagger.setTag(view, R.id.TAG_DIALOG_ITEM, item);
+            view.setTag(R.id.TAG_DIALOG_ITEM, item);
 
             CompoundButton btn = item.getSelector(view);
             if (btn != null) {
                 btn.setVisibility(View.VISIBLE);
-                ViewTagger.setTag(btn, R.id.TAG_DIALOG_ITEM, item);
+                btn.setTag(R.id.TAG_DIALOG_ITEM, item);
                 btn.setChecked(item == selectedItem);
                 btn.setOnClickListener(listener);
             }

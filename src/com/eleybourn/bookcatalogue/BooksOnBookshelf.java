@@ -80,7 +80,6 @@ import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -141,7 +140,7 @@ public class BooksOnBookshelf
     private Bookshelf mCurrentBookshelf;
 
     /** Holder for all (semi)supported search criteria. See class for mre info. */
-    private SearchCriteria mSearchCriteria = new SearchCriteria();
+    private final SearchCriteria mSearchCriteria = new SearchCriteria();
     /** Saved position of top row. */
     private int mTopRow;
     /** Used by onScroll to detect when the top row has actually changed. */
@@ -758,7 +757,7 @@ public class BooksOnBookshelf
                                   mListCursor.numLevels() > level
                                           && style.showLevel(level));
         }
-        ViewTagger.setTag(listView, listHeader);
+        listView.setTag(listHeader);
 
         // Update the header details
         if (count > 0 && (headersToShow
@@ -780,7 +779,8 @@ public class BooksOnBookshelf
                         if (mLastTopRow != firstVisibleItem
                                 && !mIsDead
                                 && (headersToShow != 0)) {
-                            ListHeader listHeader = ViewTagger.getTagOrThrow(view);
+                            ListHeader listHeader = (ListHeader) view.getTag();
+                            //noinspection ConstantConditions
                             listHeader.updateListHeader(firstVisibleItem);
                         }
                     }
@@ -1301,37 +1301,37 @@ public class BooksOnBookshelf
          * Text to use in search query.
          */
         @Nullable
-        public String text = "";
+        String text = "";
         /**
          * Author to use in search query.
          * Supported in the builder, but not in this class yet.
          */
         @Nullable
-        public String author = "";
+        String author = "";
         /**
          * Title to use in search query.
          * Supported in the builder, but not in this class yet.
          */
         @Nullable
-        public String title = "";
+        String title = "";
         /**
          * Series to use in search query.
          * Supported in the builder, but not in this class yet.
          */
         @Nullable
-        public String series = "";
+        String series = "";
         /**
          * Name of the person we loaned books to, to use in search query.
          * Supported in the builder, but not in this class yet.
          */
         @Nullable
-        public String loanee = "";
+        String loanee = "";
 
         /**
          * List of bookId's to display. The result of a search.
          */
         @Nullable
-        public ArrayList<Integer> bookList;
+        ArrayList<Integer> bookList;
 
         void clear() {
             text = "";
@@ -1342,7 +1342,7 @@ public class BooksOnBookshelf
             bookList = null;
         }
 
-        public void from(@NonNull final Bundle bundle) {
+        void from(@NonNull final Bundle bundle) {
             if (bundle.containsKey(UniqueId.BKEY_SEARCH_TEXT)) {
                 text = initSearchField(bundle.getString(UniqueId.BKEY_SEARCH_TEXT));
             }
@@ -1366,7 +1366,7 @@ public class BooksOnBookshelf
         /**
          * @param intent which will be used for a {@link #startActivityForResult}
          */
-        public void to(@NonNull final Intent intent) {
+        void to(@NonNull final Intent intent) {
             intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, text);
             intent.putExtra(UniqueId.BKEY_SEARCH_AUTHOR, author);
             intent.putExtra(UniqueId.KEY_TITLE, title);
@@ -1378,7 +1378,7 @@ public class BooksOnBookshelf
         /**
          * @param outState from {@link #onSaveInstanceState}
          */
-        public void to(final Bundle outState) {
+        void to(final Bundle outState) {
             outState.putString(UniqueId.BKEY_SEARCH_TEXT, text);
             outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, author);
             outState.putString(UniqueId.KEY_TITLE, title);
@@ -1387,7 +1387,7 @@ public class BooksOnBookshelf
             outState.putIntegerArrayList(UniqueId.BKEY_ID_LIST, bookList);
         }
 
-        public boolean isEmpty() {
+        boolean isEmpty() {
             return (text == null || text.isEmpty())
                     && (author == null || author.isEmpty())
                     && (title == null || title.isEmpty())

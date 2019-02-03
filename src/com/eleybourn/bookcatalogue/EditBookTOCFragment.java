@@ -60,7 +60,6 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBResultsListener;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -539,7 +538,7 @@ public class EditBookTOCFragment
         public void onGetView(@NonNull final View convertView,
                               @NonNull final TocEntry item) {
 
-            Holder holder = ViewTagger.getTag(convertView);
+            Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
@@ -547,7 +546,7 @@ public class EditBookTOCFragment
                 holder.authorView = convertView.findViewById(R.id.author);
                 holder.firstPublicationView = convertView.findViewById(R.id.year);
                 // Tag the parts that need it
-                ViewTagger.setTag(convertView, holder);
+                convertView.setTag(holder);
             }
 
             holder.titleView.setText(item.getTitle());

@@ -36,7 +36,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +98,7 @@ public class EventQueueListActivity
                                 final int position,
                                 final long id) {
 
-        final Event event = ViewTagger.getTagOrThrow(v, R.id.TAG_EVENT);
+        final Event event = (Event) v.getTag(R.id.TAG_EVENT);
 
         // If it owns a hint, display it first
         if (event instanceof HintOwner) {
@@ -112,6 +111,7 @@ public class EventQueueListActivity
                                     });
         } else {
             // Just display context menu
+            //noinspection ConstantConditions
             doContextMenu(parent, v, event, position, id);
         }
     }
@@ -141,7 +141,7 @@ public class EventQueueListActivity
                                @NonNull final View convertView,
                                @NonNull final BindableItemCursor cursor,
                                @NonNull final BindableItemCursorAdapter.BindableItem item) {
-        ViewTagger.setTag(convertView, R.id.TAG_EVENT, item);
+        convertView.setTag(R.id.TAG_EVENT, item);
         item.bindView(convertView, context, cursor, mDb);
     }
 

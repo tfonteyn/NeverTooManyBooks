@@ -31,7 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.List;
 
@@ -111,12 +110,13 @@ public abstract class SimpleListAdapter<T>
 
             holder.deleteRowButton = convertView.findViewById(R.id.SLA_ROW_DELETE);
 
-            ViewTagger.setTag(convertView, R.id.SLA_ROW_TAG, holder);
+            convertView.setTag(R.id.SLA_ROW_TAG, holder);
 
         } else {
-            holder = ViewTagger.getTagOrThrow(convertView, R.id.SLA_ROW_TAG);
+            holder = (SimpleHolder) convertView.getTag(R.id.SLA_ROW_TAG);
         }
 
+        //noinspection ConstantConditions
         if (holder.row != null) {
             holder.row.setOnClickListener(new View.OnClickListener() {
                 @Override

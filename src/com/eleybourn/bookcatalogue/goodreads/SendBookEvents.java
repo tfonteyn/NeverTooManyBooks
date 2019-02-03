@@ -42,15 +42,14 @@ import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager.HintOwner;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.tasks.taskqueue.BindableItemCursor;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.Event;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.EventsCursor;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +79,8 @@ final class SendBookEvents {
         static final OnClickListener mRetryButtonListener = new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                BookEventHolder holder = ViewTagger.getTagOrThrow(v, R.id.TAG_BOOK_EVENT_HOLDER);
+                BookEventHolder holder = (BookEventHolder) v.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
+                //noinspection ConstantConditions
                 holder.event.retry();
             }
         };
@@ -131,7 +131,7 @@ final class SendBookEvents {
                                     @NonNull final ViewGroup parent) {
             View view = LayoutInflater.from(context)
                                       .inflate(R.layout.row_book_event_info, parent, false);
-            ViewTagger.setTag(view, R.id.TAG_EVENT, this);
+            view.setTag(R.id.TAG_EVENT, this);
             BookEventHolder holder = new BookEventHolder();
             holder.event = this;
             holder.rowId = cursor.getId();
@@ -143,9 +143,9 @@ final class SendBookEvents {
             holder.retryView = view.findViewById(R.id.retry);
             holder.titleView = view.findViewById(R.id.title);
 
-            ViewTagger.setTag(view, R.id.TAG_BOOK_EVENT_HOLDER, holder);
-            ViewTagger.setTag(holder.buttonView, R.id.TAG_BOOK_EVENT_HOLDER, holder);
-            ViewTagger.setTag(holder.retryView, R.id.TAG_BOOK_EVENT_HOLDER, holder);
+            view.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
+            holder.buttonView.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
+            holder.retryView.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
 
             return view;
         }
@@ -162,7 +162,8 @@ final class SendBookEvents {
 
             // Update event info binding; the Views in the holder are unchanged,
             // but when it is reused the Event and ID will change.
-            BookEventHolder holder = ViewTagger.getTagOrThrow(view, R.id.TAG_BOOK_EVENT_HOLDER);
+            BookEventHolder holder = (BookEventHolder) view.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
+            //noinspection ConstantConditions
             holder.event = this;
             holder.rowId = eventsCursor.getId();
 
@@ -183,7 +184,8 @@ final class SendBookEvents {
             }
 
             holder.titleView.setText(title);
-            holder.authorView.setText(String.format(context.getString(R.string.lbl_by_authors), author));
+            holder.authorView.setText(
+                    String.format(context.getString(R.string.lbl_by_authors), author));
             holder.errorView.setText(this.getDescription());
 
             String date = String.format(context.getString(R.string.gr_tq_occurred_at),
@@ -197,8 +199,9 @@ final class SendBookEvents {
                 @Override
                 public void onCheckedChanged(@NonNull final CompoundButton buttonView,
                                              final boolean isChecked) {
-                    BookEventHolder holder =
-                            ViewTagger.getTagOrThrow(buttonView, R.id.TAG_BOOK_EVENT_HOLDER);
+                    BookEventHolder holder = (BookEventHolder)
+                            buttonView.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
+                    //noinspection ConstantConditions
                     eventsCursor.setSelected(holder.rowId, isChecked);
                 }
             });
@@ -208,7 +211,7 @@ final class SendBookEvents {
             // Hide parts of view based on current book having an isbn or not..
             if (isbn != null && !isbn.isEmpty()) {
                 holder.retryView.setVisibility(View.VISIBLE);
-                ViewTagger.setTag(holder.retryView, this);
+                holder.retryView.setTag(this);
                 holder.retryView.setOnClickListener(mRetryButtonListener);
                 return;
             }
@@ -237,8 +240,9 @@ final class SendBookEvents {
                         public void run() {
                             try {
                                 GrSendBookEvent event =
-                                        ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
+                                        (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
                                 Intent intent = new Intent(context, EditBookActivity.class);
+                                //noinspection ConstantConditions
                                 intent.putExtra(UniqueId.KEY_ID, event.getBookId());
                                 intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB,
                                                 EditBookFragment.TAB_EDIT);
@@ -256,9 +260,8 @@ final class SendBookEvents {
 //                    new Runnable() {
 //                        @Override
 //                        public void run() {
-//                            BookEventHolder holder =
-//                                    ViewTagger.getTagOrThrow(view,
-//                                                             R.id.TAG_BOOK_EVENT_HOLDER);
+//                            BookEventHolder holder = (BookEventHolder)
+//                                    view.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
 //                            Intent intent = new Intent(context,
 //                                                       GoodreadsSearchCriteriaActivity.class);
 //                            intent.putExtra(
@@ -289,8 +292,9 @@ final class SendBookEvents {
                                     @Override
                                     public void run() {
                                         try {
-                                            GrSendBookEvent event =
-                                                    ViewTagger.getTagOrThrow(view, R.id.TAG_EVENT);
+                                            GrSendBookEvent event = (GrSendBookEvent) view.getTag(
+                                                    R.id.TAG_EVENT);
+                                            //noinspection ConstantConditions
                                             event.retry();
                                             QueueManager.getQueueManager().deleteEvent(id);
                                         } catch (RuntimeException ignore) {

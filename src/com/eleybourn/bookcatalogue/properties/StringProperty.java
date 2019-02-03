@@ -21,10 +21,6 @@
 package com.eleybourn.bookcatalogue.properties;
 
 import android.os.Parcel;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -33,10 +29,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.Objects;
 
@@ -72,7 +72,7 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
         holder.value.setText(getResolvedValue());
 
         // tags used
-        ViewTagger.setTag(root, R.id.TAG_PROPERTY, holder);
+        root.setTag(R.id.TAG_PROPERTY, holder);
 
         // Reflect all changes in underlying data
         holder.value.addTextChangedListener(new TextWatcher() {

@@ -77,7 +77,7 @@ public class ColumnInfo {
     public enum StorageClass {
         Integer, Real, Text, Blob;
 
-        public static StorageClass newInstance(@NonNull final String columnType) {
+        static StorageClass newInstance(@NonNull final String columnType) {
             // hardcoded strings are for backwards compatibility
             switch (columnType.toLowerCase()) {
                 case TYPE_INTEGER:

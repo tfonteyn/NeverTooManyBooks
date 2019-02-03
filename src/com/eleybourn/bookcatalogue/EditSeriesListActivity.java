@@ -43,7 +43,6 @@ import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialog;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.Utils;
-import com.eleybourn.bookcatalogue.utils.ViewTagger;
 
 import java.util.ArrayList;
 
@@ -315,14 +314,14 @@ public class EditSeriesListActivity
         @Override
         public void onGetView(@NonNull final View convertView,
                               @NonNull final Series item) {
-            Holder holder = ViewTagger.getTag(convertView);
+            Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
                 // New view, so build the Holder
                 holder = new Holder();
                 holder.rowSeriesView = convertView.findViewById(R.id.row_series);
                 holder.rowSeriesSortView = convertView.findViewById(R.id.row_series_sort);
                 // Tag the parts that need it
-                ViewTagger.setTag(convertView, holder);
+                convertView.setTag(holder);
             }
             // Setup the variant fields in the holder
             if (holder.rowSeriesView != null) {
