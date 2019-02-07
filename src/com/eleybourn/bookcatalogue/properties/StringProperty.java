@@ -170,13 +170,11 @@ public class StringProperty extends PropertyWithGlobalValue<String> {
     }
 
     public void writeToParcel(@NonNull final Parcel dest) {
-        String value = this.getValue();
-        dest.writeString(value);
+        dest.writeString(getValue());
     }
 
     public void readFromParcel(@NonNull final Parcel in) {
-        String parceledString = in.readString();
-        setValue(parceledString);
+        setValue(in.readString());
     }
     private static class Holder {
         StringProperty property;

@@ -44,20 +44,20 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager.TaskManagerLis
 
 /**
  * TODO: Remove this! Fragments makes BaseActivityWithTasks mostly redundant.
- *
+ * <p>
  * Class used to manager a collection of background threads for a
  * {@link BaseActivityWithTasks} subclass.
- *
+ * <p>
  * Part of three components that make this easier:
- *
+ * <p>
  * {@link ManagedTask}
  * Background task that is managed by TaskManager and uses TaskManager to coordinate
  * display activities.
- *
+ * <p>
  * {@link TaskManager}
  * handles the management of multiple tasks and passing messages with the help
  * of a {@link MessageSwitch}
- *
+ * <p>
  * {@link BaseActivityWithTasks}
  * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
  * Deals with orientation changes in cooperation with TaskManager.
@@ -98,7 +98,7 @@ public abstract class BaseActivityWithTasks
                                    @NonNull final ManagedTask task) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(BaseActivityWithTasks.this,
-                            "onTaskFinished","task=`" + task.getName());
+                            "onTaskFinished", "task=`" + task.getName());
             }
             // Just pass this one on. This will allow sub classes to override the base method,
             // and as such get informed.
@@ -118,7 +118,7 @@ public abstract class BaseActivityWithTasks
                         + message.replace("\n", "\\n") + '\'';
                 Tracker.handleEvent(BaseActivityWithTasks.this, States.Running,
                                     "onProgress|msg=" + dbgMsg);
-                Logger.info(BaseActivityWithTasks.this,"onProgress","msg=" + dbgMsg);
+                Logger.info(BaseActivityWithTasks.this, "onProgress", "msg=" + dbgMsg);
             }
 
             // Save the details
@@ -148,7 +148,7 @@ public abstract class BaseActivityWithTasks
         public void onUserMessage(@NonNull final String message) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(BaseActivityWithTasks.this,
-                            "onUserMessage","msg=`" + message);
+                            "onUserMessage", "msg=`" + message);
             }
             StandardDialogs.showUserMessage(BaseActivityWithTasks.this, message);
         }
@@ -214,7 +214,7 @@ public abstract class BaseActivityWithTasks
         if (mTaskManagerId != 0) {
             TaskManager.getMessageSwitch().removeListener(mTaskManagerId, mTaskListener);
             // If the Activity is finishing, tell the TaskManager to cancel all active
-            // tasks and not to accept new ones.
+            // tasks and not to hasInternet new ones.
             if (isFinishing()) {
                 getTaskManager().cancelAllTasksAndStopListening();
             }

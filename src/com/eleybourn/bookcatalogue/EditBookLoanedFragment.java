@@ -76,7 +76,7 @@ public class EditBookLoanedFragment
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
-        return ((EditBookFragment) this.getParentFragment()).getBookManager();
+        return ((EditBookFragment) getParentFragment()).getBookManager();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -129,7 +129,7 @@ public class EditBookLoanedFragment
         sv.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             public void onClick(@NonNull final View v) {
                 String loanee = mLoanedToView.getText().toString().trim();
-                getBookManager().getBook().loan(mDb, loanee);
+                getBookManager().getBook().lend(mDb, loanee);
                 showLoaned(loanee);
             }
         });

@@ -60,7 +60,7 @@ public class Publisher
      * @param name of publisher.
      */
     public Publisher(@NonNull final String name) {
-        this.mName = name.trim();
+        mName = name.trim();
     }
 
     /** {@link Parcelable}. */
@@ -121,7 +121,7 @@ public class Publisher
         }
         Publisher that = (Publisher) obj;
 
-        return Objects.equals(this.mName, that.mName);
+        return Objects.equals(mName, that.mName);
     }
 
     @Override

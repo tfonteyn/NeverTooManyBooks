@@ -213,8 +213,7 @@ public class BookFragment
                        getBook().getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY)));
         mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
                .setFormatter(new Fields.BookEditionsFormatter());
-        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED)
-               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(requireContext()));
+
         mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
         mFields.add(R.id.notes, UniqueId.KEY_BOOK_NOTES)
@@ -224,8 +223,11 @@ public class BookFragment
         mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END)
                .setFormatter(dateFormatter);
 
-        // note the use of the accessor instead of a real column.
-        mFields.add(R.id.read, Book.IS_READ, UniqueId.KEY_BOOK_READ);
+        // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
+        mFields.add(R.id.read, UniqueId.KEY_BOOK_READ);
+        // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
+        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED)
+               .setFormatter(new Fields.BinaryYesNoEmptyFormatter(requireContext()));
 
         // defined, but handled manually
         mFields.add(R.id.bookshelves, "", UniqueId.KEY_BOOKSHELF_NAME);
@@ -269,12 +271,12 @@ public class BookFragment
         populateSeriesListField(book);
 
         // override setting the cover as we want a bigger size.
-        ImageUtils.ThumbSize ts = ImageUtils.getThumbSizes(mActivity);
+        ImageUtils.ImageSize ts = ImageUtils.getImageSizes(mActivity);
         mCoverHandler.populateCoverView(ts.small, ts.standard);
 
         // handle 'text' DoNotFetch fields
-        mFields.getField(R.id.bookshelves).setValue(
-                Bookshelf.toDisplayString(book.getBookshelfList()));
+        ArrayList<Bookshelf> bsList = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
         populateLoanedToField(book.getId());
 
         // handle composite fields
@@ -366,7 +368,7 @@ public class BookFragment
     //<editor-fold desc="Populate">
 
     private void populateAuthorListField(@NonNull final Book book) {
-        ArrayList<Author> authors = book.getAuthorList();
+        ArrayList<Author> authors = book.getList(UniqueId.BKEY_AUTHOR_ARRAY);
         int authorsCount = authors.size();
         boolean visible = authorsCount != 0;
         if (visible) {
@@ -386,7 +388,7 @@ public class BookFragment
     }
 
     void populateSeriesListField(@NonNull final Book book) {
-        ArrayList<Series> list = book.getSeriesList();
+        ArrayList<Series> list = book.getList(UniqueId.BKEY_SERIES_ARRAY);
         int seriesCount = list.size();
         boolean visible = seriesCount != 0 && mFields.getField(R.id.series).isVisible();
         if (visible) {
@@ -415,8 +417,8 @@ public class BookFragment
      */
     private void populatePublishingSection(@NonNull final Book book) {
 
-        String datePublished = mFields.getField(R.id.date_published).format(
-                book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
+        String datePublished = mFields.getField(R.id.date_published)
+                                      .format(book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
         boolean hasPublishDate = !datePublished.isEmpty();
 
         String publisher = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
@@ -481,11 +483,12 @@ public class BookFragment
      */
     private void populateTOC(@NonNull final Book book) {
         //ENHANCE: add to mFields?
-        ArrayList<TocEntry> list = book.getTOCList();
+        ArrayList<TocEntry> list = book.getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         // only show if: field in use + it's flagged as an ant + the ant has titles
         boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK)
-                && book.getBoolean(Book.HAS_MULTIPLE_WORKS)
+                && book.isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                                 TocEntry.Type.MULTIPLE_WORKS)
                 && !list.isEmpty();
 
         if (visible) {
@@ -566,12 +569,21 @@ public class BookFragment
     public boolean onContextItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_LOAN_RETURNED:
-                getBook().loanReturned(mDb);
+                loanIsReturned();
                 return true;
 
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    /**
+     * A book was returned. Update the database, and hide the loan view.
+     */
+    protected void loanIsReturned() {
+        getBook().loanReturned(mDb);
+        mFields.getField(R.id.loaned_to).setValue("");
+        mFields.getField(R.id.loaned_to).getView().setVisibility(View.GONE);
     }
 
     /**
@@ -602,7 +614,7 @@ public class BookFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_EDIT:
-                Intent intent = new Intent(this.getContext(), EditBookActivity.class);
+                Intent intent = new Intent(getContext(), EditBookActivity.class);
                 intent.putExtra(UniqueId.KEY_ID, getBook().getId());
                 intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);

@@ -151,7 +151,7 @@ public class CheckListEditorDialogFragment<T>
             super(context);
 
             // Get the layout
-            View root = this.getLayoutInflater().inflate(R.layout.dialog_edit_base, null);
+            View root = getLayoutInflater().inflate(R.layout.dialog_edit_base, null);
             setView(root);
 
             // get the content view
@@ -190,12 +190,12 @@ public class CheckListEditorDialogFragment<T>
         public void setList(@NonNull final ArrayList<CheckListItem<T>> list) {
             mList = list;
             for (CheckListItem item : mList) {
-                CompoundButton btn = new CheckBox(getContext());
-                btn.setChecked(item.isSelected());
-                btn.setText(item.getLabel());
-                btn.setOnCheckedChangeListener(this);
-                btn.setTag(R.id.TAG_DIALOG_ITEM, item);
-                mContent.addView(btn);
+                CompoundButton buttonView = new CheckBox(getContext());
+                buttonView.setChecked(item.isSelected());
+                buttonView.setText(item.getLabel());
+                buttonView.setOnCheckedChangeListener(this);
+                buttonView.setTag(R.id.TAG_DIALOG_ITEM, item);
+                mContent.addView(buttonView);
             }
         }
 

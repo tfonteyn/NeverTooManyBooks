@@ -84,9 +84,9 @@ public class EditSeriesListActivity
                                             android.R.layout.simple_dropdown_item_1line,
                                             mDb.getAllSeriesNames());
 
-        mSeriesNameView = this.findViewById(R.id.name);
+        mSeriesNameView = findViewById(R.id.name);
         mSeriesNameView.setAdapter(mSeriesAdapter);
-        mSeriesNumberView = this.findViewById(R.id.series_num);
+        mSeriesNumberView = findViewById(R.id.series_num);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
@@ -320,7 +320,7 @@ public class EditSeriesListActivity
                 holder = new Holder();
                 holder.rowSeriesView = convertView.findViewById(R.id.row_series);
                 holder.rowSeriesSortView = convertView.findViewById(R.id.row_series_sort);
-                // Tag the parts that need it
+
                 convertView.setTag(holder);
             }
             // Setup the variant fields in the holder

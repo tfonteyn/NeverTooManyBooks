@@ -177,7 +177,7 @@ public abstract class Property<T> {
     /** Accessor for underlying value */
     @NonNull
     public Property<T> setValue(@Nullable final T value) {
-        this.mValue = value;
+        mValue = value;
         return this;
     }
 

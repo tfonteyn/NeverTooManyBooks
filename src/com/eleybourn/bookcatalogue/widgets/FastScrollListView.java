@@ -106,7 +106,7 @@ public class FastScrollListView
             return;
         }
 
-        mScroller = new FastScroller(this.getContext(), this);
+        mScroller = new FastScroller(getContext(), this);
     }
 
     /**

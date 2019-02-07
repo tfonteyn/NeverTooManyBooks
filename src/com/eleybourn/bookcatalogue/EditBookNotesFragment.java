@@ -32,7 +32,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
-import com.eleybourn.bookcatalogue.datamanager.datavalidators.ValidatorException;
+import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
@@ -69,7 +69,7 @@ public class EditBookNotesFragment
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
-        return ((EditBookFragment) this.getParentFragment()).getBookManager();
+        return ((EditBookFragment) getParentFragment()).getBookManager();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -111,6 +111,7 @@ public class EditBookNotesFragment
 
         Field field;
 
+        // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         mFields.add(R.id.read, UniqueId.KEY_BOOK_READ)
                .getView().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +127,9 @@ public class EditBookNotesFragment
             }
         });
 
+        // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED);
+
         mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
 
         mFields.add(R.id.notes, UniqueId.KEY_BOOK_NOTES);

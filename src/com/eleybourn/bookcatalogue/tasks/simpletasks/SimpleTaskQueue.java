@@ -504,7 +504,7 @@ public class SimpleTaskQueue {
 
         @Override
         public void setRequiresFinish(final boolean requiresFinish) {
-            this.mFinishRequested = requiresFinish;
+            mFinishRequested = requiresFinish;
         }
 
         @Override
@@ -563,7 +563,7 @@ public class SimpleTaskQueue {
         public void run() {
             try {
                 // Set the thread name to something helpful.
-                this.setName(mName);
+                setName(mName);
                 while (!mTerminate) {
                     SimpleTaskWrapper req = mExecutionStack.poll(TIMEOUT, TimeUnit.MILLISECONDS);
 

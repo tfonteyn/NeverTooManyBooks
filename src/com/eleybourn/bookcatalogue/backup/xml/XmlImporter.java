@@ -26,9 +26,11 @@ import com.eleybourn.bookcatalogue.booklist.prefs.PString;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -68,6 +70,7 @@ public class XmlImporter
         mSettings.what = ExportSettings.ALL;
     }
 
+    @SuppressWarnings("unused")
     public XmlImporter(@NonNull final ImportSettings settings) {
         mDb = new DBA(BookCatalogueApp.getAppContext());
         settings.validate();
@@ -129,7 +132,7 @@ public class XmlImporter
     }
 
     /**
-     * Read stylePrefs from an XML stream into a given SharedPreferences object.
+     * Read mStylePrefs from an XML stream into a given SharedPreferences object.
      *
      * @param entity   to read
      * @param listener Progress and cancellation provider
@@ -173,13 +176,14 @@ public class XmlImporter
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement)
                  .setStartAction(new XmlFilter.XmlHandler() {
                      @Override
-                     public void process(@NonNull final XmlFilter.ElementContext context) {
-                         String version = context.attributes.getValue(XmlUtils.ATTR_VERSION);
-                         String id = context.attributes.getValue(XmlUtils.ATTR_ID);
-                         String name = context.attributes.getValue(XmlUtils.ATTR_NAME);
+                     public void process(@NonNull final ElementContext context) {
+                         Attributes attrs = context.getAttributes();
+                         String version = attrs.getValue(XmlUtils.ATTR_VERSION);
+                         String id = attrs.getValue(XmlUtils.ATTR_ID);
+                         String name = attrs.getValue(XmlUtils.ATTR_NAME);
                          if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
                              Logger.info(this, "StartAction|NEW-ELEMENT" +
-                                     "|localName=`" + context.localName + '`' +
+                                     "|localName=`" + context.getLocalName() + '`' +
                                      "|tag.name=`" + name + '`');
                          }
                          accessor.startElement(
@@ -189,7 +193,7 @@ public class XmlImporter
                  })
                  .setEndAction(new XmlFilter.XmlHandler() {
                      @Override
-                     public void process(@NonNull final XmlFilter.ElementContext context) {
+                     public void process(@NonNull final ElementContext context) {
                          accessor.endElement();
                      }
                  });
@@ -197,13 +201,13 @@ public class XmlImporter
         // typed tag starts
         XmlFilter.XmlHandler startTypedTag = new XmlFilter.XmlHandler() {
             @Override
-            public void process(@NonNull final XmlFilter.ElementContext context) {
-                tag.type = context.localName;
-                tag.name = context.attributes.getValue(XmlUtils.ATTR_NAME);
-                tag.value = context.attributes.getValue(XmlUtils.ATTR_VALUE);
+            public void process(@NonNull final ElementContext context) {
+                tag.type = context.getLocalName();
+                tag.name = context.getAttributes().getValue(XmlUtils.ATTR_NAME);
+                tag.value = context.getAttributes().getValue(XmlUtils.ATTR_VALUE);
                 if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
                     Logger.info(this, "StartAction" +
-                            "|localName=`" + context.localName + '`' +
+                            "|localName=`" + context.getLocalName() + '`' +
                             "|tag.name=`" + tag.name + '`' +
                             "|tag.value=`" + tag.value + '`');
                 }
@@ -236,10 +240,10 @@ public class XmlImporter
         // the end of a typed tag with a body
         XmlFilter.XmlHandler endTypedTag = new XmlFilter.XmlHandler() {
             @Override
-            public void process(@NonNull final XmlFilter.ElementContext context) {
+            public void process(@NonNull final ElementContext context) {
                 if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
                     Logger.info(this, "EndAction" +
-                            "|localName=`" + context.localName + '`' +
+                            "|localName=`" + context.getLocalName() + '`' +
                             "|tag.name=`" + tag.name + '`');
                 }
                 // tags with a value attribute were handled in the startElement call.
@@ -250,7 +254,7 @@ public class XmlImporter
                 try {
                     switch (tag.type) {
                         case XmlUtils.XML_STRING:
-                            accessor.putString(tag.name, context.body);
+                            accessor.putString(tag.name, context.getBody());
                             break;
 
                         case XmlUtils.XML_SET:
@@ -262,7 +266,8 @@ public class XmlImporter
 
                         case XmlUtils.XML_SERIALIZABLE:
                             accessor.putSerializable(tag.name,
-                                                     Base64.decode(context.body, Base64.DEFAULT));
+                                                     Base64.decode(context.getBody(),
+                                                                   Base64.DEFAULT));
                             break;
 
                         default:
@@ -311,8 +316,8 @@ public class XmlImporter
          */
         XmlFilter.XmlHandler startElementInCollection = new XmlFilter.XmlHandler() {
             @Override
-            public void process(@NonNull final XmlFilter.ElementContext context) {
-                currentStringSet.add(context.attributes.getValue(XmlUtils.ATTR_VALUE));
+            public void process(@NonNull final ElementContext context) {
+                currentStringSet.add(context.getAttributes().getValue(XmlUtils.ATTR_VALUE));
             }
         };
 
@@ -365,50 +370,49 @@ public class XmlImporter
         XmlFilter.buildFilter(rootFilter, "collection", "item")
                  .setStartAction(new XmlFilter.XmlHandler() {
                      @Override
-                     public void process(@NonNull final XmlFilter.ElementContext context) {
+                     public void process(@NonNull final ElementContext context) {
 
-                         tag.name = context.attributes.getValue("name");
-                         tag.type = context.attributes.getValue("type");
+                         tag.name = context.getAttributes().getValue("name");
+                         tag.type = context.getAttributes().getValue("type");
                          if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
                              Logger.info(this, "StartAction" +
-                                     "|localName=`" + context.localName + '`' +
+                                     "|localName=`" + context.getLocalName() + '`' +
                                      "|tag.name=`" + tag.name + '`');
                          }
                      }
                  }, null)
                  .setEndAction(new XmlFilter.XmlHandler() {
                      @Override
-                     public void process(@NonNull final XmlFilter.ElementContext context) {
+                     public void process(@NonNull final ElementContext context) {
                          if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
                              Logger.info(this, "EndAction" +
-                                     "|localName=`" + context.localName + '`' +
+                                     "|localName=`" + context.getLocalName() + '`' +
                                      "|tag.name=`" + tag.name + '`');
                          }
                          try {
+                             String body = context.getBody();
                              switch (tag.type) {
                                  case "Int":
-                                     accessor.putInt(tag.name, Integer.parseInt(context.body));
+                                     accessor.putInt(tag.name, Integer.parseInt(body));
                                      break;
                                  case "Long":
-                                     accessor.putLong(tag.name, Long.parseLong(context.body));
+                                     accessor.putLong(tag.name, Long.parseLong(body));
                                      break;
                                  case "Flt":
-                                     accessor.putFloat(tag.name, Float.parseFloat(context.body));
+                                     accessor.putFloat(tag.name, Float.parseFloat(body));
                                      break;
                                  case "Dbl":
-                                     accessor.putDouble(tag.name, Double.parseDouble(context.body));
+                                     accessor.putDouble(tag.name, Double.parseDouble(body));
                                      break;
                                  case "Str":
-                                     accessor.putString(tag.name, context.body);
+                                     accessor.putString(tag.name, body);
                                      break;
                                  case "Bool":
-                                     accessor.putBoolean(tag.name,
-                                                         Boolean.parseBoolean(context.body));
+                                     accessor.putBoolean(tag.name, Boolean.parseBoolean(body));
                                      break;
                                  case "Serial":
                                      accessor.putSerializable(tag.name,
-                                                              Base64.decode(context.body,
-                                                                            Base64.DEFAULT));
+                                                              Base64.decode(body, Base64.DEFAULT));
                                      break;
 
                                  default:
@@ -429,15 +433,13 @@ public class XmlImporter
 
     @Override
     public void close() {
-        if (mDb != null) {
-            try {
-                // now do some cleaning
-                mDb.purge();
-            } catch (RuntimeException e) {
-                Logger.error(e);
-            }
-            mDb.close();
+        try {
+            // now do some cleaning
+            mDb.purge();
+        } catch (RuntimeException e) {
+            Logger.error(e);
         }
+        mDb.close();
     }
 
     /**
@@ -717,10 +719,16 @@ public class XmlImporter
 
         private final DBA mDb;
 
-        private BooklistStyle style;
-        // a collection of *ALL* Preferences (including from *all* groups)
-        private Map<String, PPref> stylePrefs;
+        private BooklistStyle mStyle;
 
+        /** a collection of *ALL* Preferences (including from *all* groups). */
+        private Map<String, PPref> mStylePrefs;
+
+        /**
+         * Constructor.
+         *
+         * @param db the database
+         */
         StylesReader(@NonNull final DBA db) {
             mDb = db;
         }
@@ -753,14 +761,14 @@ public class XmlImporter
                 throw new IllegalArgumentException();
             }
             // create a new Style object. This will not have any groups assigned to it...
-            style = new BooklistStyle(id, name);
+            mStyle = new BooklistStyle(id, name);
             //... and hence, the Style Preferences won't have any group Preferences either.
-            stylePrefs = style.getPreferences(true);
+            mStylePrefs = mStyle.getPreferences(true);
             // So loop all groups, and get their Preferences.
             // Do NOT add the group itself to the style at this point as our import
             // might not actually have it.
-            for (BooklistGroup group : BooklistGroup.getAllGroups(style)) {
-                stylePrefs.putAll(group.getPreferences());
+            for (BooklistGroup group : BooklistGroup.getAllGroups(mStyle)) {
+                mStylePrefs.putAll(group.getPreferences());
             }
         }
 
@@ -772,43 +780,47 @@ public class XmlImporter
         public void endElement() {
             // we now have the groups themselves (one of the 'flat' prefs) set on the style,
             // so transfer their specific Preferences.
-            for (BooklistGroup group : style.getGroups()) {
-                style.updatePreferences(group.getPreferences());
+            for (BooklistGroup group : mStyle.getGroups()) {
+                mStyle.updatePreferences(group.getPreferences());
             }
             // add to the menu of preferred styles if needed.
-            if (style.isPreferred()) {
-                BooklistStyles.addPreferredStyle(style);
+            if (mStyle.isPreferred()) {
+                BooklistStyles.addPreferredStyle(mStyle);
             }
 
             // the prefs are written on the fly, but we still need the db entry saved.
-            style.save(mDb);
+            mStyle.save(mDb);
         }
 
         @Override
         public void putBoolean(@NonNull final String key,
                                final boolean value) {
-            PBoolean p = (PBoolean) stylePrefs.get(key);
+            PBoolean p = (PBoolean) mStylePrefs.get(key);
+            //noinspection ConstantConditions
             p.set(value);
         }
 
         @Override
         public void putInt(@NonNull final String key,
                            final int value) {
-            PInt p = (PInt) stylePrefs.get(key);
+            PInt p = (PInt) mStylePrefs.get(key);
+            //noinspection ConstantConditions
             p.set(value);
         }
 
         @Override
         public void putString(@NonNull final String key,
                               @NonNull final String value) {
-            PString p = (PString) stylePrefs.get(key);
+            PString p = (PString) mStylePrefs.get(key);
+            //noinspection ConstantConditions
             p.set(value);
         }
 
         @Override
         public void putStringSet(@NonNull final String key,
                                  @NonNull final Set<String> value) {
-            PCollection p = (PCollection) stylePrefs.get(key);
+            PCollection p = (PCollection) mStylePrefs.get(key);
+            //noinspection ConstantConditions
             p.set(value);
         }
 

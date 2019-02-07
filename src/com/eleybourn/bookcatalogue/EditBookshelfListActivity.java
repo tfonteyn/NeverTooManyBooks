@@ -34,6 +34,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.adapters.BookshelfAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
@@ -78,8 +79,8 @@ public class EditBookshelfListActivity
      */
     private void populateList() {
         mList = mDb.getBookshelves();
-        ArrayAdapter<Bookshelf> adapter = new ArrayAdapter<>(this, R.layout.row_bookshelf,
-                                                             R.id.row_bookshelves, mList);
+        ArrayAdapter<Bookshelf> adapter = new BookshelfAdapter(this,
+                                                               R.layout.row_bookshelf, mList);
         setListAdapter(adapter);
     }
 
@@ -138,7 +139,6 @@ public class EditBookshelfListActivity
                 }
                 return true;
 
-
             default:
                 return false;
         }
@@ -167,8 +167,7 @@ public class EditBookshelfListActivity
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_INSERT:
-                doEditDialog(new Bookshelf("",
-                                           BooklistStyles.getDefaultStyle(mDb).getId()));
+                doEditDialog(new Bookshelf("", BooklistStyles.getDefaultStyle(mDb).getId()));
                 return true;
 
             default:

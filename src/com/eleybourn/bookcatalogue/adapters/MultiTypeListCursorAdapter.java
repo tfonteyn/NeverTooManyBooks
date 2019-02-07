@@ -86,7 +86,7 @@ public class MultiTypeListCursorAdapter
 
     @Override
     public int getItemViewType(final int position) {
-        final Cursor listCursor = this.getCursor();
+        final Cursor listCursor = getCursor();
         //
         // At least on Android 2.3.4 we see attempts to get item types for cached items beyond the
         // end of empty cursors. This implies a cleanup ordering issue, but has not been confirmed.
@@ -116,7 +116,7 @@ public class MultiTypeListCursorAdapter
     public View getView(final int position,
                         final View convertView,
                         @NonNull final ViewGroup parent) {
-        Cursor listCursor = this.getCursor();
+        Cursor listCursor = getCursor();
         listCursor.moveToPosition(position);
 
         return mListHandler.getView(listCursor, mInflater, convertView, parent);
@@ -131,7 +131,7 @@ public class MultiTypeListCursorAdapter
     @Nullable
     public String[] getSectionTextForPosition(final int position) {
         Tracker.enterFunction(this, "getSectionTextForPosition", position);
-        final Cursor listCursor = this.getCursor();
+        final Cursor listCursor = getCursor();
         if (position < 0 || position >= listCursor.getCount()) {
             return null;
         }

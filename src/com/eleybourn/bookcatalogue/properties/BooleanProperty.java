@@ -123,7 +123,7 @@ public class BooleanProperty
         holder.cb.setId(nextViewId());
 
         // Set the initial values
-        holder.name.setText(this.getNameResourceId());
+        holder.name.setText(getNameResourceId());
         holder.cb.setNullable(!isGlobal());
         setViewValues(holder, getValue());
 
@@ -154,7 +154,7 @@ public class BooleanProperty
     /** Set the checkbox and text fields based on passed value. */
     private void setViewValues(@NonNull final Holder holder,
                                @Nullable final Boolean value) {
-        holder.name.setText(this.getNameResourceId());
+        holder.name.setText(getNameResourceId());
         holder.cb.setPressed(false);
         holder.cb.setState(value);
 
@@ -259,7 +259,7 @@ public class BooleanProperty
     }
 
     public void writeToParcel(@NonNull final Parcel dest) {
-        dest.writeValue(this.getValue());
+        dest.writeValue(getValue());
     }
 
     public void readFromParcel(@NonNull final Parcel in) {
@@ -352,8 +352,8 @@ public class BooleanProperty
         public void setState(@Nullable final Boolean state) {
             if (!this.restoring && this.state != state) {
                 this.state = state;
-                if (this.clientListener != null) {
-                    this.clientListener.onTriStateChange(this, state);
+                if (clientListener != null) {
+                    clientListener.onTriStateChange(this, state);
                 }
                 updateBtn();
             }

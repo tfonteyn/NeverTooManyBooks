@@ -236,7 +236,7 @@ public class UpdateFieldsFromInternetTask
                                                          mDb.getAuthorsByBookId(mCurrentBookId));
                 mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
                                                          mDb.getSeriesByBookId(mCurrentBookId));
-                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY,
+                mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
                                                          mDb.getTocEntryByBook(mCurrentBookId));
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
@@ -363,10 +363,10 @@ public class UpdateFieldsFromInternetTask
                 }
                 break;
 
-            case UniqueId.BKEY_TOC_TITLES_ARRAY:
+            case UniqueId.BKEY_TOC_ENTRY_ARRAY:
                 if (mOriginalBookData.containsKey(usage.fieldId)) {
                     ArrayList<TocEntry> list = mOriginalBookData.getParcelableArrayList(
-                            UniqueId.BKEY_TOC_TITLES_ARRAY);
+                            UniqueId.BKEY_TOC_ENTRY_ARRAY);
                     if (list == null || list.size() == 0) {
                         fieldUsages.put(usage.fieldId, usage);
                     }
@@ -521,7 +521,7 @@ public class UpdateFieldsFromInternetTask
                                                            originalBookData, newBookData);
                 break;
 
-            case UniqueId.BKEY_TOC_TITLES_ARRAY:
+            case UniqueId.BKEY_TOC_ENTRY_ARRAY:
                 UpdateFieldsFromInternetTask.<TocEntry>merge(usage.fieldId,
                                                              originalBookData, newBookData);
                 break;
@@ -561,10 +561,10 @@ public class UpdateFieldsFromInternetTask
                 }
                 break;
 
-            case UniqueId.BKEY_TOC_TITLES_ARRAY:
+            case UniqueId.BKEY_TOC_ENTRY_ARRAY:
                 if (originalBookData.containsKey(usage.fieldId)) {
                     ArrayList<TocEntry> list =
-                            originalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
+                            originalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
                     if (list != null && list.size() > 0) {
                         newBookData.remove(usage.fieldId);
                     }

@@ -163,7 +163,7 @@ public class BindableItemCursorAdapter
     public View getView(final int position,
                         @Nullable View convertView,
                         @NonNull final ViewGroup parent) {
-        BindableItemCursor cursor = (BindableItemCursor) this.getCursor();
+        BindableItemCursor cursor = (BindableItemCursor) getCursor();
         cursor.moveToPosition(position);
 
         BindableItem item;

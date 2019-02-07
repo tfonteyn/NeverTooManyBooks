@@ -92,7 +92,7 @@ public class CoverHandler
      * (instead of using getBook())
      */
     private final Fields.Field mIsbnField;
-    private final ImageUtils.ThumbSize mThumbSize;
+    private final ImageUtils.ImageSize mImageSize;
     @Nullable
     private CoverBrowser mCoverBrowser;
     /** Used to display a hint if user rotates a camera image. */
@@ -114,7 +114,7 @@ public class CoverHandler
         mCoverField = coverField;
         mIsbnField = isbnField;
 
-        mThumbSize = ImageUtils.getThumbSizes(mActivity);
+        mImageSize = ImageUtils.getImageSizes(mActivity);
 
         if (mCoverField.isVisible()) {
             // add context menu to the cover image
@@ -123,7 +123,7 @@ public class CoverHandler
             mCoverField.getView().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(@NonNull final View v) {
-                    ImageUtils.showZoomedThumb(mActivity, getCoverFile());
+                    ImageUtils.showZoomedImage(mActivity, getCoverFile());
                 }
             });
         }
@@ -287,11 +287,11 @@ public class CoverHandler
     }
 
     /**
-     * Load the image into the view, using preset {@link ImageUtils.ThumbSize#small} dimensions.
+     * Load the image into the view, using preset {@link ImageUtils.ImageSize#small} dimensions.
      */
     void populateCoverView() {
-        ImageUtils.fetchFileIntoImageView((ImageView) (mCoverField.getView()), getCoverFile(),
-                                          mThumbSize.small, mThumbSize.small, true);
+        ImageUtils.getImageAndPutIntoView((ImageView) (mCoverField.getView()), getCoverFile(),
+                                          mImageSize.small, mImageSize.small, true);
     }
 
     /**
@@ -299,7 +299,7 @@ public class CoverHandler
      */
     void populateCoverView(final int maxWidth,
                            final int maxHeight) {
-        ImageUtils.fetchFileIntoImageView((ImageView) (mCoverField.getView()), getCoverFile(),
+        ImageUtils.getImageAndPutIntoView((ImageView) (mCoverField.getView()), getCoverFile(),
                                           maxWidth, maxHeight, true);
     }
 
@@ -366,7 +366,7 @@ public class CoverHandler
         large image without producing memory exhaustion.
         Android does not include a file-based image rotation.
 
-        File f = this.getCameraTempCoverFile();
+        File f = getCameraTempCoverFile();
         StorageUtils.deleteFile(f);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
     */
@@ -382,7 +382,7 @@ public class CoverHandler
         Bitmap bitmap = (Bitmap) bundle.get(CropImageActivity.BKEY_DATA);
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             Matrix m = new Matrix();
-            m.postRotate(Prefs.getIntString(R.string.pk_thumbnails_rotate_auto, 0));
+            m.postRotate(Prefs.getListPreference(R.string.pk_thumbnails_rotate_auto, 0));
             bitmap = Bitmap.createBitmap(bitmap, 0, 0,
                                          bitmap.getWidth(), bitmap.getHeight(),
                                          m, true);
@@ -465,9 +465,9 @@ public class CoverHandler
                 File thumbFile = getCoverFile();
 
                 Bitmap bitmap = ImageUtils
-                        .fetchFileIntoImageView(null, thumbFile,
-                                                mThumbSize.large * 2,
-                                                mThumbSize.large * 2, true);
+                        .getImageAndPutIntoView(null, thumbFile,
+                                                mImageSize.large * 2,
+                                                mImageSize.large * 2, true);
                 if (bitmap == null) {
                     return;
                 }
@@ -523,7 +523,7 @@ public class CoverHandler
                 R.string.pk_thumbnails_crop_frame_is_whole_image, false);
 
         // Get the output file spec, and make sure it does not already exist.
-        File cropped = this.getCroppedTempCoverFile();
+        File cropped = getCroppedTempCoverFile();
         StorageUtils.deleteFile(cropped);
 
         Intent intent = new Intent(mActivity, CropImageActivity.class);
@@ -571,10 +571,10 @@ public class CoverHandler
 //            cropIntent.putExtra("outputY", 256);
 
             // Save output image in uri
-            File cropped = this.getCroppedTempCoverFile();
+            File cropped = getCroppedTempCoverFile();
             StorageUtils.deleteFile(cropped);
             intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                                Uri.fromFile(new File(cropped.getAbsolutePath())));
+                            Uri.fromFile(new File(cropped.getAbsolutePath())));
 
             List<ResolveInfo> list = mActivity.getPackageManager()
                                               .queryIntentActivities(intent, 0);
@@ -616,7 +616,7 @@ public class CoverHandler
         final long bookId = mBookManager.getBook().getId();
         if (bookId != 0) {
             try (CoversDBA db = CoversDBA.getInstance()) {
-                db.deleteBookCover(mDb.getBookUuid(bookId));
+                db.delete(mDb.getBookUuid(bookId));
             } catch (SQLiteDoneException e) {
                 Logger.error(e, "SQLiteDoneException cleaning up cached cover images");
             } catch (RuntimeException e) {

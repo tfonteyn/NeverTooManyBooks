@@ -226,6 +226,7 @@ public class BooklistPseudoCursor
 
             // Set the active cursor, and set its position correctly
             mActiveCursor = mCursors.get(cursorId);
+            //noinspection ConstantConditions
             mActiveCursor.moveToPosition(newPosition - cursorStartPos);
         }
         return true;

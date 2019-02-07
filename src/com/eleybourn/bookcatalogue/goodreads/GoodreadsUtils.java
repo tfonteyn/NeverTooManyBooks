@@ -380,5 +380,4 @@ public final class GoodreadsUtils {
                 .newInstance(context, R.string.progress_msg_connecting_to_web_site,
                              task, true, 0);
     }
-
 }

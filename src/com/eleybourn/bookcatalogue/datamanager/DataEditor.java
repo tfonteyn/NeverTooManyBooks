@@ -28,6 +28,10 @@ import androidx.annotation.NonNull;
  */
 public interface DataEditor extends DataViewer {
 
-    /** Save current data TO the passed DataManager. */
+    /**
+     * Save current data TO the passed DataManager.
+     *
+     * @param dataManager the parent collection
+     */
     <T extends DataManager> void saveFieldsTo(@NonNull T /* in/out */ dataManager);
 }

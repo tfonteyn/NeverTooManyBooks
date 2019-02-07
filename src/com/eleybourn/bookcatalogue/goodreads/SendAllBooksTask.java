@@ -102,7 +102,7 @@ public class SendAllBooksTask
 
                 queueManager.updateTask(this);
 
-                if (this.isAborting()) {
+                if (isAborting()) {
                     queueManager.updateTask(this);
                     return false;
                 }
@@ -111,8 +111,7 @@ public class SendAllBooksTask
 
         // Notify the user: '15 books processed:
         // 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in Goodreads'
-        BookCatalogueApp.showNotification(
-                context, context.getString(R.string.gr_title_send_book),
+        BookCatalogueApp.showNotification(context, R.string.gr_title_send_book,
                 context.getString(R.string.gr_send_all_books_results, mCount, mSent, mNoIsbn,
                                   mNotFound));
 

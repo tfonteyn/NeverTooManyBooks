@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -89,7 +88,7 @@ public class XmlResponseParser
         super.startElement(uri, localName, qName, attributes);
 
         if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
-            Logger.info(this, "startElement","localName=`" + localName + '`');
+            Logger.info(this, "startElement", "localName=`" + localName + '`');
         }
         // Create a new context for this new tag saving the current inter-tag text for later
         ElementContext tag = new ElementContext(uri, localName, qName, attributes,
@@ -99,11 +98,11 @@ public class XmlResponseParser
         ElementContext enclosingTag = mParents.get(mParents.size() - 1);
 
         // If there is an active filter, then see if the new tag is of any interest
-        if (enclosingTag.filter != null) {
+        if (enclosingTag.getFilter() != null) {
             // Check for interest in new tag
-            XmlFilter filter = enclosingTag.filter.getSubFilter(tag);
+            XmlFilter filter = enclosingTag.getFilter().getSubFilter(tag);
             // If new tag has a filter, store it in the new context object
-            tag.filter = filter;
+            tag.setFilter(filter);
             // If we got a filter, tell it a tag is now starting.
             if (filter != null) {
                 filter.processStart(tag);
@@ -130,19 +129,18 @@ public class XmlResponseParser
         ElementContext tag = mParents.remove(mParents.size() - 1);
 
         // Minor paranoia. Make sure name matches. Total waste of time, right?
-        if (!localName.equals(tag.localName)) {
+        if (!localName.equals(tag.getLocalName())) {
             throw new IllegalStateException(
                     "End element '" + localName + "' does not match start element"
-                            + " '" + tag.localName + '\'');
+                            + " '" + tag.getLocalName() + '\'');
         }
 
         // Save the text that appeared inside this tag (but not inside inner tags)
-        //2019-01-06: trim to remove whitespace
-        tag.body = mBuilder.toString().trim();
+        tag.setBody(mBuilder.toString());
 
         // If there is an active filter in this context, then tell it the tag is finished.
-        if (tag.filter != null) {
-            tag.filter.processEnd(tag);
+        if (tag.getFilter() != null) {
+            tag.getFilter().processEnd(tag);
         }
 
         // Reset the inter-tag text and append the previously saved 'pre-text'.

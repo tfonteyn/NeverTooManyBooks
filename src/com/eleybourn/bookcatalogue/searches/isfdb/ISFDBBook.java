@@ -202,8 +202,6 @@ public class ISFDBBook
             return;
         }
 
-        Format bookFormatHelper = new Format();
-
         Element contentBox = mDoc.select("div.contentbox").first();
         Elements lis = contentBox.select("li");
         String tmp;
@@ -331,14 +329,14 @@ public class ISFDBBook
 
                 } else if ("Format:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(3).childNode(0).toString().trim();
-                    bookData.putString(UniqueId.KEY_BOOK_FORMAT, bookFormatHelper.map(tmp));
+                    bookData.putString(UniqueId.KEY_BOOK_FORMAT, Format.map(tmp));
 
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(2).toString().trim();
                     bookData.putString(ISFDB_BKEY_BOOK_TYPE, tmp);
                     Integer type = TYPE_MAP.get(tmp);
                     if (type != null) {
-                        bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
+                        bookData.putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
                     }
 
                 } else if ("Notes:".equalsIgnoreCase(fieldName)) {
@@ -391,7 +389,7 @@ public class ISFDBBook
 
         // the table of content
         ArrayList<TocEntry> toc = getTableOfContentList(bookData);
-        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, toc);
+        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
 
         // store accumulated Series, do this *after* we go the TOC
         bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
@@ -402,7 +400,7 @@ public class ISFDBBook
             if (TocEntry.hasMultipleAuthors(toc)) {
                 type |= TocEntry.Type.MULTIPLE_AUTHORS;
             }
-            bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
+            bookData.putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
         }
 
         // try to deduce the first publication date
@@ -468,15 +466,15 @@ public class ISFDBBook
         Element img = contentBox.selectFirst("img");
         if (img != null) {
             String thumbnail = img.attr("src");
-            String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, FILENAME_SUFFIX);
+            String fileSpec = ImageUtils.saveImage(thumbnail, FILENAME_SUFFIX);
             if (fileSpec != null) {
                 ArrayList<String> imageList = bookData.getStringArrayList(
-                        UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                        UniqueId.BKEY_FILE_SPEC_ARRAY);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
                 imageList.add(fileSpec);
-                bookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
+                bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
             }
         }
     }

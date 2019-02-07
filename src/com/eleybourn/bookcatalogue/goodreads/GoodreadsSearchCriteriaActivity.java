@@ -72,7 +72,7 @@ public class GoodreadsSearchCriteriaActivity
 
         mCriteriaView = findViewById(R.id.search_text);
 
-        Bundle extras = this.getIntent().getExtras();
+        Bundle extras = getIntent().getExtras();
 
         // Look for a book ID
         if (extras != null && extras.containsKey(UniqueId.KEY_ID)) {

@@ -472,15 +472,15 @@ public class SearchAmazonHandler
     @CallSuper
     public void endDocument() {
         if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
-            String fileSpec = ImageUtils.saveThumbnailFromUrl(mThumbnailUrl, FILENAME_SUFFIX);
+            String fileSpec = ImageUtils.saveImage(mThumbnailUrl, FILENAME_SUFFIX);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
-                        mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                        mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
                 imageList.add(fileSpec);
-                mBookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
+                mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
             }
         }
         mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);

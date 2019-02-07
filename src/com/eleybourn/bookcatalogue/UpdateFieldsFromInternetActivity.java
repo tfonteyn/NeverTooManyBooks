@@ -175,7 +175,7 @@ public class UpdateFieldsFromInternetActivity
                      R.string.lbl_cover, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES,
                      R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
-        addIfVisible(UniqueId.BKEY_TOC_TITLES_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+        addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
                      R.string.lbl_table_of_content, Fields.FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.KEY_BOOK_PUBLISHER,
                      R.string.lbl_publisher, Fields.FieldUsage.Usage.CopyIfBlank, false);
@@ -243,7 +243,7 @@ public class UpdateFieldsFromInternetActivity
     private void populateFields() {
 
         for (Fields.FieldUsage usage : mFieldUsages.values()) {
-            View row = this.getLayoutInflater().inflate(R.layout.row_update_from_internet,
+            View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
                                                         mListContainer, false);
 
             TextView fieldLabel = row.findViewById(R.id.field);

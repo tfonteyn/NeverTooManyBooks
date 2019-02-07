@@ -283,12 +283,12 @@ public class TocEntry
             return false;
         }
         TocEntry that = (TocEntry) obj;
-        if (this.mId == 0 || that.mId == 0) {
-            return Objects.equals(this.mAuthor, that.mAuthor)
-                    && Objects.equals(this.mTitle, that.mTitle)
-                    && Objects.equals(this.mFirstPublicationDate, that.mFirstPublicationDate);
+        if (mId == 0 || that.mId == 0) {
+            return Objects.equals(mAuthor, that.mAuthor)
+                    && Objects.equals(mTitle, that.mTitle)
+                    && Objects.equals(mFirstPublicationDate, that.mFirstPublicationDate);
         }
-        return this.mId == that.mId;
+        return mId == that.mId;
     }
 
     @Override

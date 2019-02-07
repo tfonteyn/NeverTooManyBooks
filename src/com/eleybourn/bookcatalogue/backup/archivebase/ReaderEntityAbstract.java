@@ -46,7 +46,7 @@ public abstract class ReaderEntityAbstract
     private final BackupEntityType mType;
 
     public ReaderEntityAbstract(@NonNull final BackupEntityType type) {
-        this.mType = type;
+        mType = type;
     }
 
     /** Get the type of this entity. */
@@ -70,7 +70,7 @@ public abstract class ReaderEntityAbstract
         } finally {
             if (destFile.exists()) {
                 //noinspection ResultOfMethodCallIgnored
-                destFile.setLastModified(this.getDateModified().getTime());
+                destFile.setLastModified(getDateModified().getTime());
             }
         }
     }

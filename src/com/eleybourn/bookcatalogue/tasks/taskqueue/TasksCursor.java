@@ -131,7 +131,7 @@ public final class TasksCursor
     @Override
     public long getId() {
         if (mIdCol < 0) {
-            mIdCol = this.getColumnIndex(DOM_ID);
+            mIdCol = getColumnIndex(DOM_ID);
         }
         return getLong(mIdCol);
     }
@@ -139,7 +139,7 @@ public final class TasksCursor
     @NonNull
     Date getQueuedDate() {
         if (mQueuedDateCol < 0) {
-            mQueuedDateCol = this.getColumnIndex(DOM_QUEUED_DATE);
+            mQueuedDateCol = getColumnIndex(DOM_QUEUED_DATE);
         }
 
         Date date = DateUtils.parseDate(getString(mQueuedDateCol));
@@ -216,7 +216,7 @@ public final class TasksCursor
         } catch (SerializationUtils.DeserializationException de) {
             task = new LegacyTask();
         }
-        task.setId(this.getId());
+        task.setId(getId());
         return task;
     }
 }

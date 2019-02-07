@@ -115,11 +115,11 @@ public final class SearchSites {
 
     static void setSearchOrder(@NonNull final ArrayList<Site> newList) {
         mPreferredSearchOrder = newList;
-        SharedPreferences.Editor e = Prefs.getPrefs().edit();
+        SharedPreferences.Editor ed = Prefs.getPrefs().edit();
         for (Site site : newList) {
-            site.saveToPrefs(e);
+            site.saveToPrefs(ed);
         }
-        e.apply();
+        ed.apply();
     }
 
     @NonNull
@@ -129,11 +129,11 @@ public final class SearchSites {
 
     static void setCoverSearchOrder(@NonNull final ArrayList<Site> newList) {
         mPreferredCoverSearchOrder = newList;
-        SharedPreferences.Editor e = Prefs.getPrefs().edit();
+        SharedPreferences.Editor ed = Prefs.getPrefs().edit();
         for (Site site : newList) {
-            site.saveToPrefs(e);
+            site.saveToPrefs(ed);
         }
-        e.apply();
+        ed.apply();
     }
 
     /**

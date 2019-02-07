@@ -34,7 +34,7 @@ public class EditFormatDialog
     public EditFormatDialog(@NonNull final Activity activity,
                             @NonNull final DBA db,
                             @NonNull final Runnable onChanged) {
-        super(activity, db, android.R.layout.simple_dropdown_item_1line, db.getFormats(),
+        super(activity, db, db.getFormats(),
               onChanged);
     }
 

@@ -113,7 +113,7 @@ final class MenuHandler {
 
     /**
      * Add SubMenu for Amazon searches.
-     *
+     * <p>
      * Normally called from your {@link Fragment#onCreateOptionsMenu}.
      *
      * @param menu Root menu
@@ -139,16 +139,16 @@ final class MenuHandler {
 
     /**
      * Set visibility of the Amazon menus.
-     *
+     * <p>
      * Normally called from your {@link Fragment#onPrepareOptionsMenu(Menu)}.
      *
-     * @param menu  Root menu
-     * @param book  the current book
+     * @param menu Root menu
+     * @param book the current book
      */
     static void prepareAmazonSearchSubMenu(final Menu menu,
-                                                  final Book book) {
-        boolean hasAuthor = book.getAuthorList().size() > 0;
-        boolean hasSeries = book.getSeriesList().size() > 0;
+                                           final Book book) {
+        boolean hasAuthor = book.getList(UniqueId.BKEY_AUTHOR_ARRAY).size() > 0;
+        boolean hasSeries = book.getList(UniqueId.BKEY_SERIES_ARRAY).size() > 0;
         menu.setGroupVisible(R.id.SUBMENU_AMAZON_SEARCH, hasAuthor || hasSeries);
     }
 
@@ -167,8 +167,8 @@ final class MenuHandler {
         switch (menuItem.getItemId()) {
             case R.id.SUBMENU_AMAZON_SEARCH:
                 Menu menu = menuItem.getSubMenu();
-                boolean hasAuthor = book.getAuthorList().size() > 0;
-                boolean hasSeries = book.getSeriesList().size() > 0;
+                boolean hasAuthor = book.getList(UniqueId.BKEY_AUTHOR_ARRAY).size() > 0;
+                boolean hasSeries = book.getList(UniqueId.BKEY_SERIES_ARRAY).size() > 0;
 
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
@@ -194,6 +194,5 @@ final class MenuHandler {
                 return false;
         }
     }
-
 
 }

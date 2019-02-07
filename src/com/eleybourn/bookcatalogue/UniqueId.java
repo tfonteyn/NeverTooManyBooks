@@ -24,6 +24,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
@@ -42,7 +43,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
@@ -57,39 +57,49 @@ public final class UniqueId {
     /** Activity Request Code. */
     public static final int REQ_NAV_PANEL_ADMIN = 1_002;
     /** Activity Request Code. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_BOOK_EDIT = 2_000;
+    /** Activity Request Code. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_BOOK_DUPLICATE = 2_001;
+    /** Activity Request Code. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_ANDROID_PERMISSIONS = 9_000;
+    /** Activity Request Code. */
     public static final int REQ_NAV_PANEL_EDIT_BOOKSHELVES = 1_003;
-    /** Activity Request Code. */
-    static final int REQ_BOOK_EDIT = 2_000;
-    /** Activity Request Code. */
-    static final int REQ_BOOK_DUPLICATE = 2_001;
-    /** Activity Request Code. */
-    static final int REQ_ANDROID_PERMISSIONS = 9_000;
-
     /** generic delete. */
     public static final int ACTIVITY_RESULT_DELETED_SOMETHING = 10_001;
     /** {@link PreferredStylesActivity} need distinct code as it can trickle up. */
     public static final int ACTIVITY_RESULT_OK_BooklistPreferredStyles = 10_101;
     /** need distinct code as it can trickle up. */
     public static final int ACTIVITY_RESULT_OK_BooklistStyleProperties = 10_102;
-
     /**
      * Bundle keys for ParcelableArrayList<Entity>.
      */
     public static final String BKEY_AUTHOR_ARRAY = "author_array";
     public static final String BKEY_SERIES_ARRAY = "series_array";
-    public static final String BKEY_TOC_TITLES_ARRAY = "toc_titles_array";
+    public static final String BKEY_TOC_ENTRY_ARRAY = "toc_titles_array";
     public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
 
-    /** ArrayList<String> of fileSpecs of thumbnails fetches from the internet. */
-    public static final String BKEY_THUMBNAIL_FILE_SPEC_ARRAY = "thumbnail_file_spec_array";
-    /** a generic filename or uri. */
-    public static final String BKEY_FILE_SPEC = "fileSpec";
 
     /** generic search text. */
     public static final String BKEY_SEARCH_TEXT = "searchText";
     /** author search text. */
     public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
 
+    /**
+     * Single fileSpecs or uri.
+     * <p>
+     * String
+     */
+    public static final String BKEY_FILE_SPEC = "fileSpec";
+
+    /**
+     * List of fileSpecs or uri.
+     * <p>
+     * ArrayList<String>
+     */
+    public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array";
 
     /**
      * The title to be used by generic Dialogs.
@@ -107,7 +117,7 @@ public final class UniqueId {
 
     /**
      * Identifier of the field we want the generic Dialog to handle.
-     *
+     * <p>
      * int (resource id)
      */
     public static final String BKEY_FIELD_ID = "fieldId";
@@ -178,13 +188,10 @@ public final class UniqueId {
     public static final String BKEY_CANCELED = "cancelled";
 
     /* ****************************************************************************************** */
-    // mapped to the database, (potential) multi-table use.
     public static final String KEY_ID = DOM_PK_ID.name;
     public static final String KEY_TITLE = DOM_TITLE.name;
     public static final String KEY_FIRST_PUBLICATION = DOM_FIRST_PUBLICATION.name;
     public static final String KEY_LAST_UPDATE_DATE = DOM_LAST_UPDATE_DATE.name;
-
-
     public static final String KEY_AUTHOR = DOM_FK_AUTHOR_ID.name;
     public static final String KEY_AUTHOR_FAMILY_NAME = DOM_AUTHOR_FAMILY_NAME.name;
     public static final String KEY_AUTHOR_GIVEN_NAMES = DOM_AUTHOR_GIVEN_NAMES.name;
@@ -192,43 +199,35 @@ public final class UniqueId {
     public static final String KEY_BOOKSHELF_NAME = DOM_BOOKSHELF.name;
     public static final String KEY_SERIES = DOM_SERIES_NAME.name;
     public static final String KEY_SERIES_NUM = DOM_BOOK_SERIES_NUM.name;
-
     public static final String KEY_BOOK_UUID = DOM_BOOK_UUID.name;
     public static final String KEY_BOOK_ISBN = DOM_BOOK_ISBN.name;
-
     public static final String KEY_BOOK_DATE_ADDED = DOM_BOOK_DATE_ADDED.name;
     public static final String KEY_BOOK_DATE_PUBLISHED = DOM_BOOK_DATE_PUBLISHED.name;
     public static final String KEY_BOOK_DATE_ACQUIRED = DOM_BOOK_DATE_ACQUIRED.name;
-
     public static final String KEY_BOOK_ANTHOLOGY_BITMASK = DOM_BOOK_ANTHOLOGY_BITMASK.name;
     public static final String KEY_BOOK_EDITION_BITMASK = DOM_BOOK_EDITION_BITMASK.name;
-
     public static final String KEY_BOOK_FORMAT = DOM_BOOK_FORMAT.name;
     public static final String KEY_BOOK_GENRE = DOM_BOOK_GENRE.name;
     public static final String KEY_BOOK_LANGUAGE = DOM_BOOK_LANGUAGE.name;
     public static final String KEY_BOOK_PAGES = DOM_BOOK_PAGES.name;
     public static final String KEY_BOOK_PUBLISHER = DOM_BOOK_PUBLISHER.name;
     public static final String KEY_BOOK_LOCATION = DOM_BOOK_LOCATION.name;
-
     public static final String KEY_BOOK_RATING = DOM_BOOK_RATING.name;
     public static final String KEY_BOOK_SIGNED = DOM_BOOK_SIGNED.name;
     public static final String KEY_BOOK_LOANEE = DOM_BOOK_LOANEE.name;
-
     public static final String KEY_BOOK_NOTES = DOM_BOOK_NOTES.name;
     public static final String KEY_BOOK_DESCRIPTION = DOM_BOOK_DESCRIPTION.name;
-
     public static final String KEY_BOOK_PRICE_LISTED = DOM_BOOK_PRICE_LISTED.name;
     public static final String KEY_BOOK_PRICE_LISTED_CURRENCY = DOM_BOOK_PRICE_LISTED_CURRENCY.name;
     public static final String KEY_BOOK_PRICE_PAID = DOM_BOOK_PRICE_PAID.name;
     public static final String KEY_BOOK_PRICE_PAID_CURRENCY = DOM_BOOK_PRICE_PAID_CURRENCY.name;
-
     public static final String KEY_BOOK_READ = DOM_BOOK_READ.name;
     public static final String KEY_BOOK_READ_START = DOM_BOOK_READ_START.name;
     public static final String KEY_BOOK_READ_END = DOM_BOOK_READ_END.name;
-
     public static final String KEY_BOOK_GR_LAST_SYNC_DATE = DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name;
     public static final String KEY_BOOK_LIBRARY_THING_ID = DOM_BOOK_LIBRARY_THING_ID.name;
     public static final String KEY_BOOK_ISFDB_ID = DOM_BOOK_ISFDB_ID.name;
+
 
     private UniqueId() {
     }

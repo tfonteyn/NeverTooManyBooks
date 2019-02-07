@@ -152,8 +152,7 @@ public abstract class ManagedTask
             runTask();
         } catch (InterruptedException e) {
             Logger.info(ManagedTask.this,
-                        "|ManagedTask=" + this.getName() +
-                                " was interrupted");
+                        "|ManagedTask=" + getName() + " was interrupted");
             mCancelFlg = true;
         } catch (Exception e) {
             Logger.error(e);
@@ -190,7 +189,7 @@ public abstract class ManagedTask
             Logger.info(this, " cancelTask");
         }
         mCancelFlg = true;
-        this.interrupt();
+        interrupt();
     }
 
     /**

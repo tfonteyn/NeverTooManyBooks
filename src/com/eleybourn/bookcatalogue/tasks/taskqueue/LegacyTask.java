@@ -82,7 +82,7 @@ public class LegacyTask
                          @NonNull final BindableItemCursor cursor,
                          @NonNull final DBA db) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
-                .setText("Legacy Placeholder for Task #" + this.getId());
+                .setText("Legacy Placeholder for Task #" + getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
                 .setText("This task is obsolete and can not be recovered."
                                  + " It is probably advisable to delete it.");

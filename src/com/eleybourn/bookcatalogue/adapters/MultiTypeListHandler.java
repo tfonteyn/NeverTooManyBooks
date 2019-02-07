@@ -94,21 +94,22 @@ public interface MultiTypeListHandler {
          * associated with a reusable view that will always be used for rows of the current
          * kind. We avoid having to call findViewById() by doing it once at creation time.
          */
-        public abstract void map(@NonNull T rowContext,
+        public abstract void map(@NonNull T row,
                                  @NonNull View view);
 
         /**
          * Use the passed rowContext to fill in the actual details for the current row.
          */
-        public abstract void set(@NonNull T rowContext,
+        public abstract void set(@NonNull T row,
                                  @NonNull View view,
                                  int level);
 
         /**
          * Use the passed rowContext to determine the kind of View that is required.
+         *
          * @return a new view.
          */
-        public abstract View createView(@NonNull T rowContext,
+        public abstract View createView(@NonNull T row,
                                         @NonNull LayoutInflater inflater,
                                         @NonNull ViewGroup parent,
                                         int level);

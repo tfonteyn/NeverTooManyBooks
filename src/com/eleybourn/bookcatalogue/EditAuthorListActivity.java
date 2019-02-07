@@ -84,7 +84,7 @@ public class EditAuthorListActivity
                                             android.R.layout.simple_dropdown_item_1line,
                                             mDb.getAuthorsFormattedName());
 
-        mAuthorNameView = this.findViewById(R.id.author);
+        mAuthorNameView = findViewById(R.id.author);
         mAuthorNameView.setAdapter(mAuthorAdapter);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -304,7 +304,7 @@ public class EditAuthorListActivity
                 holder = new Holder();
                 holder.rowAuthorView = convertView.findViewById(R.id.row_author);
                 holder.rowAuthorSortView = convertView.findViewById(R.id.row_author_sort);
-                // Tag the parts that need it
+
                 convertView.setTag(holder);
             }
             // Setup the variant fields in the holder.

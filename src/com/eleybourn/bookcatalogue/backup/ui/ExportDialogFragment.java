@@ -101,7 +101,7 @@ public class ExportDialogFragment
     }
 
     private void updateOptions() {
-        Dialog dialog = this.getDialog();
+        Dialog dialog = getDialog();
         // what to export. All checked == ExportSettings.ALL
         //noinspection ConstantConditions
         if (((Checkable) dialog.findViewById(R.id.xml_tables_check)).isChecked()) {

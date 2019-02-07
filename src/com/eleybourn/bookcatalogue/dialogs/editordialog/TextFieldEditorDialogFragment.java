@@ -158,7 +158,7 @@ public class TextFieldEditorDialogFragment
 
             // Get the layout
             @SuppressLint("InflateParams")
-            View root = this.getLayoutInflater().inflate(R.layout.dialog_edit_textfield, null);
+            View root = getLayoutInflater().inflate(R.layout.dialog_edit_textfield, null);
 
             // get the text view
             mTextView = root.findViewById(R.id.text);

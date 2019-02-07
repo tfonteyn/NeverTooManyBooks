@@ -363,7 +363,7 @@ public class TaskManager {
     }
 
     /**
-     * Cancel all tasks, but stay active and accept new tasks.
+     * Cancel all tasks, but stay active and hasInternet new tasks.
      */
     public void cancelAllTasks() {
         synchronized (mManagedTasks) {

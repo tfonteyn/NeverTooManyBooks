@@ -78,9 +78,9 @@ public abstract class PPrefBase<T>
     }
 
     /**
-     * for batch pref updated.
+     * for batch updates. Can also be used for setting globals.
      * <p>
-     * Stores the value as a String
+     * Stores the value as a String by default. Override if you need another type.
      */
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,

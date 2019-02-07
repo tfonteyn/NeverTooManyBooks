@@ -13,9 +13,15 @@ import androidx.annotation.StringRes;
  */
 public class PString extends PPrefBase<String> {
 
+    /**
+     * Constructor. Uses the global setting as the default value, or "" if none.
+     *
+     * @param key   of the preference
+     * @param uuid  the style id
+     */
     public PString(@StringRes final int key,
                    @Nullable final String uuid) {
-        super(key, uuid, "");
+        super(key, uuid, Prefs.getString(key));
     }
 
     @NonNull

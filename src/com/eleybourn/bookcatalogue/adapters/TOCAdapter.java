@@ -45,7 +45,7 @@ public class TOCAdapter
     public View getView(final int position,
                         @Nullable View convertView,
                         @NonNull final ViewGroup parent) {
-        final TocEntry item = this.getItem(position);
+        final TocEntry item = getItem(position);
 
         Holder holder;
 

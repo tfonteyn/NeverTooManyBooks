@@ -25,12 +25,16 @@ import java.util.Objects;
 
 /**
  * Settings editor for a Style.
+ * <p>
+ * Passing in a style with a valid UUID, settings are read/written to the style specific file.
+ * If the uuid is null, then we're editing the global defaults.
  */
 public class BooklistStyleSettingsFragment
         extends BaseSettingsFragment
         implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
+    /** Fragment tag name. */
     public static final String TAG = "BooklistStyleSettingsFragment";
 
     /** Parameter used to pass data to this activity. */
@@ -52,15 +56,19 @@ public class BooklistStyleSettingsFragment
             Logger.info(this, "onCreatePreferences", mStyle.toString());
         }
 
-        // we use the style UUID as the filename for the prefs.
-        getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
+        // We use the style UUID as the filename for the prefs.
+        String uuid = mStyle.getUuid();
+        if (uuid != null) {
+            getPreferenceManager().setSharedPreferencesName(uuid);
+        } // else if uuid == null, use global SharedPreferences for editing global defaults
 
         setPreferencesFromResource(R.xml.preferences_book_style, rootKey);
 
         PreferenceScreen screen = getPreferenceScreen();
 
         // doing this in our base class. TODO: use this for all prefs instead of our own code.
-//        EditTextPreference np = screen.findPreference(BookCatalogueApp.getResString(R.string.name));
+//        EditTextPreference np =
+//            screen.findPreference(BookCatalogueApp.getResString(R.string.name));
 //        np.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
         // add the preferences from all groups:
@@ -91,8 +99,7 @@ public class BooklistStyleSettingsFragment
         Intent data = new Intent();
         data.putExtra(UniqueId.KEY_ID, mStyle.getId());
         data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
-        requireActivity()
-                .setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties, data);
+        requireActivity().setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties, data);
     }
 
     /**

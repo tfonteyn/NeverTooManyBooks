@@ -323,14 +323,14 @@ public class StringList<E> {
 
     @NonNull
     public String encode(@NonNull final Collection<E> list) {
-        return encode(MULTI_STRING_SEPARATOR,list);
+        return encode(MULTI_STRING_SEPARATOR, list);
     }
 
     /**
      * This is used to build text lists separated by 'delim'.
      *
-     * @param delim      delimiter to use.
-     * @param list       to convert
+     * @param delim delimiter to use.
+     * @param list  to convert
      *
      * @return Converted string
      */

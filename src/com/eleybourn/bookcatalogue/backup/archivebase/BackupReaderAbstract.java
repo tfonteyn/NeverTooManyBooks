@@ -118,7 +118,7 @@ public abstract class BackupReaderAbstract
             // process each entry based on type, unless we are cancelled, as in Nikita
             while (entity != null && !mProgressListener.isCancelled()) {
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                    Logger.info(this, "restore","entity=" + entity.getName());
+                    Logger.info(this, "restore", "entity=" + entity.getName());
                 }
                 switch (entity.getType()) {
                     case Cover:
@@ -334,7 +334,6 @@ public abstract class BackupReaderAbstract
         private int mLastPos;
 
         /**
-         *
          * @param max value (can be estimated) for the progress counter
          */
         @Override
@@ -343,7 +342,6 @@ public abstract class BackupReaderAbstract
         }
 
         /**
-         *
          * @param message  to display
          * @param position absolute position for the progress counter
          */

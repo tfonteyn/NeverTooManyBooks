@@ -64,7 +64,7 @@ import java.util.UUID;
  * to describe the resulting list style.
  * <p>
  * 2018-12-20: the implementation no longer stores serialized blobs, neither in the database nor
- * in backup archives (but can still read them from archives).
+ * in backup archives (but can still read them from archives/database upgrades).
  * The database table now consists of a PK id, and a UUID column
  * The UUID serves as the name of the SharedPreference which describes the style.
  * Builtin styles are not stored in the database, and (internally) use a UUID==null
@@ -74,7 +74,7 @@ import java.util.UUID;
  * <p>
  * ENHANCE: re-introduce global inheritance ? But would that actually be used ?
  * <p>
- * ENHANCE: when a style is deleted, the prefs are cleared. But the actual fine is not removed.
+ * ENHANCE: when a style is deleted, the prefs are cleared. But the actual file is not removed.
  * How to do this in a device independent manner?
  * <p>
  * How to add a new Group:
@@ -138,9 +138,7 @@ public class BooklistStyle
     public static final Integer SUMMARY_SHOW_LEVEL_2 = 1 << 2;
     /** the amount of details to show in the header. */
     public static final Integer SUMMARY_SHOW_ALL =
-            SUMMARY_SHOW_COUNT
-                    | SUMMARY_SHOW_LEVEL_1
-                    | SUMMARY_SHOW_LEVEL_2;
+            SUMMARY_SHOW_COUNT | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2;
 
     /** Scaling of text and images. */
     @SuppressWarnings("WeakerAccess")
@@ -322,7 +320,7 @@ public class BooklistStyle
         // create new clone ?
         if (doNew) {
             // get a copy of the name first
-            setName(this.getDisplayName());
+            setName(getDisplayName());
             // now reset the other identifiers.
             mId = 0;
             mNameResId = 0;
@@ -377,7 +375,7 @@ public class BooklistStyle
 
         mDisplayName = new PString(R.string.pk_bob_style_name, mUuid);
 
-        mStyleGroups = new PStyleGroups(R.string.pk_bob_groups, mUuid);
+        mStyleGroups = new PStyleGroups(mUuid);
 
         mIsPreferred = new PBoolean(R.string.pk_bob_preferred_style, mUuid);
         mScaleSize = new PInteger(R.string.pk_bob_item_size, mUuid);
@@ -798,44 +796,13 @@ public class BooklistStyle
     @SuppressWarnings("SameParameterValue")
     void setFilter(@NonNull final Integer key,
                    final boolean value) {
+        //noinspection ConstantConditions
         mFilters.get(BookCatalogueApp.getResString(key)).set(value);
     }
 
-//    /**
-//     * Custom serialization support. The signature of this method should never be changed.
-//     *
-//     * @see Serializable
-//     */
-//    private void writeObject(@NonNull final ObjectOutputStream out)
-//            throws IOException {
-//        out.defaultWriteObject();
-//        // version must use writeObject
-//        out.writeObject(realSerialVersion);
-//        // uuid is done by defaultWriteObject, so next up is the name
-//        out.writeObject(mDisplayName.get());
-//
-//        out.writeBoolean(mIsPreferred.get());
-//        out.writeInt(mScaleSize.get());
-//        out.writeInt(mShowHeaderInfo.get());
-//
-//        out.writeBoolean(mExtraShowThumbnails.get());
-//        out.writeBoolean(mExtraLargeThumbnails.get());
-//        out.writeBoolean(mExtraShowBookshelves.get());
-//        out.writeBoolean(mExtraShowLocation.get());
-//        out.writeBoolean(mExtraShowPublisher.get());
-//        out.writeBoolean(mExtraShowAuthor.get());
-//        out.writeBoolean(mExtraShowFormat.get());
-//
-//        out.writeBoolean(mSortAuthor.get());
-//
-//        out.writeInt(mFilterRead.get());
-//        out.writeInt(mFilterSigned.get());
-//        out.writeInt(mFilterAnthology.get());
-//        out.writeInt(mFilterLoaned.get());
-//    }
-
     /**
      * Custom serialization support. The signature of this method should never be changed.
+     * Still used for reading from archives and during a database upgrade.
      *
      * @see Serializable
      */
@@ -848,11 +815,6 @@ public class BooklistStyle
         if (object instanceof Long) {
             // It's the version
             version = (Long) object;
-            if (version > 4) {
-                // readObjectPostVersion4(version, in);
-                throw new IllegalStateException();
-//                return;
-            }
             // Get the next object
             object = in.readObject();
         } // else it's a pre-version object, just use it
@@ -873,18 +835,18 @@ public class BooklistStyle
         //	public static final int FILTER_READ = 1; => true => 1
         //	public static final int FILTER_UNREAD = 2; => false => 0
         //	public static final int FILTER_READ_AND_UNREAD = 3; => not set => -1
-        Integer tmpReadFilter = (Integer) in.readObject();
-        switch (tmpReadFilter) {
+        Integer legacyExtraReadUnreadAll = (Integer) in.readObject();
+        switch (legacyExtraReadUnreadAll) {
             case 1:
                 break;
             case 2:
-                tmpReadFilter = 0;
+                legacyExtraReadUnreadAll = 0;
                 break;
             default:
-                tmpReadFilter = -1;
+                legacyExtraReadUnreadAll = -1;
                 break;
         }
-        mFilterRead.set(ed, tmpReadFilter);
+        mFilterRead.set(ed, legacyExtraReadUnreadAll);
 
         // v1 'condensed' was a Boolean.
         Object tmpCondensed = in.readObject();
@@ -925,35 +887,6 @@ public class BooklistStyle
         mGroups = null;
         ed.apply();
     }
-
-//    private void readObjectPostVersion4(@SuppressWarnings("unused") final long version,
-//                                        final ObjectInputStream in)
-//            throws IOException, ClassNotFoundException {
-//        initPrefs();
-//
-//        SharedPreferences.Editor ed = Prefs.getPrefs(mUuid).edit();
-//        mDisplayName.set(ed, (String) in.readObject());
-//
-//        mIsPreferred.set(ed, in.readBoolean());
-//        mScaleSize.set(ed, in.readInt());
-//        mShowHeaderInfo.set(ed, in.readInt());
-//
-//        mExtraShowThumbnails.set(ed, in.readBoolean());
-//        mExtraLargeThumbnails.set(ed, in.readBoolean());
-//        mExtraShowBookshelves.set(ed, in.readBoolean());
-//        mExtraShowLocation.set(ed, in.readBoolean());
-//        mExtraShowPublisher.set(ed, in.readBoolean());
-//        mExtraShowAuthor.set(ed, in.readBoolean());
-//        mExtraShowFormat.set(ed, in.readBoolean());
-//
-//        mSortAuthor.set(ed, in.readBoolean());
-//
-//        mFilterRead.set(ed, in.readInt());
-//        mFilterSigned.set(ed, in.readInt());
-//        mFilterAnthology.set(ed, in.readInt());
-//        mFilterLoaned.set(ed, in.readInt());
-//        ed.apply();
-//    }
 
     /**
      * Construct a clone of this object.
@@ -1052,9 +985,8 @@ public class BooklistStyle
 
         private final ArrayList<BooklistGroup> mGroups = new ArrayList<>();
 
-        PStyleGroups(final int key,
-                     final String uuid) {
-            super(key, uuid);
+        PStyleGroups(final String uuid) {
+            super(R.string.pk_bob_groups, uuid);
             loadGroups();
         }
 
@@ -1090,11 +1022,12 @@ public class BooklistStyle
 
         @NonNull
         List<Integer> getGroupKinds() {
-            return this.get();
+            return get();
         }
 
         int getGroupKindAt(final int index) {
-            return (int) this.get().toArray()[index];
+            //noinspection ConstantConditions
+            return (int) get().toArray()[index];
         }
 
         public void clear() {

@@ -112,9 +112,9 @@ public final class UpgradeMessageManager {
     }
 
     public static void setUpgradeAcknowledged() {
-            Prefs.getPrefs()
-                 .edit()
-                 .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, BookCatalogueApp.getVersion())
-                 .apply();
+        Prefs.getPrefs()
+             .edit()
+             .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, BookCatalogueApp.getVersion())
+             .apply();
     }
 }

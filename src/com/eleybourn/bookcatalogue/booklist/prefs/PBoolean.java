@@ -10,21 +10,35 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
 
 /**
  * A Boolean is stored as a Boolean.
- *
+ * <p>
  * Used for {@link androidx.preference.SwitchPreference}
  */
 public class PBoolean
         extends PPrefBase<Boolean> {
 
+    /**
+     * Constructor. Uses the global setting as the default value, or false if none.
+     *
+     * @param key  of the preference
+     * @param uuid the style id
+     */
     public PBoolean(@StringRes final int key,
                     @Nullable final String uuid) {
-        super(key, uuid, false);
+        super(key, uuid, Prefs.getBoolean(key, false));
     }
 
+    /**
+     * Constructor. Uses the global setting as the default value,
+     * or the passed default if no global default.
+     *
+     * @param key          of the preference
+     * @param uuid         the style id
+     * @param defaultValue default to use if there is no global default
+     */
     public PBoolean(@StringRes final int key,
                     @Nullable final String uuid,
                     @NonNull final Boolean defaultValue) {
-        super(key, uuid, defaultValue);
+        super(key, uuid, Prefs.getBoolean(key, defaultValue));
     }
 
     @Override

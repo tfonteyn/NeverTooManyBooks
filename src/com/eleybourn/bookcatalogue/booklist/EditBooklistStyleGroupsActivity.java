@@ -78,7 +78,7 @@ public class EditBooklistStyleGroupsActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         // Get the intent and get the style and other settings
-        Intent intent = this.getIntent();
+        Intent intent = getIntent();
 
         mStyle = intent.getParcelableExtra(REQUEST_BKEY_STYLE);
         Objects.requireNonNull(mStyle);
@@ -86,11 +86,11 @@ public class EditBooklistStyleGroupsActivity
         // Init the subclass now that we have the style
         super.onCreate(savedInstanceState);
 
-        this.setTitle(getString(R.string.name_colon_value,
+        setTitle(getString(R.string.name_colon_value,
                                 getString(R.string.pg_groupings), mStyle.getDisplayName()));
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(),
+            HintManager.displayHint(getLayoutInflater(),
                                     R.string.hint_booklist_style_groups, null);
         }
         Tracker.exitOnCreate(this);
@@ -245,11 +245,10 @@ public class EditBooklistStyleGroupsActivity
                               @NonNull final GroupWrapper item) {
             Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
-                // New view, so build the Holder
                 holder = new Holder();
                 holder.name = convertView.findViewById(R.id.name);
                 holder.checkable = convertView.findViewById(R.id.row_check);
-                // Tag the parts that need it
+
                 convertView.setTag(holder);
                 holder.checkable.setTag(holder);
 

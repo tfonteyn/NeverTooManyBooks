@@ -36,6 +36,9 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public class EditBookActivity
         extends BaseActivity {
 
+    /** universal flag used to indicate something was changed and not saved (yet). */
+    private boolean mIsDirty;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -57,11 +60,7 @@ public class EditBookActivity
                 .commit();
     }
 
-    /** universal flag used to indicate something was changed and not saved (yet). */
-    private boolean mIsDirty;
-
     /**
-     *
      * @return <tt>true</tt> if the data in this activity was changed and should be saved.
      */
     public boolean isDirty() {
@@ -69,11 +68,10 @@ public class EditBookActivity
     }
 
     /**
-     *
      * @param isDirty set to <tt>true</tt> if the data in this activity was changed.
      */
     public void setDirty(final boolean isDirty) {
-        this.mIsDirty = isDirty;
+        mIsDirty = isDirty;
     }
 
     /**

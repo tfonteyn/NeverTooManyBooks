@@ -64,7 +64,7 @@ import java.util.TimerTask;
 public class AdvancedLocalSearchActivity
         extends BaseActivity {
 
-    /** create timer to tick every 250ms */
+    /** create timer to tick every 250ms. */
     private static final int TIMER_TICK = 250;
     /** Handle inter-thread messages. */
     private final Handler mSCHandler = new Handler();
@@ -143,9 +143,9 @@ public class AdvancedLocalSearchActivity
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        mAuthorView = this.findViewById(R.id.author);
-        mTitleView = this.findViewById(R.id.title);
-        mCSearchView = this.findViewById(R.id.criteria);
+        mAuthorView = findViewById(R.id.author);
+        mTitleView = findViewById(R.id.title);
+        mCSearchView = findViewById(R.id.criteria);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -165,7 +165,7 @@ public class AdvancedLocalSearchActivity
 
         mDb = new DBA(this);
 
-        mBooksFound = this.findViewById(R.id.books_found);
+        mBooksFound = findViewById(R.id.books_found);
 
         // If the user touches anything, it's not idle
         findViewById(R.id.root).setOnTouchListener(mOnTouchListener);
@@ -176,9 +176,9 @@ public class AdvancedLocalSearchActivity
         mCSearchView.addTextChangedListener(mTextWatcher);
 
         // Handle button presses
-        Button ftsRebuildBtn = this.findViewById(R.id.rebuild);
+        Button ftsRebuildBtn = findViewById(R.id.rebuild);
         ftsRebuildBtn.setOnClickListener(mFtsRebuildListener);
-        Button showResultsBtn = this.findViewById(R.id.search);
+        Button showResultsBtn = findViewById(R.id.search);
         showResultsBtn.setOnClickListener(mShowResultsListener);
 
         // Note: Timer will be started in OnResume().

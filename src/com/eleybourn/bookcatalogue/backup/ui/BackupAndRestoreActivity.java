@@ -257,16 +257,20 @@ public class BackupAndRestoreActivity
                                final boolean cancelled,
                                @NonNull final FragmentTask task) {
 
-        Object resultSettings = Objects.requireNonNull(task.getTag());
+
 
         // Is it a task we care about?
         switch (taskId) {
             case TASK_ID_SAVE_TO_ARCHIVE:
-                handleSaveToArchiveResults(success, cancelled, (ExportSettings) resultSettings);
+                ExportSettings exportSettings =
+                        (ExportSettings) Objects.requireNonNull(task.getTag());
+                handleSaveToArchiveResults(success, cancelled, exportSettings);
                 break;
 
             case TASK_ID_READ_FROM_ARCHIVE:
-                handleReadFromArchiveResults(success, cancelled, (ImportSettings) resultSettings);
+                ImportSettings importSettings =
+                        (ImportSettings) Objects.requireNonNull(task.getTag());
+                handleReadFromArchiveResults(success, cancelled, importSettings);
                 break;
 
             case 0:

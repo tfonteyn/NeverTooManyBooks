@@ -169,11 +169,7 @@ public final class StandardDialogs {
         dialog.show();
     }
 
-    /**
-     * @return the resource id for a string in case of error, 0 for ok
-     */
-    @StringRes
-    public static int deleteBookAlert(@NonNull final Context context,
+    public static void deleteBookAlert(@NonNull final Context context,
                                       @NonNull final DBA db,
                                       final long bookId,
                                       @NonNull final Runnable onDeleted) {
@@ -228,7 +224,6 @@ public final class StandardDialogs {
                          });
 
         dialog.show();
-        return 0;
     }
 
     /**

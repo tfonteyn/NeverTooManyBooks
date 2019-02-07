@@ -153,7 +153,10 @@ public class BackupFileDetails
                 // needs RTL
                 fileContentView.setText(TextUtils.join(", ", args));
 
-                dateView.setText(DateUtils.toPrettyDateTime(mInfo.getCreationDate()));
+                Date creationDate = mInfo.getCreationDate();
+                if (creationDate != null) {
+                    dateView.setText(DateUtils.toPrettyDateTime(creationDate));
+                }
                 fileContentView.setVisibility(View.VISIBLE);
             } else {
                 dateView.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));

@@ -22,12 +22,16 @@ package com.eleybourn.bookcatalogue.datamanager;
 import androidx.annotation.NonNull;
 
 /**
- * Interface supported by a read-only object.
+ * Interface supported by a read-only object. Note that this is a 'marker' interface only.
  *
  * @author pjw
  */
 public interface DataViewer {
 
-    /** Load current data FROM passed DataManager. */
+    /**
+     * Load current data FROM passed DataManager.
+     *
+     * @param dataManager the parent collection
+     */
     <T extends DataManager> void loadFieldsFrom(@NonNull T /* in/out */ dataManager);
 }

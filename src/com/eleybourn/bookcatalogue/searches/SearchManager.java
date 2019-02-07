@@ -345,8 +345,8 @@ public class SearchManager {
 
             } else if (UniqueId.BKEY_AUTHOR_ARRAY.equals(key)
                     || UniqueId.BKEY_SERIES_ARRAY.equals(key)
-                    || UniqueId.BKEY_TOC_TITLES_ARRAY.equals(key)
-                    || UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY.equals(key)) {
+                    || UniqueId.BKEY_TOC_ENTRY_ARRAY.equals(key)
+                    || UniqueId.BKEY_FILE_SPEC_ARRAY.equals(key)) {
                 accumulateList(key, bookData);
 
             } else {
@@ -383,12 +383,12 @@ public class SearchManager {
 //            // special case: StringList incoming, transform and add to the ArrayList
 //            ArrayList<String> incomingList = StringList.decode("" + dataToAdd);
 //            ArrayList<String> list =
-//                   mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+//                   mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
 //            if (list == null) {
 //                list = new ArrayList<>();
 //            }
 //            list.addAll(incomingList);
-//            mBookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, list);
+//            mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, list);
 //            mBookData.remove(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_STRING_LIST);
 //
 //            if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
@@ -496,7 +496,7 @@ public class SearchManager {
             for (SearchSites.Site site : SearchSites.getSitesByReliability()) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
-                    if (bookData.containsKey(UniqueId.KEY_BOOK_ISBN)) {
+                    if (bookData != null && bookData.containsKey(UniqueId.KEY_BOOK_ISBN)) {
                         if (IsbnUtils.matches(mIsbn, bookData.getString(UniqueId.KEY_BOOK_ISBN))) {
                             results.add(site.id);
                         }
@@ -521,7 +521,7 @@ public class SearchManager {
         }
 
         // If there are thumbnails present, pick the biggest, delete others and rename.
-        ImageUtils.cleanupThumbnails(mBookData);
+        ImageUtils.cleanupImages(mBookData);
 
         // Try to use/construct isbn
         String isbn = mBookData.getString(UniqueId.KEY_BOOK_ISBN);

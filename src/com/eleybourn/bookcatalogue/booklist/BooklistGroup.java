@@ -881,7 +881,7 @@ public class BooklistGroup
         }
 
         void setDisplayDomain(@NonNull final DomainDefinition displayDomain) {
-            this.mDisplayDomain = displayDomain;
+            mDisplayDomain = displayDomain;
         }
 
         /**

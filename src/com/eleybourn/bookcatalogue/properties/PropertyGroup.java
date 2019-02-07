@@ -48,8 +48,8 @@ public class PropertyGroup implements Comparable<PropertyGroup> {
      * Constructor
      */
     public PropertyGroup(@StringRes final int nameResourceId, final int weight) {
-        this.mNameResourceId = nameResourceId;
-        this.mWeight = weight;
+        mNameResourceId = nameResourceId;
+        mWeight = weight;
     }
 
     @StringRes

@@ -45,7 +45,7 @@ import com.eleybourn.bookcatalogue.database.definitions.ColumnInfo;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
+import com.eleybourn.bookcatalogue.tasks.GetImageTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -57,8 +57,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * DB Helper for Covers DB. It uses the Application Context.
  * <p>
- * In the initial pass, the covers database has a single table whose members are accessed via unique
- * 'file names'.
+ * In the initial pass, the covers database has a single table whose members are accessed
+ * via unique 'file names'.
  * <p>
  * This class is used as singleton, to avoid running out of memory very quickly.
  * To be investigated some day. Not sure how much multi-threaded access is hampered by this.
@@ -75,10 +75,13 @@ public final class CoversDBA
 
     /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
-    /** DB location. */
+    /** DB name. */
     private static final String COVERS_DATABASE_NAME = "covers.db";
-    /** DB Version. */
-    private static final int COVERS_DATABASE_VERSION = 1;
+    /**
+     * DB Version.
+     * v2: dropped size/type columns + shortened 'filename'.
+     */
+    private static final int COVERS_DATABASE_VERSION = 2;
 
     /** Static Factory object to create the custom cursor. */
     private static final SQLiteDatabase.CursorFactory TRACKED_CURSOR_FACTORY =
@@ -98,40 +101,38 @@ public final class CoversDBA
 
     /* Domain definitions. */
     /** TBL_IMAGE. */
-    private static final DomainDefinition DOM_ID =
+    private static final DomainDefinition DOM_PK_ID =
             new DomainDefinition("_id");
+
+    private static final DomainDefinition DOM_CACHE_ID =
+            new DomainDefinition("filename", ColumnInfo.TYPE_TEXT, true);
+
+    private static final DomainDefinition DOM_IMAGE =
+            new DomainDefinition("image", ColumnInfo.TYPE_BLOB, true);
 
     private static final DomainDefinition DOM_DATE =
             new DomainDefinition("date", ColumnInfo.TYPE_DATETIME, true)
                     .setDefault("current_timestamp");
-    // T = Thumbnail; C = cover? Only found reference to "T"
-    private static final DomainDefinition DOM_TYPE =
-            new DomainDefinition("type", ColumnInfo.TYPE_TEXT, true);
-    private static final DomainDefinition DOM_IMAGE =
-            new DomainDefinition("image", ColumnInfo.TYPE_BLOB, true);
+
     private static final DomainDefinition DOM_WIDTH =
             new DomainDefinition("width", ColumnInfo.TYPE_INTEGER, true);
+
     private static final DomainDefinition DOM_HEIGHT =
             new DomainDefinition("height", ColumnInfo.TYPE_INTEGER, true);
-    private static final DomainDefinition DOM_SIZE =
-            new DomainDefinition("size", ColumnInfo.TYPE_INTEGER, true);
-
-    private static final DomainDefinition DOM_FILENAME =
-            new DomainDefinition("filename", ColumnInfo.TYPE_TEXT, true);
 
     /** table definitions. */
     private static final TableDefinition TBL_IMAGE =
-            new TableDefinition("image", DOM_ID, DOM_TYPE, DOM_IMAGE, DOM_DATE,
-                                DOM_WIDTH, DOM_HEIGHT, DOM_SIZE, DOM_FILENAME);
+            new TableDefinition("image", DOM_PK_ID, DOM_IMAGE, DOM_DATE,
+                                DOM_WIDTH, DOM_HEIGHT, DOM_CACHE_ID);
+    private static final String SQL_GET_IMAGE = "SELECT " + DOM_IMAGE + " FROM " + TBL_IMAGE
+            + " WHERE " + DOM_CACHE_ID + "=? AND " + DOM_DATE + ">?";
     /**
      * run a count for the desired file. 1 == exists, 0 == not there
      */
     private static final String SQL_COUNT_ID =
-            "SELECT COUNT(" + DOM_ID + ") FROM " + TBL_IMAGE
-                    + " WHERE " + DOM_FILENAME + "=?";
+            "SELECT COUNT(" + DOM_PK_ID + ") FROM " + TBL_IMAGE
+                    + " WHERE " + DOM_CACHE_ID + "=?";
 
-    /** all tables. */
-    private static final TableDefinition[] TABLES = new TableDefinition[]{TBL_IMAGE};
     /**
      * Not debug!
      * close() will only really close if INSTANCE_COUNTER == 0 is reached.
@@ -154,9 +155,11 @@ public final class CoversDBA
     /* table indexes. */
     static {
         TBL_IMAGE
-                .addIndex("id", true, DOM_ID)
-                .addIndex("file", true, DOM_FILENAME)
-                .addIndex("file_date", true, DOM_FILENAME, DOM_DATE);
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex("id", true, DOM_PK_ID)
+                .addIndex(DOM_CACHE_ID.name, true, DOM_CACHE_ID)
+                .addIndex(DOM_CACHE_ID.name + '_' + DOM_DATE.name,
+                          true, DOM_CACHE_ID, DOM_DATE);
     }
 
     /** List of statements we create so we can clean them when the instance is closed. */
@@ -187,19 +190,21 @@ public final class CoversDBA
     }
 
     /**
-     * Construct the cache ID for a given thumbnail spec.
+     * Construct the cache ID for a given thumbnail uuid.
+     * We use this to allow caching of multiple copies of the same image (book uuid)
+     * but with different dimensions.
      * <p>
-     * NOTE: Any changes to the resulting name MUST be reflected in {@link #deleteBookCover}
+     * NOTE: Any changes to the resulting name MUST be reflected in {@link #delete}
      *
      * @param uuid      used to construct the cacheId
      * @param maxWidth  used to construct the cacheId
      * @param maxHeight used to construct the cacheId
      */
     @NonNull
-    public static String getThumbnailCoverCacheId(@NonNull final String uuid,
-                                                  final int maxWidth,
-                                                  final int maxHeight) {
-        return uuid + ".thumb." + maxWidth + 'x' + maxHeight + ".jpg";
+    public static String constructCacheId(@NonNull final String uuid,
+                                          final int maxWidth,
+                                          final int maxHeight) {
+        return uuid + '.' + maxWidth + 'x' + maxHeight;
     }
 
     private void open(@NonNull final Context context) {
@@ -264,57 +269,53 @@ public final class CoversDBA
      * @return Bitmap (if cached) or null (if not cached)
      */
     @Nullable
-    public Bitmap fetchCachedImage(@NonNull final File originalFile,
-                                   @NonNull final String uuid,
-                                   final int maxWidth,
-                                   final int maxHeight) {
-        return fetchCachedImageIntoImageView(null, originalFile, uuid, maxWidth, maxHeight);
-    }
-
-    /**
-     * Called in the UI thread, will return a cached image OR NULL.
-     *
-     * @param destView     View to populate if non-null
-     * @param originalFile File representing original image file
-     * @param uuid         used to construct the cacheId
-     * @param maxWidth     used to construct the cacheId
-     * @param maxHeight    used to construct the cacheId
-     *
-     * @return Bitmap (if cached) or null (if not cached)
-     */
-    @Nullable
-    public Bitmap fetchCachedImageIntoImageView(@Nullable final ImageView destView,
-                                                @NonNull final File originalFile,
-                                                @NonNull final String uuid,
-                                                final int maxWidth,
-                                                final int maxHeight) {
+    public Bitmap getImage(@NonNull final File originalFile,
+                           @NonNull final String uuid,
+                           final int maxWidth,
+                           final int maxHeight) {
         if (mSyncedDb == null) {
             return null;
         }
 
-        // resultant Bitmap (which we will return)
-        Bitmap bitmap = null;
+        String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
+        String dateStr = DateUtils.utcSqlDateTime(new Date(originalFile.lastModified()));
 
-        byte[] bytes;
-        String cacheId = getThumbnailCoverCacheId(uuid, maxWidth, maxHeight);
-        Date expiryDate = new Date(originalFile.lastModified());
-
-        // Wrap in try/catch. It's possible the SDCard got removed and DB is now inaccessible
-        try {
-            bytes = getFile(cacheId, expiryDate);
-        } catch (RuntimeException e) {
-            return null;
-        }
-
-        if (bytes != null) {
-            try {
-                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            } catch (RuntimeException e) {
-                Logger.error(e, "");
-                return null;
+        try (Cursor cursor = mSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{cacheId, dateStr})) {
+            if (cursor.moveToFirst()) {
+                byte[] bytes = cursor.getBlob(0);
+                if (bytes != null) {
+                    return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                }
             }
+        } catch (RuntimeException e) {
+            // It's possible the SDCard got removed and DB is now inaccessible
+            // or the 'bytes' might be an invalid bitmap.
+            Logger.error(e);
         }
 
+        return null;
+    }
+
+    /**
+     * Called in the UI thread, will return a cached image OR NULL.
+     * and (if found) put it in the view.
+     *
+     * @param originalFile File representing original image file
+     * @param uuid         used to construct the cacheId
+     * @param maxWidth     used to construct the cacheId
+     * @param maxHeight    used to construct the cacheId
+     * @param destView     View to populate if non-null
+     *
+     * @return Bitmap (if cached) or null (if not cached)
+     */
+    @Nullable
+    public Bitmap getImageAndPutIntoView(@NonNull final File originalFile,
+                                         @NonNull final String uuid,
+                                         final int maxWidth,
+                                         final int maxHeight,
+                                         @NonNull final ImageView destView) {
+
+        Bitmap bitmap = getImage(originalFile, uuid, maxWidth, maxHeight);
         if (bitmap != null) {
             //
             // Remove any tasks that may be getting the image because they may overwrite
@@ -322,40 +323,11 @@ public final class CoversDBA
             // Remember: the view may have been re-purposed and have a different associated
             // task which must be removed from the view and removed from the queue.
             //
-            if (destView != null) {
-                GetThumbnailTask.clearOldTaskFromView(destView);
-            }
+            GetImageTask.clearOldTaskFromView(destView);
 
-            // We found it in cache
-            if (destView != null) {
-                destView.setImageBitmap(bitmap);
-            }
-            // Return the image
+            destView.setImageBitmap(bitmap);
         }
         return bitmap;
-    }
-
-    /**
-     * Get the named 'file'.
-     *
-     * @return byte[] of image data
-     */
-    @Nullable
-    private byte[] getFile(@NonNull final String filename,
-                           @NonNull final Date lastModified) {
-        if (mSyncedDb == null) {
-            return null;
-        }
-
-        try (Cursor cursor = mSyncedDb.rawQuery(
-                "SELECT " + DOM_IMAGE + " FROM " + TBL_IMAGE
-                        + " WHERE " + DOM_FILENAME + "=? AND " + DOM_DATE + ">?",
-                new String[]{filename, DateUtils.utcSqlDateTime(lastModified)})) {
-            if (cursor.moveToFirst()) {
-                return cursor.getBlob(0);
-            }
-            return null;
-        }
     }
 
     /**
@@ -370,31 +342,13 @@ public final class CoversDBA
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY_PERCENTAGE, out);
-        byte[] bytes = out.toByteArray();
-
-        saveFile(filename, bitmap.getHeight(), bitmap.getWidth(), bytes);
-    }
-
-    /**
-     * Save the passed encoded image data to a 'file'.
-     */
-    private void saveFile(@NonNull final String filename,
-                          final int height,
-                          final int width,
-                          @NonNull final byte[] bytes) {
-        if (mSyncedDb == null) {
-            return;
-        }
+        byte[] image = out.toByteArray();
 
         ContentValues cv = new ContentValues();
-        cv.put(DOM_FILENAME.name, filename);
-        cv.put(DOM_IMAGE.name, bytes);
-        // no need for this, column has a default.
-        //cv.put(DOM_DATE.name, DateUtils.utcSqlDateTimeForToday());
-        cv.put(DOM_TYPE.name, "T");
-        cv.put(DOM_WIDTH.name, height);
-        cv.put(DOM_HEIGHT.name, width);
-        cv.put(DOM_SIZE.name, bytes.length);
+        cv.put(DOM_CACHE_ID.name, filename);
+        cv.put(DOM_IMAGE.name, image);
+        cv.put(DOM_WIDTH.name, bitmap.getHeight());
+        cv.put(DOM_HEIGHT.name, bitmap.getWidth());
 
         SynchronizedStatement existsStmt = mStatements.get(STMT_EXISTS);
         if (existsStmt == null) {
@@ -406,7 +360,7 @@ public final class CoversDBA
             mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
         } else {
             mSyncedDb.update(TBL_IMAGE.getName(), cv,
-                             DOM_FILENAME.name + "=?",
+                             DOM_CACHE_ID.name + "=?",
                              new String[]{filename});
         }
     }
@@ -417,15 +371,16 @@ public final class CoversDBA
      * The original code also had a 2nd 'delete' method with a different where clause:
      * // We use encodeString here because it's possible a user screws up the data and imports
      * // bad UUIDs...this has happened.
-     * // String whereClause = DOM_FILENAME + " glob '" + DBA.encodeString(uuid) + ".*'";
+     * // String whereClause = DOM_CACHE_ID + " glob '" + DBA.encodeString(uuid) + ".*'";
      * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
      */
-    public void deleteBookCover(@NonNull final String uuid) {
+    public void delete(@NonNull final String uuid) {
         if (mSyncedDb == null) {
             return;
         }
         mSyncedDb.delete(TBL_IMAGE.getName(),
-                         DOM_FILENAME + " LIKE ?",
+                         DOM_CACHE_ID + " LIKE ?",
+                         // starts with the uuid, remove all sizes
                          new String[]{uuid + '%'});
     }
 
@@ -469,7 +424,7 @@ public final class CoversDBA
         @CallSuper
         public void onCreate(@NonNull final SQLiteDatabase db) {
             Logger.info(this, "Creating database: " + db.getPath());
-            TableDefinition.createTables(new SynchronizedDb(db, SYNCHRONIZER), TABLES);
+            TableDefinition.createTables(new SynchronizedDb(db, SYNCHRONIZER), TBL_IMAGE);
         }
 
         /**
@@ -481,7 +436,10 @@ public final class CoversDBA
                               final int oldVersion,
                               final int newVersion) {
             Logger.info(this, "Upgrading database: " + db.getPath());
-            throw new IllegalStateException("Upgrades not handled yet!");
+
+            // This is a cache, so no data needs preserving. Drop & recreate.
+            db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE);
+            onCreate(db);
         }
     }
 }

@@ -23,8 +23,6 @@ package com.eleybourn.bookcatalogue.utils.xml;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.xml.sax.Attributes;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -159,7 +157,7 @@ public class XmlFilter {
      */
     @Nullable
     XmlFilter getSubFilter(@NonNull final ElementContext context) {
-        return getSubFilter(context.localName);
+        return getSubFilter(context.getLocalName());
     }
 
     /**
@@ -184,7 +182,7 @@ public class XmlFilter {
      */
     void processStart(@NonNull final ElementContext context) {
         if (mStartAction != null) {
-            context.userArg = mStartArg;
+            context.setUserArg(mStartArg);
             mStartAction.process(context);
         }
     }
@@ -194,7 +192,7 @@ public class XmlFilter {
      */
     void processEnd(@NonNull final ElementContext context) {
         if (mEndAction != null) {
-            context.userArg = mEndArg;
+            context.setUserArg(mEndArg);
             mEndAction.process(context);
         }
     }
@@ -273,88 +271,6 @@ public class XmlFilter {
     public interface XmlHandler {
 
         void process(@NonNull ElementContext context);
-    }
-
-    /**
-     * Class used to define the context of a specific tag.
-     * <p>
-     * The 'body' element will only be set when the tag end is handled.
-     *
-     * @author Philip Warner
-     */
-    public static class ElementContext {
-
-        /** the short name of the tag. */
-        public final String localName;
-        /** Attributes on this tag. */
-        public final Attributes attributes;
-        /** not used for now. */
-        @SuppressWarnings("unused")
-        private final String uri;
-        /** not used for now. */
-        @SuppressWarnings("unused")
-        private final String qName;
-        /** the inner-tag text. */
-        @NonNull
-        private final String text;
-        /** the body/text between start and end of the tag. */
-        public String body;
-
-        /** filter on this tag. */
-        public XmlFilter filter;
-
-        /**
-         * the user argument fed into the {@link XmlFilter#setStartAction(XmlHandler, Object)}
-         * and {@link XmlFilter#setEndAction(XmlHandler, Object)}.
-         */
-        public Object userArg;
-
-        /**
-         * @param filter to use for this tag.
-         */
-        public ElementContext(@NonNull final XmlFilter filter) {
-            this.filter = filter;
-
-            uri = null;
-            localName = null;
-            qName = null;
-            attributes = null;
-            text = "";
-        }
-
-        /**
-         * Same arguments coming from the SAX Handler + the current inter-tag text.
-         *
-         * @param uri        The Namespace URI, or the empty string if the
-         *                   element has no Namespace URI or if Namespace
-         *                   processing is not being performed.
-         * @param localName  The local name (without prefix), or the
-         *                   empty string if Namespace processing is not being
-         *                   performed.
-         * @param qName      The qualified name (with prefix), or the
-         *                   empty string if qualified names are not available.
-         * @param attributes The attributes attached to the element.  If
-         *                   there are no attributes, it shall be an empty
-         *                   Attributes object.
-         * @param text       current inter-tag text
-         */
-        public ElementContext(@NonNull final String uri,
-                              @NonNull final String localName,
-                              @NonNull final String qName,
-                              @NonNull final Attributes attributes,
-                              @NonNull final String text) {
-            this.uri = uri;
-            this.localName = localName;
-            this.qName = qName;
-            this.attributes = attributes;
-
-            this.text = text;
-        }
-
-        @NonNull
-        public String getText() {
-            return text;
-        }
     }
 
 }

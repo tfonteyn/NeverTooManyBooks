@@ -88,8 +88,8 @@ public final class LocaleUtils {
         loadPreferred();
         mLastLocale = mCurrentLocale;
 
-        Logger.info(LocaleUtils.class,"SYSTEM_INITIAL_LOCALE=" + SYSTEM_INITIAL_LOCALE);
-        Logger.info(LocaleUtils.class,"mCurrentLocale=" + mCurrentLocale);
+        Logger.info(LocaleUtils.class, "SYSTEM_INITIAL_LOCALE=" + SYSTEM_INITIAL_LOCALE);
+        Logger.info(LocaleUtils.class, "mCurrentLocale=" + mCurrentLocale);
     }
 
     private LocaleUtils() {
@@ -178,8 +178,8 @@ public final class LocaleUtils {
      * @return <tt>true</tt> if the Locale was changed
      */
     public static boolean loadPreferred() {
-        String loc = Prefs.getString(R.string.pk_ui_language, null);
-        if (loc != null && !loc.isEmpty()) {
+        String loc = Prefs.getString(R.string.pk_ui_language);
+        if (!loc.isEmpty()) {
             mCurrentLocale = LocaleUtils.getLocaleFromCode(loc);
         } else {
             mCurrentLocale = SYSTEM_INITIAL_LOCALE;
@@ -244,13 +244,13 @@ public final class LocaleUtils {
             return;
         }
 
-        SharedPreferences.Editor editor = prefs.edit();
+        SharedPreferences.Editor ed = prefs.edit();
         for (Locale loc : Locale.getAvailableLocales()) {
-            editor.putString(loc.getDisplayLanguage(myLocale), loc.getISO3Language());
+            ed.putString(loc.getDisplayLanguage(myLocale), loc.getISO3Language());
         }
-        // signal this one was done
-        editor.putBoolean(myLocale.getISO3Language(), true);
-        editor.apply();
+        // signal this locale was done
+        ed.putBoolean(myLocale.getISO3Language(), true);
+        ed.apply();
     }
 
     public static String currencyToISO(@NonNull final String datum) {

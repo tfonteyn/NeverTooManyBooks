@@ -16,15 +16,29 @@ public class PInteger
     extends PPrefBase<Integer>
     implements PInt {
 
+    /**
+     * Constructor. Uses the global setting as the default value, or 0 if none.
+     *
+     * @param key   of the preference
+     * @param uuid  the style id
+     */
     public PInteger(@StringRes final int key,
                     @Nullable final String uuid) {
-        super(key, uuid, 0);
+        super(key, uuid, Prefs.getListPreference(key, 0));
     }
 
+    /**
+     * Constructor. Uses the global setting as the default value,
+     * or the passed default if no global default.
+     *
+     * @param key          of the preference
+     * @param uuid         the style id
+     * @param defaultValue default to use if there is no global default
+     */
     protected PInteger(@StringRes final int key,
                        @Nullable final String uuid,
                        @NonNull final Integer defaultValue) {
-        super(key, uuid, defaultValue);
+        super(key, uuid, Prefs.getListPreference(key, defaultValue));
     }
 
     @NonNull

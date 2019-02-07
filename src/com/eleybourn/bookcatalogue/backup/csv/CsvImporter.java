@@ -406,9 +406,10 @@ public class CsvImporter
     private void handleBookshelves(@NonNull final DBA db,
                                    @NonNull final Book book) {
         String encodedList = book.getString(UniqueId.KEY_BOOKSHELF_NAME);
-        book.putBookshelfList(StringList.getBookshelfCoder()
-                                        .decode(Bookshelf.MULTI_SHELF_SEPARATOR, encodedList,
-                                                false));
+        ArrayList<Bookshelf> list = StringList.getBookshelfCoder()
+                                              .decode(Bookshelf.MULTI_SHELF_SEPARATOR, encodedList,
+                                                      false);
+        book.putList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
 
         book.remove(UniqueId.KEY_BOOKSHELF_NAME);
     }
@@ -428,7 +429,7 @@ public class CsvImporter
             if (!list.isEmpty()) {
                 // fixup the id's
                 Utils.pruneList(db, list);
-                book.putTOC(list);
+                book.putList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
             }
         }
 
@@ -460,7 +461,7 @@ public class CsvImporter
         final ArrayList<Series> list = StringList.getSeriesCoder().decode(encodedList, false);
         Series.pruneSeriesList(list);
         Utils.pruneList(db, list);
-        book.putSeriesList(list);
+        book.putList(UniqueId.BKEY_SERIES_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_SERIES);
     }
 
@@ -506,7 +507,7 @@ public class CsvImporter
         // Now build the array for authors
         final ArrayList<Author> list = StringList.getAuthorCoder().decode(encodedList, false);
         Utils.pruneList(db, list);
-        book.putAuthorList(list);
+        book.putList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
     }
 

@@ -472,7 +472,7 @@ public class CoverBrowser
                 coverImage.setImageResource(R.drawable.ic_image);
             } else {
                 // Present, so use it.
-                ImageUtils.fetchFileIntoImageView(coverImage, file, mPreviewSizeWidth,
+                ImageUtils.getImageAndPutIntoView(coverImage, file, mPreviewSizeWidth,
                                                   mPreviewSizeHeight, true);
             }
 
@@ -609,7 +609,7 @@ public class CoverBrowser
             // Load the file and apply to view
             File file = new File(mFileSpec);
             file.deleteOnExit();
-            ImageUtils.fetchFileIntoImageView(mImageView, file, mMaxWidth, mMaxHeight, true);
+            ImageUtils.getImageAndPutIntoView(mImageView, file, mMaxWidth, mMaxHeight, true);
 
         }
     }
@@ -670,7 +670,7 @@ public class CoverBrowser
             if (file.exists() && file.length() > 100) {
                 Drawable image = new BitmapDrawable(
                         mActivity.getResources(),
-                        ImageUtils.fetchFileIntoImageView(null, file,
+                        ImageUtils.getImageAndPutIntoView(null, file,
                                                           mPreviewSizeWidth * 4,
                                                           mPreviewSizeHeight * 4,
                                                           true));

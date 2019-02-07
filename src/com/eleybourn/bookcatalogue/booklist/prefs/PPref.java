@@ -21,7 +21,7 @@ public interface PPref<T> {
     void set(@Nullable T value);
 
     /**
-     * for batch updates.
+     * for batch updates. Can also be used for setting globals.
      */
     void set(@NonNull SharedPreferences.Editor ed,
              @NonNull T value);

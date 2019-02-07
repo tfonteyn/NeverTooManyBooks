@@ -176,7 +176,7 @@ public abstract class BaseActivity
      * @param drawerLayout your custom one
      */
     private void setDrawerLayout(@Nullable final DrawerLayout drawerLayout) {
-        this.mDrawerLayout = drawerLayout;
+        mDrawerLayout = drawerLayout;
     }
 
     /**
@@ -226,13 +226,13 @@ public abstract class BaseActivity
                 return;
             case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this,"onActivityResult",
+                    Logger.info(this, "onActivityResult",
                                 "REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
                 }
                 return;
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-                    Logger.info(this,"onActivityResult",
+                    Logger.info(this, "onActivityResult",
                                 "REQ_NAV_PANEL_ADMIN");
                 }
                 return;
@@ -241,7 +241,7 @@ public abstract class BaseActivity
                 if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
                     // lowest level of our Activities, see if we missed anything
                     // that we should not miss.
-                    Logger.info(this, "onActivityResult","NOT HANDLED:"
+                    Logger.info(this, "onActivityResult", "NOT HANDLED:"
                             + " requestCode=" + requestCode + ','
                             + " resultCode=" + resultCode);
                 }
@@ -263,7 +263,7 @@ public abstract class BaseActivity
 
         if (mRestartActivityOnResume) {
             if (/* always show debug */ BuildConfig.DEBUG) {
-                Logger.info(this, "onResume","Restarting");
+                Logger.info(this, "onResume", "Restarting");
             }
             finish();
             startActivity(getIntent());
@@ -292,7 +292,7 @@ public abstract class BaseActivity
 
         if (key.equals(BookCatalogueApp.getResString(R.string.pk_ui_theme))) {
             if (ThemeUtils.loadPreferred()) {
-                this.setTheme(ThemeUtils.getThemeResId());
+                setTheme(ThemeUtils.getThemeResId());
             }
 
         } else if (key.equals(BookCatalogueApp.getResString(R.string.pk_ui_language))) {

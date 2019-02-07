@@ -68,7 +68,7 @@ public class FileChooserFragment
         public void onClick(@NonNull final View v) {
             String parent = mRootPath.getParent();
             if (parent == null) {
-                //Snackbar.make(this.getView(),
+                //Snackbar.make(getView(),
                 // R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
                 StandardDialogs.showUserMessage(requireActivity(),
                                                 R.string.warning_no_parent_directory_found);
@@ -246,7 +246,7 @@ public class FileChooserFragment
                             @Nullable View convertView,
                             @NonNull final ViewGroup parent) {
 
-            final FileDetails item = this.getItem(position);
+            final FileDetails item = getItem(position);
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_file_info,
                                                                         null);

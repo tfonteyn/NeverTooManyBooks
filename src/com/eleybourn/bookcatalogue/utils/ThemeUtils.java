@@ -66,7 +66,7 @@ public final class ThemeUtils {
      * @return <tt>true</tt> if the theme was changed
      */
     public static boolean loadPreferred() {
-        mCurrentTheme = Prefs.getIntString(R.string.pk_ui_theme, DEFAULT_THEME);
+        mCurrentTheme = Prefs.getListPreference(R.string.pk_ui_theme, DEFAULT_THEME);
         if (mCurrentTheme != mLastTheme) {
             mLastTheme = mCurrentTheme;
             return true;

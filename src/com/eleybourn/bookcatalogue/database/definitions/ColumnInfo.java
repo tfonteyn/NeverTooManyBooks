@@ -69,6 +69,20 @@ public class ColumnInfo {
         return "PRAGMA table_info(" + tableName + ')';
     }
 
+    @Override
+    @NonNull
+    public String toString() {
+        return "ColumnInfo{" +
+                "name='" + name + '\'' +
+                ", isPrimaryKey=" + isPrimaryKey +
+                ", storageClass=" + storageClass +
+                ", position=" + position +
+                ", typeName='" + typeName + '\'' +
+                ", allowNull=" + allowNull +
+                ", defaultValue='" + defaultValue + '\'' +
+                '}';
+    }
+
     /**
      * Mapping types to storage classes.
      * <p>

@@ -21,9 +21,9 @@ import java.util.List;
 abstract class EditStringDialog {
 
     @NonNull
-    private final Activity mActivity;
-    @NonNull
     protected final DBA mDb;
+    @NonNull
+    private final Activity mActivity;
     @Nullable
     private final Runnable mOnChanged;
 
@@ -47,19 +47,17 @@ abstract class EditStringDialog {
     /**
      * AutoCompleteTextView.
      *
-     * @param rowLayoutId the layout id to inflate a new View for a row
-     * @param list        for theAutoCompleteTextView
-     * @param onChanged   Runnable to be started after user confirming
+     * @param list      for theAutoCompleteTextView
+     * @param onChanged Runnable to be started after user confirming
      */
     EditStringDialog(@NonNull final Activity activity,
                      @NonNull final DBA db,
-                     @LayoutRes final int rowLayoutId,
                      @NonNull final List<String> list,
                      @Nullable final Runnable onChanged) {
         mActivity = activity;
         mDb = db;
         mOnChanged = onChanged;
-        mAdapter = new ArrayAdapter<>(activity, rowLayoutId, list);
+        mAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_dropdown_item_1line, list);
     }
 
     /**

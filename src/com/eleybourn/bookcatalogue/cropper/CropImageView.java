@@ -29,7 +29,7 @@ class CropImageView extends CropImageViewTouchBase {
 
     public CropImageView(@NonNull Context context, @NonNull AttributeSet attrs) {
         super(context, attrs);
-        this.mContext = context;
+        mContext = context;
     }
 
     @Override
@@ -234,7 +234,7 @@ class CropImageView extends CropImageViewTouchBase {
         float z2 = thisHeight / height * .6F;
 
         float zoom = Math.min(z1, z2);
-        zoom = zoom * this.getScale();
+        zoom = zoom * getScale();
         zoom = Math.max(1F, zoom);
         if ((Math.abs(zoom - getScale()) / zoom) > .1) {
             float[] coordinates = new float[]{hv.mCropRect.centerX(),

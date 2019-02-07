@@ -74,6 +74,7 @@
     <item name="MENU_DEBUG_DUMP_PREFS" type="id"/>
     <item name="MENU_DEBUG_DUMP_STYLE" type="id"/>
     <item name="MENU_DEBUG_DUMP_TRACKER" type="id"/>
+    <item name="MENU_DEBUG_EXPORT_DATABASE" type="id"/>
 
 
     <!-- Amazon search options submenu -->

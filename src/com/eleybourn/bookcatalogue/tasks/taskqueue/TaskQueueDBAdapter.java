@@ -555,7 +555,7 @@ class TaskQueueDBAdapter {
                       @NonNull final Cursor cursor) {
             this.timeUntilRunnable = timeUntilRunnable;
             mRetries = cursor.getInt(cursor.getColumnIndex(DOM_RETRY_COUNT));
-            this.id = cursor.getInt(cursor.getColumnIndex(DOM_ID));
+            id = cursor.getInt(cursor.getColumnIndex(DOM_ID));
             mBlob = cursor.getBlob(cursor.getColumnIndex(DOM_TASK));
         }
 

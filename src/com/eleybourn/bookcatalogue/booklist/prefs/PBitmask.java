@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
@@ -21,10 +20,18 @@ public class PBitmask
     extends PPrefBase<Integer>
     implements PInt {
 
+    /**
+     * Constructor. Uses the global setting as the default value,
+     * or the passed default if no global default.
+     *
+     * @param key          of the preference
+     * @param uuid         the style id
+     * @param defaultValue default to use if there is no global default
+     */
     public PBitmask(@StringRes final int key,
                     @Nullable final String uuid,
                     final int defaultValue) {
-        super(key, uuid, defaultValue);
+        super(key, uuid, Prefs.getMultiSelectListPreference(key, defaultValue));
     }
 
     /**
@@ -38,7 +45,7 @@ public class PBitmask
             Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
             Prefs.getPrefs(mUuid).edit()
-                 .putStringSet(getKey(), toStringSet(value)).apply();
+                 .putStringSet(getKey(), Prefs.toStringSet(value)).apply();
         }
     }
 
@@ -49,7 +56,7 @@ public class PBitmask
     public void set(@NonNull final SharedPreferences.Editor ed,
                     @Nullable final Integer value) {
         if (value != null) {
-            ed.putStringSet(getKey(), toStringSet(value));
+            ed.putStringSet(getKey(), Prefs.toStringSet(value));
         } else {
             ed.remove(getKey());
         }
@@ -68,39 +75,15 @@ public class PBitmask
             if (sValue == null || sValue.isEmpty()) {
                 return mDefaultValue;
             }
-            return toInteger(sValue);
+            return Prefs.toInteger(sValue);
         }
-    }
-
-    @NonNull
-    private Integer toInteger(@NonNull final Set<String> sValue) {
-        int tmp = 0;
-        for (String s : sValue) {
-            tmp += Integer.parseInt(s);
-        }
-        return tmp;
-    }
-
-    @NonNull
-    private Set<String> toStringSet(@NonNull final Integer value) {
-        Set<String> set = new HashSet<>();
-        int tmp = value;
-        int bit = 1;
-        while (tmp != 0) {
-            if ((tmp & 1) == 1) {
-                set.add(String.valueOf(bit));
-            }
-            bit *= 2;
-            tmp = tmp >> 1;
-        }
-        return set;
     }
 
     @Override
     @NonNull
     public String toString() {
         return "PBitmask{" + super.toString()
-                + ",value=`" + toStringSet(get()) + '`'
+                + ",value=`" + Prefs.toStringSet(get()) + '`'
                 + '}';
     }
 }

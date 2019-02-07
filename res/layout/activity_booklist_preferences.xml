@@ -16,7 +16,7 @@
         android:paddingEnd="@dimen/padding_border"
         android:paddingStart="@dimen/padding_border">
 
-        <!-- This is where the automatically generated properties will go -->
+        <!-- This is where the automatically generated properties will be added -->
         <LinearLayout
             android:id="@+id/dynamic_properties"
             android:layout_width="match_parent"

@@ -318,15 +318,10 @@ public class Series
                                       final boolean isComplete) {
         // load from database
         Series series = db.getSeries(id);
-        Objects.requireNonNull(series);
+        //noinspection ConstantConditions
         series.setComplete(isComplete);
         int rowsAffected = db.updateSeries(series);
-        if (rowsAffected != 1) {
-            // rollback
-            series.setComplete(!isComplete);
-            return false;
-        }
-        return true;
+        return rowsAffected == 1;
     }
 
     /**
@@ -342,7 +337,7 @@ public class Series
      * @param isComplete Flag indicating the user considers this series to be 'complete'
      */
     public void setComplete(final boolean isComplete) {
-        this.mIsComplete = isComplete;
+        mIsComplete = isComplete;
     }
 
     /** {@link Parcelable}. */
@@ -362,7 +357,6 @@ public class Series
         return 0;
     }
 
-    @Override
     public long getId() {
         return mId;
     }
@@ -491,12 +485,12 @@ public class Series
             return false;
         }
         Series that = (Series) obj;
-        if ((this.mId != 0) && (that.mId != 0) && (this.mId != that.mId)) {
+        if ((mId != 0) && (that.mId != 0) && (mId != that.mId)) {
             return false;
         }
-        return Objects.equals(this.mName, that.mName)
-                && (this.mIsComplete == that.mIsComplete)
-                && Objects.equals(this.mNumber, that.mNumber);
+        return Objects.equals(mName, that.mName)
+                && (mIsComplete == that.mIsComplete)
+                && Objects.equals(mNumber, that.mNumber);
 
     }
 

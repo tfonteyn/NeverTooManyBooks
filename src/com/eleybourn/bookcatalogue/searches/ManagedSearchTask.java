@@ -31,24 +31,28 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
-import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.ArrayList;
 
+/**
+ * Base class for Web site searches.
+ */
 public abstract class ManagedSearchTask
         extends ManagedTask {
 
-    protected static boolean mFetchThumbnail;
+    /** whether to fetch thumbnails. */
+    protected boolean mFetchThumbnail;
+    /** search criteria. */
     protected String mAuthor;
+    /** search criteria. */
     protected String mTitle;
+    /** search criteria. */
     protected String mIsbn;
 
     /**
      * Accumulated book info.
      * <p>
-     * The Bundle will contain String or {@link StringList} based entries by default
-     * <p>
-     * NEWKIND: if you add a new Search task that adds non-string based data,
+     * NEWKIND: if you add a new Search task/site that adds non-string based data,
      * {@link SearchManager#accumulateData(int)} must be able to handle it.
      */
     @NonNull
@@ -91,12 +95,15 @@ public abstract class ManagedSearchTask
     }
 
     /**
-     * @param fetchThumbnail to search for
+     * @param fetchThumbnail set to <tt>true</tt> if you want thumbnails to be fetched.
      */
     public void setFetchThumbnail(final boolean fetchThumbnail) {
         mFetchThumbnail = fetchThumbnail;
     }
 
+    /**
+     * @return an identifier for this task.
+     */
     public abstract int getSearchId();
 
     @Override
@@ -156,7 +163,8 @@ public abstract class ManagedSearchTask
     /**
      * Accessor, so when thread has finished, data can be retrieved.
      * <p>
-     * The Bundle will contain String or {@link StringList} based entries by default
+     *
+     * @return a Bundle containing standard Book fields AND specific site fields.
      */
     @NonNull
     Bundle getBookData() {

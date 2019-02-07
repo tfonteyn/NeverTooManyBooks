@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,14 +41,11 @@ import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsWork;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.SearchBooksApiHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Search goodreads for a book and display the list of results.
@@ -63,7 +61,6 @@ public class GoodreadsSearchResultsActivity
 
     public static final String BKEY_SEARCH_CRITERIA = "criteria";
     private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("Goodreads-GetImageTask");
-    private List<GoodreadsWork> mList = new ArrayList<>();
 
     @Override
     protected int getLayoutId() {
@@ -124,8 +121,7 @@ public class GoodreadsSearchResultsActivity
             return;
         }
 
-        mList = works;
-        ArrayAdapter<GoodreadsWork> adapter = new ResultsAdapter();
+        ArrayAdapter<GoodreadsWork> adapter = new ResultsAdapter(this, works);
         setListAdapter(adapter);
     }
 
@@ -144,13 +140,13 @@ public class GoodreadsSearchResultsActivity
     }
 
     /**
-     * Class used in implementing holder pattern for search results.
+     * Holder pattern for search results.
      *
      * @author Philip Warner
      */
     private static class Holder {
 
-        /** must be final as we'll use it as a LOCK */
+        /** must be final as we'll use it as a LOCK. */
         @NonNull
         final ImageView coverView;
 
@@ -172,8 +168,9 @@ public class GoodreadsSearchResultsActivity
     private class ResultsAdapter
             extends ArrayAdapter<GoodreadsWork> {
 
-        ResultsAdapter() {
-            super(GoodreadsSearchResultsActivity.this, 0, mList);
+        ResultsAdapter(@NonNull final Context context,
+                       @NonNull final List<GoodreadsWork> objects) {
+            super(context, 0, objects);
         }
 
         @NonNull
@@ -198,7 +195,6 @@ public class GoodreadsSearchResultsActivity
                     @Override
                     public void onClick(@NonNull final View v) {
                         Holder holder = (Holder) v.getTag();
-                        Objects.requireNonNull(holder);
                         doItemClick(holder);
                     }
                 });
@@ -211,8 +207,9 @@ public class GoodreadsSearchResultsActivity
             //noinspection ConstantConditions
             synchronized (holder.coverView) {
                 // Save the work details
-                holder.work = mList.get(position);
+                holder.work = getItem(position);
                 // get the cover (or put it in background task)
+                //noinspection ConstantConditions
                 holder.work.fillImageView(mTaskQueue, holder.coverView);
 
                 // Update the views based on the work

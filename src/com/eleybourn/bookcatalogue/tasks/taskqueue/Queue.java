@@ -62,7 +62,7 @@ class Queue
         mName = queueName;
         mManager = manager;
         // Set the thread name to something helpful. This is distinct from the Queue name.
-        this.setName("Queue " + queueName);
+        setName("Queue " + queueName);
 
         // Add this object to the active queues list in the manager. It is important
         // that this is done in the constructor AND that new queues are created inside
@@ -85,7 +85,7 @@ class Queue
      */
     public void finish() {
         mTerminate = true;
-        this.interrupt();
+        interrupt();
     }
 
     /**
@@ -125,7 +125,7 @@ class Queue
                     // Not ready, just wait. Allow for possible wake-up calls if something
                     // else gets queued.
                     synchronized (this) {
-                        this.wait(scheduledTask.timeUntilRunnable);
+                        wait(scheduledTask.timeUntilRunnable);
                     }
                 }
             }

@@ -392,7 +392,7 @@ public class MessageSwitch<T, U> {
 
         /** Destination queue (sender ID). */
         @NonNull
-        final Long destination;
+        private final Long mDestination;
         /** Message to deliver. */
         @NonNull
         final Message<T> message;
@@ -400,7 +400,7 @@ public class MessageSwitch<T, U> {
         /** Constructor. */
         MessageRoutingSlip(@NonNull final Long destination,
                            @NonNull final Message<T> message) {
-            this.destination = destination;
+            mDestination = destination;
             this.message = message;
         }
 
@@ -414,7 +414,7 @@ public class MessageSwitch<T, U> {
             // Find the queue and get the iterator
             synchronized (mListeners) {
                 // Queue for given ID
-                queue = mListeners.get(destination);
+                queue = mListeners.get(mDestination);
                 if (queue != null) {
                     queue.setLastMessage(this);
                     queueIterator = queue.iterator();

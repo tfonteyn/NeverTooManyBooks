@@ -74,9 +74,9 @@ public class Synchronizer {
         //Logger.info(t.getName() + " locked lock held by " + mLock.getHoldCount());
         purgeOldLocks();
         try {
-            int count;
-            if (mSharedOwners.containsKey(t)) {
-                count = mSharedOwners.get(t) + 1;
+            Integer count = mSharedOwners.get(t);
+            if (count != null) {
+                count++;
             } else {
                 count = 1;
             }
@@ -98,8 +98,9 @@ public class Synchronizer {
         mLock.lock();
         //Logger.info(t.getName() + " locked lock held by " + mLock.getHoldCount());
         try {
-            if (mSharedOwners.containsKey(t)) {
-                int count = mSharedOwners.get(t) - 1;
+            Integer count = mSharedOwners.get(t);
+            if (count != null) {
+                count--;
                 //Logger.info(t.getName() + " now has " + count + " SHARED locks");
                 if (count < 0) {
                     throw new LockException("Release a lock count already zero");

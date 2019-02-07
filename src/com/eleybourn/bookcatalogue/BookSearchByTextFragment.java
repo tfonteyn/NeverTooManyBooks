@@ -84,7 +84,7 @@ public class BookSearchByTextFragment
 
         // Display hint if required
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_book_search_by_text,
+            HintManager.displayHint(getLayoutInflater(), R.string.hint_book_search_by_text,
                                     null);
         }
     }
@@ -150,7 +150,7 @@ public class BookSearchByTextFragment
             if (!wasCancelled) {
                 mActivity.getTaskManager().sendHeaderTaskProgressMessage(
                         getString(R.string.progress_msg_adding_book));
-                Intent intent = new Intent(this.getContext(), EditBookActivity.class);
+                Intent intent = new Intent(getContext(), EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, REQ_BOOK_EDIT);
 

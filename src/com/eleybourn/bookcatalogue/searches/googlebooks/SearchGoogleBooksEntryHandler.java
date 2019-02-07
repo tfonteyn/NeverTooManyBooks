@@ -208,15 +208,15 @@ class SearchGoogleBooksEntryHandler
                     .equals(attributes.getValue("", "rel"))) {
 
                 String thumbnail = attributes.getValue("", "href");
-                String fileSpec = ImageUtils.saveThumbnailFromUrl(thumbnail, FILENAME_SUFFIX);
+                String fileSpec = ImageUtils.saveImage(thumbnail, FILENAME_SUFFIX);
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
-                            mBookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                            mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
                     if (imageList == null) {
                         imageList = new ArrayList<>();
                     }
                     imageList.add(fileSpec);
-                    mBookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY,
+                    mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY,
                                                  imageList);
                 }
             }

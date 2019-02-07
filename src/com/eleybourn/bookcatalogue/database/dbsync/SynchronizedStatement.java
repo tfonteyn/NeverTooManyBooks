@@ -186,7 +186,7 @@ public class SynchronizedStatement
                 Logger.debug("count statement not a count?");
             }
         }
-        return this.simpleQueryForLongOrZero();
+        return simpleQueryForLongOrZero();
     }
 
     /**
@@ -203,7 +203,13 @@ public class SynchronizedStatement
             throws SQLiteDoneException {
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
-            return mStatement.simpleQueryForString();
+            String result = mStatement.simpleQueryForString();
+            if (/* always print debug */ BuildConfig.DEBUG) {
+                Logger.info(this, "simpleQueryForString",mStatement.toString());
+                Logger.info(this, "simpleQueryForString",result);
+            }
+            return result;
+
         } finally {
             sharedLock.unlock();
         }
@@ -225,6 +231,7 @@ public class SynchronizedStatement
             return mStatement.simpleQueryForString();
         } catch (SQLiteDoneException e) {
             if (/* always print debug */ BuildConfig.DEBUG) {
+                Logger.info(this, "simpleQueryForStringOrNull",mStatement.toString());
                 Logger.info(this, "simpleQueryForStringOrNull","NULL");
             }
             return null;

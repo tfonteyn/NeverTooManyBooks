@@ -486,17 +486,17 @@ public final class IsbnUtils {
 
             if (!this.isValid() || !cmp.isValid()) {
                 // If either is invalid, require they simply match exactly
-                return this.mDigits.size() == cmp.mDigits.size()
-                        && digitsMatch(this.mDigits.size(), 0, cmp, 0);
+                return mDigits.size() == cmp.mDigits.size()
+                        && digitsMatch(mDigits.size(), 0, cmp, 0);
             }
 
             // same length ? simple check
-            if (this.mDigits.size() == cmp.mDigits.size()) {
-                return digitsMatch(this.mDigits.size(), 0, cmp, 0);
+            if (mDigits.size() == cmp.mDigits.size()) {
+                return digitsMatch(mDigits.size(), 0, cmp, 0);
             }
 
             // We know the lengths are either 10 or 13 when we get here. So ... compare
-            if (this.mDigits.size() == 10) {
+            if (mDigits.size() == 10) {
                 return digitsMatch(9, 0, cmp, 3);
             } else {
                 return digitsMatch(9, 3, cmp, 0);
@@ -511,7 +511,7 @@ public final class IsbnUtils {
                                     @NonNull final ISBNNumber dig2,
                                     int posFrom2) {
             for (int i = 0; i < lenToCheck; i++) {
-                if (!this.mDigits.get(posFrom1++).equals(dig2.mDigits.get(posFrom2++))) {
+                if (!mDigits.get(posFrom1++).equals(dig2.mDigits.get(posFrom2++))) {
                     return false;
                 }
             }

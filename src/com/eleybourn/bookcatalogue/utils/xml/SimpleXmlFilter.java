@@ -25,7 +25,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class SimpleXmlFilter {
     private static final XmlHandler mHandleStart = new XmlHandler() {
         @Override
         public void process(@NonNull final ElementContext context) {
-            BuilderContext bc = (BuilderContext) context.userArg;
+            BuilderContext bc = (BuilderContext) context.getUserArg();
 
             if (bc.isArray()) {
                 bc.initArray();
@@ -61,7 +60,7 @@ public class SimpleXmlFilter {
             if (attrs != null) {
                 for (AttrFilter f : attrs) {
                     final String name = f.name;
-                    final String value = context.attributes.getValue(name);
+                    final String value = context.getAttributes().getValue(name);
                     if (value != null) {
                         try {
                             f.put(bc, value);
@@ -78,7 +77,7 @@ public class SimpleXmlFilter {
     private static final XmlHandler mHandleFinish = new XmlHandler() {
         @Override
         public void process(@NonNull ElementContext context) {
-            final BuilderContext bc = (BuilderContext) context.userArg;
+            final BuilderContext bc = (BuilderContext) context.getUserArg();
             if (bc.finishHandler != null) {
                 bc.finishHandler.process(context);
             }
@@ -103,8 +102,8 @@ public class SimpleXmlFilter {
     private static final XmlHandler mTextHandler = new XmlHandler() {
         @Override
         public void process(@NonNull final ElementContext context) {
-            final BuilderContext c = (BuilderContext) context.userArg;
-            c.getData().putString(c.collectField, context.body.trim());
+            final BuilderContext c = (BuilderContext) context.getUserArg();
+            c.getData().putString(c.collectField, context.getBody());
         }
     };
 
@@ -113,10 +112,10 @@ public class SimpleXmlFilter {
 
         @Override
         public void process(@NonNull final ElementContext context) {
-            final BuilderContext bc = (BuilderContext) context.userArg;
+            final BuilderContext bc = (BuilderContext) context.getUserArg();
             final String name = bc.collectField;
             try {
-                long l = Long.parseLong(context.body.trim());
+                long l = Long.parseLong(context.getBody());
                 bc.getData().putLong(name, l);
             } catch (NumberFormatException ignore) {
             }
@@ -128,10 +127,10 @@ public class SimpleXmlFilter {
 
         @Override
         public void process(@NonNull final ElementContext context) {
-            final BuilderContext bc = (BuilderContext) context.userArg;
+            final BuilderContext bc = (BuilderContext) context.getUserArg();
             final String name = bc.collectField;
             try {
-                double d = Double.parseDouble(context.body.trim());
+                double d = Double.parseDouble(context.getBody());
                 bc.getData().putDouble(name, d);
             } catch (NumberFormatException ignore) {
             }
@@ -143,10 +142,10 @@ public class SimpleXmlFilter {
 
         @Override
         public void process(@NonNull final ElementContext context) {
-            final BuilderContext bc = (BuilderContext) context.userArg;
+            final BuilderContext bc = (BuilderContext) context.getUserArg();
             final String name = bc.collectField;
             try {
-                boolean b = textToBoolean(context.body.trim());
+                boolean b = textToBoolean(context.getBody());
                 bc.getData().putBoolean(name, b);
             } catch (NumberFormatException ignore) {
                 // Ignore but don't add
@@ -160,6 +159,11 @@ public class SimpleXmlFilter {
     private final ArrayList<String> mTags = new ArrayList<>();
     private final DataStore mRootData = new DataStore();
 
+    /**
+     * Constructor.
+     *
+     * @param root filter
+     */
     public SimpleXmlFilter(@NonNull final XmlFilter root) {
         mRootFilter = root;
     }
@@ -194,6 +198,13 @@ public class SimpleXmlFilter {
         return this;
     }
 
+    /**
+     * Start tag
+     *
+     * @param tag that starts
+     *
+     * @return this for chaining.
+     */
     @NonNull
     public SimpleXmlFilter s(@NonNull final String tag) {
         DataStoreProvider parent;
@@ -212,12 +223,12 @@ public class SimpleXmlFilter {
         return this;
     }
 
-    @NonNull
-    @SuppressWarnings("UnusedReturnValue")
-    public SimpleXmlFilter done() {
+    /**
+     * Closing tag. Call this when done.
+     */
+    public void done() {
         mTags.clear();
         mContexts.clear();
-        return this;
     }
 
     @NonNull
@@ -535,7 +546,7 @@ public class SimpleXmlFilter {
 
         public void put(@NonNull final BuilderContext context,
                         @NonNull final String value) {
-            context.getData().putString(this.key, value);
+            context.getData().putString(key, value);
         }
     }
 
@@ -549,7 +560,7 @@ public class SimpleXmlFilter {
 
         public void put(@NonNull final BuilderContext context,
                         @NonNull final String value) {
-            context.getData().putLong(this.key, Long.parseLong(value));
+            context.getData().putLong(key, Long.parseLong(value));
         }
     }
 
@@ -563,7 +574,7 @@ public class SimpleXmlFilter {
 
         public void put(@NonNull final BuilderContext context,
                         @NonNull final String value) {
-            context.getData().putDouble(this.key, Double.parseDouble(value));
+            context.getData().putDouble(key, Double.parseDouble(value));
         }
     }
 
@@ -578,7 +589,7 @@ public class SimpleXmlFilter {
         public void put(@NonNull final BuilderContext context,
                         @NonNull final String value) {
             boolean b = textToBoolean(value.trim());
-            context.getData().putBoolean(this.key, b);
+            context.getData().putBoolean(key, b);
         }
     }
 }

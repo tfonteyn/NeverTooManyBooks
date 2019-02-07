@@ -102,7 +102,7 @@ public class EditBookTOCFragment
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
-        return ((EditBookFragment) this.getParentFragment()).getBookManager();
+        return ((EditBookFragment) getParentFragment()).getBookManager();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -166,7 +166,7 @@ public class EditBookTOCFragment
                     // editing an existing entry
                     TocEntry tocEntry = adapter.getItem(mEditPosition);
                     //noinspection ConstantConditions
-                    tocEntry.setAuthor( Author.fromString(author));
+                    tocEntry.setAuthor(Author.fromString(author));
                     tocEntry.setTitle(title);
                     tocEntry.setFirstPublication(pubDate);
 
@@ -241,8 +241,8 @@ public class EditBookTOCFragment
     //<editor-fold desc="Populate">
 
     private void populateSingleAuthorStatus(@NonNull final Book book) {
-        int bitmask = book.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
-        boolean singleAuthor = (bitmask & TocEntry.Type.MULTIPLE_AUTHORS) == 0;
+        boolean singleAuthor = !book.isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                                             TocEntry.Type.MULTIPLE_AUTHORS);
         mSingleAuthor.setChecked(singleAuthor);
         mAuthorTextView.setVisibility(singleAuthor ? View.GONE : View.VISIBLE);
     }
@@ -252,7 +252,7 @@ public class EditBookTOCFragment
      */
     private void populateContentList() {
         // Get all of the rows from the database and create the item list
-        mList = getBookManager().getBook().getTOCList();
+        mList = getBookManager().getBook().getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         // Now create a simple cursor adapter and set it to display
         ArrayAdapter<TocEntry> adapter = new TOCListAdapterForEditing(requireActivity(),
@@ -272,7 +272,7 @@ public class EditBookTOCFragment
         Tracker.enterOnSaveFieldsToBook(this, book.getId());
         super.onSaveFieldsToBook(book);
 
-        book.putTOC(mList);
+        book.putList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
 
         // multiple authors is now automatically done during database access.
         // The checkbox is only a visual aid for hiding/showing the author EditText.
@@ -283,7 +283,7 @@ public class EditBookTOCFragment
         if (!mSingleAuthor.isChecked()) {
             type |= TocEntry.Type.MULTIPLE_AUTHORS;
         }
-        book.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
+        book.putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
 
         Tracker.exitOnSaveFieldsToBook(this, book.getId());
     }
@@ -293,7 +293,6 @@ public class EditBookTOCFragment
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Menu Handlers">
-
 
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
@@ -387,14 +386,15 @@ public class EditBookTOCFragment
         // update the book with series information that was gathered from the TOC
         List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (series != null && !series.isEmpty()) {
-            ArrayList<Series> inBook = getBookManager().getBook().getSeriesList();
+            ArrayList<Series> inBook = getBookManager().getBook()
+                                                       .getList(UniqueId.BKEY_SERIES_ARRAY);
             // add, weeding out duplicates
             for (Series s : series) {
                 if (!inBook.contains(s)) {
                     inBook.add(s);
                 }
             }
-            getBookManager().getBook().putSeriesList(inBook);
+            getBookManager().getBook().putList(UniqueId.BKEY_SERIES_ARRAY, inBook);
         }
 
         // update the book with the first publication date that was gathered from the TOC
@@ -407,9 +407,9 @@ public class EditBookTOCFragment
         }
 
         // finally the TOC itself; not saved here but only put on display for the user to approve
-        final int tocBitMask = bookData.getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
+        final long tocBitMask = bookData.getLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
         ArrayList<TocEntry> tocEntries =
-                bookData.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
+                bookData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
         boolean hasTOC = tocEntries != null && !tocEntries.isEmpty();
 
         StringBuilder msg = new StringBuilder();
@@ -422,7 +422,7 @@ public class EditBookTOCFragment
             msg.append(getString(R.string.error_automatic_toc_population_failed));
         }
 
-        TextView content = new TextView(this.getContext());
+        TextView content = new TextView(getContext());
         content.setText(msg);
         // Not ideal but works
         content.setTextSize(14);
@@ -474,10 +474,10 @@ public class EditBookTOCFragment
     /**
      * The user approved, so add the TOC to the list on screen (still not saved to database).
      */
-    private void commitISFDBData(final int tocBitMask,
+    private void commitISFDBData(final long tocBitMask,
                                  @NonNull final List<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
-            getBookManager().getBook().putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, tocBitMask);
+            getBookManager().getBook().putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, tocBitMask);
             populateSingleAuthorStatus(getBookManager().getBook());
         }
 
@@ -540,12 +540,11 @@ public class EditBookTOCFragment
 
             Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
-                // New view, so build the Holder
                 holder = new Holder();
                 holder.titleView = convertView.findViewById(R.id.title);
                 holder.authorView = convertView.findViewById(R.id.author);
                 holder.firstPublicationView = convertView.findViewById(R.id.year);
-                // Tag the parts that need it
+
                 convertView.setTag(holder);
             }
 

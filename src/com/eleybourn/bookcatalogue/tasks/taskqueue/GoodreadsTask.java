@@ -103,7 +103,7 @@ public abstract class GoodreadsTask
 
         // Update task info binding
         //noinspection ConstantConditions
-        holder.description.setText(this.getDescription());
+        holder.description.setText(getDescription());
         String statusCode = tasksCursor.getStatusCode().toUpperCase();
         String statusText;
         switch (statusCode) {
@@ -121,8 +121,8 @@ public abstract class GoodreadsTask
                 statusText = context.getString(R.string.gr_tq_queued);
                 holder.retry_info
                         .setText(context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
-                                                   this.getRetries(),
-                                                   this.getRetryLimit(),
+                                                   getRetries(),
+                                                   getRetryLimit(),
                                                    DateUtils.toPrettyDateTime(
                                                            tasksCursor.getRetryDate())));
                 holder.retry_info.setVisibility(View.VISIBLE);
@@ -138,7 +138,7 @@ public abstract class GoodreadsTask
         statusText += context.getString(R.string.gr_tq_events_recorded, tasksCursor.getNoteCount());
         holder.state.setText(statusText);
 
-        Exception e = this.getException();
+        Exception e = getException();
         if (e != null) {
             holder.error.setVisibility(View.VISIBLE);
             holder.error.setText(BookCatalogueApp.getResString(R.string.gr_tq_last_error_e,
@@ -149,10 +149,9 @@ public abstract class GoodreadsTask
         //"Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
         holder.job_info.setText(BookCatalogueApp
                                         .getResString(R.string.gr_tq_generic_task_info,
-                                                      this.getId(),
+                                                      getId(),
                                                       DateUtils.toPrettyDateTime(
                                                               tasksCursor.getQueuedDate())));
-        //view.requestLayout();
     }
 
     /**

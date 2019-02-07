@@ -73,6 +73,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.AdvancedLocalSearchActivity;
 import com.eleybourn.bookcatalogue.settings.BooklistStyleSettingsFragment;
@@ -80,6 +81,7 @@ import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -111,7 +113,8 @@ public class BooksOnBookshelf
 
     /** Task queue to get book lists in background. */
     private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("BoB-GetBookListTask", 1);
-
+    /** Holder for all (semi)supported search criteria. See class for mre info. */
+    private final SearchCriteria mSearchCriteria = new SearchCriteria();
     /**
      * Flag indicating activity has been destroyed.
      * Used for background tasks.
@@ -122,7 +125,6 @@ public class BooksOnBookshelf
      * Affects the way we save state
      */
     private boolean mListHasBeenLoaded;
-
     /**
      * ProgressDialog used to display "Getting books...".
      * Needed here so we can dismiss it on close.
@@ -130,7 +132,6 @@ public class BooksOnBookshelf
     @Nullable
     @Deprecated
     private ProgressDialog mProgressDialog;
-
     /**
      * A book ID used for keeping/updating current list position,
      * eg. when a book is viewed/edited.
@@ -138,9 +139,6 @@ public class BooksOnBookshelf
     private long mCurrentPositionedBookId;
     /** Currently selected bookshelf. */
     private Bookshelf mCurrentBookshelf;
-
-    /** Holder for all (semi)supported search criteria. See class for mre info. */
-    private final SearchCriteria mSearchCriteria = new SearchCriteria();
     /** Saved position of top row. */
     private int mTopRow;
     /** Used by onScroll to detect when the top row has actually changed. */
@@ -178,7 +176,6 @@ public class BooksOnBookshelf
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
-        //setTitle(R.string.app_name);
 
         if (savedInstanceState == null) {
             // Get preferred booklist state to use from preferences;
@@ -461,6 +458,7 @@ public class BooksOnBookshelf
             menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_PREFS, 0, R.string.lbl_preferences);
             menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_STYLE, 0, R.string.lbl_style);
             menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, 0, R.string.debug_history);
+            menu.add(Menu.NONE, R.id.MENU_DEBUG_EXPORT_DATABASE,0, R.string.menu_copy_database);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -478,7 +476,7 @@ public class BooksOnBookshelf
         switch (item.getItemId()) {
 
             case R.id.MENU_SORT:
-                HintManager.displayHint(this.getLayoutInflater(),
+                HintManager.displayHint(getLayoutInflater(),
                                         R.string.hint_booklist_style_menu, new Runnable() {
                             @Override
                             public void run() {
@@ -526,6 +524,11 @@ public class BooksOnBookshelf
                         case R.id.MENU_DEBUG_DUMP_TRACKER:
                             Logger.info(this, Tracker.getEventsInfo());
                             return true;
+                        case R.id.MENU_DEBUG_EXPORT_DATABASE:
+                            StorageUtils.exportDatabaseFiles(this);
+                            StandardDialogs.showUserMessage(this,
+                                                            R.string.progress_end_backup_success);
+                            break;
                     }
                 }
                 return MenuHandler.handleBookSubMenu(this, item)
@@ -960,12 +963,12 @@ public class BooksOnBookshelf
      * Show the hints used in this class.
      */
     private void initHints() {
-        HintManager.displayHint(this.getLayoutInflater(),
+        HintManager.displayHint(getLayoutInflater(),
                                 R.string.hint_view_only_book_details, null);
-        HintManager.displayHint(this.getLayoutInflater(),
+        HintManager.displayHint(getLayoutInflater(),
                                 R.string.hint_book_list, null);
         if (StartupActivity.showAmazonHint()) {
-            HintManager.showAmazonHint(this.getLayoutInflater());
+            HintManager.showAmazonHint(getLayoutInflater());
         }
     }
 
@@ -977,37 +980,28 @@ public class BooksOnBookshelf
      */
     private void initBookshelfSpinner() {
         mBookshelfSpinner = findViewById(R.id.bookshelf_name);
-        mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.bookshelf_spinner);
+        mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.spinner_bookshelf);
         mBookshelfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfAdapter);
 
-        /*
-         * This is fired whenever a bookshelf is selected.
-         * Takes care of style and rebuilds the booklist
-         */
         mBookshelfSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            /**
+             * Called when a bookshelf is selected. Set new current + rebuild the list.
+             */
             @Override
             public void onItemSelected(@NonNull final AdapterView<?> parent,
                                        @NonNull final View view,
                                        final int position,
                                        final long id) {
-                // Check to see if mBookshelfAdapter is null, which should only occur if
-                // the activity is being torn down: see Issue #370.
-                if (mBookshelfAdapter == null) {
-                    Logger.info(BooksOnBookshelf.this,
-                                "spinner mBookshelfAdapter was null");
-                    return;
-                }
 
-                String bookshelf = mBookshelfAdapter.getItem(position);
-                if (bookshelf != null && !bookshelf.equalsIgnoreCase(mCurrentBookshelf.getName())) {
-                    // make the new shelf the current, and get it's preferred style
-                    mCurrentBookshelf = mDb.getBookshelfByName(bookshelf);
+                String bsName = (String) parent.getItemAtPosition(position);
+                if (bsName != null && !bsName.equalsIgnoreCase(mCurrentBookshelf.getName())) {
+                    // make the new shelf the current
+                    mCurrentBookshelf = mDb.getBookshelfByName(bsName);
                     if (mCurrentBookshelf == null) {
                         // shelf must have been deleted, switch to 'all book'
                         mCurrentBookshelf = Bookshelf.getAllBooksBookshelf(mDb);
                     }
-
                     mCurrentBookshelf.setAsPreferred();
 
                     initBookList(true);
@@ -1038,6 +1032,7 @@ public class BooksOnBookshelf
             position++;
             mBookshelfAdapter.add(bookshelf.getName());
         }
+
         // Set the current bookshelf. We use this to force the correct bookshelf after
         // the state has been restored.
         mBookshelfSpinner.setSelection(currentPos);
@@ -1096,7 +1091,7 @@ public class BooksOnBookshelf
      * @param showAll if <tt>true</tt> show all styles, otherwise only the preferred ones.
      */
     private void doSortMenu(final boolean showAll) {
-        LayoutInflater inflater = this.getLayoutInflater();
+        LayoutInflater inflater = getLayoutInflater();
         @SuppressLint("InflateParams")
         View dialogView = inflater.inflate(R.layout.booklist_style_menu, null);
 

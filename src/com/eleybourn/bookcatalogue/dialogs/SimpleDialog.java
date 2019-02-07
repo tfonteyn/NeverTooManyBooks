@@ -93,12 +93,12 @@ public final class SimpleDialog {
 
             view.setTag(R.id.TAG_DIALOG_ITEM, item);
 
-            CompoundButton btn = item.getSelector(view);
-            if (btn != null) {
-                btn.setVisibility(View.VISIBLE);
-                btn.setTag(R.id.TAG_DIALOG_ITEM, item);
-                btn.setChecked(item == selectedItem);
-                btn.setOnClickListener(listener);
+            CompoundButton buttonView = item.getSelector(view);
+            if (buttonView != null) {
+                buttonView.setVisibility(View.VISIBLE);
+                buttonView.setTag(R.id.TAG_DIALOG_ITEM, item);
+                buttonView.setChecked(item == selectedItem);
+                buttonView.setOnClickListener(listener);
             }
             list.addView(view);
         }

@@ -36,9 +36,9 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import org.xml.sax.SAXException;
@@ -277,7 +277,7 @@ public class LibraryThingManager {
         try {
             URL url = new URL(urlText);
             SAXParser parser = factory.newSAXParser();
-            parser.parse(NetworkUtils.getInputStreamWithTerminator(url), handler);
+            parser.parse(Terminator.getInputStream(url), handler);
 
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -333,7 +333,7 @@ public class LibraryThingManager {
 
         // Fetch, then save it with a suffix
         String fileSpec = ImageUtils
-                .saveThumbnailFromUrl(url, FILENAME_SUFFIX + '_' + isbn + '_' + size);
+                .saveImage(url, FILENAME_SUFFIX + '_' + isbn + '_' + size);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -377,7 +377,7 @@ public class LibraryThingManager {
         try {
             URL url = new URL(urlText);
             SAXParser parser = factory.newSAXParser();
-            parser.parse(NetworkUtils.getInputStreamWithTerminator(url), handler);
+            parser.parse(Terminator.getInputStream(url), handler);
 
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | SAXException e) {
@@ -388,12 +388,12 @@ public class LibraryThingManager {
             File file = getCoverImage(isbn, ImageSizes.LARGE);
             if (file != null) {
                 ArrayList<String> imageList = bookData.getStringArrayList(
-                        UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                        UniqueId.BKEY_FILE_SPEC_ARRAY);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
                 imageList.add(file.getAbsolutePath());
-                bookData.putStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY, imageList);
+                bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
             }
         }
     }

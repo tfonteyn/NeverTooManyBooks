@@ -182,22 +182,16 @@ public class Author
                                       final boolean isComplete) {
         // load from database
         Author author = db.getAuthor(id);
-        Objects.requireNonNull(author);
+        //noinspection ConstantConditions
         author.setComplete(isComplete);
         int rowsAffected = db.updateAuthor(author);
-        if (rowsAffected != 1) {
-            // rollback
-            author.setComplete(!isComplete);
-            return false;
-        }
-        return true;
+        return rowsAffected == 1;
     }
 
     public void setComplete(final boolean complete) {
         mIsComplete = complete;
     }
 
-    @Override
     public long getId() {
         return mId;
     }
@@ -415,7 +409,7 @@ public class Author
             return false;
         }
         Author that = (Author) obj;
-        if (this.mId != 0 && that.mId != 0 && this.mId != that.mId) {
+        if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
 

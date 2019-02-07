@@ -29,7 +29,7 @@ ENHANCE: XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!
  * con: fools / fields will be bigger due to labels/tags / not easy to get 'others' to create import files
 
-TODO: go through all activity and fragments and check savedInstanceState versus extras/arguments.
+TODO: check all activity and fragments and check savedInstanceState versus extras/arguments.
 Not all places save/restore the state when the app is put on pause.
 
 TODO: remove the Apache http client; it's removed from API: 23.
@@ -68,6 +68,7 @@ TEST:
 - dialog editors without listeners
 - bookshelf with style storage
 - preferences
+- global replace author
 
 
 

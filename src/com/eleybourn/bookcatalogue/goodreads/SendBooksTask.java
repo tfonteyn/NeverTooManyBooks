@@ -22,6 +22,7 @@ public abstract class SendBooksTask
         extends GoodreadsTask {
 
     private static final long serialVersionUID = -8519158637447641604L;
+    /** wait time before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
     /** Number of books with no ISBN. */
     int mNoIsbn;
@@ -85,7 +86,8 @@ public abstract class SendBooksTask
                         @NonNull final Context context,
                         @NonNull final GoodreadsManager grManager,
                         @NonNull final DBA db,
-                        final BookCursorRow bookCursorRow) {
+                        @NonNull final BookCursorRow bookCursorRow) {
+
         GoodreadsManager.ExportDisposition disposition;
         Exception exportException = null;
         try {
@@ -118,7 +120,7 @@ public abstract class SendBooksTask
                 break;
 
             case error:
-                this.setException(exportException);
+                setException(exportException);
                 queueManager.updateTask(this);
                 return false;
 

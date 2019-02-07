@@ -40,15 +40,14 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
-import com.eleybourn.bookcatalogue.datamanager.BitmaskDataAccessor;
-import com.eleybourn.bookcatalogue.datamanager.BooleanDataAccessor;
-import com.eleybourn.bookcatalogue.datamanager.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
+import com.eleybourn.bookcatalogue.datamanager.accessors.BitmaskDataAccessor;
+import com.eleybourn.bookcatalogue.datamanager.accessors.BooleanDataAccessor;
+import com.eleybourn.bookcatalogue.datamanager.accessors.DataAccessor;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
-import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
@@ -68,17 +67,30 @@ public class Book
         extends DataManager {
 
     /**
-     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_ANTHOLOGY_BITMASK}.
-     * Type: Boolean
-     * true: anthology by one or more authors
-     */
-    public static final String HAS_MULTIPLE_WORKS = "+IsAnthology";
-
-    /**
      * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_READ}.
      * Type: Boolean
      */
     public static final String IS_READ = "+IsRead";
+
+    /**
+     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_SIGNED}.
+     * Type: Boolean
+     */
+    public static final String IS_SIGNED = "+IsSigned";
+
+    /**
+     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_ANTHOLOGY_BITMASK}.
+     * Type: Boolean
+     * true: anthology by one or more authors
+     */
+    public static final String HAS_MULTIPLE_WORKS = "+HasMultiWorks";
+
+    /**
+     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_ANTHOLOGY_BITMASK}.
+     * Type: Boolean
+     * true: anthology by multiple authors
+     */
+    public static final String HAS_MULTIPLE_AUTHORS = "+HasMultiAuthors";
 
     /** mapping the edition bit to a resource string for displaying. */
     @SuppressLint("UseSparseArrays")
@@ -141,13 +153,11 @@ public class Book
     }
 
     /**
-     * Private constructor.
+     * Constructor.
      *
-     * @param bookId   of book (may be 0 for new)
-     * @param bookData Bundle with book data
+     * @param bookData Bundle with book data; can but does not have to, contain the id.
      */
-    private Book(final long bookId,
-                 @NonNull final Bundle bookData) {
+    public Book(@NonNull final Bundle bookData) {
         initValidatorsAndAccessors();
         putAll(bookData);
     }
@@ -173,7 +183,7 @@ public class Book
                                @Nullable final Bundle bookData) {
         // if we have a populated bundle, use that.
         if (bookData != null) {
-            return new Book(bookId, bookData);
+            return new Book(bookData);
         }
         // otherwise, create a new book and try to load the data from the database.
         return new Book(db, bookId);
@@ -196,7 +206,7 @@ public class Book
                                   final boolean isRead) {
         // load from database
         Book book = getBook(db, bookId);
-        book.putBoolean(UniqueId.KEY_BOOK_READ, isRead);
+        book.putBoolean(Book.IS_READ, isRead);
         book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
         return db.updateBook(bookId, book, 0) == 1;
     }
@@ -253,37 +263,53 @@ public class Book
     }
 
     /**
-     * Duplicate a book by putting applicable fields in a Bundle ready for further processing.
+     * Duplicate a book by putting APPLICABLE (not simply all of them) fields
+     * in a Bundle ready for further processing.
      *
      * @return bundle with book data
+     * <p>
+     * Dev note: keep in sync with {@link DBA.SqlColumns#BOOK}.
      */
     public Bundle duplicate() {
         final Bundle bookData = new Bundle();
+
+        // Do not copy identifiers.
+//        DOM_PK_ID
+//        DOM_BOOK_UUID
+//        DOM_BOOK_LIBRARY_THING_ID
+//        DOM_BOOK_ISFDB_ID
+//        DOM_BOOK_GOODREADS_BOOK_ID
+
+        // Do not copy specific dates.
+//        DOM_BOOK_DATE_ADDED
+//        DOM_LAST_UPDATE_DATE
+//        DOM_BOOK_GOODREADS_LAST_SYNC_DATE
 
         bookData.putString(UniqueId.KEY_TITLE,
                            getString(UniqueId.KEY_TITLE));
         bookData.putString(UniqueId.KEY_BOOK_ISBN,
                            getString(UniqueId.KEY_BOOK_ISBN));
-        bookData.putString(UniqueId.KEY_BOOK_DESCRIPTION,
-                           getString(UniqueId.KEY_BOOK_DESCRIPTION));
 
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
                                         getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY));
         bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
                                         getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY));
+        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
+                                        getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY));
 
-        bookData.putInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                        getInt(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
-        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY,
-                                        getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY));
-
+        // publication data
         bookData.putString(UniqueId.KEY_BOOK_PUBLISHER,
                            getString(UniqueId.KEY_BOOK_PUBLISHER));
+        bookData.putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                        getLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
         bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED,
                            getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
+        bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED,
+                           getString(UniqueId.KEY_BOOK_PRICE_LISTED));
+        bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
+                           getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY));
         bookData.putString(UniqueId.KEY_FIRST_PUBLICATION,
                            getString(UniqueId.KEY_FIRST_PUBLICATION));
-
         bookData.putString(UniqueId.KEY_BOOK_FORMAT,
                            getString(UniqueId.KEY_BOOK_FORMAT));
         bookData.putString(UniqueId.KEY_BOOK_GENRE,
@@ -292,34 +318,41 @@ public class Book
                            getString(UniqueId.KEY_BOOK_LANGUAGE));
         bookData.putString(UniqueId.KEY_BOOK_PAGES,
                            getString(UniqueId.KEY_BOOK_PAGES));
+        // common blurb
+        bookData.putString(UniqueId.KEY_BOOK_DESCRIPTION,
+                           getString(UniqueId.KEY_BOOK_DESCRIPTION));
 
+        // partially edition info, partially use-owned info.
+        bookData.putLong(UniqueId.KEY_BOOK_EDITION_BITMASK,
+                        getLong(UniqueId.KEY_BOOK_EDITION_BITMASK));
 
-        bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED,
-                           getString(UniqueId.KEY_BOOK_PRICE_LISTED));
-        bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
-                           getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY));
+        // user data
+
+        // put/getBoolean is 'right', but as a copy, might as well just use long
+        bookData.putLong(UniqueId.KEY_BOOK_SIGNED,
+                            getLong(UniqueId.KEY_BOOK_SIGNED));
+
+        // put/getBoolean is 'right', but as a copy, might as well just use long
+        bookData.putLong(UniqueId.KEY_BOOK_READ,
+                         getLong(UniqueId.KEY_BOOK_READ));
+
+        bookData.putDouble(UniqueId.KEY_BOOK_RATING,
+                           getDouble(UniqueId.KEY_BOOK_RATING));
+
+        bookData.putString(UniqueId.KEY_BOOK_NOTES,
+                           getString(UniqueId.KEY_BOOK_NOTES));
+        bookData.putString(UniqueId.KEY_BOOK_LOCATION,
+                           getString(UniqueId.KEY_BOOK_LOCATION));
+        bookData.putString(UniqueId.KEY_BOOK_READ_START,
+                           getString(UniqueId.KEY_BOOK_READ_START));
+        bookData.putString(UniqueId.KEY_BOOK_READ_END,
+                           getString(UniqueId.KEY_BOOK_READ_END));
+        bookData.putString(UniqueId.KEY_BOOK_DATE_ACQUIRED,
+                           getString(UniqueId.KEY_BOOK_DATE_ACQUIRED));
         bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID,
                            getString(UniqueId.KEY_BOOK_PRICE_PAID));
         bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY,
                            getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY));
-
-        bookData.putInt(UniqueId.KEY_BOOK_READ,
-                        getInt(UniqueId.KEY_BOOK_READ));
-        bookData.putString(UniqueId.KEY_BOOK_READ_END,
-                           getString(UniqueId.KEY_BOOK_READ_END));
-        bookData.putString(UniqueId.KEY_BOOK_READ_START,
-                           getString(UniqueId.KEY_BOOK_READ_START));
-
-        bookData.putString(UniqueId.KEY_BOOK_NOTES,
-                           getString(UniqueId.KEY_BOOK_NOTES));
-        bookData.putDouble(UniqueId.KEY_BOOK_RATING,
-                           getInt(UniqueId.KEY_BOOK_RATING));
-        bookData.putString(UniqueId.KEY_BOOK_LOCATION,
-                           getString(UniqueId.KEY_BOOK_LOCATION));
-        bookData.putInt(UniqueId.KEY_BOOK_SIGNED,
-                        getInt(UniqueId.KEY_BOOK_SIGNED));
-        bookData.putInt(UniqueId.KEY_BOOK_EDITION_BITMASK,
-                        getInt(UniqueId.KEY_BOOK_EDITION_BITMASK));
 
         return bookData;
     }
@@ -335,15 +368,16 @@ public class Book
     @SuppressWarnings("UnusedReturnValue")
     public boolean setRead(@NonNull final DBA db,
                            final boolean isRead) {
-        int prevRead = getInt(UniqueId.KEY_BOOK_READ);
+        // allow for rollback.
+        boolean prevRead = getBoolean(Book.IS_READ);
         String prevReadEnd = getString(UniqueId.KEY_BOOK_READ_END);
 
-        putInt(UniqueId.KEY_BOOK_READ, isRead ? 1 : 0);
+        putBoolean(Book.IS_READ, isRead);
         putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
 
         if (db.updateBook(getId(), this, 0) != 1) {
             //rollback
-            putInt(UniqueId.KEY_BOOK_READ, prevRead);
+            putBoolean(Book.IS_READ, prevRead);
             putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
             return false;
         }
@@ -366,11 +400,16 @@ public class Book
      * @return the book id.
      */
     public long getId() {
-        return this.getLong(UniqueId.KEY_ID);
+        return getLong(UniqueId.KEY_ID);
     }
 
+    /**
+     * Using the id, reload *all* other data for this book.
+     *
+     * @param db the database
+     */
     public void reload(@NonNull final DBA db) {
-        reload(db, this.getId());
+        reload(db, getId());
     }
 
     /**
@@ -390,22 +429,12 @@ public class Book
                 // Put all cursor fields in collection
                 putAll(book);
                 // load lists (or init with empty lists)
-                putBookshelfList(db.getBookshelvesByBookId(bookId));
-                putAuthorList(db.getAuthorsByBookId(bookId));
-                putSeriesList(db.getSeriesByBookId(bookId));
-                putTOC(db.getTocEntryByBook(bookId));
+                putList(UniqueId.BKEY_BOOKSHELF_ARRAY, db.getBookshelvesByBookId(bookId));
+                putList(UniqueId.BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
+                putList(UniqueId.BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
+                putList(UniqueId.BKEY_TOC_ENTRY_ARRAY, db.getTocEntryByBook(bookId));
             }
         }
-    }
-
-    /**
-     * TODO: use {@link DataAccessor}.
-     *
-     * @return the bookshelf list on which this book sits.
-     */
-    @NonNull
-    public ArrayList<Bookshelf> getBookshelfList() {
-        return super.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
     }
 
     /**
@@ -414,19 +443,12 @@ public class Book
     public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final DBA db) {
         ArrayList<CheckListItem<Bookshelf>> list = new ArrayList<>();
         // get the list of all shelves the book is currently on.
-        List<Bookshelf> currentShelves = getBookshelfList();
+        List<Bookshelf> currentShelves = getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         // Loop through all bookshelves in the database and build the list for this book
         for (Bookshelf bookshelf : db.getBookshelves()) {
             list.add(new BookshelfCheckListItem(bookshelf, currentShelves.contains(bookshelf)));
         }
         return list;
-    }
-
-    /**
-     * Special Accessor.
-     */
-    public void putBookshelfList(@NonNull final ArrayList<Bookshelf> list) {
-        super.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
     }
 
     /**
@@ -443,35 +465,28 @@ public class Book
             //noinspection ConstantConditions
             list.add(new EditionCheckListItem(
                     edition, EDITIONS.get(edition),
-                    (edition & getInt(UniqueId.KEY_BOOK_EDITION_BITMASK)) != 0));
+                    (edition & getLong(UniqueId.KEY_BOOK_EDITION_BITMASK)) != 0));
         }
         return list;
     }
 
+    /**
+     * Convenience method to set the Edition.
+     */
     public void putEditions(@NonNull final ArrayList<Integer> result) {
         int bitmask = 0;
         for (Integer bit : result) {
             bitmask += bit;
         }
-        putInt(UniqueId.KEY_BOOK_EDITION_BITMASK, bitmask);
+        putLong(UniqueId.KEY_BOOK_EDITION_BITMASK, bitmask);
     }
 
     /**
-     * TODO: use {@link DataAccessor}.
-     *
-     * @return List of authors
-     */
-    @NonNull
-    public ArrayList<Author> getAuthorList() {
-        return super.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-    }
-
-    /**
-     * @return the first author in the list of authors for this book, or null if none
+     * @return name of the first author in the list of authors for this book, or null if none
      */
     @Nullable
     public String getPrimaryAuthor() {
-        ArrayList<Author> list = getAuthorList();
+        ArrayList<Author> list = getList(UniqueId.BKEY_AUTHOR_ARRAY);
         return list.size() > 0 ? list.get(0).getDisplayName() : null;
     }
 
@@ -483,7 +498,7 @@ public class Book
     @NonNull
     public String getAuthorTextShort() {
         String newText;
-        List<Author> list = getAuthorList();
+        List<Author> list = getList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (list.size() == 0) {
             return "";
         } else {
@@ -496,41 +511,40 @@ public class Book
     }
 
     /**
-     * Special Accessor.
-     */
-    public void putAuthorList(@NonNull final ArrayList<Author> list) {
-        super.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
-    }
-
-    /**
      * Update author details from DB.
      *
      * @param db Database connection
      */
     public void refreshAuthorList(@NonNull final DBA db) {
-        ArrayList<Author> list = getAuthorList();
+        ArrayList<Author> list = getList(UniqueId.BKEY_AUTHOR_ARRAY);
         for (Author author : list) {
             db.refreshAuthor(author);
         }
-        putAuthorList(list);
+        putList(UniqueId.BKEY_AUTHOR_ARRAY, list);
     }
 
     /**
-     * TODO: use {@link DataAccessor}.
-     *
-     * @return List of series
+     * Convenience method to get a list.
      */
     @NonNull
-    public ArrayList<Series> getSeriesList() {
-        return super.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+    public <T extends Parcelable> ArrayList<T> getList(@NonNull final String key) {
+        return super.getParcelableArrayList(key);
     }
 
     /**
-     * @return the first series in the list of series for this book, or null if none
+     * Convenience method to set a list.
+     */
+    public void putList(@NonNull final String key,
+                        @NonNull final ArrayList<? extends Parcelable> list) {
+        super.putParcelableArrayList(key, list);
+    }
+
+    /**
+     * @return name of the first series in the list of series for this book, or null if none
      */
     @Nullable
     public String getPrimarySeries() {
-        ArrayList<Series> list = getSeriesList();
+        ArrayList<Series> list = getList(UniqueId.BKEY_SERIES_ARRAY);
         return list.size() > 0 ? list.get(0).getName() : null;
     }
 
@@ -542,7 +556,7 @@ public class Book
     @NonNull
     public String getSeriesTextShort() {
         String newText;
-        ArrayList<Series> list = getSeriesList();
+        ArrayList<Series> list = getList(UniqueId.BKEY_SERIES_ARRAY);
         if (list.size() == 0) {
             return "";
         } else {
@@ -555,49 +569,9 @@ public class Book
     }
 
     /**
-     * Special Accessor.
-     */
-    public void putSeriesList(@NonNull final ArrayList<Series> list) {
-        super.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-    }
-
-    /**
-     * TODO: use {@link DataAccessor}.
-     *
-     * @return Table Of Content (a TocEntry list)
-     */
-    @NonNull
-    @CallSuper
-    public ArrayList<TocEntry> getTOCList() {
-        return super.getParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY);
-    }
-
-    /**
-     * Special Accessor.
-     */
-    @CallSuper
-    public void putTOC(@NonNull final ArrayList<TocEntry> list) {
-        super.putParcelableArrayList(UniqueId.BKEY_TOC_TITLES_ARRAY, list);
-    }
-
-    /**
-     * // If there are thumbnails present, pick the biggest, delete others and rename.
-     */
-    public void cleanupThumbnails() {
-        ImageUtils.cleanupThumbnails(mBundle);
-    }
-
-    /**
-     * @return the underlying raw data.
-     * DO NOT UPDATE THIS! IT SHOULD BE USED FOR READING DATA ONLY.
-     */
-    @NonNull
-    public Bundle getRawData() {
-        return mBundle;
-    }
-
-    /**
      * Build any special purpose validators/accessors.
+     * <p>
+     * ENHANCE: add (partial) date validators ? any other validators needed ?
      */
     private void initValidatorsAndAccessors() {
         addValidator(UniqueId.KEY_TITLE, NON_BLANK_VALIDATOR);
@@ -610,23 +584,29 @@ public class Book
         addValidator(UniqueId.KEY_BOOK_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR);
 
 
+        /* Booleans are stored as Long (0,1) */
         addAccessor(IS_READ, new BooleanDataAccessor(UniqueId.KEY_BOOK_READ));
 
-        /* This only handles the fact of being an anthology or not.
-         * Does not handle 'multiple authors' */
+        /* Booleans are stored as Long (0,1) */
+        addAccessor(IS_SIGNED, new BooleanDataAccessor(UniqueId.KEY_BOOK_SIGNED));
+
+        /* set/reset the single bit TocEntry.Type.MULTIPLE_WORKS in the bitmask. */
         addAccessor(HAS_MULTIPLE_WORKS,
                     new BitmaskDataAccessor(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
                                             TocEntry.Type.MULTIPLE_WORKS));
-
+        /* set/reset the single bit TocEntry.Type.MULTIPLE_AUTHORS in the bitmask. */
+        addAccessor(HAS_MULTIPLE_AUTHORS,
+                    new BitmaskDataAccessor(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                                            TocEntry.Type.MULTIPLE_AUTHORS));
     }
 
     /**
-     * Loan this book to someone.
+     * Lend this book to someone.
      *
      * @param db     the database
      * @param loanee person to lend to
      */
-    public void loan(final DBA db,
+    public void lend(final DBA db,
                      final String loanee) {
         db.insertLoan(getId(), loanee);
     }
@@ -640,6 +620,9 @@ public class Book
         db.deleteLoan(getId());
     }
 
+    /**
+     * Used to edit the Editions of this Book.
+     */
     public static class EditionCheckListItem
             extends CheckListItemBase<Integer>
             implements Parcelable {
@@ -660,22 +643,34 @@ public class Book
         @StringRes
         private int mLabelId;
 
+        /**
+         * Constructor.
+         */
         public EditionCheckListItem() {
         }
 
-        EditionCheckListItem(@NonNull final Integer bit,
+        /**
+         * Constructor.
+         *
+         * @param bitMask  the item to encapsulate
+         * @param labelId  resource id for the label to display
+         * @param selected the current status
+         */
+        EditionCheckListItem(@NonNull final Integer bitMask,
                              @StringRes final int labelId,
                              final boolean selected) {
-            super(bit, selected);
+            super(bitMask, selected);
             mLabelId = labelId;
         }
 
+        /** {@link Parcelable}. */
         EditionCheckListItem(@NonNull final Parcel in) {
             super(in);
             mLabelId = in.readInt();
             item = in.readInt();
         }
 
+        /** {@link Parcelable}. */
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
@@ -684,11 +679,17 @@ public class Book
             dest.writeInt(item);
         }
 
+        /**
+         * @return the label to display
+         */
         public String getLabel() {
             return BookCatalogueApp.getResString(mLabelId);
         }
     }
 
+    /**
+     * Used to edit the {@link Bookshelf}'s this Book is on.
+     */
     public static class BookshelfCheckListItem
             extends CheckListItemBase<Bookshelf>
             implements Parcelable {
@@ -707,19 +708,30 @@ public class Book
                     }
                 };
 
+        /**
+         * Constructor.
+         */
         public BookshelfCheckListItem() {
         }
 
+        /**
+         * Constructor.
+         *
+         * @param item     the item to encapsulate
+         * @param selected the current status
+         */
         BookshelfCheckListItem(@NonNull final Bookshelf item,
                                final boolean selected) {
             super(item, selected);
         }
 
+        /** {@link Parcelable}. */
         BookshelfCheckListItem(@NonNull final Parcel in) {
             super(in);
             item = in.readParcelable(getClass().getClassLoader());
         }
 
+        /** {@link Parcelable}. */
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
@@ -727,6 +739,9 @@ public class Book
             dest.writeParcelable(item, flags);
         }
 
+        /**
+         * @return the label to display
+         */
         @NonNull
         public String getLabel() {
             return getItem().getName();

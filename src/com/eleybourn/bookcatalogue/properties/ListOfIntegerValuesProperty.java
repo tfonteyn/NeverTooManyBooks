@@ -146,7 +146,7 @@ public class ListOfIntegerValuesProperty extends ListOfValuesProperty<Integer> {
     }
 
     public void writeToParcel(@NonNull final Parcel dest) {
-        dest.writeValue(this.getValue());
+        dest.writeValue(getValue());
     }
 
     public void readFromParcel(@NonNull final Parcel in) {

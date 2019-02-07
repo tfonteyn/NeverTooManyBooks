@@ -91,7 +91,7 @@ public abstract class SimpleListAdapter<T>
     public View getView(final int position,
                         @Nullable View convertView,
                         @NonNull final ViewGroup parent) {
-        final T item = this.getItem(position);
+        final T item = getItem(position);
         SimpleHolder holder;
 
         // Get the view; if not defined, load it.
@@ -142,7 +142,6 @@ public abstract class SimpleListAdapter<T>
                         onListChanged();
                     }
                 });
-
             }
 
             // Ask the subclass to set other fields.

@@ -100,7 +100,6 @@ import java.util.Objects;
 //        ,applicationLogFile = ""
 //        ,applicationLogFileLines = 1000
 )
-
 public class BookCatalogueApp
         extends Application {
 
@@ -138,7 +137,7 @@ public class BookCatalogueApp
      * Show a notification while this app is running.
      */
     public static void showNotification(@NonNull final Context context,
-                                        @NonNull final String title,
+                                        @StringRes final int titleId,
                                         @NonNull final String message) {
 
         Intent intent = new Intent(context, StartupActivity.class);
@@ -150,7 +149,7 @@ public class BookCatalogueApp
 
         Notification notification = new Notification.Builder(mInstance.getApplicationContext())
                 .setSmallIcon(R.drawable.ic_info_outline)
-                .setContentTitle(title)
+                .setContentTitle(context.getString(titleId))
                 .setContentText(message)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)

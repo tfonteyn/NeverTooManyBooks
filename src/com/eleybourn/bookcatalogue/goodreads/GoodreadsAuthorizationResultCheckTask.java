@@ -74,26 +74,22 @@ public class GoodreadsAuthorizationResultCheckTask
 
             if (grMgr.hasValidCredentials()) {
                 Logger.info(this, "hasValidCredentials==true");
-
-                BookCatalogueApp.showNotification(context, context.getString(R.string.info_authorized),
+                BookCatalogueApp.showNotification(context, R.string.info_authorized,
                                                   context.getString(R.string.gr_auth_successful));
             } else {
                 Logger.info(this, "hasValidCredentials==false");
-                BookCatalogueApp.showNotification(context,
-                                                  context.getString(R.string.info_not_authorized),
+                BookCatalogueApp.showNotification(context, R.string.info_not_authorized,
                                                   context.getString(R.string.gr_auth_failed));
             }
         } catch (NotAuthorizedException e) {
             Logger.error(e);
-            BookCatalogueApp.showNotification(context, context.getString(R.string.info_not_authorized),
+            BookCatalogueApp.showNotification(context, R.string.info_not_authorized,
                                               context.getString(R.string.gr_auth_failed));
         } catch (IOException e) {
             Logger.error(e);
-            BookCatalogueApp.showNotification(
-                    context,
-                    context.getString(R.string.info_not_authorized),
-                    context.getString(R.string.gr_auth_error) + ' '
-                            + context.getString(R.string.error_if_the_problem_persists));
+            String msg = context.getString(R.string.gr_auth_error) + ' '
+                    + context.getString(R.string.error_if_the_problem_persists);
+            BookCatalogueApp.showNotification(context, R.string.info_not_authorized, msg);
         }
         return true;
     }
@@ -103,6 +99,4 @@ public class GoodreadsAuthorizationResultCheckTask
 
         return Task.CAT_GOODREADS_AUTH_RESULT;
     }
-
-
 }

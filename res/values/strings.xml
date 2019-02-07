@@ -989,7 +989,7 @@
     <!-- menu option: lend out the current book. -->
     <string name="menu_loan_lend_book">Lend Book to…</string>
     <!-- menu option: lend out the current book. -->
-    <string name="menu_loan_return_book">Borrowed book is back</string>
+    <string name="menu_loan_return_book">Lend book is returned</string>
 
     <string name="lbl_loaned">On Loan</string>
     <!-- Button text, to 'return' a loaned book -->

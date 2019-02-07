@@ -599,9 +599,7 @@ public class XmlExporter
 
     @Override
     public void close() {
-        if (mDb != null) {
-            mDb.close();
-        }
+        mDb.close();
     }
 
     /**
@@ -794,6 +792,7 @@ public class XmlExporter
 
         @Override
         public long getVersionAttribute() {
+            //noinspection ConstantConditions
             return (Long) mMap.get(StartupActivity.PREF_STARTUP_LAST_VERSION);
         }
 

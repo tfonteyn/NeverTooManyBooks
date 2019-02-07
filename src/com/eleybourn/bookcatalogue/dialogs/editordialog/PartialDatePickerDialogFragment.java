@@ -266,7 +266,7 @@ public class PartialDatePickerDialogFragment
             mDay = day;
 
             // Get the layout
-            LayoutInflater inf = this.getLayoutInflater();
+            LayoutInflater inf = getLayoutInflater();
             @SuppressLint("InflateParams")
             View root = inf.inflate(R.layout.dialog_partial_date_picker, null);
 

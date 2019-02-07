@@ -2,10 +2,8 @@ package com.eleybourn.bookcatalogue.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -137,7 +135,7 @@ public abstract class BaseSettingsFragment
 //        // get a new instance of this fragment
 //        Fragment frag;
 //        try {
-//            frag = this.getClass().newInstance();
+//            frag = getClass().newInstance();
 //        } catch (java.lang.InstantiationException | IllegalAccessException ignore) {
 //            throw new IllegalStateException();
 //        }

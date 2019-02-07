@@ -117,7 +117,7 @@ final class SendBookEvents {
             SendOneBookTask task = new SendOneBookTask(mBookId);
             // TODO: MAKE IT USE THE SAME QUEUE? Why????
             qm.enqueueTask(task, QueueManager.QUEUE_SMALL_JOBS);
-            qm.deleteEvent(this.getId());
+            qm.deleteEvent(getId());
         }
 
         /**
@@ -186,7 +186,7 @@ final class SendBookEvents {
             holder.titleView.setText(title);
             holder.authorView.setText(
                     String.format(context.getString(R.string.lbl_by_authors), author));
-            holder.errorView.setText(this.getDescription());
+            holder.errorView.setText(getDescription());
 
             String date = String.format(context.getString(R.string.gr_tq_occurred_at),
                                         DateUtils.toPrettyDateTime(eventsCursor.getEventDate()));
@@ -292,8 +292,8 @@ final class SendBookEvents {
                                     @Override
                                     public void run() {
                                         try {
-                                            GrSendBookEvent event = (GrSendBookEvent) view.getTag(
-                                                    R.id.TAG_EVENT);
+                                            GrSendBookEvent event =
+                                                    (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
                                             //noinspection ConstantConditions
                                             event.retry();
                                             QueueManager.getQueueManager().deleteEvent(id);

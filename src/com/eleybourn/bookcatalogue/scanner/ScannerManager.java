@@ -95,8 +95,8 @@ public final class ScannerManager {
     @Nullable
     public static Scanner getScanner(@NonNull final Activity activity) {
         // Find out what the user prefers if any
-        int prefScanner = Prefs.getIntString(R.string.pk_scanning_preferred_scanner,
-                                       SCANNER_ZXING_COMPATIBLE);
+        int prefScanner = Prefs.getListPreference(R.string.pk_scanning_preferred_scanner,
+                                                  SCANNER_ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
         ScannerFactory psf = SCANNER_FACTORIES.get(prefScanner);

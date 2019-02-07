@@ -34,7 +34,7 @@ public class EditLocationDialog
     public EditLocationDialog(@NonNull final Activity activity,
                               @NonNull final DBA db,
                               @NonNull final Runnable onChanged) {
-        super(activity, db, android.R.layout.simple_dropdown_item_1line, db.getLocations(),
+        super(activity, db, db.getLocations(),
               onChanged);
     }
 

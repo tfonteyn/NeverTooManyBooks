@@ -60,7 +60,7 @@ public final class ISFDBManager {
             search(isbn, "", "", bookData, true);
 
             ArrayList<String> imageList =
-                    bookData.getStringArrayList(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+                    bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
             if (imageList != null && !imageList.isEmpty()) {
                 File found = new File(imageList.get(0));
                 File coverFile = new File(found.getAbsolutePath() + '_' + isbn);

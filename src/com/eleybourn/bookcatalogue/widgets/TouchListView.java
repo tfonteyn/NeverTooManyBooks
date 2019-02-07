@@ -84,6 +84,12 @@ public class TouchListView
 
     private final Rect mTempRect = new Rect();
     private final int mTouchSlop;
+    //private int mItemHeightExpanded=-1;
+    @IdRes
+    private final int grabberId;
+    /** Color.TRANSPARENT by default. */
+    @ColorInt
+    private final int dragndropBackgroundColor;
     private ImageView mDragView;
     /** use {@link #getWindowManager()} to access. */
     private WindowManager mWindowManager;
@@ -104,17 +110,11 @@ public class TouchListView
     private int mHeight;
     @Nullable
     private GestureDetector mGestureDetector;
-    private int mRemoveMode = MODE_NOT_SET;
+
+    private final int mRemoveMode;
     @Nullable
     private Bitmap mDragBitmap;
-    private int mItemHeightNormal = -1;
-    //private int mItemHeightExpanded=-1;
-    @IdRes
-    private final int grabberId;
-    /** Color.TRANSPARENT by default. */
-    @ColorInt
-    private final int dragndropBackgroundColor;
-
+    private final int mItemHeightNormal;
     /** Set to <tt>true</tt> at start of a new drag operation. */
     private boolean mWasFirstExpansion;
 
@@ -136,13 +136,17 @@ public class TouchListView
         TypedArray typedArray = getContext()
                 .obtainStyledAttributes(attrs, R.styleable.TouchListView, 0, 0);
 
-        mItemHeightNormal = typedArray.getDimensionPixelSize(
-                R.styleable.TouchListView_normal_height, 0);
+        mItemHeightNormal =
+                typedArray.getDimensionPixelSize(R.styleable.TouchListView_normal_height, 0);
+
         //mItemHeightExpanded=a.getDimensionPixelSize(
         //      R.styleable.TouchListView_expanded_height, mItemHeightNormal);
+
         grabberId = typedArray.getResourceId(R.styleable.TouchListView_grabber, -1);
+
         dragndropBackgroundColor = typedArray.getColor(
                 R.styleable.TouchListView_dragndrop_background, Color.TRANSPARENT);
+
         mRemoveMode = typedArray.getInt(R.styleable.TouchListView_remove_mode, MODE_NOT_SET);
 
         typedArray.recycle();
@@ -437,9 +441,8 @@ public class TouchListView
                 vv.invalidate();
             }
         }
-        // Request re-layout since we changed the items layout
-        // and not doing this would cause bogus hitbox calculation
-        // in myPointToPosition
+        // Request re-layout since we changed the items layout and not doing this
+        // would cause bogus hitbox calculation in myPointToPosition
         layoutChildren();
     }
 

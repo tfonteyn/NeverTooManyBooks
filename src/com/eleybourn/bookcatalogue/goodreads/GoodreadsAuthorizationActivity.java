@@ -56,7 +56,7 @@ public class GoodreadsAuthorizationActivity
         super.onCreate(savedInstanceState);
 
         // Get the payload and make sure it is what we expect
-        Intent intent = this.getIntent();
+        Intent intent = getIntent();
         Uri uri = intent.getData();
 
         //if (uri != null) && uri.toString().startsWith("BookCatalogue")) {

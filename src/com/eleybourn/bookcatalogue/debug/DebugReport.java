@@ -147,7 +147,7 @@ public final class DebugReport {
         // Scanners installed
         try {
             message.append("Pref. Scanner: ").append(
-                    Prefs.getIntString(R.string.pk_scanning_preferred_scanner, -1)).append('\n');
+                    Prefs.getListPreference(R.string.pk_scanning_preferred_scanner, -1)).append('\n');
             String[] scanners = new String[]{
                     ZxingScanner.ACTION,
                     Pic2ShopScanner.Free.ACTION,

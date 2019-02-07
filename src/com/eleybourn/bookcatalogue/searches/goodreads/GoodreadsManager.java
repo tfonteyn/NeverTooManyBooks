@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.searches.goodreads;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -40,16 +39,17 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsAuthorizationResultCheckTask;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.AuthUserApiHandler;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.BookshelfListApiHandler;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.BookshelfListApiHandler.BookshelfListFieldNames;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.IsbnToId;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.ReviewUpdateHandler;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.SearchBooksApiHandler;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.ShelfAddBookHandler;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookApiHandler.ShowBookFieldNames;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookByIdApiHandler;
-import com.eleybourn.bookcatalogue.searches.goodreads.api.ShowBookByIsbnApiHandler;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
+import com.eleybourn.bookcatalogue.goodreads.api.AuthUserApiHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.BookshelfListApiHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.BookshelfListApiHandler.GrBookshelfFields;
+import com.eleybourn.bookcatalogue.goodreads.api.IsbnToId;
+import com.eleybourn.bookcatalogue.goodreads.api.ReviewUpdateHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.ShelfAddBookHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFieldNames;
+import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIdApiHandler;
+import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIsbnApiHandler;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -127,16 +127,15 @@ public class GoodreadsManager {
      * host: goodreadsauth
      *
      * <pre>
-     *              <intent-filter>
-     *                 <action android:name="android.intent.action.VIEW" />
+     *      <intent-filter>
+     *        <action android:name="android.intent.action.VIEW" />
      *
-     *                 <category android:name="android.intent.category.DEFAULT" />
-     *                 <category android:name="android.intent.category.BROWSABLE" />
+     *        <category android:name="android.intent.category.DEFAULT" />
+     *        <category android:name="android.intent.category.BROWSABLE" />
      *
-     *                 <data
-     *                     android:host="goodreadsauth"
-     *                     android:scheme="${packageName}" />
-     *             </intent-filter>
+     *        <data android:host="goodreadsauth"
+     *              android:scheme="${packageName}" />
+     *      </intent-filter>
      * </pre>
      */
     private static final String AUTHORIZATION_CALLBACK =
@@ -200,15 +199,15 @@ public class GoodreadsManager {
     }
 
     /**
-     * Use mLastRequestTime to determine how long until the next request is allowed; and
-     * update mLastRequestTime this needs to be synchronized across threads.
+     * Use mLastRequestTime to determine how long until the next request is allowed;
+     * and update mLastRequestTime this needs to be synchronized across threads.
      * <p>
      * Note that as a result of this approach mLastRequestTime may in fact be
      * in the future; callers to this routine effectively allocate time slots.
      * <p>
-     * This method will sleep() until it can make a request; if ten threads call this
-     * simultaneously, one will return immediately, one will return 1 second later, another
-     * two seconds etc.
+     * This method will sleep() until it can make a request; if 10 threads call this
+     * simultaneously, one will return immediately, one will return 1 second later,
+     * another two seconds etc.
      */
     private static void waitUntilRequestAllowed() {
 
@@ -296,13 +295,9 @@ public class GoodreadsManager {
      * @param date Last date
      */
     public static void setLastSyncDate(@Nullable final Date date) {
-        SharedPreferences.Editor ed = Prefs.getPrefs().edit();
-        if (date == null) {
-            ed.putString(PREFS_LAST_SYNC_DATE, null);
-        } else {
-            ed.putString(PREFS_LAST_SYNC_DATE, DateUtils.utcSqlDateTime(date));
-        }
-        ed.apply();
+
+        String dateStr = date != null ? DateUtils.utcSqlDateTime(date) : null;
+        Prefs.getPrefs().edit().putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
     }
 
     /**
@@ -313,11 +308,10 @@ public class GoodreadsManager {
         mAccessToken = "";
         mAccessSecret = "";
         mHasValidCredentials = false;
-        // Get the stored token values from prefs, and setup the consumer if present
-        SharedPreferences.Editor ed = Prefs.getPrefs().edit();
-        ed.putString(ACCESS_TOKEN, "");
-        ed.putString(ACCESS_SECRET, "");
-        ed.apply();
+        Prefs.getPrefs().edit()
+             .putString(ACCESS_TOKEN, "")
+             .putString(ACCESS_SECRET, "")
+             .apply();
     }
 
     /**
@@ -553,19 +547,17 @@ public class GoodreadsManager {
             int page = 1;
             while (true) {
                 Bundle result = handler.run(page);
-                List<Bundle> shelves =
-                        result.getParcelableArrayList(BookshelfListFieldNames.SHELVES);
-                if (shelves == null || shelves.isEmpty()) {
+                List<Bundle> grShelves = result.getParcelableArrayList(GrBookshelfFields.SHELVES);
+                if (grShelves == null || grShelves.isEmpty()) {
                     break;
                 }
 
-                for (Bundle b : shelves) {
-                    GoodreadsBookshelf shelf = new GoodreadsBookshelf(b);
+                for (Bundle grShelf : grShelves) {
+                    GoodreadsBookshelf shelf = new GoodreadsBookshelf(grShelf);
                     map.put(shelf.getName(), shelf);
                 }
 
-                if (result.getLong(BookshelfListFieldNames.END)
-                        >= result.getLong(BookshelfListFieldNames.TOTAL)) {
+                if (result.getLong(GrBookshelfFields.END) >= result.getLong(GrBookshelfFields.TOTAL)) {
                     break;
                 }
 
@@ -723,8 +715,8 @@ public class GoodreadsManager {
                 }
             }
 
-            // If no exclusive shelves are specified, then add pseudo-shelf to match goodreads because
-            // review.update does not seem to update them properly
+            // If no exclusive shelves are specified, then add pseudo-shelf to match goodreads
+            // because review.update does not seem to update them properly
             if (exclusiveCount == 0) {
                 String pseudoShelf;
                 if (bookCursorRow.isRead()) {
@@ -858,7 +850,7 @@ public class GoodreadsManager {
             SearchBooksApiHandler searcher = new SearchBooksApiHandler(this);
             return searcher.search(query);
         } else {
-            throw new IllegalArgumentException("No search criteria specified");
+            throw new IllegalArgumentException("No search criteria");
         }
     }
 
@@ -878,7 +870,7 @@ public class GoodreadsManager {
             // Run the search
             return api.get(bookId, true);
         } else {
-            throw new IllegalArgumentException("No bookId specified");
+            throw new IllegalArgumentException("No bookId");
         }
     }
 
@@ -907,7 +899,7 @@ public class GoodreadsManager {
     public boolean isAvailable() {
         boolean gotKey = !DEV_KEY.isEmpty() && !DEV_SECRET.isEmpty();
         if (!gotKey) {
-            Logger.info(this, "Goodreads keys not available");
+            Logger.info(this, "No dev keys");
         }
         return gotKey;
     }
@@ -990,7 +982,7 @@ public class GoodreadsManager {
         // Get the URL
         try {
             authUrl = mProvider.retrieveRequestToken(mConsumer, AUTHORIZATION_CALLBACK);
-        } catch (OAuthMessageSignerException
+    } catch (OAuthMessageSignerException
                 | OAuthExpectationFailedException
                 | OAuthCommunicationException e) {
             throw new IOException(e);
@@ -999,22 +991,22 @@ public class GoodreadsManager {
         }
 
         if (DEBUG_SWITCHES.GOODREADS && BuildConfig.DEBUG) {
-            Logger.info(this,"requestAuthorization","authUrl: " + authUrl);
+            Logger.info(this, "requestAuthorization", "authUrl: " + authUrl);
         }
         //TEST: double check if this ever gives issues!
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
             // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;
             if (DEBUG_SWITCHES.GOODREADS && BuildConfig.DEBUG) {
-                Logger.info(this,"requestAuthorization","replacing with: " + authUrl);
+                Logger.info(this, "requestAuthorization", "replacing with: " + authUrl);
             }
         }
 
         // Save the token; this object may well be destroyed before the web page has returned.
-        SharedPreferences.Editor ed = Prefs.getPrefs().edit();
-        ed.putString(REQUEST_TOKEN, mConsumer.getToken());
-        ed.putString(REQUEST_SECRET, mConsumer.getTokenSecret());
-        ed.apply();
+        Prefs.getPrefs().edit()
+             .putString(REQUEST_TOKEN, mConsumer.getToken())
+             .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
+             .apply();
 
         // Open the web page
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
@@ -1062,10 +1054,10 @@ public class GoodreadsManager {
         mAccessToken = mConsumer.getToken();
         mAccessSecret = mConsumer.getTokenSecret();
 
-        SharedPreferences.Editor ed = Prefs.getPrefs().edit();
-        ed.putString(ACCESS_TOKEN, mAccessToken);
-        ed.putString(ACCESS_SECRET, mAccessSecret);
-        ed.apply();
+        Prefs.getPrefs().edit()
+             .putString(ACCESS_TOKEN, mAccessToken)
+             .putString(ACCESS_SECRET, mAccessSecret)
+             .apply();
     }
 
     /**
@@ -1087,11 +1079,11 @@ public class GoodreadsManager {
         @NonNull
         String getName() {
             //noinspection ConstantConditions
-            return mBundle.getString(BookshelfListFieldNames.NAME);
+            return mBundle.getString(GrBookshelfFields.NAME);
         }
 
         boolean isExclusive() {
-            return mBundle.getBoolean(BookshelfListFieldNames.EXCLUSIVE);
+            return mBundle.getBoolean(GrBookshelfFields.EXCLUSIVE);
         }
     }
 
@@ -1105,7 +1097,8 @@ public class GoodreadsManager {
         }
 
         boolean isExclusive(@Nullable final String name) {
-            return mList.containsKey(name) && mList.get(name).isExclusive();
+            GoodreadsBookshelf shelf = mList.get(name);
+            return shelf != null && shelf.isExclusive();
         }
     }
 }

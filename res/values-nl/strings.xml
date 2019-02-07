@@ -759,7 +759,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="lbl_covers">Omslagen</string>
     <string name="lbl_styles">Stijl</string>
     <string name="menu_clear_filters">Filters verwijderen</string>
-    <string name="menu_loan_return_book">Geleend boek is terug</string>
+    <string name="menu_loan_return_book">Uitgeleend boek is terug</string>
     <string name="book_format_hardcover">Hardcover</string>
     <string name="book_format_paperback">Pocket</string>
     <string name="book_format_digest">Samenvatting</string>

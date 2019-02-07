@@ -71,7 +71,7 @@ public class TaskQueueListActivity
         });
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(), R.string.hint_background_tasks, null);
+            HintManager.displayHint(getLayoutInflater(), R.string.hint_background_tasks, null);
         }
     }
 

@@ -21,8 +21,9 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.tasks.GetThumbnailTask;
-import com.eleybourn.bookcatalogue.tasks.ThumbnailCacheWriterTask;
+import com.eleybourn.bookcatalogue.tasks.GetImageTask;
+import com.eleybourn.bookcatalogue.tasks.ImageCacheWriterTask;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,10 +44,16 @@ public final class ImageUtils {
      * <p>
      * If the view is non-null, the image is placed in the view.
      *
+     * @param destView  The ImageView to load with the bitmap or an appropriate icon
+     * @param file      The file of the image
+     * @param maxWidth  Maximum desired width of the image
+     * @param maxHeight Maximum desired height of the image
+     * @param exact     if true, the image will be proportionally scaled to fit box.
+     *
      * @return The bitmap, or null
      */
     @Nullable
-    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
+    public static Bitmap getImageAndPutIntoView(@Nullable final ImageView destView,
                                                 @NonNull final File file,
                                                 final int maxWidth,
                                                 final int maxHeight,
@@ -59,7 +66,67 @@ public final class ImageUtils {
             return null;
         }
 
-        return fetchFileIntoImageView(destView, file.getPath(), maxWidth, maxHeight, exact);
+        return getImageAndPutIntoView(destView, file.getPath(), maxWidth, maxHeight, exact);
+    }
+
+    /**
+     * Called in the UI thread, will either use a cached cover OR start a background task
+     * to create and load it.
+     * <p>
+     * If a cached image is used a background task is still started to check the file date vs
+     * the cache date. If the cached image date is < the file, it is rebuilt.
+     *
+     * @param destView        View to populate
+     * @param uuid            ID of book to retrieve.
+     * @param maxWidth        Max width of resulting image
+     * @param maxHeight       Max height of resulting image
+     * @param exact           Whether to fit dimensions exactly
+     * @param checkCache      Indicates if cache should be checked for this cover
+     * @param allowBackground Indicates if request can be put in background task.
+     *
+     * @return Bitmap (if cached) or null (if done in background)
+     */
+    @Nullable
+    public static Bitmap getImageAndPutIntoView(@Nullable final ImageView destView,
+                                                @NonNull final String uuid,
+                                                final int maxWidth,
+                                                final int maxHeight,
+                                                final boolean exact,
+                                                final boolean checkCache,
+                                                final boolean allowBackground) {
+
+        //* Get the original file so we can use the modification date, path etc */
+        final File coverFile = StorageUtils.getCoverFile(uuid);
+
+        boolean cacheWasChecked = false;
+
+        // If we want to check the cache, AND we don't have cache building happening,
+        // then check it.
+        if (checkCache && destView != null
+                && !GetImageTask.hasActiveTasks()
+                && !ImageCacheWriterTask.hasActiveTasks()) {
+            try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
+                final Bitmap bm = coversDBAdapter.getImageAndPutIntoView(coverFile, uuid,
+                                                                         maxWidth, maxHeight,
+                                                                         destView);
+                if (bm != null) {
+                    return bm;
+                }
+            }
+            cacheWasChecked = true;
+        }
+
+        // If we get here, the image is not in the cache but the original exists.
+        // See if we can queue it.
+        if (allowBackground && destView != null) {
+            destView.setImageBitmap(null);
+            GetImageTask.getImage(uuid, destView, maxWidth, maxHeight, cacheWasChecked);
+            return null;
+        }
+
+        // File is not in cache, original exists, we are in the background task
+        // (or not allowed to queue request)
+        return getImageAndPutIntoView(destView, coverFile.getPath(), maxWidth, maxHeight, exact);
     }
 
     /**
@@ -70,7 +137,7 @@ public final class ImageUtils {
      * @return The bitmap, or null
      */
     @Nullable
-    private static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
+    private static Bitmap getImageAndPutIntoView(@Nullable final ImageView destView,
                                                  @NonNull final String fileSpec,
                                                  final int maxWidth,
                                                  final int maxHeight,
@@ -109,7 +176,7 @@ public final class ImageUtils {
                 (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
-            Logger.info(ImageUtils.class, "fetchFileIntoImageView:\n"
+            Logger.info(ImageUtils.class, "getImageAndPutIntoView:\n"
                     + " filename = " + fileSpec + '\n'
                     + "  exact       = " + exact + '\n'
                     + "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth
@@ -175,66 +242,6 @@ public final class ImageUtils {
     }
 
     /**
-     * Called in the UI thread, will either use a cached cover OR start a background task
-     * to create and load it.
-     * <p>
-     * If a cached image is used a background task is still started to check the file date vs
-     * the cache date. If the cached image date is < the file, it is rebuilt.
-     *
-     * @param destView        View to populate
-     * @param uuid            ID of book to retrieve.
-     * @param maxWidth        Max width of resulting image
-     * @param maxHeight       Max height of resulting image
-     * @param exact           Whether to fit dimensions exactly
-     * @param checkCache      Indicates if cache should be checked for this cover
-     * @param allowBackground Indicates if request can be put in background task.
-     *
-     * @return Bitmap (if cached) or null (if done in background)
-     */
-    @Nullable
-    public static Bitmap fetchFileIntoImageView(@Nullable final ImageView destView,
-                                                @NonNull final String uuid,
-                                                final int maxWidth,
-                                                final int maxHeight,
-                                                final boolean exact,
-                                                final boolean checkCache,
-                                                final boolean allowBackground) {
-
-        //* Get the original file so we can use the modification date, path etc */
-        final File coverFile = StorageUtils.getCoverFile(uuid);
-
-        boolean cacheWasChecked = false;
-
-        // If we want to check the cache, AND we don't have cache building happening,
-        // then check it.
-        if (checkCache && destView != null
-                && !GetThumbnailTask.hasActiveTasks()
-                && !ThumbnailCacheWriterTask.hasActiveTasks()) {
-            try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
-                final Bitmap bm = coversDBAdapter.fetchCachedImageIntoImageView(destView, coverFile,
-                                                                                uuid, maxWidth,
-                                                                                maxHeight);
-                if (bm != null) {
-                    return bm;
-                }
-            }
-            cacheWasChecked = true;
-        }
-
-        // If we get here, the image is not in the cache but the original exists.
-        // See if we can queue it.
-        if (allowBackground && destView != null) {
-            destView.setImageBitmap(null);
-            GetThumbnailTask.getThumbnail(uuid, destView, maxWidth, maxHeight, cacheWasChecked);
-            return null;
-        }
-
-        // File is not in cache, original exists, we are in the background task
-        // (or not allowed to queue request)
-        return fetchFileIntoImageView(destView, coverFile.getPath(), maxWidth, maxHeight, exact);
-    }
-
-    /**
      * Given a URL, get an image and save to a file.
      *
      * @param urlText Image file URL
@@ -243,11 +250,11 @@ public final class ImageUtils {
      * @return Downloaded fileSpec, or null on failure
      */
     @Nullable
-    public static String saveThumbnailFromUrl(@NonNull final String urlText,
-                                              @NonNull final String name) {
+    public static String saveImage(@NonNull final String urlText,
+                                   @NonNull final String name) {
         boolean success = false;
         final File file = StorageUtils.getTempCoverFile(name);
-        try (InputStream in = NetworkUtils.getInputStreamWithTerminator(new URL(urlText))) {
+        try (InputStream in = Terminator.getInputStream(new URL(urlText))) {
             if (in != null) {
                 success = StorageUtils.saveInputStreamToFile(in, file);
             } else {
@@ -268,8 +275,8 @@ public final class ImageUtils {
      * @return Downloaded byte[] or null upon failure
      */
     @Nullable
-    public static byte[] getBytesFromUrl(@NonNull final String urlText) {
-        try (InputStream in = NetworkUtils.getInputStreamWithTerminator(new URL(urlText))) {
+    public static byte[] getBytes(@NonNull final String urlText) {
+        try (InputStream in = Terminator.getInputStream(new URL(urlText))) {
             if (in != null) {
                 try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                     // Save the output to a byte output stream
@@ -297,7 +304,7 @@ public final class ImageUtils {
      * @return bitmap
      */
     @Nullable
-    public static Bitmap getBitmapFromBytes(@NonNull final byte[] bytes) {
+    public static Bitmap getBitmap(@NonNull final byte[] bytes) {
         if (bytes.length == 0) {
             return null;
         }
@@ -312,22 +319,34 @@ public final class ImageUtils {
         return bitmap;
     }
 
-
     /**
-     * Read UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY.
+     * Read {@link UniqueId#BKEY_FILE_SPEC_ARRAY}.
      * If there are images, pick the largest one, rename it, and delete the others.
-     * Finally, remove the key and set UniqueId.BKEY_THUMBNAIL to true
+     * Finally, remove the key and set {@link UniqueId#BKEY_THUMBNAIL} to true
      */
-    public static void cleanupThumbnails(@Nullable final Bundle /* in/out */ bookData) {
+    public static void cleanupImages(@Nullable final Bundle /* in/out */ bookData) {
         if (bookData == null) {
             return;
         }
 
-        ArrayList<String> imageList = bookData.getStringArrayList(
-                UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
+        ArrayList<String> imageList =
+                bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
         if (imageList == null || imageList.isEmpty()) {
             return;
         }
+
+        cleanupImages(imageList);
+
+        // Finally, cleanup the data
+        bookData.remove(UniqueId.BKEY_FILE_SPEC_ARRAY);
+        // and indicate we got a file with the default name
+        bookData.putBoolean(UniqueId.BKEY_THUMBNAIL, true);
+    }
+
+    /**
+     * If there are images, pick the largest one, rename it, and delete the others.
+     */
+    private static void cleanupImages(@NonNull final ArrayList<String> imageList) {
 
         long bestFileSize = -1;
         int bestFileIndex = -1;
@@ -366,27 +385,23 @@ public final class ImageUtils {
             File destination = StorageUtils.getTempCoverFile();
             StorageUtils.renameFile(source, destination);
         }
-        // Finally, cleanup the data
-        bookData.remove(UniqueId.BKEY_THUMBNAIL_FILE_SPEC_ARRAY);
-        // and indicate we got a file with the default name
-        bookData.putBoolean(UniqueId.BKEY_THUMBNAIL, true);
     }
 
     /**
-     * Show large thumbnail in dialog. Closed by click on image area.
+     * Show large image in dialog. Closed by click on image area.
      */
-    public static void showZoomedThumb(@NonNull final Activity activity,
-                                       @Nullable final File thumbFile) {
+    public static void showZoomedImage(@NonNull final Activity activity,
+                                       @Nullable final File image) {
 
-        final ThumbSize thumbSizes = getThumbSizes(activity);
+        final ImageSize imageSizes = getImageSizes(activity);
 
         // Check if we have a file and/or it is valid
-        if (thumbFile == null || !thumbFile.exists()) {
+        if (image == null || !image.exists()) {
             StandardDialogs.showUserMessage(activity, R.string.warning_cover_field_not_set);
         } else {
             BitmapFactory.Options opt = new BitmapFactory.Options();
             opt.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), opt);
+            BitmapFactory.decodeFile(image.getAbsolutePath(), opt);
 
             // If no size info, assume file bad and return appropriate icon
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
@@ -397,7 +412,7 @@ public final class ImageUtils {
                 final Dialog dialog = new AppCompatDialog(activity, R.style.zoomedCoverImage);
 
                 final ImageView cover = new ImageView(activity);
-                fetchFileIntoImageView(cover, thumbFile, thumbSizes.large, thumbSizes.large, true);
+                getImageAndPutIntoView(cover, image, imageSizes.large, imageSizes.large, true);
                 cover.setAdjustViewBounds(true);
                 cover.setBackgroundResource(R.drawable.border);
                 cover.setOnClickListener(new View.OnClickListener() {
@@ -416,8 +431,8 @@ public final class ImageUtils {
     }
 
     @NonNull
-    public static ThumbSize getThumbSizes(@NonNull final Activity activity) {
-        return new ThumbSize(activity);
+    public static ImageSize getImageSizes(@NonNull final Activity activity) {
+        return new ImageSize(activity);
     }
 
     @NonNull
@@ -428,43 +443,15 @@ public final class ImageUtils {
     }
 
     /**
-     * This function will load the thumbnail bitmap with a guaranteed maximum size; it
-     * prevents OutOfMemory exceptions on large files and reduces memory usage in lists.
-     * It can also SCALE images to the exact requested size.
-     *
-     * @param destView  The ImageView to load with the bitmap or an appropriate icon
-     * @param uuid      The id of the book
-     * @param maxWidth  Maximum desired width of the image
-     * @param maxHeight Maximum desired height of the image
-     * @param exact     if true, the image will be proportionally scaled to fit box.
-     *
-     * @return The scaled bitmap for the file, or null if no file or bad file.
-     */
-    @Nullable
-    public static Bitmap fetchThumbnailIntoImageView(@Nullable final ImageView destView,
-                                                     @NonNull final String uuid,
-                                                     final int maxWidth,
-                                                     final int maxHeight,
-                                                     final boolean exact) {
-        try {
-            return fetchFileIntoImageView(destView, StorageUtils.getCoverFile(uuid),
-                                          maxWidth, maxHeight, exact);
-        } catch (IllegalArgumentException e) {
-            Logger.error(e);
-            return null;
-        }
-    }
-
-    /**
-     * NEWKIND: if we need more sizes, add a field here and set it in {@link #getThumbSizes}.
+     * NEWKIND: if we need more sizes, add a field here and set it in {@link #getImageSizes}.
      * <p>
-     * small:  Minimum of THUMBNAIL_MAX_SIZE_SMALL and 1/3rd of largest screen dimension
-     * standard: Minimum of THUMBNAIL_MAX_SIZE_STANDARD and 2/3rd of largest screen dimension
-     * large:  Minimum of THUMBNAIL_MAX_SIZE_LARGE and largest screen dimension.
+     * small:  Minimum of MAX_SIZE_SMALL and 1/3rd of largest screen dimension
+     * standard: Minimum of MAX_SIZE_STANDARD and 2/3rd of largest screen dimension
+     * large:  Minimum of MAX_SIZE_LARGE and largest screen dimension.
      */
-    public static class ThumbSize {
+    public static class ImageSize {
 
-        /** Target size of a thumbnail - on the Edit Screens. */
+        /** Target size of an image - on the Edit Screens. */
         private static final int MAX_SIZE_SMALL = 256;
         /** on the View Screens. */
         private static final int MAX_SIZE_STANDARD = 512;
@@ -475,7 +462,7 @@ public final class ImageUtils {
         public final int standard;
         public final int large;
 
-        ThumbSize(@NonNull final Activity activity) {
+        ImageSize(@NonNull final Activity activity) {
             DisplayMetrics metrics = getDisplayMetrics(activity);
             int maxMetric = Math.max(metrics.widthPixels, metrics.heightPixels);
             small = Math.min(MAX_SIZE_SMALL, maxMetric / 3);

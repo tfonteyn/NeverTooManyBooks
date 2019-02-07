@@ -77,7 +77,7 @@ public abstract class BookSearchBaseFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // make sure {@link #onCreateOptionsMenu} is called
-        this.setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -132,7 +132,7 @@ public abstract class BookSearchBaseFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
-                Intent intent = new Intent(this.requireContext(), SearchAdminActivity.class);
+                Intent intent = new Intent(requireContext(), SearchAdminActivity.class);
                 intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
                                 SearchAdminActivity.TAB_SEARCH_ORDER);
                 startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES);

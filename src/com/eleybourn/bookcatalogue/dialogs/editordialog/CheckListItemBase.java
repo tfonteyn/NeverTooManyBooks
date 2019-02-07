@@ -22,9 +22,18 @@ public abstract class CheckListItemBase<T>
     protected T item;
     private boolean mSelected;
 
+    /**
+     * Constructor.
+     */
     protected CheckListItemBase() {
     }
 
+    /**
+     * Constructor.
+     *
+     * @param item     to encapsulate
+     * @param selected the current status
+     */
     protected CheckListItemBase(@NonNull final T item,
                                 final boolean selected) {
         this.item = item;
@@ -73,9 +82,16 @@ public abstract class CheckListItemBase<T>
 
     @Override
     public void setSelected(final boolean selected) {
-        this.mSelected = selected;
+        mSelected = selected;
     }
 
+    /**
+     * Access the list of {@link CheckListItem} and extract the actual items.
+     *
+     * @param list to disect
+     *
+     * @return the extracted list
+     */
     @NonNull
     public ArrayList<T> extractList(@NonNull final List<CheckListItem<T>> list) {
         ArrayList<T> result = new ArrayList<>();

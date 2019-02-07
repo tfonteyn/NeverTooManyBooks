@@ -37,7 +37,7 @@ import java.net.UnknownHostException;
 
 /**
  * /**
- * Goodreads ManagedSearchTask as used by the {@link SearchSites.Site#getTask(TaskManager)}.
+ * Goodreads ManagedSearchTask as used by {@link SearchSites.Site#getTask(TaskManager)}.
  *
  * @author Philip Warner
  */
@@ -48,6 +48,12 @@ public class SearchGoodreadsTask
     @StringRes
     private static final int R_ID_SEARCHING = R.string.searching_goodreads;
 
+    /**
+     * Constructor.
+     *
+     * @param name    for this task
+     * @param manager TaskManager to use
+     */
     public SearchGoodreadsTask(@NonNull final String name,
                                @NonNull final TaskManager manager) {
         super(name, manager);

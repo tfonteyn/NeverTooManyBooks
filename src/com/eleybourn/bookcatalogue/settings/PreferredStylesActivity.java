@@ -92,7 +92,7 @@ public class PreferredStylesActivity
         getListView().setOnItemLongClickListener(this);
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(),
+            HintManager.displayHint(getLayoutInflater(),
                                     R.string.hint_booklist_styles_editor, null);
         }
 
@@ -105,7 +105,7 @@ public class PreferredStylesActivity
     @Override
     @NonNull
     protected ArrayList<BooklistStyle> getList() {
-        return new ArrayList<>(BooklistStyles.getStyles(this.mDb, true).values());
+        return new ArrayList<>(BooklistStyles.getStyles(mDb, true).values());
     }
 
     /**
@@ -323,13 +323,12 @@ public class PreferredStylesActivity
                               @NonNull final BooklistStyle item) {
             Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
-                // New view, so build the Holder
                 holder = new Holder();
                 holder.nameView = convertView.findViewById(R.id.name);
                 holder.checkableView = convertView.findViewById(R.id.row_check);
                 holder.groupsView = convertView.findViewById(R.id.groups);
                 holder.kindView = convertView.findViewById(R.id.kind);
-                // Tag the parts that need it
+
                 convertView.setTag(holder);
                 holder.checkableView.setTag(holder);
 

@@ -82,7 +82,7 @@ public class LegacyEvent
                          @NonNull final BindableItemCursor cursor,
                          @NonNull final DBA db) {
         ((TextView) view.findViewById(TEXT_FIELD_1))
-                .setText("Legacy Placeholder for Event #" + this.getId());
+                .setText("Legacy Placeholder for Event #" + getId());
         ((TextView) view.findViewById(TEXT_FIELD_2))
                 .setText("This event is obsolete and can not be recovered."
                                  + " It is probably advisable to delete it.");

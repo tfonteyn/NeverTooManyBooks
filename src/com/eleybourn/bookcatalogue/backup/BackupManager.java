@@ -101,7 +101,7 @@ public final class BackupManager {
                 BackupContainer bkp = new TarBackupContainer(tempFile);
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                     Logger.info(this,
-                                "backup","starting|file=" + tempFile.getAbsolutePath());
+                                "backup", "starting|file=" + tempFile.getAbsolutePath());
                 }
                 try (BackupWriter wrt = bkp.newWriter()) {
                     try {
@@ -139,7 +139,7 @@ public final class BackupManager {
                         // cancelled
                         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                             Logger.info(this,
-                                        "backup","cancelling|file="
+                                        "backup", "cancelling|file="
                                                 + settings.file.getAbsolutePath());
                         }
                         StorageUtils.deleteFile(tempFile);
@@ -151,7 +151,7 @@ public final class BackupManager {
 
                         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                             Logger.info(this,
-                                        "backup","finished|file="
+                                        "backup", "finished|file="
                                                 + settings.file.getAbsolutePath()
                                                 + ", size = " + settings.file.length());
                         }
@@ -213,7 +213,7 @@ public final class BackupManager {
                     throws Exception {
                 if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
                     Logger.info(this,
-                                "restore","starting|file=" + settings.file.getAbsolutePath());
+                                "restore", "starting|file=" + settings.file.getAbsolutePath());
                 }
                 try (BackupReader reader = readFrom(settings.file)) {
                     Objects.requireNonNull(reader);

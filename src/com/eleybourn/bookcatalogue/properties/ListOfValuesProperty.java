@@ -138,8 +138,8 @@ public abstract class ListOfValuesProperty<T>
     private void handleClick(@NonNull final View base,
                              @NonNull final LayoutInflater inflater) {
         final ItemList<T> items = mList;
-        if (this.hasHint()) {
-            HintManager.displayHint(inflater, this.getHint(), new Runnable() {
+        if (hasHint()) {
+            HintManager.displayHint(inflater, getHint(), new Runnable() {
                 @Override
                 public void run() {
                     displayList(base, inflater, items);
@@ -161,7 +161,7 @@ public abstract class ListOfValuesProperty<T>
                              @NonNull final LayoutInflater inflater,
                              @NonNull final ItemList<T> items) {
 
-        T currentValue = this.getValue();
+        T currentValue = getValue();
 
         // Get the view and the radio group
         @SuppressLint("InflateParams")

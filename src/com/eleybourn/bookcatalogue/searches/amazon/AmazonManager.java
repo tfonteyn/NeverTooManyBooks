@@ -5,8 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import org.xml.sax.SAXException;
@@ -75,7 +75,7 @@ public final class AmazonManager {
         try {
             URL url = new URL(urlText);
             SAXParser parser = factory.newSAXParser();
-            parser.parse(NetworkUtils.getInputStreamWithTerminator(url), handler);
+            parser.parse(Terminator.getInputStream(url), handler);
 
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | SAXException e) {

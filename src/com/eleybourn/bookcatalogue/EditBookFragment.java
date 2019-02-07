@@ -42,6 +42,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
+import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.google.android.material.tabs.TabLayout;
 
@@ -68,9 +69,10 @@ public class EditBookFragment
     @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_NOTES = 1;
     @SuppressWarnings("WeakerAccess")
-    public static final int TAB_EDIT_LOANS = 2;
+    public static final int TAB_EDIT_ANTHOLOGY = 2;
+
     @SuppressWarnings("WeakerAccess")
-    public static final int TAB_EDIT_ANTHOLOGY = 3;
+    public static final int TAB_EDIT_LOANS = 3;
 
     /** the one and only book we're editing. */
     private Book mBook;
@@ -228,7 +230,8 @@ public class EditBookFragment
         tab = mTabLayout.newTab().setText(R.string.tab_lbl_notes).setTag(fragmentHolder);
         mTabLayout.addTab(tab);
 
-        addTOCTab(getBook().getBoolean(Book.HAS_MULTIPLE_WORKS));
+        addTOCTab(getBook().isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                                         TocEntry.Type.MULTIPLE_WORKS));
 
         // can't loan out a new book yet (or user does not like loaning)
         if (isExistingBook && Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
@@ -395,7 +398,7 @@ public class EditBookFragment
 //        }
 
         // However, there is some data that we really do require...
-        if (book.getAuthorList().size() == 0) {
+        if (book.getList(UniqueId.BKEY_AUTHOR_ARRAY).size() == 0) {
             StandardDialogs.showUserMessage(mActivity, R.string.warning_required_author_long);
             return;
         }

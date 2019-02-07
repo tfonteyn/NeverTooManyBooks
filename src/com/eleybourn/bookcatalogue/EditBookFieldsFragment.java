@@ -48,6 +48,7 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
@@ -88,7 +89,7 @@ public class EditBookFieldsFragment
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
-        return ((EditBookFragment) this.getParentFragment()).getBookManager();
+        return ((EditBookFragment) getParentFragment()).getBookManager();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -140,7 +141,7 @@ public class EditBookFieldsFragment
                     public void onClick(@NonNull final View v) {
                         Intent intent = new Intent(requireActivity(), EditAuthorListActivity.class);
                         intent.putExtra(UniqueId.BKEY_AUTHOR_ARRAY,
-                                        getBookManager().getBook().getAuthorList());
+                                        getBookManager().getBook().getList(UniqueId.BKEY_AUTHOR_ARRAY));
                         intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId());
                         intent.putExtra(UniqueId.KEY_TITLE,
                                         mFields.getField(R.id.title).getValue().toString());
@@ -156,7 +157,7 @@ public class EditBookFieldsFragment
                     public void onClick(@NonNull final View v) {
                         Intent intent = new Intent(requireActivity(), EditSeriesListActivity.class);
                         intent.putExtra(UniqueId.BKEY_SERIES_ARRAY,
-                                        getBookManager().getBook().getSeriesList());
+                                        getBookManager().getBook().getList(UniqueId.BKEY_SERIES_ARRAY));
                         intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId());
                         intent.putExtra(UniqueId.KEY_TITLE,
                                         mFields.getField(R.id.title).getValue().toString());
@@ -246,9 +247,12 @@ public class EditBookFieldsFragment
 
         populateAuthorListField(book);
         populateSeriesListField(book);
-        mFields.getField(R.id.bookshelves).setValue(
-                Bookshelf.toDisplayString(book.getBookshelfList()));
-        mFields.getField(R.id.is_anthology).setValue(book.getString(Book.HAS_MULTIPLE_WORKS));
+        ArrayList<Bookshelf> bsList = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
+
+        boolean isAnt = book.isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                                      TocEntry.Type.MULTIPLE_WORKS);
+        mFields.getField(R.id.is_anthology).setValue(isAnt ? "1" : "0");
 
         mCoverHandler.populateCoverView();
 
@@ -276,7 +280,7 @@ public class EditBookFieldsFragment
         }
 
         // If the new book is not on any Bookshelf, use the current bookshelf as default
-        final ArrayList<Bookshelf> list = book.getBookshelfList();
+        final ArrayList<Bookshelf> list = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         if (list.isEmpty()) {
 
             Bookshelf bookshelf = null;
@@ -293,15 +297,15 @@ public class EditBookFieldsFragment
             mFields.getField(R.id.bookshelves).setValue(bookshelf.getName());
             // add to set, and store in book.
             list.add(bookshelf);
-            book.putBookshelfList(list);
+            book.putList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
         }
     }
 
     private void populateAuthorListField(@NonNull final Book book) {
-        ArrayList<Author> list = book.getAuthorList();
+        ArrayList<Author> list = book.getList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (list.size() != 0 && Utils.pruneList(mDb, list)) {
             getBookManager().setDirty(true);
-            book.putAuthorList(list);
+            book.putList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
 
         String newText = book.getAuthorTextShort();
@@ -314,12 +318,12 @@ public class EditBookFieldsFragment
     private void populateSeriesListField(@NonNull final Book book) {
         boolean visible = mFields.getField(R.id.name).isVisible();
         if (visible) {
-            ArrayList<Series> list = book.getSeriesList();
+            ArrayList<Series> list = book.getList(UniqueId.BKEY_SERIES_ARRAY);
             int seriesCount = list.size();
 
             if (seriesCount != 0 && Utils.pruneList(mDb, list)) {
                 getBookManager().setDirty(true);
-                book.putSeriesList(list);
+                book.putList(UniqueId.BKEY_SERIES_ARRAY, list);
             }
 
             String newText = book.getSeriesTextShort();
@@ -411,10 +415,9 @@ public class EditBookFieldsFragment
         dialog.dismiss();
 
         if (destinationFieldId == R.id.bookshelves) {
-            ArrayList<Bookshelf> result = new Book.BookshelfCheckListItem().extractList(list);
-            getBookManager().getBook().putBookshelfList(result);
-            mFields.getField(destinationFieldId).setValue(
-                    Bookshelf.toDisplayString(getBookManager().getBook().getBookshelfList()));
+            ArrayList<Bookshelf> bsList = new Book.BookshelfCheckListItem().extractList(list);
+            getBookManager().getBook().putList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
+            mFields.getField(destinationFieldId).setValue(Bookshelf.toDisplayString(bsList));
         }
     }
 
@@ -528,7 +531,8 @@ public class EditBookFieldsFragment
                     //noinspection ConstantConditions
                     ArrayList<Author> list = data.getExtras().getParcelableArrayList(
                             UniqueId.BKEY_AUTHOR_ARRAY);
-                    book.putAuthorList(list != null ? list : new ArrayList<Author>());
+                    book.putList(UniqueId.BKEY_AUTHOR_ARRAY, list != null ? list
+                                                                          : new ArrayList<Author>());
 
                     getBookManager().setDirty(true);
                 } else {
@@ -550,7 +554,8 @@ public class EditBookFieldsFragment
                     //noinspection ConstantConditions
                     ArrayList<Series> list = data.getExtras().getParcelableArrayList(
                             UniqueId.BKEY_SERIES_ARRAY);
-                    book.putSeriesList(list != null ? list : new ArrayList<Series>());
+                    book.putList(UniqueId.BKEY_SERIES_ARRAY, list != null ? list
+                                                                          : new ArrayList<Series>());
 
                     populateSeriesListField(book);
                     getBookManager().setDirty(true);

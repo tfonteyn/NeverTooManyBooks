@@ -110,13 +110,13 @@ public class AdminSearchOrderFragment
             Holder holder;
             if (convertView == null) {
                 // Not recycling, get a new View and make the holder for it.
-                convertView = LayoutInflater.from(getContext()).inflate(
-                        R.layout.row_edit_searchsite, parent, false);
+                convertView = LayoutInflater.from(getContext())
+                                            .inflate(R.layout.row_edit_searchsite, parent, false);
 
                 holder = new Holder();
                 holder.name = convertView.findViewById(R.id.name);
                 holder.checkable = convertView.findViewById(R.id.row_check);
-                // Tag the parts that need it
+
                 convertView.setTag(holder);
                 holder.checkable.setTag(holder);
 

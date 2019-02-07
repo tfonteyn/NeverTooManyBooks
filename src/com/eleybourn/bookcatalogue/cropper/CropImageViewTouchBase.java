@@ -124,11 +124,11 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
      * see {@link View#setLayerType(int, Paint)}
      */
     private void initRenderer() {
-        int type = Prefs.getIntString(R.string.pk_thumbnail_cropper_layer_type, -1);
+        int type = Prefs.getListPreference(R.string.pk_thumbnail_cropper_layer_type, -1);
         if (type == -1) {
             return;
         }
-        this.setLayerType(type, null);
+        setLayerType(type, null);
     }
 
     @SuppressWarnings("unused")

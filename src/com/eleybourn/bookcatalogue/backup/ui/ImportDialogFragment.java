@@ -109,7 +109,7 @@ public class ImportDialogFragment
     }
 
     private void updateOptions() {
-        Dialog dialog = this.getDialog();
+        Dialog dialog = getDialog();
         // what to import. All three checked == ImportSettings.ALL
         //noinspection ConstantConditions
         if (((Checkable) dialog.findViewById(R.id.books_check)).isChecked()) {

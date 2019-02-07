@@ -319,7 +319,7 @@ public class BooklistBuilder
      */
     public static int getListRebuildState() {
         //noinspection ConstantConditions
-        return Prefs.getIntString(R.string.pk_bob_list_state, PREF_LIST_REBUILD_ALWAYS_EXPANDED);
+        return Prefs.getListPreference(R.string.pk_bob_list_state, PREF_LIST_REBUILD_ALWAYS_EXPANDED);
     }
 
     public static boolean thumbnailsAreCached() {
@@ -2593,7 +2593,7 @@ public class BooklistBuilder
          * Constructor.
          */
         private CompatibilityMode() {
-            int mode = Prefs.getIntString(R.string.pk_bob_list_generation, PREF_MODE_DEFAULT);
+            int mode = Prefs.getListPreference(R.string.pk_bob_list_generation, PREF_MODE_DEFAULT);
             // we'll always use triggers unless we're in 'ancient' mode
             useTriggers = mode != PREF_MODE_OLD_STYLE;
 

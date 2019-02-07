@@ -25,7 +25,8 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.datamanager.datavalidators.DataValidator;
+import com.eleybourn.bookcatalogue.datamanager.accessors.DataAccessor;
+import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,13 +35,14 @@ import java.util.ArrayList;
  * Class to manage storage and retrieval of a piece of data from a bundle as well as
  * ancillary details such as visibility.
  * <p>
- * Note: In theory, all strings PUT into the collection will get automatically trimmed.
+ * DataManager, e.g. a Book.
+ * Datum, describes a single piece of data. Has a 'key' identifier.
+ * rawData, where the actual values are stored using the 'key' from the Datum.
  *
  * @author pjw
  */
 public class Datum {
 
-    /** Key of this datum. */
     @NonNull
     private final String mKey;
     /** <tt>true</tt> if data should be visible. */
@@ -57,12 +59,12 @@ public class Datum {
     /**
      * Constructor.
      *
-     * @param key     Key of this datum
-     * @param visible <tt>true</tt> if data should be visible
+     * @param datumKey Key of this datum
+     * @param visible  <tt>true</tt> if data should be visible
      */
-    public Datum(@NonNull final String key,
+    public Datum(@NonNull final String datumKey,
                  final boolean visible) {
-        mKey = key;
+        mKey = datumKey;
         mIsVisible = visible;
     }
 
@@ -77,17 +79,17 @@ public class Datum {
     public static long toLong(@Nullable final Object o) {
         if (o == null) {
             return 0;
-        }
-        try {
+        } else if (o instanceof Long) {
             return (Long) o;
-        } catch (ClassCastException e) {
-            final String s = o.toString();
-            if (s.isEmpty()) {
-                return 0;
-            }
+        } else if (o instanceof Integer) {
+            return ((Integer) o).longValue();
+        } else if (o.toString().trim().isEmpty()) {
+            return 0;
+        } else {
             try {
-                return Long.parseLong(s);
+                return Long.parseLong(o.toString());
             } catch (NumberFormatException e1) {
+                // desperate ?
                 return toBoolean(o) ? 1 : 0;
             }
         }
@@ -103,15 +105,18 @@ public class Datum {
     private static double toDouble(@Nullable final Object o) {
         if (o == null) {
             return 0;
-        }
-        try {
+        } else if (o instanceof Double) {
             return (Double) o;
-        } catch (ClassCastException e) {
-            final String s = o.toString();
-            if (s.isEmpty()) {
-                return 0;
-            } else {
-                return Double.parseDouble(s);
+        } else if (o instanceof Float) {
+            return ((Float) o).doubleValue();
+        } else if (o.toString().trim().isEmpty()) {
+            return 0;
+        } else {
+            try {
+                return Double.parseDouble(o.toString());
+            } catch (NumberFormatException e1) {
+                // desperate ?
+                return toBoolean(o) ? 1 : 0;
             }
         }
     }
@@ -151,14 +156,39 @@ public class Datum {
     }
 
     /**
+     * Translate the passed Object to a boolean value.
+     *
+     * @param o Object
+     *
+     * @return Resulting value
+     *
+     * @throws NumberFormatException if the Object was not boolean compatible.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static boolean toBoolean(@Nullable final Object o)
+            throws NumberFormatException {
+        if (o == null) {
+            return false;
+        } else if (o instanceof Boolean) {
+            return (Boolean) o;
+        } else if (o instanceof Integer) {
+            return (Integer) o != 0;
+        } else if (o instanceof Long) {
+            return (Long) o != 0;
+        }
+        // lets see if its a String then
+        return toBoolean(o.toString(), true);
+    }
+
+    /**
      * Converts a String to a boolean value.
      *
      * @param s            String to convert
-     * @param emptyIsFalse if true, null and empty string is handled as false
+     * @param emptyIsFalse if true, null and empty string are handled as false
      *
-     * @return Boolean value
+     * @return boolean value
      *
-     * @throws NumberFormatException when the string does not contain a valid boolean.
+     * @throws NumberFormatException if the string does not contain a valid boolean.
      */
     public static boolean toBoolean(@Nullable final String s,
                                     final boolean emptyIsFalse)
@@ -193,51 +223,29 @@ public class Datum {
         }
     }
 
-    /**
-     * Translate the passed Object to a boolean value.
-     *
-     * @param o Object
-     *
-     * @return Resulting value
-     *
-     * @throws NumberFormatException if the Object was not boolean compatible.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static boolean toBoolean(@NonNull final Object o)
-        throws NumberFormatException {
-        if (o instanceof Boolean) {
-            return (Boolean) o;
-        }
-        if (o instanceof Integer) {
-            return (Integer) o != 0;
-        }
-        if (o instanceof Long) {
-            return (Long) o != 0;
-        }
-        // lets see if its a String then
-        return toBoolean(o.toString(), true);
-    }
-
+    /** @return the key. */
     @NonNull
     public String getKey() {
         return mKey;
     }
 
-    public boolean isHidden() {
-        return !mIsVisible;
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean isVisible() {
+        return mIsVisible;
     }
 
+    /** @return the DataValidator. */
     @Nullable
     public DataValidator getValidator() {
         return mValidator;
     }
 
     /**
-     * Accessor. Protected against being set twice.
+     * Set the DataValidator. Protected against being set twice.
      */
     @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
     @NonNull
-    public Datum addValidator(@NonNull final DataValidator validator) {
+    public Datum setValidator(@NonNull final DataValidator validator) {
         if (mValidator != null && validator != mValidator) {
             throw new IllegalStateException("Datum '" + mKey + "' already has a validator");
         }
@@ -245,23 +253,18 @@ public class Datum {
         return this;
     }
 
-    @SuppressWarnings("unused")
-    boolean hasValidator() {
-        return mValidator != null;
-    }
-
-    /** Accessor. */
+    /** @return the DataAccessor. */
     @Nullable
     public DataAccessor getAccessor() {
         return mAccessor;
     }
 
     /**
-     * Accessor. Protected against being set twice.
+     * Set the DataAccessor. Protected against being set twice.
      */
     @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
     @NonNull
-    public Datum addAccessor(@NonNull final DataAccessor accessor) {
+    public Datum setAccessor(@NonNull final DataAccessor accessor) {
         if (mAccessor != null && accessor != mAccessor) {
             throw new IllegalStateException("Datum '" + mKey + "' already has an Accessor");
         }
@@ -270,264 +273,240 @@ public class Datum {
     }
 
     /**
-     * Get the raw Object for this Datum.
+     * Retrieve the raw Object from the DataManager, translating and using Accessor as necessary.
      *
-     * @param data   Parent DataManager
-     * @param bundle Raw data bundle
+     * @param data    Parent DataManager
+     * @param rawData Raw data bundle
      *
      * @return The object data
      */
     @Nullable
     public Object get(@NonNull final DataManager data,
-                      @NonNull final Bundle bundle) {
+                      @NonNull final Bundle rawData) {
         if (mAccessor == null) {
-            return bundle.get(mKey);
+            return rawData.get(mKey);
         } else {
-            return mAccessor.get(data, this, bundle);
+            return mAccessor.get(data, rawData, this);
         }
     }
 
     /**
-     * Retrieve the data from the DataManager, translating and using Accessor as necessary.
+     * Retrieve the value from the DataManager, translating and using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
+     * @param data    Parent collection
+     * @param rawData Raw data
      *
      * @return Value of the data
      */
     public boolean getBoolean(@NonNull final DataManager data,
-                              @NonNull final Bundle bundle) {
+                              @NonNull final Bundle rawData) {
         Object o;
         if (mAccessor == null) {
-            o = bundle.getBoolean(mKey);
+            o = rawData.get(mKey);
         } else {
-            o = mAccessor.get(data, this, bundle);
+            o = mAccessor.get(data, rawData, this);
         }
         return toBoolean(o);
     }
 
     /**
-     * Store the data in the DataManager, using Accessor as necessary.
+     * Store the value in the rawData, or using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
-     *
-     * @return This Datum, for chaining
+     * @param data    Parent collection
+     * @param rawData Raw data
+     * @param value   The boolean (primitive) value to store
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public Datum putBoolean(@NonNull final DataManager data,
-                            @NonNull final Bundle bundle,
-                            final boolean value) {
+    public void putBoolean(@NonNull final DataManager data,
+                           @NonNull final Bundle rawData,
+                           final boolean value) {
         if (mAccessor == null) {
-            bundle.putBoolean(mKey, value);
+            rawData.putBoolean(mKey, value);
         } else {
-            mAccessor.set(data, this, bundle, value);
+            mAccessor.put(data, rawData, this, value);
         }
-        return this;
     }
 
     /**
      * Retrieve the data from the DataManager, translating and using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
+     * @param data    Parent collection
+     * @param rawData Raw data
      *
      * @return Value of the data
      */
     public int getInt(@NonNull final DataManager data,
-                      @NonNull final Bundle bundle) {
+                      @NonNull final Bundle rawData) {
         Object o;
         if (mAccessor == null) {
-            o = bundle.get(mKey);
+            o = rawData.get(mKey);
         } else {
-            o = mAccessor.get(data, this, bundle);
+            o = mAccessor.get(data, rawData, this);
         }
         return (int) toLong(o);
     }
 
     /**
-     * Store the data in the DataManager, using Accessor as necessary.
+     * Store the value in the rawData, or using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
-     *
-     * @return This Datum, for chaining
+     * @param data    Parent collection
+     * @param rawData Raw data
+     * @param value   The int value to store
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public Datum putInt(@NonNull final DataManager data,
-                        @NonNull final Bundle bundle,
-                        final int value) {
+    public void putInt(@NonNull final DataManager data,
+                       @NonNull final Bundle rawData,
+                       final int value) {
         if (mAccessor == null) {
-            bundle.putInt(mKey, value);
+            rawData.putInt(mKey, value);
         } else {
-            mAccessor.set(data, this, bundle, value);
+            mAccessor.put(data, rawData, this, value);
         }
-        return this;
     }
 
     /**
      * Retrieve the data from the DataManager, translating and using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
+     * @param data    Parent collection
+     * @param rawData Raw data
      *
      * @return Value of the data
      */
     public long getLong(@NonNull final DataManager data,
-                        @NonNull final Bundle bundle) {
+                        @NonNull final Bundle rawData) {
         Object o;
         if (mAccessor == null) {
-            o = bundle.get(mKey);
+            o = rawData.get(mKey);
         } else {
-            o = mAccessor.get(data, this, bundle);
+            o = mAccessor.get(data, rawData, this);
         }
         return toLong(o);
     }
 
     /**
-     * Store the data in the DataManager, using Accessor as necessary.
+     * Store the value in the rawData, or using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
-     *
-     * @return This Datum, for chaining
+     * @param data    Parent collection
+     * @param rawData Raw data
+     * @param value   The long value to store
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public Datum putLong(@NonNull final DataManager data,
-                         @NonNull final Bundle bundle,
-                         final long value) {
+    public void putLong(@NonNull final DataManager data,
+                        @NonNull final Bundle rawData,
+                        final long value) {
         if (mAccessor == null) {
-            bundle.putLong(mKey, value);
+            rawData.putLong(mKey, value);
         } else {
-            mAccessor.set(data, this, bundle, value);
+            mAccessor.put(data, rawData, this, value);
         }
-        return this;
     }
 
     /**
      * Retrieve the data from the DataManager, translating and using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
+     * @param data    Parent collection
+     * @param rawData Raw data
      *
      * @return Value of the data
      */
-    double getDouble(@NonNull final DataManager data,
-                     @NonNull final Bundle bundle) {
+    @SuppressWarnings("WeakerAccess")
+    public double getDouble(@NonNull final DataManager data,
+                            @NonNull final Bundle rawData) {
         Object o;
         if (mAccessor == null) {
-            o = bundle.get(mKey);
+            o = rawData.get(mKey);
         } else {
-            o = mAccessor.get(data, this, bundle);
+            o = mAccessor.get(data, rawData, this);
         }
         return toDouble(o);
     }
 
     /**
-     * Store the data in the DataManager, using Accessor as necessary.
+     * Store the value in the rawData, or using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
-     *
-     * @return This Datum, for chaining
+     * @param data    Parent collection
+     * @param rawData Raw data
+     * @param value   The double value to store
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    Datum putDouble(@NonNull final DataManager data,
-                    @NonNull final Bundle bundle,
-                    final double value) {
+    void putDouble(@NonNull final DataManager data,
+                   @NonNull final Bundle rawData,
+                   final double value) {
         if (mAccessor == null) {
-            bundle.putDouble(mKey, value);
+            rawData.putDouble(mKey, value);
         } else {
-            mAccessor.set(data, this, bundle, value);
+            mAccessor.put(data, rawData, this, value);
         }
-        return this;
     }
 
     /**
      * Retrieve the data from the DataManager, translating and using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
+     * @param data    Parent collection
+     * @param rawData Raw data
      *
      * @return Value of the data
      */
-    float getFloat(@NonNull final DataManager data,
-                   @NonNull final Bundle bundle) {
+    @SuppressWarnings("WeakerAccess")
+    public float getFloat(@NonNull final DataManager data,
+                          @NonNull final Bundle rawData) {
         Object o;
         if (mAccessor == null) {
-            o = bundle.get(mKey);
+            o = rawData.get(mKey);
         } else {
-            o = mAccessor.get(data, this, bundle);
+            o = mAccessor.get(data, rawData, this);
         }
         return (float) toDouble(o);
     }
 
     /**
-     * Store the data in the DataManager, using Accessor as necessary.
+     * Store the value in the rawData, or using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
-     *
-     * @return This Datum, for chaining
+     * @param data    Parent collection
+     * @param rawData Raw data
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    Datum putFloat(@NonNull final DataManager data,
-                   @NonNull final Bundle bundle,
-                   final float value) {
+    void putFloat(@NonNull final DataManager data,
+                  @NonNull final Bundle rawData,
+                  final float value) {
         if (mAccessor == null) {
-            bundle.putFloat(mKey, value);
+            rawData.putFloat(mKey, value);
         } else {
-            mAccessor.set(data, this, bundle, value);
+            mAccessor.put(data, rawData, this, value);
         }
-        return this;
     }
 
     /**
      * Retrieve the data from the DataManager, translating and using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
+     * @param data    Parent collection
+     * @param rawData Raw data
      *
      * @return Value of the data, can be empty, but never null
      */
     @NonNull
     public String getString(@NonNull final DataManager data,
-                            @NonNull final Bundle bundle) {
+                            @NonNull final Bundle rawData) {
         Object o;
         if (mAccessor == null) {
-            o = bundle.get(mKey);
+            o = rawData.get(mKey);
         } else {
-            o = mAccessor.get(data, this, bundle);
+            o = mAccessor.get(data, rawData, this);
         }
         // any null gets turned into ""
         return toString(o);
     }
 
     /**
-     * Store the data in the DataManager, using Accessor as necessary.
+     * Store the value in the rawData, or using Accessor as necessary.
      *
-     * @param data   Parent collection
-     * @param bundle Raw data
-     * @param value  string will be trimmed before storing.
-     *
-     * @return This Datum, for chaining
+     * @param data    Parent collection
+     * @param rawData Raw data
+     * @param value   the String object to store, will be trimmed before storing.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public Datum putString(@NonNull final DataManager data,
-                           @NonNull final Bundle bundle,
-                           @NonNull final String value) {
+    public void putString(@NonNull final DataManager data,
+                          @NonNull final Bundle rawData,
+                          @NonNull final String value) {
         if (mAccessor == null) {
-            bundle.putString(mKey, value.trim());
+            rawData.putString(mKey, value.trim());
         } else {
-            mAccessor.set(data, this, bundle, value.trim());
+            mAccessor.put(data, rawData, this, value.trim());
         }
-        return this;
     }
 
     /**
@@ -535,61 +514,56 @@ public class Datum {
      * We currently do not use a Datum for special access.
      * TODO: Consider how to use an accessor
      *
-     * @param data   Parent DataManager
-     * @param bundle Raw data Bundle
+     * @param data    Parent collection
+     * @param rawData Raw data Bundle
      *
      * @return The data
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "WeakerAccess"})
     @Nullable
-    <T extends Serializable> T getSerializable(@SuppressWarnings("unused")
-                                               @NonNull final DataManager data,
-                                               @NonNull final Bundle bundle) {
+    public <T extends Serializable> T getSerializable(@SuppressWarnings("unused")
+                                                      @NonNull final DataManager data,
+                                                      @NonNull final Bundle rawData) {
         if (mAccessor == null) {
-            return (T) bundle.getSerializable(mKey);
+            return (T) rawData.getSerializable(mKey);
         } else {
             throw new AccessorNotSupportedException("Serializable");
         }
     }
 
     /**
-     * Set the serializable object in the collection.
+     * Store the value in the rawData.
      * We currently do not use a Datum for special access.
      * TODO: Consider how to use an accessor
      *
-     * @param bundle Raw data Bundle
-     * @param value  The serializable object
-     *
-     * @return The data manager for chaining
+     * @param rawData Raw data Bundle
+     * @param value   The Serializable object to store
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    Datum putSerializable(@NonNull final Bundle bundle,
-                          @NonNull final Serializable value) {
+    void putSerializable(@NonNull final Bundle rawData,
+                         @NonNull final Serializable value) {
         if (mAccessor == null) {
-            bundle.putSerializable(mKey, value);
+            rawData.putSerializable(mKey, value);
         } else {
             throw new AccessorNotSupportedException("Serializable");
         }
-        return this;
     }
 
     /**
      * Get the ArrayList<Parcelable> object from the collection.
      *
-     * @param data   Parent DataManager
-     * @param bundle Raw data Bundle
+     * @param data    Parent DataManager
+     * @param rawData Raw data Bundle
      *
      * @return The list, can be empty but never null
      */
     @NonNull
-    <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final DataManager data,
-                                                               @NonNull final Bundle bundle) {
+    public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final DataManager data,
+                                                                      @NonNull final Bundle rawData) {
         Object o;
         if (mAccessor == null) {
-            o = bundle.get(mKey);
+            o = rawData.get(mKey);
         } else {
-            o = mAccessor.get(data, this, bundle);
+            o = mAccessor.get(data, rawData, this);
         }
 
         if (o == null) {
@@ -600,42 +574,37 @@ public class Datum {
     }
 
     /**
-     * Set the ArrayList<Parcelable> object in the collection.
+     * Store the value in the rawData, or using Accessor as necessary.
      *
-     * @param bundle Raw data Bundle
-     * @param value  The ArrayList<Parcelable> object
-     *
-     * @return The data manager for chaining
+     * @param rawData Raw data Bundle
+     * @param value   The ArrayList<Parcelable> object to store
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    <T extends Parcelable> Datum putParcelableArrayList(@NonNull final DataManager data,
-                                                        @NonNull final Bundle bundle,
-                                                        @NonNull final ArrayList<T> value) {
+    public <T extends Parcelable> void putParcelableArrayList(@NonNull final DataManager data,
+                                                              @NonNull final Bundle rawData,
+                                                              @NonNull final ArrayList<T> value) {
         if (mAccessor == null) {
-            bundle.putParcelableArrayList(mKey, value);
+            rawData.putParcelableArrayList(mKey, value);
         } else {
-            mAccessor.set(data, this, bundle, value);
+            mAccessor.put(data, rawData, this, value);
         }
-        return this;
     }
 
     /**
      * Get the ArrayList<String> object from the collection.
      *
-     * @param data   Parent DataManager
-     * @param bundle Raw data Bundle
+     * @param data    Parent DataManager
+     * @param rawData Raw data Bundle
      *
      * @return The list, can be empty but never null
      */
     @NonNull
-    ArrayList<String> getStringArrayList(@NonNull final DataManager data,
-                                         @NonNull final Bundle bundle) {
+    public ArrayList<String> getStringArrayList(@NonNull final DataManager data,
+                                                @NonNull final Bundle rawData) {
         Object o;
         if (mAccessor == null) {
-            o = bundle.get(mKey);
+            o = rawData.get(mKey);
         } else {
-            o = mAccessor.get(data, this, bundle);
+            o = mAccessor.get(data, rawData, this);
         }
 
         if (o == null) {
@@ -646,24 +615,19 @@ public class Datum {
     }
 
     /**
-     * Set the ArrayList<String> object in the collection.
+     * Store the value in the rawData, or using Accessor as necessary.
      *
-     * @param bundle Raw data Bundle
-     * @param value  The ArrayList<String> object
-     *
-     * @return The data manager for chaining
+     * @param rawData Raw data Bundle
+     * @param value   The ArrayList<String> object to store
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    Datum putStringArrayList(@NonNull final DataManager data,
-                             @NonNull final Bundle bundle,
-                             @NonNull final ArrayList<String> value) {
+    void putStringArrayList(@NonNull final DataManager data,
+                            @NonNull final Bundle rawData,
+                            @NonNull final ArrayList<String> value) {
         if (mAccessor == null) {
-            bundle.putStringArrayList(mKey, value);
+            rawData.putStringArrayList(mKey, value);
         } else {
-            mAccessor.set(data, this, bundle, value);
+            mAccessor.put(data, rawData, this, value);
         }
-        return this;
     }
 
     private static class AccessorNotSupportedException

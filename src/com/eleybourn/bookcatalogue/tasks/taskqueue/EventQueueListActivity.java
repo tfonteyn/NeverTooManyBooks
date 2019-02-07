@@ -83,7 +83,7 @@ public class EventQueueListActivity
         });
 
         if (savedInstanceState == null) {
-            HintManager.displayHint(this.getLayoutInflater(),
+            HintManager.displayHint(getLayoutInflater(),
                                     R.string.hint_background_task_events,
                                     null);
         }
@@ -102,7 +102,7 @@ public class EventQueueListActivity
 
         // If it owns a hint, display it first
         if (event instanceof HintOwner) {
-            HintManager.displayHint(this.getLayoutInflater(), ((HintOwner) event).getHint(),
+            HintManager.displayHint(getLayoutInflater(), ((HintOwner) event).getHint(),
                                     new Runnable() {
                                         @Override
                                         public void run() {

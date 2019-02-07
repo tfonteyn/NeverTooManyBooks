@@ -15,12 +15,12 @@ import java.util.Map;
  *
  * {@link com.eleybourn.bookcatalogue.database.DatabaseDefinitions#DOM_BOOK_FORMAT}
  */
-public class Format {
+public final class Format {
 
     /** map to translate site book format' terminology with our own. */
     private static final Map<String, Integer> MAPPER = new HashMap<>();
+    // use lowercase keys!
     static {
-        // use lower-key keys!
         MAPPER.put("pb", R.string.book_format_paperback);
         MAPPER.put("tp", R.string.book_format_trade_paperback);
         MAPPER.put("hc", R.string.book_format_hardcover);
@@ -31,7 +31,7 @@ public class Format {
         MAPPER.put("unknown", R.string.unknown);
     }
 
-    public Format() {
+    private Format() {
     }
 
     /**
@@ -41,7 +41,7 @@ public class Format {
      *
      * @return localized equivalent, or the source if no mapping exists.
      */
-    public String map(@NonNull final String source) {
+    public static String map(@NonNull final String source) {
         Integer resId = MAPPER.get(source.toLowerCase());
         return resId != null ? BookCatalogueApp.getResString(resId)
                              : source;

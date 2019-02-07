@@ -54,7 +54,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
-import com.eleybourn.bookcatalogue.datamanager.datavalidators.ValidatorException;
+import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.Csv;
@@ -280,7 +280,7 @@ public class Fields
                      @NonNull final String sourceColumn,
                      @NonNull final String visibilityGroup) {
         Field field = new Field(this, fieldId, sourceColumn, visibilityGroup);
-        this.add(field);
+        add(field);
         return field;
     }
 
@@ -583,6 +583,8 @@ public class Fields
     /**
      * Interface for view-specific accessors. One of these will be implemented for
      * each view type that is supported.
+     *
+     * TOMF: would it be enough to make this generic ? i.e instead of String be able to use a boolean ?
      *
      * @author Philip Warner
      */
@@ -930,54 +932,53 @@ public class Fields
         public void setFieldValueFrom(@NonNull final Field field,
                                       @NonNull final Cursor cursor)
                 throws CursorIndexOutOfBoundsException {
-            RatingBar ratingBar = field.getView();
+            RatingBar bar = field.getView();
+            int col = cursor.getColumnIndex(field.mColumn);
             if (field.formatter != null) {
-                ratingBar.setRating(Float.parseFloat(field.formatter.format(field, cursor.getString(
-                        cursor.getColumnIndex(field.mColumn)))));
+                String sValue = field.formatter.format(field, cursor.getString(col));
+                bar.setRating(Float.parseFloat(sValue));
             } else {
-                ratingBar.setRating(cursor.getFloat(cursor.getColumnIndex(field.mColumn)));
+                bar.setRating(cursor.getFloat(col));
             }
         }
 
         public void set(@NonNull final Field field,
                         @Nullable final String value) {
-            RatingBar ratingBar = field.getView();
+            RatingBar bar = field.getView();
             float f = 0.0f;
             try {
                 f = Float.parseFloat(field.format(value));
             } catch (NumberFormatException ignored) {
             }
-            ratingBar.setRating(f);
+            bar.setRating(f);
         }
 
         public void putFieldValueInto(@NonNull final Field field,
                                       @NonNull final Bundle values) {
-            RatingBar ratingBar = field.getView();
+            RatingBar bar = field.getView();
             if (field.formatter != null) {
-                values.putString(field.mColumn,
-                                 field.formatter
-                                         .extract(field, String.valueOf(ratingBar.getRating())));
+                String sValue = field.formatter.extract(field, String.valueOf(bar.getRating()));
+                values.putString(field.mColumn, sValue);
             } else {
-                values.putFloat(field.mColumn, ratingBar.getRating());
+                values.putFloat(field.mColumn, bar.getRating());
             }
         }
 
         public void putFieldValueInto(@NonNull final Field field,
                                       @NonNull final DataManager values) {
-            RatingBar ratingBar = field.getView();
+            RatingBar bar = field.getView();
             if (field.formatter != null) {
-                values.putString(field.mColumn,
-                                 field.formatter
-                                         .extract(field, String.valueOf(ratingBar.getRating())));
+                String sValue = field.formatter.extract(field, String.valueOf(bar.getRating()));
+                values.putString(field.mColumn, sValue);
             } else {
-                values.putFloat(field.mColumn, ratingBar.getRating());
+                values.putFloat(field.mColumn, bar.getRating());
             }
         }
 
         @NonNull
         public Object get(@NonNull final Field field) {
-            RatingBar ratingBar = field.getView();
-            return ratingBar.getRating();
+            RatingBar bar = field.getView();
+            return bar.getRating();
         }
     }
 
@@ -1134,7 +1135,7 @@ public class Fields
          */
         @SuppressWarnings("WeakerAccess")
         public PriceFormatter(@NonNull final String currencyCode) {
-            this.mCurrencyCode = currencyCode;
+            mCurrencyCode = currencyCode;
         }
 
         /**
@@ -1244,7 +1245,9 @@ public class Fields
             List<String> list = new ArrayList<>();
             for (Integer edition : Book.EDITIONS.keySet()) {
                 if ((edition & bitmask) != 0) {
-                    list.add(BookCatalogueApp.getResString(Book.EDITIONS.get(edition)));
+                    @SuppressWarnings("ConstantConditions")
+                    int resId = Book.EDITIONS.get(edition);
+                    list.add(BookCatalogueApp.getResString(resId));
                 }
             }
             return Csv.toDisplayString(list);
@@ -1258,6 +1261,10 @@ public class Fields
         }
     }
 
+    /**
+     * How to handle a field when updating the entity it belongs to.
+     * e.g. skip it, overwrite the value, etc...
+     */
     public static class FieldUsage {
 
         /** a key, usually from {@link UniqueId}. */
@@ -1481,7 +1488,7 @@ public class Fields
             group = visibilityGroupName;
 
             // Lookup the view
-            final View view = mFields.get().getContext().findViewById(this.id);
+            final View view = mFields.get().getContext().findViewById(id);
 
             // Set the appropriate accessor
             if (view == null) {
@@ -1551,7 +1558,7 @@ public class Fields
          * @return field (for chaining)
          */
         public Field setAccessor(@NonNull final FieldDataAccessor accessor) {
-            this.mFieldDataAccessor = accessor;
+            mFieldDataAccessor = accessor;
             return this;
         }
 
@@ -1571,7 +1578,7 @@ public class Fields
          * @return field (for chaining)
          */
         public Field setValidator(@NonNull final FieldValidator validator) {
-            this.mFieldValidator = validator;
+            mFieldValidator = validator;
             return this;
         }
 
@@ -1596,7 +1603,7 @@ public class Fields
          */
         @SuppressWarnings({"UnusedReturnValue", "unused"})
         public Field setDoNotFetch(final boolean doNoFetch) {
-            this.mDoNoFetch = doNoFetch;
+            mDoNoFetch = doNoFetch;
             return this;
         }
 
@@ -1612,7 +1619,7 @@ public class Fields
          */
         private void resetVisibility() {
             // Lookup the view
-            final View view = mFields.get().getContext().findViewById(this.id);
+            final View view = mFields.get().getContext().findViewById(id);
             if (view != null) {
                 mIsVisible = Fields.isVisible(group);
                 view.setVisibility(mIsVisible ? View.VISIBLE : View.GONE);
@@ -1663,7 +1670,7 @@ public class Fields
         @SuppressWarnings("unchecked")
         @NonNull
         public <T extends View> T getView() {
-            T view = (T) mFields.get().getContext().findViewById(this.id);
+            T view = (T) mFields.get().getContext().findViewById(id);
             if (view == null) {
                 debugNullView(this);
                 throw new NullPointerException("view is NULL");

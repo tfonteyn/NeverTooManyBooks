@@ -286,9 +286,6 @@ public abstract class BookBaseFragment
             .setIcon(R.drawable.ic_share);
 
         if (Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
-            /*
-             * Only one of these two is made visible (or none if the book is not persisted yet).
-             */
             menu.add(R.id.MENU_BOOK_EDIT_LOAN, R.id.MENU_BOOK_EDIT_LOAN, 0,
                      R.string.menu_loan_lend_book);
             menu.add(R.id.MENU_BOOK_LOAN_RETURNED, R.id.MENU_BOOK_EDIT_LOAN, 0,
@@ -313,7 +310,7 @@ public abstract class BookBaseFragment
         boolean bookExists = book.getId() != 0;
         menu.setGroupVisible(R.id.MENU_GROUP_BOOK, bookExists);
 
-        boolean isRead = 0 != book.getInt(UniqueId.KEY_BOOK_READ);
+        boolean isRead = book.getBoolean(Book.IS_READ);
         menu.setGroupVisible(R.id.MENU_BOOK_READ, bookExists && !isRead);
         menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
 
@@ -340,20 +337,13 @@ public abstract class BookBaseFragment
 
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_DELETE:
-                @StringRes
-                int errorMsgId = StandardDialogs.deleteBookAlert(
-                        mActivity, mDb, book.getId(),
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mActivity.setResult(
-                                        UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
-                                mActivity.finish();
-                            }
-                        });
-                if (errorMsgId != 0) {
-                    StandardDialogs.showUserMessage(mActivity, errorMsgId);
-                }
+                StandardDialogs.deleteBookAlert(mActivity, mDb, book.getId(), new Runnable() {
+                    @Override
+                    public void run() {
+                        mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+                        mActivity.finish();
+                    }
+                });
                 return true;
 
             case R.id.MENU_BOOK_DUPLICATE:
@@ -381,6 +371,7 @@ public abstract class BookBaseFragment
             case R.id.MENU_BOOK_EDIT_LOAN:
                 boolean isAvailable = null == mDb.getLoaneeByBookId(book.getId());
                 if (isAvailable) {
+                    //TOMF: obv. when this is called when we're ON the edit screen... oops... but loan will be a dialog soon anyhow.
                     Intent intentLoan = new Intent(mActivity, EditBookActivity.class);
                     intentLoan.putExtra(UniqueId.KEY_ID, book.getId());
                     intentLoan.putExtra(EditBookFragment.REQUEST_BKEY_TAB,
@@ -393,7 +384,7 @@ public abstract class BookBaseFragment
 
             case R.id.MENU_BOOK_READ:
                 // toggle 'read' status
-                boolean isRead = 0 != book.getInt(UniqueId.KEY_BOOK_READ);
+                boolean isRead = book.getBoolean(Book.IS_READ);
                 if (book.setRead(mDb, !isRead)) {
                     // reverse value obv.
                     mFields.getField(R.id.read).setValue(isRead ? "0" : "1");
@@ -647,7 +638,7 @@ public abstract class BookBaseFragment
 //        showHideField(hideIfEmpty, R.id.toc, R.id.row_toc);
 
         // personal fields
-        showHideField(hideIfEmpty, R.id.bookshelves, R.id.row_bookshelves, R.id.lbl_bookshelves);
+        showHideField(hideIfEmpty, R.id.bookshelves, R.id.name, R.id.lbl_bookshelves);
 //        showHideField(hideIfEmpty, R.id.read, R.id.row_read, R.id.lbl_read);
 
         showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);

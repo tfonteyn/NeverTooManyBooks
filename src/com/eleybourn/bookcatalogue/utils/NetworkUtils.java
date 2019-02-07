@@ -4,152 +4,31 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
-
-import java.io.BufferedInputStream;
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InterruptedIOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
-/**
- * ENHANCE: make timeouts configurable; global ? or per {@link SearchSites.Site} ?
- * However, not all connections actually use this method + this is old... do we still need this ?
- */
-public final class NetworkUtils {
 
-    /** initial connection time to websites timeout. */
-    private static final int CONNECT_TIMEOUT = 30_000;
-    /** timeout for requests to  website. */
-    private static final int READ_TIMEOUT = 30_000;
-    /** kill connections after this delay. */
-    private static final int KILL_CONNECT_DELAY = 30_000;
-    /** for synchronization. */
-    private static final Object LOCK = new Object();
+public final class NetworkUtils
+        extends AsyncTask<Void, Void, Boolean> {
 
-    private NetworkUtils() {
-    }
+    @NonNull
+    private final InternetCheckCallback mCallback;
+    private String mHost;
+    private int mPort;
 
     /**
-     * https://developer.android.com/about/versions/marshmallow/android-6.0-changes
-     * The Apache HTTP client was removed from 6.0 (although you can use a legacy lib)
-     * Recommended is to use the java.net.HttpURLConnection
-     * This means com.android.okhttp
-     * https://square.github.io/okhttp/
-     * <p>
-     * 2018-11-22: removal of apache started....
-     * <p>
-     * Get data from a URL. Makes sure timeout is set to avoid application stalling.
+     * Constructor.
      *
-     * @param url URL to retrieve
-     *
-     * @return InputStream
+     * @param callback for callback
      */
-    @Nullable
-    public static InputStream getInputStreamWithTerminator(@NonNull final URL url)
-            throws IOException {
-
-        synchronized (LOCK) {
-
-            int retries = 3;
-            while (true) {
-
-                final ConnectionInfo connInfo = new ConnectionInfo();
-
-                try {
-                    /*
-                     * There is a problem with failed timeouts:
-                     *   http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
-                     *
-                     * So...we are forced to use a background thread to be able to kill it.
-                     */
-
-                    // paranoid sanity check
-                    URLConnection urlConnection = url.openConnection();
-                    if (!(urlConnection instanceof HttpURLConnection)) {
-                        return null;
-                    }
-
-                    connInfo.connection = (HttpURLConnection) urlConnection;
-                    connInfo.connection.setUseCaches(false);
-                    connInfo.connection.setDoInput(true);
-                    connInfo.connection.setDoOutput(false);
-                    connInfo.connection.setConnectTimeout(CONNECT_TIMEOUT);
-                    connInfo.connection.setReadTimeout(READ_TIMEOUT);
-                    connInfo.connection.setRequestMethod("GET");
-
-                    // close the connection on a background task,
-                    // so that we can cancel any runaway timeouts.
-                    Terminator.enqueue(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (connInfo.inputStream != null) {
-                                if (connInfo.inputStream.isOpen()) {
-                                    try {
-                                        connInfo.inputStream.close();
-                                        connInfo.connection.disconnect();
-                                    } catch (IOException e) {
-                                        Logger.error(e);
-                                    }
-                                }
-                            } else {
-                                connInfo.connection.disconnect();
-                            }
-                        }
-                    }, KILL_CONNECT_DELAY);
-
-                    connInfo.inputStream =
-                            new StatefulBufferedInputStream(connInfo.connection.getInputStream());
-
-                    if (connInfo.connection != null
-                            && connInfo.connection.getResponseCode() >= 300) {
-                        Logger.error("URL lookup failed: "
-                                             + connInfo.connection.getResponseCode()
-                                             + ' ' + connInfo.connection.getResponseMessage()
-                                             + ", URL: " + url);
-                        return null;
-                    }
-
-                    return connInfo.inputStream;
-
-                } catch (java.net.UnknownHostException e) {
-                    Logger.error(e);
-                    retries--;
-                    if (retries-- == 0) {
-                        throw e;
-                    }
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ignored) {
-                    }
-                    if (connInfo.connection != null) {
-                        connInfo.connection.disconnect();
-                    }
-                } catch (InterruptedIOException e) {
-                    Logger.info(Terminator.class,
-                                "InterruptedIOException: " + e.getLocalizedMessage());
-                    if (connInfo.connection != null) {
-                        connInfo.connection.disconnect();
-                    }
-                } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
-                    Logger.error(e);
-                    if (connInfo.connection != null) {
-                        connInfo.connection.disconnect();
-                    }
-                    throw e;
-                }
-            }
-        }
+    public NetworkUtils(@NonNull final InternetCheckCallback callback) {
+        mCallback = callback;
     }
 
     /**
@@ -163,7 +42,7 @@ public final class NetworkUtils {
         if (connectivity != null) {
             for (Network network : connectivity.getAllNetworks()) {
                 NetworkInfo info = connectivity.getNetworkInfo(network);
-                if (info != null && info.getState() == NetworkInfo.State.CONNECTED) {
+                if (info != null && info.isConnected()) {
                     return true;
                 }
             }
@@ -171,37 +50,70 @@ public final class NetworkUtils {
         return false;
     }
 
-    public static class ConnectionInfo {
-
-        @Nullable
-        HttpURLConnection connection;
-        @Nullable
-        StatefulBufferedInputStream inputStream;
-    }
-
-    public static class StatefulBufferedInputStream
-            extends BufferedInputStream
-            implements Closeable {
-
-        private boolean mIsOpen = true;
-
-        StatefulBufferedInputStream(@NonNull final InputStream in) {
-            super(in);
-        }
-
-        @Override
-        @CallSuper
-        public void close()
-                throws IOException {
-            try {
-                super.close();
-            } finally {
-                mIsOpen = false;
+    /**
+     * Sample code not in use right now. Use {@link android.net.NetworkCapabilities}
+     * Check for un-metered access for example.
+     */
+    @Deprecated
+    public static boolean isWifiAvailable(@NonNull final Context context) {
+        ConnectivityManager connectivity =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity != null) {
+            NetworkInfo info = connectivity.getActiveNetworkInfo();
+            if (info != null) {
+                return info.isConnected() && info.getType() == ConnectivityManager.TYPE_WIFI;
             }
         }
+        return false;
+    }
 
-        public boolean isOpen() {
-            return mIsOpen;
+    /**
+     * Check if Google DNS is reachable.
+     */
+    public void isGoogleAlive() {
+        mHost = "8.8.8.8";
+        mPort = 53;
+        execute();
+    }
+
+    /**
+     * Check if a specific web site is reachable.
+     *
+     * @param host   to check; hostname or ip address
+     * @param secure use the secure port (or standard port)
+     */
+    public void isWebSiteAlive(@NonNull final String host,
+                               final boolean secure) {
+        mHost = host;
+        mPort = secure ? 443 : 80;
+        execute();
+    }
+
+    @Override
+    protected Boolean doInBackground(@Nullable final Void... params) {
+        try {
+            Socket sock = new Socket();
+            sock.connect(new InetSocketAddress(mHost, mPort), 1500);
+            sock.close();
+            return true;
+        } catch (IOException e) {
+            return false;
         }
     }
+
+    @Override
+    protected void onPostExecute(@NonNull final Boolean result) {
+        mCallback.hasInternet(result);
+    }
+
+
+    private interface InternetCheckCallback {
+        /**
+         * Callback reporting actual internet being up.
+         *
+         * @param isUp <tt>true</tt> if Google is reachable
+         */
+        void hasInternet(final boolean isUp);
+    }
+
 }

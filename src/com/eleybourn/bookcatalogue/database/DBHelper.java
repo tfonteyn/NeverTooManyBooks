@@ -56,6 +56,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
@@ -115,24 +116,6 @@ public class DBHelper
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
                     + " (" + DOM_TITLE + DBA.COLLATION + ')',
             };
-
-    /**
-     * Trigger specific SQL.
-     * <p>
-     * Flag books needing a backup by updating their 'last update date'.
-     */
-    private static final String UPDATE_BOOK_LAST_UPDATE_DATE =
-            "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
-                    + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK_ID;
-
-    /**
-     * Trigger specific SQL.
-     * <p>
-     * After deleting a Book, also delete it from FTS.
-     */
-    private static final String DELETE_BOOK_FROM_FTS =
-            "DELETE FROM " + TBL_BOOKS_FTS
-                    + " WHERE " + DOM_PK_DOCID + '=' + "Old." + DOM_PK_ID;
 
 
     /** Readers/Writer lock for this database. */
@@ -337,7 +320,7 @@ public class DBHelper
      *
      * @param syncedDb the database
      */
-    private void createTriggers(@NonNull final SynchronizedDb syncedDb) {
+    public void createTriggers(@NonNull final SynchronizedDb syncedDb) {
 
         String name;
         String body;
@@ -350,7 +333,8 @@ public class DBHelper
         name = "after_delete_on_" + TBL_BOOK_BOOKSHELF;
         body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  " + UPDATE_BOOK_LAST_UPDATE_DATE + ";\n"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK_ID + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -364,7 +348,7 @@ public class DBHelper
         name = "after_update_on" + TBL_BOOKSHELF;
         body = " AFTER UPDATE ON " + TBL_BOOKSHELF + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "    UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
                 + " WHERE " + DOM_PK_ID + " IN \n"
                 + "(SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_BOOKSHELF
                 + " WHERE " + DOM_FK_BOOKSHELF_ID + "=Old." + DOM_PK_ID + ");\n"
@@ -373,19 +357,20 @@ public class DBHelper
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
-        /**
-         * Deleting an {@link Author).
-         *
-         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
-         */
-        name = "after_delete_on_" + TBL_BOOK_AUTHOR;
-        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR + " FOR EACH ROW\n"
-                + " BEGIN\n"
-                + "  " + UPDATE_BOOK_LAST_UPDATE_DATE + ";\n"
-                + " END";
-
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+//        /**
+//         * Deleting an {@link Author). Currently not possible to delete an Author directly.
+//         *
+//         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+//         */
+//        name = "after_delete_on_" + TBL_BOOK_AUTHOR;
+//        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR + " FOR EACH ROW\n"
+//                + " BEGIN\n"
+//                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+//                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK_ID + ";\n"
+//                + " END";
+//
+//        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
+//        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
         /**
          * Updating an {@link Author).
@@ -395,6 +380,8 @@ public class DBHelper
          * (i.e. each toc has the right author, but the book says "many authors")
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         *
+         * VERIFIED 2019-02-05
          */
         name = "after_update_on" + TBL_AUTHORS;
         body = " AFTER UPDATE ON " + TBL_AUTHORS + " FOR EACH ROW\n"
@@ -404,12 +391,13 @@ public class DBHelper
                 + " WHERE " + DOM_PK_ID + " IN \n"
                 // actual books by this Author
                 + "(SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_AUTHOR
-                + " WHERE " + DOM_FK_BOOK_ID + "=Old." + DOM_PK_ID + ")\n"
+                + " WHERE " + DOM_FK_AUTHOR_ID + "=Old." + DOM_PK_ID + ")\n"
 
                 + " OR " + DOM_PK_ID + " IN \n"
                 // books with entries in anthologies by this Author
-                + "(SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_TOC_ENTRIES
-                + " WHERE " + DOM_FK_BOOK_ID + "=Old." + DOM_PK_ID + ");\n"
+                + "(SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_TOC_ENTRIES.ref()
+                + TBL_BOOK_TOC_ENTRIES.join(TBL_TOC_ENTRIES)
+                + " WHERE " + DOM_FK_AUTHOR_ID + "=Old." + DOM_PK_ID + ");\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -419,11 +407,14 @@ public class DBHelper
          * Deleting a {@link Series).
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         *
+         * VERIFIED 2019-02-05
          */
         name = "after_delete_on_" + TBL_BOOK_SERIES;
         body = " AFTER DELETE ON " + TBL_BOOK_SERIES + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  " + UPDATE_BOOK_LAST_UPDATE_DATE + ";\n"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK_ID + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -433,11 +424,13 @@ public class DBHelper
          * Update a {@link Series}
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         *
+         * VERIFIED 2019-02-05
          */
         name = "after_update_on" + TBL_SERIES;
         body = " AFTER UPDATE ON " + TBL_SERIES + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "    UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
                 + " WHERE " + DOM_PK_ID + " IN \n"
                 + "(SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_SERIES
                 + " WHERE " + DOM_FK_SERIES_ID + "=Old." + DOM_PK_ID + ");\n"
@@ -446,28 +439,18 @@ public class DBHelper
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
-//         * Deleting a {@link TocEntry}.
-//         *
-//         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
-//         */
-//        name = "after_delete_on_" + TBL_BOOK_TOC_ENTRIES;
-//        body = " AFTER DELETE ON " + TBL_BOOK_TOC_ENTRIES + " FOR EACH ROW\n"
-//                + " BEGIN\n"
-//                + "  " + UPDATE_BOOK_LAST_UPDATE_DATE + ";\n"
-//                + " END";
-//
-//        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-//        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
-
         /**
          * Deleting a Loan.
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         *
+         * VERIFIED 2019-02-05
          */
         name = "after_delete_on_" + TBL_BOOK_LOANEE;
         body = " AFTER DELETE ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  " + UPDATE_BOOK_LAST_UPDATE_DATE + ";\n"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK_ID + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -481,7 +464,8 @@ public class DBHelper
         name = "after_update_on_" + TBL_BOOK_LOANEE;
         body = " AFTER UPDATE ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  " + UPDATE_BOOK_LAST_UPDATE_DATE + ";\n"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK_ID + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -491,11 +475,14 @@ public class DBHelper
          * Inserting a Loan.
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
+         *
+         * VERIFIED 2019-02-05
          */
         name = "after_insert_on_" + TBL_BOOK_LOANEE;
         body = " AFTER INSERT ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  " + UPDATE_BOOK_LAST_UPDATE_DATE + ";\n"
+                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
+                + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK_ID + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -510,7 +497,8 @@ public class DBHelper
         name = "after_delete_on_" + TBL_BOOKS;
         body = " AFTER DELETE ON " + TBL_BOOKS + " FOR EACH ROW\n"
                 + " BEGIN\n"
-                + "  " + DELETE_BOOK_FROM_FTS + ";\n"
+                + "  DELETE FROM " + TBL_BOOKS_FTS
+                + " WHERE " + DOM_PK_DOCID + '=' + "Old." + DOM_PK_ID + ";\n"
                 + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);

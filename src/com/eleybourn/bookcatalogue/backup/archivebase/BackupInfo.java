@@ -179,15 +179,18 @@ public class BackupInfo
         return mBundle.getInt(INFO_ARCHIVER_VERSION);
     }
 
+    @SuppressWarnings("unused")
     public int getCompatArchiver() {
         return mBundle.getInt(INFO_ARCHIVER_COMPATIBLE);
     }
 
+    @SuppressWarnings("unused")
     @Nullable
     public String getAppPackage() {
         return mBundle.getString(INFO_APPPACKAGE);
     }
 
+    @SuppressWarnings("unused")
     @Nullable
     public String getAppVersionName() {
         return mBundle.getString(INFO_APPVERSIONNAME);
@@ -203,6 +206,7 @@ public class BackupInfo
      *
      * @since v200
      */
+    @SuppressWarnings("unused")
     public int getDatabaseVersionCode() {
         switch (getAppVersionCode()) {
             case 179:
@@ -215,10 +219,12 @@ public class BackupInfo
     }
 
 
+    @SuppressWarnings("unused")
     public int getSdk() {
         return mBundle.getInt(INFO_SDK);
     }
 
+    @SuppressWarnings("unused")
     public boolean hasDatabase() {
         return mBundle.getBoolean(INFO_HAS_DATABASE);
     }

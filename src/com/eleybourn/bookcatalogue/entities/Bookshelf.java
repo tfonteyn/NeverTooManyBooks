@@ -25,20 +25,15 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID
 
 /**
  * Represents a Bookshelf.
- * <p>
- * ENHANCE: store the style in the db table.
  */
 public class Bookshelf
         implements Parcelable, Utils.ItemWithIdFixup {
 
-    /** how to concat bookshelf names. This should be using '|' as {@link StringList}
+    /**
+     * how to concat bookshelf names. This should be using '|' as {@link StringList}
      * but backwards compatibility rules here.
      */
     public static final Character MULTI_SHELF_SEPARATOR = ',';
-
-    /** String encoding use. */
-    private static final char FIELD_SEPARATOR = '*';
-
     /** {@link Parcelable}. */
     public static final Creator<Bookshelf> CREATOR =
             new Creator<Bookshelf>() {
@@ -57,6 +52,8 @@ public class Bookshelf
      * Storing the name and not the id. If you export/import... the id will be different.
      */
     public static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
+    /** String encoding use. */
+    private static final char FIELD_SEPARATOR = '*';
     /** the virtual 'All Books'. */
     private static final int ALL_BOOKS = -1;
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
@@ -115,9 +112,9 @@ public class Bookshelf
     /**
      * Constructor that will attempt to parse a single string into a Bookshelf.
      *
-     * @param element        the string to decode
-     *
-     * format: "name * styleUUID"
+     * @param element the string to decode
+     *                <p>
+     *                format: "name * styleUUID"
      */
     public static Bookshelf fromString(@NonNull final String element) {
         List<String> list = new StringList<String>()
@@ -215,7 +212,6 @@ public class Bookshelf
         Prefs.getPrefs().edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
     }
 
-    @Override
     public long getId() {
         return mId;
     }
@@ -270,7 +266,6 @@ public class Bookshelf
         return mCachedStyle;
     }
 
-
     /**
      * Replace local details from another Bookshelf.
      *
@@ -291,7 +286,6 @@ public class Bookshelf
     }
 
     /** {@link Parcelable}. */
-    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
@@ -317,7 +311,7 @@ public class Bookshelf
      */
     @NonNull
     public String stringEncoded() {
-        return mName + ' ' + FIELD_SEPARATOR + ' '+ mCachedStyle.getUuid();
+        return mName + ' ' + FIELD_SEPARATOR + ' ' + mCachedStyle.getUuid();
     }
 
 
@@ -354,10 +348,10 @@ public class Bookshelf
             return false;
         }
         Bookshelf that = (Bookshelf) obj;
-        if (this.mId != 0 && that.mId != 0 && this.mId != that.mId) {
+        if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;
         }
-        return Objects.equals(this.mName, that.mName);
+        return Objects.equals(mName, that.mName);
     }
 
     @Override

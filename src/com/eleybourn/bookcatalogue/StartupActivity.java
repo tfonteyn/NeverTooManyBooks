@@ -105,8 +105,8 @@ public class StartupActivity
     /**
      * Progress Dialog for startup tasks.
      * <p>
-     * @deprecated
-     * API: 26 this is a global requirement:
+     *
+     * @deprecated API: 26 this is a global requirement:
      * ProgressDialog is deprecated
      * https://developer.android.com/reference/android/app/ProgressDialog
      * Suggested: ProgressBar or Notification.
@@ -593,11 +593,13 @@ public class StartupActivity
             // Get a DB to make sure the FTS rebuild flag is set appropriately,
             // do not close the database!
             DBA db = taskContext.getDb();
-            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)) {
+            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
+                                            false)) {
                 updateProgress(R.string.progress_msg_rebuilding_search_index);
                 db.rebuildFts();
-                Prefs.getPrefs().edit().putBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
-                                                   false).apply();
+                Prefs.getPrefs().edit().putBoolean(
+                        UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
+                        false).apply();
             }
         }
 
@@ -624,6 +626,9 @@ public class StartupActivity
                 CoversDBA coversDBAdapter = taskContext.getCoversDb();
                 coversDBAdapter.analyze();
             }
+
+            //TOMF: for use during test... remove when done.
+            db.recreateTriggers();
 
             if (Prefs.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED,
                                             false)) {
