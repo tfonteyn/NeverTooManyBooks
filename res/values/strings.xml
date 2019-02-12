@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?><!--
  define entities that can be used inside of other string (not possible with standard Android resources
- e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
+ e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
 
 <resources>
 
-    <!-- TODO: make this user controlled ? -->
+    <!-- Regular expression !! - TODO: make this user controlled ? -->
     <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
 
     <!-- ####################################################################################### -->
@@ -22,7 +22,9 @@
     <!-- ####################################################################################### -->
 
     <string name="debug_subject">Gathered debugging information</string>
-    <string name="debug_body">Please take the time to briefly describe the problem you are experiencing.</string>
+    <string name="debug_body">
+        Please take the time to briefly describe the problem you are experiencing.
+    </string>
     <string name="debug_send_info_text">
         Click on the button below to gather information about any recent crashes or other
         errors and send it to one of our developers. This will create a backup copy of your
@@ -33,7 +35,7 @@
     <string name="acra_resDialogTitle">&APP_NAME; Crash</string>
     <string name="acra_resDialogText">
         It looks like &APP_NAME; has crashed. If possible describe anything you think may be
-        relevant below and press "OK" to send us an email about the crash.
+        relevant below and press “OK” to send us an email about the crash.
         You will see the email before it is sent.
     </string>
 
@@ -52,32 +54,34 @@
     <!-- ========== ValidatorException error messages; currently never shown. ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="vldt_unable_to_get_value">Unable to get value for \'%s\'</string>
-    <string name="vldt_integer_expected">Expected an integer value for \'%s\'</string>
-    <string name="vldt_real_expected">Expected a real number for \'%s\'</string>
-    <string name="vldt_date_expected">Expected a date for \'%s\'</string>
-    <string name="vldt_boolean_expected">Expected a boolean value (0,1,t,f,true,false) for \'%s\'</string>
-    <string name="vldt_non_blank_required">Non-empty value required for \'%s\'</string>
-    <string name="vldt_blank_required">Empty value required for \'%s\'</string>
-    <string name="vldt_failed">Validation failed for \'%s\'</string>
+    <string name="vldt_unable_to_get_value">Unable to get value for \‘%s\’</string>
+    <string name="vldt_integer_expected">Expected an integer value for \‘%s\’</string>
+    <string name="vldt_real_expected">Expected a real number for \‘%s\’</string>
+    <string name="vldt_date_expected">Expected a date for \‘%s\’</string>
+    <string name="vldt_boolean_expected">Expected a boolean value (0,1,t,f,true,false) for \‘%s\’</string>
+    <string name="vldt_non_blank_required">Non-empty value required for \‘%s\’</string>
+    <string name="vldt_blank_required">Empty value required for \‘%s\’</string>
+    <string name="vldt_failed">Validation failed for \‘%s\’</string>
     <string name="vldt_read_start_after_end">The date reading started is after the end date</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== General error messages ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="error_unexpected_error">An unexpected error has occurred, please send
-        the details to support via \'Help\' page from the main menu.</string>
+    <string name="error_unexpected_error">
+        An unexpected error has occurred, please send the details to support via “Help” page from
+        the main menu.
+    </string>
     <string name="error_unknown">An unknown error occurred.</string>
-    <string name="error_if_the_problem_persists">If the problem persists,
-        contact support via \'Help\' page from the main menu.</string>
-
+    <string name="error_if_the_problem_persists">
+        If the problem persists, contact support via “Help” page from the main menu.
+    </string>
     <string name="error_search_failed">Searching for the book failed.
         Please check your network settings.</string>
     <string name="error_search_exception">Search failed while %1$s: %2$s</string>
     <string name="error_column_is_blank">Column %1$s is blank at row %2$s</string>
     <string name="error_columns_are_blank">Columns %1$s are all blank at row %2$d</string>
-    <string name="error_automatic_toc_population_failed">Automatic Population of Titles Failed</string>
+    <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed</string>
     <string name="error_no_internet_connection">Internet connection is not available.</string>
     <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
@@ -87,7 +91,7 @@
     <!-- Displayed when any write operation to Shared Storage fails -->
     <string name="error_storage_not_writable">Please check that the SD Card is writable,
         and has sufficient space.</string>
-    <!-- Shared Storage file system is not available (it's not mounted, busy, USB locked it, etc.... -->
+    <!-- Shared Storage is not available (it's not mounted, busy, USB locked it, etc.... -->
     <string name="error_storage_not_available">The SD Card is not available</string>
     <!-- Shared Storage file system access fails for some reason (but is is available) -->
     <string name="error_storage_no_access">Cannot access the SD Card</string>
@@ -101,8 +105,11 @@
     <string name="error_network_timeout">No response, please try again</string>
     <string name="error_email_failed">Sending the email failed.</string>
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
-    <string name="error_search_configuration">Search configuration error.
-        Please open the Admin page and check your Search Site preferences</string>
+    <string name="error_search_configuration">
+        Search configuration error.
+        Please open the Admin page and check your Search Site preferences
+    </string>
+    <string name="error_authorization_failed">%1$s authorization failed</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
@@ -121,7 +128,7 @@
         on the SD card at each upgrade, when you backup the database, or when the application
         crashes. Click the button below to purge these files from your SD card. If you have
         been experiencing crashing or other errors, please consider using the
-        \'Send Information\' button first.
+        “Send Information” button first.
     </string>
     <string name="info_option_not_available_until_book_saved">
         This option is not available until the book is saved</string>
@@ -150,9 +157,8 @@
         or the id field is blank.
     </string>
     <string name="warning_book_not_found">
-        The book was not found.
-        You can sometimes find the correct barcode on the inside front cover.
-        Otherwise please enter the details manually.
+        The book was not found. You can sometimes find the correct barcode on the inside front
+        cover. Otherwise please enter the details manually.
     </string>
     <string name="warning_immediate_global_changes">
         NOTE: All saved changes apply instantly and globally</string>
@@ -184,7 +190,7 @@
     <string name="warning_x_is_not_a_valid_isbn">%1$s is not a valid ISBN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s is not a valid ISBN or ASIN</string>
     <string name="warning_invalid_isbn_x_specified_in_search">
-        Invalid ISBN \'%1$s\' specified in search
+        Invalid ISBN “%1$s” specified in search
     </string>
 
     <string name="warning_cover_field_not_set">Cover is not set</string>
@@ -214,7 +220,9 @@
     <!-- Displayed when a file/open dialog results in selecting a non-existent file -->
     <string name="warning_select_an_existing_file">Please select an existing file</string>
     <!-- Displayed when a file/save dialog results in selecting a directory file -->
-    <string name="warning_select_a_non_directory">Please select a file that is not a directory</string>
+    <string name="warning_select_a_non_directory">
+        Please select a file that is not a directory
+    </string>
 
     <string name="warning_bad_scanner">
         It looks like your existing barcode scanner app is not compatible with &APP_NAME;.
@@ -229,12 +237,12 @@
         You have unsaved changes, if you exit now they will be lost.
     </string>
     <string name="confirm_really_delete_series">
-        Really delete series \'%s\'?\n\nThe books themselves will not be deleted.
-        \n\nConsider editing the series and changing the series name to that of another series
+        Really delete series “%s”?\n\nThe books themselves will not be deleted.\n
+        \nConsider editing the series and changing the series name to that of another series
         to preserve this data
     </string>
     <string name="confirm_really_delete_book">
-        This will completely delete the book entitled \'%1$s\' by %2$s.
+        This will completely delete the book entitled “%1$s” by %2$s.
         Are you sure you wish to proceed?
     </string>
     <string name="confirm_merge_bookshelves">
@@ -250,12 +258,12 @@
         Warning, this may take a long time.
     </string>
     <string name="confirm_apply_author_changed">
-        You have changed the author from:\n  \'%1$s\' to \n  \'%2$s\'\n
-        How do you wish to apply this change?\nNote: The choice \'%3$s\' will be applied instantly.
+        You have changed the author from:\n  “%1$s” to \n  “%2$s”\n
+        How do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly.
     </string>
     <string name="confirm_apply_series_changed">
-        You have changed the series from:\n  \'%1$s\' to \n  \'%2$s\'\n
-        How do you wish to apply this change?\nNote: The choice \'%3$s\' will be applied instantly.
+        You have changed the series from:\n  “%1$s” to \n  “%2$s”\n
+        How do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly.
     </string>
 
     <!-- ####################################################################################### -->
@@ -296,7 +304,9 @@
     <!-- Displayed in progress dialog when exporting covers -->
     <string name="progress_msg_covers">%1$s covers processed (%2$s missing)</string>
     <!-- Displayed in progress dialog when exporting covers -->
-    <string name="progress_msg_covers_skip">%1$s covers processed (%2$s missing, %3$s skipped)</string>
+    <string name="progress_msg_covers_skip">
+        %1$s covers processed (%2$s missing, %3$s skipped)
+    </string>
 
     <!-- progress final message -->
     <string name="progress_end_import_complete">Import Complete</string>
@@ -342,8 +352,8 @@
     <!-- ========== Goodreads specific ========== -->
     <!-- ####################################################################################### -->
     <string name="gr_auth_blurb_part1">
-        Goodreads is a web site whose stated mission is "to help people find and share books they love".
-    	They have an extensive database of books and reviews, and if you are a registered
+        Goodreads is a web site whose stated mission is “to help people find and share books they love”.
+        They have an extensive database of books and reviews, and if you are a registered
         Goodreads user, &APP_NAME; can export your books, shelves and reviews to Goodreads
         and import your books, shelves and reviews from Goodreads. &APP_NAME; is a stand-alone
         application and does not require Goodreads, but if you are interested you can register at:
@@ -351,9 +361,9 @@
     <string name="gr_auth_blurb_part2">
         Once you are registered, or if you are already a Goodreads user, you can authorize &APP_NAME;
         access your Goodreads data by pressing the button below. It will take you to a web page
-    	where you will need to login to Goodreads and authorize this application. We will never see
-    	your password, and you can disable access via the Goodreads website. Due to the vagaries of
-    	the web, you may end up on a blank web page. Just click the back button to return here!
+        where you will need to login to Goodreads and authorize this application. We will never see
+        your password, and you can disable access via the Goodreads website. Due to the vagaries of
+        the web, you may end up on a blank web page. Just click the back button to return here!
     </string>
     <string name="gr_auth_blurb_part3">
         But remember…there is no need to do any of this: &APP_NAME; works just fine without it!
@@ -380,7 +390,6 @@
 
     <string name="gr_auth_error">Goodreads authorization resulted in an error.</string>
     <string name="gr_auth_check">Goodreads authorization check</string>
-    <string name="gr_auth_failed">Goodreads authorization failed</string>
     <string name="gr_auth_successful">Goodreads authorization successful</string>
     <string name="gr_import_all_from_goodreads">Import all from Goodreads</string>
     <string name="gr_action_cannot_be_completed">
@@ -401,35 +410,27 @@
         not found in Goodreads
     </string>
     <string name="gr_send_books_to_goodreads_blurb">
-        This will send your library to Goodreads.
-    	\n
+        This will send your library to Goodreads.\n
         \nYou can choose to send all of your books, or only the books you have updated
-    	since they were last copied to or from Goodreads (including all books that have
-    	not been sent yet) or you can cancel the update.
-    	\n
-        \nIf you have never sent any books then there is no
-    	difference between the first two options.
+        since they were last copied to or from Goodreads (including all books that have
+        not been sent yet) or you can cancel the update.\n
+        \nIf you have never sent any books then there is no difference between the first two options.
     </string>
     <string name="gr_explain_goodreads_no_isbn">
         The selected book does not have an ISBN; it is not possible to automatically synchronize
-        it with Goodreads. The simplest solution is to:
-    	\n
-        \n(1) delete the book from &APP_NAME; \n
-        \n(2) add the book in Goodreads manually via their web interface
-    	\n
-        \n(3) Synchronize with Goodreads
-    	\n
+        it with Goodreads. The simplest solution is to:\n
+        \n(1) delete the book from &APP_NAME;\n
+        \n(2) add the book in Goodreads manually via their web interface\n
+        \n(3) Synchronize with Goodreads\n
         \nThis will result in the book being recreated in &APP_NAME; and the two will remain
         linked from that point onwards.
     </string>
     <string name="gr_explain_goodreads_no_match">
         The ISBN of the selected book could not be found on Goodreads. There are two possible
-        causes for this:
-    	either the data for the book is wrong (you should check the ISBN), or the book is not in Goodreads.
-    	\n
-        \nIf you make any changes to the data in &APP_NAME;, just press the \'Retry\' button
-        and check to see if the	resulting background task succeeds.
-    	\n
+        causes for this: either the data for the book is wrong (you should check the ISBN),
+        or the book is not in Goodreads.\n
+        \nIf you make any changes to the data in &APP_NAME;, just press the “Retry” button
+        and check to see if the	resulting background task succeeds.\n
         \nIf the data looks correct and the book is still not found, then a book with that ISBN
         needs to be added to Goodreads manually via their web site. Once that is done, you can
         retry sending the book.
@@ -474,33 +475,26 @@
     </string>
     <!-- 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_styles_editor">
-        You can use this screen to customize the list of styles that will be displayed in your default styles menu.
-    	\n
-        \nA \'tick\' indicates the style will be shown in the list, \'un-tick\' to hide it and vice versa.
-    	\n
-        \nIf no styles are ticked, then all styles will be shown.
-    	\n
-        \nYou can re-order the hierarchy by dragging the icon at the extreme right of each row up or down.
-    	\n
+        You can use this screen to customize the list of styles that will be displayed in your
+        default styles menu.\n
+        \nA “tick” indicates the style will be shown in the list, “un-tick” to hide it and vice versa.\n
+        \nIf no styles are ticked, then all styles will be shown.\n
+        \nYou can re-order the hierarchy by dragging the icon at the extreme right of each row up or down.\n
         \nLong-clicking anywhere else in a row will allow you to edit or clone the details of a specific style.
         \nIf you cloned a style, and changed your mind, you will need to delete it yourself.
     </string>
     <!-- 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_groups">
-        You can use this screen to modify the hierarchy of headings for a specific book list style.
-    	\n
-        \nA \'tick\' indicates the heading will be shown in the list, \'unc-tick\' to hide it and vice versa.
-    	\n
+        You can use this screen to modify the hierarchy of headings for a specific book list style.\n
+        \nA “tick” indicates the heading will be shown in the list, “un-tick” to hide it and vice versa.\n
         \nYou can re-order the hierarchy by dragging the icon at the extreme right of each row up or down.
     </string>
     <!-- 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_properties">
-        You can use this screen to set the characteristics of a specific book list style.
-    	\n
+        You can use this screen to set the characteristics of a specific book list style.\n
         \nYou can change the name, edit the groupings to change the hierarchy, and adjust a
-        variety of other preferences to build a style that you find useful.
-    	\n
-        \nIt is also possible to use \'Filters\' to modify the selection of books that will
+        variety of other preferences to build a style that you find useful.\n
+        \nIt is also possible to use “Filters” to modify the selection of books that will
         be displayed in	the list. e.g. to only retrieve books you have not read yet and more.
     </string>
 
@@ -522,10 +516,9 @@
         will allow you to perform a variety of actions appropriate for that event.
     </string>
     <string name="hint_booklist_style_menu">
-        This menu allows you to select the style of the list.
-    	\n
+        This menu allows you to select the style of the list.\n
         \nYou can also customize this menu, as well as create your own list styles, by clicking
-        \'Customize\' at the end of the list.
+        “Customize” at the end of the list.
     </string>
     <string name="hint_autorotate_camera_images">
         If you find yourself always rotating camera images in the same direction, try changing the
@@ -543,17 +536,17 @@
         overflow menu icon.
     </string>
     <!-- Hint text displayed when user enters the book list -->
-    <string name="hint_book_list">Tapping on a book will show you the details of the book.
-        A long-press on an item in the list will give you more options.</string>
+    <string name="hint_book_list">
+        Tapping on a book will show you the details of the book.
+        A long-press on an item in the list will give you more options.
+    </string>
     <!-- A hint describing the benefit of following the Amazon links -->
-    <string name="hint_amazon_links_blurb">
-        <![CDATA[
-        <p>If you buy things from Amazon after selecting the  « <i>"%1$s"</i> », « <i>"%2$s"</i> » or « <i>"%3$s"</i> »
+    <string name="hint_amazon_links_blurb"><![CDATA[
+        <p>If you buy things from Amazon after selecting the  <i>“%1$s”</i>, <i>“%2$s”</i> or <i>“%3$s”</i>
         menu items, a proportion of the purchase price will be sent to the developers of %4$s.</p>
         <p>You can also use the
-         <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29">links on our FAQ</a>
-          to navigate directly to Amazon or PayPal.</p>
-        ]]>
+         <a href=“https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29”>links on our FAQ</a>
+          to navigate directly to Amazon or PayPal.</p>]]>
     </string>
 
     <!-- ####################################################################################### -->
@@ -1049,7 +1042,7 @@
         selecting books and/or covers to export:</string>
     <!-- displayed when a Backup is done -->
     <string name="export_info_success_archive_details">A %3$s file called %2$s was created in the
-        \"%1$s\" directory on your SD card.\n\nYou should manually copy it elsewhere to protect
+        “%1$s” directory on your SD card.\n\nYou should manually copy it elsewhere to protect
         the data in case your device is damaged, lost, or stolen.
     </string>
     <!-- Displayed when a backup archive fails -->
@@ -1137,41 +1130,38 @@
     <string name="pt_ui_system_locale">System Locale</string>
     <string name="unrecognized_task">Unrecognized Task</string>
     <string name="events_found">%1$d events found</string>
-    <string name="pt_bob_filter_read">Select based on \'Read\' status</string>
+    <string name="pt_bob_filter_read">Select based on “Read” status</string>
     <string name="title_export_books">
         The books in your catalogue will be exported. Select on one of two options to start
-        the export, or press \'back\' to cancel:</string>
+        the export, or press “back” to cancel:</string>
     <string name="title_import_books_blurb">The books in this archive will be imported. Select on
-        one of two options to start the import, or press \'back\' to cancel:</string>
+        one of two options to start the import, or press “back” to cancel:</string>
 
     <string name="hint_startup_screen">
         This is the standard &APP_NAME; startup screen. If you prefer, you can startup directly
-        in \'My Books\'; the preferred startup screen can be changed in preferences.
+        in “My Books”; the preferred startup screen can be changed in preferences.
     </string>
     <string name="hint_booklist_global_properties">
-        You can use this screen to set the default characteristics of all book list styles.
-    	\n
+        You can use this screen to set the default characteristics of all book list styles.\n
         \n
-        Most properties can be overridden by individual styles, but the default values are defined here.
- 		\n
+        Most properties can be overridden by individual styles, but the default values are defined here.\n
         \n
         You can change the background, change how lists are displayed at startup, and adjust
-        a variety of other preferences that will be applied to all your styles when possible.
-    	\n
+        a variety of other preferences that will be applied to all your styles when possible.\n
         \n
         You can also edit the styles menu, and the styles themselves from here.
     </string>
     <string name="hint_tempus_locum" translatable="false">
-	    		<![CDATA[
-	    		<p><b>The lead developer of BookCatalogue has developed a new app!</b></p>
-				<p>Keep track of locations, images, recordings and notes; and if you are into
-				science, then manage samples and labels.</p>
-				<p>Please check it out in the Play Store:</p>
-				<p><a href="market://details?id=info.philipwarner.fieldassistant">Tempus Locum</a></p>
-				<p>or you can see the web site here:</p>
-				<p><a href="http://www.tempuslocum.com/">http://www.tempuslocum.com/</a>
-				</p>
-			]]>
+        <![CDATA[
+        <p><b>The lead developer of BookCatalogue has developed a new app!</b></p>
+        <p>Keep track of locations, images, recordings and notes; and if you are into
+        science, then manage samples and labels.</p>
+        <p>Please check it out in the Play Store:</p>
+        <p><a href="market://details?id=info.philipwarner.fieldassistant">Tempus Locum</a></p>
+        <p>or you can see the web site here:</p>
+        <p><a href="http://www.tempuslocum.com/">http://www.tempuslocum.com/</a>
+        </p>
+        ]]>
     </string>
 
     <!-- ####################################################################################### -->
@@ -1235,5 +1225,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="books_found">%1$s books found</string>
+    <string name="error_not_available">not available</string>
+    <string name="searching_titelbank">Searching TitelBank</string>
 
 </resources>

@@ -91,7 +91,7 @@
     <string name="menu_delete_toc_entry">Verwijder titels uit bloemlezing</string>
     <string name="lbl_is_anthology">Is dit boek een bloemlezing?</string>
     <string name="menu_populate_toc">Automatisch titels invullen (alleen ISFDB)</string>
-    <string name="error_automatic_toc_population_failed">Automatisch titels invullen mislukt</string>
+    <string name="error_auto_toc_population_failed">Automatisch titels invullen mislukt</string>
     <string name="lbl_anthology">Bloemlezing</string>
     <string name="toc_confirm">Bevestig dat deze titels (merendeels) correct zijn</string>
     <string name="menu_cover_add_from_camera">Van Camera…</string>
@@ -112,6 +112,7 @@
     <string name="searching_amazon_books">Zoek bij Amazon</string>
     <string name="searching_google_books">Zoeken bij Google Books</string>
     <string name="searching_library_thing">Zoeken bij LibraryThing</string>
+    <string name="searching_titelbank">Zoeken by TitelBank.nl</string>
     <string name="select_bookshelves">Selecteer Boekenplanken</string>
     <string name="lbl_format">Formaat</string>
     <string name="lbl_description">Beschrijving</string>
@@ -120,14 +121,14 @@
     <string name="menu_search_books">Zoek boeken</string>
     <string name="hint_book_search_by_text">toevoegen van boeken via ISBN is veel preciezer dan toevoegen via auteur en titel en verdient meestal de voorkeur. De juiste streepjescode kunt u meestal vinden aan de achterkant van de boekomslag. \n\n</string>
     <string name="about_help_click_here">Tik hier voor online help</string>
-    <string name="vldt_unable_to_get_value">Kan de waarde voor \'%s\' niet krijgen</string>
-    <string name="vldt_integer_expected">Verwachtte een numerieke waarde voor \'%s\'</string>
-    <string name="vldt_real_expected">Verwachtte een echt nummer voor \'%s\'</string>
-    <string name="vldt_date_expected">Verwachtte een datum voor \'%s\'</string>
-    <string name="vldt_boolean_expected">Verwachtte een boolean waarde (0,1,t,f,waar,onwaar) voor \'%s\'</string>
-    <string name="vldt_non_blank_required">Waardeveld mag niet leeg zijn voor \'%s\'</string>
-    <string name="vldt_blank_required">Waardeveld moet leeg zijn voor \'%s\'</string>
-    <string name="vldt_failed">Validatie mislukt voor \'%s\'</string>
+    <string name="vldt_unable_to_get_value">Kan de waarde voor \‘%s\’ niet krijgen</string>
+    <string name="vldt_integer_expected">Verwachtte een numerieke waarde voor \‘%s\’</string>
+    <string name="vldt_real_expected">Verwachtte een echt nummer voor \‘%s\’</string>
+    <string name="vldt_date_expected">Verwachtte een datum voor \‘%s\’</string>
+    <string name="vldt_boolean_expected">Verwachtte een boolean waarde (0,1,t,f,waar,onwaar) voor \‘%s\’</string>
+    <string name="vldt_non_blank_required">Waardeveld mag niet leeg zijn voor \‘%s\’</string>
+    <string name="vldt_blank_required">Waardeveld moet leeg zijn voor \‘%s\’</string>
+    <string name="vldt_failed">Validatie mislukt voor \‘%s\’</string>
     <string name="vldt_read_start_after_end">De begindatum voor lezen moet vóór de einddatum liggen</string>
     <string name="progress_end_backup_success">Back-up gelukt</string>
     <string name="export_error_backup_failed">Back-up mislukt</string>
@@ -174,13 +175,13 @@
     <string name="warning_no_isbn_no_editions">Kan geen uitgavegegevens verkrijgen van een boek zonder ISBN</string>
     <string name="unsaved_edits">De door u gemaakte veranderingen zijn niet opgeslagen. Wilt u toch doorgaan?</string>
     <string name="unsaved_edits_title">Niet opgeslagen veranderingen</string>
-    <string name="confirm_apply_author_changed">U heeft de auteursnaam veranderd van:\n  \'%1$s\' naar \n  \'%2$s\'\nHoe wilt u deze verandering toepassen?\nNB: De keuze \'%3$s\' wordt onmiddelijk toegepast.</string>
+    <string name="confirm_apply_author_changed">U heeft de auteursnaam veranderd van:\n  \‘%1$s\’ naar \n  \‘%2$s\’\nHoe wilt u deze verandering toepassen?\nNB: De keuze \‘%3$s\’ wordt onmiddelijk toegepast.</string>
     <string name="btn_this_book">Dit boek</string>
     <string name="title_scope_of_change">Omvang van de verandering</string>
-    <string name="confirm_apply_series_changed">U heeft de serie veranderd van:\n  \'%1$s\' naar \n  \'%2$s\'\nHoe wilt u deze verandering doorvoeren?\nNB: De keuze \'%3$s\' wordt onmiddelijk toegepast.</string>
+    <string name="confirm_apply_series_changed">U heeft de serie veranderd van:\n  \‘%1$s\’ naar \n  \‘%2$s\’\nHoe wilt u deze verandering doorvoeren?\nNB: De keuze \‘%3$s\’ wordt onmiddelijk toegepast.</string>
     <string name="warning_unable_to_find_book">Kan gespecificeerd boek niet vinden</string>
     <string name="list_and">en</string>
-    <string name="confirm_really_delete_book">Dit zal het boek met de titel \'%1$s\' door %2$s compleet verwijderen. Weet u zeker dat u door wilt gaan?</string>
+    <string name="confirm_really_delete_book">Dit zal het boek met de titel \‘%1$s\’ door %2$s compleet verwijderen. Weet u zeker dat u door wilt gaan?</string>
     <string name="warning_editions_require_isbn">Andere uitgaven ophalen vereist een ISBN</string>
     <string name="warning_no_editions">Geen uitgavegegevens beschikbaar</string>
     <string name="title_finding_editions">Zoeken naar uitgaven…</string>
@@ -207,7 +208,7 @@
     <string name="btn_reset">Herstellen</string>
     <string name="debug_send_info_text">Tik op de knop hieronder om informatie te verzamelen over recente crashes of andere fouten en zend deze naar een van onze ontwikkelaars. Dit maakt een back-up van uw hele database en van alle log-bestanden. Als u deze bestanden niet wilt opsturen, kunt u ze van de bijlagen lijst in het e-mailbericht verwijderen voordat u dit verstuurt.</string>
     <string name="about_send_info">Zend informatie</string>
-    <string name="info_cleanup_files_text">Permanent te verwijderen bestanden nemen %s van uw SD kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD kaart. Als u veel crashes ondervindt of ander fouten, overweeg dan de  \'Zend Informatie\' knop eerst te gebruiken.</string>
+    <string name="info_cleanup_files_text">Permanent te verwijderen bestanden nemen %s van uw SD kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD kaart. Als u veel crashes ondervindt of ander fouten, overweeg dan de  \‘Zend Informatie\’ knop eerst te gebruiken.</string>
     <string name="cleanup_files">Bestanden opschonen</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
@@ -231,12 +232,12 @@
     <string name="menu_admin_and_prefs">Administratie en voorkeuren</string>
     <string name="gr_menu_send_to_goodreads">Zend naar Goodreads</string>
     <string name="gr_auth_blurb_part1">
-        Goodreads is een website met de missie: "mensen helpen boeken te vinden en te delen met
-        anderen". Ze hebben een uitgebreide database met boeken en boekbesprekingen.
+        Goodreads is een website met de missie: “mensen helpen boeken te vinden en te delen met
+        anderen”. Ze hebben een uitgebreide database met boeken en boekbesprekingen.
         Als geregistreerde gebruiker kan &APP_NAME; uw boeken, boekenplanken en boekbesprekingen
-        exporteren en importeren naar en van Goodreads.	&APP_NAME; is een op zichzelf staande
-        applicatie en heeft Goodreads niet nodig, maar als u toch geïnteresseerd
-    	bent kunt u zich registreren op:
+        exporteren en importeren naar en van Goodreads. &APP_NAME; is een op zichzelf staande
+        applicatie en heeft Goodreads niet nodig, maar als u toch geïnteresseerd bent kunt
+        u zich registreren op:
     </string>
     <string name="gr_auth_blurb_part2">
         Eenmaal geregistreerd, of als u al gebruiker bent, kunt u &APP_NAME; toestemming
@@ -271,7 +272,7 @@
     <string name="warning_no_isbn_stored_for_book">Geen ISBN opgeslagen voor boek</string>
     <string name="title_select_an_action">Selecteer een actie</string>
     <string name="gr_auth_check">Goodreads autorisatie controle</string>
-    <string name="gr_auth_failed">Goodreads autorisatie mislukt</string>
+    <string name="error_authorization_failed">%1$s autorisatie mislukt</string>
     <string name="gr_auth_successful">Goodreads autorisatie gelukt</string>
     <string name="info_authorized">Geautoriseerd</string>
     <string name="info_not_authorized">Niet geautoriseerd</string>
@@ -289,7 +290,7 @@
     <string name="acra_resNotifTitle">&APP_NAME; crash</string>
     <string name="acra_resNotifText">Tik hier voor details</string>
     <string name="acra_resDialogTitle">&APP_NAME; crash</string>
-    <string name="acra_resDialogText">Het lijkt er op dat &APP_NAME; is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op "OK" om ons een e-mail te sturen over deze crash. U kunt het bericht inzien voordat het wordt verzonden.</string>
+    <string name="acra_resDialogText">Het lijkt er op dat &APP_NAME; is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op “OK” om ons een e-mail te sturen over deze crash. U kunt het bericht inzien voordat het wordt verzonden.</string>
     <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
     <string name="acra_resDialogOkToast">Dank u!</string>
     <string name="lbl_read">Gelezen</string>
@@ -316,7 +317,6 @@
     <string name="progress_msg_optimizing_databases">Databases optimaliseren…</string>
     <string name="progress_msg_starting_up">Opstarten…</string>
     <string name="lbl_application_startup">&APP_NAME; Opstart</string>
-
     <string name="searching_goodreads">Goodreads doorzoeken</string>
     <string name="menu_edit_booklist_styles">Bewerk boekenlijststijlen</string>
     <string name="menu_show_more_ellipsis">Toon meer…</string>
@@ -326,30 +326,30 @@
     <string name="hint_reset_all_hints">Herstel aanwijzingen</string>
     <string name="btn_do_not_show_again">Niet meer laten zien</string>
     <string name="hint_booklist_styles_editor">U kunt dit scherm gebruiken om de lijst met stijlen aan te passen die in uw standaard stijlen menu wordt getoond.
-    										\n\nEen goren vinkje betekent dat een stijl getoond wordt in de lijst en een rood kruisje dat die niet wordt getoond.
-    										Tikken op een groen vinkje zal het in een rood kruisje veranderen en vice-versa.
-    										\n\nAls geen stijlen zijn aangevinkt zullen alle stijlen worden getoond.
-    										\n\nHet is ook mogelijk de items te herschikken door ze met het pictogram uiterst rechts van de rij op en neer te verslepen.
-    										\n\nOveral elders in de rij tikken geeft de mogelijkheid de details van een bepaalde stijl te bewerken (of deze te klonen als het een ingebouwde stijl is).
-</string>
+        \n\nEen groen vinkje betekent dat een stijl getoond wordt in de lijst en een rood kruisje dat die niet wordt getoond.
+        Tikken op een groen vinkje zal het in een rood kruisje veranderen en vice-versa.
+        \n\nAls geen stijlen zijn aangevinkt zullen alle stijlen worden getoond.
+        \n\nHet is ook mogelijk de items te herschikken door ze met het pictogram uiterst rechts van de rij op en neer te verslepen.
+        \n\nOveral elders in de rij tikken geeft de mogelijkheid de details van een bepaalde stijl te bewerken (of deze te klonen als het een ingebouwde stijl is).
+    </string>
     <string name="hint_booklist_style_groups">U kunt dit scherm gebruiken om de hierarchie van de kopteksten voor een bepaalde boekenlijststijl te bewerken.
-    										\n\nEen groen vinkje geeft aan dat de koptekst in de lijst te zien is en een rood kruisje dat deze niet te zien is.
-    										Tikken op een groen vinkje zal het in een rood kruisje veranderen en vice-versa.
-    										\n\nU kunt de hierarchie herschikken door ze met het pictogram uiterst rechts van de rij op en neer verslepen.
-</string>
+        \n\nEen groen vinkje geeft aan dat de koptekst in de lijst te zien is en een rood kruisje dat deze niet te zien is.
+        Tikken op een groen vinkje zal het in een rood kruisje veranderen en vice-versa.
+        \n\nU kunt de hierarchie herschikken door ze met het pictogram uiterst rechts van de rij op en neer verslepen.
+    </string>
     <string name="hint_booklist_style_properties">U kunt dit scherm gebruiken om de eigenschappen van een bepaalde boekenlijststijl te bewerken.
-    										\n\nU kunt de naam veranderen, de groepering bewerken om de hierarchie te veranderen en een nog veel meer aanpassingen 
-    										doen aan de instellingen om een stijl te bouwen naar uw eigen inzichten.
-    										\n\nHet is ook mogelijk \'Boekfilters\' te gebruiken om de selectie van weer te geven boeken in de lijst aan te passen,
-    										bijvoorbeeld alleen die boeken die u nog niet heeft gelezen.
-</string>
+        \n\nU kunt de naam veranderen, de groepering bewerken om de hierarchie te veranderen en een nog veel meer aanpassingen
+        doen aan de instellingen om een stijl te bouwen naar uw eigen inzichten.
+        \n\nHet is ook mogelijk \'Boekfilters\' te gebruiken om de selectie van weer te geven boeken in de lijst aan te passen,
+        bijvoorbeeld alleen die boeken die u nog niet heeft gelezen.
+    </string>
     <string name="hint_booklist_global_properties">U kunt dit scherm gebruiken om de standaard eigenschappen van alle boekenlijststijlen in te stellen.
-    										\n\nDe meeste eigenschappen kunnen worden overschreven door individuele stijlen, maar de standaardwaarden worden
-    										hier gedefinieerd.
-    										\n\nU kunt hier de achtergrond veranderen, hoe de lijsten worden weer te geven bij het opstarten en een aantal andere instellingen
-    										veranderen die, waar mogelijk, toegepast worden op alle stijlen.
-    										\n\nU kunt ook het stijl-menu aanpassen en van hieruit de stijlen zelf.
-</string>
+        \n\nDe meeste eigenschappen kunnen worden overschreven door individuele stijlen, maar de standaardwaarden worden
+        hier gedefinieerd.
+        \n\nU kunt hier de achtergrond veranderen, hoe de lijsten worden weer te geven bij het opstarten en een aantal andere instellingen
+        veranderen die, waar mogelijk, toegepast worden op alle stijlen.
+        \n\nU kunt ook het stijl-menu aanpassen en van hieruit de stijlen zelf.
+    </string>
     <string name="lbl_preferred_styles">Voorkeursstijlen</string>
     <string name="pt_bob_preferred_style">Voorkeursstijlen</string>
     <string name="title_edit_style_colon_name">Bewerk stijl: %1$s</string>
@@ -357,7 +357,6 @@
     <string name="title_clone_style_colon_name">Klonen van Stijl: %1$s</string>
     <string name="pg_filters">Boekfilters</string>
     <string name="title_add_style">Nieuwe stijl</string>
-
     <string name="title_select_style">Selecteer stijl</string>
     <string name="booklist_background_style">Boekenlijst achtergrondstijl</string>
     <string name="textured_background">Achtergrondafbeelding met textuur</string>
@@ -365,7 +364,7 @@
     <string name="warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="edit">Bewerken</string>
     <string name="lbl_preferences">Voorkeuren</string>
-    <string name="error_unexpected_error">Er is een onverwachte fout opgetreden. Zend ons aub de details via de \'Help\' optie in het hoofdmenu</string>
+    <string name="error_unexpected_error">Er is een onverwachte fout opgetreden. Zend ons aub de details via de \‘Help\’ optie in het hoofdmenu</string>
     <string name="menu_delete_style">Stijl verwijderen</string>
     <string name="menu_edit_booklist_style">Stijl bewerken</string>
     <string name="menu_clone_style">Stijl klonen</string>
@@ -391,11 +390,11 @@
     <string name="gr_tq_queued">In de wachtrij</string>
     <string name="unknown">Onbekend</string>
     <string name="gr_send_books_to_goodreads_blurb">
-        Dit zendt uw bibliotheek naar Goodreads.
-    	\n\nU kunt er voor kiezen alle boeken te sturen of alleen de boeken die u heeft bijgewerkt
-    	sinds deze werden gekopieerd van of naar Goodreads (inclusief alle boeken die nog niet
-    	werden verzonden) of u kunt de update annuleren.
-    	\n\nAls u nog nooit boeken heeft verzonden is er geen verschil tussen de eerste twee opties.
+        Dit zendt uw bibliotheek naar Goodreads.\n\n
+        U kunt er voor kiezen alle boeken te sturen of alleen de boeken die u heeft bijgewerkt
+        sinds deze werden gekopieerd van of naar Goodreads (inclusief alle boeken die nog niet
+        werden verzonden) of u kunt de update annuleren.\n\n
+        Als u nog nooit boeken heeft verzonden is er geen verschil tussen de eerste twee opties.
     </string>
     <string name="gr_btn_send_all">Zend alles</string>
     <string name="gr_btn_send_updated">Zend bijgewerkte</string>
@@ -404,21 +403,24 @@
     <string name="gr_tq_show_events_ellipsis">Toon gebeurtenissen…</string>
     <string name="hint_authors_book_may_appear_more_than_once">Als boeken worden getoond met alle auteurs, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
     <string name="hint_series_book_may_appear_more_than_once">Als boeken worden getoond in alle series, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
-    <string name="hint_background_tasks">Vanaf deze plaats kunt u de lopende taken zien en eveneens vorige taken die met fouten of ander vermeldingswaardige gebeurtenissen zijn beëindigd. 
-    								     Tikken op een taak laat u de bijbehorende gebeurtenissen zien en ook de taak laten verwijderen (samen met de gerelateerde gebeurtenissen).</string>
+    <string name="hint_background_tasks">
+        Vanaf deze plaats kunt u de lopende taken zien en eveneens vorige taken die met fouten of ander vermeldingswaardige gebeurtenissen zijn beëindigd.
+        Tikken op een taak laat u de bijbehorende gebeurtenissen zien en ook de taak laten verwijderen (samen met de gerelateerde gebeurtenissen).
+    </string>
     <string name="hint_background_task_events">Vanaf hier kunt u de gebeurtenissen zien die zijn geassocieerd met op de achtergrond lopende taken. 
-    								    Tikken op een gebeurtenis laat u een aantal acties uitvoeren die samenhangen met die gebeurtenis.</string>
+        Tikken op een gebeurtenis laat u een aantal acties uitvoeren die samenhangen met die gebeurtenis.
+    </string>
     <string name="hints_have_been_reset">Aanwijzingen zijn hersteld</string>
     <string name="gr_tq_task_has_been_queued_in_background">Taak is op de achtergrond in de wachtrij gezet</string>
-    <string name="hint_startup_screen">Dit is het standaard &APP_NAME; opstartscherm. Als u dat wilt kunt u direct in \'Mijn Boeken\' opstarten. Het opstartscherm kan veranderd worden bij Voorkeuren.</string>
+    <string name="hint_startup_screen">Dit is het standaard &APP_NAME; opstartscherm. Als u dat wilt kunt u direct in \‘Mijn Boeken\’ opstarten. Het opstartscherm kan veranderd worden bij Voorkeuren.</string>
     <string name="progress_msg_upgrading">Nieuwe versie voorbereiden…</string>
     <string name="gr_explain_goodreads_no_isbn">
         Het geselecteerde boek heeft geen ISBN en kan niet automatisch worden gesynchroniseerd met Goodreads.
-    	De simpelste oplossing is om:
-    	\n\n(1) het boek te verwijderen uit &APP_NAME;
-    	\n\n(2) het boek handmatig toe te voegen aan Goodreads via hun website
-    	\n\n(3) synchroniseren met Goodreads
-    	\n\nDit zal als resultaat hebben dat het boek opnieuw wordt aangemaakt in &APP_NAME;
+        De simpelste oplossing is om:\n
+        \n(1) het boek te verwijderen uit &APP_NAME;\n
+        \n(2) het boek handmatig toe te voegen aan Goodreads via hun website\n
+        \n(3) synchroniseren met Goodreads\n
+        \nDit zal als resultaat hebben dat het boek opnieuw wordt aangemaakt in &APP_NAME;
         en dat de twee van af dat moment gekoppeld blijven.
     </string>
     <string name="gr_explain_goodreads_no_match">
@@ -427,8 +429,8 @@
         óf het boek staat niet in Goodreads.
         \n\nAls u de boekgegevens in &APP_NAME; gaat veranderen drukt u daarna op de
         \'Probeer opnieuw\' knop en controleert of de op de achtergrond opgestarte taak met
-        succes is beëindigd.
-    	\n\nAls de boekgegevens correct lijken en het boek nog steeds niet kan worden gevonden
+        succes is beëindigd.\n
+        \nAls de boekgegevens correct lijken en het boek nog steeds niet kan worden gevonden
         dan moet een boek met dat ISBN handmatig worden toegevoegd aan Goodreads via hun
         website. Nadat dat is gedaan kunt u proberen het boek opnieuw te zenden.
     </string>
@@ -446,8 +448,9 @@
     <string name="import_error_csv_file_not_found">Geen exportbestanden gevonden</string>
     <string name="import_warning_select_csv_file">Meer dan een exportbestand gevonden. Selecteer aub een exportbestand om te importeren uit de lijst hieronder</string>
     <string name="error_starting_import_arg">Het is een probleem bij het starten van de import van: %1$s</string>
-    <string name="hint_booklist_style_menu">Dit menu laat u de lijststijl selecteren. 
-    								\n\nU kunt het menu ook aanpassen of u eigen lijststijl maken door te tikken op \'Aanpassen\' onderaan de lijst.</string>
+    <string name="hint_booklist_style_menu">Dit menu laat u de lijststijl selecteren.\n\n
+        U kunt het menu ook aanpassen of u eigen lijststijl maken door te tikken op \'Aanpassen\' onderaan de lijst.
+    </string>
     <string name="menu_edit_format">Formaat bewerken…</string>
     <string name="title_edit_format">Formaat bewerken</string>
     <string name="warning_required_name">Naamveld mag niet leeg zijn</string>
@@ -480,7 +483,7 @@
     <string name="menu_edit">bewerken…</string>
     <string name="progress_msg_getting_books">Verkrijgen van boeken…</string>
     <string name="gr_tq_last_error_e">Laatste fout: %1$s</string>
-    <string name="warning_invalid_isbn_x_specified_in_search">Ongeldig ISBN \'%1$s\' gespecificeerd in zoekveld</string>
+    <string name="warning_invalid_isbn_x_specified_in_search">Ongeldig ISBN \‘%1$s\’ gespecificeerd in zoekveld</string>
     <string name="warning_if_day_set_month_and_year_must_be">Als de dag is gespecificeerd dan moet ook de maand en het jaar ingevuld worden.</string>
     <string name="warning_if_month_set_year_must_be">Als de maand is gespecificeerd moet ook het jaar worden ingevuld.</string>
     <string name="hint_autorotate_camera_images">Als u altijd uw camera-opnames dezelfde kant opdraait kunt u proberen de applicatie-instellingen te veranderen zodat dit automatisch gebeurt.</string>
@@ -492,26 +495,17 @@
     <string name="lbl_by_author">door</string>
     <string name="lbl_loaned_to_name">Uitgeleend aan %1$s</string>
     <string name="lbl_x_pages">%1$s pagina\'s</string>
-
     <string name="warning_bad_scanner">Het lijkt er op dat de door u gebruikt streepjescode scanner app niet compatibel is met &APP_NAME;. Wij kunnen de Zxing streepjescode scanner application aanbevelen. als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
-
     <!-- Hint text displayed when user enters the book listw -->
-    <string name="hint_view_only_book_details">Wanneer u op een item in deze lijst tikt, kunt u nu kiezen naar een alleen-lezen detailoverzicht te gaan. 
-Zie "Meer voorkeuren" voor de relevante instelling.
-</string>
-
+    <string name="hint_view_only_book_details">Wanneer u op een item in deze lijst tikt, kunt u nu kiezen naar een alleen-lezen detailoverzicht te gaan. Zie “Meer voorkeuren” voor de relevante instelling.</string>
     <!-- Hint text displayed when user enters the 'read-only' book view -->
-    <string name="hint_view_only_help">Dit is het alleen-lezen detailoverzicht. U kunt naar link en rechts vegen om naar andere boeken te gaan en u kunt het boek bewerken via het opties menu door gebruik te maken van de menuknop of overvloeiend menu-pictogram.
-</string>
-
+    <string name="hint_view_only_help">Dit is het alleen-lezen detailoverzicht. U kunt naar link en rechts vegen om naar andere boeken te gaan en u kunt het boek bewerken via het opties menu door gebruik te maken van de menuknop of overvloeiend menu-pictogram.</string>
     <!-- This is the heading of the 'Details' tab when editing a book. It needs to be short. "Book Details" is too long. -->
     <string name="tab_lbl_details">Details</string>
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
     <string name="tab_lbl_loan">Uitlenen</string>
-
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
     <string name="gr_btn_forget_credentials">Vergeet inloggegevens</string>
-
     <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
     <string name="gr_auth_blurb_part4">
         Het lijkt er op dat u deze app al heeft geautoriseerd. als u de inloggegevens op dit
@@ -530,9 +524,10 @@ Zie "Meer voorkeuren" voor de relevante instelling.
 
     <!-- Hint displayed when a Backup is done -->
     <string name="export_info_success_archive_details">Een %3$s bestand met de naam %2$s is
-        aangemaakt in de \"%1$s\" map op uw SD kaart.\n\nU wordt aangeraden dit bestand naar
+        aangemaakt in de \“%1$s\” map op uw SD kaart.\n\nU wordt aangeraden dit bestand naar
         een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat
-        wordt gestolen, beschadigd of kwijt raakt.</string>
+        wordt gestolen, beschadigd of kwijt raakt.
+    </string>
 
     <!-- Displayed in progress dialog when exporting covers -->
     <string name="progress_msg_covers">%1$s boekomslagen verwerkt (%2$s missend)</string>
@@ -577,7 +572,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="lbl_language">Taal</string>
 
     <!--  Explanatory text for 'import' dialogue -->
-    <string name="title_import_books_blurb">De boeken in dit archief zullen worden geïmporteerd. Tik op één van de twee opties om de import te starten of druk op \'terug\' om te annuleren:</string>
+    <string name="title_import_books_blurb">De boeken in dit archief zullen worden geïmporteerd. Tik op één van de twee opties om de import te starten of druk op \‘terug\’ om te annuleren:</string>
     <!-- Description of the 'import all books' option -->
     <string name="import_option_info_all_books">Alle boeken in het archief zullen worden geïmporteerd en zo de bestaande boeken bijwerken en nieuwe toevoegen.</string>
     <!-- Menu text for the 'import/export new & changed' option -->
@@ -590,7 +585,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="progress_msg_n_created_m_updated">%1$s toegevoegd, %2$s bijgewerkt</string>
 
     <!--  Explanatory text for 'export' dialogue -->
-    <string name="title_export_books">De boeken in de catalogus zullen worden geëxporteerd. Tik op één van de twee opties om de export te starten of druk op \'terug\' om te annuleren:</string>
+    <string name="title_export_books">De boeken in de catalogus zullen worden geëxporteerd. Tik op één van de twee opties om de export te starten of druk op \‘terug\’ om te annuleren:</string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">%1$s boekomslagen verwerkt (%2$s missend, %3$s overgeslagen)</string>
@@ -663,13 +658,11 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="about_translators">&APP_NAME; is het resultaat van de inspanning van vele personen en zou niet zo\'n grote verspreiding kennen zonder de genereuse hulp van vrijwillige vertalers: Eugenio Davolio, José M. Galdo, Imkal, Gideon van Melle, Emir Sarı, Nick Silin, and Robert Wetzlmayr (als we iemand zijn vergeten, laat het ons aub weten).</string>
 
     <!-- A hint describing the benefit of folowing the Amazon links -->
-    <string name="hint_amazon_links_blurb">
-        <![CDATA[
-        <p>Indien u boeken koopt bij Amazon na het selecteren van de  « <i>"%1$s"</i> », « <i>"%2$s"</i> » of « <i>"%3$s"</i> »
+    <string name="hint_amazon_links_blurb"><![CDATA[
+        <p>Indien u boeken koopt bij Amazon na het selecteren van de  « <i>“%1$s”</i> », « <i>“%2$s”</i> » of « <i>“%3$s”</i> »
         menu opties, zal een deel van de aankoopprijs gezonden worden naar de ontwikkelaars van %4$s.</p>
-         <p>U kunt ook de <a href="https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29">links op de FAQ pagina</a>
-          gebruiken om direct naar Amazon of Paypal te gaan.</p>
-        ]]>
+         <p>U kunt ook de <a href=“https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29”>links op de FAQ pagina</a>
+          gebruiken om direct naar Amazon of Paypal te gaan.</p>]]>
     </string>
     <!-- Name of the new style grouping (needs to be short). -->
     <string name="style_builtin_update_date">Datum update</string>
@@ -748,7 +741,7 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="lbl_signed">Gesigneerd</string>
     <string name="lbl_first_publication_month">Eerste uitg. Maand</string>
     <string name="lbl_first_publication_year">Eerste uitg. Dag</string>
-    <string name="pt_bob_filter_read">Selecteer op \'Gelezen\' status</string>
+    <string name="pt_bob_filter_read">Selecteer op \‘Gelezen\’ status</string>
     <string name="info_tap_to_edit">Tik hier om de naam te bewerken</string>
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
     <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
@@ -765,4 +758,5 @@ Zie "Meer voorkeuren" voor de relevante instelling.
     <string name="book_format_digest">Samenvatting</string>
     <string name="book_format_trade_paperback">Trade Paperback</string>
     <string name="error_google_play_missing">Google Play / Market is niet geïnstalleerd</string>
+    <string name="books_found">%1$s boeken gevonden</string>
 </resources>
