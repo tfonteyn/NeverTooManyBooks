@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -71,7 +72,6 @@ public class EditBookshelfDialog {
                                    .inflate(R.layout.dialog_edit_bookshelf, null);
 
         final EditText nameView = root.findViewById(R.id.name);
-        //noinspection ConstantConditions
         nameView.setText(source.getName());
 
         final AlertDialog dialog = new AlertDialog.Builder(mActivity)
@@ -79,7 +79,6 @@ public class EditBookshelfDialog {
                 .setTitle(R.string.menu_edit_bookshelf)
                 .create();
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -127,7 +126,6 @@ public class EditBookshelfDialog {
             }
         });
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {

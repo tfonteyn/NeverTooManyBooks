@@ -130,7 +130,7 @@
     <string name="vldt_failed">Convalida di \‘%s\’ non riuscita</string>
     <string name="vldt_read_start_after_end">Data di inizio lettura posteriore alla data di fine lettura</string>
     <string name="progress_end_backup_success">Backup completato</string>
-    <string name="export_error_backup_failed">Backup fallito</string>
+    <string name="error_backup_failed">Backup fallito</string>
     <string name="error_file_must_contain_column">Il file deve contenere una colonna con nome %s</string>
     <string name="import_error_csv_file_must_contain_any_column">Il file deve contenere una colonna con uno dei seguenti nomi: %s</string>
     <string name="error_column_is_blank">La colonna %1$s è vuota alla riga %2$s</string>

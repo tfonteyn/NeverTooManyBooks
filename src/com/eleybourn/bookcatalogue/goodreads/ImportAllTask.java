@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
@@ -159,9 +160,9 @@ public class ImportAllTask
                                                            QueueManager.QUEUE_MAIN);
             }
             return ok;
-        } catch (GoodreadsExceptions.NotAuthorizedException e) {
+        } catch (AuthorizationException e) {
             Logger.error(e);
-            throw new RuntimeException("Goodreads authorization failed");
+            throw new RuntimeException(e.getLocalizedMessage());
         }
     }
 
@@ -170,7 +171,7 @@ public class ImportAllTask
      */
     private boolean processReviews(@NonNull final QueueManager queueManager,
                                    @NonNull final DBA db)
-            throws GoodreadsExceptions.NotAuthorizedException {
+            throws AuthorizationException {
 
         GoodreadsManager gr = new GoodreadsManager();
         ListReviewsApiHandler api = new ListReviewsApiHandler(gr);
@@ -198,9 +199,7 @@ public class ImportAllTask
                 if (mStartDate == null) {
                     mStartDate = runDate;
                 }
-            } catch (GoodreadsExceptions.BookNotFoundException
-                    | GoodreadsExceptions.NotAuthorizedException
-                    | IOException e) {
+            } catch (BookNotFoundException | AuthorizationException | IOException e) {
                 setException(e);
                 return false;
             }
@@ -217,7 +216,7 @@ public class ImportAllTask
             ArrayList<Bundle> reviews =
                     books.getParcelableArrayList(ListReviewsApiHandler.ReviewFields.REVIEWS);
 
-            if (reviews == null || reviews.size() == 0) {
+            if (reviews == null || reviews.isEmpty()) {
                 break;
             }
 
@@ -277,7 +276,7 @@ public class ImportAllTask
                 cursor = null;
 
                 List<String> list = extractIsbnList(review);
-                if (list.size() > 0) {
+                if (!list.isEmpty()) {
                     cursor = db.fetchBooksByIsbnList(list);
                     found = cursor.moveToFirst();
                 }
@@ -367,9 +366,7 @@ public class ImportAllTask
         // data for the given book (taken from the cursor), not just replace it.
         Book book = new Book(buildBundle(db, bookCursorRow, review));
 
-        db.updateBook(bookCursorRow.getId(), book,
-                      DBA.BOOK_UPDATE_SKIP_PURGE_REFERENCES
-                              | DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+        db.updateBook(bookCursorRow.getId(), book,DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
     }
 
     /**
@@ -440,7 +437,7 @@ public class ImportAllTask
          * Find the best (longest) isbn.
          */
         List<String> list = extractIsbnList(review);
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             String best = list.get(0);
             int bestLen = best.length();
             for (String curr : list) {

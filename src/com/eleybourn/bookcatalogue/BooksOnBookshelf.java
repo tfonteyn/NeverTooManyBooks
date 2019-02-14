@@ -75,7 +75,7 @@ import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
-import com.eleybourn.bookcatalogue.searches.AdvancedLocalSearchActivity;
+import com.eleybourn.bookcatalogue.searches.FTSSearchActivity;
 import com.eleybourn.bookcatalogue.settings.BooklistStyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
@@ -252,7 +252,7 @@ public class BooksOnBookshelf
 
     @Override
     public boolean onSearchRequested() {
-        Intent intent = new Intent(this, AdvancedLocalSearchActivity.class);
+        Intent intent = new Intent(this, FTSSearchActivity.class);
         mSearchCriteria.to(intent);
         startActivityForResult(intent, REQ_ADVANCED_LOCAL_SEARCH);
         return true;
@@ -373,8 +373,8 @@ public class BooksOnBookshelf
                 // but storing and recovering the view becomes unmanageable.
                 // ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542
                 if (mListCursor.getCursorRow().getLevel() == 1) {
-                    mListCursor.getBuilder().toggleExpandNode(
-                            mListCursor.getCursorRow().getAbsolutePosition());
+                    mListCursor.getBuilder()
+                               .toggleExpandNode(mListCursor.getCursorRow().getAbsolutePosition());
                     mListCursor.requery();
                     mAdapter.notifyDataSetChanged();
                 }
@@ -711,7 +711,6 @@ public class BooksOnBookshelf
         final BooklistStyle style = mCurrentBookshelf.getStyle(mDb);
         final int headersToShow = style.getShowHeaderInfo();
 
-
         populateBookCountField(headersToShow);
 
         long t0;
@@ -762,7 +761,7 @@ public class BooksOnBookshelf
         }
         listView.setTag(listHeader);
 
-        // Update the header details
+        // Update the header 'level' details
         if (count > 0 && (headersToShow
                 & (BooklistStyle.SUMMARY_SHOW_LEVEL_1 ^ BooklistStyle.SUMMARY_SHOW_LEVEL_2)) != 0) {
             listHeader.updateListHeader(mTopRow);
@@ -783,7 +782,6 @@ public class BooksOnBookshelf
                                 && !mIsDead
                                 && (headersToShow != 0)) {
                             ListHeader listHeader = (ListHeader) view.getTag();
-                            //noinspection ConstantConditions
                             listHeader.updateListHeader(firstVisibleItem);
                         }
                     }
@@ -1260,7 +1258,7 @@ public class BooksOnBookshelf
                         @Override
                         public void onCancel(@NonNull final DialogInterface dialog) {
                             // Cancelling the list cancels the activity.
-                            BooksOnBookshelf.this.finish();
+                            finish();
                             dialog.dismiss();
                             mProgressDialog = null;
                         }
@@ -1432,7 +1430,6 @@ public class BooksOnBookshelf
 
             // If not a full rebuild then just use the current builder to re-query
             // the underlying data
-            //noinspection ConstantConditions
             if (mListCursor != null && !this.isFullRebuild) {
                 bookListBuilder = mListCursor.getBuilder();
             } else {
@@ -1458,7 +1455,7 @@ public class BooksOnBookshelf
                     t0 = System.currentTimeMillis();
                 }
                 // Build the underlying data
-                if (mListCursor != null && !this.isFullRebuild) {
+                if (mListCursor != null && !isFullRebuild) {
                     bookListBuilder.rebuild();
                 } else {
                     bookListBuilder.build(mRebuildState, mCurrentPositionedBookId);
@@ -1476,7 +1473,7 @@ public class BooksOnBookshelf
                     // get all positions of the book
                     targetRows = bookListBuilder.getBookAbsolutePositions(mCurrentPositionedBookId);
 
-                    if (targetRows != null && targetRows.size() > 0) {
+                    if (targetRows != null && !targetRows.isEmpty()) {
                         // First, get the ones that are currently visible...
                         ArrayList<BookRowInfo> visRows = new ArrayList<>();
                         for (BookRowInfo i : targetRows) {
@@ -1485,7 +1482,7 @@ public class BooksOnBookshelf
                             }
                         }
                         // If we have any visible rows, only consider them for the new position
-                        if (visRows.size() > 0) {
+                        if (!visRows.isEmpty()) {
                             targetRows = visRows;
                         } else {
                             // Make them ALL visible

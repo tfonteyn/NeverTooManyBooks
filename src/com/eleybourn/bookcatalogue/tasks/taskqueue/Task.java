@@ -67,6 +67,8 @@ public abstract class Task
 
     /**
      * Constructor.
+     *
+     * @param description for the task
      */
     Task(@NonNull final String description) {
         mDescription = description;

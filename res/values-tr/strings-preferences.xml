@@ -65,8 +65,8 @@
     </string-array>
 
     <!-- Preference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Küçük resmi kırp \'Layer Type\'</string>
-    <string name="pt_hint_layer_type">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için \'Donanım\' için \'Yazılım\' deneyin, ancak daha hızlı</string>
+    <string name="pt_thumbnail_cropper_layer_type">Küçük resmi kırp \‘Layer Type\’</string>
+    <string name="pt_hint_layer_type">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için \‘Donanım\’ için \‘Yazılım\’ deneyin, ancak daha hızlı</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Varsayılan değer</item>
         <item>Donanım</item>
@@ -143,8 +143,8 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Yazar adları biçimi</string>
-    <string name="pv_bob_format_author_name_given_first">Ad başta, örneğin \'Özgür Çapulcu\'</string>
-    <string name="pv_bob_format_author_name_family_first">Soyad başta, örneğin \'Çapulcu, Özgür\'</string>
+    <string name="pv_bob_format_author_name_given_first">Ad başta, örneğin \‘Özgür Çapulcu\’</string>
+    <string name="pv_bob_format_author_name_family_first">Soyad başta, örneğin \‘Çapulcu, Özgür\’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Yazarları sırala</string>

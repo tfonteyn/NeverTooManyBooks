@@ -3,8 +3,9 @@ package com.eleybourn.bookcatalogue;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
+import com.eleybourn.bookcatalogue.goodreads.TaskWithProgressDialogFragment;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -36,7 +37,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean TIMERS = false;
 
     /** dump the style each time it is accessed. */
-    public static final boolean DUMP_STYLE = true;
+    public static final boolean DUMP_STYLE = false;
 
 
     /** {@link com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager}. */
@@ -57,7 +58,7 @@ public final class DEBUG_SWITCHES {
     /** {@link TaskManager}. */
     public static final boolean TASK_MANAGER = false;
 
-    /** {@link com.eleybourn.bookcatalogue.searches.SearchManager} and related. */
+    /** {@link SearchCoordinator} and related. */
     public static final boolean SEARCH_INTERNET = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook}. */
@@ -153,13 +154,13 @@ public final class DEBUG_SWITCHES {
      * Dump the SQL.
      * {@link SynchronizedStatement#executeInsert()}
      */
-    public static final boolean DB_SYNC_EXECUTE_INSERT = true;
+    public static final boolean DB_SYNC_EXECUTE_INSERT = false;
 
     /**
      * Dump the SQL and the rowsAffected.
      * {@link SynchronizedStatement#executeUpdateDelete()}
      */
-    public static final boolean DB_SYNC_ROWS_AFFECTED = true;
+    public static final boolean DB_SYNC_ROWS_AFFECTED = false;
 
     /* ****************************************************************************************** */
 

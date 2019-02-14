@@ -22,8 +22,8 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 import org.apache.http.client.methods.HttpGet;
@@ -59,7 +59,7 @@ public class IsbnToId
      */
     public long isbnToId(@NonNull final String isbn)
             throws IOException,
-                   NotAuthorizedException,
+                   AuthorizationException,
                    BookNotFoundException {
 
         HttpGet get = new HttpGet(GoodreadsManager.BASE_URL + "/book/isbn_to_id/" + isbn

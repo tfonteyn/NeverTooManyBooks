@@ -74,6 +74,7 @@ public class CsvImporter
     /** as used in older versions, or from arbitrarily constructed CSV files. */
     private static final String OLD_STYLE_AUTHOR_NAME = "author_name";
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
+    private static final String LEGACY_BOOKSHELF_TEXT_COLUMN = "bookshelf_text";
 
     @NonNull
     private final DBA mDb;
@@ -121,22 +122,20 @@ public class CsvImporter
 
         final List<String> importedList = new ArrayList<>();
 
-        final BufferedReader in =
-                new BufferedReader(new InputStreamReader(importStream, StandardCharsets.UTF_8),
-                                   BUFFER_SIZE);
+        final BufferedReader in = new BufferedReader(
+                new InputStreamReader(importStream, StandardCharsets.UTF_8), BUFFER_SIZE);
+
         String line;
         while ((line = in.readLine()) != null) {
             importedList.add(line);
         }
-
-        if (importedList.size() == 0) {
+        if (importedList.isEmpty()) {
             return 0;
         }
 
         listener.setMax(importedList.size() - 1);
 
         final Book book = new Book();
-
         // first line in import are the column names
         final String[] csvColumnNames = returnRow(importedList.get(0), true);
         // Store the names so we can check what is present
@@ -190,13 +189,14 @@ public class CsvImporter
         int txRowCount = 0;
         long lastUpdate = 0;
 
-        /* Iterate through each imported row */
+        // Iterate through each imported row
         SyncLock txLock = null;
         try {
             while (row < importedList.size() && !listener.isCancelled()) {
                 // every 10 inserted, we commit the transaction
                 if (mDb.inTransaction() && txRowCount > 10) {
                     mDb.setTransactionSuccessful();
+                    //noinspection ConstantConditions
                     mDb.endTransaction(txLock);
                 }
                 if (!mDb.inTransaction()) {
@@ -215,41 +215,12 @@ public class CsvImporter
                     book.putString(csvColumnNames[i], csvDataRow[i]);
                 }
 
-                // Validate ID
-                // why String ? See book init, we store all keys we find in the import
-                // file as text simple to see if they are present.
-                final String idStr = book.getString(STRINGED_ID);
-                long bookId = 0;
-                boolean hasNumericId = (idStr != null && !idStr.isEmpty());
-
-                if (hasNumericId) {
-                    try {
-                        bookId = Long.parseLong(idStr);
-                    } catch (NumberFormatException e) {
-                        hasNumericId = false;
-                    }
-                }
-
-                if (!hasNumericId) {
-                    // yes, string, see above
-                    book.putString(STRINGED_ID, "0");
-                }
-
-                // Get the UUID, and remove from collection if null/blank
-                final String uuid = book.getString(UniqueId.KEY_BOOK_UUID);
-                final boolean hasUuid = (uuid != null && !uuid.isEmpty());
-                if (!hasUuid) {
-                    // Remove any blank UUID column, just in case
-                    if (book.containsKey(UniqueId.KEY_BOOK_UUID)) {
-                        book.remove(UniqueId.KEY_BOOK_UUID);
-                    }
-                }
-
+                // Validate IDs
+                BookIds bids = new BookIds(book);
+                // check title
                 requireNonBlankOrThrow(book, row, UniqueId.KEY_TITLE);
                 final String title = book.getString(UniqueId.KEY_TITLE);
-
-                // Handle these here, lookup id's etc, but do not write to db!
-                // storing the book data does all that
+                // Lookup id's etc, but do not write to db! Storing the book data does all that
                 handleAuthors(mDb, book);
                 handleSeries(mDb, book);
                 if (book.containsKey(CsvExporter.CSV_COLUMN_TOC)) {
@@ -258,28 +229,27 @@ public class CsvImporter
 
                 // v5 has columns
                 // "bookshelf_id" == UniqueId.DOM_FK_BOOKSHELF_ID
-                // => see CsvExporter EXPORT_FIELD_HEADERS
+                // => ignore, we don't / can't use it anyhow.
                 // "bookshelf" == UniqueId.KEY_BOOKSHELF_NAME
                 // I suspect "bookshelf_text" is from older versions and obsolete now (Classic ?)
                 if (book.containsKey(UniqueId.KEY_BOOKSHELF_NAME)
-                        && !book.containsKey("bookshelf_text")) {
+                        && !book.containsKey(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
                     handleBookshelves(mDb, book);
                 }
 
                 try {
                     // Save the original ID from the file for use in checking for images
-                    long bookIdFromFile = bookId;
-
-                    bookId = importBook(bookId, hasNumericId, uuid, hasUuid, book,
-                                        updateOnlyIfNewer);
+                    long bookIdFromFile = bids.bookId;
+                    // go!
+                    bids.bookId = importBook(book, bids, updateOnlyIfNewer);
 
                     // When importing a file that has an ID or UUID, try to import a cover.
                     if (coverFinder != null) {
-                        if (uuid != null && !uuid.isEmpty()) {
-                            coverFinder.copyOrRenameCoverFile(uuid);
+                        if (!bids.uuid.isEmpty()) {
+                            coverFinder.copyOrRenameCoverFile(bids.uuid);
                         } else {
                             coverFinder.copyOrRenameCoverFile(bookIdFromFile,
-                                                              mDb.getBookUuid(bookId));
+                                                              mDb.getBookUuid(bids.bookId));
                         }
                     }
                 } catch (IOException e) {
@@ -310,6 +280,7 @@ public class CsvImporter
         } finally {
             if (mDb.inTransaction()) {
                 mDb.setTransactionSuccessful();
+                //noinspection ConstantConditions
                 mDb.endTransaction(txLock);
             }
         }
@@ -319,6 +290,50 @@ public class CsvImporter
                     "Csv Import successful: rows processed: " + (row - 1) +
                             ", created:" + mCreated + ", updated: " + mUpdated);
         return row;
+    }
+
+    /**
+     * Holder class for identifiers of a book during import.
+     * (created to let lint work)
+     */
+    private static class BookIds {
+        final String uuid;
+        long bookId;
+        boolean hasNumericId;
+
+        /**
+         * Constructor. All work is done here to populate the member variables.
+         *
+         * @param book the book, will be modified.
+         */
+        BookIds(@NonNull final Book /* in/out */ book) {
+            // why String ? See book init, we store all keys we find in the import
+            // file as text simple to see if they are present.
+            final String idStr = book.getString(STRINGED_ID);
+            hasNumericId = !idStr.isEmpty();
+
+            if (hasNumericId) {
+                try {
+                    bookId = Long.parseLong(idStr);
+                } catch (NumberFormatException e) {
+                    hasNumericId = false;
+                }
+            }
+
+            if (!hasNumericId) {
+                // yes, string, see above
+                book.putString(STRINGED_ID, "0");
+            }
+
+            // Get the UUID, and remove from collection if null/blank
+            uuid = book.getString(UniqueId.KEY_BOOK_UUID);
+            if (uuid.isEmpty()) {
+                // Remove any blank UUID column, just in case
+                if (book.containsKey(UniqueId.KEY_BOOK_UUID)) {
+                    book.remove(UniqueId.KEY_BOOK_UUID);
+                }
+            }
+        }
     }
 
     @Override
@@ -334,21 +349,16 @@ public class CsvImporter
 
     /**
      * insert or update a single book.
-     *
-     * @param bookId of book to insert(bookId==0) or update(bookId>0)
-     *
-     * @return non 0 bookId
      */
-    private long importBook(long bookId,
-                            final boolean hasNumericId,
-                            @NonNull final String uuidVal,
-                            final boolean hasUuid,
-                            @NonNull final Book book,
+    private long importBook(@NonNull final Book book,
+                            @NonNull final BookIds bids,
                             final boolean updateOnlyIfNewer) {
+
+        final boolean hasUuid = !bids.uuid.isEmpty();
 
         // Always import empty IDs...even if they are duplicates.
         // Would be nice to import a cover, but without ID/UUID that is not possible
-        if (!hasUuid && !hasNumericId) {
+        if (!hasUuid && !bids.hasNumericId) {
             return mDb.insertBookWithId(0, book);
         }
 
@@ -358,35 +368,33 @@ public class CsvImporter
         boolean exists = false;
 
         if (hasUuid) {
-            long tmp_id = mDb.getBookIdFromUuid(uuidVal);
+            long tmp_id = mDb.getBookIdFromUuid(bids.uuid);
             if (tmp_id != 0) {
                 // use the id from the existing book, as found by UUID lookup
-                bookId = tmp_id;
+                bids.bookId = tmp_id;
                 exists = true;
             } else {
                 // We have a UUID, but book does not exist. We will create a book.
                 // Make sure the ID (if present) is not already used.
-                if (hasNumericId && mDb.bookExists(bookId)) {
-                    bookId = 0;
+                if (bids.hasNumericId && mDb.bookExists(bids.bookId)) {
+                    bids.bookId = 0;
                 }
             }
         } else {
-            exists = mDb.bookExists(bookId);
+            exists = mDb.bookExists(bids.bookId);
         }
 
         if (exists) {
-            if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bookId)) {
-                mDb.updateBook(bookId, book,
-                               DBA.BOOK_UPDATE_SKIP_PURGE_REFERENCES
-                                       | DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+            if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bids.bookId)) {
+                mDb.updateBook(bids.bookId, book, DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
                 mUpdated++;
             }
         } else {
-            bookId = mDb.insertBookWithId(bookId, book);
+            bids.bookId = mDb.insertBookWithId(bids.bookId, book);
             mCreated++;
         }
 
-        return bookId;
+        return bids.bookId;
     }
 
 
@@ -401,7 +409,9 @@ public class CsvImporter
     }
 
     /**
-     * The "bookshelf_id" column is not used at all (similar to how author etc is done).
+     * Database access is strictly limited to fetching id's.
+     * <p>
+     * Get the list of bookshelves.
      */
     private void handleBookshelves(@NonNull final DBA db,
                                    @NonNull final Book book) {
@@ -412,6 +422,8 @@ public class CsvImporter
         book.putList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
 
         book.remove(UniqueId.KEY_BOOKSHELF_NAME);
+        book.remove(LEGACY_BOOKSHELF_TEXT_COLUMN);
+        book.remove("bookshelf_id");
     }
 
     /**

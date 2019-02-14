@@ -29,6 +29,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -36,16 +37,17 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +81,8 @@ import javax.xml.parsers.SAXParserFactory;
  *
  * @author Philip Warner
  */
-public class LibraryThingManager {
+public class LibraryThingManager
+        implements SearchSites.SearchSiteManager {
 
     private static final String TAG = "LibraryThing.";
 
@@ -120,6 +123,9 @@ public class LibraryThingManager {
     @NonNull
     private static Long mLastRequestTime = 0L;
 
+    /**
+     * Constructor.
+     */
     public LibraryThingManager() {
     }
 
@@ -167,7 +173,7 @@ public class LibraryThingManager {
                                               final boolean required,
                                               @NonNull final String prefSuffix) {
         LibraryThingManager ltm = new LibraryThingManager();
-        if (!ltm.isAvailable()) {
+        if (ltm.noKey()) {
             needLibraryThingAlert(context, required, prefSuffix);
         }
     }
@@ -264,7 +270,7 @@ public class LibraryThingManager {
         }
 
         // Base path for an Editions search
-        String urlText = String.format(EDITIONS_URL, isbn);
+        String url = String.format(EDITIONS_URL, isbn);
 
         // Setup the parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -274,11 +280,9 @@ public class LibraryThingManager {
         waitUntilRequestAllowed();
 
         // Get it
-        try {
-            URL url = new URL(urlText);
+        try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
             SAXParser parser = factory.newSAXParser();
-            parser.parse(Terminator.getInputStream(url), handler);
-
+            parser.parse(con.inputStream, handler);
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | SAXException | IOException e) {
             Logger.error(e);
@@ -293,17 +297,19 @@ public class LibraryThingManager {
     /**
      * dev-key needed for this call.
      *
-     * @param isbn to lookup. Must be a valid ISBN
-     * @param size the LT {@link ImageSizes} size to get
+     * @param isbn to search for
+     * @param size of image to get.
      *
      * @return found/saved File, or null when none found (or any other failure)
      */
     @Nullable
+    @WorkerThread
+    @Override
     public File getCoverImage(@NonNull final String isbn,
-                              @NonNull final ImageSizes size) {
+                              @Nullable final SearchSites.ImageSizes size) {
 
         // sanity check
-        if (!isAvailable()) {
+        if (noKey()) {
             return null;
         }
         // sanity check
@@ -312,6 +318,7 @@ public class LibraryThingManager {
         }
 
         String path;
+        //noinspection ConstantConditions
         switch (size) {
             case SMALL:
                 path = COVER_URL_SMALL;
@@ -332,8 +339,7 @@ public class LibraryThingManager {
         waitUntilRequestAllowed();
 
         // Fetch, then save it with a suffix
-        String fileSpec = ImageUtils
-                .saveImage(url, FILENAME_SUFFIX + '_' + isbn + '_' + size);
+        String fileSpec = ImageUtils.saveImage(url, FILENAME_SUFFIX + '_' + isbn + '_' + size);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -344,27 +350,31 @@ public class LibraryThingManager {
     /**
      * dev-key needed for this call.
      *
-     * @param isbn     to lookup. Must be a valid ISBN
-     * @param bookData Bundle to save results in
+     * @param isbn           to lookup. Must be a valid ISBN
+     * @param author         unused
+     * @param title          unused
+     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
      *
      * @throws IOException on failure to search
      */
-    void search(@NonNull final String isbn,
-                @NonNull final Bundle /* out */ bookData,
-                final boolean fetchThumbnail)
+    @NonNull
+    @Override
+    @WorkerThread
+    public Bundle search(@NonNull final String isbn,
+                         @NonNull final String author,
+                         @NonNull final String title,
+                         final boolean fetchThumbnail)
             throws IOException {
 
-        // sanity check
-        if (!isAvailable()) {
-            return;
-        }
+        Bundle bookData = new Bundle();
+
         // sanity check
         if (!IsbnUtils.isValid(isbn)) {
-            return;
+            return bookData;
         }
 
         // Base path for an ISBN search
-        String urlText = String.format(DETAIL_URL, getDevKey(), isbn);
+        String url = String.format(DETAIL_URL, getDevKey(), isbn);
 
         // Setup the parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -374,21 +384,19 @@ public class LibraryThingManager {
         waitUntilRequestAllowed();
 
         // Get it
-        try {
-            URL url = new URL(urlText);
+        try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
             SAXParser parser = factory.newSAXParser();
-            parser.parse(Terminator.getInputStream(url), handler);
-
+            parser.parse(con.inputStream, handler);
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | SAXException e) {
             Logger.error(e);
         }
 
         if (fetchThumbnail) {
-            File file = getCoverImage(isbn, ImageSizes.LARGE);
+            File file = getCoverImage(isbn, SearchSites.ImageSizes.LARGE);
             if (file != null) {
-                ArrayList<String> imageList = bookData.getStringArrayList(
-                        UniqueId.BKEY_FILE_SPEC_ARRAY);
+                ArrayList<String> imageList =
+                        bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
@@ -396,20 +404,27 @@ public class LibraryThingManager {
                 bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
             }
         }
+
+        return bookData;
+    }
+
+    @Override
+    @WorkerThread
+    public boolean isAvailable() {
+        return !noKey() && NetworkUtils.isAlive(getBaseURL());
     }
 
     /**
      * external users (to this class) should call this before doing any searches.
      *
-     * @return <tt>true</tt> if there is a non-empty dev key
+     * @return <tt>true</tt> if there is no dev key configured.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean isAvailable() {
-        boolean gotKey = !getDevKey().isEmpty();
-        if (!gotKey) {
+    public boolean noKey() {
+        boolean noKey = getDevKey().isEmpty();
+        if (noKey) {
             Logger.info(this, "LT dev key not available");
         }
-        return gotKey;
+        return noKey;
     }
 
     /**
@@ -422,13 +437,6 @@ public class LibraryThingManager {
             return key.replaceAll("[\\r\\t\\n\\s]*", "");
         }
         return "";
-    }
-
-    /** Sizes of thumbnails. */
-    public enum ImageSizes {
-        SMALL,
-        MEDIUM,
-        LARGE
     }
 
 }

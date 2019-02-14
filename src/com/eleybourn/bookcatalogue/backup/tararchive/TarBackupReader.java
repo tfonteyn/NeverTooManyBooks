@@ -65,7 +65,6 @@ public class TarBackupReader
      */
     TarBackupReader(@NonNull final TarBackupContainer container)
             throws IOException {
-        super();
 
         // Open the file and create the archive stream
         final FileInputStream in = new FileInputStream(container.getFile());

@@ -52,14 +52,17 @@ public class EditPublisherDialog {
     /** Adapter for the AutoCompleteTextView field. */
     private final ArrayAdapter<String> mAdapter;
 
+    /**
+     * Constructor.
+     */
     public EditPublisherDialog(@NonNull final Activity activity,
                                @NonNull final DBA db,
                                @Nullable final Runnable onChanged) {
         mDb = db;
         mActivity = activity;
         mOnChanged = onChanged;
-        mAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_dropdown_item_1line,
-                                      db.getPublisherNames());
+        mAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line,
+                                      mDb.getPublisherNames());
     }
 
     @CallSuper
@@ -69,7 +72,6 @@ public class EditPublisherDialog {
                                    .inflate(R.layout.dialog_edit_publisher, null);
 
         final AutoCompleteTextView nameView = root.findViewById(R.id.name);
-        //noinspection ConstantConditions
         nameView.setText(source.getName());
         nameView.setAdapter(mAdapter);
 
@@ -78,7 +80,6 @@ public class EditPublisherDialog {
                 .setTitle(R.string.title_edit_publisher)
                 .create();
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -99,7 +100,6 @@ public class EditPublisherDialog {
             }
         });
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {

@@ -103,7 +103,8 @@ public class SearchAdminActivity
                 ArrayList<SearchSites.Site> list = frag.getList();
                 if (list != null) {
                     for (SearchSites.Site site : list) {
-                        sites = site.enabled ? sites | site.id : sites & ~site.id;
+                        sites = site.isEnabled() ? sites | site.id
+                                                 : sites & ~site.id;
                     }
                 }
                 Intent data = new Intent();

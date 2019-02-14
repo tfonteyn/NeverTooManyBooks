@@ -186,7 +186,7 @@ public class StartupActivity
                     @Override
                     public void onCancel(@NonNull final DialogInterface dialog) {
                         // Cancelling the list cancels the activity.
-                        StartupActivity.this.finish();
+                        finish();
                     }
                 });
     }
@@ -597,9 +597,10 @@ public class StartupActivity
                                             false)) {
                 updateProgress(R.string.progress_msg_rebuilding_search_index);
                 db.rebuildFts();
-                Prefs.getPrefs().edit().putBoolean(
-                        UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
-                        false).apply();
+                Prefs.getPrefs()
+                     .edit()
+                     .putBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)
+                     .apply();
             }
         }
 
@@ -633,8 +634,10 @@ public class StartupActivity
             if (Prefs.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED,
                                             false)) {
                 UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
-                Prefs.getPrefs().edit().remove(
-                        UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED).apply();
+                Prefs.getPrefs()
+                     .edit()
+                     .remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED)
+                     .apply();
             }
         }
 

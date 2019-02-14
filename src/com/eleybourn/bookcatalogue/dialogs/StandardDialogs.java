@@ -184,7 +184,7 @@ public final class StandardDialogs {
 
         // Format the list of authors nicely
         StringBuilder authors = new StringBuilder();
-        if (authorList.size() == 0) {
+        if (authorList.isEmpty()) {
             authors.append(UNKNOWN);
         } else {
             authors.append(authorList.get(0).getDisplayName());
@@ -224,51 +224,6 @@ public final class StandardDialogs {
                          });
 
         dialog.show();
-    }
-
-    /**
-     * Display a dialog warning the user that Goodreads authentication is required.
-     * Gives the options: 'request now', 'more info' or 'cancel'.
-     */
-    public static void goodreadsAuthAlert(@NonNull final FragmentActivity context) {
-        final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(R.string.gr_title_auth_access)
-                .setMessage(R.string.gr_action_cannot_be_completed)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .create();
-
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                                 GoodreadsRegisterActivity.requestAuthorizationInBackground(
-                                         context);
-                             }
-                         });
-
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                         context.getString(R.string.btn_tell_me_more),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                                 Intent i = new Intent(context, GoodreadsRegisterActivity.class);
-                                 context.startActivity(i);
-                             }
-                         });
-
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         context.getString(android.R.string.cancel),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                             }
-                         });
-
-        dialog.show();
-
     }
 
     public static void confirmSaveDuplicateBook(@NonNull final Context context,

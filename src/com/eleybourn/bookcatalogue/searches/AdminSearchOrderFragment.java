@@ -64,7 +64,7 @@ public class AdminSearchOrderFragment
     /**
      * Handle drop events; This is a simplified version of {@link EditObjectListActivity#onDrop}.
      * <p>
-     * Lists here are 5 items or so....
+     * Lists here are only 5 items or less....
      */
     @Override
     @CallSuper
@@ -88,7 +88,7 @@ public class AdminSearchOrderFragment
         if (mListView != null) {
             // walk the list, and use the position of the item as the site.priority
             for (int row = 0; row < mList.size(); row++) {
-                mList.get(row).priority = row;
+                mList.get(row).setPriority(row);
             }
         }
         return mList;
@@ -125,9 +125,8 @@ public class AdminSearchOrderFragment
                     @Override
                     public void onClick(@NonNull final View v) {
                         Holder h = (Holder) v.getTag();
-                        //noinspection ConstantConditions
-                        h.site.enabled = !h.site.enabled;
-                        h.checkable.setChecked(h.site.enabled);
+                        h.site.setEnabled(!h.site.isEnabled());
+                        h.checkable.setChecked(h.site.isEnabled());
                         // no need to update the list, item itself is updated
                         //onListChanged();
                     }
@@ -138,11 +137,10 @@ public class AdminSearchOrderFragment
             }
 
             // Setup the variant fields in the holder
-            //noinspection ConstantConditions
             holder.site = getItem(position);
             //noinspection ConstantConditions
-            holder.name.setText(holder.site.name);
-            holder.checkable.setChecked(holder.site.enabled);
+            holder.name.setText(holder.site.getName());
+            holder.checkable.setChecked(holder.site.isEnabled());
 
             return convertView;
         }

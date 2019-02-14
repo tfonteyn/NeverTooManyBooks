@@ -65,7 +65,7 @@
     </string-array>
 
     <!-- Preference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Обрезать \'Layer Type\'</string>
+    <string name="pt_thumbnail_cropper_layer_type">Обрезать \‘Layer Type\’</string>
     <string name="pt_hint_layer_type">Оставьте этот параметр по умолчанию, если вы не столкнетесь с падениями при кадрировании изображений. Попробуйте «программное обеспечение» для более безопасного, но медленного или принудительного «оборудования» для менее безопасного, но быстрее</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>дефолт</item>
@@ -144,8 +144,8 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Форматирование по авторским именам</string>
-    <string name="pv_bob_format_author_name_given_first">Первое имя, например \'Иван, Иванов\'</string>
-    <string name="pv_bob_format_author_name_family_first">Первая фамилия, например \'Иванов, Иван\'</string>
+    <string name="pv_bob_format_author_name_given_first">Первое имя, например \‘Иван, Иванов\’</string>
+    <string name="pv_bob_format_author_name_family_first">Первая фамилия, например \‘Иванов, Иван\’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Сортировать авторов</string>

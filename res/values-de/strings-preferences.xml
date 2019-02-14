@@ -66,7 +66,7 @@
 
     <!-- Preference - Compatibility / bug workaround for some devices -->
     <string name="pt_thumbnail_cropper_layer_type">Zuschneiden Schicht Typ</string>
-    <string name="pt_hint_layer_type">Behalten Sie diese Einstellung bei \'Standardeinstellung\' bei, es sei denn, Sie stürzen beim Beschneiden von Bildern ab. Probieren Sie \'Software\' aus, um sicherer, aber langsamer zu sein, oder erzwingen Sie \'Hardware\' für weniger Sicherheit, aber schneller.</string>
+    <string name="pt_hint_layer_type">Behalten Sie diese Einstellung bei \‘Standardeinstellung\’ bei, es sei denn, Sie stürzen beim Beschneiden von Bildern ab. Probieren Sie \‘Software\’ aus, um sicherer, aber langsamer zu sein, oder erzwingen Sie \‘Hardware\’ für weniger Sicherheit, aber schneller.</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Standardeinstellung verwenden</item>
         <item>Hardware</item>
@@ -143,8 +143,8 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Format des Autorennamens</string>
-    <string name="pv_bob_format_author_name_given_first">Vorname zuerst (z.B. \'Max Meier\')</string>
-    <string name="pv_bob_format_author_name_family_first">Familienname zuerst (z.B. \'Meier, Max\')</string>
+    <string name="pv_bob_format_author_name_given_first">Vorname zuerst (z.B. \‘Max Meier\’)</string>
+    <string name="pv_bob_format_author_name_family_first">Familienname zuerst (z.B. \‘Meier, Max\’)</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Autorennamen sortieren</string>

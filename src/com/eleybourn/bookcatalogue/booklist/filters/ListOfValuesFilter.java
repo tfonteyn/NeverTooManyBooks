@@ -44,7 +44,7 @@ public class ListOfValuesFilter<T>
             public String encode(@NonNull final T element) {
                 return element.toString();
             }
-        }).encode(list);
+        }).encode(',',list);
     }
 
     @Override

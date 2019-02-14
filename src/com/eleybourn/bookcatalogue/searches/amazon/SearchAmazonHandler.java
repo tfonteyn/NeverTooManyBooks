@@ -273,8 +273,10 @@ public class SearchAmazonHandler
     private boolean mEntryDone;
 
     /**
+     * Constructor.
+     *
      * @param bookData       Bundle to save results in
-     * @param fetchThumbnail <tt>true</tt> if we need to get a thumbnail
+     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
      */
     SearchAmazonHandler(@NonNull final Bundle bookData,
                         final boolean fetchThumbnail) {
@@ -315,6 +317,11 @@ public class SearchAmazonHandler
             addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
                                         mCurrencyCode);
         } catch (NumberFormatException ignore) {
+            if (BuildConfig.DEBUG) {
+                Logger.info(this, "handleListPrice",
+                            "mCurrencyCode=" + mCurrencyCode
+                                    + ", mCurrencyAmount=" + mCurrencyAmount);
+            }
         }
     }
 

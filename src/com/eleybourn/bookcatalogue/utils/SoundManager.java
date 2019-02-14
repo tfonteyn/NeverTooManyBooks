@@ -30,7 +30,7 @@ public final class SoundManager {
     }
 
     private static void playFile(@NonNull final Context context,
-                                 final @RawRes int resId) {
+                                 @RawRes final int resId) {
         try {
             AssetFileDescriptor file = context.getResources().openRawResourceFd(resId);
             MediaPlayer player = new MediaPlayer();

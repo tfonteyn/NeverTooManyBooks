@@ -70,6 +70,7 @@ public class Bookshelf
     /** the style gets cached. It only gets reloaded when the mStyleId != cached one. */
     private BooklistStyle mCachedStyle;
 
+
     /**
      * Constructor without ID.
      */
@@ -114,6 +115,7 @@ public class Bookshelf
      *
      * @param element the string to decode
      *                <p>
+     *                format: "name"
      *                format: "name * styleUUID"
      */
     public static Bookshelf fromString(@NonNull final String element) {
@@ -121,24 +123,27 @@ public class Bookshelf
                 .decode(FIELD_SEPARATOR, element, false);
 
         String name = list.get(0);
-
-        // the right thing todo would be: get a database, then get the 'real' default style.
-        // as this is a lot of overkill for importing, we're just using the builtin default.
+        // check if we have a style
         if (list.size() > 1) {
             String uuid = list.get(1).trim();
             if (uuid.startsWith("-")) {
                 // it's a builtin style, use it.
                 try {
-                    return new Bookshelf(name, Long.parseLong(uuid));
+                    long builtinId = Long.parseLong(uuid);
+                    return new Bookshelf(name, builtinId);
                 } catch (NumberFormatException ignore) {
                 }
             } else {
-                // it's a user defined style.
-                //TOMF: ENHANCE... implement later....
-                // convert 'uuid' to 'id'
-                //return new Bookshelf(name, styleId);
+                // it's a user defined style. TOMF: ENHANCE... implement later....
+                //problem: importing an archive where the bookshelf data comes BEFORE the styles
+                // see if we can find the uuid in the db
+                // if found, we have the id:
+                //..... return new Bookshelf(name, styleId);
+                // if not found?
             }
         }
+        // the right thing todo would be: get a database, then get the 'real' default style.
+        // as this is a lot of overkill for importing, we're just using the builtin default.
         return new Bookshelf(name, BooklistStyles.DEFAULT_STYLE);
     }
 
@@ -304,14 +309,24 @@ public class Bookshelf
 
     /**
      * Support for encoding to a text file.
-     *
+     *TOMF: fix/finish uuid stuff: give builtin styles a uuid
      * @return the object encoded as a String.
      * <p>
      * "name * styleUUID"
      */
     @NonNull
     public String stringEncoded() {
-        return mName + ' ' + FIELD_SEPARATOR + ' ' + mCachedStyle.getUuid();
+        if (mStyleId < 0) {
+            // builtin style, use the id.
+            return mName + ' ' + FIELD_SEPARATOR + ' ' + mStyleId;
+        }
+
+        if (mCachedStyle != null) {
+            return mName + ' ' + FIELD_SEPARATOR + ' ' + mCachedStyle.getUuid();
+        } else {
+            // without a database, ... no style.
+            return mName;
+        }
     }
 
 

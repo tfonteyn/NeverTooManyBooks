@@ -73,8 +73,7 @@ public class GetImageTask
             maxTasks = 3;
         }
         if (DEBUG_SWITCHES.TASK_MANAGER && BuildConfig.DEBUG) {
-            Logger.info(GetImageTask.class, "GetImageTask: #cpu     : " + nr);
-            Logger.info(GetImageTask.class, "GetImageTask: #maxTasks: " + maxTasks);
+            Logger.info(GetImageTask.class, "#cpu: " + nr +  ", #maxTasks: " + maxTasks);
         }
         TASK_QUEUE = new SimpleTaskQueue("GetImageTask", maxTasks);
     }

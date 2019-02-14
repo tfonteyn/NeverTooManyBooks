@@ -19,7 +19,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
+import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
@@ -28,7 +28,7 @@ import java.util.Objects;
 
 public abstract class BookSearchBaseFragment
         extends Fragment
-        implements SearchManager.SearchManagerListener {
+        implements SearchCoordinator.SearchManagerListener {
 
     static final int REQ_BOOK_EDIT = 0;
     /**
@@ -144,23 +144,23 @@ public abstract class BookSearchBaseFragment
     }
 
     /**
-     * (re)connect with the {@link SearchManager} by starting to listen to its messages.
+     * (re)connect with the {@link SearchCoordinator} by starting to listen to its messages.
      */
     @Override
     @CallSuper
     public void onResume() {
         super.onResume();
         if (mSearchManagerId != 0) {
-            SearchManager.getMessageSwitch()
-                         .addListener(mSearchManagerId, this, true);
+            SearchCoordinator.getMessageSwitch()
+                             .addListener(mSearchManagerId, this, true);
         }
     }
 
     /**
-     * Start the actual search with the {@link SearchManager} in the background.
+     * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
      * The results will arrive in
-     * {@link SearchManager.SearchManagerListener#onSearchFinished(boolean, Bundle)}
+     * {@link SearchCoordinator.SearchManagerListener#onSearchFinished(boolean, Bundle)}
      *
      * @return <tt>true</tt> if search was started.
      */
@@ -178,18 +178,18 @@ public abstract class BookSearchBaseFragment
 
         try {
             // Start the lookup in a background search task.
-            final SearchManager searchManager =
-                    new SearchManager(mActivity.getTaskManager(), this);
-            mSearchManagerId = searchManager.getId();
+            final SearchCoordinator searchCoordinator =
+                    new SearchCoordinator(mActivity.getTaskManager(), this);
+            mSearchManagerId = searchCoordinator.getId();
 
             Tracker.handleEvent(this, Tracker.States.Running,
                                 "Created SearchManager=" + mSearchManagerId);
 
-            mActivity.getTaskManager().sendHeaderTaskProgressMessage(
-                    getString(R.string.progress_msg_searching));
+            mActivity.getTaskManager()
+                     .sendHeaderTaskProgressMessage(R.string.progress_msg_searching);
             // kick of the searches
-            searchManager.search(mSearchSites, authorSearchText, titleSearchText,
-                                 isbnSearchText, true);
+            searchCoordinator.search(mSearchSites, authorSearchText, titleSearchText,
+                                     isbnSearchText, true);
             return true;
 
         } catch (RuntimeException e) {
@@ -202,13 +202,13 @@ public abstract class BookSearchBaseFragment
     }
 
     /**
-     * Cut us loose from the {@link SearchManager} by stopping listening to its messages.
+     * Cut us loose from the {@link SearchCoordinator} by stopping listening to its messages.
      */
     @Override
     @CallSuper
     public void onPause() {
         if (mSearchManagerId != 0) {
-            SearchManager.getMessageSwitch().removeListener(mSearchManagerId, this);
+            SearchCoordinator.getMessageSwitch().removeListener(mSearchManagerId, this);
         }
         super.onPause();
     }

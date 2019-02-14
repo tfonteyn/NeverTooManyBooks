@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.eleybourn.bookcatalogue.tasks.simpletasks;
+package com.eleybourn.bookcatalogue.goodreads;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -41,6 +41,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
+import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 
 import java.util.ArrayList;
@@ -386,22 +388,6 @@ public class TaskWithProgressDialogFragment
     }
 
     /**
-     * Convenience method to step the progress by the passed delta.
-     */
-    public void onProgressStep(@Nullable final String message,
-                               final int delta) {
-        synchronized (this) {
-            if (message != null) {
-                mMessage = message;
-                mMessageChanged = true;
-            }
-            mProgress += delta;
-            mProgressChanged = true;
-        }
-        requestUpdateProgress();
-    }
-
-    /**
      * Direct update of message and progress value.
      */
     public void onProgress(@Nullable final String message,
@@ -495,17 +481,6 @@ public class TaskWithProgressDialogFragment
         void deliver(@NonNull Activity activity);
     }
 
-    /**
-     * Listener for OnTaskFinished messages.
-     */
-    public interface OnTaskFinishedListener {
-
-        void onTaskFinished(@NonNull TaskWithProgressDialogFragment fragment,
-                            int taskId,
-                            boolean success,
-                            boolean cancelled,
-                            @NonNull FragmentTask task);
-    }
 
     /**
      * Listener for OnAllTasksFinished messages.
@@ -605,10 +580,9 @@ public class TaskWithProgressDialogFragment
                 Logger.error(e);
             }
             try {
-                if (activity instanceof OnTaskFinishedListener) {
-                    ((OnTaskFinishedListener) activity).onTaskFinished(
-                            TaskWithProgressDialogFragment.this,
-                            mTaskId, mSuccess, mWasCancelled, mTask);
+                if (activity instanceof TaskWithProgress.OnTaskFinishedListener) {
+                    ((TaskWithProgress.OnTaskFinishedListener) activity)
+                            .onTaskFinished(mTaskId, !mSuccess, mWasCancelled, mTask.getTag());
                 }
             } catch (RuntimeException e) {
                 Logger.error(e);
@@ -664,7 +638,7 @@ public class TaskWithProgressDialogFragment
         @Override
         public void onFinish(@Nullable final Exception e) {
             //  Queue a TaskFinished message to whoever created us.
-            TaskWithProgressDialogFragment.this.queueTaskFinished(mInnerTask, e);
+            queueTaskFinished(mInnerTask, e);
         }
 
     }

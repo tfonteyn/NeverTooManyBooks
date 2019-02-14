@@ -61,8 +61,7 @@ public abstract class BackupWriterAbstract
     @NonNull
     private final DBA mDb;
 
-    private @NonNull
-    ExportSettings mSettings;
+    private ExportSettings mSettings;
 
     private BackupWriter.BackupWriterListener mProgressListener;
 
@@ -82,6 +81,9 @@ public abstract class BackupWriterAbstract
             throws IOException {
         mSettings = settings;
         mProgressListener = listener;
+
+        // do a cleanup first
+        mDb.purge();
 
         // keep track of what we wrote to the archive
         int entitiesWritten = ExportSettings.NOTHING;
@@ -130,6 +132,7 @@ public abstract class BackupWriterAbstract
             if (!mProgressListener.isCancelled()
                     && (mSettings.what & ExportSettings.BOOK_CSV) != 0) {
                 try {
+                    //noinspection ConstantConditions
                     putBooks(tempBookCsvFile);
                 } finally {
                     StorageUtils.deleteFile(tempBookCsvFile);

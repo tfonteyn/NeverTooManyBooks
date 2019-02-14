@@ -42,26 +42,27 @@ import java.util.ArrayList;
  * An XML handler for the Google Books entry return.
  *
  * <pre>
- * <?xml version='1.0' encoding='UTF-8'?>
- * <entry xmlns='http://www.w3.org/2005/Atom'
- *   xmlns:gbs='http://schemas.google.com/books/2008'
- *   xmlns:dc='http://purl.org/dc/terms'
- *   xmlns:batch='http://schemas.google.com/gdata/batch'
- *   xmlns:gd='http://schemas.google.com/g/2005'>
+ *   {@code
+ *   <?xml version='1.0' encoding='UTF-8'?>
+ *   <entry xmlns='http://www.w3.org/2005/Atom'
+ *    xmlns:gbs='http://schemas.google.com/books/2008'
+ *    xmlns:dc='http://purl.org/dc/terms'
+ *    xmlns:batch='http://schemas.google.com/gdata/batch'
+ *    xmlns:gd='http://schemas.google.com/g/2005'>
  *
  *   <id>http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ</id>
  *   <updated>2010-02-28T10:49:24.000Z</updated>
  *   <category scheme='http://schemas.google.com/g/2005#kind'
- *   term='http://schemas.google.com/books/2008#volume'/>
+ *    term='http://schemas.google.com/books/2008#volume'/>
  *   <title type='text'>The trigger</title>
  *   <link rel='http://schemas.google.com/books/2008/info' type='text/html'
- *   href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
+ *    href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1&amp;source=gbs_gdata'/>
  *   <link rel='http://schemas.google.com/books/2008/annotation'
- *   type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
+ *     type='application/atom+xml' href='http://www.google.com/books/feeds/users/me/volumes'/>
  *   <link rel='alternate' type='text/html'
- *   href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1'/>
+ *     href='http://books.google.com/books?id=A4NDPgAACAAJ&amp;ie=ISO-8859-1'/>
  *   <link rel='self' type='application/atom+xml'
- *   href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
+ *     href='http://www.google.com/books/feeds/volumes/A4NDPgAACAAJ'/>
  *   <gbs:embeddability value='http://schemas.google.com/books/2008#not_embeddable'/>
  *   <gbs:openAccess value='http://schemas.google.com/books/2008#disabled'/>
  *   <gbs:viewability value='http://schemas.google.com/books/2008#view_no_pages'/>
@@ -128,6 +129,7 @@ import java.util.ArrayList;
  * <dc:title>The Geeks' Guide to World Domination</dc:title>
  * <dc:title>Be Afraid, Beautiful People</dc:title>
  * </entry>
+ * }
  * </pre>
  */
 class SearchGoogleBooksEntryHandler
@@ -163,7 +165,7 @@ class SearchGoogleBooksEntryHandler
      * Constructor.
      *
      * @param bookData       Bundle to save results in
-     * @param fetchThumbnail <tt>true</tt> if we need to get a thumbnail
+     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
      */
     SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
                                   final boolean fetchThumbnail) {
@@ -261,7 +263,7 @@ class SearchGoogleBooksEntryHandler
                 break;
 
             case XML_AUTHOR:
-                mAuthors.add( Author.fromString(mBuilder.toString()));
+                mAuthors.add(Author.fromString(mBuilder.toString()));
                 break;
 
             case XML_PUBLISHER:
@@ -298,7 +300,7 @@ class SearchGoogleBooksEntryHandler
             default:
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                     // see what we are missing.
-                    Logger.info(this,"endElement",
+                    Logger.info(this, "endElement",
                                 "Skipping: " + localName + "->'" + mBuilder + '\'');
                 }
 

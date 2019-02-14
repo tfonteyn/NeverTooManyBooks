@@ -31,6 +31,7 @@ import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -235,26 +236,25 @@ public class Author
      * <p>
      * Special rules, see {@link #FAMILY_NAME_PREFIX} and {@link #FAMILY_NAME_SUFFIX}
      * <p>
-     * Not covered are people with multiple, and not concatenated, last names.
+     * Not covered:
+     * - multiple, and not concatenated, family names.
+     * - more then 1 un-encoded comma.
+     *
      * <p>
      * TODO: would be nice to redo with a rules based approach.
      *
      * @param name a String containing the name
      */
     public static Author fromString(@NonNull String name) {
-        //TODO: use the stringlist decode after we detect a comma ?
-        // check easy case first: "family, given"
-        int commaIndex = name.indexOf(FIELD_SEPARATOR);
-        if (commaIndex > 0) {
-            String beforeComma = name.substring(0, commaIndex).trim();
-            String behindComma = name.substring(commaIndex + 1).trim();
-            Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(behindComma);
+        List<String> fngn = new StringList<String>().decode(FIELD_SEPARATOR, name, true);
+        if (fngn.size() > 1) {
+            Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(fngn.get(1));
             if (!matchSuffix.find()) {
                 // not a suffix, assume the names are already formatted.
-                return new Author(beforeComma, behindComma);
+                return new Author(fngn.get(0), fngn.get(1));
             } else {
                 // concatenate without the comma. Further processing will take care of the suffix.
-                name = beforeComma + ' ' + behindComma;
+                name = fngn.get(0) + ' ' + fngn.get(1);
             }
         }
 

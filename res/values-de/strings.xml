@@ -152,7 +152,7 @@
     <string name="vldt_failed">Die Überprüfung für \‘%s\’ ist fehlgeschlagen</string>
     <string name="vldt_read_start_after_end">Das Datum Lesen beendet ist vor dem Datum mit Lesen begonnen</string>
     <string name="progress_end_backup_success">Sicherungskopie erfolgreich erstellt</string>
-    <string name="export_error_backup_failed">Sicherungskopie erstellen fehlgeschlagen</string>
+    <string name="error_backup_failed">Sicherungskopie erstellen fehlgeschlagen</string>
     <string name="error_file_must_contain_column">Die Datei muss eine Spalte mit dem Namen %s enthalten</string>
     <string name="import_error_csv_file_must_contain_any_column">Die Datei muss eine Spalte
         mit den folgenden Namen enthalten: %s</string>

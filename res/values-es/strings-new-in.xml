@@ -53,23 +53,23 @@
 		]]>
     </string>
 
-    <string name="new_in_424">
-<![CDATA[
+    <string name="new_in_424"><![CDATA[
+
 	<p><b>Novedades en la versión 4.2.4</b>\n\n
-		* Vista no editable de los detalles de un libro, con soporte \'fling\'! (Ver \"Otras preferencias\") (Nick Silin)\n\n
+		* Vista no editable de los detalles de un libro, con soporte \'fling\'! (Ver \“Otras preferencias\”) (Nick Silin)\n\n
 		* Soporte para el escáner pic2shop (mejor para foco fijo, poca luz y cámaras frontales)\n\n
 		* Comprobación de la conexión a internet al tratar de escanear libros\n\n
 		* Actualización de la traducción al alemán (Robert Wetzlmayr)\n\n
 		* Actualización de la traducción al francés (Djiko)\n\n
 		* Corrección de errores\n\n
 		</p>
-		]]>
-    </string>
 
-    <string name="new_in_500">
-<![CDATA[
+    ]]></string>
+
+    <string name="new_in_500"><![CDATA[
+
 	<p><b>Novedades en la versión 5.0.0</b>\n\n
-		* Vista no editable de los detalles de un libro, con soporte \'fling\'! (Ver \"Otras preferencias\") (Nick Silin)\n\n
+		* Vista no editable de los detalles de un libro, con soporte \'fling\'! (Ver \“Otras preferencias\”) (Nick Silin)\n\n
 		* Archivado (Backup & Importación) del catálogo completo, incluyendo libros, portadas, preferencias y estilos\n\n
 		* Interfaz actualizada con una barra de acción que funciona mejor en dispositivos sin botones de menú\n\n
 		* Soporte para el escáner pic2shop (mejor para foco fijo, poca luz y cámaras frontales)\n\n
@@ -81,8 +81,8 @@
 		* Cambios internos, en preparación para una interfaz mejorada para tabletas\n\n
 		* Corrección de errores\n\n
 		</p>
-		]]>
-    </string>
+
+    ]]></string>
 
     <string name="new_in_502">
 		<![CDATA[
@@ -108,15 +108,15 @@
 			</p>
 		]]>
     </string>
-    <string name="new_in_505">
-		<![CDATA[
+    <string name="new_in_505"><![CDATA[
+
 			<p><b>Novedades en la versión 5.0.5</b>\n\n
-				* Se puede ordenar por "Fecha de inclusión", inversa\n\n
+				* Se puede ordenar por “Fecha de inclusión”, inversa\n\n
 				* Actualización de la traducción al francés (Imkal)\n\n
 				* Corrección de errores\n\n
 			</p>
-		]]>
-    </string>
+
+    ]]></string>
     <string name="new_in_508">
 		<![CDATA[
 			<p><b>Novedades en la versión 5.0.8</b>\n\n

@@ -65,8 +65,8 @@
     </string-array>
 
     <!-- Preference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Recadrage \'Layer Type\'</string>
-    <string name="pt_hint_layer_type">Laissez ce paramètre sur la valeur par défaut, sauf si vous rencontrez des problèmes lors du recadrage des images. Essayez \'Logiciel\' pour plus sûr mais plus lentement, ou forcez \'Matériel\' pour moins sûr, mais plus rapide.</string>
+    <string name="pt_thumbnail_cropper_layer_type">Recadrage \‘Layer Type\’</string>
+    <string name="pt_hint_layer_type">Laissez ce paramètre sur la valeur par défaut, sauf si vous rencontrez des problèmes lors du recadrage des images. Essayez \‘Logiciel\’ pour plus sûr mais plus lentement, ou forcez \‘Matériel\’ pour moins sûr, mais plus rapide.</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Valeur par défaut</item>
         <item>Matériel</item>

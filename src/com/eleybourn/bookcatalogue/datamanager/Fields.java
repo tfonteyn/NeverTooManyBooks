@@ -168,7 +168,6 @@ public class Fields
      * @param fragment The parent fragment which contains all Views this object will manage.
      */
     public Fields(@NonNull final Fragment fragment) {
-        super();
         mContext = new FragmentContext(fragment);
     }
 
@@ -179,7 +178,6 @@ public class Fields
      */
     @SuppressWarnings("unused")
     Fields(@NonNull final Activity activity) {
-        super();
         mContext = new ActivityContext(activity);
     }
 
@@ -483,7 +481,7 @@ public class Fields
     @NonNull
     @SuppressWarnings("unused")
     public String getValidationExceptionMessage(@NonNull final Resources res) {
-        if (mValidationExceptions.size() == 0) {
+        if (mValidationExceptions.isEmpty()) {
             return "No error";
         } else {
             StringBuilder message = new StringBuilder();
@@ -1119,7 +1117,6 @@ public class Fields
         }
     }
 
-
     /**
      * Formatter for price fields.
      * <p>
@@ -1241,7 +1238,6 @@ public class Fields
             } catch (NumberFormatException ignore) {
                 return source;
             }
-
             List<String> list = new ArrayList<>();
             for (Integer edition : Book.EDITIONS.keySet()) {
                 if ((edition & bitmask) != 0) {
@@ -1250,7 +1246,7 @@ public class Fields
                     list.add(BookCatalogueApp.getResString(resId));
                 }
             }
-            return Csv.toDisplayString(list);
+            return Csv.toDisplayString(list, null);
         }
 
         @NonNull
@@ -1522,7 +1518,7 @@ public class Fields
 
                         @Override
                         public void afterTextChanged(@NonNull final Editable s) {
-                            Field.this.setValue(s.toString());
+                            setValue(s.toString());
                         }
                     };
                     et.addTextChangedListener(mTextWatcher);

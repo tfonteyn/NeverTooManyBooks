@@ -97,7 +97,6 @@ public class TaskQueueListActivity
                 }));
 
         Task task = (Task) v.getTag(R.id.TAG_TASK);
-        //noinspection ConstantConditions
         task.addContextMenuItems(this, parent, v, position, id, items, mDb);
         ContextDialogItem.showContextDialog(this, R.string.title_select_an_action, items);
     }

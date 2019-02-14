@@ -29,6 +29,7 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -36,14 +37,15 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
+import com.eleybourn.bookcatalogue.backup.BackupTask;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.RestoreTask;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserBaseActivity;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment;
-import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.filechooser.FileListerAsyncTask;
+import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -60,6 +62,7 @@ import java.util.Objects;
 public class BackupAndRestoreActivity
         extends FileChooserBaseActivity
         implements
+        TaskWithProgress.OnTaskFinishedListener,
         ImportDialogFragment.OnImportTypeSelectionDialogResultsListener,
         ExportDialogFragment.OnExportTypeSelectionDialogResultsListener {
 
@@ -70,11 +73,9 @@ public class BackupAndRestoreActivity
      * Note: could use {@link #isSave()} of course. But keeping it future proof.
      * Option 3 ? cloud ? etc....
      */
+    private static final int TASK_ID_FILE_LISTER = 0;
     private static final int TASK_ID_SAVE_TO_ARCHIVE = 1;
     private static final int TASK_ID_READ_FROM_ARCHIVE = 2;
-
-    private final ImportSettings importSettings = new ImportSettings();
-    private final ExportSettings exportSettings = new ExportSettings();
 
     @CallSuper
     @Override
@@ -120,8 +121,9 @@ public class BackupAndRestoreActivity
      */
     @NonNull
     @Override
-    public FileListerFragmentTask getFileLister(@NonNull final File root) {
-        return new BackupListerFragmentTask(root);
+    public FileListerAsyncTask getFileLister(@NonNull final FragmentActivity context,
+                                             @NonNull final File root) {
+        return new BackupListerTask(TASK_ID_FILE_LISTER, this, root);
     }
 
     /**
@@ -132,7 +134,8 @@ public class BackupAndRestoreActivity
      */
     @Override
     public void onOpen(@NonNull final File file) {
-        importSettings.file = file;
+        final ImportSettings settings = new ImportSettings();
+        settings.file = file;
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_import_from_archive)
@@ -142,9 +145,9 @@ public class BackupAndRestoreActivity
                     public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         // User wants to import all.
-                        importSettings.what = ImportSettings.ALL;
-                        BackupManager.restore(BackupAndRestoreActivity.this,
-                                              TASK_ID_READ_FROM_ARCHIVE, importSettings);
+                        settings.what = ImportSettings.ALL;
+                        new RestoreTask(TASK_ID_READ_FROM_ARCHIVE, BackupAndRestoreActivity.this,
+                                        settings).execute();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -159,7 +162,7 @@ public class BackupAndRestoreActivity
                     public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         // User wants to tune settings first.
-                        ImportDialogFragment.newInstance(importSettings)
+                        ImportDialogFragment.newInstance(settings)
                                             .show(getSupportFragmentManager(), null);
                     }
                 })
@@ -176,7 +179,7 @@ public class BackupAndRestoreActivity
         if (settings.what == ImportSettings.NOTHING) {
             return;
         }
-        BackupManager.restore(this, TASK_ID_READ_FROM_ARCHIVE, settings);
+        new RestoreTask(TASK_ID_READ_FROM_ARCHIVE, this, settings).execute();
     }
 
     /**
@@ -184,7 +187,8 @@ public class BackupAndRestoreActivity
      */
     @Override
     public void onSave(@NonNull final File file) {
-        exportSettings.file = file;
+        final ExportSettings settings = new ExportSettings();
+        settings.file = file;
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_backup)
@@ -194,10 +198,9 @@ public class BackupAndRestoreActivity
                     public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         // User wants to backup all.
-                        exportSettings.what = ExportSettings.ALL;
-                        BackupManager.backup(BackupAndRestoreActivity.this,
-                                             TASK_ID_SAVE_TO_ARCHIVE,
-                                             exportSettings);
+                        settings.what = ExportSettings.ALL;
+                        new BackupTask(TASK_ID_SAVE_TO_ARCHIVE,
+                                       BackupAndRestoreActivity.this, settings).execute();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -212,7 +215,7 @@ public class BackupAndRestoreActivity
                     public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         // User wants to tune settings first.
-                        ExportDialogFragment.newInstance(exportSettings)
+                        ExportDialogFragment.newInstance(settings)
                                             .show(getSupportFragmentManager(), null);
                     }
                 })
@@ -246,35 +249,35 @@ public class BackupAndRestoreActivity
             settings.dateFrom = null;
         }
 
-        BackupManager.backup(this, TASK_ID_SAVE_TO_ARCHIVE, settings);
+        new BackupTask(TASK_ID_SAVE_TO_ARCHIVE, this, settings).execute();
     }
 
-    /** the import/export has finished. */
+    /**
+     * Listener {@link TaskWithProgress} tasks.
+     *
+     * @param result - archive backup : {@link ExportSettings}
+     *          - archive restore: {@link ImportSettings}
+     *          - file lister: not used
+     */
     @Override
-    public void onTaskFinished(@NonNull final TaskWithProgressDialogFragment fragment,
-                               final int taskId,
-                               final boolean success,
+    public void onTaskFinished(final int taskId,
+                               final boolean failed,
                                final boolean cancelled,
-                               @NonNull final FragmentTask task) {
-
-
+                               @Nullable final Object result) {
 
         // Is it a task we care about?
         switch (taskId) {
             case TASK_ID_SAVE_TO_ARCHIVE:
-                ExportSettings exportSettings =
-                        (ExportSettings) Objects.requireNonNull(task.getTag());
-                handleSaveToArchiveResults(success, cancelled, exportSettings);
+                ExportSettings exportSettings = (ExportSettings) Objects.requireNonNull(result);
+                handleSaveToArchiveResults(failed, cancelled, exportSettings);
                 break;
 
             case TASK_ID_READ_FROM_ARCHIVE:
-                ImportSettings importSettings =
-                        (ImportSettings) Objects.requireNonNull(task.getTag());
-                handleReadFromArchiveResults(success, cancelled, importSettings);
+                ImportSettings importSettings = (ImportSettings) Objects.requireNonNull(result);
+                handleReadFromArchiveResults(failed, cancelled, importSettings);
                 break;
 
-            case 0:
-                // don't care.
+            case TASK_ID_FILE_LISTER:
                 break;
 
             default:
@@ -283,10 +286,10 @@ public class BackupAndRestoreActivity
         }
     }
 
-    private void handleReadFromArchiveResults(final boolean success,
+    private void handleReadFromArchiveResults(final boolean failed,
                                               final boolean cancelled,
                                               @NonNull final ImportSettings resultSettings) {
-        if (!success) {
+        if (failed) {
             String msg = getString(R.string.error_import_failed)
                     + ' ' + getString(R.string.error_storage_not_readable)
                     + "\n\n" + getString(R.string.error_if_the_problem_persists);
@@ -345,11 +348,11 @@ public class BackupAndRestoreActivity
         dialog.show();
     }
 
-    private void handleSaveToArchiveResults(final boolean success,
+    private void handleSaveToArchiveResults(final boolean failed,
                                             final boolean cancelled,
                                             @NonNull final ExportSettings resultSettings) {
-        if (!success) {
-            String msg = getString(R.string.export_error_backup_failed)
+        if (failed) {
+            String msg = getString(R.string.error_backup_failed)
                     + ' ' + getString(R.string.error_storage_not_writable)
                     + "\n\n" + getString(R.string.error_if_the_problem_persists);
 

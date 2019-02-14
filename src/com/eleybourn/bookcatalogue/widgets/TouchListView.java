@@ -530,7 +530,6 @@ public class TouchListView
         if (mWindowManager == null) {
             mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         }
-        //noinspection ConstantConditions
         return mWindowManager;
     }
 

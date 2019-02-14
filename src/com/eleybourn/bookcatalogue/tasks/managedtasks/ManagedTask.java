@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.tasks.managedtasks;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -75,6 +76,7 @@ public abstract class ManagedTask
     /** */
     private final long mMessageSenderId;
     /** message to send to the TaskManager when all is said and done. */
+    @Nullable
     protected String mFinalMessage;
     /** Flag indicating the main runTask method has completed. Set in thread run. */
     private boolean mFinished;
@@ -94,7 +96,7 @@ public abstract class ManagedTask
         ManagedTaskController controller = new ManagedTaskController() {
             @Override
             public void requestAbort() {
-                ManagedTask.this.cancelTask();
+                cancelTask();
             }
 
             @NonNull
@@ -170,7 +172,7 @@ public abstract class ManagedTask
                     public boolean deliver(@NonNull final ManagedTaskListener listener) {
                         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                             Logger.info(ManagedTask.this,
-                                        "|ManagedTask=" + ManagedTask.this.getName() +
+                                        "|ManagedTask=" + getName() +
                                                 "|Delivering 'onTaskFinished'" +
                                                 " to listener: " + listener);
                         }
@@ -210,6 +212,7 @@ public abstract class ManagedTask
         return mMessageSenderId;
     }
 
+    @Nullable
     public String getFinalMessage() {
         return mFinalMessage;
     }
@@ -219,10 +222,8 @@ public abstract class ManagedTask
      */
     public interface ManagedTaskController {
 
-        @SuppressWarnings("unused")
         void requestAbort();
 
-        @SuppressWarnings("unused")
         @NonNull
         ManagedTask getManagedTask();
     }

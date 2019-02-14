@@ -52,7 +52,7 @@ abstract class BindableItemListActivity
             new QueueManager.OnChangeListener() {
                 @Override
                 public void onChange() {
-                    BindableItemListActivity.this.refreshData();
+                    refreshData();
                 }
             };
 
@@ -82,7 +82,7 @@ abstract class BindableItemListActivity
                                     @NonNull final View view,
                                     final int position,
                                     final long id) {
-                BindableItemListActivity.this.onListItemClick(parent, view, position, id);
+                onListItemClick(parent, view, position, id);
             }
         });
     }

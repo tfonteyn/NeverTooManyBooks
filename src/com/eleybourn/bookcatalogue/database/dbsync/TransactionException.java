@@ -8,7 +8,6 @@ public class TransactionException
     private static final long serialVersionUID = -3659088149611399296L;
 
     public TransactionException() {
-        super();
     }
 
     public TransactionException(@Nullable final String msg) {

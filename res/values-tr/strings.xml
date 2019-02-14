@@ -128,7 +128,7 @@
     <string name="vldt_failed">\‘%s\’ için doğrulama başarısız</string>
     <string name="vldt_read_start_after_end">Okunmaya başlama süresi bitiş süresinden sonra</string>
     <string name="progress_end_backup_success">Yedekleme başarılı!</string>
-    <string name="export_error_backup_failed">Yedekleme başarısız!</string>
+    <string name="error_backup_failed">Yedekleme başarısız!</string>
     <string name="error_file_must_contain_column">Dosya adı %s adında bir sütun içermeli</string>
     <string name="import_error_csv_file_must_contain_any_column">Dosya, %s adlarından birini kullanan bir sütun içermeli</string>
     <string name="error_column_is_blank">Sütun %1$s %2$s numaralı satırda boş</string>

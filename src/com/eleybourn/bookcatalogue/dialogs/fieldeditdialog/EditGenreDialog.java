@@ -34,8 +34,7 @@ public class EditGenreDialog
     public EditGenreDialog(@NonNull final Activity activity,
                            @NonNull final DBA db,
                            @NonNull final Runnable onChanged) {
-        super(activity, db, db.getGenres(),
-              onChanged);
+        super(activity, db, db.getGenres(), onChanged);
     }
 
     @CallSuper

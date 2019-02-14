@@ -3,9 +3,7 @@ package com.eleybourn.bookcatalogue.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * CSV utilities.
@@ -16,27 +14,18 @@ public final class Csv {
     }
 
     /**
-     * Convert a array of objects to a csv string fit for user displaying.
+     * Convert a Collection of objects to a csv string fit for user displaying.
      *
-     * @param list with items. toString() will be used to make the item displayable.
+     * @param collection with items. toString() will be used to make the item displayable,
+     *                   or you can provide a {@link Formatter}.
+     * @param formatter  (optional) formatter to use on each element, or null for none.
      *
      * @return Resulting string
      */
     @NonNull
-    public static <E> String toDisplayString(@NonNull final List<E> list) {
-        return join(", ", list, null);
-    }
-
-    @NonNull
-    public static <E> String toDisplayString(@NonNull final List<E> list,
+    public static <E> String toDisplayString(@NonNull final Collection<E> collection,
                                              @Nullable final Formatter<E> formatter) {
-        return join(", ", list, formatter);
-    }
-
-    @NonNull
-    public static <E> String join(@NonNull final CharSequence delim,
-                                  @NonNull final E[] collection) {
-        return join(delim, Arrays.asList(collection), null);
+        return join(", ", collection, formatter);
     }
 
     @NonNull
@@ -45,18 +34,11 @@ public final class Csv {
         return join(delim, collection, null);
     }
 
-    @NonNull
-    public static <E> String join(final char delim,
-                                  @NonNull final Collection<E> collection,
-                                  @Nullable final Formatter<E> formatter) {
-        return join(String.valueOf(delim), collection, formatter);
-    }
-
     /**
      * Create a CSV list String from the passed collection.
      * Uses String.valueOf(element).trim()
      * This means that the "null" string is used for null elements.
-     * (but no exceptions thrown)
+     * (but no exceptions thrown). This can be avoided by providing a {@link Formatter}.
      *
      * @param delim      delimiter, e.g. "," or ", " etc...
      * @param collection collection

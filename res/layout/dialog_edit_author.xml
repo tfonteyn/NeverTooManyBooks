@@ -22,7 +22,7 @@
         android:text="@string/lbl_given_names"
         android:textSize="12sp" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/given_names"
         style="@style/personalNameTextEntry"
         android:hint="@string/lbl_given_names"

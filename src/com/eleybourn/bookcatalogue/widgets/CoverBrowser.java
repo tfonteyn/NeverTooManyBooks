@@ -28,6 +28,7 @@ import android.content.res.TypedArray;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,6 +42,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -49,10 +51,8 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
+import com.eleybourn.bookcatalogue.searches.SearchSites.ImageSizes;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager.ImageSizes;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -64,7 +64,9 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Class to display and manage a cover image browser in a dialog.
+ * Displays and manages a cover image browser in a dialog, allowing the user to select
+ * an image from a list to use as the (new) book cover image.
+ *
  * <p>
  * ENHANCE: For each ISBN returned by LT, add TWO images and get the second from Goodreads
  * ENHANCE: (Somehow) remove non-existent images from ImageSelector.
@@ -81,6 +83,7 @@ public class CoverBrowser
     /** ISBN of book to lookup. */
     @NonNull
     private final String mIsbn;
+
     /** Calling context. */
     @NonNull
     private final Activity mActivity;
@@ -109,11 +112,19 @@ public class CoverBrowser
      *
      * @param activity                Calling context
      * @param isbn                    ISBN of book
+     * @param searchFlags             bitmask with sites to search,
+     *                                see {@link SearchSites.Site#SEARCH_ALL} and individual flags
      * @param onImageSelectedListener Handler to call when book selected
      */
     public CoverBrowser(@NonNull final Activity activity,
                         @NonNull final String isbn,
+                        final int searchFlags,
                         @NonNull final OnImageSelectedListener onImageSelectedListener) {
+        // dev sanity check
+        if ((searchFlags & SearchSites.Site.SEARCH_ALL) == 0) {
+            throw new IllegalArgumentException("Must specify at least one source to use");
+        }
+
         mActivity = activity;
         mIsbn = isbn;
         mOnImageSelectedListener = onImageSelectedListener;
@@ -128,7 +139,7 @@ public class CoverBrowser
         mImageBackgroundColor = mActivity.getResources().getColor(R.color.CoverBrowser_background);
 
         // Create an object to manage the downloaded files
-        mFileManager = new FileManager();
+        mFileManager = new FileManager(searchFlags);
 
         mDialog = new AppCompatDialog(mActivity, ThemeUtils.getDialogThemeResId());
 //        mDialog = new AlertDialog.Builder(mActivity).create();
@@ -156,10 +167,10 @@ public class CoverBrowser
     /**
      * Show the user a selection of other covers and allow selection of a replacement.
      */
-    public void showEditionCovers() {
+    void showEditionCovers() {
 
         LibraryThingManager mLibraryThing = new LibraryThingManager();
-        if (!mLibraryThing.isAvailable()) {
+        if (mLibraryThing.noKey()) {
             LibraryThingManager.needLibraryThingAlert(mActivity, true, "cover_browser");
             return;
         }
@@ -175,6 +186,7 @@ public class CoverBrowser
             mImageFetcher = new SimpleTaskQueue("CoverBrowser-tasks");
         }
 
+        //new GetEditions(mIsbn, this);
         mImageFetcher.enqueue(new GetEditionsTask(mIsbn));
 
         // Setup the basic dialog
@@ -268,10 +280,21 @@ public class CoverBrowser
      */
     private static class FileManager {
 
-        private final LibraryThingManager libraryThingManager = new LibraryThingManager();
-
         /** key = isbn + "_" + size. */
         private final Bundle files = new Bundle();
+
+        /** Flags applicable to *current* search. */
+        private final int mSearchFlags;
+
+        /**
+         * Constructor.
+         *
+         * @param searchFlags bitmask with sites to search,
+         *                    see {@link SearchSites.Site#SEARCH_ALL} and individual flags
+         */
+        FileManager(final int searchFlags) {
+            mSearchFlags = searchFlags;
+        }
 
         /**
          * Check if a file is an image with acceptable size.
@@ -307,6 +330,8 @@ public class CoverBrowser
 
         /**
          * Download a file if not present and keep a record of it.
+         * <p>
+         * ENHANCE: use {@link SearchSites.SearchSiteManager#isAvailable()}.
          *
          * @param isbn ISBN of file
          * @param size Size of image required
@@ -314,6 +339,7 @@ public class CoverBrowser
          * @return the fileSpec, or null when not found
          */
         @Nullable
+        @WorkerThread
         String download(@NonNull final String isbn,
                         @NonNull final ImageSizes size) {
             String fileSpec;
@@ -335,25 +361,11 @@ public class CoverBrowser
             // (to avoid confusion: covers are fetched for each edition,
             // but only from ONE website each)
             // ENHANCE: allow the user to prioritize the order on the fly.
+
             for (SearchSites.Site site : SearchSites.getSitesForCoverSearches()) {
-                if (site.enabled) {
-                    File file;
-                    switch (site.id) {
-                        case SearchSites.Site.SEARCH_LIBRARY_THING:
-                            file = libraryThingManager.getCoverImage(isbn, size);
-                            break;
-
-                        case SearchSites.Site.SEARCH_GOOGLE:
-                            file = GoogleBooksManager.getCoverImage(isbn);
-                            break;
-
-                        case SearchSites.Site.SEARCH_ISFDB:
-                            file = ISFDBManager.getCoverImage(isbn);
-                            break;
-
-                        default:
-                            throw new IllegalArgumentException("unknown search site");
-                    }
+                // If this search includes the source, check it
+                if (site.isEnabled() && ((mSearchFlags & site.id) != 0)) {
+                    File file = site.getSearchSiteManager().getCoverImage(isbn, size);
 
                     if (file != null && isGood(file)) {
                         fileSpec = file.getAbsolutePath();
@@ -459,7 +471,7 @@ public class CoverBrowser
             // See if file is present
             File file = null;
             try {
-                file = mFileManager.getFile(isbn, ImageSizes.SMALL);
+                file = mFileManager.getFile(isbn, SearchSites.ImageSizes.SMALL);
             } catch (NullPointerException ignore) {
                 //file did not exist. Dealt with later.
             }
@@ -522,6 +534,8 @@ public class CoverBrowser
         @NonNull
         private final String mIsbn;
 
+        List<String> editions;
+
         /**
          * Constructor.
          */
@@ -536,20 +550,66 @@ public class CoverBrowser
             // As well as the alternate user-contributed images from LibraryThing. The latter are
             // often the best source but at present could only be obtained by HTML scraping.
             try {
-                mAlternativeEditions = LibraryThingManager.searchEditions(mIsbn);
+                editions = LibraryThingManager.searchEditions(mIsbn);
             } catch (RuntimeException e) {
-                mAlternativeEditions = null;
+                editions = null;
             }
         }
 
         @Override
         public void onFinish(@Nullable final Exception e) {
-            if (mAlternativeEditions == null || mAlternativeEditions.isEmpty()) {
-                StandardDialogs.showUserMessage(mActivity, R.string.warning_no_editions);
-                close();
-                return;
+            handleTaskResult(editions);
+        }
+    }
+
+    private void handleTaskResult(@Nullable final List<String> editions) {
+        mAlternativeEditions = editions;
+
+        if (mAlternativeEditions == null || mAlternativeEditions.isEmpty()) {
+            StandardDialogs.showUserMessage(mActivity, R.string.warning_no_editions);
+            close();
+            return;
+        }
+        showGallery();
+    }
+
+    private static class GetEditions
+            extends AsyncTask<Void, Void, List<String>> {
+
+        @NonNull
+        private final String mIsbn;
+        @NonNull
+        private final CoverBrowser mCallback;
+
+        /**
+         * Constructor.
+         *
+         * @param isbn     to search for
+         * @param callback to send results to
+         */
+        public GetEditions(@NonNull final String isbn,
+                                    @NonNull final CoverBrowser callback) {
+            mIsbn = isbn;
+            mCallback = callback;
+        }
+
+        @Override
+        @Nullable
+        protected List<String> doInBackground(final Void... params) {
+            // Get some editions
+            // ENHANCE: the list of editions should be expanded to include other sites
+            // As well as the alternate user-contributed images from LibraryThing. The latter are
+            // often the best source but at present could only be obtained by HTML scraping.
+            try {
+                return LibraryThingManager.searchEditions(mIsbn);
+            } catch (RuntimeException e) {
+                return null;
             }
-            showGallery();
+        }
+
+        @Override
+        protected void onPostExecute(final List<String> result) {
+            mCallback.handleTaskResult(result);
         }
     }
 
@@ -591,13 +651,13 @@ public class CoverBrowser
             }
 
             // Try SMALL
-            mFileSpec = mFileManager.download(mIsbn, ImageSizes.SMALL);
+            mFileSpec = mFileManager.download(mIsbn, SearchSites.ImageSizes.SMALL);
             if (mFileSpec != null && new File(mFileSpec).length() >= 50) {
                 return;
             }
 
             // Try LARGE (or silently give up)
-            mFileSpec = mFileManager.download(mIsbn, ImageSizes.LARGE);
+            mFileSpec = mFileManager.download(mIsbn, SearchSites.ImageSizes.LARGE);
         }
 
         @Override
@@ -650,12 +710,12 @@ public class CoverBrowser
             }
 
             // Download the file, try LARGE first
-            mFileSpec = mFileManager.download(mIsbn, ImageSizes.LARGE);
+            mFileSpec = mFileManager.download(mIsbn, SearchSites.ImageSizes.LARGE);
             if (mFileSpec != null && new File(mFileSpec).length() >= 50) {
                 return;
             }
             // Try SMALL (or silently give up)
-            mFileSpec = mFileManager.download(mIsbn, ImageSizes.SMALL);
+            mFileSpec = mFileManager.download(mIsbn, SearchSites.ImageSizes.SMALL);
         }
 
         @Override

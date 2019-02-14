@@ -126,7 +126,7 @@
     <string name="vldt_failed">Selhala validace pro \‘%s\’</string>
     <string name="vldt_read_start_after_end">Datum začátku čtení musí předcházet datu ukončení čtení.</string>
     <string name="progress_end_backup_success">Zálohování úspěšně dokončeno</string>
-    <string name="export_error_backup_failed">Zálohování selhalo</string>
+    <string name="error_backup_failed">Zálohování selhalo</string>
     <string name="error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %s</string>
     <string name="import_error_csv_file_must_contain_any_column">Soubor musí obsahovat sloupec s jedním z následujících jmen: %s</string>
     <string name="error_column_is_blank">Sloupec %1$s je prázdný na řádku %2$s</string>

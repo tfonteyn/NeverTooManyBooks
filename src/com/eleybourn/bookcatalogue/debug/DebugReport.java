@@ -159,7 +159,7 @@ public final class DebugReport {
                 final List<ResolveInfo> resolved =
                         activity.getPackageManager().queryIntentActivities(mainIntent, 0);
 
-                if (resolved.size() > 0) {
+                if (!resolved.isEmpty()) {
                     for (ResolveInfo r : resolved) {
                         message.append("    ");
                         // Could be activity or service...

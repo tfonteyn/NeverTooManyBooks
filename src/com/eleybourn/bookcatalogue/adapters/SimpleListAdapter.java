@@ -116,7 +116,6 @@ public abstract class SimpleListAdapter<T>
             holder = (SimpleHolder) convertView.getTag(R.id.SLA_ROW_TAG);
         }
 
-        //noinspection ConstantConditions
         if (holder.row != null) {
             holder.row.setOnClickListener(new View.OnClickListener() {
                 @Override

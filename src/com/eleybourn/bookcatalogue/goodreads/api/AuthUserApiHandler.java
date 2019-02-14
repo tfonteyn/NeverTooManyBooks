@@ -23,7 +23,8 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
@@ -62,6 +63,8 @@ import java.io.IOException;
 public class AuthUserApiHandler
         extends ApiHandler {
 
+    private static final String XML_USER = "user";
+
     private long mUserId;
     @Nullable
     private String mUsername;
@@ -90,9 +93,7 @@ public class AuthUserApiHandler
             mManager.execute(post, handler, true);
             // Return user found.
             return mUserId;
-        } catch (GoodreadsExceptions.BookNotFoundException
-                | GoodreadsExceptions.NotAuthorizedException
-                | IOException
+        } catch (BookNotFoundException | AuthorizationException | IOException
                 | RuntimeException e) {
             return 0;
         }

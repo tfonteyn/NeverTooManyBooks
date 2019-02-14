@@ -140,8 +140,7 @@ public class PreferredStylesActivity
                             .setIcon(R.drawable.ic_content_copy);
 
         // display the menu
-        PreferredStylesActivity.this
-                .onCreateListViewContextMenu(view, mListViewContextMenu, menuInfo);
+        onCreateListViewContextMenu(view, mListViewContextMenu, menuInfo);
         return true;
     }
 
@@ -337,7 +336,6 @@ public class PreferredStylesActivity
                     @Override
                     public void onClick(@NonNull final View v) {
                         Holder h = (Holder) v.getTag();
-                        //noinspection ConstantConditions
                         boolean newStatus = !h.style.isPreferred();
                         h.style.setPreferred(newStatus);
                         h.checkableView.setChecked(newStatus);

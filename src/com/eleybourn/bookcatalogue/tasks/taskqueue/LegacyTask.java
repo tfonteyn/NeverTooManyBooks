@@ -102,7 +102,7 @@ public class LegacyTask
                                             @Override
                                             public void run() {
                                                 QueueManager.getQueueManager()
-                                                            .deleteTask(LegacyTask.this.getId());
+                                                            .deleteTask(getId());
                                             }
                                         }));
     }

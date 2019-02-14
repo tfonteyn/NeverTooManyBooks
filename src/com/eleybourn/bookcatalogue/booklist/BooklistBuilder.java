@@ -196,19 +196,19 @@ public class BooklistBuilder
             "DELETE FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " WHERE " + DOM_BL_NODE_ROW_KIND + "=?";
 
     /** Statement names for caching. */
-    private static final String STMT_GET_NODE_LEVEL = "mGetNodeLevel";
-    private static final String STMT_GET_NEXT_AT_SAME_LEVEL = "mGetNextAtSameLevel";
-    private static final String STMT_SHOW = "mShow";
-    private static final String STMT_EXPAND = "mExpand";
-    private static final String STMT_GET_NODE_ROOT = "mGetNodeRoot";
-    private static final String STMT_GET_POSITION_CHECK_VISIBLE = "mGetPositionCheckVisible";
-    private static final String STMT_SAVE_LIST_NODE_SETTING = "mSaveListNodeSetting";
-    private static final String STMT_SAVE_ALL_LIST_NODE_SETTINGS = "mSaveAllListNodeSettings";
-    private static final String STMT_DELETE_LIST_NODE_SETTING = "mDeleteListNodeSetting";
-    private static final String STMT_BASE_BUILD = "mBaseBuild";
-    private static final String STMT_DELETE_LIST_NODE_SETTINGS = "mDeleteListNodeSettings";
-    private static final String STMT_GET_POSITION = "mGetPosition";
-    private static final String STMT_NAV_TABLE_INSERT = "mNavTable.insert";
+    private static final String STMT_GET_NODE_LEVEL = "GetNodeLevel";
+    private static final String STMT_GET_NEXT_AT_SAME_LEVEL = "GetNextAtSameLevel";
+    private static final String STMT_SHOW = "Show";
+    private static final String STMT_EXPAND = "Expand";
+    private static final String STMT_GET_NODE_ROOT = "GetNodeRoot";
+    private static final String STMT_GET_POSITION_CHECK_VISIBLE = "GetPosCheckVisible";
+    private static final String STMT_SAVE_LIST_NODE_SETTING = "SaveNodeSetting";
+    private static final String STMT_SAVE_ALL_LIST_NODE_SETTINGS = "SaveAllNodeSettings";
+    private static final String STMT_DELETE_LIST_NODE_SETTING = "DelNodeSetting";
+    private static final String STMT_BASE_BUILD = "BaseBuild";
+    private static final String STMT_DELETE_LIST_NODE_SETTINGS = "DelNodeSettings";
+    private static final String STMT_GET_POSITION = "GetPos";
+    private static final String STMT_NAV_TABLE_INSERT = "NavTable.insert";
     private static final String STMT_NAV_IX_1 = "navIx1";
     private static final String STMT_NAV_IX_2 = "navIx2";
     private static final String STMT_IX_1 = "ix1";
@@ -318,7 +318,6 @@ public class BooklistBuilder
      * @return the current preferred rebuild state for the list.
      */
     public static int getListRebuildState() {
-        //noinspection ConstantConditions
         return Prefs.getListPreference(R.string.pk_bob_list_state, PREF_LIST_REBUILD_ALWAYS_EXPANDED);
     }
 
@@ -670,7 +669,6 @@ public class BooklistBuilder
      * @param filter a list of book id's.
      */
     public void setFilterOnBookIdList(@Nullable final List<Integer> filter) {
-
         if (filter != null && !filter.isEmpty()) {
             mFilters.add(new ListOfValuesFilter<>(TBL_BOOKS, DOM_PK_ID, filter));
         }
@@ -944,7 +942,6 @@ public class BooklistBuilder
                 //Logger.info("Time to MANUALLY INSERT: " + (TM1-TM0));
                 //</editor-fold>
 
-                //noinspection UnusedAssignment
                 final long t9 = System.currentTimeMillis();
 
                 mLevelBuildStmts = new ArrayList<>();
@@ -2508,7 +2505,7 @@ public class BooklistBuilder
      * @param isFinalize set in the finalize[] method call
      */
     private void cleanup(final boolean isFinalize) {
-        if (mStatements.size() != 0) {
+        if (!mStatements.isEmpty()) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
                 Logger.info(this,
                             "Finalizing with active mStatements (this is not an error): ");

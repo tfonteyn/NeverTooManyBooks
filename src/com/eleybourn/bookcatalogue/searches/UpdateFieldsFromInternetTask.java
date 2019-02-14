@@ -64,7 +64,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class UpdateFieldsFromInternetTask
         extends ManagedTask
-        implements SearchManager.SearchManagerListener {
+        implements SearchCoordinator.SearchManagerListener {
 
     /** The fields that the user requested to update. */
     @NonNull
@@ -77,7 +77,7 @@ public class UpdateFieldsFromInternetTask
     /** Sites to search. */
     private final int mSearchSites;
     /** Active search manager. */
-    private final SearchManager mSearchManager;
+    private final SearchCoordinator mSearchCoordinator;
 
     /** DB connection. */
     private DBA mDb;
@@ -129,9 +129,8 @@ public class UpdateFieldsFromInternetTask
         mFields = fields;
         mSearchSites = searchSites;
 
-        mSearchManager = new SearchManager(mTaskManager, this);
-        mTaskManager.sendHeaderTaskProgressMessage(
-                BookCatalogueApp.getResString(R.string.progress_msg_starting_search));
+        mSearchCoordinator = new SearchCoordinator(mTaskManager, this);
+        mTaskManager.sendHeaderTaskProgressMessage(R.string.progress_msg_starting_search);
         getMessageSwitch().addListener(getSenderId(), listener, false);
     }
 
@@ -250,7 +249,7 @@ public class UpdateFieldsFromInternetTask
                 // Check which fields this book needs.
                 mCurrentBookFieldUsages = getCurrentBookFieldUsages(mFields);
                 // if no data required, skip to next book
-                if (mCurrentBookFieldUsages.size() == 0 || isbn.isEmpty()
+                if (mCurrentBookFieldUsages.isEmpty() || isbn.isEmpty()
                         && (author.isEmpty() || title.isEmpty())) {
                     // Update progress appropriately
                     mTaskManager.sendHeaderTaskProgressMessage(
@@ -270,8 +269,8 @@ public class UpdateFieldsFromInternetTask
                 mTaskManager.sendTaskProgressMessage(this, 0, progressCounter);
 
                 // Start searching, then wait...
-                mSearchManager.search(mSearchSites, author, title, isbn,
-                                      mCurrentBookFieldUsages.containsKey(
+                mSearchCoordinator.search(mSearchSites, author, title, isbn,
+                                          mCurrentBookFieldUsages.containsKey(
                                               UniqueId.BKEY_THUMBNAIL));
 
                 mSearchLock.lock();
@@ -347,7 +346,7 @@ public class UpdateFieldsFromInternetTask
                 if (mOriginalBookData.containsKey(usage.fieldId)) {
                     ArrayList<Author> list = mOriginalBookData.getParcelableArrayList(
                             UniqueId.BKEY_AUTHOR_ARRAY);
-                    if (list == null || list.size() == 0) {
+                    if (list == null || list.isEmpty()) {
                         fieldUsages.put(usage.fieldId, usage);
                     }
                 }
@@ -357,7 +356,7 @@ public class UpdateFieldsFromInternetTask
                 if (mOriginalBookData.containsKey(usage.fieldId)) {
                     ArrayList<Series> list = mOriginalBookData.getParcelableArrayList(
                             UniqueId.BKEY_SERIES_ARRAY);
-                    if (list == null || list.size() == 0) {
+                    if (list == null || list.isEmpty()) {
                         fieldUsages.put(usage.fieldId, usage);
                     }
                 }
@@ -367,7 +366,7 @@ public class UpdateFieldsFromInternetTask
                 if (mOriginalBookData.containsKey(usage.fieldId)) {
                     ArrayList<TocEntry> list = mOriginalBookData.getParcelableArrayList(
                             UniqueId.BKEY_TOC_ENTRY_ARRAY);
-                    if (list == null || list.size() == 0) {
+                    if (list == null || list.isEmpty()) {
                         fieldUsages.put(usage.fieldId, usage);
                     }
                 }
@@ -405,14 +404,13 @@ public class UpdateFieldsFromInternetTask
         if (wasCancelled) {
             // if the search was cancelled, propagate by cancelling ourselves.
             cancelTask();
-        } else if (bookData.size() == 0) {
+        } else if (bookData.isEmpty()) {
             // tell the user if the search failed.
-            mTaskManager.sendTaskUserMessage(
-                    BookCatalogueApp.getResString(R.string.warning_unable_to_find_book));
+            mTaskManager.sendTaskUserMessage(R.string.warning_unable_to_find_book);
         }
 
         // Save the local data from the context so we can start a new search
-        if (!isCancelled() && bookData.size() > 0) {
+        if (!isCancelled() && !bookData.isEmpty()) {
             processSearchResults(mCurrentBookId, mCurrentUuid, mCurrentBookFieldUsages, bookData,
                                  mOriginalBookData);
         }
@@ -545,7 +543,7 @@ public class UpdateFieldsFromInternetTask
                 if (originalBookData.containsKey(usage.fieldId)) {
                     ArrayList<Author> list =
                             originalBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-                    if (list != null && list.size() > 0) {
+                    if (list != null && !list.isEmpty()) {
                         newBookData.remove(usage.fieldId);
                     }
                 }
@@ -555,7 +553,7 @@ public class UpdateFieldsFromInternetTask
                 if (originalBookData.containsKey(usage.fieldId)) {
                     ArrayList<Series> list =
                             originalBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-                    if (list != null && list.size() > 0) {
+                    if (list != null && !list.isEmpty()) {
                         newBookData.remove(usage.fieldId);
                     }
                 }
@@ -565,7 +563,7 @@ public class UpdateFieldsFromInternetTask
                 if (originalBookData.containsKey(usage.fieldId)) {
                     ArrayList<TocEntry> list =
                             originalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
-                    if (list != null && list.size() > 0) {
+                    if (list != null && !list.isEmpty()) {
                         newBookData.remove(usage.fieldId);
                     }
                 }

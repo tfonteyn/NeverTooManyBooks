@@ -131,7 +131,7 @@
     <string name="vldt_failed">Проверка не удалась для \‘%s\’</string>
     <string name="vldt_read_start_after_end">Дата начала чтения позже даты завершения</string>
     <string name="progress_end_backup_success">Резервное копирование успешно</string>
-    <string name="export_error_backup_failed">Резервное копирование не удалось</string>
+    <string name="error_backup_failed">Резервное копирование не удалось</string>
     <string name="error_file_must_contain_column">В файле должен быть столбец с названием %s</string>
     <string name="import_error_csv_file_must_contain_any_column">Файл должен содержать столбец с одним из следующих имён: %s</string>
     <string name="error_column_is_blank">Столбец %1$s в строке %2$s пуст</string>

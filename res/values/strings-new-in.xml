@@ -2,218 +2,218 @@
 <resources>
 
     <string name="new_in_600"><![CDATA[
-			<p><b>New in 6.0.0</b>\n
-                * Modernisation to Android 5.0 bringing lots of new UI goodies.\n
-                * Cover thumbnails and log files moved to dedicated sub folders.\n
-                * Configurable websites search order.\n
-                * New Search website: ISFDB.\n
-                * Better Anthology support (Edit/View/cross-book) and morphed into \'Table of Content\' or \'TOC\'\n
-                * TOC auto populated (ISFDB site only!).\n
-                * Language field wil show the translated name for the current locale.\n
-                * Books & Anthology/TOC titles now have a \'first published\' field.\n
-                * Books Editions (1st, book-club, etc).\n
-                * Book paid price.\n
-                * Book date acquired.\n
-                * Currency support for prices.\n
-                * Styles now exported/imported in XML format.\n
-                * Export of all tables can also be done in XML (no import yet).\n
-                * LibraryThing & ISFDB local id for future usage.\n
-                * Database upgrades only supported from the earliest version 4.0.0.\n
-                * Removed the old \'Classic\' view (sorry).\n
-			</p>]]>
+        <p><b>New in 6.0.0</b>\n
+            * Modernisation to Android 5.0 bringing lots of new UI goodies.\n
+            * Cover thumbnails and log files moved to dedicated sub folders.\n
+            * Configurable websites search order.\n
+            * New Search website: ISFDB.\n
+            * Better Anthology support (Edit/View/cross-book) and morphed into \'Table of Content\' or \'TOC\'\n
+            * TOC auto populated (ISFDB site only!).\n
+            * Language field wil show the translated name for the current locale.\n
+            * Books & Anthology/TOC titles now have a \'first published\' field.\n
+            * Books Editions (1st, book-club, etc).\n
+            * Book paid price.\n
+            * Book date acquired.\n
+            * Currency support for prices.\n
+            * Styles now exported/imported in XML format.\n
+            * Export of all tables can also be done in XML (no import yet).\n
+            * LibraryThing & ISFDB local id for future usage.\n
+            * Database upgrades only supported from the earliest version 4.0.0.\n
+            * Removed the old \'Classic\' view (sorry).\n
+        </p>]]>
     </string>
     <string name="new_in_522"><![CDATA[
-			<p><b>New in 5.2.2</b>\n
-				* Bug fixes\n
-			</p>]]>
+        <p><b>New in 5.2.2</b>\n
+            * Bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_520"><![CDATA[
-			<p><b>New in 5.2.0</b>\n
-			    * User-selectable locale in Preferences\n
-			    * Greek translation (Dimitris Klisiaris)\n
-                * Locale-specific capitalization (de, fr)\n
-                * Improvements to search\n
-				* Bug fixes\n
-			</p>]]>
+        <p><b>New in 5.2.0</b>\n
+            * User-selectable locale in Preferences\n
+            * Greek translation (Dimitris Klisiaris)\n
+            * Locale-specific capitalization (de, fr)\n
+            * Improvements to search\n
+            * Bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_511"><![CDATA[
-			<p><b>New in 5.1.1</b>\n
-				* Bug fixes\n
-				* New style: Group by last update date\n
-				* New style: Group by rating\n
-				* New style: Group by bookshelf name\n
-			</p>]]>
+        <p><b>New in 5.1.1</b>\n
+            * Bug fixes\n
+            * New style: Group by last update date\n
+            * New style: Group by rating\n
+            * New style: Group by bookshelf name\n
+        </p>]]>
     </string>
     <string name="new_in_510"><![CDATA[
-			<p><b>New in 5.1.0</b>\n
-				* Italian translation (Eugenio Davolio)\n
-				* Spanish translation (José M. Galdo)\n
-				* Turkish translations (Emir Sarı)\n
-				* Ability to archive only new/updated books and to exclude covers (or books)\n
-				* Better thumbnail size in lists for high density screens\n
-				* Added options to see books by author/series at Amazon\n
-				* Other minor bug fixes\n
-			</p>]]>
+        <p><b>New in 5.1.0</b>\n
+            * Italian translation (Eugenio Davolio)\n
+            * Spanish translation (José M. Galdo)\n
+            * Turkish translations (Emir Sarı)\n
+            * Ability to archive only new/updated books and to exclude covers (or books)\n
+            * Better thumbnail size in lists for high density screens\n
+            * Added options to see books by author/series at Amazon\n
+            * Other minor bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_509"><![CDATA[
-			<p><b>New in 5.0.9</b>\n
-				* Bug fix for Android 4.4 (KitKat)\n
-				* Dutch translation (Gideon van Melle)\n
-				* Other minor bug fixes\n
-			</p>]]>
+        <p><b>New in 5.0.9</b>\n
+            * Bug fix for Android 4.4 (KitKat)\n
+            * Dutch translation (Gideon van Melle)\n
+            * Other minor bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_508"><![CDATA[
-			<p><b>New in 5.0.8</b>\n
-				* German translation updates (Robert Wetzlmayr)\n
-			</p>]]>
+        <p><b>New in 5.0.8</b>\n
+            * German translation updates (Robert Wetzlmayr)\n
+        </p>]]>
     </string>
     <string name="new_in_505"><![CDATA[
-			<p><b>New in 5.0.5</b>\n
-				* "Added Date" List now sorted in reverse order \n
-				* French translation updates (Imkal)\n
-				* Bug fixes\n
-			</p>]]>
-    </string>
+        <p><b>New in 5.0.5</b>\n
+            * “Added Date” List now sorted in reverse order \n
+            * French translation updates (Imkal)\n
+            * Bug fixes\n
+        </p>
+    ]]></string>
 
     <string name="new_in_504"><![CDATA[
-			<p><b>New in 5.0.4</b>\n
-				* New field: Language\n
-				* French translation updates (Imkal)\n
-				* Bug fixes\n
-			</p>]]>
+        <p><b>New in 5.0.4</b>\n
+            * New field: Language\n
+            * French translation updates (Imkal)\n
+            * Bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_503"><![CDATA[
-			<p><b>New in 5.0.3</b>\n
-				* Bug fixes\n
-				* French translation updates (Imkal)\n
-			</p>]]>
+        <p><b>New in 5.0.3</b>\n
+            * Bug fixes\n
+            * French translation updates (Imkal)\n
+        </p>]]>
     </string>
     <string name="new_in_502"><![CDATA[
-			<p><b>New in 5.0.2</b>\n
-				* Bug fixes\n
-			</p>]]>
+        <p><b>New in 5.0.2</b>\n
+            * Bug fixes\n
+        </p>]]>
     </string>
     <!-- This is pretty close to the expected feature list! It is a merge of 424 and 430... -->
     <string name="new_in_500"><![CDATA[
-            <p><b>New in 5.0.0</b>\n
-                * A non-editable view of book details, with \'fling\' support! (See \"Other Preferences\") (Nick Silin)\n
-                * Archiving (Backup & Import) of entire catalogue, including books, covers, preferences and styles\n
-                * Updated interface with Action Bar support for usability and to work better on devices without menu buttons\n
-                * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)\n
-                * Goodreads now appears in main menu if you authorize it\n
-                * Check internet connection earlier when trying to scan books\n
-                * More German translation updates (Robert Wetzlmayr)\n
-                * More French translation updates (Imkal & Djiko)\n
-                * More Russian translation updates (Nick Silin)\n
-                * Internal changes in anticipation of an improved tablet interface\n
-                * Bug fixes\n
-                </p>]]>
+        <p><b>New in 5.0.0</b>\n
+            * A non-editable view of book details, with \'fling\' support! (See \“Other Preferences\”) (Nick Silin)\n
+            * Archiving (Backup & Import) of entire catalogue, including books, covers, preferences and styles\n
+            * Updated interface with Action Bar support for usability and to work better on devices without menu buttons\n
+            * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)\n
+            * Goodreads now appears in main menu if you authorize it\n
+            * Check internet connection earlier when trying to scan books\n
+            * More German translation updates (Robert Wetzlmayr)\n
+            * More French translation updates (Imkal & Djiko)\n
+            * More Russian translation updates (Nick Silin)\n
+            * Internal changes in anticipation of an improved tablet interface\n
+            * Bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_424"><![CDATA[
-            <p><b>New in 4.2.4</b>\n
-                * A non-editable view of book details, with \'fling\' support! (See \"Other Preferences\") (Nick Silin)\n
-                * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)\n
-                * Check internet connection earlier when trying to scan books\n
-                * More German translation updates (Robert Wetzlmayr)\n
-                * More French translation updates (Djiko)\n
-                * Bug fixes\n
-                </p>]]>
+        <p><b>New in 4.2.4</b>\n
+            * A non-editable view of book details, with \'fling\' support! (See \“Other Preferences\”) (Nick Silin)\n
+            * Support for pic2shop scanner (better for fixed focus, low light and in front-facing cameras)\n
+            * Check internet connection earlier when trying to scan books\n
+            * More German translation updates (Robert Wetzlmayr)\n
+            * More French translation updates (Djiko)\n
+            * Bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_423"><![CDATA[
-            <p><b>New in 4.2.3</b>\n
-			    * Improve handling of invalid ISBNs when sending to Goodreads\n
-			    * Other minor bug fixes\n
-			</p>]]>
+        <p><b>New in 4.2.3</b>\n
+            * Improve handling of invalid ISBNs when sending to Goodreads\n
+            * Other minor bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_422"><![CDATA[
-            <p><b>New in 4.2.2</b>\n
-			     * Fix tiling of background image for some Android versions\n
-			     * Better handling of incompatible scanner apps\n
-			     * Send more details on crash or when asking for help\n
-			     * Cleanup of layouts (Nick Silin)\n
-			     * Bug fixes\n
-			</p>]]>
+        <p><b>New in 4.2.2</b>\n
+             * Fix tiling of background image for some Android versions\n
+             * Better handling of incompatible scanner apps\n
+             * Send more details on crash or when asking for help\n
+             * Cleanup of layouts (Nick Silin)\n
+             * Bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_421"><![CDATA[
-            <p><b>New in 4.2.1</b>\n
-			     * Fix crash when expanding list items and using \'Expand All\'\n
-			</p>]]>
+        <p><b>New in 4.2.1</b>\n
+            * Fix crash when expanding list items and using \'Expand All\'\n
+        </p>]]>
     </string>
     <string name="new_in_420"><![CDATA[
-            <p><b>New in 4.2</b>\n
-                * Date-Picker that supports dates down to 0AD as well as partial dates\n
-                * HTML descriptions display correctly with click to edit\n
-                * Preference for pre-selecting whole image when cropping\n
-                * Preference for auto-rotating images from camera\n
-                * Preference to use external cropping tool (experimental)\n
-                * Added more items to the options menus\n
-                * French translation updates (Imkal)\n
-                * German translation updates (Robert Wetzlmayr)\n
-                * Russian translation updates (Nick Silin)\n
-                * Updated OK/Cancel button positions to conform to current Android standards\n
-                * Full keyboard available when entering ASINs\n
-                * Keeps 5 previous export files\n
-                * Better detection of \'changes\' when editing books\n
-                * Support for a wider range of Gallery and file browsers\n
-                * More reliable date handling on import/export/sync\n
-                * Fix handling of duplicate anthology titles\n
-                * Various bugs fixed\n
-                Many thanks to our dedicated beta testers and translators!\n
-                Blame Grunthos for all bugs and errors. And send us bug reports.\n
-            </p>]]>
+        <p><b>New in 4.2</b>\n
+            * Date-Picker that supports dates down to 0AD as well as partial dates\n
+            * HTML descriptions display correctly with click to edit\n
+            * Preference for pre-selecting whole image when cropping\n
+            * Preference for auto-rotating images from camera\n
+            * Preference to use external cropping tool (experimental)\n
+            * Added more items to the options menus\n
+            * French translation updates (Imkal)\n
+            * German translation updates (Robert Wetzlmayr)\n
+            * Russian translation updates (Nick Silin)\n
+            * Updated OK/Cancel button positions to conform to current Android standards\n
+            * Full keyboard available when entering ASINs\n
+            * Keeps 5 previous export files\n
+            * Better detection of \'changes\' when editing books\n
+            * Support for a wider range of Gallery and file browsers\n
+            * More reliable date handling on import/export/sync\n
+            * Fix handling of duplicate anthology titles\n
+            * Various bugs fixed\n
+            Many thanks to our dedicated beta testers and translators!\n
+            Blame Grunthos for all bugs and errors. And send us bug reports.\n
+        </p>]]>
     </string>
     <string name="new_in_410"><![CDATA[
-            <p><b>New in 4.1</b>\n
-                * New style groups: Location and Date Read\n
-                * Improved \'Share\' functionality (filipeximenes)\n
-                * French translation updates (Djiko)\n
-                * Better handling of the \'back\' key when editing books (filipeximenes)\n
-                * Various bug fixes\n
-            </p>]]>
+        <p><b>New in 4.1</b>\n
+            * New style groups: Location and Date Read\n
+            * Improved \'Share\' functionality (filipeximenes)\n
+            * French translation updates (Djiko)\n
+            * Better handling of the \'back\' key when editing books (filipeximenes)\n
+            * Various bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_406"><![CDATA[
-            <p><b>New in 4.0.6</b>\n
-                * When adding books, scanning or typing an existing ISBN allows you the option to edit the book.\n
-                * Allow ASINs to be entered manually as well as ISBNs\n
-                * German translation updates (Robert Wetzlmayr)\n
-            </p>]]>
+        <p><b>New in 4.0.6</b>\n
+            * When adding books, scanning or typing an existing ISBN allows you the option to edit the book.\n
+            * Allow ASINs to be entered manually as well as ISBNs\n
+            * German translation updates (Robert Wetzlmayr)\n
+        </p>]]>
     </string>
     <string name="new_in_404"><![CDATA[
-            <p><b>New in 4.0.4</b>\n
-                * Search now searches series and anthology data\n
-                * Allows non-numeric data entry in series position\n
-                * Better sorting of leading numerical in series position\n
-                * Several bug fixes\n
-            </p>]]>
+        <p><b>New in 4.0.4</b>\n
+            * Search now searches series and anthology data\n
+            * Allows non-numeric data entry in series position\n
+            * Better sorting of leading numerical in series position\n
+            * Several bug fixes\n
+        </p>]]>
     </string>
     <string name="new_in_403"><![CDATA[
-            <p><b>New in 4.0.3</b>\n
-                * ISBN validation when searching/scanning and error beep when scanning (with preference to turn it off)\n
-                * \'Loaned\' list now shows available books under the heading \'Available\'\n
-                * Added preference to hide list headers (for small phones)\n
-                * Restored functionality to use current bookshelf when adding book\n
-                * FastScroller sizing improved\n
-                * Several bugs fixed\n
-            </p>]]>
+        <p><b>New in 4.0.3</b>\n
+            * ISBN validation when searching/scanning and error beep when scanning (with preference to turn it off)\n
+            * \'Loaned\' list now shows available books under the heading \'Available\'\n
+            * Added preference to hide list headers (for small phones)\n
+            * Restored functionality to use current bookshelf when adding book\n
+            * FastScroller sizing improved\n
+            * Several bugs fixed\n
+        </p>]]>
     </string>
     <string name="new_in_401"><![CDATA[
-            <p><b>New in 4.0.1</b>\n
-                * Added a preference to completely disable background bitmap\n
-                * Added book counts to book lists\n
-            </p>]]>
+        <p><b>New in 4.0.1</b>\n
+            * Added a preference to completely disable background bitmap\n
+            * Added book counts to book lists\n
+        </p>]]>
     </string>
     <string name="new_in_400"><![CDATA[
-            <p><b>New in 4.0</b>\n
-                Updates courtesy of (mainly) Philip Warner (a.k.a Grunthos) — blame him, politely, if it toasts your data\n
-                * New look, new startup page\n
-                * Synchronization with goodreads (www.goodreads.com)\n
-                * New styles for book lists (including \'Compact\' and \'Unread\')\n
-                * User-defined styles for book lists\n
-                * More efficient memory usage\n
-                * New preferences, including \'always expanded/collapsed\' lists\n
-                * Faster expand/collapse with large collections\n
-                * Cached covers for faster scrolling lists\n
-                * Cover images now have globally unique names, and books have globally unique IDs, so sharing and combining collections is easier\n
-                * Improved detection of series names\n
-            </p>]]></string>
+        <p><b>New in 4.0</b>\n
+            Updates courtesy of (mainly) Philip Warner (a.k.a Grunthos) — blame him, politely, if it toasts your data\n
+            * New look, new startup page\n
+            * Synchronization with goodreads (www.goodreads.com)\n
+            * New styles for book lists (including \'Compact\' and \'Unread\')\n
+            * User-defined styles for book lists\n
+            * More efficient memory usage\n
+            * New preferences, including \'always expanded/collapsed\' lists\n
+            * Faster expand/collapse with large collections\n
+            * Cached covers for faster scrolling lists\n
+            * Cover images now have globally unique names, and books have globally unique IDs, so sharing and combining collections is easier\n
+            * Improved detection of series names\n
+        </p>]]></string>
 </resources>

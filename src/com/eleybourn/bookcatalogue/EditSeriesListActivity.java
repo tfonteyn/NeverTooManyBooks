@@ -140,10 +140,8 @@ public class EditSeriesListActivity
         final AutoCompleteTextView editNameView = root.findViewById(R.id.name);
         final EditText editNumberView = root.findViewById(R.id.series_num);
 
-        //noinspection ConstantConditions
         editNameView.setText(series.getName());
         editNameView.setAdapter(mSeriesAdapter);
-        //noinspection ConstantConditions
         editNumberView.setText(series.getNumber());
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
@@ -151,7 +149,6 @@ public class EditSeriesListActivity
                 .setTitle(R.string.title_edit_book_series)
                 .create();
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -187,7 +184,6 @@ public class EditSeriesListActivity
             }
         });
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {

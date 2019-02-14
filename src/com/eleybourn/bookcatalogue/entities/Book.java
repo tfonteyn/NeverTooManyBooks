@@ -114,7 +114,7 @@ public class Book
      */
     //private static final int EDITION_NOTHING_SPECIAL = 0;
 
-    /** first edition ever of this content. */
+    /** first edition ever of this work/content/story. */
     private static final int EDITION_FIRST = 1;
     /** First printing of the 'this' edition. */
     private static final int EDITION_FIRST_IMPRESSION = 1 << 1;
@@ -487,7 +487,7 @@ public class Book
     @Nullable
     public String getPrimaryAuthor() {
         ArrayList<Author> list = getList(UniqueId.BKEY_AUTHOR_ARRAY);
-        return list.size() > 0 ? list.get(0).getDisplayName() : null;
+        return !list.isEmpty() ? list.get(0).getDisplayName() : null;
     }
 
     /**
@@ -499,7 +499,7 @@ public class Book
     public String getAuthorTextShort() {
         String newText;
         List<Author> list = getList(UniqueId.BKEY_AUTHOR_ARRAY);
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return "";
         } else {
             newText = list.get(0).getDisplayName();
@@ -524,6 +524,19 @@ public class Book
     }
 
     /**
+     * Update series details from DB.
+     *
+     * @param db Database connection
+     */
+    public void refreshSeriesList(@NonNull final DBA db) {
+        ArrayList<Series> list = getList(UniqueId.BKEY_SERIES_ARRAY);
+        for (Series series : list) {
+            db.refreshSeries(series);
+        }
+        putList(UniqueId.BKEY_SERIES_ARRAY, list);
+    }
+
+    /**
      * Convenience method to get a list.
      */
     @NonNull
@@ -545,7 +558,7 @@ public class Book
     @Nullable
     public String getPrimarySeries() {
         ArrayList<Series> list = getList(UniqueId.BKEY_SERIES_ARRAY);
-        return list.size() > 0 ? list.get(0).getName() : null;
+        return !list.isEmpty() ? list.get(0).getName() : null;
     }
 
     /**
@@ -557,7 +570,7 @@ public class Book
     public String getSeriesTextShort() {
         String newText;
         ArrayList<Series> list = getList(UniqueId.BKEY_SERIES_ARRAY);
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return "";
         } else {
             newText = list.get(0).getDisplayName();

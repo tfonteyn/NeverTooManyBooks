@@ -35,6 +35,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -52,7 +53,7 @@ import java.util.List;
  * Use background tasks to get thumbnails and update when retrieved.
  * <p>
  * Used by {@link GoodreadsSearchCriteriaActivity} which is currently
- * commented out in {@link SendBookEvents}
+ * commented out in {@link SendBooksTask}
  *
  * @author Philip Warner
  */
@@ -99,8 +100,8 @@ public class GoodreadsSearchResultsActivity
         List<GoodreadsWork> works;
         try {
             works = searcher.search(criteria.trim());
-        } catch (GoodreadsExceptions.BookNotFoundException
-                | GoodreadsExceptions.NotAuthorizedException
+        } catch (BookNotFoundException
+                | AuthorizationException
                 | IOException
                 | RuntimeException e) {
             Logger.error(e, "Failed when searching Goodreads");
@@ -114,7 +115,7 @@ public class GoodreadsSearchResultsActivity
         }
 
         // Finish if no results, otherwise display them
-        if (works.size() == 0) {
+        if (works.isEmpty()) {
             StandardDialogs.showUserMessage(this, R.string.warning_no_matching_book_found);
             setResult(Activity.RESULT_CANCELED);
             finish();
@@ -168,6 +169,12 @@ public class GoodreadsSearchResultsActivity
     private class ResultsAdapter
             extends ArrayAdapter<GoodreadsWork> {
 
+        /**
+         * Constructor.
+         *
+         * @param context caller context
+         * @param objects the list
+         */
         ResultsAdapter(@NonNull final Context context,
                        @NonNull final List<GoodreadsWork> objects) {
             super(context, 0, objects);
@@ -187,10 +194,8 @@ public class GoodreadsSearchResultsActivity
                 holder.authorView = convertView.findViewById(R.id.author);
                 holder.titleView = convertView.findViewById(R.id.title);
 
-                // Save the holder
                 convertView.setTag(holder);
 
-                // Set the click listener
                 convertView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
@@ -204,7 +209,6 @@ public class GoodreadsSearchResultsActivity
                 holder = (Holder) convertView.getTag();
             }
 
-            //noinspection ConstantConditions
             synchronized (holder.coverView) {
                 // Save the work details
                 holder.work = getItem(position);

@@ -145,7 +145,7 @@ public class Synchronizer {
                 //Logger.info("Lock held by " + mLock.getHoldCount());
                 try {
                     // Simple case -- no locks held, just return and keep the lock
-                    if (mSharedOwners.size() == 0) {
+                    if (mSharedOwners.isEmpty()) {
                         return mExclusiveLock;
                     }
                     // Check for one lock, and it being this thread.

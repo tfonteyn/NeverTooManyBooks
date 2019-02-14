@@ -34,8 +34,7 @@ public class EditFormatDialog
     public EditFormatDialog(@NonNull final Activity activity,
                             @NonNull final DBA db,
                             @NonNull final Runnable onChanged) {
-        super(activity, db, db.getFormats(),
-              onChanged);
+        super(activity, db, db.getFormats(), onChanged);
     }
 
     @CallSuper

@@ -22,7 +22,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
- * Wrappers for Amazon API.
+ * Provides the {@link #openSearchPage(Activity, String, String)} api.
+ * <p>
+ * Either opening a link via the Amazon API (if we have a key) or open a web page.
  * <p>
  * NOTE: The project manifest must contain the app key granted by Amazon.
  * For testing purposes this KEY can be empty.

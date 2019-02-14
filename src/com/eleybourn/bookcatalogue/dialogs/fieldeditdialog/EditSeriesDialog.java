@@ -52,6 +52,9 @@ public class EditSeriesDialog {
     @NonNull
     private final ArrayAdapter<String> mAdapter;
 
+    /**
+     * Constructor.
+     */
     public EditSeriesDialog(@NonNull final Activity activity,
                             @NonNull final DBA db,
                             @Nullable final Runnable onChanged) {
@@ -68,7 +71,6 @@ public class EditSeriesDialog {
                                    .inflate(R.layout.dialog_edit_series, null);
 
         final AutoCompleteTextView seriesView = root.findViewById(R.id.name);
-        //noinspection ConstantConditions
         seriesView.setText(source.getName());
         seriesView.setAdapter(mAdapter);
         final Checkable isCompleteView = root.findViewById(R.id.is_complete);
@@ -79,7 +81,6 @@ public class EditSeriesDialog {
                 .setTitle(R.string.title_edit_series)
                 .create();
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -104,7 +105,6 @@ public class EditSeriesDialog {
             }
         });
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {

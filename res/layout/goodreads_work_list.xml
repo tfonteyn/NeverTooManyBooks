@@ -4,93 +4,96 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="top"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
-        <!--
-	 	<LinearLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:orientation="vertical" >
-	
-	 		<TextView 
-		  		android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
-			    android:textAppearance="?android:attr/textAppearanceSmall"
-			    android:text="@string/author"
-		  		/>
-			<EditText
-			    android:id="@+id/author"
-			    style="@style/personalNameTextEntry"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content" 
-				android:layout_weight="1"
-				android:hint="@string/author"
-				android:inputType="textCapWords"
-			    android:textAppearance="?android:attr/textAppearanceMedium"
-				/>	 				 	    
-	 	</LinearLayout>
+<!--
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-	 	<LinearLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:orientation="vertical" >
-	
-	 		<TextView 
-		  		android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
-			    android:textAppearance="?android:attr/textAppearanceSmall"
-			    android:text="@string/title"
-		  		/>
-			<EditText
-			    android:id="@+id/title"
-			    style="@style/titleTextEntry"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content" 
-				android:layout_weight="1"
-				android:hint="@string/title"
-				android:inputType="textCapWords"
-			    android:textAppearance="?android:attr/textAppearanceMedium"
-				/>	 				 	    
-	 	</LinearLayout>
-	 	
-	 	<LinearLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:orientation="vertical" >
-	
-	 		<TextView 
-		  		android:layout_width="wrap_content"
-				android:layout_height="wrap_content" 
-			    android:textAppearance="?android:attr/textAppearanceSmall"
-			    android:text="@string/isbn"
-		  		/>
-			<EditText
-			    android:id="@+id/isbn"
-			    style="@style/simpleTextEntry"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content" 
-				android:layout_weight="1"
-				android:hint="@string/isbn"
-				android:inputType="textCapWords"
-			    android:textAppearance="?android:attr/textAppearanceMedium"
-				/>	 				 	    
-	 	</LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/author"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                />
 
-	 	<Button android:id="@+id/search"
-			android:focusable="false"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="@+string/search"
-		    />	    
+            <EditText
+                android:id="@+id/author"
+                style="@style/personalNameTextEntry"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:hint="@string/author"
+                android:inputType="textCapWords"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+        </LinearLayout>
 
-        -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                />
+
+            <EditText
+                android:id="@+id/title"
+                style="@style/titleTextEntry"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:hint="@string/title"
+                android:inputType="textCapWords"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/isbn"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                />
+
+            <EditText
+                android:id="@+id/isbn"
+                style="@style/simpleTextEntry"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:hint="@string/isbn"
+                android:inputType="textCapWords"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:text="@+string/search"
+            />
+-->
 
         <View style="@style/divider_horizontalList" />
     </LinearLayout>
@@ -100,7 +103,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <View style="@style/divider_horizontalList" />
 
@@ -118,7 +121,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/footer"
-        android:layout_below="@id/header" >
+        android:layout_below="@id/header">
     </ListView>
 
 </RelativeLayout>

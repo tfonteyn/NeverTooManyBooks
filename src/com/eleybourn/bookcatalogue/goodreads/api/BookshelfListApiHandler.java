@@ -26,9 +26,10 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
@@ -100,10 +101,10 @@ public class BookshelfListApiHandler
     private SimpleXmlFilter mFilters;
 
     public BookshelfListApiHandler(@NonNull final GoodreadsManager manager)
-            throws NotAuthorizedException {
+            throws AuthorizationException {
         super(manager);
         if (!manager.hasValidCredentials()) {
-            throw new NotAuthorizedException();
+            throw new AuthorizationException(R.string.goodreads);
         }
         // Build the XML filters needed to get the data we're interested in.
         buildFilters();
@@ -111,7 +112,7 @@ public class BookshelfListApiHandler
 
     @NonNull
     public Bundle run(final int page)
-            throws NotAuthorizedException,
+            throws AuthorizationException,
                    BookNotFoundException,
                    IOException {
         @SuppressWarnings("UnusedAssignment")

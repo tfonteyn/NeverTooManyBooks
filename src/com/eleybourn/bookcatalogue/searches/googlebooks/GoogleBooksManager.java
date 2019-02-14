@@ -5,19 +5,19 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,19 +28,23 @@ import javax.xml.parsers.SAXParserFactory;
  * ENHANCE: Get editions via.
  * http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
  */
-public final class GoogleBooksManager {
+public final class GoogleBooksManager
+        implements SearchSites.SearchSiteManager {
 
     private static final String TAG = "GoogleBooks.";
 
     private static final String PREFS_HOST_URL = TAG + "hostUrl";
 
-    private GoogleBooksManager() {
+    /**
+     * Constructor.
+     */
+    public GoogleBooksManager() {
     }
 
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return Prefs.getPrefs().getString(PREFS_HOST_URL, "http://books.google.com");
+        return Prefs.getPrefs().getString(PREFS_HOST_URL, "https://books.google.com");
     }
 
     public static void setBaseURL(@NonNull final String url) {
@@ -48,84 +52,91 @@ public final class GoogleBooksManager {
     }
 
     /**
-     * @param isbn for book cover to find
+     * @param isbn to search for
+     * @param size of image to get.
      *
      * @return found/saved File, or null when none found (or any other failure)
      */
     @Nullable
-    public static File getCoverImage(@NonNull final String isbn) {
-        // sanity check
-        if (!IsbnUtils.isValid(isbn)) {
-            return null;
-        }
+    @Override
+    @WorkerThread
+    public File getCoverImage(@NonNull final String isbn,
+                              @Nullable final SearchSites.ImageSizes size) {
 
-        Bundle bookData = new Bundle();
-        try {
-            // no specific API, just go search the book
-            search(isbn, "", "", bookData, true);
-
-            ArrayList<String> imageList =
-                    bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
-            if (imageList != null && !imageList.isEmpty()) {
-                File found = new File(imageList.get(0));
-                File coverFile = new File(found.getAbsolutePath() + '_' + isbn);
-                StorageUtils.renameFile(found, coverFile);
-                return coverFile;
-            }
-        } catch (IOException e) {
-            Logger.error(e, "Error getting thumbnail from Google");
-        }
-        return null;
+        return SearchSites.getCoverImageFallback(this, isbn);
     }
 
-    public static void search(@NonNull final String isbn,
-                              @NonNull final String author,
-                              @NonNull final String title,
-                              @NonNull final Bundle /* out */ book,
-                              final boolean fetchThumbnail)
+    @Override
+    @WorkerThread
+    public boolean isAvailable() {
+        return NetworkUtils.isAlive(getBaseURL());
+    }
+
+    /**
+     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     *
+     * @return bundle with book data
+     *
+     * @throws IOException on failure
+     */
+    @NonNull
+    @Override
+    @WorkerThread
+    public Bundle search(@NonNull final String isbn,
+                         @NonNull final String author,
+                         @NonNull final String title,
+                         final boolean fetchThumbnail)
             throws IOException {
 
-        String urlText = getBaseURL() + "/books/feeds/volumes";
+        Bundle bookData = new Bundle();
+
+        String url = getBaseURL() + "/books/feeds/volumes";
         if (!isbn.isEmpty()) {
             // sanity check
             if (!IsbnUtils.isValid(isbn)) {
-                return;
+                return bookData;
             }
-            urlText += "?q=ISBN%3C" + isbn + "%3E";
+            url += "?q=ISBN%3C" + isbn + "%3E";
         } else {
             // sanity check
             if (author.isEmpty() && title.isEmpty()) {
-                return;
+                return bookData;
             }
             //replace spaces in author/title with %20
-            urlText += "?q=" + "intitle%3A" + title.replace(" ", "%20")
+            url += "?q=" + "intitle%3A" + title.replace(" ", "%20")
                     + "%2Binauthor%3A" + author.replace(" ", "%20");
         }
 
-        // Setup the parser; the handler can return multiple books.
-        // The entry handler takes care of them
+        // Setup the parser; the handler can return multiple books ('entry' elements)
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SearchGoogleBooksHandler handler = new SearchGoogleBooksHandler();
+        // The entry handler takes care of individual entries
         SearchGoogleBooksEntryHandler entryHandler =
-                new SearchGoogleBooksEntryHandler(book, fetchThumbnail);
+                new SearchGoogleBooksEntryHandler(bookData, fetchThumbnail);
 
+        // yes, to many try nesting makes this ugly to read,... but the code is very clean.
         try {
-            URL url = new URL(urlText);
-            SAXParser parser = factory.newSAXParser();
-            parser.parse(Terminator.getInputStream(url), handler);
-
-            ArrayList<String> urlList = handler.getUrlList();
-            if (urlList.size() > 0) {
-                // only using the first one found, maybe future enhancement?
-                urlText = urlList.get(0);
-                url = new URL(urlText);
-                parser = factory.newSAXParser();
-                parser.parse(Terminator.getInputStream(url), entryHandler);
+            // get the book list
+            try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+                SAXParser parser = factory.newSAXParser();
+                parser.parse(con.inputStream, handler);
             }
 
+            ArrayList<String> urlList = handler.getUrlList();
+            if (!urlList.isEmpty()) {
+                // only using the first one found, maybe future enhancement?
+                url = urlList.get(0);
+
+                try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+                    SAXParser parser = factory.newSAXParser();
+                    parser.parse(con.inputStream, entryHandler);
+                }
+            }
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | ParseException | SAXException e) {
             Logger.error(e);
         }
+
+        return bookData;
     }
 }

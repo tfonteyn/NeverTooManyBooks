@@ -19,7 +19,8 @@ import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 /**
  * Allows editing the host url for some of the search sites.
  *
- * Note that Amazon is bypassed as it uses a proxy, but we have the plumbing in place.
+ * Note that Amazon is bypassed as it uses a proxy, but without dev keys installed,
+ * the site *IS* used.
  *
  * ISFDB is currently only a single url, but the site people make the source/data freely
  * available, so someone could setup a new site/mirror.
@@ -54,8 +55,9 @@ public class AdminHostsFragment
         google_url = getView().findViewById(R.id.google_url);
         google_url.setText(GoogleBooksManager.getBaseURL());
 
-        isfdb_url = getView().findViewById(R.id.isfdb_url);
-        isfdb_url.setText(ISFDBManager.getBaseURL());
+        // needs visibility set in the xml layout if uncommenting these
+//        isfdb_url = getView().findViewById(R.id.isfdb_url);
+//        isfdb_url.setText(ISFDBManager.getBaseURL());
 
         isCreated = true;
     }
@@ -71,10 +73,10 @@ public class AdminHostsFragment
             if (!newGoogle.isEmpty()) {
                 GoogleBooksManager.setBaseURL(newGoogle);
             }
-            String newIsfdb = isfdb_url.getText().toString().trim();
-            if (!newIsfdb.isEmpty()) {
-                ISFDBManager.setBaseURL(newIsfdb);
-            }
+//            String newIsfdb = isfdb_url.getText().toString().trim();
+//            if (!newIsfdb.isEmpty()) {
+//                ISFDBManager.setBaseURL(newIsfdb);
+//            }
         }
     }
 }

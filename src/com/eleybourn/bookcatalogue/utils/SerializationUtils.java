@@ -100,7 +100,6 @@ public final class SerializationUtils {
         private static final long serialVersionUID = -2040548134317746620L;
 
         DeserializationException(@Nullable final Exception e) {
-            super();
             initCause(e);
         }
     }

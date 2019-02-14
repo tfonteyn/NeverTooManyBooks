@@ -29,6 +29,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -38,8 +39,6 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.OnPathChangedListener;
-import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask.FileListerListener;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,9 +52,7 @@ import java.util.ArrayList;
 public abstract class FileChooserBaseActivity
         extends BaseActivity
         implements
-        TaskWithProgressDialogFragment.OnTaskFinishedListener,
-        TaskWithProgressDialogFragment.OnAllTasksFinishedListener,
-        FileListerFragmentTask.FileListerListener,
+        FileListerAsyncTask.FileListerListener,
         OnPathChangedListener {
 
     /** Key for member of EXTRAS that specifies the mode of operation of this dialog. */
@@ -190,8 +187,8 @@ public abstract class FileChooserBaseActivity
     public void onGotFileList(@NonNull final File root,
                               @NonNull final ArrayList<FileDetails> list) {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.browser_fragment);
-        if (frag instanceof FileListerListener) {
-            ((FileListerListener) frag).onGotFileList(root, list);
+        if (frag instanceof FileListerAsyncTask.FileListerListener) {
+            ((FileListerAsyncTask.FileListerListener) frag).onGotFileList(root, list);
         }
     }
 
@@ -199,7 +196,9 @@ public abstract class FileChooserBaseActivity
      * @return an object for building an list of files in background.
      */
     @NonNull
-    protected abstract FileListerFragmentTask getFileLister(@NonNull final File root);
+    //protected abstract FileListerFragmentTask getFileLister(@NonNull final File root);
+    protected abstract FileListerAsyncTask getFileLister(@NonNull final FragmentActivity context,
+                                                         @NonNull final File root);
 
     /**
      * Rebuild the file list in background; gather whatever data is necessary to
@@ -210,23 +209,7 @@ public abstract class FileChooserBaseActivity
         if (root == null || !root.isDirectory()) {
             return;
         }
-
-        // Create the background task
-        FileListerFragmentTask lister = getFileLister(root);
-
-        // Start the task
-        TaskWithProgressDialogFragment
-                .newInstance(this, R.string.progress_msg_searching_directory, lister, true, 0);
-
-    }
-
-    /**
-     * Empty implementation. Override if you need to.
-     */
-    @Override
-    public void onAllTasksFinished(@NonNull final TaskWithProgressDialogFragment fragment,
-                                   final int taskId,
-                                   final boolean success,
-                                   final boolean cancelled) {
+        // get and start task.
+        getFileLister(this, root).execute();
     }
 }

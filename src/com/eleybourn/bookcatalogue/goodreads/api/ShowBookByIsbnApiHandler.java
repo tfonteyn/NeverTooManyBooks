@@ -24,8 +24,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
@@ -51,12 +51,14 @@ public class ShowBookByIsbnApiHandler
     /**
      * Perform a search and handle the results.
      *
+     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
+     *
      * @return the array of GoodreadsWork objects.
      */
     @NonNull
     public Bundle get(@NonNull final String isbn,
                       final boolean fetchThumbnail)
-            throws NotAuthorizedException,
+            throws AuthorizationException,
                    BookNotFoundException,
                    IOException {
 

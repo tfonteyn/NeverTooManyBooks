@@ -4,10 +4,11 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -20,8 +21,8 @@ import java.util.Comparator;
  *
  * @author pjw
  */
-public abstract class FileListerFragmentTask
-        extends TaskWithProgressDialogFragment.FragmentTaskAbstract {
+public abstract class FileListerAsyncTask
+        extends TaskWithProgress<ArrayList<FileDetails>> {
 
     @NonNull
     private final File mRoot;
@@ -38,12 +39,13 @@ public abstract class FileListerFragmentTask
         }
     };
 
-    private ArrayList<FileDetails> mDirs;
-
     /**
      * Constructor.
      */
-    protected FileListerFragmentTask(@NonNull final File root) {
+    protected FileListerAsyncTask(final int taskId,
+                                  @NonNull final FragmentActivity context,
+                                  @NonNull final File root) {
+        super(taskId, context, R.string.progress_msg_searching_directory, true);
         mRoot = root;
     }
 
@@ -55,29 +57,33 @@ public abstract class FileListerFragmentTask
     @NonNull
     protected abstract ArrayList<FileDetails> processList(@Nullable final File[] files);
 
+
     @Override
-    public void run(@NonNull final TaskWithProgressDialogFragment fragment,
-                    @NonNull final SimpleTaskContext taskContext) {
+    @Nullable
+    protected ArrayList<FileDetails> doInBackground(final Void... params) {
         // Get a file list
         File[] files = mRoot.listFiles(getFilter());
         // Filter/fill-in using the subclass
-        mDirs = processList(files);
-        // Sort it
-        Collections.sort(mDirs, mComparator);
+        ArrayList<FileDetails> dirs = processList(files);
+        Collections.sort(dirs, mComparator);
+        return dirs;
     }
 
     @Override
-    public void onFinish(@NonNull final TaskWithProgressDialogFragment fragment,
-                         @Nullable final Exception e) {
-        // Display it in UI thread.
-        Activity listenerActivity = fragment.getActivity();
-        if (listenerActivity instanceof FileListerListener) {
-            ((FileListerListener) listenerActivity).onGotFileList(mRoot, mDirs);
+    protected void onPostExecute(@Nullable final ArrayList<FileDetails> result) {
+        if (result != null) {
+            // Display it in UI thread.
+            Activity activity = mFragment.getActivity();
+            if (activity instanceof FileListerListener) {
+                ((FileListerListener) activity).onGotFileList(mRoot, result);
+            }
         }
+        super.onPostExecute(result);
     }
 
     /**
      * Interface for the creating activity to allow the resulting list to be returned.
+     * We're not using the standard {@link OnTaskFinishedListener}.
      */
     public interface FileListerListener {
 

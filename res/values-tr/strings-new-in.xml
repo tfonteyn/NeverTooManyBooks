@@ -24,15 +24,15 @@
 			</p>
 		]]>
     </string>
-    <string name="new_in_505">
-		<![CDATA[
+    <string name="new_in_505"><![CDATA[
+
 			<p><b>5.0.5 sürümündeki yenilikler</b>\n\n
-				* "Eklenen günay" dizelgesi şimdi ters sırada diziliyor \n\n
+				* “Eklenen günay” dizelgesi şimdi ters sırada diziliyor \n\n
 				* Fransızca çeviri güncellemeleri (Imkal)\n\n
 				* Hata düzeltmeleri\n\n
 			</p>
-		]]>
-    </string>
+
+    ]]></string>
     <string name="new_in_508">
 		<![CDATA[
 			<p><b>5.0.8 sürümündeki yenilikler</b>\n\n

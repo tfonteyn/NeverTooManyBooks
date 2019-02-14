@@ -196,7 +196,7 @@ public class BooklistStyle
      * replaced by {@link #mDisplayName}.
      * Do not rename.
      */
-    @SuppressWarnings({"unused", "FieldCanBeLocal"})
+    @SuppressWarnings({"unused"})
     private String mName;
 
     /**
@@ -207,7 +207,6 @@ public class BooklistStyle
      * Note to self: a 'List' will NOT be deserialize'd, must be the original ArrayList
      * Do not rename.
      */
-    @SuppressWarnings("FieldCanBeLocal")
     private ArrayList<BooklistGroup> mGroups;
 
     /**
@@ -263,7 +262,7 @@ public class BooklistStyle
      * @param nameId the resource id for the name
      * @param kinds  a list of group kinds to attach to this style
      */
-    BooklistStyle(final @IntRange(from = -100, to = -1) long id,
+    BooklistStyle(@IntRange(from = -100, to = -1) final long id,
                   @StringRes final int nameId,
                   @NonNull final int... kinds) {
 
@@ -620,7 +619,7 @@ public class BooklistStyle
      * Used by built-in styles only.
      */
     @SuppressWarnings("SameParameterValue")
-    void setScaleSize(final @IntRange(from = SCALE_SIZE_NORMAL, to = SCALE_SIZE_LARGER) int size) {
+    void setScaleSize(@IntRange(from = SCALE_SIZE_NORMAL, to = SCALE_SIZE_LARGER) final int size) {
         mScaleSize.set(size);
     }
 
@@ -1041,7 +1040,7 @@ public class BooklistStyle
 
         @Override
         public void set(@NonNull final Parcel in) {
-            this.clear();
+            clear();
             in.readList(mGroups, getClass().getClassLoader());
             writeGroupIds();
         }

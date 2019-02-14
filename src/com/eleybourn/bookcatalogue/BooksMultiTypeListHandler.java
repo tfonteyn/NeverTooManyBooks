@@ -235,7 +235,6 @@ public class BooksMultiTypeListHandler
             holder = (BooklistHolder) convertView.getTag();
         }
 
-        //noinspection ConstantConditions
         holder.absolutePosition = rowView.getAbsolutePosition();
         holder.set(rowView, convertView, level);
         return convertView;
@@ -251,7 +250,7 @@ public class BooksMultiTypeListHandler
 
         } else if (rowView.getRowKind() == RowKind.BOOK) {
             List<Author> authors = db.getAuthorsByBookId(rowView.getBookId());
-            if (authors.size() > 0) {
+            if (!authors.isEmpty()) {
                 return authors.get(0).getDisplayName();
             }
         }
@@ -268,7 +267,7 @@ public class BooksMultiTypeListHandler
             }
         } else if (rowView.getRowKind() == RowKind.BOOK) {
             ArrayList<Series> series = db.getSeriesByBookId(rowView.getBookId());
-            if (series.size() > 0) {
+            if (!series.isEmpty()) {
                 return series.get(0).getName();
             }
         }

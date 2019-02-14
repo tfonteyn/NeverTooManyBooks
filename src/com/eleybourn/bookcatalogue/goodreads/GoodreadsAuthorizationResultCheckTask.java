@@ -25,9 +25,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.GoodreadsTask;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
@@ -57,7 +57,6 @@ public class GoodreadsAuthorizationResultCheckTask
      * Constructor sets the task description.
      */
     GoodreadsAuthorizationResultCheckTask() {
-
         super(BookCatalogueApp.getResString(R.string.gr_auth_check));
     }
 
@@ -74,17 +73,21 @@ public class GoodreadsAuthorizationResultCheckTask
 
             if (grMgr.hasValidCredentials()) {
                 Logger.info(this, "hasValidCredentials==true");
-                BookCatalogueApp.showNotification(context, R.string.info_authorized,
-                                                  context.getString(R.string.gr_auth_successful));
+                BookCatalogueApp.showNotification(
+                        context, R.string.info_authorized,
+                        context.getString(R.string.gr_auth_successful));
             } else {
                 Logger.info(this, "hasValidCredentials==false");
-                BookCatalogueApp.showNotification(context, R.string.info_not_authorized,
-                                                  context.getString(R.string.gr_auth_failed));
+                BookCatalogueApp.showNotification(
+                        context, R.string.info_not_authorized,
+                        context.getString(R.string.error_authorization_failed,
+                                          context.getString(R.string.goodreads)));
             }
-        } catch (NotAuthorizedException e) {
+        } catch (AuthorizationException e) {
             Logger.error(e);
-            BookCatalogueApp.showNotification(context, R.string.info_not_authorized,
-                                              context.getString(R.string.gr_auth_failed));
+            BookCatalogueApp.showNotification(
+                    context, R.string.info_not_authorized, e.getLocalizedMessage());
+
         } catch (IOException e) {
             Logger.error(e);
             String msg = context.getString(R.string.gr_auth_error) + ' '
@@ -96,7 +99,6 @@ public class GoodreadsAuthorizationResultCheckTask
 
     @Override
     public int getCategory() {
-
         return Task.CAT_GOODREADS_AUTH_RESULT;
     }
 }

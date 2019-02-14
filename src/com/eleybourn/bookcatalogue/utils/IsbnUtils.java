@@ -226,7 +226,6 @@ public final class IsbnUtils {
         }
 
         /** kept for faster conversion between 10/13 formats. */
-        @SuppressWarnings("FieldMayBeFinal")
         private List<Integer> mDigits;
 
         /**
@@ -484,7 +483,7 @@ public final class IsbnUtils {
          */
         public boolean equals(@NonNull final ISBNNumber cmp) {
 
-            if (!this.isValid() || !cmp.isValid()) {
+            if (!isValid() || !cmp.isValid()) {
                 // If either is invalid, require they simply match exactly
                 return mDigits.size() == cmp.mDigits.size()
                         && digitsMatch(mDigits.size(), 0, cmp, 0);

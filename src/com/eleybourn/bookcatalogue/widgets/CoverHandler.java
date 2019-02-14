@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue;
+package com.eleybourn.bookcatalogue.widgets;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
@@ -32,11 +33,11 @@ import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.BookManager;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.widgets.CoverBrowser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -101,11 +102,11 @@ public class CoverHandler
     /**
      * Constructor.
      */
-    CoverHandler(@NonNull final Fragment fragment,
-                 @NonNull final DBA db,
-                 @NonNull final BookManager bookManager,
-                 @NonNull final Fields.Field coverField,
-                 @NonNull final Fields.Field isbnField) {
+    public CoverHandler(@NonNull final Fragment fragment,
+                        @NonNull final DBA db,
+                        @NonNull final BookManager bookManager,
+                        @NonNull final Fields.Field coverField,
+                        @NonNull final Fields.Field isbnField) {
         mFragment = fragment;
         // cache it to avoid multiple calls.
         mActivity = mFragment.requireActivity();
@@ -161,7 +162,7 @@ public class CoverHandler
      * external from {@link #initContextMenuOnView} as we also need this
      * from {@link Fragment#onOptionsItemSelected}.
      */
-    void prepareCoverImageViewContextMenu() {
+    public void prepareCoverImageViewContextMenu() {
 
         String menuTitle = mActivity.getString(R.string.title_cover);
 
@@ -172,38 +173,38 @@ public class CoverHandler
                 new SimpleDialog.ContextMenuInfo(menuTitle, 0);
 
         // populate the menu
-        menu.add(Menu.NONE, R.id.MENU_THUMB_DELETE, 0, R.string.menu_delete)
+        menu.add(Menu.NONE, R.id.MENU_THUMB_DELETE, Menu.NONE, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
-        SubMenu replaceSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, 2,
+        SubMenu replaceSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, Menu.NONE,
                                                  R.string.menu_cover_replace);
         replaceSubmenu.setIcon(R.drawable.ic_find_replace);
 
-        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_CAMERA, 1,
+        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_CAMERA, Menu.NONE,
                            R.string.menu_cover_add_from_camera)
                       .setIcon(R.drawable.ic_add_a_photo);
-        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_GALLERY, 2,
+        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_FROM_GALLERY, Menu.NONE,
                            R.string.menu_cover_add_from_gallery)
                       .setIcon(R.drawable.ic_image);
-        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_ALT_EDITIONS, 3,
+        replaceSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ADD_ALT_EDITIONS, Menu.NONE,
                            R.string.menu_cover_search_alt_editions)
                       .setIcon(R.drawable.ic_find_replace);
 
-        SubMenu rotateSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_ROTATE, 3,
+        SubMenu rotateSubmenu = menu.addSubMenu(Menu.NONE, R.id.SUBMENU_THUMB_ROTATE, Menu.NONE,
                                                 R.string.menu_cover_rotate);
         rotateSubmenu.setIcon(R.drawable.ic_rotate_right);
 
-        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CW, 1,
+        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CW, Menu.NONE,
                           R.string.menu_cover_rotate_cw)
                      .setIcon(R.drawable.ic_rotate_right);
-        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CCW, 2,
+        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_CCW, Menu.NONE,
                           R.string.menu_cover_rotate_ccw)
                      .setIcon(R.drawable.ic_rotate_left);
-        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_180, 3,
+        rotateSubmenu.add(Menu.NONE, R.id.MENU_THUMB_ROTATE_180, Menu.NONE,
                           R.string.menu_cover_rotate_180)
                      .setIcon(R.drawable.ic_swap_vert);
 
-        menu.add(Menu.NONE, R.id.MENU_THUMB_CROP, 4, R.string.menu_cover_crop)
+        menu.add(Menu.NONE, R.id.MENU_THUMB_CROP, Menu.NONE, R.string.menu_cover_crop)
             .setIcon(R.drawable.ic_crop);
 
         // display
@@ -251,17 +252,17 @@ public class CoverHandler
                 return true;
 
             case R.id.MENU_THUMB_ROTATE_CW:
-                rotateThumbnail(90);
+                rotateImage(90);
                 populateCoverView();
                 return true;
 
             case R.id.MENU_THUMB_ROTATE_CCW:
-                rotateThumbnail(-90);
+                rotateImage(-90);
                 populateCoverView();
                 return true;
 
             case R.id.MENU_THUMB_ROTATE_180:
-                rotateThumbnail(180);
+                rotateImage(180);
                 populateCoverView();
                 return true;
 
@@ -289,7 +290,7 @@ public class CoverHandler
     /**
      * Load the image into the view, using preset {@link ImageUtils.ImageSize#small} dimensions.
      */
-    void populateCoverView() {
+    public void populateCoverView() {
         ImageUtils.getImageAndPutIntoView((ImageView) (mCoverField.getView()), getCoverFile(),
                                           mImageSize.small, mImageSize.small, true);
     }
@@ -297,8 +298,8 @@ public class CoverHandler
     /**
      * Load the image into the view, using custom dimensions.
      */
-    void populateCoverView(final int maxWidth,
-                           final int maxHeight) {
+    public void populateCoverView(final int maxWidth,
+                                  final int maxHeight) {
         ImageUtils.getImageAndPutIntoView((ImageView) (mCoverField.getView()), getCoverFile(),
                                           maxWidth, maxHeight, true);
     }
@@ -328,6 +329,7 @@ public class CoverHandler
         if (IsbnUtils.isValid(isbn)) {
             mCoverBrowser = new CoverBrowser(
                     mActivity, isbn,
+                    SearchSites.Site.SEARCH_ALL,
                     new CoverBrowser.OnImageSelectedListener() {
                         @Override
                         public void onImageSelected(@NonNull final String fileSpec) {
@@ -390,7 +392,7 @@ public class CoverHandler
             File cameraFile = StorageUtils.getTempCoverFile(
                     "camera" + CoverHandler.mTempImageCounter);
             FileOutputStream out;
-            // Create a file to copy the thumbnail into
+            // Create a file to copy the image into
             try {
                 out = new FileOutputStream(cameraFile.getAbsoluteFile());
             } catch (FileNotFoundException e) {
@@ -453,19 +455,19 @@ public class CoverHandler
     }
 
     /**
-     * Rotate the thumbnail.
+     * Rotate the image.
      *
-     * @param angle by a specified amount
+     * @param angle rotate by the specified amount
      */
-    private void rotateThumbnail(final long angle) {
+    private void rotateImage(final long angle) {
         // we'll try it twice with a gc in between
         int attempts = 2;
         while (true) {
             try {
-                File thumbFile = getCoverFile();
+                File file = getCoverFile();
 
                 Bitmap bitmap = ImageUtils
-                        .getImageAndPutIntoView(null, thumbFile,
+                        .getImageAndPutIntoView(null, file,
                                                 mImageSize.large * 2,
                                                 mImageSize.large * 2, true);
                 if (bitmap == null) {
@@ -481,10 +483,10 @@ public class CoverHandler
                     bitmap.recycle();
                 }
 
-                /* Create a file to copy the thumbnail into */
+                /* Create a file to copy the image into */
                 FileOutputStream outFos;
                 try {
-                    outFos = new FileOutputStream(thumbFile.getAbsoluteFile());
+                    outFos = new FileOutputStream(file.getAbsoluteFile());
                 } catch (FileNotFoundException e) {
                     Logger.error(e);
                     return;
@@ -504,21 +506,21 @@ public class CoverHandler
     }
 
 
-    private void cropCoverImage(@NonNull final File thumbFile) {
+    private void cropCoverImage(@NonNull final File imageFile) {
         boolean external = Prefs.getBoolean(R.string.pk_thumbnails_external_cropper, false);
         if (external) {
-            cropCoverImageExternal(thumbFile);
+            cropCoverImageExternal(imageFile);
         } else {
-            cropCoverImageInternal(thumbFile);
+            cropCoverImageInternal(imageFile);
         }
     }
 
     /**
      * Crop the image using our internal code in {@link CropImageActivity}.
      *
-     * @param thumbFile to crop
+     * @param imageFile to crop
      */
-    private void cropCoverImageInternal(@NonNull final File thumbFile) {
+    private void cropCoverImageInternal(@NonNull final File imageFile) {
         boolean cropFrameWholeImage = Prefs.getBoolean(
                 R.string.pk_thumbnails_crop_frame_is_whole_image, false);
 
@@ -528,7 +530,7 @@ public class CoverHandler
 
         Intent intent = new Intent(mActivity, CropImageActivity.class);
         intent.putExtra(CropImageActivity.REQUEST_KEY_IMAGE_ABSOLUTE_PATH,
-                        thumbFile.getAbsolutePath());
+                        imageFile.getAbsolutePath());
         intent.putExtra(CropImageActivity.REQUEST_KEY_SCALE, true);
         intent.putExtra(CropImageActivity.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
         intent.putExtra(CropImageActivity.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH,
@@ -542,12 +544,12 @@ public class CoverHandler
      * <p>
      * Code using hardcoded string on purpose as they are part of the Intent api.
      *
-     * @param thumbFile to crop
+     * @param imageFile to crop
      */
-    private void cropCoverImageExternal(@NonNull final File thumbFile) {
+    private void cropCoverImageExternal(@NonNull final File imageFile) {
         Tracker.handleEvent(this, Tracker.States.Enter, "cropCoverImageExternal");
         try {
-            File inputFile = new File(thumbFile.getAbsolutePath());
+            File inputFile = new File(imageFile.getAbsolutePath());
 
             //call the standard crop action intent (the device may not support it)
             Intent intent = new Intent("com.android.camera.action.CROP");
@@ -578,7 +580,7 @@ public class CoverHandler
 
             List<ResolveInfo> list = mActivity.getPackageManager()
                                               .queryIntentActivities(intent, 0);
-            if (list.size() == 0) {
+            if (list.isEmpty()) {
                 StandardDialogs.showUserMessage(mActivity, R.string.error_no_external_crop_app);
             } else {
                 mFragment.startActivityForResult(intent, REQ_CROP_IMAGE_EXTERNAL);
@@ -597,22 +599,22 @@ public class CoverHandler
     }
 
     /**
-     * Delete the thumbnail.
+     * Delete the image.
      */
     private void deleteCoverFile() {
         try {
-            File thumbFile = getCoverFile();
-            StorageUtils.deleteFile(thumbFile);
+            File file = getCoverFile();
+            StorageUtils.deleteFile(file);
         } catch (RuntimeException e) {
             Logger.error(e);
         }
-        invalidateCachedThumbnail();
+        invalidateCachedImages();
     }
 
     /**
-     * Ensure that the cached thumbnails for this book are deleted (if present).
+     * Ensure that the cached images for this book are deleted (if present).
      */
-    private void invalidateCachedThumbnail() {
+    private void invalidateCachedImages() {
         final long bookId = mBookManager.getBook().getId();
         if (bookId != 0) {
             try (CoversDBA db = CoversDBA.getInstance()) {
@@ -628,7 +630,7 @@ public class CoverHandler
     /**
      * Dismiss the cover browser.
      */
-    void dismissCoverBrowser() {
+    public void dismissCoverBrowser() {
         if (mCoverBrowser != null) {
             mCoverBrowser.close();
             mCoverBrowser = null;

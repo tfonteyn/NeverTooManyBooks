@@ -28,8 +28,6 @@ import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
 public final class ImageUtils {
@@ -244,23 +242,19 @@ public final class ImageUtils {
     /**
      * Given a URL, get an image and save to a file.
      *
-     * @param urlText Image file URL
-     * @param name    for the file.
+     * @param url  Image file URL
+     * @param name for the file.
      *
      * @return Downloaded fileSpec, or null on failure
      */
     @Nullable
-    public static String saveImage(@NonNull final String urlText,
+    public static String saveImage(@NonNull final String url,
                                    @NonNull final String name) {
         boolean success = false;
         final File file = StorageUtils.getTempCoverFile(name);
-        try (InputStream in = Terminator.getInputStream(new URL(urlText))) {
-            if (in != null) {
-                success = StorageUtils.saveInputStreamToFile(in, file);
-            } else {
-                Logger.error("InputStream was null");
-            }
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
+        try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+            success = StorageUtils.saveInputStreamToFile(con.inputStream, file);
+        } catch (@NonNull final IOException e) {
             Logger.error(e);
         }
 
@@ -270,27 +264,23 @@ public final class ImageUtils {
     /**
      * Given a URL, get an image and return as a byte array.
      *
-     * @param urlText Image file URL
+     * @param url Image file URL
      *
      * @return Downloaded byte[] or null upon failure
      */
     @Nullable
-    public static byte[] getBytes(@NonNull final String urlText) {
-        try (InputStream in = Terminator.getInputStream(new URL(urlText))) {
-            if (in != null) {
-                try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                    // Save the output to a byte output stream
-                    byte[] buffer = new byte[BUFFER_SIZE];
-                    int len;
-                    while ((len = in.read(buffer)) >= 0) {
-                        out.write(buffer, 0, len);
-                    }
-                    return out.toByteArray();
+    public static byte[] getBytes(@NonNull final String url) {
+        try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                // Save the output to a byte output stream
+                byte[] buffer = new byte[BUFFER_SIZE];
+                int len;
+                while ((len = con.inputStream.read(buffer)) >= 0) {
+                    out.write(buffer, 0, len);
                 }
-            } else {
-                Logger.error("InputStream was null");
+                return out.toByteArray();
             }
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
+        } catch (@NonNull final IOException e) {
             Logger.error(e);
         }
         return null;

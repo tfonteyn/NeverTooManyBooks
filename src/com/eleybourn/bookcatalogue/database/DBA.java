@@ -172,12 +172,11 @@ public class DBA
     /**
      * Flag indicating the UPDATE_DATE field from the bundle should be trusted.
      * If this flag is not set, the UPDATE_DATE will be set based on the current time
+     *
+     * Currently down to a single flag, but not switching to a boolean for now.
      */
     public static final int BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT = 1;
-    /**
-     * Flag indicating to skip doing the 'purge' step; mainly used in batch operations.
-     */
-    public static final int BOOK_UPDATE_SKIP_PURGE_REFERENCES = 1 << 1;
+
     /**
      * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM),
      * Android supplies two more.
@@ -278,9 +277,6 @@ public class DBA
     private static final String STMT_DELETE_BOOK_SERIES = "DeleteBookSeries";
     private static final String STMT_DELETE_BOOKLIST_STYLE = "DeleteBooklistStyle";
 
-    private static final String STMT_SET_BOOKS_DIRTY_BY_AUTHOR_1 = "SetBooksDirtyByAuthor1";
-    private static final String STMT_SET_BOOKS_DIRTY_BY_AUTHOR_2 = "SetBooksDirtyByAuthor2";
-
     private static final String STMT_UPDATE_GOODREADS_BOOK_ID = "SetGoodreadsBookId";
     private static final String STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES = "UpdateAuthorOnTocEntry";
     private static final String STMT_UPDATE_GOODREADS_SYNC_DATE = "SetGoodreadsSyncDate";
@@ -377,11 +373,6 @@ public class DBA
     @NonNull
     public static String encodeString(@NonNull final String value) {
         return value.replace("'", "''");
-    }
-
-    @NonNull
-    private static String SELECT(@NonNull final String... sa) {
-        return "SELECT " + Csv.join(",", sa);
     }
 
     /**
@@ -835,9 +826,9 @@ public class DBA
     }
 
     /**
-     * Refresh the passed author from the database, if present. Used to ensure that
+     * Refresh the passed Author from the database, if present. Used to ensure that
      * the current record matches the current DB if some other task may have
-     * changed the author.
+     * changed the Author.
      * <p>
      * Will NOT insert a new Author if not found.
      */
@@ -881,16 +872,17 @@ public class DBA
         }
 
         if (BuildConfig.DEBUG) {
-            Logger.info(this,"globalReplaceAuthor",
+            Logger.info(this, "globalReplaceAuthor",
                         "from=" + from.getId() + ", to=" + to.getId());
         }
 
         SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
-            //setBooksDirtyByAuthorId(from.getId());
-
-            // replace the old if with the new id on the TOC entries
+            // replace the old id with the new id on the TOC entries
             updateAuthorOnTocEntry(from.getId(), to.getId());
+
+            // update books for which the new ID is not already present
+            globalReplaceId(TBL_BOOK_AUTHOR, DOM_FK_AUTHOR_ID, from.getId(), to.getId());
 
             globalReplacePositionedBookItem(TBL_BOOK_AUTHOR,
                                             DOM_FK_AUTHOR_ID,
@@ -1054,42 +1046,21 @@ public class DBA
     private void preprocessBook(final boolean isNew,
                                 @NonNull final Book book) {
 
-        // Handle AUTHOR
-        // If present, get the author ID from the author name
-        // (it may have changed with a name change)
-        if (book.containsKey(UniqueId.KEY_AUTHOR_FORMATTED)) {
-            Author author = Author.fromString(book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
-            if (author.fixupId(this) == 0) {
-                insertAuthor(author);
-            }
-            book.putLong(UniqueId.KEY_AUTHOR, author.getId());
-
-        } else {
-            if (book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
-                String family = book.getString(UniqueId.KEY_AUTHOR_FAMILY_NAME);
-                String given;
-                if (book.containsKey(UniqueId.KEY_AUTHOR_GIVEN_NAMES)) {
-                    given = book.getString(UniqueId.KEY_AUTHOR_GIVEN_NAMES);
-                } else {
-                    given = "";
-                }
-
-                Author author = new Author(family, given);
-                if (author.fixupId(this) == 0) {
-                    insertAuthor(author);
-                }
-                book.putLong(UniqueId.KEY_AUTHOR, author.getId());
-            }
+        // Handle AUTHOR. When is this needed? Legacy archive import ?
+        if (book.containsKey(UniqueId.KEY_AUTHOR_FORMATTED)
+                || book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
+            preprocessLegacyAuthor(book);
         }
 
         // Handle TITLE; but only for new books
         if (isNew && book.containsKey(UniqueId.KEY_TITLE)) {
-            book.putString(UniqueId.KEY_TITLE, preprocessTitle(book.getString(UniqueId.KEY_TITLE)));
+            String cleanTitle = preprocessTitle(book.getString(UniqueId.KEY_TITLE));
+            book.putString(UniqueId.KEY_TITLE, cleanTitle);
         }
 
         // Handle ANTHOLOGY_BITMASK only, no handling of actual titles here
         ArrayList<TocEntry> tocEntries = book.getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
-        if (tocEntries.size() > 0) {
+        if (!tocEntries.isEmpty()) {
             // definitively an anthology, overrule whatever the KEY_BOOK_ANTHOLOGY_BITMASK was.
             int type = TocEntry.Type.MULTIPLE_WORKS;
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
@@ -1115,6 +1086,7 @@ public class DBA
         if (book.containsKey(UniqueId.KEY_BOOK_LANGUAGE)) {
             String lang = book.getString(UniqueId.KEY_BOOK_LANGUAGE);
             if (lang.length() > 3) {
+                // translate to iso3 code, or if that fails, stores the original
                 book.putString(UniqueId.KEY_BOOK_LANGUAGE, LocaleUtils.getISO3Language(lang));
             }
         }
@@ -1159,12 +1131,54 @@ public class DBA
                 }) {
             if (book.containsKey(name)) {
                 Object o = book.get(name);
-                // Need to allow for the possibility the value is not
-                // a string, in which case getString() would return a NULL.
+                // Need to allow for the possibility the value is not a string,
+                // in which case getString() would return a NULL.
                 if (o == null || o.toString().isEmpty()) {
                     book.remove(name);
                 }
             }
+        }
+    }
+
+    /**
+     * Needed for reading from legacy archive versions... I think?
+     */
+    private void preprocessLegacyAuthor(@NonNull final Book book) {
+
+        // If present, get the author ID from the author name
+        // (it may have changed with a name change)
+        if (book.containsKey(UniqueId.KEY_AUTHOR_FORMATTED)) {
+
+            Author author = Author.fromString(book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
+            if (author.fixupId(this) == 0) {
+                if (BuildConfig.DEBUG) {
+                    Logger.info(this, "preprocessBook",
+                                "KEY_AUTHOR_FORMATTED|inserting author: "
+                                        + author.stringEncoded());
+                }
+                insertAuthor(author);
+            }
+            book.putLong(UniqueId.KEY_AUTHOR, author.getId());
+
+        } else if (book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
+            String family = book.getString(UniqueId.KEY_AUTHOR_FAMILY_NAME);
+            String given;
+            if (book.containsKey(UniqueId.KEY_AUTHOR_GIVEN_NAMES)) {
+                given = book.getString(UniqueId.KEY_AUTHOR_GIVEN_NAMES);
+            } else {
+                given = "";
+            }
+
+            Author author = new Author(family, given);
+            if (author.fixupId(this) == 0) {
+                if (BuildConfig.DEBUG) {
+                    Logger.info(this, "preprocessBook",
+                                "KEY_AUTHOR_FAMILY_NAME|inserting author: "
+                                        + author.stringEncoded());
+                }
+                insertAuthor(author);
+            }
+            book.putLong(UniqueId.KEY_AUTHOR, author.getId());
         }
     }
 
@@ -1180,6 +1194,8 @@ public class DBA
         StringBuilder newTitle = new StringBuilder();
         String[] titleWords = title.split(" ");
         try {
+            // ENHANCE: if a user runs in language X, but enters books in language Y then
+            // this code *should* load the lang Y resource.
             if (titleWords[0].matches(mContext.getString(R.string.title_reorder))) {
                 for (int i = 1; i < titleWords.length; i++) {
                     if (i != 1) {
@@ -1402,7 +1418,7 @@ public class DBA
 
             // Make sure we have an author
             List<Author> authors = book.getList(UniqueId.BKEY_AUTHOR_ARRAY);
-            if (authors.size() == 0) {
+            if (authors.isEmpty()) {
                 Logger.error("No authors in book from\n" + book);
                 return -1L;
             }
@@ -1452,8 +1468,7 @@ public class DBA
      *
      * @param bookId of the book; takes precedence over the id of the book itself.
      * @param book   A collection with the columns to be set. May contain extra data.
-     * @param flags  See {@link #BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT} an others for
-     *               flag definitions
+     * @param flags  See {@link #BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT} for flag definitions
      *
      * @return the number of rows affected, should be 1 for success.
      */
@@ -1606,31 +1621,6 @@ public class DBA
     }
 
     /**
-     * TEST:done via triggers now.
-     * <p>
-     * Set all books referencing a given author as dirty.
-     */
-    private void setBooksDirtyByAuthorId(final long id) {
-        // set all related books based on anthology Author as dirty
-        SynchronizedStatement stmt = mStatements.get(STMT_SET_BOOKS_DIRTY_BY_AUTHOR_1);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_SET_BOOKS_DIRTY_BY_AUTHOR_1,
-                                   SqlSetBookDirty.TOC_ENTRY_AUTHOR_ID);
-        }
-        stmt.bindLong(1, id);
-        stmt.executeUpdateDelete();
-
-        // set all books of this Author dirty
-        stmt = mStatements.get(STMT_SET_BOOKS_DIRTY_BY_AUTHOR_2);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_SET_BOOKS_DIRTY_BY_AUTHOR_2,
-                                   SqlSetBookDirty.BY_AUTHOR_ID);
-        }
-        stmt.bindLong(1, id);
-        stmt.executeUpdateDelete();
-    }
-
-    /**
      * Create the link between {@link Book} and {@link Series}.
      * <p>
      * {@link DatabaseDefinitions#TBL_BOOK_SERIES}
@@ -1652,7 +1642,7 @@ public class DBA
         deleteBookSeriesByBookId(bookId);
 
         // anything to insert ?
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return;
         }
 
@@ -1667,6 +1657,10 @@ public class DBA
         int position = 0;
         for (Series series : list) {
             if (series.fixupId(this) == 0) {
+                if (BuildConfig.DEBUG) {
+                    Logger.info(this, "insertBookSeries",
+                                "inserting series: " + series.stringEncoded());
+                }
                 insertSeries(series);
             }
 
@@ -1718,7 +1712,7 @@ public class DBA
         deleteBookTocEntryByBookId(bookId);
 
         // anything to insert ?
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return;
         }
 
@@ -1731,11 +1725,19 @@ public class DBA
             // handle the author.
             Author author = tocEntry.getAuthor();
             if (author.fixupId(this) == 0) {
+                if (BuildConfig.DEBUG) {
+                    Logger.info(this, "updateOrInsertTOC",
+                                "inserting author: " + author.stringEncoded());
+                }
                 insertAuthor(author);
             }
 
             // As an entry can exist in multiple books, try to find the entry.
             if (tocEntry.fixupId(this) == 0) {
+                if (BuildConfig.DEBUG) {
+                    Logger.info(this, "updateOrInsertTOC",
+                                "inserting tocEntry: " + tocEntry.stringEncoded());
+                }
                 insertTOCEntry(tocEntry);
             } else {
                 // if found, FIXME: (do not) unconditionally update the publication year.
@@ -1785,7 +1787,7 @@ public class DBA
         deleteBookAuthorByBookId(bookId);
 
         // anything to insert ?
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return;
         }
 
@@ -1801,6 +1803,10 @@ public class DBA
         for (Author author : list) {
             // find/insert the author
             if (author.fixupId(this) == 0) {
+                if (BuildConfig.DEBUG) {
+                    Logger.info(this, "insertBookAuthors",
+                                "inserting author: " + author.stringEncoded());
+                }
                 insertAuthor(author);
             }
 
@@ -1860,7 +1866,7 @@ public class DBA
         deleteBookBookshelfByBookId(bookId);
 
         // anything to insert ?
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return;
         }
 
@@ -1875,6 +1881,10 @@ public class DBA
             }
 
             if (bookshelf.fixupId(this) == 0) {
+                if (BuildConfig.DEBUG) {
+                    Logger.info(this, "insertBookBookshelf",
+                                "inserting bookshelf: " + bookshelf.stringEncoded());
+                }
                 insertBookshelf(bookshelf);
             }
 
@@ -1904,28 +1914,19 @@ public class DBA
     }
 
     /**
-     * Books use an ordered list of Authors and Series (custom order by the end-user).
-     * When replacing one of them, lists have to be adjusted.
+     * update books for which the new ID is not already present.
      * <p>
-     * transaction: needs.
+     * In other words: replace the id for books that are not already linked with the new one
      *
-     * throws exceptions, caller must handle
-     *
-     * @param table         : TBL_AUTHORS or TBL_SERIES
-     * @param domain        : DOM_FK_AUTHOR_ID or DOM_FK_SERIES_ID
-     * @param positionField : DOM_BOOK_AUTHOR_POSITION or DOM_BOOK_SERIES_POSITION
+     * @param table  the link-table between books and author or series
+     * @param domain name of the column to use, again author or series
+     * @param fromId the id to replace
+     * @param toId   the id to use
      */
-    private void globalReplacePositionedBookItem(@NonNull final TableDefinition table,
-                                                 @NonNull final DomainDefinition domain,
-                                                 @NonNull final DomainDefinition positionField,
-                                                 final long from,
-                                                 final long to) {
-
-        if (!mSyncedDb.inTransaction()) {
-            throw new TransactionException(ERROR_NEEDS_TRANSACTION);
-        }
-
-        // update books for which the new ID is not already present
+    private void globalReplaceId(@NonNull final TableDefinition table,
+                                 @NonNull final DomainDefinition domain,
+                                 final long fromId,
+                                 final long toId) {
         /*
         sql = "Update " + tableName + " Set " + objectIdField + " = " + newId
         + " Where " + objectIdField + " = " + oldId
@@ -1933,7 +1934,7 @@ public class DBA
         + "                 ba." + KEY_BOOK + " = " + tableName + "." + KEY_BOOK
         + "                 and ba." + objectIdField + " = " + newId + ")";
          */
-        SynchronizedStatement updItemTableStmt = mSyncedDb.compileStatement(
+        SynchronizedStatement stmt = mSyncedDb.compileStatement(
                 "UPDATE " + table + " SET " + domain + "=? WHERE " + domain + "=?"
                         + " AND NOT EXISTS"
 
@@ -1943,17 +1944,41 @@ public class DBA
                         // left: the aliased table
                         + " AND " + table.dot(domain) + "=?)");
 
-        updItemTableStmt.bindLong(1, to);
-        updItemTableStmt.bindLong(2, from);
-        updItemTableStmt.bindLong(3, to);
-        updItemTableStmt.executeUpdateDelete();
+        stmt.bindLong(1, toId);
+        stmt.bindLong(2, fromId);
+        stmt.bindLong(3, toId);
+        stmt.executeUpdateDelete();
+        stmt.close();
+    }
 
-        // Delete the rows that would have caused duplicates. Be cautious by using the
-        // EXISTS statement again; it's not necessary, but we do it to reduce the risk of data
-        // loss if one of the prior statements failed silently.
-        //
-        // We also move remaining items up one place to ensure positions remain correct
-        //
+    /**
+     * Books use an ordered list of Authors and Series (custom order by the end-user).
+     * When replacing one of them, lists have to be adjusted.
+     * <p>
+     * transaction: needs.
+     * <p>
+     * throws exceptions, caller must handle
+     *
+     * @param table         : TBL_BOOK_AUTHORS or TBL_BOOK_SERIES
+     * @param domain        : DOM_FK_AUTHOR_ID or DOM_FK_SERIES_ID
+     * @param positionField : DOM_BOOK_AUTHOR_POSITION or DOM_BOOK_SERIES_POSITION
+     */
+    private void globalReplacePositionedBookItem(@NonNull final TableDefinition table,
+                                                 @NonNull final DomainDefinition domain,
+                                                 @NonNull final DomainDefinition positionField,
+                                                 final long fromId,
+                                                 final long toId) {
+
+        if (!mSyncedDb.inTransaction()) {
+            throw new TransactionException(ERROR_NEEDS_TRANSACTION);
+        }
+
+        SynchronizedStatement delStmt = null;
+        SynchronizedStatement replacementIdPosStmt = null;
+        SynchronizedStatement checkMinStmt = null;
+        SynchronizedStatement moveStmt = null;
+
+        // Re-position remaining items up one place to ensure positions remain correct
         /*
         sql = "select * from " + tableName + " Where " + objectIdField + " = " + oldId
         + " And Exists(Select NULL From " + tableName + " ba Where "
@@ -1970,13 +1995,15 @@ public class DBA
                 // left: the aliased table
                 + " AND " + table.dot(domain) + "=?)";
 
-        SynchronizedStatement delStmt = null;
-        SynchronizedStatement replacementIdPosStmt = null;
-        SynchronizedStatement checkMinStmt = null;
-        SynchronizedStatement moveStmt = null;
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(fromId),
+                                                                  String.valueOf(toId)})) {
 
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(from),
-                                                                  String.valueOf(to)})) {
+            int count = cursor.getCount();
+            if (BuildConfig.DEBUG) {
+                Logger.info(this, "globalReplacePositionedBookItem",
+                            "Re-position, total count=" + count);
+            }
+
             // Get the column indexes we need
             final int bookCol = cursor.getColumnIndexOrThrow(DOM_FK_BOOK_ID.name);
             final int posCol = cursor.getColumnIndexOrThrow(positionField.name);
@@ -2009,23 +2036,24 @@ public class DBA
 
                 // Get the position of the new/replacement object
                 replacementIdPosStmt.bindLong(1, bookId);
-                replacementIdPosStmt.bindLong(2, to);
+                replacementIdPosStmt.bindLong(2, toId);
                 long replacementIdPos = replacementIdPosStmt.simpleQueryForLong();
                 if (BuildConfig.DEBUG) {
-                    Logger.info(this,"globalReplacePositionedBookItem",
-                                "id="+ bookId + ", to=" + to + "=> replacementIdPos=" + replacementIdPos);
+                    Logger.info(this, "globalReplacePositionedBookItem",
+                                "id=" + bookId + ", to=" + toId + "=> replacementIdPos=" + replacementIdPos);
                 }
                 // Delete the old record
-                delStmt.bindLong(1, from);
-                delStmt.bindLong(2, to);
+                delStmt.bindLong(1, fromId);
+                delStmt.bindLong(2, toId);
                 delStmt.executeUpdateDelete();
 
                 // If the deleted object was more prominent than the new object,
                 // move the new one up
                 if (replacementIdPos > pos) {
                     if (BuildConfig.DEBUG) {
-                        Logger.info(this,"globalReplacePositionedBookItem",
-                                    "id="+ bookId + ", pos=" + pos + ", replacementIdPos=" + replacementIdPos);
+                        Logger.info(this, "globalReplacePositionedBookItem",
+                                    "id=" + bookId + ", pos=" + pos
+                                            + ", replacementIdPos=" + replacementIdPos);
                     }
                     moveStmt.bindLong(1, pos);
                     moveStmt.bindLong(2, bookId);
@@ -2043,8 +2071,8 @@ public class DBA
                 // If it's > 1, move it to 1
                 if (minPos > 1) {
                     if (BuildConfig.DEBUG) {
-                        Logger.info(this,"globalReplacePositionedBookItem",
-                                    "id="+ bookId + ", pos to 1, minPos=" + minPos);
+                        Logger.info(this, "globalReplacePositionedBookItem",
+                                    "id=" + bookId + ", pos to 1, minPos=" + minPos);
                     }
                     moveStmt.bindLong(1, 1);
                     moveStmt.bindLong(2, bookId);
@@ -2053,8 +2081,6 @@ public class DBA
                 }
             }
         } finally {
-            updItemTableStmt.close();
-
             if (delStmt != null) {
                 delStmt.close();
             }
@@ -2219,22 +2245,22 @@ public class DBA
         // so DO NOT replace them with table.dot() etc... !
 
         // there is no 'real' FROM table set. The 'from' is a combo of three sub-selects
-        return SELECT(
-                "b.*",
-                TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME),
-                TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES),
-                TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE),
-                SqlColumns.AUTHOR_FORMATTED,
-                SqlColumns.AUTHOR_FORMATTED_GIVEN_FIRST,
-                "a." + DOM_FK_AUTHOR_ID + " AS " + DOM_FK_AUTHOR_ID,
+        return "SELECT "
+                + "b.*"
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_FAMILY_NAME)
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_GIVEN_NAMES)
+                + ',' + TBL_AUTHORS.dotAs(DOM_AUTHOR_IS_COMPLETE)
+                + ',' + SqlColumns.AUTHOR_FORMATTED
+                + ',' + SqlColumns.AUTHOR_FORMATTED_GIVEN_FIRST
+                + ',' + "a." + DOM_FK_AUTHOR_ID + " AS " + DOM_FK_AUTHOR_ID
 
                 // use a dummy series for books not in a series (i.e. don't use null's)
-                "Coalesce(s." + DOM_FK_SERIES_ID + ", 0) AS " + DOM_FK_SERIES_ID,
-                "Coalesce(s." + DOM_SERIES_NAME + ", '') AS " + DOM_SERIES_NAME,
-                "Coalesce(s." + DOM_BOOK_SERIES_NUM + ", '') AS " + DOM_BOOK_SERIES_NUM,
+                + ',' + "Coalesce(s." + DOM_FK_SERIES_ID + ", 0) AS " + DOM_FK_SERIES_ID
+                + ',' + "Coalesce(s." + DOM_SERIES_NAME + ", '') AS " + DOM_SERIES_NAME
+                + ',' + "Coalesce(s." + DOM_BOOK_SERIES_NUM + ", '') AS " + DOM_BOOK_SERIES_NUM
 
-                SqlColumns.SERIES_LIST
-        )
+                + ',' + SqlColumns.SERIES_LIST
+
                 + " FROM"
 
                 // all books (with WHERE clause if passed in).
@@ -2319,7 +2345,7 @@ public class DBA
      */
     @NonNull
     public BookCursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
-        if (isbnList.size() == 0) {
+        if (isbnList.isEmpty()) {
             throw new IllegalArgumentException("isbnList was empty");
         }
 
@@ -2659,7 +2685,7 @@ public class DBA
      */
     @NonNull
     public Cursor fetchSearchSuggestions(@NonNull final String query) {
-        String q = query + '%';
+        String q = '%' + query + '%';
         return mSyncedDb.rawQuery(SqlSelect.SEARCH_SUGGESTIONS, new String[]{q, q, q, q});
     }
 
@@ -3048,6 +3074,30 @@ public class DBA
     }
 
     /**
+     * Refresh the passed Series from the database, if present. Used to ensure that
+     * the current record matches the current DB if some other task may have
+     * changed the Series.
+     * <p>
+     * Will NOT insert a new Series if not found.
+     */
+    public void refreshSeries(@NonNull final Series /* out */ series) {
+        if (series.getId() == 0) {
+            // It wasn't a known series; see if it is now. If so, update ID.
+            series.fixupId(this);
+        } else {
+            // It was a known author, see if it still is and fetch possibly updated fields.
+            Series dbSeries = getSeries(series.getId());
+            if (dbSeries != null) {
+                // copy any updated fields
+                series.copyFrom(dbSeries);
+            } else {
+                // series not found?, set the series as 'new'
+                series.setId(0);
+            }
+        }
+    }
+
+    /**
      * @return <tt>true</tt> for success.
      */
     public boolean globalReplaceSeries(@NonNull final Series from,
@@ -3070,12 +3120,15 @@ public class DBA
         }
 
         if (BuildConfig.DEBUG) {
-            Logger.info(this,"globalReplaceSeries",
+            Logger.info(this, "globalReplaceSeries",
                         "from=" + from.getId() + ", to=" + to.getId());
         }
 
         SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
+            // update books for which the new ID is not already present
+            globalReplaceId(TBL_BOOK_SERIES, DOM_FK_SERIES_ID, from.getId(), to.getId());
+
             globalReplacePositionedBookItem(TBL_BOOK_SERIES,
                                             DOM_FK_SERIES_ID,
                                             DOM_BOOK_SERIES_POSITION,
@@ -3829,11 +3882,11 @@ public class DBA
         private static final String BOOKS =
                 "SELECT * FROM " + TBL_BOOKS;
 
-        /** {@link Author}, all columns */
+        /** {@link Author}, all columns. */
         private static final String AUTHORS =
                 "SELECT * FROM " + TBL_AUTHORS;
 
-        /** {@link Series}, all columns */
+        /** {@link Series}, all columns. */
         private static final String SERIES =
                 "SELECT * FROM " + TBL_SERIES;
 
@@ -3846,7 +3899,7 @@ public class DBA
         private static final String BOOKLIST_STYLES =
                 "SELECT * FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_PK_ID + ">0";
 
-        /** Book UUID only, for accessing all cover image files */
+        /** Book UUID only, for accessing all cover image files. */
         private static final String BOOK_UUIDS =
                 "SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS;
 
@@ -4389,43 +4442,22 @@ public class DBA
         static final String PURGE_AUTHORS =
                 "DELETE FROM " + TBL_AUTHORS
                         + " WHERE " + DOM_PK_ID + " NOT IN"
-                        + " (SELECT DISTINCT " + DOM_FK_AUTHOR_ID + " FROM " + TBL_BOOK_AUTHOR + ')'
+                        + " (SELECT DISTINCT " + DOM_FK_AUTHOR_ID
+                        + " FROM " + TBL_BOOK_AUTHOR + ')'
                         + " AND " + DOM_PK_ID + " NOT IN"
-                        + " (SELECT DISTINCT " + DOM_FK_AUTHOR_ID + " FROM " + TBL_TOC_ENTRIES + ')';
+                        + " (SELECT DISTINCT " + DOM_FK_AUTHOR_ID
+                        + " FROM " + TBL_TOC_ENTRIES + ')';
 
         /**
          * Purge a {@link Series} if no longer in use.
          */
         static final String PURGE_SERIES =
                 "DELETE FROM " + TBL_SERIES + " WHERE " + DOM_PK_ID + " NOT IN"
-                        + " (SELECT DISTINCT " + DOM_FK_SERIES_ID + " FROM " + TBL_BOOK_SERIES + ')';
+                        + " (SELECT DISTINCT " + DOM_FK_SERIES_ID
+                        + " FROM " + TBL_BOOK_SERIES + ')';
 
         private SqlDelete() {
         }
-    }
-
-    /**
-     * Sql UPDATE commands to set the last update date of a Book.
-     */
-    private static final class SqlSetBookDirty {
-
-        static final String TOC_ENTRY_AUTHOR_ID =
-                "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
-                        + " WHERE " + DOM_PK_ID + " IN ("
-
-                        + "SELECT " + TBL_BOOK_TOC_ENTRIES.dot(DOM_FK_BOOK_ID)
-                        + " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(
-                        TBL_BOOK_TOC_ENTRIES)
-                        + " WHERE " + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR_ID) + "=?"
-
-                        + ')';
-
-        static final String BY_AUTHOR_ID =
-                "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
-                        + " WHERE " + DOM_PK_ID + " IN ("
-                        + "SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_AUTHOR
-                        + " WHERE " + DOM_FK_AUTHOR_ID + "=?"
-                        + ')';
     }
 
     /**

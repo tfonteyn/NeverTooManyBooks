@@ -8,9 +8,9 @@ Review database stuff
  * The caller is either already catching them, or believes they will never happen.
  *
  * - database insert methods which return -1 for failing to insert. Not all callers check.
- * - catch UpdateException (or not?)
  * - catch NotFoundException (or not?)
  * - bind variables versus string concat
+ * could global replace of author/series be optimized ? For now it's cumbersome and long-winded.
 
 ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
  * Performance? Better 'Collation' setting?'. LIKE operator ?
@@ -18,9 +18,6 @@ ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
  * force table creation to use NOCASE ? but what about current LOCALIZED then ?
 
 ENHANCE: move Publisher, Location, Format ... to separate tables ?
-
-ENHANCE: finish FTS searching {@link com.eleybourn.bookcatalogue.searches.AdvancedLocalSearchActivity}
- * and {@link #searchFts(String, String, String)}
 
 TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
 
@@ -32,7 +29,9 @@ ENHANCE: XML Exporter / Importer
 TODO: check all activity and fragments and check savedInstanceState versus extras/arguments.
 Not all places save/restore the state when the app is put on pause.
 
-TODO: remove the Apache http client; it's removed from API: 23.
+TODO: remove the Apache http client; it's removed from API: 23. Seems to be a requirement for signpost?
+Signpost claims that the native android HttpURLConnection is buggy... and suggest to always use apache on android
+https://github.com/mttkay/signpost
 
 Issues checked: 812 down to 677 (inc)
 
@@ -65,11 +64,7 @@ FIXME: https://github.com/eleybourn/Book-Catalogue/issues/809 - same as 740
 
 TEST:
 - csv export/import with the new coders.
-- dialog editors without listeners
 - bookshelf with style storage
-- preferences
-- global replace author
-
 
 
 Implemented:

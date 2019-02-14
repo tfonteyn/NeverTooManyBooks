@@ -134,7 +134,7 @@ public class About
         view.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private void sendContactEmail(@StringRes final int stringId) {
+    void sendContactEmail(@StringRes final int stringId) {
         try {
             Intent emailIntent = new Intent(Intent.ACTION_SEND);
             emailIntent.setType("text/plain");

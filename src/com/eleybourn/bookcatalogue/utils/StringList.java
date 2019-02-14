@@ -40,13 +40,18 @@ import java.util.Collection;
  */
 public class StringList<E> {
 
+    /** the default delimiter to use when concatenating elements. */
     private static final char MULTI_STRING_SEPARATOR = '|';
+    /** pre-configured  coder/decoder for Bookshelf elements. */
     @Nullable
     private static StringList<Bookshelf> mBookshelfUtils;
+    /** pre-configured  coder/decoder for Author elements. */
     @Nullable
     private static StringList<Author> mAuthorUtils;
+    /** pre-configured  coder/decoder for Series elements. */
     @Nullable
     private static StringList<Series> mSeriesUtils;
+    /** pre-configured  coder/decoder for TocEntry elements. */
     @Nullable
     private static StringList<TocEntry> mTOCUtils;
 
@@ -321,6 +326,13 @@ public class StringList<E> {
         return list;
     }
 
+    /**
+     * Encode using the standard multi-string delimiter, '|'.
+     *
+     * @param list to convert
+     *
+     * @return Converted string
+     */
     @NonNull
     public String encode(@NonNull final Collection<E> list) {
         return encode(MULTI_STRING_SEPARATOR, list);
@@ -339,7 +351,7 @@ public class StringList<E> {
     public String encode(final char delim,
                          @NonNull final Collection<E> list) {
 
-        return Csv.join(delim, list, new Csv.Formatter<E>() {
+        return Csv.join(String.valueOf(delim), list, new Csv.Formatter<E>() {
             @Override
             public String format(@NonNull final E element) {
                 return mFactory.encode(element);

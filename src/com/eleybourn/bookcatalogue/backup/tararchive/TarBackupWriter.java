@@ -55,7 +55,6 @@ public class TarBackupWriter
      */
     TarBackupWriter(@NonNull final TarBackupContainer container)
             throws IOException {
-        super();
         mContainer = container;
         // Open the archive for writing
         FileOutputStream out = new FileOutputStream(container.getFile());

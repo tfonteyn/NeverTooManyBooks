@@ -61,7 +61,6 @@ public class GoodreadsWork {
      * Constructor.
      */
     public GoodreadsWork() {
-        super();
     }
 
     /**

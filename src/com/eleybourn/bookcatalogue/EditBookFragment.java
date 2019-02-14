@@ -213,21 +213,24 @@ public class EditBookFragment
 
         //noinspection ConstantConditions
         mTabLayout = getView().findViewById(R.id.tab_panel);
-
         mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+
         FragmentHolder fragmentHolder;
 
         fragmentHolder = new FragmentHolder();
         fragmentHolder.fragment = new EditBookFieldsFragment();
         fragmentHolder.tag = EditBookFieldsFragment.TAG;
-        TabLayout.Tab tab = mTabLayout.newTab().setText(R.string.tab_lbl_details).setTag(
-                fragmentHolder);
+        TabLayout.Tab tab = mTabLayout.newTab()
+                                      .setText(R.string.tab_lbl_details)
+                                      .setTag(fragmentHolder);
         mTabLayout.addTab(tab);
 
         fragmentHolder = new FragmentHolder();
         fragmentHolder.fragment = new EditBookNotesFragment();
         fragmentHolder.tag = EditBookNotesFragment.TAG;
-        tab = mTabLayout.newTab().setText(R.string.tab_lbl_notes).setTag(fragmentHolder);
+        tab = mTabLayout.newTab()
+                        .setText(R.string.tab_lbl_notes)
+                        .setTag(fragmentHolder);
         mTabLayout.addTab(tab);
 
         addTOCTab(getBook().isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
@@ -238,7 +241,9 @@ public class EditBookFragment
             fragmentHolder = new FragmentHolder();
             fragmentHolder.fragment = new EditBookLoanedFragment();
             fragmentHolder.tag = EditBookLoanedFragment.TAG;
-            tab = mTabLayout.newTab().setText(R.string.tab_lbl_loan).setTag(fragmentHolder);
+            tab = mTabLayout.newTab()
+                            .setText(R.string.tab_lbl_loan)
+                            .setTag(fragmentHolder);
             mTabLayout.addTab(tab);
         }
 
@@ -383,14 +388,13 @@ public class EditBookFragment
         // ask the currently displayed tab fragment to add it's fields; the others
         // did when they went in hiding
         //ENHANCE: alternative method: see SearchAdminActivity. Decide later
-        //noinspection ConstantConditions
         DataEditor currentChildFragment = (DataEditor) getChildFragmentManager()
                 .findFragmentById(R.id.tab_fragment);
         //noinspection ConstantConditions
         currentChildFragment.saveFieldsTo(book);
 
 
-        // Ignore validation failures; but we still validate to get the current values.
+        // Ignore validation failures; but we still validate to get the current values updated.
         book.validate();
 //        if (!book.validate()) {
 //              StandardDialogs.sendTaskUserMessage(this,
@@ -398,7 +402,7 @@ public class EditBookFragment
 //        }
 
         // However, there is some data that we really do require...
-        if (book.getList(UniqueId.BKEY_AUTHOR_ARRAY).size() == 0) {
+        if (book.getList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
             StandardDialogs.showUserMessage(mActivity, R.string.warning_required_author_long);
             return;
         }

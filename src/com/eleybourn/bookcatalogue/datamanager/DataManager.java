@@ -619,7 +619,7 @@ public class DataManager {
     @SuppressWarnings("unused")
     @Nullable
     public String getValidationExceptionMessage(@NonNull final Resources res) {
-        if (mValidationExceptions.size() == 0) {
+        if (mValidationExceptions.isEmpty()) {
             return null;
         } else {
             StringBuilder message = new StringBuilder();
@@ -666,7 +666,7 @@ public class DataManager {
             Datum datum = super.get(key);
             if (datum == null) {
                 datum = new Datum(key, true);
-                this.put(key, datum);
+                put(key, datum);
             }
             return datum;
         }

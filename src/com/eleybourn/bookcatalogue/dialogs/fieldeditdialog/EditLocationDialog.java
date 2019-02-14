@@ -34,8 +34,7 @@ public class EditLocationDialog
     public EditLocationDialog(@NonNull final Activity activity,
                               @NonNull final DBA db,
                               @NonNull final Runnable onChanged) {
-        super(activity, db, db.getLocations(),
-              onChanged);
+        super(activity, db, db.getLocations(), onChanged);
     }
 
     @CallSuper

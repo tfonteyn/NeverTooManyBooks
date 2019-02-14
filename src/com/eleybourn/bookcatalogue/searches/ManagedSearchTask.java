@@ -24,50 +24,73 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 /**
  * Base class for Web site searches.
  */
-public abstract class ManagedSearchTask
+public class ManagedSearchTask
         extends ManagedTask {
 
+    /** progress title. e.g. "Searching Amazon". */
+    @StringRes
+    private final int mProgressTitleResId;
+
+    @NonNull
+    private final SearchSites.SearchSiteManager mSearchSiteManager;
+
+    /** identifier for this task. */
+    private final int mTaskId;
     /** whether to fetch thumbnails. */
-    protected boolean mFetchThumbnail;
+    private boolean mFetchThumbnail;
     /** search criteria. */
-    protected String mAuthor;
+    private String mAuthor;
     /** search criteria. */
-    protected String mTitle;
+    private String mTitle;
     /** search criteria. */
-    protected String mIsbn;
+    private String mIsbn;
 
     /**
      * Accumulated book info.
      * <p>
      * NEWKIND: if you add a new Search task/site that adds non-string based data,
-     * {@link SearchManager#accumulateData(int)} must be able to handle it.
+     * {@link SearchCoordinator#accumulateData(int)} must be able to handle it.
      */
     @NonNull
-    protected Bundle mBookData = new Bundle();
+    private Bundle mBookData = new Bundle();
 
     /**
      * Constructor. Will search according to passed parameters. If an ISBN
      * is provided that will be used to the exclusion of all others.
      *
-     * @param name    of this thread
-     * @param manager TaskHandler implementation
+     * @param taskId     identifier for this task.
+     * @param threadName name for the thread
+     * @param manager    TaskHandler implementation
      */
-    protected ManagedSearchTask(@NonNull final String name,
-                                @NonNull final TaskManager manager) {
-        super(name, manager);
+    ManagedSearchTask(final int taskId,
+                      @NonNull final String threadName,
+                      @NonNull final TaskManager manager,
+                      @StringRes final int progressTitleResId,
+                      @NonNull final SearchSites.SearchSiteManager searchSiteManager) {
+        super(threadName, manager);
+        mTaskId = taskId;
+        mProgressTitleResId = progressTitleResId;
+        mSearchSiteManager = searchSiteManager;
     }
 
     /**
@@ -95,16 +118,73 @@ public abstract class ManagedSearchTask
     }
 
     /**
-     * @param fetchThumbnail set to <tt>true</tt> if you want thumbnails to be fetched.
+     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
      */
     public void setFetchThumbnail(final boolean fetchThumbnail) {
         mFetchThumbnail = fetchThumbnail;
     }
 
     /**
+     * Accessor, so when thread has finished, data can be retrieved.
+     * <p>
+     *
+     * @return a Bundle containing standard Book fields AND specific site fields.
+     */
+    @NonNull
+    Bundle getBookData() {
+        return mBookData;
+    }
+
+    /**
      * @return an identifier for this task.
      */
-    public abstract int getSearchId();
+    int getTaskId() {
+        return mTaskId;
+    }
+
+    @Override
+    @WorkerThread
+    protected void runTask() {
+
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, "runTask", getString(mProgressTitleResId));
+        }
+        // keys? site up? etc...
+        if (!mSearchSiteManager.isAvailable()) {
+            setFinalError(mProgressTitleResId, R.string.error_not_available);
+            return;
+        }
+
+        mTaskManager.sendTaskProgressMessage(this, mProgressTitleResId, 0);
+
+        try {
+            // manager checks the arguments
+            mBookData = mSearchSiteManager.search(mIsbn, mAuthor, mTitle, mFetchThumbnail);
+            if (!mBookData.isEmpty()) {
+                // Look for series name in the book title and clean KEY_TITLE
+                checkForSeriesNameInTitle();
+            }
+
+        } catch (AuthorizationException e) {
+            Logger.error(e);
+            // authorization exception has a user suitable message
+            setFinalError(mProgressTitleResId, e.getLocalizedMessage());
+
+        } catch (java.net.SocketTimeoutException e) {
+            Logger.info(this, e.getLocalizedMessage());
+            setFinalError(mProgressTitleResId, R.string.error_network_timeout);
+        } catch (MalformedURLException | UnknownHostException e) {
+            Logger.error(e);
+            setFinalError(mProgressTitleResId, R.string.error_search_configuration);
+        } catch (IOException e) {
+            Logger.error(e);
+            setFinalError(mProgressTitleResId, R.string.error_search_failed);
+        } catch (RuntimeException e) {
+            // unknown e
+            Logger.error(e);
+            setFinalError(mProgressTitleResId, e);
+        }
+    }
 
     @Override
     protected void onTaskFinish() {
@@ -114,7 +194,7 @@ public abstract class ManagedSearchTask
     /**
      * Look for a title; if present try to get a series name from it and clean the title.
      */
-    protected void checkForSeriesNameInTitle() {
+    private void checkForSeriesNameInTitle() {
         String bookTitle = mBookData.getString(UniqueId.KEY_TITLE);
         if (bookTitle != null) {
             SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
@@ -138,10 +218,30 @@ public abstract class ManagedSearchTask
     }
 
     /**
+     * Show a 'known' error after task finish, without the dreaded exception message.
+     */
+    private void setFinalError(@StringRes final int id,
+                               @NonNull final String error) {
+        mFinalMessage = String.format(getString(R.string.error_search_exception),
+                                      getString(id),
+                                      error);
+    }
+
+    /**
+     * Show a 'known' error after task finish, without the dreaded exception message.
+     */
+    private void setFinalError(@StringRes final int id,
+                               @StringRes final int error) {
+        mFinalMessage = String.format(getString(R.string.error_search_exception),
+                                      getString(id),
+                                      getString(error));
+    }
+
+    /**
      * Show an unexpected exception message after task finish.
      */
-    protected void setFinalError(@StringRes final int id,
-                                 @NonNull final Exception e) {
+    private void setFinalError(@StringRes final int id,
+                               @NonNull final Exception e) {
         String s;
         try {
             s = e.getLocalizedMessage();
@@ -149,25 +249,5 @@ public abstract class ManagedSearchTask
             s = e2.getClass().getCanonicalName();
         }
         mFinalMessage = String.format(getString(R.string.error_search_exception), getString(id), s);
-    }
-
-    /**
-     * Show a 'known' error after task finish, without the dreaded exception message.
-     */
-    protected void setFinalError(@StringRes final int id,
-                                 @StringRes final int error) {
-        mFinalMessage = String.format(getString(R.string.error_search_exception), getString(id),
-                                      error);
-    }
-
-    /**
-     * Accessor, so when thread has finished, data can be retrieved.
-     * <p>
-     *
-     * @return a Bundle containing standard Book fields AND specific site fields.
-     */
-    @NonNull
-    Bundle getBookData() {
-        return mBookData;
     }
 }

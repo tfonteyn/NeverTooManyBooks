@@ -65,8 +65,8 @@
     </string-array>
 
     <!-- Preference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Περικοπή μικρογραφίας \'Layer Type\'</string>
-    <string name="pt_hint_layer_type">Αφήστε αυτή τη ρύθμιση στην προεπιλεγμένη τιμή, εκτός εάν παρουσιάσετε σφάλματα κατά την περικοπή εικόνων. Δοκιμάστε το \'Λογισμικό\' για ασφαλέστερο αλλά πιο αργό ή για \'υλισμικό\' για λιγότερο ασφαλές αλλά πιο γρήγορο</string>
+    <string name="pt_thumbnail_cropper_layer_type">Περικοπή μικρογραφίας \‘Layer Type\’</string>
+    <string name="pt_hint_layer_type">Αφήστε αυτή τη ρύθμιση στην προεπιλεγμένη τιμή, εκτός εάν παρουσιάσετε σφάλματα κατά την περικοπή εικόνων. Δοκιμάστε το \‘Λογισμικό\’ για ασφαλέστερο αλλά πιο αργό ή για \‘υλισμικό\’ για λιγότερο ασφαλές αλλά πιο γρήγορο</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Προεπιλεγμένη τιμή</item>
         <item>υλισμικό</item>
@@ -144,8 +144,8 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Μορφή του ονόματος συγγραφέα</string>
-    <string name="pv_bob_format_author_name_given_first">Μικρό όνομα πρώτα πχ \'Bill Smith\'</string>
-    <string name="pv_bob_format_author_name_family_first">Επώνυμο πρώτα πχ \'Smith, Bill\'</string>
+    <string name="pv_bob_format_author_name_given_first">Μικρό όνομα πρώτα πχ \‘Bill Smith\’</string>
+    <string name="pv_bob_format_author_name_family_first">Επώνυμο πρώτα πχ \‘Smith, Bill\’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Ταξινόμηση δημιουργών</string>

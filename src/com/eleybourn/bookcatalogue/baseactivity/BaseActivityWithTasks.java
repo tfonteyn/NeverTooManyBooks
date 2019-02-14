@@ -187,8 +187,8 @@ public abstract class BaseActivityWithTasks
     public TaskManager getTaskManager() {
         if (mTaskManager == null) {
             if (mTaskManagerId != 0) {
-                TaskManagerController controller =
-                        TaskManager.getMessageSwitch().getController(mTaskManagerId);
+                TaskManagerController controller = TaskManager.getMessageSwitch()
+                                                              .getController(mTaskManagerId);
                 if (controller != null) {
                     mTaskManager = controller.getTaskManager();
                 } else {

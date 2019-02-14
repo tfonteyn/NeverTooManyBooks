@@ -2,12 +2,13 @@ package com.eleybourn.bookcatalogue.backup.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
-import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask;
+import com.eleybourn.bookcatalogue.filechooser.FileListerAsyncTask;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -19,8 +20,8 @@ import java.util.ArrayList;
  *
  * @author pjw
  */
-public class BackupListerFragmentTask
-        extends FileListerFragmentTask {
+public class BackupListerTask
+        extends FileListerAsyncTask {
 
     /**
      * Construct a file filter to select only directories and backup files.
@@ -38,8 +39,10 @@ public class BackupListerFragmentTask
      *
      * @param root folder to list
      */
-    BackupListerFragmentTask(@NonNull final File root) {
-        super(root);
+    BackupListerTask(final int taskId,
+                     @NonNull final FragmentActivity context,
+                     @NonNull final File root) {
+        super(taskId, context, root);
     }
 
     /**

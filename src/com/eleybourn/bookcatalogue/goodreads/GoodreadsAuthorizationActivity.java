@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
 
@@ -52,7 +51,6 @@ public class GoodreadsAuthorizationActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // Get the payload and make sure it is what we expect
@@ -64,7 +62,6 @@ public class GoodreadsAuthorizationActivity
             // Goodreads does not set the verifier...but we may as well check for it.
             // The verifier was added in API version 1.0A, and Goodreads seems to
             // implement 1.0.
-
             //String verifier = uri.getQueryParameter("oauth_verifier");
 
             // Handle the auth response by passing it off to a background task to check.
@@ -79,7 +76,5 @@ public class GoodreadsAuthorizationActivity
         bcTop.addCategory(Intent.CATEGORY_LAUNCHER);
         startActivity(bcTop);
         finish();
-
-        Tracker.exitOnCreate(this);
     }
 }

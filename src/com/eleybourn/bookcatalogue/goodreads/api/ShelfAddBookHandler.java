@@ -23,8 +23,8 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
@@ -97,7 +97,7 @@ public class ShelfAddBookHandler
     public long add(@NonNull final String shelfName,
                     final long grBookId)
             throws IOException,
-                   NotAuthorizedException,
+                   AuthorizationException,
                    BookNotFoundException {
 
         return doCall(shelfName, grBookId, false);
@@ -110,7 +110,7 @@ public class ShelfAddBookHandler
     public long remove(@NonNull final String shelfName,
                        final long grBookId)
             throws IOException,
-                   NotAuthorizedException,
+                   AuthorizationException,
                    BookNotFoundException {
 
         return doCall(shelfName, grBookId, true);
@@ -123,7 +123,7 @@ public class ShelfAddBookHandler
                         final long grBookId,
                         final boolean isRemove)
             throws IOException,
-                   NotAuthorizedException,
+                   AuthorizationException,
                    BookNotFoundException {
 
         mReviewId = 0;
@@ -151,7 +151,6 @@ public class ShelfAddBookHandler
      * Build filters to process typical output.
      */
     private void buildFilters() {
-
         // We only care about review-id:
         XmlFilter.buildFilter(mRootFilter, XML_SHELF, XML_REVIEW_ID)
                  .setEndAction(mHandleReviewId);

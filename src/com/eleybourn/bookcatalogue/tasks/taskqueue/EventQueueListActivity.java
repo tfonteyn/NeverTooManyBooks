@@ -111,7 +111,6 @@ public class EventQueueListActivity
                                     });
         } else {
             // Just display context menu
-            //noinspection ConstantConditions
             doContextMenu(parent, v, event, position, id);
         }
     }

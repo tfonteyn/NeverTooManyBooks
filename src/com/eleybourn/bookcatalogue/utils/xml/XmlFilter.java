@@ -100,7 +100,7 @@ public class XmlFilter {
     @NonNull
     static XmlFilter buildFilter(@NonNull final XmlFilter root,
                                  @NonNull final List<String> filters) {
-        if (filters.size() <= 0) {
+        if (filters.isEmpty()) {
             throw new IllegalArgumentException("no filters");
         }
         return buildFilter(root, 0, filters.iterator());

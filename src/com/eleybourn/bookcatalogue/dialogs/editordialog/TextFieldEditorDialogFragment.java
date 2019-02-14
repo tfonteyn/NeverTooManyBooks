@@ -177,7 +177,7 @@ public class TextFieldEditorDialogFragment
                     new View.OnClickListener() {
                         @Override
                         public void onClick(@NonNull final View v) {
-                            TextFieldEditorDialogFragment.this.reportChanges(getText());
+                            reportChanges(getText());
                         }
                     }
             );

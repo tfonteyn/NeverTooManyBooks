@@ -32,7 +32,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -53,61 +52,44 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Catalogue search based on the SQLite FTS engine. Due to the speed of FTS it updates the
- * number of hits more or less in real time. The user can choose to see a full list at any
- * time.
+ * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
+ * number of hits more or less in real time. The user can choose to see a full list at any time.
  * <p>
- * ENHANCE: Finish ! FTS activity.
+ * The form allows entering free text, author, title.
+ * <p>
+ * The search gets the id's of matching books, and returns this list when the 'show' button
+ * is tapped. *Only* this list is returned; the original fields are not.
  *
  * @author Philip Warner
  */
-public class AdvancedLocalSearchActivity
+public class FTSSearchActivity
         extends BaseActivity {
 
     /** create timer to tick every 250ms. */
     private static final int TIMER_TICK = 250;
     /** Handle inter-thread messages. */
     private final Handler mSCHandler = new Handler();
-    private EditText mAuthorView;
-    private EditText mTitleView;
-    private EditText mCSearchView;
+    /** the database connection. */
     private DBA mDb;
-    /** Handle the 'FTS Rebuild' button. */
-    private final OnClickListener mFtsRebuildListener = new OnClickListener() {
-        @Override
-        public void onClick(@NonNull final View v) {
-            mDb.rebuildFts();
-        }
-    };
+
+    /** search field. */
+    private EditText mAuthorView;
+    /** search field. */
+    private EditText mTitleView;
+    /** search field. */
+    private EditText mCSearchView;
+    /** show the number of results. */
     private TextView mBooksFound;
+    /** The results list. */
     private ArrayList<Integer> mBookIdsFound;
-    /** Handle the 'Search' button. */
-    private final OnClickListener mShowResultsListener = new OnClickListener() {
-        @Override
-        public void onClick(@NonNull final View v) {
-            Intent data = new Intent();
-            data.putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
-            setResult(Activity.RESULT_OK, data);
-            finish();
-        }
-    };
     /** Indicates user has changed something since the last search. */
-    private boolean mSearchDirty;
+    private boolean mSearchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
     private long mIdleStart;
     /** Timer object for background idle searches. */
     @Nullable
     private Timer mTimer;
 
-    /** Detect when user touches something, just so we know they are 'busy'. */
-    private final OnTouchListener mOnTouchListener = new OnTouchListener() {
-        @Override
-        public boolean onTouch(@NonNull final View v,
-                               @NonNull final MotionEvent event) {
-            userIsActive(false);
-            return false;
-        }
-    };
     /**
      * Detect text changes and call userIsActive(...).
      */
@@ -167,19 +149,39 @@ public class AdvancedLocalSearchActivity
 
         mBooksFound = findViewById(R.id.books_found);
 
-        // If the user touches anything, it's not idle
-        findViewById(R.id.root).setOnTouchListener(mOnTouchListener);
+        // Detect when user touches something, just so we know they are 'busy'.
+        findViewById(R.id.root).setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(@NonNull final View v,
+                                   @NonNull final MotionEvent event) {
+                userIsActive(false);
+                return false;
+            }
+        });
 
         // If the user changes any text, it's not idle
         mAuthorView.addTextChangedListener(mTextWatcher);
         mTitleView.addTextChangedListener(mTextWatcher);
         mCSearchView.addTextChangedListener(mTextWatcher);
 
-        // Handle button presses
-        Button ftsRebuildBtn = findViewById(R.id.rebuild);
-        ftsRebuildBtn.setOnClickListener(mFtsRebuildListener);
-        Button showResultsBtn = findViewById(R.id.search);
-        showResultsBtn.setOnClickListener(mShowResultsListener);
+        // Handle the 'FTS Rebuild' button.
+        findViewById(R.id.rebuild).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                mDb.rebuildFts();
+            }
+        });
+
+        // Handle the 'Search' button.
+        findViewById(R.id.search).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                Intent data = new Intent();
+                data.putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
+                setResult(Activity.RESULT_OK, data);
+                finish();
+            }
+        });
 
         // Note: Timer will be started in OnResume().
         Tracker.exitOnCreate(this);
@@ -190,7 +192,7 @@ public class AdvancedLocalSearchActivity
      */
     private void startIdleTimer() {
         // Synchronize since this is relevant to more than 1 thread.
-        synchronized (AdvancedLocalSearchActivity.this) {
+        synchronized (FTSSearchActivity.this) {
             if (mTimer != null) {
                 return;
             }
@@ -207,7 +209,7 @@ public class AdvancedLocalSearchActivity
     private void stopIdleTimer() {
         Timer tmr;
         // Synchronize since this is relevant to more than 1 thread.
-        synchronized (AdvancedLocalSearchActivity.this) {
+        synchronized (FTSSearchActivity.this) {
             tmr = mTimer;
             mTimer = null;
         }
@@ -234,8 +236,11 @@ public class AdvancedLocalSearchActivity
         try (Cursor cursor = mDb.searchFts(author, title, criteria)) {
             if (cursor != null) {
                 int count = cursor.getCount();
-                t0 = System.currentTimeMillis() - t0;
-                tmpMsg = "(" + count + " books found in " + t0 + "ms)";
+                tmpMsg = getString(R.string.books_found, String.valueOf(count));
+                if (BuildConfig.DEBUG) {
+                    t0 = System.currentTimeMillis() - t0;
+                    tmpMsg += "  in " + t0 + "ms)";
+                }
                 mBookIdsFound = new ArrayList<>();
                 while (cursor.moveToNext()) {
                     mBookIdsFound.add(cursor.getInt(0));
@@ -243,7 +248,7 @@ public class AdvancedLocalSearchActivity
 
             } else if (BuildConfig.DEBUG) {
                 // Null return means searchFts thought parameters were effectively blank
-                tmpMsg = "(enter search criteria)";
+                tmpMsg = "(dbg enter search criteria)";
             }
         } catch (RuntimeException e) {
             Logger.error(e);
@@ -267,15 +272,15 @@ public class AdvancedLocalSearchActivity
      */
     @SuppressLint("SetTextI18n")
     private void userIsActive(final boolean dirty) {
-        synchronized (AdvancedLocalSearchActivity.this) {
+        synchronized (FTSSearchActivity.this) {
             // Mark search dirty if necessary
-            mSearchDirty = mSearchDirty || dirty;
+            mSearchIsDirty = mSearchIsDirty || dirty;
             // Reset the idle timer since the user did something
             mIdleStart = System.currentTimeMillis();
             // If the search is dirty, make sure idle timer is running and update UI
-            if (mSearchDirty) {
+            if (mSearchIsDirty) {
                 if (BuildConfig.DEBUG) {
-                    mBooksFound.setText("(waiting for idle)");
+                    mBooksFound.setText("(dbg waiting for idle)");
                 }
                 startIdleTimer();
             }
@@ -327,15 +332,15 @@ public class AdvancedLocalSearchActivity
         public void run() {
             boolean doSearch = false;
             // Synchronize since this is relevant to more than 1 thread.
-            synchronized (AdvancedLocalSearchActivity.this) {
+            synchronized (FTSSearchActivity.this) {
                 long timeNow = System.currentTimeMillis();
                 boolean idle = (timeNow - mIdleStart) > 1000;
                 if (idle) {
                     // Stop the timer, it will be restarted if the user changes something
                     stopIdleTimer();
-                    if (mSearchDirty) {
+                    if (mSearchIsDirty) {
                         doSearch = true;
-                        mSearchDirty = false;
+                        mSearchIsDirty = false;
                     }
                 }
             }

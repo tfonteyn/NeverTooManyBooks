@@ -15,6 +15,7 @@ import java.util.List;
  * <p>
  * Typical request output:
  * <pre>
+ *     {@code
  *   <?xml version="1.0" encoding="utf-8"?>
  *   <idlist>
  *     <isbn>0380014300</isbn>
@@ -24,6 +25,7 @@ import java.util.List;
  *     ...etc...
  *     <isbn>2207301907</isbn>
  *   </idlist>
+ *   }
  * </pre>
  *
  * @author Philip Warner

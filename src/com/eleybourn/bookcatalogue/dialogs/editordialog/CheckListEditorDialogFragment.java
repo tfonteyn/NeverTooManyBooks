@@ -162,7 +162,7 @@ public class CheckListEditorDialogFragment<T>
                     new View.OnClickListener() {
                         @Override
                         public void onClick(@NonNull final View v) {
-                            CheckListEditorDialogFragment.this.reportChanges(mList);
+                            reportChanges(mList);
                         }
                     }
             );
@@ -209,7 +209,6 @@ public class CheckListEditorDialogFragment<T>
         public void onCheckedChanged(final CompoundButton buttonView,
                                      final boolean isChecked) {
             CheckListItem item = (CheckListItem) buttonView.getTag(R.id.TAG_DIALOG_ITEM);
-            //noinspection ConstantConditions
             item.setSelected(isChecked);
         }
     }

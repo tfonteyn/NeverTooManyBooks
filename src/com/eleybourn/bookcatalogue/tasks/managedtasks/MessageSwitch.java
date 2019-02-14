@@ -90,9 +90,9 @@ public class MessageSwitch<T, U> {
      */
     @NonNull
     public Long createSender(@NonNull final U controller) {
-        MessageSender<U> s = new MessageSenderImpl(controller);
-        mSenders.put(s.getId(), s);
-        return s.getId();
+        MessageSender<U> sender = new MessageSenderImpl(controller);
+        mSenders.put(sender.getId(), sender);
+        return sender.getId();
     }
 
     /**
@@ -479,7 +479,7 @@ public class MessageSwitch<T, U> {
         @Override
         public void close() {
             synchronized (mSenders) {
-                MessageSwitch.this.removeSender(this);
+                removeSender(this);
             }
         }
     }

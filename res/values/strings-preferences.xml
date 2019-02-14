@@ -115,7 +115,7 @@
     <!-- Preference - Compatibility / bug workaround for some devices -->
     <string name="pt_thumbnail_cropper_layer_type">Cropper Layer Type</string>
     <string name="pk_thumbnail_cropper_layer_type" translatable="false">Image.ViewLayerType</string>
-    <string name="pt_hint_layer_type">Leave this setting on \'Use default\' unless you experience crashes while cropping images. Try \'Software\' for safer but slower or force \'Hardware\' for less safe, but faster</string>
+    <string name="pt_hint_layer_type">Leave this setting on \‘Use default\’ unless you experience crashes while cropping images. Try \‘Software\’ for safer but slower or force \‘Hardware\’ for less safe, but faster</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Use default</item>
         <item>Hardware</item>
@@ -250,8 +250,8 @@
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Format of author names</string>
     <string name="pk_bob_format_author_name" translatable="false">BookList.Style.Group.Authors.DisplayFirstThenLast</string>
-    <string name="pv_bob_format_author_name_given_first">Given name first eg. \'Bill Smith\'</string>
-    <string name="pv_bob_format_author_name_family_first">Family name first eg. \'Smith, Bill\'</string>
+    <string name="pv_bob_format_author_name_given_first">Given name first eg. \‘Bill Smith\’</string>
+    <string name="pv_bob_format_author_name_family_first">Family name first eg. \‘Smith, Bill\’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Sorting of author names</string>

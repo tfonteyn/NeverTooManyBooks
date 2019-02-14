@@ -1,0 +1,29 @@
+package com.eleybourn.bookcatalogue.utils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
+
+/**
+ * Note that the exception message can/will be shown to the end-user.
+ */
+public class AuthorizationException
+        extends Exception {
+
+    private static final long serialVersionUID = 1029975248988349668L;
+
+    public AuthorizationException(@StringRes final int site) {
+        super(BookCatalogueApp.getResString(R.string.error_authorization_failed, site), null);
+    }
+
+    public AuthorizationException(@StringRes final int site,
+                                  @NonNull final Throwable inner) {
+        super(BookCatalogueApp.getResString(R.string.error_authorization_failed, site), inner);
+    }
+
+    public AuthorizationException(final String message) {
+        super(message);
+    }
+}

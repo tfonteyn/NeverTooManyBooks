@@ -65,8 +65,8 @@
     </string-array>
 
     <!-- Preference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Recortar \'Layer Type\'</string>
-    <string name="pt_hint_layer_type">Deje esta configuración en el valor predeterminado a menos que experimente bloqueos al recortar imágenes. Pruebe \'Software\' para un método más seguro pero más lento o fuerce \'Hardware\' para que sea menos seguro, pero más rápido</string>
+    <string name="pt_thumbnail_cropper_layer_type">Recortar \‘Layer Type\’</string>
+    <string name="pt_hint_layer_type">Deje esta configuración en el valor predeterminado a menos que experimente bloqueos al recortar imágenes. Pruebe \‘Software\’ para un método más seguro pero más lento o fuerce \‘Hardware\’ para que sea menos seguro, pero más rápido</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Valor por defecto</item>
         <item>Hardware</item>
@@ -145,8 +145,8 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Formato para nombres de autor</string>
-    <string name="pv_bob_format_author_name_given_first">Nombre primero, por ejemplo \'Antonio García\'</string>
-    <string name="pv_bob_format_author_name_family_first">Apellido primero, por ejemplo \'García, Antonio\'</string>
+    <string name="pv_bob_format_author_name_given_first">Nombre primero, por ejemplo \‘Antonio García\’</string>
+    <string name="pv_bob_format_author_name_family_first">Apellido primero, por ejemplo \‘García, Antonio\’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Ordenar autores</string>

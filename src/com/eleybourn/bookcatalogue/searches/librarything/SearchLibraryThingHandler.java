@@ -22,181 +22,197 @@ import java.util.ArrayList;
  * A typical (and thorough) LibraryThing ISBN response looks like:
  *
  * <pre>
- * <?xml version="1.0" encoding="UTF-8"?>
- * <response stat="ok">
- * <ltml xmlns="http://www.librarything.com/" version="1.1">
- * <item id="5196084" type="work">
- * <author id="28" authorcode="asimovisaac">Isaac Asimov</author>
- * <url>http://www.librarything.com/work/5196084</url>
- * <commonknowledge>
- * <fieldList>
- * <field type="4" name="awards" displayName="Awards and honors">
- * <versionList>
- * <version id="3324305" archived="0" lang="eng">
- * <date timestamp="1296476301">Mon, 31 Jan 2011 07:18:21 -0500</date>
- * <person id="325052"><name>Cecrow</name><url>http://www.librarything.com/profile/Cecrow</url></person>
- * <factList>
- * <fact>1001 Books You Must Read Before You Die (2006/2008/2010 Edition)</fact>
- * <fact>Astounding/Analog Science Fiction and Fact All-Time Poll (placed 23, 1952)</fact>
- * <fact>Astounding/Analog Science Fiction and Fact All-Time Poll (placed 21, 1956)</fact>
- * <fact>Harenberg Buch der 1000 B�cher (1. Ausgabe)</fact>
- * <fact>501 Must-Read Books (Science Fiction)</fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * <field type="37" name="movies" displayName="Related movies">
- * <versionList>
- * <version id="3120269" archived="0" lang="eng">
- * <date timestamp="1292202792">Sun, 12 Dec 2010 20:13:12 -0500</date>
- * <person id="656066">
- * <name>Scottneumann</name>
- * <url>http://www.librarything.com/profile/Scottneumann</url>
- * </person>
- * <factList>
- * <fact>Robots (1988 | tt0174170)</fact>
- * <fact>I, Robot (2004 | tt0343818)</fact>
- * <fact>The Outer Limits: I Robot (1963 | tt0056777)</fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * <field type="40" name="publisherseries" displayName="Publisher Series">
- * <versionList>
- * <version id="2971007" archived="0" lang="eng">
- * <date timestamp="1289497446">Thu, 11 Nov 2010 12:44:06 -0500</date>
- * <person id="3929">
- * <name>sonyagreen</name>
- * <url>http://www.librarything.com/profile/sonyagreen</url>
- * </person>
- * <factList>
- * <fact>Voyager Classics</fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * <field type="14" name="description" displayName="Description">
- * <versionList>
- * <version id="2756634" archived="0" lang="eng">
- * <date timestamp="1281897478">Sun, 15 Aug 2010 14:37:58 -0400</date>
- * <person id="203279">
- * <name>jseger9000</name>
- * <url>http://www.librarything.com/profile/jseger9000</url>
- * </person>
- * <factList>
- * <fact>&lt;![CDATA[ Contents:&lt;br&gt;&lt;br&gt;Introduction&lt;br&gt;Robbie&lt;br&gt;Runaround&lt
- * ;br&gt;Reason&lt;br&gt;Catch That Rabbit&lt;br&gt;Liar!&lt;br&gt;Little Lost Robot&lt
- * ;br&gt;Escape!&lt;br&gt;Evidence&lt;br&gt;The Evitable Conflict ]]&gt;
- * </fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * <field type="23" name="series" displayName="Series">
- * <versionList>
- * <version id="2742329" archived="0" lang="eng">
- * <date timestamp="1281338643">Mon, 09 Aug 2010 03:24:03 -0400</date>
- * <person id="1162290">
- * <name>larry.auld</name>
- * <url>http://www.librarything.com/profile/larry.auld</url>
- * </person>
- * <factList>
- * <fact>Isaac Asimov's Robot Series (0.1)</fact>
- * <fact>Robot/Foundation</fact>
- * <fact>Robot/Empire/Foundation - Chronological (book 1)</fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * <field type="16" name="originalpublicationdate" displayName="Original publication date">
- * <versionList>
- * <version id="2554955" archived="0" lang="eng">
- * <date timestamp="1275746736">Sat, 05 Jun 2010 10:05:36 -0400</date>
- * <person id="125174">
- * <name>paulhurtley</name>
- * <url>http://www.librarything.com/profile/paulhurtley</url>
- * </person>
- * <factList>
- * <fact>1950 (Collection)</fact>
- * <fact>1944 (Catch that Rabbit)</fact>
- * <fact>1945 (Escape!)</fact>
- * <fact>1946 (Evidence)</fact>
- * <fact>1950 (The Evitable Conflict)</fact>
- * <fact>1941  (Liar)</fact>
- * <fact>1947  (Little Lost Robot)</fact>
- * <fact>1940  (Robbie)</fact>
- * <fact>1942  (Runaround)</fact>
- * <fact>1941  (Reason)</fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * <field type="27" name="quotations" displayName="Quotations">
- * <versionList>
- * <version id="2503597" archived="0" lang="eng">
- * <date timestamp="1274377341">Thu, 20 May 2010 13:42:21 -0400</date>
- * <person id="1797">
- * <name>lorax</name>
- * <url>http://www.librarything.com/profile/lorax</url>
- * </person>
- * <factList>
- * <fact>&lt;![CDATA[ The Three Laws of Robotics
- * 1. A robot may not injure a human being, or, through inaction, allow a human being to come to harm.
- * 2. A robot must obey the orders given it by human beings except where such orders would conflict
- * with the First Law.
- * 3. A robot must protect its own existence as long as such protection does not conflict with the
- * First or Second Law.  ]]&gt;
- * </fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * <field type="30" name="dedication" displayName="Dedication">
- * <versionList>
- * <version id="2503596" archived="0" lang="eng">
- * <date timestamp="1274377341">Thu, 20 May 2010 13:42:21 -0400</date>
- * <person id="1797">
- * <name>lorax</name>
- * <url>http://www.librarything.com/profile/lorax</url>
- * </person>
- * <factList>
- * <fact>&lt;![CDATA[ To John W. Campbell, Jr., who godfathered the robots ]]&gt;</fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * <field type="26" name="lastwords" displayName="Last words">
- * <versionList>
- * <version id="2503594" archived="0" lang="eng">
- * <date timestamp="1274377340">Thu, 20 May 2010 13:42:20 -0400</date>
- * <person id="1797">
- * <name>lorax</name>
- * <url>http://www.librarything.com/profile/lorax</url>
- * </person>
- * <factList>
- * <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Well," said Mrs. Weston, at last, "I guess he can stay with us until he rusts." ]]&gt;</fact>
- * <fact>&lt;![CDATA[ Runaround:&lt;br&gt;"Space Station," said Donovan, "here I come." ]]&gt;</fact>
- * <fact>&lt;![CDATA[ Reason"&lt;br&gt;He grinned � and went into the ship.  Muller would be here for several weeks � ]]&gt;</fact>
- * <fact>&lt;![CDATA[ Catch That Rabbit:&lt;br&gt;****&lt;br&gt;**** too spoilerish! ]]&gt;</fact>
- * <fact>&lt;![CDATA[ Liar:&lt;br&gt;"Liar!" ]]&gt;</fact>
- * <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;"� His very superiority caught him.  Good-by General" ]]&gt;</fact>
- * <fact>&lt;![CDATA[ Escape:&lt;br&gt;To which Bogert added absently, "Strictly according to the contract, too." ]]&gt;</fact>
- * <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Stephen Byerley chuckled.  "I must reply that that is a somewhat farfetched idea."&lt;br&gt;The door closed behind her. ]]&gt;</fact>
- * <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;And the fire behind the quartz went out and only a curl of smoke was left to indicate its place. ]]&gt;</fact>
- * <fact>&lt;![CDATA[ &lt;i&gt;She died last month at the age of eighty-two.&lt;/i&gt; ]]&gt;</fact>
- * </factList>
- * </version>
- * </versionList>
- * </field>
- * <field type="25" name="firstwords" displayName="First words">
- * <versionList>
- * <version id="2503593" archived="0" lang="eng">
- * <date timestamp="1274377340">Thu, 20 May 2010 13:42:20 -0400</date>
- * <person id="1797">
- * <name>lorax</name>
- * <url>http://www.librarything.com/profile/lorax</url>
- * </person>
- * <factList>
+ * {@code
+ *  <?xml version="1.0" encoding="UTF-8"?>
+ *    <response stat="ok">
+ *    <ltml xmlns="http://www.librarything.com/" version="1.1">
+ *    <item id="5196084" type="work">
+ *      <author id="28" authorcode="asimovisaac">Isaac Asimov</author>
+ *      <url>http://www.librarything.com/work/5196084</url>
+ *      <commonknowledge>
+ *        <fieldList>
+ *          <field type="4" name="awards" displayName="Awards and honors">
+ *            <versionList>
+ *              <version id="3324305" archived="0" lang="eng">
+ *                <date timestamp="1296476301">Mon, 31 Jan 2011 07:18:21 -0500</date>
+ *                <person id="325052"><name>Cecrow</name><url>http://www.librarything.com/profile/Cecrow</url></person>
+ *                <factList>
+ *                  <fact>1001 Books You Must Read Before You Die (2006/2008/2010 Edition)</fact>
+ *                  <fact>Astounding/Analog Science Fiction and Fact All-Time Poll (placed 23, 1952)</fact>
+ *                  <fact>Astounding/Analog Science Fiction and Fact All-Time Poll (placed 21, 1956)</fact>
+ *                  <fact>Harenberg Buch der 1000 B�cher (1. Ausgabe)</fact>
+ *                  <fact>501 Must-Read Books (Science Fiction)</fact>
+ *                </factList>
+ *              </version>
+ *            </versionList>
+ *          </field>
+ *          <field type="37" name="movies" displayName="Related movies">
+ *            <versionList>
+ *              <version id="3120269" archived="0" lang="eng">
+ *                <date timestamp="1292202792">Sun, 12 Dec 2010 20:13:12 -0500</date>
+ *                <person id="656066">
+ *                  <name>Scottneumann</name>
+ *                  <url>http://www.librarything.com/profile/Scottneumann</url>
+ *                </person>
+ *                <factList>
+ *                  <fact>Robots (1988 | tt0174170)</fact>
+ *                  <fact>I, Robot (2004 | tt0343818)</fact>
+ *                  <fact>The Outer Limits: I Robot (1963 | tt0056777)</fact>
+ *                </factList>
+ *              </version>
+ *            </versionList>
+ *          </field>
+ *          <field type="40" name="publisherseries" displayName="Publisher Series">
+ *            <versionList>
+ *              <version id="2971007" archived="0" lang="eng">
+ *                <date timestamp="1289497446">Thu, 11 Nov 2010 12:44:06 -0500</date>
+ *                <person id="3929">
+ *                  <name>sonyagreen</name>
+ *                  <url>http://www.librarything.com/profile/sonyagreen</url>
+ *                </person>
+ *                <factList>
+ *                  <fact>Voyager Classics</fact>
+ *                </factList>
+ *              </version>
+ *            </versionList>
+ *          </field>
+ *          <field type="14" name="description" displayName="Description">
+ *            <versionList>
+ *              <version id="2756634" archived="0" lang="eng">
+ *                <date timestamp="1281897478">Sun, 15 Aug 2010 14:37:58 -0400</date>
+ *                <person id="203279">
+ *                  <name>jseger9000</name>
+ *                  <url>http://www.librarything.com/profile/jseger9000</url>
+ *                </person>
+ *                <factList>
+ *                  <fact>&lt;![CDATA[ Contents:&lt;br&gt;&lt;br&gt;Introduction&lt;br
+ *                    &gt;Robbie&lt;br&gt;Runaround&lt;br&gt;Reason&lt;br&gt;Catch That Rabbit&lt;
+ *                    br&gt;Liar!&lt;br&gt;Little Lost Robot&lt;br&gt;Escape!&lt;br
+ *                    &gt;Evidence&lt;br&gt;The Evitable Conflict ]]&gt;
+ *                  </fact>
+ *                </factList>
+ *              </version>
+ *            </versionList>
+ *          </field>
+ *          <field type="23" name="series" displayName="Series">
+ *            <versionList>
+ *              <version id="2742329" archived="0" lang="eng">
+ *                <date timestamp="1281338643">Mon, 09 Aug 2010 03:24:03 -0400</date>
+ *                <person id="1162290">
+ *                  <name>larry.auld</name>
+ *                  <url>http://www.librarything.com/profile/larry.auld</url>
+ *                </person>
+ *                <factList>
+ *                  <fact>Isaac Asimov's Robot Series (0.1)</fact>
+ *                  <fact>Robot/Foundation</fact>
+ *                  <fact>Robot/Empire/Foundation - Chronological (book 1)</fact>
+ *                </factList>
+ *              </version>
+ *            </versionList>
+ *          </field>
+ *          <field type="16" name="originalpublicationdate" displayName="Original publication date">
+ *            <versionList>
+ *              <version id="2554955" archived="0" lang="eng">
+ *                <date timestamp="1275746736">Sat, 05 Jun 2010 10:05:36 -0400</date>
+ *                <person id="125174">
+ *                  <name>paulhurtley</name>
+ *                  <url>http://www.librarything.com/profile/paulhurtley</url>
+ *                </person>
+ *                <factList>
+ *                  <fact>1950 (Collection)</fact>
+ *                  <fact>1944 (Catch that Rabbit)</fact>
+ *                  <fact>1945 (Escape!)</fact>
+ *                  <fact>1946 (Evidence)</fact>
+ *                  <fact>1950 (The Evitable Conflict)</fact>
+ *                  <fact>1941  (Liar)</fact>
+ *                  <fact>1947  (Little Lost Robot)</fact>
+ *                  <fact>1940  (Robbie)</fact>
+ *                  <fact>1942  (Runaround)</fact>
+ *                  <fact>1941  (Reason)</fact>
+ *                </factList>
+ *              </version>
+ *            </versionList>
+ *          </field>
+ *          <field type="27" name="quotations" displayName="Quotations">
+ *            <versionList>
+ *              <version id="2503597" archived="0" lang="eng">
+ *                <date timestamp="1274377341">Thu, 20 May 2010 13:42:21 -0400</date>
+ *                <person id="1797">
+ *                  <name>lorax</name>
+ *                  <url>http://www.librarything.com/profile/lorax</url>
+ *                </person>
+ *                <factList>
+ *                  <fact>&lt;![CDATA[ The Three Laws of Robotics
+ *                    1. A robot may not injure a human being, or, through inaction, allow a human
+ *                    being to come to harm.
+ *                    2. A robot must obey the orders given it by human beings except where such
+ *                    orders would conflict with the First Law.
+ *                    3. A robot must protect its own existence as long as such protection does not
+ *                    conflict with the First or Second Law.  ]]&gt;
+ *                  </fact>
+ *                </factList>
+ *              </version>
+ *            </versionList>
+ *          </field>
+ *          <field type="30" name="dedication" displayName="Dedication">
+ *            <versionList>
+ *              <version id="2503596" archived="0" lang="eng">
+ *                <date timestamp="1274377341">Thu, 20 May 2010 13:42:21 -0400</date>
+ *                <person id="1797">
+ *                  <name>lorax</name>
+ *                  <url>http://www.librarything.com/profile/lorax</url>
+ *                </person>
+ *                <factList>
+ *                  <fact>
+ *                      &lt;![CDATA[ To John W. Campbell, Jr., who godfathered the robots]]&gt;
+ *                  </fact>
+ *                </factList>
+ *            </version>
+ *          </versionList>
+ *        </field>
+ *        <field type="26" name="lastwords" displayName="Last words">
+ *          <versionList>
+ *            <version id="2503594" archived="0" lang="eng">
+ *              <date timestamp="1274377340">Thu, 20 May 2010 13:42:20 -0400</date>
+ *              <person id="1797">
+ *                <name>lorax</name>
+ *                <url>http://www.librarything.com/profile/lorax</url>
+ *              </person>
+ *              <factList>
+ *                <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Well," said Mrs. Weston, at last,
+ *                "I guess he can stay with us until he rusts." ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Runaround:&lt;br&gt;"Space Station," said Donovan,
+ *                "here I come." ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Reason"&lt;br&gt;He grinned � and went into the ship.
+ *                Muller would be here for several weeks � ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Catch That Rabbit:&lt;br&gt;****&lt;br&gt;**** too
+ *                spoilerish! ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Liar:&lt;br&gt;"Liar!" ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Little Lost Robot:&lt;br&gt;"� His very superiority caught
+ *                him.  Good-by General" ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Escape:&lt;br&gt;To which Bogert added absently, "Strictly
+ *                according to the contract, too." ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ Evidence:&lt;br&gt;Stephen Byerley chuckled.  "I must reply
+ *                that that is a somewhat farfetched idea."&lt;br&gt;The door closed behind her.
+ *                ]]&gt;</fact>
+ *                <fact>&lt;![CDATA[ The Evitable Conflict:&lt;br&gt;And the fire behind the
+ *                quartz went out and only a curl of smoke was left to indicate its place. ]]&gt;
+ *                </fact>
+ *                <fact>&lt;![CDATA[ &lt;i&gt;She died last month at the age of eighty-two.
+ *                &lt;/i&gt; ]]&gt;</fact>
+ *              </factList>
+ *            </version>
+ *          </versionList>
+ *        </field>
+ *        <field type="25" name="firstwords" displayName="First words">
+ *          <versionList>
+ *            <version id="2503593" archived="0" lang="eng">
+ *              <date timestamp="1274377340">Thu, 20 May 2010 13:42:20 -0400</date>
+ *              <person id="1797">
+ *                <name>lorax</name>
+ *                <url>http://www.librarything.com/profile/lorax</url>
+ *              </person>
+ *              <factList>
  * <fact>&lt;![CDATA[ Robbie:&lt;br&gt;"Ninety-eight � ninety-nine � &lt;i&gt;one hundred&lt;/i&gt;." ]]&gt;</fact>
  * <fact>&lt;![CDATA[ Runaround:&lt;br&gt;It was one of Gregory Powell's favorite platitudes that nothing was to
  * be gained from excitement, so when Mike Donovan came leaping down the stairs toward him, red hair matted
@@ -289,12 +305,13 @@ import java.util.ArrayList;
  * <legal>By using this data you agree to the LibraryThing API terms of service.</legal>
  * </ltml>
  * </response>
- *
+ * }
  * </pre>
  * <p>
  * A less well-known work produces rather less data:
  *
  * <pre>
+ *     {@code
  *   <?xml version="1.0" encoding="UTF-8"?>
  *   <response stat="ok">
  *     <ltml xmlns="http://www.librarything.com/" version="1.1">
@@ -306,6 +323,7 @@ import java.util.ArrayList;
  *       <legal>By using this data you agree to the LibraryThing API terms of service.</legal>
  *     </ltml>
  *   </response>
+ *   }
  * </pre>
  * but in both cases, it should be noted that the covers are still available.
  *

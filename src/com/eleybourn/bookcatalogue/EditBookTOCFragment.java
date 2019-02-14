@@ -58,7 +58,8 @@ import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBGetBookTask;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBGetEditionsTask;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBResultsListener;
 
 import java.util.ArrayList;
@@ -81,11 +82,14 @@ public class EditBookTOCFragment
     private EditText mTitleTextView;
     private EditText mPubDateTextView;
     private AutoCompleteTextView mAuthorTextView;
+    /** the book. */
     private String mIsbn;
+    /** primary author of the book. */
     private String mBookAuthor;
     private Button mAddButton;
     private CompoundButton mSingleAuthor;
 
+    /** position of row we're currently editing. */
     @Nullable
     private Integer mEditPosition;
     private ArrayList<TocEntry> mList;
@@ -98,16 +102,16 @@ public class EditBookTOCFragment
     private List<String> mISFDBEditionUrls;
 
     /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Fragment startup">
+
+    /* ------------------------------------------------------------------------------------------ */
     @Override
     @NonNull
     protected BookManager getBookManager() {
         //noinspection ConstantConditions
         return ((EditBookFragment) getParentFragment()).getBookManager();
     }
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    //<editor-fold desc="Fragment startup">
 
     @Override
     @NonNull
@@ -150,6 +154,9 @@ public class EditBookTOCFragment
 
         mAddButton = getView().findViewById(R.id.add_button);
         mAddButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Add the author/title from the edit fields as a new row in the TOC list.
+             */
             public void onClick(@NonNull final View v) {
                 String pubDate = mPubDateTextView.getText().toString().trim();
                 String title = mTitleTextView.getText().toString().trim();
@@ -157,7 +164,7 @@ public class EditBookTOCFragment
                 if (mSingleAuthor.isChecked()) {
                     author = mBookAuthor;
                 }
-                ArrayAdapter<TocEntry> adapter = EditBookTOCFragment.this.getListAdapter();
+                ArrayAdapter<TocEntry> adapter = getListAdapter();
 
                 if (mEditPosition == null) {
                     // adding a new entry
@@ -186,6 +193,11 @@ public class EditBookTOCFragment
         Tracker.exitOnActivityCreated(this);
     }
 
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Populate">
 
     @Override
     protected void initFields() {
@@ -233,19 +245,24 @@ public class EditBookTOCFragment
 
         Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Fragment shutdown">
+
+    private void populateSingleAuthorStatus(@NonNull final Book book) {
+        boolean singleAuthor = !book.isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                                              TocEntry.Type.MULTIPLE_AUTHORS);
+        mSingleAuthor.setChecked(singleAuthor);
+        mAuthorTextView.setVisibility(singleAuthor ? View.GONE : View.VISIBLE);
+    }
 
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
 
-    //<editor-fold desc="Populate">
-
-    private void populateSingleAuthorStatus(@NonNull final Book book) {
-        boolean singleAuthor = !book.isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                                             TocEntry.Type.MULTIPLE_AUTHORS);
-        mSingleAuthor.setChecked(singleAuthor);
-        mAuthorTextView.setVisibility(singleAuthor ? View.GONE : View.VISIBLE);
-    }
+    //<editor-fold desc="Menu Handlers">
 
     /**
      * Populate the list view with the book content table.
@@ -260,11 +277,6 @@ public class EditBookTOCFragment
                                                                       mList);
         mListView.setAdapter(adapter);
     }
-    //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    //<editor-fold desc="Fragment shutdown">
 
     @Override
     @CallSuper
@@ -288,12 +300,6 @@ public class EditBookTOCFragment
         Tracker.exitOnSaveFieldsToBook(this, book.getId());
     }
 
-    //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    //<editor-fold desc="Menu Handlers">
-
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
@@ -316,7 +322,8 @@ public class EditBookTOCFragment
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
                 StandardDialogs.showUserMessage(requireActivity(),
                                                 R.string.progress_msg_connecting_to_web_site);
-                ISFDBManager.searchEditions(mIsbn, this);
+                new ISFDBGetEditionsTask(mIsbn, this)
+                        .execute();
                 return true;
 
             default:
@@ -355,6 +362,7 @@ public class EditBookTOCFragment
         }
     }
 
+
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -369,10 +377,11 @@ public class EditBookTOCFragment
      * Remove from menu each time one is tried.
      */
     @Override
-    public void onGotISFDBEditions(@NonNull final List<String> editions) {
-        mISFDBEditionUrls = editions;
-        if (mISFDBEditionUrls.size() > 0) {
-            ISFDBManager.search(mISFDBEditionUrls, this);
+    public void onGotISFDBEditions(@Nullable final List<String> editions) {
+        mISFDBEditionUrls = editions != null ? editions : new ArrayList<String>();
+        if (!mISFDBEditionUrls.isEmpty()) {
+            new ISFDBGetBookTask(mISFDBEditionUrls, false, this)
+                    .execute();
         }
     }
 
@@ -382,7 +391,11 @@ public class EditBookTOCFragment
      * @param bookData our book from ISFDB.
      */
     @Override
-    public void onGotISFDBBook(@NonNull final Bundle bookData) {
+    public void onGotISFDBBook(@Nullable final Bundle bookData) {
+        if (bookData == null) {
+            return;
+        }
+
         // update the book with series information that was gathered from the TOC
         List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (series != null && !series.isEmpty()) {
@@ -419,7 +432,7 @@ public class EditBookTOCFragment
                 msg.append(t.getTitle()).append(", ");
             }
         } else {
-            msg.append(getString(R.string.error_automatic_toc_population_failed));
+            msg.append(getString(R.string.error_auto_toc_population_failed));
         }
 
         TextView content = new TextView(getContext());
@@ -455,8 +468,9 @@ public class EditBookTOCFragment
                                                      final int which) {
                                      // remove the top one, and try again
                                      mISFDBEditionUrls.remove(0);
-                                     ISFDBManager.search(mISFDBEditionUrls,
-                                                         EditBookTOCFragment.this);
+                                     new ISFDBGetBookTask(mISFDBEditionUrls, false,
+                                                          EditBookTOCFragment.this)
+                                             .execute();
                                  }
                              });
         }
@@ -484,9 +498,6 @@ public class EditBookTOCFragment
         mList.addAll(tocEntries);
         getListAdapter().notifyDataSetChanged();
     }
-    //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
 
     /**
      * copy the selected entry into the edit fields,
@@ -503,6 +514,9 @@ public class EditBookTOCFragment
         mEditPosition = position;
         mAddButton.setText(R.string.btn_confirm_save);
     }
+    //</editor-fold>
+
+    /* ------------------------------------------------------------------------------------------ */
 
     @SuppressWarnings("unchecked")
     private <T extends ArrayAdapter<TocEntry>> T getListAdapter() {

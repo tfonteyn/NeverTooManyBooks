@@ -32,12 +32,13 @@ import android.widget.EditText;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment.FragmentTask;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -93,47 +94,13 @@ public class LibraryThingAdminActivity
             public void onClick(@NonNull final View v) {
                 EditText devKeyView = findViewById(R.id.dev_key);
                 String devKey = devKeyView.getText().toString().trim();
-                Prefs.getPrefs().edit()
+                Prefs.getPrefs()
+                     .edit()
                      .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
                      .apply();
 
                 if (!devKey.isEmpty()) {
-                    FragmentTask task =
-                            new TaskWithProgressDialogFragment.FragmentTaskAbstract() {
-                        /**
-                         * Validate the key by getting a known cover.
-                         */
-                        @Override
-                        public void run(@NonNull final TaskWithProgressDialogFragment fragment,
-                                        @NonNull final SimpleTaskContext taskContext) {
-                            LibraryThingManager ltm = new LibraryThingManager();
-                            File tmpFile = ltm.getCoverImage("0451451783",
-                                                             LibraryThingManager.ImageSizes.SMALL);
-                            if (tmpFile != null) {
-                                tmpFile.deleteOnExit();
-                                long length = tmpFile.length();
-                                if (length < 100) {
-                                    // Queue a message
-                                    fragment.showUserMessage(getString(R.string.lt_incorrect_key));
-                                } else {
-                                    // Queue a message
-                                    fragment.showUserMessage(getString(R.string.lt_correct_key));
-                                }
-                                StorageUtils.deleteFile(tmpFile);
-                            }
-                        }
-
-                        @Override
-                        public void onFinish(@NonNull final TaskWithProgressDialogFragment fragment,
-                                             @Nullable final Exception e) {
-                        }
-                    };
-
-                    // Get the fragment to display task progress
-                    TaskWithProgressDialogFragment.newInstance(
-                            LibraryThingAdminActivity.this,
-                            R.string.progress_msg_connecting_to_web_site, task, true, 0);
-
+                    new ValidateKey(LibraryThingAdminActivity.this).execute();
                 }
             }
         });
@@ -144,8 +111,8 @@ public class LibraryThingAdminActivity
                 SharedPreferences prefs = Prefs.getPrefs();
                 SharedPreferences.Editor ed = prefs.edit();
                 for (String key : prefs.getAll().keySet()) {
-                    if (key.toLowerCase().startsWith(
-                            LibraryThingManager.PREFS_HIDE_ALERT.toLowerCase())) {
+                    if (key.toLowerCase()
+                           .startsWith(LibraryThingManager.PREFS_HIDE_ALERT.toLowerCase())) {
                         ed.remove(key);
                     }
                 }
@@ -155,5 +122,47 @@ public class LibraryThingAdminActivity
 
         // hide soft keyboard at first
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
+
+    private static class ValidateKey
+            extends TaskWithProgress<Integer> {
+
+        /**
+         * Constructor.
+         *
+         * @param context the calling fragment
+         */
+        ValidateKey(@NonNull final FragmentActivity context) {
+            super(0, context, R.string.progress_msg_connecting_to_web_site, true);
+        }
+
+        @Override
+        @Nullable
+        protected Integer doInBackground(final Void... params) {
+            LibraryThingManager ltm = new LibraryThingManager();
+            File tmpFile = ltm.getCoverImage("0451451783", SearchSites.ImageSizes.SMALL);
+            if (tmpFile != null) {
+                tmpFile.deleteOnExit();
+                long length = tmpFile.length();
+                StorageUtils.deleteFile(tmpFile);
+
+                if (length < 100) {
+                    return R.string.lt_incorrect_key;
+                } else {
+                    // all ok
+                    return R.string.lt_correct_key;
+                }
+            }
+            if (mFragment.isCancelled()) {
+                return R.string.progress_end_cancelled;
+            }
+            return R.string.warning_cover_not_found;
+        }
+
+        @Override
+        protected void onPostExecute(@NonNull final Integer result) {
+            StandardDialogs.showUserMessage(result);
+            super.onPostExecute(result);
+        }
     }
 }

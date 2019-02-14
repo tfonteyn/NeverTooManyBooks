@@ -37,7 +37,6 @@ abstract class ApiHandler {
 
     /** XML tags/attrs we look for. */
     static final String XML_GOODREADS_RESPONSE = "GoodreadsResponse";
-    static final String XML_USER = "user";
     static final String XML_NAME = "name";
 
     static final String XML_ID = "id";

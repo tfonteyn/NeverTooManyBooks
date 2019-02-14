@@ -26,9 +26,9 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 public class IntListPreference
         extends DialogPreference {
 
-    private final static int DEFAULT_WHEN_NO_DEFAULT_SET = Integer.MIN_VALUE;
+    private static final int DEFAULT_WHEN_NO_DEFAULT_SET = Integer.MIN_VALUE;
 
-    private final static String ANDROID_NS = "http://schemas.android.com/apk/res/android";
+    private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
 
     private CharSequence[] mEntries;
     private int[] mEntryValues;

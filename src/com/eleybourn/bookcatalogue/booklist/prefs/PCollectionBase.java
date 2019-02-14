@@ -100,7 +100,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             if (sValues == null) {
                 sValues = String.valueOf(value);
             } else {
-                sValues += DELIM + String.valueOf(value);
+                sValues += DELIM + value;
             }
             Prefs.getPrefs(mUuid).edit().putString(getKey(), sValues).apply();
         }

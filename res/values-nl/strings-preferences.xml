@@ -66,7 +66,7 @@
 
     <!-- Preference - Compatibility / bug workaround for some devices -->
     <string name="pt_thumbnail_cropper_layer_type">Cropper Layer Type</string>
-    <string name="pt_hint_layer_type">Leave this setting on \'Standaard waarde\' unless you experience crashes while cropping images. Try \'Software\' for safer but slower or force \'Hardware\' for less safe, but faster</string>
+    <string name="pt_hint_layer_type">Leave this setting on \‘Standaard waarde\’ unless you experience crashes while cropping images. Try \‘Software\’ for safer but slower or force \‘Hardware\’ for less safe, but faster</string>
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>Standaard waarde</item>
         <item>Hardware</item>
@@ -125,7 +125,8 @@
     <string name="pt_bob_header">Details in de koptekst</string>
     <string-array name="pe_bob_header">
         <item>Toon aantal boeken</item>
-        <item>Toon eerste niveau koptekst</item>
+        <item>Toon 1ste niveau koptekst</item>
+        <item>Toon 2de niveau koptekst</item>
     </string-array>
 
     <!-- Preference - Show thumbnail image for each book -->
@@ -143,8 +144,8 @@
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Formaat van auteursnamen</string>
-    <string name="pv_bob_format_author_name_given_first">Voornaam eerst bijv. \'Gerard Reve\'</string>
-    <string name="pv_bob_format_author_name_family_first">Achternaam eerst bijv. \'Reve, Gerard\'</string>
+    <string name="pv_bob_format_author_name_given_first">Voornaam eerst bijv. \‘Gerard Reve\’</string>
+    <string name="pv_bob_format_author_name_family_first">Achternaam eerst bijv. \‘Reve, Gerard\’</string>
 
     <!-- Preference - Sorting Author by family (default) or given name. This is independent from the display format -->
     <string name="pt_bob_sort_author_name">Auteur namen sorteren</string>

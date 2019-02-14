@@ -16,6 +16,6 @@ public class GenericFileProvider
      * <p>
      * android:authorities="${packageName}.GenericFileProvider"
      */
-    public final static String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName() +
+    public static final String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName() +
             ".GenericFileProvider";
 }

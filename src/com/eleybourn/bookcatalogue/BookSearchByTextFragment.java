@@ -17,7 +17,7 @@ import androidx.appcompat.app.ActionBar;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
+import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -114,7 +114,7 @@ public class BookSearchByTextFragment
     }
 
     /**
-     * Start the actual search with the {@link SearchManager} in the background.
+     * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
      * The results will arrive in {@link #onSearchFinished}
      */
@@ -148,8 +148,8 @@ public class BookSearchByTextFragment
                             "onSearchFinished|SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {
-                mActivity.getTaskManager().sendHeaderTaskProgressMessage(
-                        getString(R.string.progress_msg_adding_book));
+                mActivity.getTaskManager()
+                         .sendHeaderTaskProgressMessage(R.string.progress_msg_adding_book);
                 Intent intent = new Intent(getContext(), EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, REQ_BOOK_EDIT);

@@ -23,8 +23,8 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
@@ -99,7 +99,7 @@ public class OwnedBookCreateHandler
     public void create(@NonNull final String isbn,
                        @NonNull final List<String> shelves)
             throws IOException,
-                   NotAuthorizedException,
+                   AuthorizationException,
                    BookNotFoundException {
         IsbnToId isbnToId = new IsbnToId(mManager);
         long id;
@@ -129,7 +129,7 @@ public class OwnedBookCreateHandler
     public void create(@NonNull final String isbn,
                        @NonNull final String shelf)
             throws IOException,
-                   NotAuthorizedException,
+                   AuthorizationException,
                    BookNotFoundException {
         List<String> shelves = new ArrayList<>();
         shelves.add(shelf);

@@ -186,6 +186,10 @@ class SearchGoogleBooksHandler
                            @NonNull final String qName)
             throws SAXException {
         super.endElement(uri, localName, qName);
+        /* the bits we want:
+         * 		<entry>
+         * 			<id>http://www.google.com/books/feeds/volumes/lf2EMetoLugC</id>
+         */
         if (localName.equalsIgnoreCase(XML_ENTRY)) {
             mInEntry = false;
             mEntryDone = true;

@@ -124,7 +124,6 @@ public class BookCatalogueApp
     /** create a singleton. */
     @SuppressWarnings("unused")
     public BookCatalogueApp() {
-        super();
         mInstance = this;
     }
 
@@ -191,7 +190,7 @@ public class BookCatalogueApp
      * @return resolved attribute
      */
     @SuppressWarnings("unused")
-    public static int getAttr(final @AttrRes int attr) {
+    public static int getAttr(@AttrRes final int attr) {
         return getAttr(mInstance.getApplicationContext().getTheme(), attr);
     }
 
@@ -202,7 +201,7 @@ public class BookCatalogueApp
      * @return resolved attribute
      */
     public static int getAttr(@NonNull final Resources.Theme theme,
-                              final @AttrRes int attr) {
+                              @AttrRes final int attr) {
         TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         return tv.resourceId;

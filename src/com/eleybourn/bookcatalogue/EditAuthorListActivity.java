@@ -59,7 +59,7 @@ public class EditAuthorListActivity
     /** Main screen Author name field. */
     private AutoCompleteTextView mAuthorNameView;
 
-    /** AutoCompleteTextView for mAuthorNameView */
+    /** Adapter for mAuthorNameView */
     @SuppressWarnings("FieldCanBeLocal")
     private ArrayAdapter<String> mAuthorAdapter;
 
@@ -136,9 +136,7 @@ public class EditAuthorListActivity
         final EditText familyView = root.findViewById(R.id.family_name);
         final EditText givenView = root.findViewById(R.id.given_names);
 
-        //noinspection ConstantConditions
         familyView.setText(author.getFamilyName());
-        //noinspection ConstantConditions
         givenView.setText(author.getGivenNames());
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
@@ -146,7 +144,6 @@ public class EditAuthorListActivity
                 .setTitle(R.string.title_edit_author)
                 .create();
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -172,7 +169,6 @@ public class EditAuthorListActivity
                 processChanges(author, newAuthor);
             }
         });
-        //noinspection ConstantConditions
         root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -193,7 +189,13 @@ public class EditAuthorListActivity
 
         // if it's not, then we can simply re-use the old object.
         if (!usedByOthers) {
-            // Use the original author, but update its fields
+            /*
+              * Use the original author, but update its fields
+              *
+              * see below and {@link DBA#insertBookDependents} where an *insert* will be done
+              * The 'old' author will be orphaned.
+              * TODO: simplify / don't orphan?
+              */
             author.copyFrom(newAuthor);
             Utils.pruneList(mDb, mList);
             onListChanged();
@@ -205,13 +207,29 @@ public class EditAuthorListActivity
         String allBooks = getString(R.string.all_books);
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(
-                        getString(R.string.confirm_apply_author_changed,
-                                  author.getSortName(), newAuthor.getSortName(), allBooks))
+                .setMessage(getString(R.string.confirm_apply_author_changed,
+                                      author.getSortName(), newAuthor.getSortName(), allBooks))
                 .setTitle(R.string.title_scope_of_change)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
+        /*
+         * choosing 'this book':
+         * Copy the data fields (name,..) from the holder to the 'old' author.
+         * and remove any duplicates.
+         *
+         * When the actual book is saved, {@link DBA#updateBook} will call
+         * {@link DBA#insertBookDependents} which when updating TBL_BOOK_AUTHORS
+         * will first try and find the author based on name.
+         * If its names differ -> new Author -> inserts the new author.
+         * Result: *this* book now uses the modified/new author,
+         * while all others keep using the original one.
+         *
+         * TODO: speculate if it would not be easier to:
+         * - fixup(newAuthor) and  if id == 0 insert newAuthor
+         * - remove old author from book
+         * - add new author to book
+         */
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
@@ -224,6 +242,29 @@ public class EditAuthorListActivity
                              }
                          });
 
+        /*
+         * Choosing 'all books':
+         * globalReplaceAuthor:
+         * - Find/update or insert the new Author.
+         * - update the TOC's of all books so they use the new author id.
+         * - update TBL_BOOK_AUTHORS for all books to use the new author id
+         * - re-order the 'position' if needed.
+         * Result:
+         * - all books previously using the olf author, now point to the new author.
+         * - the old author will still exist, but won't be in use.
+         *
+         * Copy the data fields (name,..) from the holder to the 'old' author.
+         * and remove any duplicates.
+         *
+         * When the actual book is saved, {@link DBA#updateBook} will call
+         * {@link DBA#insertBookDependents} which when updating TBL_BOOK_AUTHORS
+         * will first try and find the author (with the old id) based on name.
+         * => it will find the NEW author, and update the id in memory (old becomes new)
+         * Result:
+         * - this book uses the new author (by recycling the old object with all new id/data)
+         *
+         * TODO: speculate if this can be simplified.
+         */
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks,
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,

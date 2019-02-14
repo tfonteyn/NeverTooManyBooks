@@ -147,8 +147,8 @@ final class MenuHandler {
      */
     static void prepareAmazonSearchSubMenu(final Menu menu,
                                            final Book book) {
-        boolean hasAuthor = book.getList(UniqueId.BKEY_AUTHOR_ARRAY).size() > 0;
-        boolean hasSeries = book.getList(UniqueId.BKEY_SERIES_ARRAY).size() > 0;
+        boolean hasAuthor = !book.getList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
+        boolean hasSeries = !book.getList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
         menu.setGroupVisible(R.id.SUBMENU_AMAZON_SEARCH, hasAuthor || hasSeries);
     }
 
@@ -167,8 +167,8 @@ final class MenuHandler {
         switch (menuItem.getItemId()) {
             case R.id.SUBMENU_AMAZON_SEARCH:
                 Menu menu = menuItem.getSubMenu();
-                boolean hasAuthor = book.getList(UniqueId.BKEY_AUTHOR_ARRAY).size() > 0;
-                boolean hasSeries = book.getList(UniqueId.BKEY_SERIES_ARRAY).size() > 0;
+                boolean hasAuthor = !book.getList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
+                boolean hasSeries = !book.getList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
 
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,

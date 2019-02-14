@@ -148,7 +148,7 @@ public class TaskManager {
         /* Controller instance for this specific SearchManager */
         TaskManagerController controller = new TaskManagerController() {
             public void requestAbort() {
-                TaskManager.this.cancelAllTasks();
+                cancelAllTasks();
             }
 
             @Override
@@ -215,6 +215,16 @@ public class TaskManager {
      * Used (generally) by {@link BaseActivityWithTasks} to display some text above
      * the task info. Set to null to ensure ProgressDialog will be removed.
      */
+    public void sendHeaderTaskProgressMessage(@StringRes final int message) {
+        mBaseMessage = getContext().getString(message);
+        sendTaskProgressMessage();
+    }
+
+    /**
+     * Creates and send a {@link TaskProgressMessage} with the base/header message.
+     * Used (generally) by {@link BaseActivityWithTasks} to display some text above
+     * the task info. Set to null to ensure ProgressDialog will be removed.
+     */
     public void sendHeaderTaskProgressMessage(@Nullable final String message) {
         mBaseMessage = message;
         sendTaskProgressMessage();
@@ -271,7 +281,7 @@ public class TaskManager {
 
             synchronized (mManagedTasks) {
                 // Append each task message
-                if (mManagedTasks.size() > 0) {
+                if (!mManagedTasks.isEmpty()) {
                     if (!progressMessage.isEmpty()) {
                         progressMessage += "\n";
                     }
@@ -320,6 +330,16 @@ public class TaskManager {
         } catch (RuntimeException e) {
             Logger.error(e, "Error updating progress");
         }
+    }
+
+    /**
+     * Creates and send a {@link TaskUserMessage}.
+     *
+     * @param messageId Message resource id to send
+     */
+    public void sendTaskUserMessage(@StringRes final int messageId) {
+        MESSAGE_SWITCH.send(mMessageSenderId,
+                            new TaskUserMessage(getContext().getString(messageId)));
     }
 
     /**

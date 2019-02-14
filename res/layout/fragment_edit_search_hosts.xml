@@ -21,8 +21,6 @@
         android:inputType="textUri"
         tools:ignore="Autofill,HardcodedText" />
 
-    <!-- FIXME: Amazon is currently searched through a proxy, see {@link AmazonManager}
-         , but... without a dev-key, the website is used.-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

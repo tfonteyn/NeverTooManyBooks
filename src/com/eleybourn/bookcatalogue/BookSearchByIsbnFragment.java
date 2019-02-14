@@ -24,7 +24,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
-import com.eleybourn.bookcatalogue.searches.SearchManager;
+import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.SoundManager;
 
@@ -353,7 +353,7 @@ public class BookSearchByIsbnFragment
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        // User wants to add regardless, doSearch get details and eventually doSearch to edit
+        // User wants to add regardless
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.btn_confirm_add),
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
@@ -362,13 +362,13 @@ public class BookSearchByIsbnFragment
                              }
                          });
 
-        // User wants to review the existing book, doSearch to edit
+        // User wants to review the existing book
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit_book),
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  Intent intent = new Intent(
-                                         BookSearchByIsbnFragment.this.getContext(),
+                                         getContext(),
                                          EditBookActivity.class);
                                  intent.putExtra(UniqueId.KEY_ID, existingId);
                                  intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB,
@@ -393,7 +393,7 @@ public class BookSearchByIsbnFragment
     }
 
     /**
-     * Start the actual search with the {@link SearchManager} in the background.
+     * Start the actual search with the {@link SearchCoordinator} in the background.
      * Or restart the scanner if applicable.
      * <p>
      * The results will arrive in {@link #onSearchFinished}
@@ -429,8 +429,8 @@ public class BookSearchByIsbnFragment
                             "onSearchFinished|SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {
-                mActivity.getTaskManager().sendHeaderTaskProgressMessage(
-                        getString(R.string.progress_msg_adding_book));
+                mActivity.getTaskManager()
+                         .sendHeaderTaskProgressMessage(R.string.progress_msg_adding_book);
                 Intent intent = new Intent(mActivity, EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, REQ_BOOK_EDIT);

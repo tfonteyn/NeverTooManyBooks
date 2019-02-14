@@ -23,8 +23,8 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
@@ -189,7 +189,6 @@ import java.util.List;
 public class SearchBooksApiHandler
         extends ApiHandler {
 
-
     /** List of GoodreadsWork objects that result from a search. */
     @Nullable
     private List<GoodreadsWork> mWorks;
@@ -332,7 +331,7 @@ public class SearchBooksApiHandler
      */
     @NonNull
     public List<GoodreadsWork> search(@NonNull final String query)
-            throws NotAuthorizedException,
+            throws AuthorizationException,
                    BookNotFoundException,
                    IOException {
 
@@ -416,7 +415,8 @@ public class SearchBooksApiHandler
                 </results>
             </search>
         </GoodreadsResponse>
-		 */
+        */
+
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULTS_START)
                  .setEndAction(mHandleResultsStart);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_SEARCH, XML_RESULTS_END)

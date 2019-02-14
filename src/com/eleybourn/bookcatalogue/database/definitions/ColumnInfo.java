@@ -39,13 +39,12 @@ public class ColumnInfo {
     public final boolean isPrimaryKey;
     public final StorageClass storageClass;
 
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    @SuppressWarnings({"unused"})
     private final int position;
-    @SuppressWarnings("FieldCanBeLocal")
     private final String typeName;
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    @SuppressWarnings({"unused"})
     private final boolean allowNull;
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    @SuppressWarnings({"unused"})
     private final String defaultValue;
 
 

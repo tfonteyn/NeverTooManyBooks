@@ -85,6 +85,8 @@
     <string name="error_no_internet_connection">Internet connection is not available.</string>
     <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
+    <!-- generic backup failure -->
+    <string name="error_backup_failed">Backup Failed</string>
 
     <!-- Displayed when any read operation from Shared Storage fails -->
     <string name="error_storage_not_readable">Please check that the SD Card is accessible.</string>
@@ -1045,8 +1047,6 @@
         “%1$s” directory on your SD card.\n\nYou should manually copy it elsewhere to protect
         the data in case your device is damaged, lost, or stolen.
     </string>
-    <!-- Displayed when a backup archive fails -->
-    <string name="export_error_backup_failed">Backup Failed</string>
 
     <!-- ####################################################################################### -->
     <!-- === Import/Export CSV file specific strings == -->

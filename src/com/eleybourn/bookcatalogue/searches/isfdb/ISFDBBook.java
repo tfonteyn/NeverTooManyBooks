@@ -137,7 +137,7 @@ public class ISFDBBook
     /**
      * @param editionUrls List of url's; example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
      */
-    ISFDBBook(@NonNull final @Size(min = 1) List<String> editionUrls) {
+    public ISFDBBook(@Size(min = 1) @NonNull final List<String> editionUrls) {
         mEditions = editionUrls;
         mPath = editionUrls.get(0);
         mPublicationRecord = stripNumber(mPath);
@@ -195,11 +195,12 @@ public class ISFDBBook
         </div>
      */
 
-    public void fetch(@NonNull final Bundle /* out */ bookData,
+    @Nullable
+    public Bundle fetch(@NonNull final Bundle /* out */ bookData,
                       final boolean withThumbnail)
             throws SocketTimeoutException {
         if (!loadPage()) {
-            return;
+            return null;
         }
 
         Element contentBox = mDoc.select("div.contentbox").first();
@@ -395,7 +396,7 @@ public class ISFDBBook
         bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
 
         // set Anthology type
-        if (toc.size() > 0) {
+        if (!toc.isEmpty()) {
             int type = TocEntry.Type.MULTIPLE_WORKS;
             if (TocEntry.hasMultipleAuthors(toc)) {
                 type |= TocEntry.Type.MULTIPLE_AUTHORS;
@@ -422,6 +423,8 @@ public class ISFDBBook
         if (withThumbnail) {
             fetchCover(bookData);
         }
+
+        return bookData;
     }
 
     /**

@@ -118,7 +118,7 @@ public final class XmlUtils {
      * <p>
      * escape reserved XML characters + all newlines/tab and the backslash.
      * <p>
-     * quot	"   U+0022 (34) XML 1.0 double quotation mark
+     * quot "   U+0022 (34) XML 1.0 double quotation mark
      * amp  &   U+0026 (38) XML 1.0 ampersand
      * apos '   U+0027 (39) XML 1.0 apostrophe (apostrophe-quote)
      * lt   <   U+003C (60) XML 1.0 less-than sign
@@ -131,7 +131,7 @@ public final class XmlUtils {
     @NonNull
     private static String encode(@Nullable final String data) {
         try {
-            if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
+            if (data == null || data.trim().isEmpty() || "null".equalsIgnoreCase(data)) {
                 return "";
             }
 
@@ -270,8 +270,8 @@ public final class XmlUtils {
             throws IOException {
         if (value instanceof String) {
             // strings are encoded
-            return '<' + tag + (name != null ? name(name) : "") + value(
-                    encode(String.valueOf(value))) + "/>\n";
+            return '<' + tag + (name != null ? name(name) : "")
+                    + value(encode(String.valueOf(value))) + "/>\n";
         } else {
             // non-strings as-is; for boolean this means: true,false
             return typedTag(name, value);
@@ -286,10 +286,10 @@ public final class XmlUtils {
     private static String tagWithBody(@NonNull final String tag,
                                       @Nullable final String name,
                                       @NonNull final Object value) {
-        return
-                '<' + tag + (name != null ? name(name) : "") + '>' +
-                        String.valueOf(value) +
-                        "</" + tag + ">\n";
+
+        return '<' + tag + (name != null ? name(name) : "") + '>'
+                + value
+                + "</" + tag + ">\n";
     }
 
     /**
@@ -298,10 +298,9 @@ public final class XmlUtils {
     static String tagWithCData(@NonNull final String tag,
                                @Nullable final String name,
                                @NonNull final String value) {
-        return
-                '<' + tag + (name != null ? name(name) : "") + ">\n" +
-                        "<![CDATA[" + value + "]]>\n" +
-                        "</" + tag + ">\n";
+        return '<' + tag + (name != null ? name(name) : "") + ">\n"
+                + "<![CDATA[" + value + "]]>\n"
+                + "</" + tag + ">\n";
     }
 
     /**

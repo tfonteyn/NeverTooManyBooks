@@ -123,7 +123,7 @@ public class ElementContext {
      * @param body of the tag.
      */
     public void setBody(final String body) {
-        this.mBody = body.trim();
+        mBody = body.trim();
     }
 
     @NonNull

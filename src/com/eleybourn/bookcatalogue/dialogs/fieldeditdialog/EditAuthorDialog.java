@@ -54,29 +54,33 @@ public class EditAuthorDialog {
     @NonNull
     private final ArrayAdapter<String> mGivenNameAdapter;
 
+    /**
+     * Constructor.
+     */
     public EditAuthorDialog(@NonNull final Activity activity,
                             @NonNull final DBA db,
                             @Nullable final Runnable onChanged) {
         mDb = db;
         mActivity = activity;
         mOnChanged = onChanged;
-        mFamilyNameAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line,
+        mFamilyNameAdapter = new ArrayAdapter<>(mActivity,
+                                                android.R.layout.simple_dropdown_item_1line,
                                                 mDb.getAuthorsFamilyName());
-        mGivenNameAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line,
+        mGivenNameAdapter = new ArrayAdapter<>(mActivity,
+                                               android.R.layout.simple_dropdown_item_1line,
                                                mDb.getAuthorsGivenNames());
     }
 
     public void edit(@NonNull final Author source) {
         // Build the base dialog
-        final View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
+        final View root = mActivity.getLayoutInflater()
+                                   .inflate(R.layout.dialog_edit_author, null);
 
         final AutoCompleteTextView familyView = root.findViewById(R.id.family_name);
-        //noinspection ConstantConditions
         familyView.setText(source.getFamilyName());
         familyView.setAdapter(mFamilyNameAdapter);
 
         final AutoCompleteTextView givenView = root.findViewById(R.id.given_names);
-        //noinspection ConstantConditions
         givenView.setText(source.getGivenNames());
         givenView.setAdapter(mGivenNameAdapter);
 
@@ -88,7 +92,6 @@ public class EditAuthorDialog {
                 .setTitle(R.string.title_edit_author)
                 .create();
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -118,7 +121,6 @@ public class EditAuthorDialog {
             }
         });
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {

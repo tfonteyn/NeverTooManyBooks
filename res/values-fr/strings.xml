@@ -131,7 +131,7 @@
     <string name="vldt_failed">La validation a échoué pour \‘%s\’</string>
     <string name="vldt_read_start_after_end">La date de début de lecture est après la date de fin</string>
     <string name="progress_end_backup_success">Sauvegarde réussie</string>
-    <string name="export_error_backup_failed">Sauvegarde échouée</string>
+    <string name="error_backup_failed">Sauvegarde échouée</string>
     <string name="error_file_must_contain_column">Le fichier doit contenir une colonne nommée %s</string>
     <string name="import_error_csv_file_must_contain_any_column">Le fichier doit contenir au moins une des colonnes suivantes : %s</string>
     <string name="error_column_is_blank">La colonne %1$s est vide à la ligne %2$s</string>

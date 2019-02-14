@@ -232,7 +232,6 @@ public final class HintManager {
                     .setTitle(R.string.hint)
                     .create();
 
-            //noinspection ConstantConditions
             root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(@NonNull final View v) {
@@ -243,7 +242,6 @@ public final class HintManager {
                 }
             });
 
-            //noinspection ConstantConditions
             root.findViewById(R.id.hint_do_not_show_again).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(@NonNull final View v) {

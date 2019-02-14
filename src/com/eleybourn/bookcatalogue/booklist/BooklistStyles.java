@@ -366,7 +366,7 @@ public final class BooklistStyles {
         }
 
         // Return the ones we found.
-        if (resultingStyles.size() > 0) {
+        if (!resultingStyles.isEmpty()) {
             return resultingStyles;
         } else {
             // If none found, return what we were given.
@@ -402,8 +402,10 @@ public final class BooklistStyles {
      * @param list of style id's
      */
     private static void setPreferredStyleMenuOrder(@NonNull final Set<Long> list) {
-        Prefs.getPrefs().edit().putString(PREF_BL_PREFERRED_STYLES,
-                                          TextUtils.join(",", list)).apply();
+        Prefs.getPrefs()
+             .edit()
+             .putString(PREF_BL_PREFERRED_STYLES, TextUtils.join(",", list))
+             .apply();
     }
 
     /**

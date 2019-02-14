@@ -72,7 +72,6 @@ abstract class EditStringDialog {
         final View root = mActivity.getLayoutInflater().inflate(dialogLayoutId, null);
 
         final EditText editView = root.findViewById(R.id.name);
-        //noinspection ConstantConditions
         editView.setText(currentText);
         if (editView instanceof AutoCompleteTextView) {
             ((AutoCompleteTextView) editView).setAdapter(mAdapter);
@@ -83,7 +82,6 @@ abstract class EditStringDialog {
                 .setTitle(title)
                 .create();
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -105,7 +103,6 @@ abstract class EditStringDialog {
             }
         });
 
-        //noinspection ConstantConditions
         root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {

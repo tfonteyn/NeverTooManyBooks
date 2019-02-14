@@ -39,9 +39,7 @@ import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.filechooser.FileListerFragmentTask.FileListerListener;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
 import java.io.File;
@@ -55,7 +53,7 @@ import java.util.Objects;
  */
 public class FileChooserFragment
         extends Fragment
-        implements FileListerListener {
+        implements FileListerAsyncTask.FileListerListener {
 
     public static final String TAG = "FileChooserFragment";
 
@@ -129,7 +127,6 @@ public class FileChooserFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnActivityCreated(this, savedInstanceState);
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
@@ -154,8 +151,6 @@ public class FileChooserFragment
         // 'up' directory
         getView().findViewById(R.id.row_path_up).setOnClickListener(onPathUpClickListener);
         getView().findViewById(R.id.btn_path_up).setOnClickListener(onPathUpClickListener);
-
-        Tracker.exitOnActivityCreated(this);
     }
 
     /**

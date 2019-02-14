@@ -131,7 +131,7 @@
     <string name="vldt_failed">Falló la validación para \‘%s\’</string>
     <string name="vldt_read_start_after_end">La fecha de inicio de lectura es posterior a la de finalización</string>
     <string name="progress_end_backup_success">Copia de seguridad correcta</string>
-    <string name="export_error_backup_failed">Copia de seguridad errónea</string>
+    <string name="error_backup_failed">Copia de seguridad errónea</string>
     <string name="error_file_must_contain_column">El fichero debe tener una columna con el nombre %s</string>
     <string name="import_error_csv_file_must_contain_any_column">El fichero debe tener una columna con uno de los nombres siguientes: %s</string>
     <string name="error_column_is_blank">La columna %1$s tiene en blanco la fila %2$s</string>

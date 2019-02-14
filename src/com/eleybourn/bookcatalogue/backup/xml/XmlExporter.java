@@ -737,6 +737,7 @@ public class XmlExporter
         @Override
         @NonNull
         public Object get(@NonNull final String key) {
+            //noinspection ConstantConditions
             return mBundle.get(key);
         }
     }
@@ -805,6 +806,7 @@ public class XmlExporter
         @Override
         @NonNull
         public Object get(@NonNull final String key) {
+            //noinspection ConstantConditions
             return mMap.get(key);
         }
     }
@@ -892,8 +894,8 @@ public class XmlExporter
             if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
                 Logger.info(this, "get","uuid=" + current.getUuid() + "|name=" + key);
             }
+            //noinspection ConstantConditions
             return currentPPrefs.get(key).get();
         }
     }
-
 }

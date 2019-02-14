@@ -52,6 +52,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
+import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,7 +142,9 @@ public class EditBookFieldsFragment
                     public void onClick(@NonNull final View v) {
                         Intent intent = new Intent(requireActivity(), EditAuthorListActivity.class);
                         intent.putExtra(UniqueId.BKEY_AUTHOR_ARRAY,
-                                        getBookManager().getBook().getList(UniqueId.BKEY_AUTHOR_ARRAY));
+                                        getBookManager().getBook().getList(
+                                                UniqueId.BKEY_AUTHOR_ARRAY));
+
                         intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId());
                         intent.putExtra(UniqueId.KEY_TITLE,
                                         mFields.getField(R.id.title).getValue().toString());
@@ -157,7 +160,9 @@ public class EditBookFieldsFragment
                     public void onClick(@NonNull final View v) {
                         Intent intent = new Intent(requireActivity(), EditSeriesListActivity.class);
                         intent.putExtra(UniqueId.BKEY_SERIES_ARRAY,
-                                        getBookManager().getBook().getList(UniqueId.BKEY_SERIES_ARRAY));
+                                        getBookManager().getBook().getList(
+                                                UniqueId.BKEY_SERIES_ARRAY));
+
                         intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId());
                         intent.putExtra(UniqueId.KEY_TITLE,
                                         mFields.getField(R.id.title).getValue().toString());
@@ -303,7 +308,7 @@ public class EditBookFieldsFragment
 
     private void populateAuthorListField(@NonNull final Book book) {
         ArrayList<Author> list = book.getList(UniqueId.BKEY_AUTHOR_ARRAY);
-        if (list.size() != 0 && Utils.pruneList(mDb, list)) {
+        if (!list.isEmpty() && Utils.pruneList(mDb, list)) {
             getBookManager().setDirty(true);
             book.putList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
@@ -319,9 +324,7 @@ public class EditBookFieldsFragment
         boolean visible = mFields.getField(R.id.name).isVisible();
         if (visible) {
             ArrayList<Series> list = book.getList(UniqueId.BKEY_SERIES_ARRAY);
-            int seriesCount = list.size();
-
-            if (seriesCount != 0 && Utils.pruneList(mDb, list)) {
+            if (!list.isEmpty() && Utils.pruneList(mDb, list)) {
                 getBookManager().setDirty(true);
                 book.putList(UniqueId.BKEY_SERIES_ARRAY, list);
             }
@@ -526,39 +529,51 @@ public class EditBookFieldsFragment
         Book book = getBookManager().getBook();
         switch (requestCode) {
             case REQ_EDIT_AUTHORS:
-                if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(
-                        UniqueId.BKEY_AUTHOR_ARRAY)) {
-                    //noinspection ConstantConditions
-                    ArrayList<Author> list = data.getExtras().getParcelableArrayList(
-                            UniqueId.BKEY_AUTHOR_ARRAY);
-                    book.putList(UniqueId.BKEY_AUTHOR_ARRAY, list != null ? list
-                                                                          : new ArrayList<Author>());
+                if (data != null) {
+                    if (resultCode == Activity.RESULT_OK
+                            && data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+                        //noinspection ConstantConditions
+                        ArrayList<Author> list =
+                                data.getExtras().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+                        book.putList(UniqueId.BKEY_AUTHOR_ARRAY,
+                                     list != null ? list : new ArrayList<Author>());
 
-                    getBookManager().setDirty(true);
-                } else {
-                    // Even though the dialog was terminated,
-                    // some authors MAY have been updated/added.
-                    book.refreshAuthorList(mDb);
+                        getBookManager().setDirty(true);
+                    } else {
+                        // Even though the dialog was terminated,
+                        // some authors MAY have been modified.
+                        book.refreshAuthorList(mDb);
+                    }
+
+                    boolean wasDirty = getBookManager().isDirty();
+                    populateAuthorListField(book);
+                    getBookManager().setDirty(wasDirty);
+
                 }
-                // The user may have edited or merged authors.
-                // This will have already been applied to the database so no update is
-                // necessary, but we do need to update the data we display.
-                boolean wasDirty = getBookManager().isDirty();
-                populateAuthorListField(book);
-                getBookManager().setDirty(wasDirty);
                 break;
 
             case REQ_EDIT_SERIES:
-                if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(
-                        UniqueId.BKEY_SERIES_ARRAY)) {
-                    //noinspection ConstantConditions
-                    ArrayList<Series> list = data.getExtras().getParcelableArrayList(
-                            UniqueId.BKEY_SERIES_ARRAY);
-                    book.putList(UniqueId.BKEY_SERIES_ARRAY, list != null ? list
-                                                                          : new ArrayList<Series>());
+                if (data != null) {
+                    if (resultCode == Activity.RESULT_OK
+                            && data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
+                        //noinspection ConstantConditions
+                        ArrayList<Series> list =
+                                data.getExtras().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                        book.putList(UniqueId.BKEY_SERIES_ARRAY,
+                                     list != null ? list : new ArrayList<Series>());
 
+                        populateSeriesListField(book);
+                        getBookManager().setDirty(true);
+                    } else {
+                        // Even though the dialog was terminated,
+                        // some series MAY have been modified.
+                        book.refreshSeriesList(mDb);
+                    }
+
+                    boolean wasDirty = getBookManager().isDirty();
                     populateSeriesListField(book);
-                    getBookManager().setDirty(true);
+                    getBookManager().setDirty(wasDirty);
+
                 }
                 break;
 

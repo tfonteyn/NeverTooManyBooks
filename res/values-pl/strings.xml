@@ -131,7 +131,7 @@
     <string name="vldt_failed">Walidacja pola nie powiodła się dla \‘%s\’</string>
     <string name="vldt_read_start_after_end">Data rozpoczęcia czytania późniejsza od daty zakończenia</string>
     <string name="progress_end_backup_success">Kopia zapasowa wykonana</string>
-    <string name="export_error_backup_failed">Kopia zapasowa nie powiodła się</string>
+    <string name="error_backup_failed">Kopia zapasowa nie powiodła się</string>
     <string name="error_file_must_contain_column">Plik musi zawierać pole %s</string>
     <string name="import_error_csv_file_must_contain_any_column">Plik musi zawierać jedno z pól: %s</string>
     <string name="error_column_is_blank">Pole %1$s jest puste w linii %2$s</string>

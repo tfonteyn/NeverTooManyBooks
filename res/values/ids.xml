@@ -10,8 +10,6 @@
     <item name="TAG_GOODREADS_WORK" type="id" />
     <!-- tags a Cover Image View with the SimpleTask responsible to fetch the image -->
     <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
-    <!-- storing a Property.Holder or the Property itself. See {@link BooleanProperty} for example -->
-    <item name="TAG_PROPERTY" type="id" />
         <!-- used for tagging items in a list of items used in a selection dialog -->
     <item name="TAG_DIALOG_ITEM" type="id" />
 

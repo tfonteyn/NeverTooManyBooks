@@ -64,12 +64,20 @@ public class XmlImporter
     @NonNull
     private final ImportSettings mSettings;
 
+    /**
+     * Constructor.
+     */
     public XmlImporter() {
         mDb = new DBA(BookCatalogueApp.getAppContext());
         mSettings = new ImportSettings();
         mSettings.what = ExportSettings.ALL;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param settings the import settings
+     */
     @SuppressWarnings("unused")
     public XmlImporter(@NonNull final ImportSettings settings) {
         mDb = new DBA(BookCatalogueApp.getAppContext());
@@ -100,10 +108,9 @@ public class XmlImporter
     public void doEntity(@NonNull final ReaderEntity entity,
                          @NonNull final ImportListener listener)
             throws IOException {
-        final BufferedReader in =
-                new BufferedReaderNoClose(new InputStreamReader(entity.getStream(),
-                                                                StandardCharsets.UTF_8),
-                                          XmlUtils.BUFFER_SIZE);
+        final BufferedReader in = new BufferedReaderNoClose(
+                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8),
+                XmlUtils.BUFFER_SIZE);
 
         switch (entity.getType()) {
             case BooklistStyles:
@@ -127,7 +134,8 @@ public class XmlImporter
                                   @NonNull final BackupInfo info)
             throws IOException {
         final BufferedReader in = new BufferedReaderNoClose(
-                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
+                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8),
+                XmlUtils.BUFFER_SIZE);
         fromXml(in, null, new InfoReader(info));
     }
 
@@ -143,7 +151,8 @@ public class XmlImporter
                               @NonNull final SharedPreferences prefs)
             throws IOException {
         final BufferedReader in = new BufferedReaderNoClose(
-                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
+                new InputStreamReader(entity.getStream(), StandardCharsets.UTF_8),
+                XmlUtils.BUFFER_SIZE);
         SharedPreferences.Editor editor = prefs.edit();
         fromXml(in, listener, new PreferencesReader(editor));
         editor.apply();
@@ -265,9 +274,8 @@ public class XmlImporter
                             break;
 
                         case XmlUtils.XML_SERIALIZABLE:
-                            accessor.putSerializable(tag.name,
-                                                     Base64.decode(context.getBody(),
-                                                                   Base64.DEFAULT));
+                            accessor.putSerializable(
+                                    tag.name, Base64.decode(context.getBody(), Base64.DEFAULT));
                             break;
 
                         default:
@@ -276,9 +284,8 @@ public class XmlImporter
                     }
                 } catch (RuntimeException e) {
                     Logger.error(e);
-                    throw new RuntimeException(
-                            UNABLE_TO_PROCESS_XML_ENTITY_ERROR + tag.name
-                                    + '(' + tag.type + ')', e);
+                    throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + tag.name
+                                                       + '(' + tag.type + ')', e);
                 }
             }
         };
@@ -416,7 +423,6 @@ public class XmlImporter
                                      break;
 
                                  default:
-                                     //noinspection ThrowCaughtLocally
                                      throw new RTE.IllegalTypeException(tag.type);
                              }
 

@@ -27,10 +27,10 @@
 чтобы помочь сделать его ещё лучше.
 
 Полный списко изменений и часто задаваемых вопросов вы можете найти по адресу:
-	https://github.com/eleybourn/Book-Catalogue/wiki
+    https://github.com/eleybourn/Book-Catalogue/wiki
 
 Полная история обновлении находится по адресу:
-	https://raw.github.com/eleybourn/Book-Catalogue/master/README
+    https://raw.github.com/eleybourn/Book-Catalogue/master/README
 
 История недавних обновлений: 
 
@@ -61,4 +61,4 @@
 Bо всех багах и ошибках вините Grunthos:) И шлите нам отчеты с ошибками.
 
 Исходный код приложения:
-	https://github.com/eleybourn/Book-Catalogue
+    https://github.com/eleybourn/Book-Catalogue

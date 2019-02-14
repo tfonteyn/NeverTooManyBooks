@@ -132,7 +132,7 @@
     <string name="vldt_failed">Η επικύρωση απέτυχε για \‘%s\’</string>
     <string name="vldt_read_start_after_end">Η ημερομηνία έναρξης ανάγνωσης είναι μετά την ημερομηνία λήξης</string>
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
-    <string name="export_error_backup_failed">Αντίγραφο απέτυχε</string>
+    <string name="error_backup_failed">Αντίγραφο απέτυχε</string>
     <string name="error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %s</string>
     <string name="import_error_csv_file_must_contain_any_column">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %s</string>
     <string name="error_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$s</string>

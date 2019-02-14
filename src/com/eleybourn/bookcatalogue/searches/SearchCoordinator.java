@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Parcelable;
 
@@ -38,21 +39,22 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
- * Class to co-ordinate multiple {@link ManagedSearchTask} objects using
- * an existing {@link TaskManager}.
+ * Class to co-ordinate {@link ManagedSearchTask} objects using an existing {@link TaskManager}.
  * <p>
- * It uses the {@link TaskManager} it is passed and listens to
- * {@link TaskManager.TaskManagerListener} messages.
+ * Uses the {@link TaskManager} and listens to {@link TaskManager.TaskManagerListener} messages.
  * <p>
  * It maintain its own internal list of tasks {@link #mManagedTasks} and as tasks it knows about
  * finish, it processes the data. Once all tasks are complete, it sends a message to its
@@ -60,7 +62,7 @@ import java.util.List;
  *
  * @author Philip Warner
  */
-public class SearchManager {
+public class SearchCoordinator {
 
     /**
      * STATIC Object for passing messages from background tasks to activities
@@ -75,11 +77,13 @@ public class SearchManager {
      * <p>
      * Used as senderId for SENDING messages specific to this instance.
      */
+    @NonNull
     private final Long mMessageSenderId;
 
     /**
      * List of ManagedTask being managed by *this* object.
      */
+    @NonNull
     private final ArrayList<ManagedTask> mManagedTasks = new ArrayList<>();
 
     /**
@@ -89,7 +93,11 @@ public class SearchManager {
      */
     @NonNull
     private final TaskManager mTaskManager;
-
+    /** Output from search threads. */
+    @SuppressLint("UseSparseArrays")
+    @NonNull
+    private final Map<Integer, Bundle> mSearchResults =
+            Collections.synchronizedMap(new HashMap<Integer, Bundle>());
     /** Flags applicable to *current* search. */
     private int mSearchFlags;
     /** Accumulated book data. */
@@ -110,9 +118,6 @@ public class SearchManager {
     private boolean mHasValidIsbn;
     /** Whether of not to fetch thumbnails. */
     private boolean mFetchThumbnail;
-    /** Output from search threads. */
-    @NonNull
-    private Hashtable<Integer, Bundle> mSearchResults = new Hashtable<>();
     /**
      * Listener for TaskManager messages.
      */
@@ -122,13 +127,16 @@ public class SearchManager {
                  * {@link TaskManager.TaskFinishedMessage}
                  *
                  * When a task has ended, see check if there are more tasks running.
-                 * If not, finish and send results back with {@link SearchManager#sendResults}
+                 * If not, finish and send results back with {@link SearchCoordinator#sendResults}
                  */
                 @Override
                 public void onTaskFinished(@NonNull final TaskManager manager,
                                            @NonNull final ManagedTask task) {
                     // display final message from task.
-                    onUserMessage(task.getFinalMessage());
+                    String msg = task.getFinalMessage();
+                    if (msg != null) {
+                        onUserMessage(msg);
+                    }
 
                     // Handle the result, and optionally queue another task
                     if (task instanceof ManagedSearchTask) {
@@ -143,7 +151,7 @@ public class SearchManager {
 
                         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                             for (ManagedTask t : mManagedTasks) {
-                                Logger.info(SearchManager.this,
+                                Logger.info(SearchCoordinator.this,
                                             "|Task `" + t.getName() + "` still running");
                             }
                         }
@@ -182,19 +190,26 @@ public class SearchManager {
      * @param taskManager           TaskManager to use
      * @param searchManagerListener to send results to
      */
-    public SearchManager(@NonNull final TaskManager taskManager,
-                         @NonNull final SearchManagerListener searchManagerListener) {
+    public SearchCoordinator(@NonNull final TaskManager taskManager,
+                             @NonNull final SearchManagerListener searchManagerListener) {
 
         /* Controller instance for this specific SearchManager */
         SearchManagerController controller = new SearchManagerController() {
+            /**
+             *
+             */
             public void requestAbort() {
                 mTaskManager.cancelAllTasks();
             }
 
+            /**
+             *
+             * @return the search coordinator.
+             */
             @NonNull
             @Override
-            public SearchManager getManager() {
-                return SearchManager.this;
+            public SearchCoordinator getSearchCoordinator() {
+                return SearchCoordinator.this;
             }
         };
         mMessageSenderId = MESSAGE_SWITCH.createSender(controller);
@@ -212,6 +227,7 @@ public class SearchManager {
      * Check if passed Bundle contains a non-blank ISBN string. Does not check if the ISBN is valid.
      *
      * @param bundle to check
+     *
      * @return Present/absent
      */
     private static boolean hasIsbn(@NonNull final Bundle bundle) {
@@ -229,21 +245,28 @@ public class SearchManager {
      * @param author         to search for (can be empty)
      * @param title          to search for (can be empty)
      * @param isbn           to search for (can be empty)
-     * @param fetchThumbnail whether to fetch thumbnails
+     * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
      */
     public void search(final int searchFlags,
                        @NonNull final String author,
                        @NonNull final String title,
                        @NonNull final String isbn,
                        final boolean fetchThumbnail) {
+
+        // last chance before we try to make network connections in the individual tasks.
+        if (!NetworkUtils.isNetworkAvailable(mTaskManager.getContext())) {
+            throw new RuntimeException("Network not available");
+        }
+
+        // dev sanity check
         if ((searchFlags & SearchSites.Site.SEARCH_ALL) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
         }
-
-        if (mManagedTasks.size() > 0) {
+        // dev sanity check
+        if (!mManagedTasks.isEmpty()) {
             throw new IllegalStateException(
                     "Attempting to start new search while previous search running");
-        }
+        }// dev sanity check
         if (author.isEmpty() && title.isEmpty() && isbn.isEmpty()) {
             throw new IllegalArgumentException(
                     "Must specify at least one criteria non-empty: isbn=" + isbn
@@ -255,7 +278,7 @@ public class SearchManager {
 
         // Save the input and initialize
         mBookData = new Bundle();
-        mSearchResults = new Hashtable<>();
+        mSearchResults.clear();
 
         mWaitingForIsbn = false;
         mCancelledFlg = false;
@@ -331,9 +354,10 @@ public class SearchManager {
         Bundle bookData = mSearchResults.get(searchId);
 
         // See if we REALLY got data from this source
-        if (bookData == null) {
+        if (bookData == null || bookData.isEmpty()) {
             return;
         }
+
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this,
                         "Processing data from search engine: id=" + searchId);
@@ -547,11 +571,10 @@ public class SearchManager {
         ArrayList<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
         // If book not found or is missing required data, warn the user
-        if (mBookData.size() == 0
+        if (mBookData.isEmpty()
                 || authors == null || authors.isEmpty()
                 || title == null || title.isEmpty()) {
-            mTaskManager.sendTaskUserMessage(
-                    BookCatalogueApp.getResString(R.string.warning_book_not_found));
+            mTaskManager.sendTaskUserMessage(R.string.warning_book_not_found);
         }
 
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
@@ -564,7 +587,7 @@ public class SearchManager {
                                 @Override
                                 public boolean deliver(@NonNull final SearchManagerListener listener) {
                                     if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                                        Logger.info(SearchManager.this,
+                                        Logger.info(SearchCoordinator.this,
                                                     "Delivering to SearchListener=" + listener +
                                                             "|title=`" + mBookData.getString(
                                                             UniqueId.KEY_TITLE) + '`');
@@ -576,18 +599,22 @@ public class SearchManager {
     }
 
     /**
+     * Start a single task.
+     * <p>
      * When running in single-stream mode, start the next thread that has no data.
-     * While Google is reputedly most likely to succeed, it also produces garbage a lot.
+     * While Google is reputedly most likely to succeed, it also produces garbage a lot of the time.
      * So we search Amazon, Goodreads, Google and LT last as it REQUIRES an ISBN.
+     *
+     * @return <tt>true</tt> if a search was started, <tt>false</tt> if not
      */
     private boolean startNext() {
         // Loop though in 'search-priority' order
-        for (SearchSites.Site source : SearchSites.getSites()) {
+        for (SearchSites.Site site : SearchSites.getSites()) {
             // If this search includes the source, check it
-            if (source.enabled && ((mSearchFlags & source.id) != 0)) {
+            if (site.isEnabled() && ((mSearchFlags & site.id) != 0)) {
                 // If the source has not been searched, search it
-                if (!mSearchResults.containsKey(source.id)) {
-                    return startOneSearch(source);
+                if (!mSearchResults.containsKey(site.id)) {
+                    return startOneSearch(site);
                 }
             }
         }
@@ -598,14 +625,16 @@ public class SearchManager {
      * Start all searches listed in passed parameter that have not been run yet.
      *
      * @param sources bitmask with sites to search
+     *
+     * @return <tt>true</tt> if at least one search was started, <tt>false</tt> if none
      */
     private boolean startSearches(final int sources) {
         boolean atLeastOneStarted = false;
         // Loop searches in priority order
         for (SearchSites.Site source : SearchSites.getSites()) {
-            // If requested search contains this source...
-            if (source.enabled && ((sources & source.id) != 0)) {
-                // If we have not run this search...
+            // If this search includes the source, check it
+            if (source.isEnabled() && ((sources & source.id) != 0)) {
+                // If the source has not been searched, search it
                 if (!mSearchResults.containsKey(source.id)) {
                     // Run it now
                     if (startOneSearch(source)) {
@@ -627,7 +656,7 @@ public class SearchManager {
             return false;
         }
         // special case, some sites can only be searched with an ISBN
-        if (site.isbnOnly && !mHasValidIsbn) {
+        if (site.isIsbnOnly() && !mHasValidIsbn) {
             return false;
         }
 
@@ -645,8 +674,10 @@ public class SearchManager {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, "Starting search: " + task.getName());
         }
+
         task.start();
         return true;
+
     }
 
     /**
@@ -654,14 +685,14 @@ public class SearchManager {
      *
      * @see TaskManager.TaskManagerListener#onTaskFinished
      */
-    private void handleSearchTaskFinished(@NonNull final ManagedSearchTask managedSearchTask) {
+    private void handleSearchTaskFinished(@NonNull final ManagedSearchTask task) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this,
-                        "handleSearchTaskFinished", '`' + managedSearchTask.getName() + '`');
+            Logger.info(this, "handleSearchTaskFinished", '`' + task.getName() + '`');
         }
-        mCancelledFlg = managedSearchTask.isCancelled();
-        final Bundle bookData = managedSearchTask.getBookData();
-        mSearchResults.put(managedSearchTask.getSearchId(), bookData);
+
+        mCancelledFlg = task.isCancelled();
+        Bundle bookData = task.getBookData();
+        mSearchResults.put(task.getTaskId(), bookData);
 
         if (mCancelledFlg) {
             mWaitingForIsbn = false;
@@ -712,6 +743,7 @@ public class SearchManager {
         }
     }
 
+    @NonNull
     public Long getId() {
         return mMessageSenderId;
     }
@@ -724,7 +756,7 @@ public class SearchManager {
         void requestAbort();
 
         @NonNull
-        SearchManager getManager();
+        SearchCoordinator getSearchCoordinator();
     }
 
     /**
@@ -737,4 +769,5 @@ public class SearchManager {
         boolean onSearchFinished(boolean wasCancelled,
                                  @NonNull Bundle bookData);
     }
+
 }

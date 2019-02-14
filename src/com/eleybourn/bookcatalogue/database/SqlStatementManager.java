@@ -112,10 +112,9 @@ public class SqlStatementManager
         return stmt;
     }
 
-    public int size() {
-        return mStatements.size();
+    public boolean isEmpty() {
+        return mStatements.isEmpty();
     }
-
 
     /**
      * RuntimeException are caught and ignored.

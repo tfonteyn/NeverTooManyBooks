@@ -19,57 +19,72 @@
  */
 package com.eleybourn.bookcatalogue.tasks.simpletasks;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 import java.io.BufferedInputStream;
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
 /**
  * Class to execute Runnable objects in a separate thread after a predetermined delay.
+ * <p>
+ * KILL_CONNECT_DELAY is 30 seconds. This means reading an http response MUST be complete in 30 secs.
  *
  * @author pjw
  */
 public final class Terminator {
 
-    /** Task queue to get book lists in background. */
-    private static final SimpleTaskQueue TASK_QUEUE =
-            new SimpleTaskQueue("Terminator", 1);
-
+    /** Task queue to kill run-away connections. */
+    private static final SimpleTaskQueue TASK_QUEUE;
     /** Object used in synchronization. */
     private static final Object TERMINATOR_LOCK = new Object();
-
     /** Queue of Event objects currently awaiting execution. */
     private static final PriorityQueue<Event> EVENTS =
             new PriorityQueue<>(10, new EventComparator());
-
     /** initial connection time to websites timeout. */
     private static final int CONNECT_TIMEOUT = 30_000;
     /** timeout for requests to  website. */
     private static final int READ_TIMEOUT = 30_000;
     /** kill connections after this delay. */
     private static final int KILL_CONNECT_DELAY = 30_000;
+    /** if at first we don't succeed... */
+    private static final int RETRIES = 3;
+    /** milliseconds to wait between retries. */
+    private static final int RETRY_AFTER_MS = 500;
     /** for synchronization. */
     private static final Object INPUT_STREAM_LOCK = new Object();
-
     /**
      * Flag indicating the main thread process is still running and waiting
      * for a timer to elapse.
      */
     private static boolean mIsRunning;
+
+    //2019-02-11:  replaced TASK_QUEUE = new SimpleTaskQueue("Terminator", 1);
+    static {
+        int maxTasks = 1;
+        int nr = Runtime.getRuntime().availableProcessors();
+        if (nr > 4) {
+            // just a poke in the dark TODO: experiment more
+            maxTasks = 3;
+        }
+        if (DEBUG_SWITCHES.TASK_MANAGER && BuildConfig.DEBUG) {
+            Logger.info(Terminator.class, "#cpu: " + nr + ", #maxTasks: " + maxTasks);
+        }
+        TASK_QUEUE = new SimpleTaskQueue("Terminator", maxTasks);
+    }
 
     private Terminator() {
     }
@@ -80,6 +95,52 @@ public final class Terminator {
      */
     @SuppressWarnings("EmptyMethod")
     public static void init() {
+    }
+
+    /**
+     * Get a ConnectionInfo from a URL.
+     *
+     * <p>
+     * It is assumed we have a network.
+     * It is not assumed (will be tested) that the internet works.
+     *
+     * @param urlStr URL to retrieve
+     *
+     * @return ConnectionInfo
+     */
+    @WorkerThread
+    @NonNull
+    public static WrappedConnection getConnection(@NonNull final String urlStr)
+            throws IOException {
+
+        final URL url = new URL(urlStr);
+
+        // lets make sure name resolution and basic site access works.
+        // Uses a low-level socket, if that already fails, no point to continue.
+        if (!NetworkUtils.isAlive(urlStr)) {
+            throw new IOException("site cannot be contacted");
+        }
+
+        // only allow one request at a time to get an InputStream.
+        synchronized (INPUT_STREAM_LOCK) {
+            int retries = RETRIES;
+            while (true) {
+                try {
+                    return new WrappedConnection(url);
+
+                } catch (UnknownHostException e) {
+                    Logger.info(Terminator.class, e.getLocalizedMessage());
+                    retries--;
+                    if (retries-- == 0) {
+                        throw e;
+                    }
+                    try {
+                        Thread.sleep(RETRY_AFTER_MS);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -104,118 +165,6 @@ public final class Terminator {
                 // Wake up task in case this object has a shorter timer
                 synchronized (TERMINATOR_LOCK) {
                     TERMINATOR_LOCK.notify();
-                }
-            }
-        }
-    }
-
-    /**
-     * https://developer.android.com/about/versions/marshmallow/android-6.0-changes
-     * The Apache HTTP client was removed from 6.0 (although you can use a legacy lib)
-     * Recommended is to use the java.net.HttpURLConnection
-     * This means com.android.okhttp
-     * https://square.github.io/okhttp/
-     * <p>
-     * 2018-11-22: removal of apache started....
-     * <p>
-     * Get data from a URL. Makes sure timeout is set to avoid application stalling.
-     *
-     * @param url URL to retrieve
-     *
-     * @return InputStream
-     */
-    @Nullable
-    public static InputStream getInputStream(@NonNull final URL url)
-            throws IOException {
-
-        synchronized (INPUT_STREAM_LOCK) {
-
-            int retries = 3;
-            while (true) {
-
-                final ConnectionInfo connInfo = new ConnectionInfo();
-
-                try {
-                    /*
-                     * There is a problem with failed timeouts:
-                     *   http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
-                     *
-                     * So...we are forced to use a background thread to be able to kill it.
-                     */
-
-                    // paranoid sanity check
-                    URLConnection urlConnection = url.openConnection();
-                    if (!(urlConnection instanceof HttpURLConnection)) {
-                        return null;
-                    }
-
-                    connInfo.connection = (HttpURLConnection) urlConnection;
-                    connInfo.connection.setUseCaches(false);
-                    connInfo.connection.setDoInput(true);
-                    connInfo.connection.setDoOutput(false);
-                    connInfo.connection.setConnectTimeout(CONNECT_TIMEOUT);
-                    connInfo.connection.setReadTimeout(READ_TIMEOUT);
-                    connInfo.connection.setRequestMethod("GET");
-
-                    // close the connection on a background task,
-                    // so that we can cancel any runaway timeouts.
-                    enqueue(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (connInfo.inputStream != null) {
-                                if (connInfo.inputStream.isOpen()) {
-                                    try {
-                                        connInfo.inputStream.close();
-                                        connInfo.connection.disconnect();
-                                    } catch (IOException e) {
-                                        Logger.error(e);
-                                    }
-                                }
-                            } else {
-                                connInfo.connection.disconnect();
-                            }
-                        }
-                    }, KILL_CONNECT_DELAY);
-
-                    connInfo.inputStream =
-                            new StatefulBufferedInputStream(connInfo.connection.getInputStream());
-
-                    if (connInfo.connection != null
-                            && connInfo.connection.getResponseCode() >= 300) {
-                        Logger.error("URL lookup failed: "
-                                             + connInfo.connection.getResponseCode()
-                                             + ' ' + connInfo.connection.getResponseMessage()
-                                             + ", URL: " + url);
-                        return null;
-                    }
-
-                    return connInfo.inputStream;
-
-                } catch (java.net.UnknownHostException e) {
-                    Logger.error(e);
-                    retries--;
-                    if (retries-- == 0) {
-                        throw e;
-                    }
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ignored) {
-                    }
-                    if (connInfo.connection != null) {
-                        connInfo.connection.disconnect();
-                    }
-                } catch (InterruptedIOException e) {
-                    Logger.info(Terminator.class,
-                                "InterruptedIOException: " + e.getLocalizedMessage());
-                    if (connInfo.connection != null) {
-                        connInfo.connection.disconnect();
-                    }
-                } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
-                    Logger.error(e);
-                    if (connInfo.connection != null) {
-                        connInfo.connection.disconnect();
-                    }
-                    throw e;
                 }
             }
         }
@@ -309,37 +258,64 @@ public final class Terminator {
         }
     }
 
-    public static class ConnectionInfo {
+    /**
+     * Wrapping a HttpURLConnection and BufferedInputStream with timeout close() support.
+     *
+     * <p>
+     * There is a problem with failed timeouts:
+     * http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
+     * <p>
+     * So...we are forced to use a background thread to be able to kill it.
+     * <p>
+     * Get data from a URL. Makes sure timeout is set to avoid application stalling.
+     */
+    public static class WrappedConnection
+            implements AutoCloseable {
 
-        @Nullable
-        HttpURLConnection connection;
-        @Nullable
-        StatefulBufferedInputStream inputStream;
-    }
+        @NonNull
+        public final HttpURLConnection con;
+        @NonNull
+        public final BufferedInputStream inputStream;
 
-    public static class StatefulBufferedInputStream
-            extends BufferedInputStream
-            implements Closeable {
-
-        private boolean mIsOpen = true;
-
-        StatefulBufferedInputStream(@NonNull final InputStream in) {
-            super(in);
-        }
-
-        @Override
-        @CallSuper
-        public void close()
+        /** Constructor. */
+        WrappedConnection(@NonNull final URL url)
                 throws IOException {
-            try {
-                super.close();
-            } finally {
-                mIsOpen = false;
+            con = (HttpURLConnection) url.openConnection();
+            con.setUseCaches(false);
+            con.setConnectTimeout(CONNECT_TIMEOUT);
+            con.setReadTimeout(READ_TIMEOUT);
+            // these are defaults
+            //con.setDoInput(true);
+            //con.setDoOutput(false);
+            //con.setRequestMethod("GET");
+
+            // close the connection on a background task after a 'kill' timeout,
+            // so that we can cancel any runaway timeouts.
+            enqueue(new Runnable() {
+                @Override
+                public void run() {
+                    if (BuildConfig.DEBUG) {
+                        Logger.info(Terminator.class,"Killing connection: " + url);
+                    }
+                    close();
+                }
+            }, KILL_CONNECT_DELAY);
+
+            inputStream = new BufferedInputStream(con.getInputStream());
+
+            if (con.getResponseCode() >= 300) {
+                throw new IOException("response: " + con.getResponseCode()
+                                              + ' ' + con.getResponseMessage());
             }
         }
 
-        public boolean isOpen() {
-            return mIsOpen;
+        public void close() {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                Logger.error(e);
+            }
+            con.disconnect();
         }
     }
 }

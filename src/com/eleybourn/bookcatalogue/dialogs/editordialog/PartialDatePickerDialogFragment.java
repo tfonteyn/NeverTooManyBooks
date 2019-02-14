@@ -484,8 +484,7 @@ public class PartialDatePickerDialogFragment
                                             mActivity,
                                             R.string.warning_if_month_set_year_must_be);
                                 } else {
-                                    PartialDatePickerDialogFragment.this
-                                            .reportChanges(mYear, mMonth, mDay);
+                                    reportChanges(mYear, mMonth, mDay);
 
                                 }
                             }

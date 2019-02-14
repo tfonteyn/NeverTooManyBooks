@@ -14,16 +14,18 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-class Editions
+public class Editions
         extends AbstractBase {
 
     private static final String EDITIONS_URL = "/cgi-bin/se.cgi?arg=%s&type=ISBN";
     private List<String> mEditions;
 
     /**
+     * Constructor.
+     *
      * We assume the isbn is already checked & valid.
      */
-    Editions(@NonNull final String isbn) {
+    public Editions(@NonNull final String isbn) {
         mPath = ISFDBManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
     }
 
@@ -56,7 +58,7 @@ class Editions
      *
      * @throws SocketTimeoutException on timeout
      */
-    List<String> fetch()
+    public List<String> fetch()
             throws SocketTimeoutException {
         if (mEditions == null) {
             mEditions = new ArrayList<>();
@@ -67,7 +69,7 @@ class Editions
 
         findEntries(mDoc, "tr.table0", "tr.table1");
         // if no editions found, we might have been redirected to the book itself
-        if (mEditions.size() == 0) {
+        if (mEditions.isEmpty()) {
             // check if the url looks like "http://www.isfdb.org/cgi-bin/pl.cgi?597467"
             if (mDoc.location().contains("pl.cgi")) {
                 mEditions.add(mDoc.location());

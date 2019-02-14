@@ -102,7 +102,7 @@ public class LegacyEvent
                                             @Override
                                             public void run() {
                                                 QueueManager.getQueueManager()
-                                                            .deleteEvent(LegacyEvent.this.getId());
+                                                            .deleteEvent(getId());
                                             }
                                         }));
 

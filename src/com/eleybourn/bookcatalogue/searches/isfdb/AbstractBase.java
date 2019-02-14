@@ -66,9 +66,9 @@ abstract class AbstractBase {
                  * @throws java.net.MalformedURLException if the request URL is not a HTTP
                  * or HTTPS URL, or is otherwise malformed
                  * @throws HttpStatusException(IOException) if the response is not OK and
-                  * HTTP response errors are not ignored
+                 * HTTP response errors are not ignored
                  * @throws UnsupportedMimeTypeException if the response mime type is not
-                  * supported and those errors are not ignored
+                 * supported and those errors are not ignored
                  * @throws java.net.SocketTimeoutException if the connection times out
                  * @throws IOException on error
                  */
@@ -98,6 +98,13 @@ abstract class AbstractBase {
                 .trim();
     }
 
+    /**
+     * A url ends in ...?123.  Strip and return the '123' part.
+     *
+     * @param url to handle
+     *
+     * @return the number
+     */
     long stripNumber(@NonNull final String url) {
         return Long.parseLong(url.split("\\?")[1]);
     }

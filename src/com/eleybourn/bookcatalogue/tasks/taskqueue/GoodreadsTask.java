@@ -55,6 +55,11 @@ public abstract class GoodreadsTask
 
     private static final long serialVersionUID = -4388499226374546985L;
 
+    /**
+     * Constructor.
+     *
+     * @param description for the task
+     */
     public GoodreadsTask(@NonNull final String description) {
         super(description);
     }
@@ -102,7 +107,6 @@ public abstract class GoodreadsTask
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
         // Update task info binding
-        //noinspection ConstantConditions
         holder.description.setText(getDescription());
         String statusCode = tasksCursor.getStatusCode().toUpperCase();
         String statusText;

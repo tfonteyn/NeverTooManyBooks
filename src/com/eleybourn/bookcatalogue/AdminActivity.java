@@ -35,7 +35,8 @@ import androidx.core.content.FileProvider;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
-import com.eleybourn.bookcatalogue.backup.csv.CsvTasks;
+import com.eleybourn.bookcatalogue.backup.csv.ExportCSVTask;
+import com.eleybourn.bookcatalogue.backup.csv.ImportCSVTask;
 import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
@@ -54,7 +55,7 @@ import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivi
 import com.eleybourn.bookcatalogue.settings.FieldVisibilitySettingsFragment;
 import com.eleybourn.bookcatalogue.settings.GlobalSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.SettingsActivity;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.TaskWithProgressDialogFragment;
+import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueListActivity;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -70,12 +71,16 @@ import java.util.List;
  */
 public class AdminActivity
         extends BaseActivity
-        implements TaskWithProgressDialogFragment.OnTaskFinishedListener {
+        implements TaskWithProgress.OnTaskFinishedListener {
 
     /** requestCode for making a backup to archive. // taskId for exporting CSV. */
     private static final int REQ_ARCHIVE_BACKUP = 0;
     /** requestCode for doing a restore/import from archive.  // taskId for importing CSV. */
     private static final int REQ_ARCHIVE_RESTORE = 1;
+    /** requestCode for making a backup to archive. // taskId for exporting CSV. */
+    private static final int REQ_CSV_EXPORT = 2;
+    /** requestCode for doing a restore/import from archive.  // taskId for importing CSV. */
+    private static final int REQ_CSV_IMPORT = 3;
 
     private static final int REQ_ADMIN_SEARCH_SETTINGS = 10;
 
@@ -362,7 +367,7 @@ public class AdminActivity
         File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
         ExportSettings settings = new ExportSettings(file);
         settings.what = ExportSettings.BOOK_CSV;
-        CsvTasks.exportCSV(this, REQ_ARCHIVE_BACKUP, settings);
+        new ExportCSVTask(REQ_CSV_EXPORT, this, settings).execute();
     }
 
     /**
@@ -397,7 +402,7 @@ public class AdminActivity
     private void importFromCSV() {
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
-        if (files.size() == 0) {
+        if (files.isEmpty()) {
             StandardDialogs.showUserMessage(this, R.string.import_error_csv_file_not_found);
         } else {
             if (files.size() == 1) {
@@ -429,7 +434,7 @@ public class AdminActivity
     private void importFromCSV(@NonNull final File file) {
         ImportSettings settings = new ImportSettings(file);
         settings.what = ImportSettings.BOOK_CSV;
-        CsvTasks.importCSV(this, REQ_ARCHIVE_RESTORE, settings);
+        new ImportCSVTask(REQ_CSV_IMPORT, this, settings).execute();
     }
 
     @Override
@@ -461,24 +466,24 @@ public class AdminActivity
         Tracker.exitOnActivityResult(this);
     }
 
-
     /**
      * Called when a task finishes.
+     *
+     * @param result not used
      */
     @Override
-    public void onTaskFinished(@NonNull final TaskWithProgressDialogFragment fragment,
-                               final int taskId,
-                               final boolean success,
+    public void onTaskFinished(final int taskId,
+                               final boolean failed,
                                final boolean cancelled,
-                               @NonNull final TaskWithProgressDialogFragment.FragmentTask task) {
+                               @Nullable final Object result) {
         switch (taskId) {
-            case REQ_ARCHIVE_BACKUP:
+            case REQ_CSV_EXPORT:
                 if (!cancelled) {
                     onExportFinished();
                 }
                 break;
 
-            case REQ_ARCHIVE_RESTORE:
+            case REQ_CSV_IMPORT:
                 break;
         }
     }

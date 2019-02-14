@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -258,7 +259,6 @@ public class UpdateFieldsFromInternetActivity
                     // ENHANCE: The check is really a FOUR-state.
                     final CompoundButton cb = (CompoundButton) v;
                     final Fields.FieldUsage usage = (Fields.FieldUsage) cb.getTag();
-                    //noinspection ConstantConditions
                     usage.nextState();
                     cb.setChecked(usage.isSelected());
                     cb.setText(usage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
@@ -295,7 +295,7 @@ public class UpdateFieldsFromInternetActivity
 
             dialog.setButton(
                     AlertDialog.BUTTON_POSITIVE,
-                    UpdateFieldsFromInternetActivity.this.getString(R.string.yes),
+                    getString(R.string.yes),
                     new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
@@ -305,7 +305,7 @@ public class UpdateFieldsFromInternetActivity
                     });
             dialog.setButton(
                     AlertDialog.BUTTON_NEGATIVE,
-                    UpdateFieldsFromInternetActivity.this.getString(android.R.string.cancel),
+                    getString(android.R.string.cancel),
                     new DialogInterface.OnClickListener() {
                         @SuppressWarnings("EmptyMethod")
                         public void onClick(@NonNull final DialogInterface dialog,
@@ -315,7 +315,7 @@ public class UpdateFieldsFromInternetActivity
                     });
             dialog.setButton(
                     AlertDialog.BUTTON_NEUTRAL,
-                    UpdateFieldsFromInternetActivity.this.getString(R.string.no),
+                    getString(R.string.no),
                     new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
@@ -400,7 +400,6 @@ public class UpdateFieldsFromInternetActivity
             CompoundButton cb = view.findViewById(R.id.usage);
             if (cb != null) {
                 Fields.FieldUsage usage = (Fields.FieldUsage) cb.getTag();
-                //noinspection ConstantConditions
                 if (usage.isSelected()) {
                     return true;
                 }
@@ -420,7 +419,6 @@ public class UpdateFieldsFromInternetActivity
                                                  mSearchSites,
                                                  mFieldUsages,
                                                  mSearchTaskListener);
-
         if (bookId > 0) {
             updateTask.setBookId(bookId);
         }

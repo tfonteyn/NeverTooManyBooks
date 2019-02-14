@@ -63,8 +63,7 @@ public abstract class BackupReaderAbstract
     /** progress and cancellation listener. */
     private BackupReader.BackupReaderListener mProgressListener;
     /** what and how to import. */
-    private @NonNull
-    ImportSettings mSettings;
+    private ImportSettings mSettings;
 
     /**
      * Constructor.

@@ -23,8 +23,8 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.BookNotFoundException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsExceptions.NotAuthorizedException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 import org.apache.http.NameValuePair;
@@ -56,19 +56,19 @@ public class ReviewUpdateHandler
                        @Nullable final String review,
                        final int rating)
             throws IOException,
-                   NotAuthorizedException,
+                   AuthorizationException,
                    BookNotFoundException {
 
         HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/review/" + reviewId + ".xml");
 
 //        StringBuilder shelvesString = null;
-//        if (shelves != null && shelves.size() > 0) {
+//        if (shelves != null && !shelves.isEmpty()) {
 //            shelvesString = new StringBuilder();
-//            if (shelves.size() > 0) {
+//            if (!shelves.isEmpty()) {
 //                shelvesString.append(shelves.get(0));
 //            }
 //            for (int i = 1; i < shelves.size(); i++) {
-//                shelvesString.append("," + shelves.get(i));
+//                shelvesString.append(',').append(shelves.get(i));
 //            }
 //        }
 
@@ -102,35 +102,35 @@ public class ReviewUpdateHandler
         //String s = handler.getHtml();
         //Logger.info(s);
         /* Typical response can be ignored, but is:
-           <review>
-			  <book-id type='integer'>375802</book-id>
-			  <comments-count type='integer'>0</comments-count>
-			  <created-at type='datetime'>2011-03-15T01:51:42-07:00</created-at>
-			  <hidden-flag type='boolean'>false</hidden-flag>
-			  <id type='integer'>154477749</id>
-			  <language-code type='integer' nil='true'></language-code>
-			  <last-comment-at type='datetime' nil='true'></last-comment-at>
-			  <last-revision-at type='datetime'>2012-01-01T05:43:30-08:00</last-revision-at>
-			  <non-friends-rating-count type='integer'>0</non-friends-rating-count>
-			  <notes></notes>
-			  <rating type='integer'>4</rating>
-			  <ratings-count type='integer'>0</ratings-count>
-			  <ratings-sum type='integer'>0</ratings-sum>
-			  <read-at type='datetime'>1991-05-01T00:00:00-07:00</read-at>
-			  <read-count></read-count>
-			  <read-status>read</read-status>
-			  <recommendation></recommendation>
-			  <recommender-user-id1 type='integer'>0</recommender-user-id1>
-			  <recommender-user-name1></recommender-user-name1>
-			  <review></review>
-			  <sell-flag type='boolean'>true</sell-flag>
-			  <spoiler-flag type='boolean'>false</spoiler-flag>
-			  <started-at type='datetime' nil='true'></started-at>
-			  <updated-at type='datetime'>2012-01-01T05:43:30-08:00</updated-at>
-			  <user-id type='integer'>5129458</user-id>
-			  <weight type='integer'>0</weight>
-			  <work-id type='integer'>2422333</work-id>
-			</review>
+            <review>
+                <book-id type='integer'>375802</book-id>
+                <comments-count type='integer'>0</comments-count>
+                <created-at type='datetime'>2011-03-15T01:51:42-07:00</created-at>
+                <hidden-flag type='boolean'>false</hidden-flag>
+                <id type='integer'>154477749</id>
+                <language-code type='integer' nil='true'></language-code>
+                <last-comment-at type='datetime' nil='true'></last-comment-at>
+                <last-revision-at type='datetime'>2012-01-01T05:43:30-08:00</last-revision-at>
+                <non-friends-rating-count type='integer'>0</non-friends-rating-count>
+                <notes></notes>
+                <rating type='integer'>4</rating>
+                <ratings-count type='integer'>0</ratings-count>
+                <ratings-sum type='integer'>0</ratings-sum>
+                <read-at type='datetime'>1991-05-01T00:00:00-07:00</read-at>
+                <read-count></read-count>
+                <read-status>read</read-status>
+                <recommendation></recommendation>
+                <recommender-user-id1 type='integer'>0</recommender-user-id1>
+                <recommender-user-name1></recommender-user-name1>
+                <review></review>
+                <sell-flag type='boolean'>true</sell-flag>
+                <spoiler-flag type='boolean'>false</spoiler-flag>
+                <started-at type='datetime' nil='true'></started-at>
+                <updated-at type='datetime'>2012-01-01T05:43:30-08:00</updated-at>
+                <user-id type='integer'>5129458</user-id>
+                <weight type='integer'>0</weight>
+                <work-id type='integer'>2422333</work-id>
+            </review>
          */
     }
 

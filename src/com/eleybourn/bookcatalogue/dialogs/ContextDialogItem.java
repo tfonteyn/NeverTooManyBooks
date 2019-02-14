@@ -60,7 +60,7 @@ public class ContextDialogItem
     public static void showContextDialog(@NonNull final Context context,
                                          @StringRes final int title,
                                          @NonNull final List<ContextDialogItem> items) {
-        if (items.size() > 0) {
+        if (!items.isEmpty()) {
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
             items.toArray(itemArray);
 
