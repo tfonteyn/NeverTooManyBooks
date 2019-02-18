@@ -30,7 +30,7 @@ public class BackupTask
     @NonNull
     private final ExportSettings mSettings;
     @NonNull
-    private final File mTempFile;
+    private final File mTmpFile;
 
     public BackupTask(final int taskId,
                       @NonNull final FragmentActivity context,
@@ -50,16 +50,16 @@ public class BackupTask
         }
 
         // we write to the temp file, and rename it upon success
-        mTempFile = new File(mSettings.file.getAbsolutePath() + ".tmp");
+        mTmpFile = new File(mSettings.file.getAbsolutePath() + ".tmp");
     }
 
     @Override
     @NonNull
     protected ExportSettings doInBackground(final Void... params) {
-        BackupContainer bkp = new TarBackupContainer(mTempFile);
+        BackupContainer bkp = new TarBackupContainer(mTmpFile);
         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
             Logger.info(this, "backup",
-                        "starting|file=" + mTempFile.getAbsolutePath());
+                        "starting|file=" + mTmpFile.getAbsolutePath());
         }
         try (BackupWriter wrt = bkp.newWriter()) {
             // go go go...
@@ -89,7 +89,7 @@ public class BackupTask
                 // success
                 StorageUtils.deleteFile(mSettings.file);
                 //noinspection ConstantConditions
-                StorageUtils.renameFile(mTempFile, mSettings.file);
+                StorageUtils.renameFile(mTmpFile, mSettings.file);
 
                 SharedPreferences.Editor ed = Prefs.getPrefs().edit();
                 // if the backup was a full one (not a 'since') remember that.
@@ -112,11 +112,11 @@ public class BackupTask
             Logger.error(e);
             mException = e;
             // cleanup
-            StorageUtils.deleteFile(mTempFile);
+            StorageUtils.deleteFile(mTmpFile);
         } finally {
             if (mFragment.isCancelled() || mException != null) {
                 // cleanup
-                StorageUtils.deleteFile(mTempFile);
+                StorageUtils.deleteFile(mTmpFile);
             }
         }
 

@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -31,20 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
-
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
-import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.NetworkUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
-
-import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +39,20 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.SAXException;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.NetworkUtils;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
@@ -169,6 +168,15 @@ public class LibraryThingManager
     }
 
 
+    /**
+     * Check if we have a key; if not alert the user.
+     *
+     * @param context    caller context
+     * @param required   <tt>true</tt> if we must have access to LT.
+     *                   <tt>false</tt> it it would be beneficial.
+     * @param prefSuffix String used to flag in preferences if we showed the alert from
+     *                   that caller already or not yet.
+     */
     public static void showLtAlertIfNecessary(@NonNull final Context context,
                                               final boolean required,
                                               @NonNull final String prefSuffix) {
@@ -178,11 +186,18 @@ public class LibraryThingManager
         }
     }
 
+    /**
+     * Alert the user if not shown before that we require or would benefit from LT access.
+     *
+     * @param context    caller context
+     * @param required   <tt>true</tt> if we must have access to LT.
+     *                   <tt>false</tt> it it would be beneficial.
+     * @param prefSuffix String used to flag in preferences if we showed the alert from
+     *                   that caller already or not yet.
+     */
     public static void needLibraryThingAlert(@NonNull final Context context,
                                              final boolean required,
                                              @NonNull final String prefSuffix) {
-
-        final SharedPreferences prefs = Prefs.getPrefs();
 
         boolean showAlert;
         @StringRes
@@ -193,7 +208,7 @@ public class LibraryThingManager
             showAlert = true;
         } else {
             msgId = R.string.lt_uses_info;
-            showAlert = !prefs.getBoolean(prefName, false);
+            showAlert = !Prefs.getPrefs().getBoolean(prefName, false);
         }
 
         if (!showAlert) {
@@ -224,7 +239,7 @@ public class LibraryThingManager
                     new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
-                            prefs.edit().putBoolean(prefName, true).apply();
+                            Prefs.getPrefs().edit().putBoolean(prefName, true).apply();
                             dialog.dismiss();
                         }
                     });
@@ -280,7 +295,7 @@ public class LibraryThingManager
         waitUntilRequestAllowed();
 
         // Get it
-        try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
             // Don't bother catching general exceptions, they will be caught by the caller.
@@ -329,6 +344,7 @@ public class LibraryThingManager
             case LARGE:
                 path = COVER_URL_LARGE;
                 break;
+
             default:
                 path = COVER_URL_SMALL;
                 break;
@@ -384,7 +400,7 @@ public class LibraryThingManager
         waitUntilRequestAllowed();
 
         // Get it
-        try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
             // only catch exceptions related to the parsing, others will be caught by the caller.

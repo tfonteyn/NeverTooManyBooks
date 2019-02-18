@@ -135,7 +135,7 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             long result = mStatement.simpleQueryForLong();
-            if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR && BuildConfig.DEBUG) {
                 Logger.info(this, "simpleQueryForLong", mStatement.toString());
                 Logger.info(this, "simpleQueryForLong","result: " + result);
             }
@@ -158,7 +158,7 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             long result = mStatement.simpleQueryForLong();
-            if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR && BuildConfig.DEBUG) {
                 Logger.info(this, "simpleQueryForLongOrZero", mStatement.toString());
                 Logger.info(this, "simpleQueryForLongOrZero","result: " + result);
             }
@@ -181,7 +181,7 @@ public class SynchronizedStatement
      * @return The result of the query.
      */
     public long count() {
-        if (DEBUG_SWITCHES.DB_SYNC_QUERY_FOR_LONG && BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR && BuildConfig.DEBUG) {
             if (!mIsCount) {
                 Logger.debug("count statement not a count?");
             }
@@ -204,7 +204,7 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             String result = mStatement.simpleQueryForString();
-            if (/* always print debug */ BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR && BuildConfig.DEBUG) {
                 Logger.info(this, "simpleQueryForString",mStatement.toString());
                 Logger.info(this, "simpleQueryForString",result);
             }

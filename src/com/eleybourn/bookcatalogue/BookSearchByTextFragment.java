@@ -149,7 +149,7 @@ public class BookSearchByTextFragment
         try {
             if (!wasCancelled) {
                 mActivity.getTaskManager()
-                         .sendHeaderTaskProgressMessage(R.string.progress_msg_adding_book);
+                         .sendHeaderUpdate(R.string.progress_msg_adding_book);
                 Intent intent = new Intent(getContext(), EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, REQ_BOOK_EDIT);
@@ -163,7 +163,7 @@ public class BookSearchByTextFragment
             // Clean up
             mSearchManagerId = 0;
             // Make sure the base message will be empty.
-            mActivity.getTaskManager().sendHeaderTaskProgressMessage(null);
+            mActivity.getTaskManager().sendHeaderUpdate(null);
         }
     }
 

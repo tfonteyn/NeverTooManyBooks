@@ -89,7 +89,6 @@ public abstract class BaseActivityWithTasks
     @NonNull
     private final TaskManagerListener mTaskListener = new TaskManagerListener() {
         /**
-         *
          * @param manager   TaskManager
          * @param task      task which is finishing.
          */
@@ -116,8 +115,6 @@ public abstract class BaseActivityWithTasks
                 @SuppressWarnings("UnusedAssignment")
                 String dbgMsg = "onProgress: " + count + '/' + max + ", '"
                         + message.replace("\n", "\\n") + '\'';
-                Tracker.handleEvent(BaseActivityWithTasks.this, States.Running,
-                                    "onProgress|msg=" + dbgMsg);
                 Logger.info(BaseActivityWithTasks.this, "onProgress", "msg=" + dbgMsg);
             }
 

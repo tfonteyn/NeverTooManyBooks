@@ -130,7 +130,7 @@ public class UpdateFieldsFromInternetTask
         mSearchSites = searchSites;
 
         mSearchCoordinator = new SearchCoordinator(mTaskManager, this);
-        mTaskManager.sendHeaderTaskProgressMessage(R.string.progress_msg_starting_search);
+        mTaskManager.sendHeaderUpdate(R.string.progress_msg_starting_search);
         getMessageSwitch().addListener(getSenderId(), listener, false);
     }
 
@@ -252,7 +252,7 @@ public class UpdateFieldsFromInternetTask
                 if (mCurrentBookFieldUsages.isEmpty() || isbn.isEmpty()
                         && (author.isEmpty() || title.isEmpty())) {
                     // Update progress appropriately
-                    mTaskManager.sendHeaderTaskProgressMessage(
+                    mTaskManager.sendHeaderUpdate(
                             String.format(getString(R.string.progress_msg_skip_title), title));
                     continue;
                 }
@@ -261,12 +261,12 @@ public class UpdateFieldsFromInternetTask
 
                 // Update the progress appropriately
                 if (!title.isEmpty()) {
-                    mTaskManager.sendHeaderTaskProgressMessage(title);
+                    mTaskManager.sendHeaderUpdate(title);
                 } else {
-                    mTaskManager.sendHeaderTaskProgressMessage(isbn);
+                    mTaskManager.sendHeaderUpdate(isbn);
                 }
                 // update the counter
-                mTaskManager.sendTaskProgressMessage(this, 0, progressCounter);
+                mTaskManager.sendProgress(this, 0, progressCounter);
 
                 // Start searching, then wait...
                 mSearchCoordinator.search(mSearchSites, author, title, isbn,
@@ -290,7 +290,7 @@ public class UpdateFieldsFromInternetTask
         } finally {
             // TOMF: do we need this here or can this be done when we send the final message ??
             // Tell our listener they can clear the progress message.
-            mTaskManager.sendHeaderTaskProgressMessage(null);
+            mTaskManager.sendHeaderUpdate(null);
             // Create the final message for them (user message, not a Progress message)
             mFinalMessage = String.format(getString(R.string.progress_end_num_books_searched),
                                           "" + progressCounter);
@@ -406,7 +406,7 @@ public class UpdateFieldsFromInternetTask
             cancelTask();
         } else if (bookData.isEmpty()) {
             // tell the user if the search failed.
-            mTaskManager.sendTaskUserMessage(R.string.warning_unable_to_find_book);
+            mTaskManager.sendUserMessage(R.string.warning_unable_to_find_book);
         }
 
         // Save the local data from the context so we can start a new search

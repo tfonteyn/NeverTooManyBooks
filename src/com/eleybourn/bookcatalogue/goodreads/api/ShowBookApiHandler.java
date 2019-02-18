@@ -443,7 +443,7 @@ public abstract class ShowBookApiHandler
      * @param request        HttpGet request to use
      * @param fetchThumbnail Indicates if thumbnail file should be retrieved
      *
-     * @return the Bundle of data.
+     * @return the Bundle of book data.
      */
     @NonNull
     Bundle sendRequest(@NonNull final HttpGet request,

@@ -8,7 +8,7 @@ import androidx.annotation.WorkerThread;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
+import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -94,7 +94,7 @@ public final class AmazonManager
         SearchAmazonHandler handler = new SearchAmazonHandler(bookData, fetchThumbnail);
 
         // Get it
-        try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.inputStream, handler);
             // only catch exceptions related to the parsing, others will be caught by the caller.

@@ -2,10 +2,13 @@ package com.eleybourn.bookcatalogue;
 
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook;
+import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
-import com.eleybourn.bookcatalogue.goodreads.TaskWithProgressDialogFragment;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -39,8 +42,7 @@ public final class DEBUG_SWITCHES {
     /** dump the style each time it is accessed. */
     public static final boolean DUMP_STYLE = false;
 
-
-    /** {@link com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager}. */
+    /** {@link LibraryThingManager}. */
     public static final boolean LIBRARY_THING_MANAGER = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.goodreads}. */
@@ -48,9 +50,6 @@ public final class DEBUG_SWITCHES {
 
     /** {@link com.eleybourn.bookcatalogue.utils.ImageUtils}. */
     public static final boolean IMAGE_UTILS = false;
-
-    /** {@link TaskWithProgressDialogFragment}. */
-    public static final boolean SQP_FRAGMENT = false;
 
     /** {@link com.eleybourn.bookcatalogue.utils.StorageUtils}. */
     public static final boolean STORAGE_UTILS = false;
@@ -61,17 +60,11 @@ public final class DEBUG_SWITCHES {
     /** {@link SearchCoordinator} and related. */
     public static final boolean SEARCH_INTERNET = false;
 
-    /** {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook}. */
+    /** {@link ISFDBBook}. */
     public static final boolean ISFDB_SEARCH = false;
 
-    /** all things related to {@link com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask}. */
+    /** all things related to {@link ManagedTask}. */
     public static final boolean MANAGED_TASKS = false;
-
-    /**
-     * all things related to
-     * {@link com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTask}.
-     */
-    public static final boolean SIMPLE_TASKS = false;
 
     /** reading/writing a backup file. */
     public static final boolean BACKUP = false;
@@ -113,7 +106,7 @@ public final class DEBUG_SWITCHES {
      */
     public static final boolean TEMP_TABLES_ARE_STANDARD = false;
 
-    /** {@link com.eleybourn.bookcatalogue.database.cursors.TrackedCursor}. */
+    /** {@link TrackedCursor}. */
     public static final boolean TRACKED_CURSOR = false;
 
     /** {@link DBA}. */
@@ -127,7 +120,7 @@ public final class DEBUG_SWITCHES {
      * {@link SynchronizedStatement#simpleQueryForLong()}
      * {@link SynchronizedStatement#simpleQueryForLongOrZero()}
      */
-    public static final boolean DB_SYNC_QUERY_FOR_LONG = false;
+    public static final boolean DB_SYNC_SIMPLE_QUERY_FOR = false;
 
     /** dump *all* SQL strings to the log. */
     public static final boolean SQL = false;

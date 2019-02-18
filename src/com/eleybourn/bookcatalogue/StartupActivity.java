@@ -23,14 +23,13 @@ package com.eleybourn.bookcatalogue;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Html;
 import android.util.Log;
 
@@ -44,25 +43,25 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 
+import java.lang.ref.WeakReference;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBCleaner;
+import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.OnTaskFinishListener;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
-
-import java.lang.ref.WeakReference;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Single Activity to be the 'Main' activity for the app.
@@ -97,11 +96,8 @@ public class StartupActivity
      * Self reference for use during upgrades.
      */
     private static WeakReference<StartupActivity> mStartupActivity;
-    /** Handler to post run'ables to UI thread. */
-    private final Handler mHandler = new Handler();
-    /** Queue for executing startup tasks, if any. */
-    @Nullable
-    private SimpleTaskQueue mTaskQueue;
+    /** TaskId holder. Added when started. Removed when stopped. */
+    private final Set<Integer> mAllTasks = new HashSet<>();
     /**
      * Progress Dialog for startup tasks.
      * <p>
@@ -116,13 +112,12 @@ public class StartupActivity
     @Nullable
     @Deprecated
     private ProgressDialog mProgressDialog;
-
     /** Flag indicating a backup is required after startup. */
     private boolean mBackupRequired;
-    /** UI thread. */
-    private Thread mUiThread;
     /** stage the startup is at. */
     private int mStartupStage;
+    /** database used by startup tasks. */
+    private DBA mDb;
 
     /**
      * Kludge to get a reference to the currently running StartupActivity, if defined.
@@ -182,7 +177,7 @@ public class StartupActivity
                 getString(R.string.progress_msg_starting_up),
                 true,
                 true,
-                new OnCancelListener() {
+                new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(@NonNull final DialogInterface dialog) {
                         // Cancelling the list cancels the activity.
@@ -195,6 +190,17 @@ public class StartupActivity
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
             mProgressDialog = null;
+        }
+    }
+
+    private void openDBA() {
+        try {
+            mDb = new DBA(this);
+        } catch (DBHelper.UpgradeException e) {
+            Logger.info(this, e.getLocalizedMessage());
+            BookCatalogueApp.showNotification(this, R.string.error_unknown,
+                                              e.getLocalizedMessage());
+            finish();
         }
     }
 
@@ -211,12 +217,21 @@ public class StartupActivity
                 // Create a progress dialog; we may not use it...
                 // but we need it to be created in the UI thread.
                 openProgressDialog();
+
+                openDBA();
+
                 startTasks();
                 break;
 
             case 2:
                 // Get rid of the progress dialog
                 closeProgressDialog();
+
+                // tasks are done.
+                if (mDb != null) {
+                    mDb.close();
+                    mDb = null;
+                }
 
                 checkForUpgrades();
                 break;
@@ -239,18 +254,23 @@ public class StartupActivity
             Logger.debug("Startup isTaskRoot() = FALSE");
         }
 
-        mUiThread = Thread.currentThread();
-
         if (mStartupTasksShouldBeStarted) {
             mStartupActivity = new WeakReference<>(this);
 
             updateProgress(R.string.progress_msg_starting_up);
 
-            SimpleTaskQueue q = getQueue();
-            q.enqueue(new BuildLanguageMappingsTask());
-            q.enqueue(new DBCleanerTask());
-            q.enqueue(new RebuildFtsTask());
-            q.enqueue(new AnalyzeDbTask());
+            int taskId = 0;
+            new BuildLanguageMappingsTask(++taskId).execute();
+            mAllTasks.add(taskId);
+            new DBCleanerTask(++taskId, mDb).execute();
+            mAllTasks.add(taskId);
+            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
+                                            false)) {
+                new RebuildFtsTask(++taskId, mDb).execute();
+                mAllTasks.add(taskId);
+            }
+            new AnalyzeDbTask(++taskId, mDb).execute();
+            mAllTasks.add(taskId);
 
             // Remove old logs
             Logger.clearLog();
@@ -262,7 +282,7 @@ public class StartupActivity
 
         // If no tasks were queued, then move on to next stage. Otherwise, the completed
         // tasks will cause the next stage to start.
-        if (mTaskQueue == null) {
+        if (mAllTasks.isEmpty()) {
             startNextStage();
         }
     }
@@ -283,68 +303,20 @@ public class StartupActivity
             return;
         }
 
-        // If we are in the UI thread, update the progress.
-        if (Thread.currentThread().equals(mUiThread)) {
-            // There is a small chance that this message could be set to display
-            // *after* the activity is finished,
-            // so we check and we also trap, log and ignore errors.
-            // See http://code.google.com/p/android/issues/detail?id=3953
-            if (!isFinishing()) {
-                try {
-                    mProgressDialog.setMessage(message);
-                    if (!mProgressDialog.isShowing()) {
-                        mProgressDialog.show();
-                    }
-                } catch (RuntimeException e) {
-                    Logger.error(e);
+        // There is a small chance that this message could be set to display
+        // *after* the activity is finished,
+        // so we check and we also trap, log and ignore errors.
+        // See http://code.google.com/p/android/issues/detail?id=3953
+        if (!isFinishing()) {
+            try {
+                mProgressDialog.setMessage(message);
+                if (!mProgressDialog.isShowing()) {
+                    mProgressDialog.show();
                 }
+            } catch (RuntimeException e) {
+                Logger.error(e);
             }
-        } else {
-            // If we are NOT in the UI thread, queue it to the UI thread.
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    updateProgress(message);
-                }
-            });
         }
-    }
-
-    /**
-     * Called in the UI thread when any startup task completes. If no more tasks, start next stage.
-     * Because it is in the UI thread, it is not possible for this code to be called until after
-     * onCreate() completes, so a race condition is not possible. Equally well, tasks should only
-     * be queued in onCreate().
-     */
-    private void taskCompleted(@NonNull final SimpleTaskQueue.SimpleTask task) {
-        if (DEBUG_SWITCHES.STARTUP && BuildConfig.DEBUG) {
-            Logger.info(task, "Task Completed");
-        }
-        if (!getQueue().hasActiveTasks()) {
-            if (DEBUG_SWITCHES.STARTUP && BuildConfig.DEBUG) {
-                Logger.info(this, "Task Completed - all done");
-            }
-            startNextStage();
-        }
-    }
-
-    /**
-     * Get (or create) the task queue.
-     */
-    @NonNull
-    private SimpleTaskQueue getQueue() {
-        if (mTaskQueue == null) {
-            mTaskQueue = new SimpleTaskQueue("StartupActivity-tasks", 1);
-            // Listen for task completions
-            mTaskQueue.setTaskFinishListener(new OnTaskFinishListener() {
-                @Override
-                public void onTaskFinish(@NonNull final SimpleTaskQueue.SimpleTask task,
-                                         @Nullable final Exception e) {
-                    taskCompleted(task);
-                }
-            });
-        }
-        return mTaskQueue;
     }
 
     /**
@@ -459,17 +431,8 @@ public class StartupActivity
             startActivity(backupIntent);
         }
 
-        // We are done
+        // We are done here.
         finish();
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        if (mTaskQueue != null) {
-            mTaskQueue.terminate();
-        }
-        super.onDestroy();
     }
 
     /**
@@ -517,17 +480,115 @@ public class StartupActivity
         }
     }
 
+    /**
+     * Called in the UI thread when any startup task completes. If no more tasks, start next stage.
+     * Because it is in the UI thread, it is not possible for this code to be called until after
+     * onCreate() completes, so a race condition is not possible. Equally well, tasks should only
+     * be queued in onCreate().
+     */
+    public void onStartupTaskFinished(final int taskId) {
+        mAllTasks.remove(taskId);
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, "Task finished: " + taskId);
+        }
+
+        if (mAllTasks.isEmpty()) {
+            startNextStage();
+        }
+    }
+
+    private abstract static class StartupTask
+            extends AsyncTask<Void, Integer, Void> {
+
+        private final int mTaskId;
+
+        /**
+         * Constructor.
+         *
+         * @param taskId a generic identifier
+         */
+        StartupTask(final int taskId) {
+            mTaskId = taskId;
+        }
+
+        @Override
+        protected void onProgressUpdate(@StringRes final Integer... values) {
+            StartupActivity a = StartupActivity.getActiveActivity();
+            if (a != null) {
+                a.updateProgress(values[0]);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Void result) {
+            StartupActivity a = StartupActivity.getActiveActivity();
+            if (a != null) {
+                a.onStartupTaskFinished(mTaskId);
+            }
+        }
+    }
+
+    /**
+     * Run 'analyse' on our databases.
+     */
+    public static class AnalyzeDbTask
+            extends StartupTask {
+
+        @NonNull
+        private final DBA mDb;
+
+        AnalyzeDbTask(final int taskId,
+                      @NonNull final DBA db) {
+            super(taskId);
+            mDb = db;
+        }
+
+        @Override
+        protected Void doInBackground(final Void... params) {
+            publishProgress(R.string.progress_msg_optimizing_databases);
+
+            mDb.analyze();
+            //TOMF: for use during test... remove when done.
+            mDb.recreateTriggers();
+
+            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED,
+                                            false)) {
+                UpgradeDatabase.v74_fixupAuthorsAndSeries(mDb);
+                Prefs.getPrefs()
+                     .edit()
+                     .remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED)
+                     .apply();
+            }
+
+            if (BooklistBuilder.thumbnailsAreCached()) {
+                try (CoversDBA cdb = CoversDBA.getInstance()) {
+                    cdb.analyze();
+                }
+            }
+
+            return null;
+        }
+    }
 
     /**
      * Build the dedicated SharedPreferences file with the language mappings.
      * Only build once per Locale.
      */
-    public class BuildLanguageMappingsTask
-            implements SimpleTaskQueue.SimpleTask {
+    public static class BuildLanguageMappingsTask
+            extends StartupTask {
+
+        /**
+         * Constructor.
+         *
+         * @param taskId a generic identifier
+         */
+        BuildLanguageMappingsTask(final int taskId) {
+            super(taskId);
+        }
 
         @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
-            updateProgress(R.string.progress_msg_updating_languages);
+        protected Void doInBackground(final Void... params) {
+            publishProgress(R.string.progress_msg_updating_languages);
 
             // generate initial language2iso mappings.
             LocaleUtils.createLanguageMappingCache(LocaleUtils.getSystemLocal());
@@ -535,48 +596,52 @@ public class StartupActivity
             LocaleUtils.createLanguageMappingCache(Locale.getDefault());
             // and English
             LocaleUtils.createLanguageMappingCache(Locale.ENGLISH);
-        }
 
-        @Override
-        public void onFinish(@Nullable final Exception e) {
+            return null;
         }
     }
-
 
     /**
      * Data cleaning. This is done each startup. TODO: is that needed ?
      */
-    public class DBCleanerTask
-            implements SimpleTaskQueue.SimpleTask {
+    public static class DBCleanerTask
+            extends StartupTask {
+
+        @NonNull
+        private final DBA mDb;
+
+        /**
+         * Constructor.
+         *
+         * @param taskId a generic identifier
+         */
+        DBCleanerTask(final int taskId,
+                      @NonNull final DBA db) {
+            super(taskId);
+            mDb = db;
+        }
 
         @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
-            updateProgress(R.string.progress_msg_cleaning_database);
-
-            // Get a DB, do not close the database!
-            DBA db = taskContext.getDb();
-
+        protected Void doInBackground(final Void... params) {
+            publishProgress(R.string.progress_msg_cleaning_database);
             /*
              * do a mass update of any languages not yet converted to ISO3 codes
              */
-            List<String> names = db.getLanguageCodes();
+            List<String> names = mDb.getLanguageCodes();
             for (String name : names) {
                 if (name != null && name.length() > 3) {
                     String iso = LocaleUtils.getISO3Language(name);
                     Logger.info(this, "Global language update of `" + name + "` to `" + iso + '`');
                     if (!iso.equals(name)) {
-                        db.updateLanguage(name, iso);
+                        mDb.updateLanguage(name, iso);
                     }
                 }
             }
 
-
-            DBCleaner cleaner = new DBCleaner(db);
+            DBCleaner cleaner = new DBCleaner(mDb);
             cleaner.all(true);
-        }
 
-        @Override
-        public void onFinish(@Nullable final Exception e) {
+            return null;
         }
     }
 
@@ -585,64 +650,35 @@ public class StartupActivity
      *
      * @author Philip Warner
      */
-    public class RebuildFtsTask
-            implements SimpleTaskQueue.SimpleTask {
+    public static class RebuildFtsTask
+            extends StartupTask {
 
-        @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
-            // Get a DB to make sure the FTS rebuild flag is set appropriately,
-            // do not close the database!
-            DBA db = taskContext.getDb();
-            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
-                                            false)) {
-                updateProgress(R.string.progress_msg_rebuilding_search_index);
-                db.rebuildFts();
-                Prefs.getPrefs()
-                     .edit()
-                     .putBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)
-                     .apply();
-            }
+        @NonNull
+        private final DBA mDb;
+
+        /**
+         * Constructor.
+         *
+         * @param taskId a generic identifier
+         */
+        RebuildFtsTask(final int taskId,
+                       @NonNull final DBA db) {
+            super(taskId);
+            mDb = db;
         }
 
         @Override
-        public void onFinish(@Nullable final Exception e) {
-        }
-    }
+        protected Void doInBackground(final Void... params) {
+            publishProgress(R.string.progress_msg_rebuilding_search_index);
 
-    /**
-     * Run 'analyse' on our databases.
-     */
-    public class AnalyzeDbTask
-            implements SimpleTaskQueue.SimpleTask {
+            mDb.rebuildFts();
 
-        @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
-            updateProgress(R.string.progress_msg_optimizing_databases);
+            Prefs.getPrefs()
+                 .edit()
+                 .putBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)
+                 .apply();
 
-            // Get a connection, do not close the databases!
-            DBA db = taskContext.getDb();
-            db.analyze();
-
-            if (BooklistBuilder.thumbnailsAreCached()) {
-                CoversDBA coversDBAdapter = taskContext.getCoversDb();
-                coversDBAdapter.analyze();
-            }
-
-            //TOMF: for use during test... remove when done.
-            db.recreateTriggers();
-
-            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED,
-                                            false)) {
-                UpgradeDatabase.v74_fixupAuthorsAndSeries(db);
-                Prefs.getPrefs()
-                     .edit()
-                     .remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED)
-                     .apply();
-            }
-        }
-
-        @Override
-        public void onFinish(@Nullable final Exception e) {
+            return null;
         }
 
     }

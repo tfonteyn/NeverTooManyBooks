@@ -26,15 +26,15 @@
 
     <!-- ========== Global preferences ========== -->
 
-    <!-- Preference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
+    <!-- SwitchPreference - a click on a book row opens the book in read-only mode (or 'false': in edit mode) -->
     <string name="pt_bob_open_book_read_only">Open book in read-only mode</string>
     <string name="pk_bob_open_book_read_only" translatable="false">BooksOnBookshelf.OpenBookReadOnly</string>
 
-    <!-- Preference - start the cropper with the cropper frame set to the whole image -->
+    <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
     <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
     <string name="pk_thumbnails_crop_frame_is_whole_image" translatable="false">Image.Cropper.FrameIsWholeImage</string>
 
-    <!-- Preference - use an external app. (Intent) to handle cropping-->
+    <!-- SwitchPreference - use an external app. (Intent) to handle cropping-->
     <string name="pt_thumbnails_external_cropper">Use external image cropper</string>
     <string name="pk_thumbnails_external_cropper" translatable="false">Image.Cropper.UseExternalApp</string>
 
@@ -42,11 +42,11 @@
     <string name="pt_scanning_beep_if_isbn_valid">Beep if scanned ISBN is valid</string>
     <string name="pk_scanning_beep_if_isbn_valid" translatable="false">SoundManager.BeepIfScannedIsbnValid</string>
 
-    <!-- Preference -->
+    <!-- SwitchPreference -->
     <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
     <string name="pk_scanning_beep_if_isbn_invalid" translatable="false">SoundManager.BeepIfScannedIsbnInvalid</string>
 
-    <!-- Preference -->
+    <!-- ListPreference -->
     <string name="pt_ui_messages_use">Messages use</string>
     <string name="pk_ui_messages_use" translatable="false">App.UserMessage</string>
     <string-array name="pe_ui_messages_use">
@@ -58,7 +58,7 @@
         <item translatable="false">1</item>
     </string-array>
 
-    <!-- Preference -->
+    <!-- ListPreference -->
     <string name="pt_ui_theme">Interface Theme</string>
     <string name="pk_ui_theme" translatable="false">App.Theme</string>
     <string-array name="pe_ui_theme">
@@ -70,7 +70,7 @@
         <item translatable="false">1</item>
     </string-array>
 
-    <!-- Preference - Preferred interface Locale -->
+    <!-- ListPreference - Preferred interface Locale -->
     <string name="pt_ui_language">Preferred UI Language</string>
     <string name="pk_ui_language" translatable="false">App.Locale</string>
     <string-array name="pe_ui_language">
@@ -96,7 +96,7 @@
         <item translatable="false">tr</item>
     </string-array>
 
-    <!-- Preference - Degrees by which to rotate camera images automatically -->
+    <!-- ListPreference - Degrees by which to rotate camera images automatically -->
     <string name="pt_thumbnails_rotate_auto">Automatically rotate images captured by camera</string>
     <string name="pk_thumbnails_rotate_auto" translatable="false">Image.Camera.Autorotate</string>
     <string-array name="pe_thumbnails_rotate_auto">
@@ -112,7 +112,7 @@
         <item translatable="false">180</item>
     </string-array>
 
-    <!-- Preference - Compatibility / bug workaround for some devices -->
+    <!-- ListPreference - Compatibility / bug workaround for some devices -->
     <string name="pt_thumbnail_cropper_layer_type">Cropper Layer Type</string>
     <string name="pk_thumbnail_cropper_layer_type" translatable="false">Image.ViewLayerType</string>
     <string name="pt_hint_layer_type">Leave this setting on \‘Use default\’ unless you experience crashes while cropping images. Try \‘Software\’ for safer but slower or force \‘Hardware\’ for less safe, but faster</string>
@@ -127,7 +127,7 @@
         <item translatable="false">1</item>
     </string-array>
 
-    <!-- Preference - the barcode scanner to use-->
+    <!-- ListPreference - the barcode scanner to use-->
     <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
     <string name="pk_scanning_preferred_scanner" translatable="false">ScannerManager.PreferredScanner</string>
     <string-array name="pe_scanning_preferred_scanner">

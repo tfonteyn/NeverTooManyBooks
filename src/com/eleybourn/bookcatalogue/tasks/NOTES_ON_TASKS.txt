@@ -2,14 +2,15 @@ PROBLEM:
 too many ways of using tasks.
 
 GOALS:
- 1. Removal of taskqueue
- 2. Removal of ManagedTask
- 3. retire...
- 4. Move to using ASyncTask (single-threaded) or Executor (multi-threaded) for all ?
+ 1. FragmentTask ==> replaced with AsyncTask. DONE.
+ 2. replace SimpleTask with AsyncTask executing on an Executor (multi-threaded). ==> DONE
+
+ 3. Removal of ManagedTask
+ 4. Removal of taskqueue
  5. cropper ?
 
 ----------------------------------------------------------------------------------------------------
-1. ManagedTask's started from a BaseActivityWithTasks.
+3. ManagedTask's started from a BaseActivityWithTasks.
 
  * abstract {@link ManagedTask} extends Thread
  * Background task that is managed by TaskManager and uses TaskManager to coordinate display activities.
@@ -33,16 +34,7 @@ Used by:
 ==> the SearchManager/SearchTasks for getting book information from web sites.
 
 ----------------------------------------------------------------------------------------------------
-2. SimpleTask
-   Uses SimpleTaskQueue, with callbacks (listeners) directly to the object which enqueued the task.
-
-3. FragmentTask
-   Almost the same as SimpleTask, but has access to the Fragment that started it.
-   Uses a TaskWithProgressDialogFragment, displaying a ProgressDialog
-
-4. Terminator/TerminatorTask: delayed start of SimpleTask's
-----------------------------------------------------------------------------------------------------
-5. taskqueue - minimalistic traditional database backed 'MessageQueue' like product
+4. taskqueue - minimalistic traditional database backed 'MessageQueue' like product
    Task
    LegacyTask extends Task
    RunnableTask extends Task
@@ -52,8 +44,7 @@ Only used by the GoodReads api where it does make sense to have 'survivable' tas
 -> Android Service ?
 
  ----------------------------------------------------------------------------------------------------
-6. CropImageActivity
-Has yet another form of background job definition. This is small/clean.
- Might be a good replacement for ManagedTask providing we make it use a listener instead of a runnable.
+5. CropImageActivity
+Has yet another form of background job definition. This one is small/clean.
  ----------------------------------------------------------------------------------------------------
 

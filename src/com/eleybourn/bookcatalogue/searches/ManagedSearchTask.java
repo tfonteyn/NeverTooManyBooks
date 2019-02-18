@@ -155,7 +155,7 @@ public class ManagedSearchTask
             return;
         }
 
-        mTaskManager.sendTaskProgressMessage(this, mProgressTitleResId, 0);
+        mTaskManager.sendProgress(this, mProgressTitleResId, 0);
 
         try {
             // manager checks the arguments
@@ -166,7 +166,7 @@ public class ManagedSearchTask
             }
 
         } catch (AuthorizationException e) {
-            Logger.error(e);
+            Logger.info(this, e.getLocalizedMessage());
             // authorization exception has a user suitable message
             setFinalError(mProgressTitleResId, e.getLocalizedMessage());
 
@@ -174,10 +174,10 @@ public class ManagedSearchTask
             Logger.info(this, e.getLocalizedMessage());
             setFinalError(mProgressTitleResId, R.string.error_network_timeout);
         } catch (MalformedURLException | UnknownHostException e) {
-            Logger.error(e);
+            Logger.info(this,e.getLocalizedMessage());
             setFinalError(mProgressTitleResId, R.string.error_search_configuration);
         } catch (IOException e) {
-            Logger.error(e);
+            Logger.info(this,e.getLocalizedMessage());
             setFinalError(mProgressTitleResId, R.string.error_search_failed);
         } catch (RuntimeException e) {
             // unknown e
@@ -188,7 +188,7 @@ public class ManagedSearchTask
 
     @Override
     protected void onTaskFinish() {
-        mTaskManager.sendTaskProgressMessage(this, R.string.done, 0);
+        mTaskManager.sendProgress(this, R.string.done, 0);
     }
 
     /**

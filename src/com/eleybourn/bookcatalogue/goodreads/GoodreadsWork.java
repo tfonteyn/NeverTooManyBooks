@@ -20,17 +20,16 @@
 
 package com.eleybourn.bookcatalogue.goodreads;
 
+import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.utils.ImageUtils;
-
 import java.lang.ref.WeakReference;
+
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 
 /**
  * Class to store the 'work' data returned via a Goodreads search.
@@ -54,7 +53,6 @@ public class GoodreadsWork {
 
     @Nullable
     private byte[] imageBytes;
-    private GetImageTask mTask;
     private WeakReference<ImageView> mImageView;
 
     /**
@@ -70,24 +68,16 @@ public class GoodreadsWork {
      *
      * @param imageView ImageView to display cover image
      */
-    void fillImageView(@NonNull final SimpleTaskQueue queue,
-                       @NonNull final ImageView imageView) {
+    void fillImageView(@NonNull final ImageView imageView) {
         synchronized (this) {
             if (imageBytes == null) {
                 // Image not retrieved yet, so clear any existing image
                 imageView.setImageBitmap(null);
                 // Save the view so we know where the image is going to be displayed
                 mImageView = new WeakReference<>(imageView);
-                // If we don't have a task already, start one.
-                if (mTask == null) {
-                    // No task running, so Queue a task to get the image
-                    try {
-                        mTask = new GetImageTask(getBestUrl(), this);
-                        queue.enqueue(mTask);
-                    } catch (RuntimeException e) {
-                        Logger.error(e,"Failed to create task to get image");
-                    }
-                }
+                // run task to get the image
+                new GetImageTask(getBestUrl(), this)
+                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 // Save the work in the View for verification
                 imageView.setTag(R.id.TAG_GOODREADS_WORK, this);
                 //QueueManager.getQueueManager().bringTaskToFront(imageTaskId);
@@ -135,7 +125,7 @@ public class GoodreadsWork {
      * @author Philip Warner
      */
     public static class GetImageTask
-            implements SimpleTaskQueue.SimpleTask {
+            extends AsyncTask<Void, Void, Void> {
 
         /** URL of image to fetch. */
         @NonNull
@@ -164,17 +154,17 @@ public class GoodreadsWork {
          * Just get the bytes from the URL.
          */
         @Override
-        public void run(@NonNull final SimpleTaskQueue.SimpleTaskContext taskContext) {
+        protected Void doInBackground(final Void... params) {
             mBytes = ImageUtils.getBytes(mUrl);
+            return null;
         }
 
         /**
          * Tell the {@link GoodreadsWork} about it.
          */
         @Override
-        public void onFinish(@Nullable final Exception e) {
+        protected void onPostExecute(final Void result) {
             mWork.handleTaskFinished(mBytes);
         }
-
     }
 }

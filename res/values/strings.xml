@@ -111,6 +111,7 @@
         Search configuration error.
         Please open the Admin page and check your Search Site preferences
     </string>
+    <!-- 'Site' authorization failed -->
     <string name="error_authorization_failed">%1$s authorization failed</string>
 
     <!-- ####################################################################################### -->
@@ -1223,8 +1224,6 @@
     <string name="import_export_info_xml_tables">as XML</string>
     <string name="info_tap_to_edit">Tap here to edit the name</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="books_found">%1$s books found</string>
     <string name="error_not_available">not available</string>
     <string name="searching_titelbank">Searching TitelBank</string>

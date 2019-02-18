@@ -186,7 +186,7 @@ public abstract class BookSearchBaseFragment
                                 "Created SearchManager=" + mSearchManagerId);
 
             mActivity.getTaskManager()
-                     .sendHeaderTaskProgressMessage(R.string.progress_msg_searching);
+                     .sendHeaderUpdate(R.string.progress_msg_searching);
             // kick of the searches
             searchCoordinator.search(mSearchSites, authorSearchText, titleSearchText,
                                      isbnSearchText, true);

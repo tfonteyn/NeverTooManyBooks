@@ -21,7 +21,8 @@
         android:layout_below="@id/lbl_loan"
         android:layout_toStartOf="@id/confirm"
         android:gravity="center_vertical"
-        tools:text="Some friend" />
+        tools:text="Some friend"
+        android:textIsSelectable="true" />
 
     <Button
         android:id="@+id/confirm"

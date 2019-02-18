@@ -109,6 +109,20 @@ public final class UniqueId {
     public static final String BKEY_DIALOG_TITLE = "dialogTitle";
 
     /**
+     * The message id to be used by generic Dialogs.
+     * <p>
+     * int (stringId)
+     */
+    public static final String BKEY_DIALOG_MSG_ID = "dialogMsgId";
+
+    /**
+     * The message to be used by generic Dialogs.
+     * <p>
+     * String
+     */
+    public static final String BKEY_DIALOG_MSG = "dialogMsg";
+
+    /**
      * Identifier for the caller of a generic Dialog.
      * <p>
      * String (often/always the fragment TAG)

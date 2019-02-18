@@ -23,7 +23,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.GetImageTask;
 import com.eleybourn.bookcatalogue.tasks.ImageCacheWriterTask;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
+import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -123,7 +123,7 @@ public final class ImageUtils {
         }
 
         // File is not in cache, original exists, we are in the background task
-        // (or not allowed to queue request)
+        // or we are in foreground but not allowed to use background
         return getImageAndPutIntoView(destView, coverFile.getPath(), maxWidth, maxHeight, exact);
     }
 
@@ -252,7 +252,7 @@ public final class ImageUtils {
                                    @NonNull final String name) {
         boolean success = false;
         final File file = StorageUtils.getTempCoverFile(name);
-        try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
             success = StorageUtils.saveInputStreamToFile(con.inputStream, file);
         } catch (@NonNull final IOException e) {
             Logger.error(e);
@@ -270,7 +270,7 @@ public final class ImageUtils {
      */
     @Nullable
     public static byte[] getBytes(@NonNull final String url) {
-        try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+        try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 // Save the output to a byte output stream
                 byte[] buffer = new byte[BUFFER_SIZE];

@@ -31,6 +31,20 @@ public class ColumnMapper {
     private final Cursor mCursor;
 
     /**
+     * Construct the mapper using the given set of domains.
+     * No errors or Exception thrown at construction time.
+     *
+     * @param cursor  to read from
+     * @param domains a list of domains
+     */
+    public ColumnMapper(@NonNull final Cursor cursor,
+                        @Nullable final DomainDefinition... domains)
+            throws IllegalArgumentException {
+        mCursor = cursor;
+        addDomains(domains);
+    }
+
+    /**
      * Construct the mapper using all the *registered* domains from this table,
      * and the given set of domains.
      * No errors or Exception thrown at construction time.

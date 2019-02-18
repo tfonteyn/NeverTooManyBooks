@@ -10,6 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -24,13 +31,6 @@ import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Manages the setup of search engines/sites.
@@ -99,8 +99,11 @@ public final class SearchSites {
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOOGLE, "Google-cover", 0));
 
         site = new Site(Site.SEARCH_LIBRARY_THING, "LibraryThing-cover", 1);
-        // this site only supports ISBN searches.
+        // LT only supports ISBN searches.
         site.setIsbnOnly();
+        // LT supports more then 1 cover image.
+        site.setSupportsImageSizes();
+
         COVER_SEARCH_ORDER_DEFAULTS.add(site);
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, "ISFDB-cover", 2));
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOODREADS, "Goodreads-cover", 3));
@@ -291,13 +294,12 @@ public final class SearchSites {
                         return new Site[size];
                     }
                 };
-
+        /** search source to use. */
+        public static final int SEARCH_LIBRARY_THING = 1 << 2;
         /** search source to use. */
         static final int SEARCH_GOOGLE = 1;
         /** search source to use. */
         static final int SEARCH_AMAZON = 1 << 1;
-        /** search source to use. */
-        public static final int SEARCH_LIBRARY_THING = 1 << 2;
         /** search source to use. */
         static final int SEARCH_GOODREADS = 1 << 3;
         /**
@@ -343,7 +345,16 @@ public final class SearchSites {
         /** for now hard-coded, but plumbing to have this as a user preference is done. */
         private int mReliability;
 
-        /** some sites support searches ONLY by ISBN. This is not a user setting! */
+        /**
+         * some sites support multiple sizes of images, e.g. LibraryThing.
+         * This is not a user setting!
+         * TODO: this is not a good solution to prevent multiple attempts of downloading... redo!
+         */
+        private boolean mSupportsMultipleImageSizes;
+        /**
+         * some sites support searches ONLY by ISBN.
+         * This is not a user setting!
+         */
         private boolean mIsbnOnly;
         /** the class which implements the search engine for a specific site. */
         private SearchSiteManager mSearchSiteManager;
@@ -402,6 +413,7 @@ public final class SearchSites {
             mPriority = in.readInt();
             mReliability = in.readInt();
             mIsbnOnly = in.readByte() != 0;
+            mSupportsMultipleImageSizes = in.readByte() != 0;
         }
 
         public SearchSiteManager getSearchSiteManager() {
@@ -453,6 +465,7 @@ public final class SearchSites {
             dest.writeInt(mPriority);
             dest.writeInt(mReliability);
             dest.writeByte((byte) (mIsbnOnly ? 1 : 0));
+            dest.writeByte((byte) (mSupportsMultipleImageSizes ? 1 : 0));
         }
 
         private void loadFromPrefs() {
@@ -480,20 +493,28 @@ public final class SearchSites {
             return mName;
         }
 
-        public boolean isEnabled() {
-            return mEnabled;
-        }
-
-        void setEnabled(final boolean enabled) {
-            mEnabled = enabled;
-        }
-
         boolean isIsbnOnly() {
             return mIsbnOnly;
         }
 
         void setIsbnOnly() {
             mIsbnOnly = true;
+        }
+
+        public boolean supportsImageSize(@NonNull final ImageSizes size) {
+            return mSupportsMultipleImageSizes;
+        }
+
+        public void setSupportsImageSizes() {
+            mSupportsMultipleImageSizes = true;
+        }
+
+        public boolean isEnabled() {
+            return mEnabled;
+        }
+
+        void setEnabled(final boolean enabled) {
+            mEnabled = enabled;
         }
 
         int getPriority() {

@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.io.File;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -30,8 +32,6 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
-
-import java.io.File;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -320,7 +320,7 @@ public class DBHelper
      *
      * @param syncedDb the database
      */
-    public void createTriggers(@NonNull final SynchronizedDb syncedDb) {
+    void createTriggers(@NonNull final SynchronizedDb syncedDb) {
 
         String name;
         String body;
@@ -380,8 +380,6 @@ public class DBHelper
          * (i.e. each toc has the right author, but the book says "many authors")
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
-         *
-         * VERIFIED 2019-02-05
          */
         name = "after_update_on" + TBL_AUTHORS;
         body = " AFTER UPDATE ON " + TBL_AUTHORS + " FOR EACH ROW\n"
@@ -407,8 +405,6 @@ public class DBHelper
          * Deleting a {@link Series).
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
-         *
-         * VERIFIED 2019-02-05
          */
         name = "after_delete_on_" + TBL_BOOK_SERIES;
         body = " AFTER DELETE ON " + TBL_BOOK_SERIES + " FOR EACH ROW\n"
@@ -424,8 +420,6 @@ public class DBHelper
          * Update a {@link Series}
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
-         *
-         * VERIFIED 2019-02-05
          */
         name = "after_update_on" + TBL_SERIES;
         body = " AFTER UPDATE ON " + TBL_SERIES + " FOR EACH ROW\n"
@@ -443,8 +437,6 @@ public class DBHelper
          * Deleting a Loan.
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
-         *
-         * VERIFIED 2019-02-05
          */
         name = "after_delete_on_" + TBL_BOOK_LOANEE;
         body = " AFTER DELETE ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
@@ -475,8 +467,6 @@ public class DBHelper
          * Inserting a Loan.
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
-         *
-         * VERIFIED 2019-02-05
          */
         name = "after_insert_on_" + TBL_BOOK_LOANEE;
         body = " AFTER INSERT ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
@@ -562,11 +552,20 @@ public class DBHelper
         syncedDb.analyze();
     }
 
+    public static class UpgradeException extends RuntimeException {
+
+        private static final long serialVersionUID = -6910121313418068318L;
+
+        UpgradeException(final String message) {
+            super(message);
+        }
+    }
+
     /**
      * This function is called each time the database is upgraded.
      * It will run all upgrade scripts between the oldVersion and the newVersion.
-     * Minimal application version 4.0.0 (database version 71)
-     *
+     * <p>
+     * Minimal application version 4.0.0 (database version 71). Older versions not supported.
      * <p>
      * REMINDER: do not use [column].ref() or [table].create/createAll.
      * The 'current' definition might not match the upgraded definition!
@@ -592,7 +591,7 @@ public class DBHelper
             if (startup != null) {
                 startup.updateProgress(fatal);
             }
-            throw new IllegalStateException(fatal);
+            throw new UpgradeException(fatal);
         }
 
         if (startup != null) {

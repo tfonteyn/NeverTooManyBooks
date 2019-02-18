@@ -29,7 +29,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -47,28 +46,31 @@ import androidx.appcompat.app.AppCompatDialog;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.SearchSites.ImageSizes;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
  * an image from a list to use as the (new) book cover image.
  *
  * <p>
- * ENHANCE: For each ISBN returned by LT, add TWO images and get the second from Goodreads
+ * ENHANCE: For each edition, try to get TWO images from a different site each.
  * ENHANCE: (Somehow) remove non-existent images from ImageSelector.
  * Probably start with 1 image and GROW it.
  *
@@ -98,8 +100,8 @@ public class CoverBrowser
     private final Dialog mDialog;
     @NonNull
     private final android.util.DisplayMetrics mMetric;
-    /** Task queue for images. */
-    private SimpleTaskQueue mImageFetcher;
+    /** Holder for all active tasks, so we can cancel them if needed. */
+    private final Set<AsyncTask> mAllTasks = new HashSet<>();
     /** List of all editions for the given ISBN. */
     private List<String> mAlternativeEditions;
     /** Handles downloading, checking and cleanup of files. */
@@ -151,23 +153,26 @@ public class CoverBrowser
     @Override
     public void close() {
         mShutdown = true;
+        // cancel any active tasks.
+        synchronized (mAllTasks) {
+            for (AsyncTask task : mAllTasks) {
+                task.cancel(true);
+            }
+        }
 
         mDialog.dismiss();
 
-        if (mImageFetcher != null) {
-            mImageFetcher.terminate();
-            mImageFetcher = null;
-        }
         if (mFileManager != null) {
             mFileManager.purge();
             mFileManager = null;
         }
     }
 
+
     /**
-     * Show the user a selection of other covers and allow selection of a replacement.
+     * Start a search for alternative editions of the book (isbn).
      */
-    void showEditionCovers() {
+    void fetchEditions() {
 
         LibraryThingManager mLibraryThing = new LibraryThingManager();
         if (mLibraryThing.noKey()) {
@@ -181,13 +186,9 @@ public class CoverBrowser
             return;
         }
 
-        // Setup the background fetcher
-        if (mImageFetcher == null) {
-            mImageFetcher = new SimpleTaskQueue("CoverBrowser-tasks");
-        }
-
-        //new GetEditions(mIsbn, this);
-        mImageFetcher.enqueue(new GetEditionsTask(mIsbn));
+        GetEditionsTask task = new GetEditionsTask(this, mIsbn);
+        addTask(task);
+        task.execute();
 
         // Setup the basic dialog
         mDialog.setContentView(R.layout.dialog_cover_browser);
@@ -195,7 +196,22 @@ public class CoverBrowser
         mDialog.show();
     }
 
-    private void showGallery() {
+    /**
+     * Called after we got results from the edition search.
+     * Show the user a selection of other covers and allow selection of a replacement.
+     */
+    private void showGallery(@NonNull final GetEditionsTask task,
+                             @Nullable final List<String> editions) {
+        removeTask(task);
+
+        mAlternativeEditions = editions;
+
+        if (mAlternativeEditions == null || mAlternativeEditions.isEmpty()) {
+            StandardDialogs.showUserMessage(mActivity, R.string.warning_no_editions);
+            close();
+            return;
+        }
+
         mDialog.setTitle(R.string.title_select_cover);
 
         // Setup the Gallery.
@@ -221,7 +237,7 @@ public class CoverBrowser
 
         // dev note: if we set width to MATCH_PARENT, the page (cover image) IN the
         // PageView is maximized.
-        // we don't want that... we want PageView maximized, but page itself as is.
+        // we don't want that... we want PageView maximized, but the page itself as-is.
         gallery.setLayoutParams(
                 new PagerLayout.LayoutParams(mPreviewSizeWidth, mPreviewSizeHeight));
 
@@ -258,13 +274,37 @@ public class CoverBrowser
             }
         });
 
-        // When the dialog is closed, delete the files and terminated the SimpleTaskQueue.
+        // When the dialog is closed, close all resources.
         mDialog.setOnDismissListener(new OnDismissListener() {
             @Override
             public void onDismiss(@NonNull final DialogInterface dialog) {
                 close();
             }
         });
+    }
+
+    /**
+     * Synchronized access to all tasks.
+     *
+     * @param task to add
+     * @param <T>  type of task
+     */
+    private <T extends AsyncTask> void addTask(@NonNull final T task) {
+        synchronized (mAllTasks) {
+            mAllTasks.add(task);
+        }
+    }
+
+    /**
+     * Synchronized access to all tasks.
+     *
+     * @param task to remove
+     * @param <T>  type of task
+     */
+    private <T extends AsyncTask> void removeTask(@NonNull final T task) {
+        synchronized (mAllTasks) {
+            mAllTasks.remove(task);
+        }
     }
 
     /**
@@ -280,8 +320,8 @@ public class CoverBrowser
      */
     private static class FileManager {
 
-        /** key = isbn + "_" + size. */
-        private final Bundle files = new Bundle();
+        /** key = isbn + "_ + size. */
+        private final Map<String, String> files = new HashMap<>();
 
         /** Flags applicable to *current* search. */
         private final int mSearchFlags;
@@ -332,53 +372,63 @@ public class CoverBrowser
          * Download a file if not present and keep a record of it.
          * <p>
          * ENHANCE: use {@link SearchSites.SearchSiteManager#isAvailable()}.
+         * <p>
+         * Reminder: the for() loop will bailout (return) as soon as a cover file is found.
+         * i.e. for each edition of the isbn, we try to get an image from the search-sites.
+         * The first search site which has an image is accepted for *that* edition.
+         * Repeat for all editions.
+         * <p>
+         * ENHANCE: allow the user to prioritize the order on the fly.
          *
-         * @param isbn ISBN of file
-         * @param size Size of image required
+         * @param isbn       ISBN of file
+         * @param imageSizes Size of image required in order of preference
          *
          * @return the fileSpec, or null when not found
          */
         @Nullable
         @WorkerThread
         String download(@NonNull final String isbn,
-                        @NonNull final ImageSizes size) {
-            String fileSpec;
-            String key = isbn + '_' + size;
+                        @NonNull final ImageSizes... imageSizes) {
 
-            synchronized (files) {
-                fileSpec = files.getString(key);
-            }
+            for (int sizeIndex = 0; sizeIndex < imageSizes.length; sizeIndex++) {
+                ImageSizes size = imageSizes[sizeIndex];
 
-            // Is the file present && good ?
-            if ((fileSpec != null) && !fileSpec.isEmpty() && isGood(new File(fileSpec))) {
-                return fileSpec;
-            } else {
-                files.remove(key);
-            }
+                String fileSpec;
+                String key = isbn + '_' + size;
 
-            //Reminder: the for() loop will bailout (return) as soon as a cover file is found.
-            // it does not collect covers from all sites; just from the first one found.
-            // (to avoid confusion: covers are fetched for each edition,
-            // but only from ONE website each)
-            // ENHANCE: allow the user to prioritize the order on the fly.
+                synchronized (files) {
+                    fileSpec = files.get(key);
+                }
 
-            for (SearchSites.Site site : SearchSites.getSitesForCoverSearches()) {
-                // If this search includes the source, check it
-                if (site.isEnabled() && ((mSearchFlags & site.id) != 0)) {
-                    File file = site.getSearchSiteManager().getCoverImage(isbn, size);
+                // Is the file present && good ?
+                if ((fileSpec != null) && !fileSpec.isEmpty() && isGood(new File(fileSpec))) {
+                    return fileSpec;
+                } else {
+                    files.remove(key);
+                }
 
-                    if (file != null && isGood(file)) {
-                        fileSpec = file.getAbsolutePath();
-                        synchronized (files) {
-                            files.putString(key, fileSpec);
-                            return fileSpec;
+                for (SearchSites.Site site : SearchSites.getSitesForCoverSearches()) {
+                    // Are we allowed to search this site ?
+                    if (site.isEnabled()
+                            // should we search this site ?
+                            && ((mSearchFlags & site.id) != 0)
+                            // does the site support a secondary size ?
+                            && (sizeIndex > 0 && site.supportsImageSize(size))
+                    ) {
+                        File file = site.getSearchSiteManager().getCoverImage(isbn, size);
+                        if (file != null && isGood(file)) {
+                            fileSpec = file.getAbsolutePath();
+                            synchronized (files) {
+                                files.put(key, fileSpec);
+                                return fileSpec;
+                            }
                         }
                     }
                 }
-            }
 
-            // give up
-            files.remove(key);
+                // give up
+                files.remove(key);
+            }
             return null;
         }
 
@@ -396,7 +446,7 @@ public class CoverBrowser
             String key = isbn + '_' + size;
             String fileSpec;
             synchronized (files) {
-                fileSpec = files.getString(key);
+                fileSpec = files.get(key);
             }
 
             if (fileSpec == null || fileSpec.isEmpty()) {
@@ -410,16 +460,138 @@ public class CoverBrowser
          * Clean up all files.
          */
         void purge() {
-            try {
-                for (String key : files.keySet()) {
-                    String fileSpec = files.getString(key);
-                    if (fileSpec != null) {
-                        StorageUtils.deleteFile(new File(fileSpec));
-                    }
+            for (String fileSpec : files.values()) {
+                if (fileSpec != null) {
+                    StorageUtils.deleteFile(new File(fileSpec));
                 }
-                files.clear();
+            }
+            files.clear();
+        }
+    }
+
+    /**
+     * Fetch all alternative edition isbn's from LibraryThing.
+     */
+    private static class GetEditionsTask
+            extends AsyncTask<Void, Void, List<String>> {
+
+        @NonNull
+        private final String mIsbn;
+        @NonNull
+        private final CoverBrowser mCallback;
+
+        /**
+         * Constructor.
+         *
+         * @param coverBrowser to send results to
+         * @param isbn         to search for
+         */
+        GetEditionsTask(@NonNull final CoverBrowser coverBrowser,
+                        @NonNull final String isbn) {
+            mIsbn = isbn;
+            mCallback = coverBrowser;
+        }
+
+        @Override
+        @Nullable
+        protected List<String> doInBackground(final Void... params) {
+            // Get some editions
+            // ENHANCE: the list of editions should be expanded to include other sites
+            // As well as the alternate user-contributed images from LibraryThing. The latter are
+            // often the best source but at present could only be obtained by HTML scraping.
+            try {
+                return LibraryThingManager.searchEditions(mIsbn);
             } catch (RuntimeException e) {
-                Logger.error(e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final List<String> result) {
+            mCallback.showGallery(this, result);
+        }
+    }
+
+    /**
+     * Fetch a thumbnail or a full-size image and apply it to an ImageView.
+     * There are two constructors, one for each size.
+     */
+    private static class GetImageTask
+            extends AsyncTask<Void, Void, Void> {
+
+        private final CoverImagePagerAdapter mCoverImagePagerAdapter;
+        private final FileManager mFileManager;
+        @NonNull
+        private final String mIsbn;
+        private final boolean isThumbnail;
+
+        private WeakReference<ImageView> mImageViewRef;
+        private int mMaxWidth;
+        private int mMaxHeight;
+        @Nullable
+        private String mFileSpec;
+
+        /**
+         * Constructor for getting a full size image.
+         *
+         * @param adapter     to send results to
+         * @param fileManager to use
+         * @param isbn        in the editions list for the ISBN to use
+         */
+        GetImageTask(@NonNull final CoverImagePagerAdapter adapter,
+                     @NonNull final FileManager fileManager,
+                     @NonNull final String isbn) {
+            mCoverImagePagerAdapter = adapter;
+            mFileManager = fileManager;
+            mIsbn = isbn;
+            isThumbnail = false;
+        }
+
+        /**
+         * Constructor for getting a thumbnail image.
+         *
+         * @param adapter     to send results to
+         * @param fileManager to use
+         * @param isbn        in the editions list for the ISBN to use
+         */
+        GetImageTask(@NonNull final CoverImagePagerAdapter adapter,
+                     @NonNull final FileManager fileManager,
+                     @NonNull final String isbn,
+                     final int maxWidth,
+                     final int maxHeight,
+                     @NonNull final ImageView view) {
+            mCoverImagePagerAdapter = adapter;
+            mFileManager = fileManager;
+            mIsbn = isbn;
+            isThumbnail = true;
+
+            mImageViewRef = new WeakReference<>(view);
+            mMaxWidth = maxWidth;
+            mMaxHeight = maxHeight;
+        }
+
+        @Override
+        @WorkerThread
+        protected Void doInBackground(final Void... params) {
+            if (isThumbnail) {
+                mFileSpec = mFileManager.download(mIsbn, ImageSizes.SMALL, ImageSizes.LARGE);
+            } else {
+                mFileSpec = mFileManager.download(mIsbn, ImageSizes.LARGE, ImageSizes.SMALL);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(final Void result) {
+            if (isCancelled() || mFileSpec == null || mFileSpec.isEmpty()) {
+                return;
+            }
+
+            if (isThumbnail) {
+                mCoverImagePagerAdapter.updateThumbnail(this, mFileSpec, mImageViewRef.get(),
+                                                        mMaxWidth, mMaxHeight);
+            } else {
+                mCoverImagePagerAdapter.updateSwitcher(this, mFileSpec);
             }
         }
     }
@@ -469,17 +641,17 @@ public class CoverBrowser
             final String isbn = mAlternativeEditions.get(position);
 
             // See if file is present
-            File file = null;
-            try {
-                file = mFileManager.getFile(isbn, SearchSites.ImageSizes.SMALL);
-            } catch (NullPointerException ignore) {
-                //file did not exist. Dealt with later.
-            }
-
+            File file = mFileManager.getFile(isbn, SearchSites.ImageSizes.SMALL);
             if (file == null) {
                 // Not present; request it
-                mImageFetcher.enqueue(new GetThumbnailTask(isbn, coverImage, mPreviewSizeWidth,
-                                                           mPreviewSizeHeight));
+                if (!mShutdown) {
+                    GetImageTask task = new GetImageTask(CoverImagePagerAdapter.this,
+                                                         mFileManager, isbn,
+                                                         mPreviewSizeWidth, mPreviewSizeHeight,
+                                                         coverImage);
+                    addTask(task);
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
                 //  and use a placeholder.
                 coverImage.setImageResource(R.drawable.ic_image);
             } else {
@@ -497,13 +669,45 @@ public class CoverBrowser
                     final TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
                     msgVw.setText(R.string.progress_msg_loading);
                     msgVw.setVisibility(View.VISIBLE);
-
-                    GetFullImageTask task = new GetFullImageTask(isbn, mSwitcher);
-                    mImageFetcher.enqueue(task);
+                    // get the full size image.
+                    GetImageTask task = new GetImageTask(CoverImagePagerAdapter.this,
+                                                         mFileManager, isbn);
+                    addTask(task);
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             });
             container.addView(coverImage);
             return coverImage;
+        }
+
+        /**
+         * handle result from the {@link GetImageTask}.
+         *
+         * @param fileSpec the file we got.
+         */
+        void updateSwitcher(@NonNull final GetImageTask task,
+                            @NonNull final String fileSpec) {
+            removeTask(task);
+
+            // Update the ImageSwitcher
+            File file = new File(fileSpec);
+            TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
+            if (file.exists() && file.length() > 100) {
+                Drawable image = new BitmapDrawable(
+                        mActivity.getResources(),
+                        ImageUtils.getImageAndPutIntoView(null, file,
+                                                          mPreviewSizeWidth * 4,
+                                                          mPreviewSizeHeight * 4,
+                                                          true));
+                mSwitcher.setImageDrawable(image);
+                mSwitcher.setTag(file.getAbsolutePath());
+                msgVw.setVisibility(View.GONE);
+                mSwitcher.setVisibility(View.VISIBLE);
+            } else {
+                msgVw.setVisibility(View.VISIBLE);
+                mSwitcher.setVisibility(View.GONE);
+                msgVw.setText(R.string.warning_cover_not_found);
+            }
         }
 
         @Override
@@ -523,225 +727,25 @@ public class CoverBrowser
                                         @NonNull final Object object) {
             return view == object;
         }
-    }
-
-    /**
-     * SimpleTask to fetch all alternative edition isbn's from LibraryThing.
-     */
-    private class GetEditionsTask
-            implements SimpleTaskQueue.SimpleTask {
-
-        @NonNull
-        private final String mIsbn;
-
-        List<String> editions;
 
         /**
-         * Constructor.
-         */
-        GetEditionsTask(@NonNull final String isbn) {
-            mIsbn = isbn;
-        }
-
-        @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
-            // Get some editions
-            // ENHANCE: the list of editions should be expanded to include other sites
-            // As well as the alternate user-contributed images from LibraryThing. The latter are
-            // often the best source but at present could only be obtained by HTML scraping.
-            try {
-                editions = LibraryThingManager.searchEditions(mIsbn);
-            } catch (RuntimeException e) {
-                editions = null;
-            }
-        }
-
-        @Override
-        public void onFinish(@Nullable final Exception e) {
-            handleTaskResult(editions);
-        }
-    }
-
-    private void handleTaskResult(@Nullable final List<String> editions) {
-        mAlternativeEditions = editions;
-
-        if (mAlternativeEditions == null || mAlternativeEditions.isEmpty()) {
-            StandardDialogs.showUserMessage(mActivity, R.string.warning_no_editions);
-            close();
-            return;
-        }
-        showGallery();
-    }
-
-    private static class GetEditions
-            extends AsyncTask<Void, Void, List<String>> {
-
-        @NonNull
-        private final String mIsbn;
-        @NonNull
-        private final CoverBrowser mCallback;
-
-        /**
-         * Constructor.
+         * handle result from the {@link GetImageTask}.
          *
-         * @param isbn     to search for
-         * @param callback to send results to
+         * @param fileSpec the file we got.
          */
-        public GetEditions(@NonNull final String isbn,
-                                    @NonNull final CoverBrowser callback) {
-            mIsbn = isbn;
-            mCallback = callback;
-        }
-
-        @Override
-        @Nullable
-        protected List<String> doInBackground(final Void... params) {
-            // Get some editions
-            // ENHANCE: the list of editions should be expanded to include other sites
-            // As well as the alternate user-contributed images from LibraryThing. The latter are
-            // often the best source but at present could only be obtained by HTML scraping.
-            try {
-                return LibraryThingManager.searchEditions(mIsbn);
-            } catch (RuntimeException e) {
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(final List<String> result) {
-            mCallback.handleTaskResult(result);
-        }
-    }
-
-    /**
-     * SimpleTask to fetch a thumbnail image and apply it to an ImageView.
-     */
-    private class GetThumbnailTask
-            implements SimpleTaskQueue.SimpleTask {
-
-        @NonNull
-        private final ImageView mImageView;
-        private final int mMaxWidth;
-        private final int mMaxHeight;
-        @NonNull
-        private final String mIsbn;
-        @Nullable
-        private String mFileSpec;
-
-        /**
-         * @param isbn for requested cover.
-         * @param view to update
-         */
-        GetThumbnailTask(@NonNull final String isbn,
-                         @NonNull final ImageView view,
-                         final int maxWidth,
-                         final int maxHeight) {
-            mImageView = view;
-            mMaxWidth = maxWidth;
-            mMaxHeight = maxHeight;
-            mIsbn = isbn;
-        }
-
-        @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
-            // If we are shutdown, just return
-            if (mShutdown) {
-                taskContext.setRequiresFinish(false);
-                return;
-            }
-
-            // Try SMALL
-            mFileSpec = mFileManager.download(mIsbn, SearchSites.ImageSizes.SMALL);
-            if (mFileSpec != null && new File(mFileSpec).length() >= 50) {
-                return;
-            }
-
-            // Try LARGE (or silently give up)
-            mFileSpec = mFileManager.download(mIsbn, SearchSites.ImageSizes.LARGE);
-        }
-
-        @Override
-        public void onFinish(@Nullable final Exception e) {
-            if (mShutdown || mFileSpec == null || mFileSpec.isEmpty()) {
-                return;
-            }
-
-            // Load the file and apply to view
-            File file = new File(mFileSpec);
-            file.deleteOnExit();
-            ImageUtils.getImageAndPutIntoView(mImageView, file, mMaxWidth, mMaxHeight, true);
-
-        }
-    }
-
-    /**
-     * SimpleTask to download an image and apply it to the ImageSwitcher.
-     */
-    private class GetFullImageTask
-            implements SimpleTaskQueue.SimpleTask {
-
-        // Switcher to use
-        @NonNull
-        private final ImageSwitcher mSwitcher;
-        // ISBN
-        private final String mIsbn;
-        // Resulting file
-        @Nullable
-        private String mFileSpec;
-
-        /**
-         * Constructor.
-         *
-         * @param isbn     in the editions list for the ISBN to use
-         * @param switcher ImageSwitcher to update
-         */
-        GetFullImageTask(@NonNull final String isbn,
-                         @NonNull final ImageSwitcher switcher) {
-            mSwitcher = switcher;
-            mIsbn = isbn;
-        }
-
-        @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
-            // If we are shutdown, just return
-            if (mShutdown) {
-                taskContext.setRequiresFinish(false);
-                return;
-            }
-
-            // Download the file, try LARGE first
-            mFileSpec = mFileManager.download(mIsbn, SearchSites.ImageSizes.LARGE);
-            if (mFileSpec != null && new File(mFileSpec).length() >= 50) {
-                return;
-            }
-            // Try SMALL (or silently give up)
-            mFileSpec = mFileManager.download(mIsbn, SearchSites.ImageSizes.SMALL);
-        }
-
-        @Override
-        public void onFinish(@Nullable final Exception e) {
-            if (mShutdown || mFileSpec == null || mFileSpec.isEmpty()) {
-                return;
-            }
-
-            // Update the ImageSwitcher
-            File file = new File(mFileSpec);
-            TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
-            if (file.exists() && file.length() > 100) {
-                Drawable image = new BitmapDrawable(
-                        mActivity.getResources(),
-                        ImageUtils.getImageAndPutIntoView(null, file,
-                                                          mPreviewSizeWidth * 4,
-                                                          mPreviewSizeHeight * 4,
-                                                          true));
-                mSwitcher.setImageDrawable(image);
-                mSwitcher.setTag(file.getAbsolutePath());
-                msgVw.setVisibility(View.GONE);
-                mSwitcher.setVisibility(View.VISIBLE);
-            } else {
-                msgVw.setVisibility(View.VISIBLE);
-                mSwitcher.setVisibility(View.GONE);
-                msgVw.setText(R.string.warning_cover_not_found);
+        void updateThumbnail(@NonNull final GetImageTask task,
+                             @NonNull final String fileSpec,
+                             @Nullable final ImageView imageView,
+                             final int maxWidth,
+                             final int maxHeight) {
+            removeTask(task);
+            // the imageView would be null if during the task, the view would have been destroyed.
+            // (but would we even get here then? or are we being paranoid...)
+            if (imageView != null) {
+                // Load the file and apply to view
+                File file = new File(fileSpec);
+                file.deleteOnExit();
+                ImageUtils.getImageAndPutIntoView(imageView, file, maxWidth, maxHeight, true);
             }
         }
     }

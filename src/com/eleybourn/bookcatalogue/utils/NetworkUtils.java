@@ -76,6 +76,7 @@ public final class NetworkUtils {
      * Low level check if a url is reachable.
      *
      * @param site url to check, format: "http://some.site.com" or "https://secure.site.com"
+     *             Any path after the hostname will be ignored.
      *
      * @return <tt>true</tt> on success.
      */
@@ -84,7 +85,7 @@ public final class NetworkUtils {
 
         String url = site.toLowerCase();
         int port = url.startsWith("https://") ? 443 : 80;
-        String host = url.toLowerCase().split("//")[1];
+        String host = url.toLowerCase().split("//")[1].split("/")[0];
         return isAlive(host, port);
     }
 

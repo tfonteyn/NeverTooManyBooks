@@ -35,18 +35,17 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import java.io.IOException;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
-
-import java.io.IOException;
-import java.util.List;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
 /**
  * Search goodreads for a book and display the list of results.
@@ -61,7 +60,6 @@ public class GoodreadsSearchResultsActivity
         extends BaseListActivity {
 
     public static final String BKEY_SEARCH_CRITERIA = "criteria";
-    private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("Goodreads-GetImageTask");
 
     @Override
     protected int getLayoutId() {
@@ -214,7 +212,7 @@ public class GoodreadsSearchResultsActivity
                 holder.work = getItem(position);
                 // get the cover (or put it in background task)
                 //noinspection ConstantConditions
-                holder.work.fillImageView(mTaskQueue, holder.coverView);
+                holder.work.fillImageView(holder.coverView);
 
                 // Update the views based on the work
                 holder.authorView.setText(holder.work.authorName);

@@ -22,10 +22,7 @@ package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.app.SearchManager;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -47,6 +44,7 @@ import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -54,6 +52,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler.BooklistChangeListener;
 import com.eleybourn.bookcatalogue.adapters.MultiTypeListCursorAdapter;
@@ -78,13 +80,9 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.FTSSearchActivity;
 import com.eleybourn.bookcatalogue.settings.BooklistStyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
+import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -95,6 +93,7 @@ public class BooksOnBookshelf
         extends BaseListActivity
         implements
         BooklistChangeListener,
+        TaskWithProgress.OnTaskFinishedListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     /** Preference name - Saved position of last top row. */
@@ -110,28 +109,22 @@ public class BooksOnBookshelf
     private static final int REQ_BOOK_VIEW = 0;
     /** Activity Request Code. */
     private static final int REQ_ADVANCED_LOCAL_SEARCH = 10;
-
-    /** Task queue to get book lists in background. */
-    private final SimpleTaskQueue mTaskQueue = new SimpleTaskQueue("BoB-GetBookListTask", 1);
+    /** */
+    private static final int TASK_ID_GET_BOOKLIST = 1;
     /** Holder for all (semi)supported search criteria. See class for mre info. */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
     /**
      * Flag indicating activity has been destroyed.
-     * Used for background tasks.
+     * TOMF: can this be replaced by isFinishing / isDestroyed()
      */
     private boolean mIsDead;
+    @Nullable
+    private Boolean mDoFullRebuild;
     /**
      * Flag to indicate that a list has been successfully loaded.
      * Affects the way we save state
      */
     private boolean mListHasBeenLoaded;
-    /**
-     * ProgressDialog used to display "Getting books...".
-     * Needed here so we can dismiss it on close.
-     */
-    @Nullable
-    @Deprecated
-    private ProgressDialog mProgressDialog;
     /**
      * A book ID used for keeping/updating current list position,
      * eg. when a book is viewed/edited.
@@ -238,15 +231,11 @@ public class BooksOnBookshelf
 
         initBookshelfSpinner();
 
-        // populate and switch to the preferred bookshelf.
-        populateBookShelfSpinner();
-
-        // global criteria are all null
-        initBookList(true);
-
         if (savedInstanceState == null) {
             initHints();
         }
+
+        // populating the spinner and loading the list is done in onResume.
         Tracker.exitOnCreate(this);
     }
 
@@ -272,8 +261,15 @@ public class BooksOnBookshelf
             return;
         }
 
-        // bookshelves can have changed, so reload
         populateBookShelfSpinner();
+
+        // mDoFullRebuild can be set in onActivityResult
+        if (mDoFullRebuild == null) {
+            initBookList(true);
+        } else {
+            initBookList(mDoFullRebuild);
+            mDoFullRebuild = null;
+        }
 
         Tracker.exitOnResume(this);
     }
@@ -287,15 +283,6 @@ public class BooksOnBookshelf
         if (mSearchCriteria.isEmpty()) {
             savePosition();
         }
-
-        if (isFinishing()) {
-            mTaskQueue.terminate();
-        }
-
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-        }
-
         super.onPause();
     }
 
@@ -310,7 +297,6 @@ public class BooksOnBookshelf
     @CallSuper
     protected void onDestroy() {
         mIsDead = true;
-        mTaskQueue.terminate();
 
         if (mListCursor != null) {
             mListCursor.getBuilder().close();
@@ -458,7 +444,7 @@ public class BooksOnBookshelf
             menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_PREFS, 0, R.string.lbl_preferences);
             menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_STYLE, 0, R.string.lbl_style);
             menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, 0, R.string.debug_history);
-            menu.add(Menu.NONE, R.id.MENU_DEBUG_EXPORT_DATABASE,0, R.string.menu_copy_database);
+            menu.add(Menu.NONE, R.id.MENU_DEBUG_EXPORT_DATABASE, 0, R.string.menu_copy_database);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -540,6 +526,30 @@ public class BooksOnBookshelf
     /**
      * Called when an activity launched exits, giving you the requestCode you started it with,
      * the resultCode it returned, and any additional data from it.
+     * <p>
+     * Reminder: don't do any commits on the fragment manager.
+     * This includes showing fragments, or starting tasks that show fragments.
+     * Do this in {@link #onResume} which will be called after onActivityResult.
+     *
+     * Note: not tested to destruction, but it certainly was correct for starting a task
+     * with a fragment (for showing progress).
+     *
+     * See:
+     * https://www.androiddesignpatterns.com/2013/08/fragment-transaction-commit-state-loss.html
+     * https://stackoverflow.com/questions/16265733/failure-delivering-result-onactivityforresult
+     * Quoting:
+     * Calling commitAllowingStateLoss() is more of a hack than a fix. State loss is bad and
+     * should be avoided at all costs. At the time that onActivityResult() is called, the
+     * activity/fragment's state may not yet have been restored, and therefore any transactions
+     * that happen during this time will be lost as a result. This is a very important bug which
+     * must be addressed! (Note that the bug only happens when your Activity is coming back after
+     * having been killed by the system... which, depending on how much memory the device has,
+     * can sometimes be rare... so this sort of bug is not something that is very easy to catch
+     * while testing).
+     * <p>
+     * Try moving your transactions into onPostResume() instead (note that onPostResume() is
+     * always called after onResume() and onResume() is always called after onActivityResult()):
+     * => onResume works equally well.
      */
     @Override
     @CallSuper
@@ -547,16 +557,17 @@ public class BooksOnBookshelf
                                     final int resultCode,
                                     @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
+
         mCurrentPositionedBookId = 0;
 
         switch (requestCode) {
             case REQ_BOOK_VIEW:
-            case REQ_BOOK_EDIT: {
+            case REQ_BOOK_EDIT:
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING:
                         // handle re-positioning better
                         //mCurrentPositionedBookId = [somehow get the ID 'above' the deleted one;
-                        initBookList(false);
+                        mDoFullRebuild = false;
                         break;
 
                     case Activity.RESULT_OK:
@@ -565,7 +576,7 @@ public class BooksOnBookshelf
                         if (newId != 0) {
                             mCurrentPositionedBookId = newId;
                         }
-                        initBookList(false);
+                        mDoFullRebuild = false;
                         break;
 
 
@@ -576,8 +587,8 @@ public class BooksOnBookshelf
                         break;
                 }
                 break;
-            }
-            case REQ_BOOK_SEARCH: {
+
+            case REQ_BOOK_SEARCH:
                 if (resultCode == Activity.RESULT_OK) {
                     /* don't enforce having an id. We might not have found or added anything.
                      * but if we do, the data will be what EditBookActivity returns. */
@@ -588,11 +599,11 @@ public class BooksOnBookshelf
                         }
                     }
                     // regardless, do a rebuild just in case
-                    initBookList(false);
+                    mDoFullRebuild = false;
                 }
                 break;
-            }
-            case REQ_ADVANCED_LOCAL_SEARCH: {
+
+            case REQ_ADVANCED_LOCAL_SEARCH:
                 // no changes made, but we might have data to act on.
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
@@ -600,13 +611,13 @@ public class BooksOnBookshelf
                         if (extras != null) {
                             mSearchCriteria.from(data.getExtras());
                         }
-                        initBookList(true);
+                        mDoFullRebuild = true;
                     }
                 }
                 break;
-            }
+
             // from BaseActivity Nav Panel
-            case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES: {
+            case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     // the last edited/inserted shelf
@@ -615,15 +626,12 @@ public class BooksOnBookshelf
 
                     // bookshelves modified, update everything
                     initBookshelfSpinner();
-                    populateBookShelfSpinner();
-                    savePosition();
-                    initBookList(true);
+                    mDoFullRebuild = true;
                 }
                 break;
-            }
 
             // from BaseActivity Nav Panel
-            case UniqueId.REQ_NAV_PANEL_ADMIN: {
+            case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (resultCode == Activity.RESULT_OK) {
                     if ((data != null) && data.hasExtra(UniqueId.BKEY_IMPORT_RESULT_OPTIONS)) {
                         // BackupAndRestoreActivity:
@@ -636,8 +644,7 @@ public class BooksOnBookshelf
                             if (!mCurrentBookshelf.equals(newBookshelf)) {
                                 // if it was.. then switch to it.
                                 mCurrentBookshelf = newBookshelf;
-                                // take care of both bookshelf & style and trigger a rebuild.
-                                populateBookShelfSpinner();
+                                mDoFullRebuild = true;
                             }
                         }
                     } else if ((data != null)
@@ -652,19 +659,18 @@ public class BooksOnBookshelf
 //                        // child-activities results:
 //                        // SearchAdminActivity:
 //                    }
-                }
-                break;
-            }
 
-            // from BaseActivity Nav Panel or from sort menu dialog
-            // TODO: more complicated then it should be....
+                    break;
+                }
+
+                // from BaseActivity Nav Panel or from sort menu dialog
+                // TODO: more complicated then it should be....
             case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES: {
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING:
                     case UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStyles:
                         // no data
-                        savePosition();
-                        initBookList(true);
+                        mDoFullRebuild = true;
                         break;
 
                     case UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties:
@@ -678,8 +684,7 @@ public class BooksOnBookshelf
                             mCurrentBookshelf.setAsPreferred();
                             mCurrentBookshelf.setStyle(mDb, style);
                         }
-                        savePosition();
-                        initBookList(true);
+                        mDoFullRebuild = true;
                         break;
 
                     default:
@@ -690,6 +695,7 @@ public class BooksOnBookshelf
                 }
                 break;
             }
+
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
@@ -713,7 +719,7 @@ public class BooksOnBookshelf
 
         populateBookCountField(headersToShow);
 
-        long t0;
+        long t0 = 0;
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             //noinspection UnusedAssignment
             t0 = System.currentTimeMillis();
@@ -724,7 +730,7 @@ public class BooksOnBookshelf
         mListCursor = newList;
 
         // Get new handler and adapter since list may be radically different structure
-        mListHandler = new BooksMultiTypeListHandler();
+        mListHandler = new BooksMultiTypeListHandler(mDb);
         mAdapter = new MultiTypeListCursorAdapter(this, mListCursor, mListHandler);
 
         // Get the ListView and set it up
@@ -807,7 +813,7 @@ public class BooksOnBookshelf
             oldList.close();
         }
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this, " displayList: " + (System.currentTimeMillis() - t0));
+            Logger.info(this, " displayList: " + (System.currentTimeMillis() - t0) + "ms");
         }
     }
 
@@ -906,7 +912,9 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Save current position information, including view nodes that are expanded.
+     * Save current position information in the preferences, including view nodes that are expanded.
+     * We do this to preserve this data across application shutdown/startup.
+     *
      * <p>
      * ENHANCE: Handle positions a little better when books are deleted.
      * <p>
@@ -978,6 +986,7 @@ public class BooksOnBookshelf
      */
     private void initBookshelfSpinner() {
         mBookshelfSpinner = findViewById(R.id.bookshelf_name);
+        // create, but do not populate here.
         mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.spinner_bookshelf);
         mBookshelfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfAdapter);
@@ -992,8 +1001,16 @@ public class BooksOnBookshelf
                                        final int position,
                                        final long id) {
 
+                if (BuildConfig.DEBUG) {
+                    Logger.info(this,"mBookshelfSpinner onItemSelected", "pos=" + position);
+                }
+
                 String bsName = (String) parent.getItemAtPosition(position);
                 if (bsName != null && !bsName.equalsIgnoreCase(mCurrentBookshelf.getName())) {
+                    if (BuildConfig.DEBUG) {
+                        Logger.info(this,"mBookshelfSpinner onItemSelected", "spinning to shelf: " + bsName);
+                    }
+
                     // make the new shelf the current
                     mCurrentBookshelf = mDb.getBookshelfByName(bsName);
                     if (mCurrentBookshelf == null) {
@@ -1033,6 +1050,9 @@ public class BooksOnBookshelf
 
         // Set the current bookshelf. We use this to force the correct bookshelf after
         // the state has been restored.
+        if (BuildConfig.DEBUG) {
+            Logger.info(this,"populateBookShelfSpinner", "calling mBookshelfSpinner.setSelection pos=" + currentPos);
+        }
         mBookshelfSpinner.setSelection(currentPos);
     }
 
@@ -1240,30 +1260,33 @@ public class BooksOnBookshelf
         // See DatabaseDefinitions#TBL_BOOK_LIST for an example of the correct table content
         // After rebuild(false) all rows which don't show an expanded node are gone.
         //
-        boolean rebuild;
+        boolean fullRebuild;
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-            rebuild = isFullRebuild;
+            fullRebuild = isFullRebuild;
         } else {
-            rebuild = true;
+            fullRebuild = true;
         }
 
-        mTaskQueue.enqueue(new GetBookListTask(rebuild, mCurrentBookshelf.getId()));
+        BooklistBuilder bookListBuilder;
+        // If not a full rebuild then just use the current builder to re-query the underlying data
+        if (mListCursor != null && !fullRebuild) {
+            bookListBuilder = mListCursor.getBuilder();
+        } else {
+            bookListBuilder = getBooklistBuilder();
+            // Build based on our current criteria
+            bookListBuilder.setFilterOnText(mSearchCriteria.text);
+            bookListBuilder.setFilterOnTitle(mSearchCriteria.title);
+            bookListBuilder.setFilterOnAuthorName(mSearchCriteria.author);
+            bookListBuilder.setFilterOnSeriesName(mSearchCriteria.series);
+            bookListBuilder.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
 
-        if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialog.show(this,
-                                                  "",
-                                                  getString(R.string.progress_msg_getting_books),
-                                                  true,
-                                                  true, new OnCancelListener() {
-                        @Override
-                        public void onCancel(@NonNull final DialogInterface dialog) {
-                            // Cancelling the list cancels the activity.
-                            finish();
-                            dialog.dismiss();
-                            mProgressDialog = null;
-                        }
-                    });
+            bookListBuilder.setFilterOnBookIdList(mSearchCriteria.bookList);
+
+            bookListBuilder.setFilterOnBookshelfId(mCurrentBookshelf.getId());
         }
+
+        BuilderHolder h = new BuilderHolder(mCurrentPositionedBookId, mListCursor, mRebuildState);
+        new GetBookListTask(this, h, fullRebuild, bookListBuilder).execute();
     }
 
     @Override
@@ -1280,13 +1303,293 @@ public class BooksOnBookshelf
         super.onSharedPreferenceChanged(sharedPreferences, key);
     }
 
+    @Override
+    public void onTaskFinished(final int taskId,
+                               final boolean failed,
+                               final boolean cancelled,
+                               @Nullable final Object result) {
+        if (taskId == TASK_ID_GET_BOOKLIST && result != null) {
+            // Save a flag to say list was loaded at least once successfully (or not)
+            mListHasBeenLoaded = !failed && !cancelled;
+            if (mListHasBeenLoaded) {
+                BuilderHolder h = (BuilderHolder) result;
+                // always copy modified fields.
+                mCurrentPositionedBookId = h.currentPositionedBookId;
+                mListCursor = h.listCursor;
+                mRebuildState = h.rebuildState;
+                // always copy these results
+                mTotalBooks = h.resultTotalBooks;
+                mUniqueBooks = h.resultUniqueBooks;
+
+                // check if we have a new list before using it.
+                if (h.resultList != null) {
+                    displayList(h.resultList, h.resultTargetRows);
+                }
+            }
+        }
+    }
+
     /**
-     * older class for search criteria with some methods to mass manipulate them.
+     * Background task to build and retrieve the list of books based on current settings.
+     *
+     * @author Philip Warner
+     */
+    private static class GetBookListTask
+            extends TaskWithProgress<Void> {
+
+        /**
+         * Indicates whole table structure needs rebuild,
+         * versus just do a reselect of underlying data.
+         */
+        private final boolean mIsFullRebuild;
+        /** the builder. */
+        @NonNull
+        private final BooklistBuilder mBooklistBuilder;
+        /** Holds the input/output and output-only fields to be returned to the activity. */
+        @NonNull
+        private final BuilderHolder mHolder;
+        /** Resulting Cursor. */
+        private BooklistPseudoCursor tempList;
+        /** used to determine new cursor position. */
+        @Nullable
+        private ArrayList<BookRowInfo> targetRows;
+
+        /**
+         * Constructor.
+         *
+         * @param context         caller activity
+         * @param builderHolder   holder class with input fields / results.
+         * @param isFullRebuild   Indicates whole table structure needs rebuild,
+         *                        versus just do a reselect of underlying data
+         * @param bookListBuilder the builder
+         */
+        GetBookListTask(@NonNull final FragmentActivity context,
+                        @NonNull final BuilderHolder builderHolder,
+                        final boolean isFullRebuild,
+                        @NonNull final BooklistBuilder bookListBuilder) {
+
+            super(TASK_ID_GET_BOOKLIST, context, R.string.progress_msg_getting_books, true);
+            mIsFullRebuild = isFullRebuild;
+            mBooklistBuilder = bookListBuilder;
+            mHolder = builderHolder;
+
+            if (BuildConfig.DEBUG) {
+                Logger.info(this, "constructor", "mIsFullRebuild=" + isFullRebuild);
+            }
+        }
+
+        /**
+         * TOMF: add tests for
+         * mFragment.isCancelled()    <- triggered when the user hits 'back'
+         * isCancelled()  <- only triggered if 'cancel' is called on the task.
+         * <p>
+         * So.... change the mFragment to call the 'cancel' and test on mFragement.isCancelled ?
+         * or... just check on mFragment.isCancelled ?
+         *
+         * @param params void
+         *
+         * @return void
+         */
+        @Override
+        protected Void doInBackground(final Void... params) {
+            try {
+                long t0 = 0;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t0 = System.currentTimeMillis();
+                }
+                // Build the underlying data
+                if (mHolder.listCursor != null && !mIsFullRebuild) {
+                    mBooklistBuilder.rebuild();
+                } else {
+                    mBooklistBuilder.build(mHolder.rebuildState, mHolder.currentPositionedBookId);
+                    // After first build, always preserve this object state
+                    mHolder.rebuildState = BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED;
+                }
+
+                long t1 = 0;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t1 = System.currentTimeMillis();
+                }
+
+                // Try to sync the previously selected book ID
+                if (mHolder.currentPositionedBookId != 0) {
+                    // get all positions of the book
+                    targetRows = mBooklistBuilder
+                            .getBookAbsolutePositions(mHolder.currentPositionedBookId);
+
+                    if (targetRows != null && !targetRows.isEmpty()) {
+                        // First, get the ones that are currently visible...
+                        ArrayList<BookRowInfo> visRows = new ArrayList<>();
+                        for (BookRowInfo i : targetRows) {
+                            if (i.visible) {
+                                visRows.add(i);
+                            }
+                        }
+                        // If we have any visible rows, only consider them for the new position
+                        if (!visRows.isEmpty()) {
+                            targetRows = visRows;
+                        } else {
+                            // Make them ALL visible
+                            for (BookRowInfo rowInfo : targetRows) {
+                                if (!rowInfo.visible) {
+                                    mBooklistBuilder.ensureAbsolutePositionVisible(
+                                            rowInfo.absolutePosition);
+                                }
+                            }
+                            // Recalculate all positions
+                            for (BookRowInfo rowInfo : targetRows) {
+                                rowInfo.listPosition = mBooklistBuilder.getPosition(
+                                        rowInfo.absolutePosition);
+                            }
+                        }
+                        // Find the nearest row to the recorded 'top' row.
+//                        int targetRow = bookRows[0];
+//                        int minDist = Math.abs(mTopRow - b.getPosition(targetRow));
+//                        for (int i = 1; i < bookRows.length; i++) {
+//                            int pos = b.getPosition(bookRows[i]);
+//                            int dist = Math.abs(mTopRow - pos);
+//                            if (dist < minDist) {
+//                                targetRow = bookRows[i];
+//                            }
+//                        }
+//                        // Make sure the target row is visible/expanded.
+//                        b.ensureAbsolutePositionVisible(targetRow);
+//                        // Now find the position it will occupy in the view
+//                        mTargetPos = b.getPosition(targetRow);
+                    }
+                } else {
+                    targetRows = null;
+                }
+
+                long t2 = 0;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t2 = System.currentTimeMillis();
+                }
+                // Now we have expanded groups as needed, get the list cursor
+                tempList = mBooklistBuilder.getList();
+                // Clear it so it won't be reused.
+                mHolder.currentPositionedBookId = 0;
+
+                long t3 = 0;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t3 = System.currentTimeMillis();
+                }
+                // get a count() from the cursor in background task because the setAdapter() call
+                // will do a count() and potentially block the UI thread while it pages through the
+                // entire cursor. If we do it here, subsequent calls will be fast.
+                @SuppressWarnings("UnusedAssignment")
+                int count = tempList.getCount();
+
+                long t4 = 0;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t4 = System.currentTimeMillis();
+                }
+                mHolder.resultUniqueBooks = tempList.getUniqueBookCount();
+
+                long t5 = 0;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t5 = System.currentTimeMillis();
+                }
+                mHolder.resultTotalBooks = tempList.getBookCount();
+
+                long t6 = 0;
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    //noinspection UnusedAssignment
+                    t6 = System.currentTimeMillis();
+                }
+
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                    Logger.info(this, " Build: " + (t1 - t0));
+                    Logger.info(this, " Position: " + (t2 - t1));
+                    Logger.info(this, " Select: " + (t3 - t2));
+                    Logger.info(this, " Count(" + count + "): " + (t4 - t3)
+                            + '/' + (t5 - t4) + '/' + (t6 - t5));
+                    Logger.info(this, " ====== ");
+                    Logger.info(this, " Total: " + (t6 - t0));
+                }
+            } catch (RuntimeException e) {
+                Logger.error(e);
+                mException = e;
+                cleanup();
+            }
+            return null;
+        }
+
+        @AnyThread
+        private void cleanup() {
+            if (BuildConfig.DEBUG) {
+                Logger.debug("cleanup called");
+            }
+            if (tempList != null && tempList != mHolder.listCursor) {
+                if (mHolder.listCursor == null
+                        || (tempList.getBuilder() != mHolder.listCursor.getBuilder())) {
+                    tempList.getBuilder().close();
+                }
+                tempList.close();
+            }
+            tempList = null;
+        }
+
+        @Override
+        protected void onPostExecute(final Void result) {
+            // TEST: a cancel... wil need to artificially slow down the task to allow clicking back.
+            if (mFragment.isCancelled()) {
+                cleanup();
+            } else {
+                // Set the results.
+                mHolder.resultList = tempList;
+                mHolder.resultTargetRows = targetRows;
+            }
+
+            ((OnTaskFinishedListener) mFragment.requireActivity())
+                    .onTaskFinished(TASK_ID_GET_BOOKLIST, mException != null,
+                                    mFragment.isCancelled(), mHolder);
+            mFragment.dismiss();
+        }
+    }
+
+    private static class BuilderHolder {
+
+        /** input/output field for the activity. */
+        long currentPositionedBookId;
+        /** input/output field for the activity. */
+        BooklistPseudoCursor listCursor;
+        /** input/output field for the activity. */
+        int rebuildState;
+        /** output field for the activity. */
+        int resultTotalBooks;
+        /** output field for the activity. */
+        int resultUniqueBooks;
+        /** Resulting Cursor. */
+        BooklistPseudoCursor resultList;
+        /** used to determine new cursor position. */
+        ArrayList<BookRowInfo> resultTargetRows;
+
+        /**
+         * Constructor: these are the fields we need as input.
+         */
+        BuilderHolder(final long currentPositionedBookId,
+                      @NonNull final BooklistPseudoCursor listCursor,
+                      final int rebuildState) {
+            this.currentPositionedBookId = currentPositionedBookId;
+            this.listCursor = listCursor;
+            this.rebuildState = rebuildState;
+        }
+    }
+
+    /**
+     * Holder class for search criteria with some methods to bulk manipulate them.
      * <p>
      * All individual criteria are supported by the {@link BooklistBuilder},
      * but not necessarily in {@link BooksOnBookshelf}.
      * <p>
-     * Some are supported by {@link #onSearchRequested()}.
+     * Only some are supported by {@link #onSearchRequested()}.
      */
     private class SearchCriteria {
 
@@ -1389,222 +1692,6 @@ public class BooksOnBookshelf
                     && (bookList == null || bookList.isEmpty())
                     ;
         }
-    }
-
-    /**
-     * Background task to build and retrieve the list of books based on current settings.
-     *
-     * @author Philip Warner
-     */
-    private class GetBookListTask
-            implements SimpleTaskQueue.SimpleTask {
-
-        /**
-         * Indicates whole table structure needs rebuild,
-         * versus just do a reselect of underlying data.
-         */
-        private final boolean isFullRebuild;
-        /** the builder. */
-        @NonNull
-        private final BooklistBuilder bookListBuilder;
-        /** Resulting Cursor. */
-        private BooklistPseudoCursor tempList;
-        /** used to determine new cursor position. */
-        @Nullable
-        private ArrayList<BookRowInfo> targetRows;
-
-        /**
-         * Constructor.
-         *
-         * @param isFullRebuild      Indicates whole table structure needs rebuild,
-         *                           versus just do a reselect of underlying data
-         * @param currentBookshelfId strictly return books on this bookshelf
-         */
-        GetBookListTask(final boolean isFullRebuild,
-                        final long currentBookshelfId) {
-
-            if (!isFullRebuild && BuildConfig.DEBUG) {
-                Logger.info(this, " constructor, isFullRebuild=false");
-            }
-            this.isFullRebuild = isFullRebuild;
-
-            // If not a full rebuild then just use the current builder to re-query
-            // the underlying data
-            if (mListCursor != null && !this.isFullRebuild) {
-                bookListBuilder = mListCursor.getBuilder();
-            } else {
-                bookListBuilder = getBooklistBuilder();
-                // Build based on our current criteria
-                bookListBuilder.setFilterOnText(mSearchCriteria.text);
-                bookListBuilder.setFilterOnTitle(mSearchCriteria.title);
-                bookListBuilder.setFilterOnAuthorName(mSearchCriteria.author);
-                bookListBuilder.setFilterOnSeriesName(mSearchCriteria.series);
-                bookListBuilder.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
-                bookListBuilder.setFilterOnBookIdList(mSearchCriteria.bookList);
-
-                bookListBuilder.setFilterOnBookshelfId(currentBookshelfId);
-            }
-        }
-
-        @Override
-        public void run(@NonNull final SimpleTaskContext taskContext) {
-            try {
-                long t0;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t0 = System.currentTimeMillis();
-                }
-                // Build the underlying data
-                if (mListCursor != null && !isFullRebuild) {
-                    bookListBuilder.rebuild();
-                } else {
-                    bookListBuilder.build(mRebuildState, mCurrentPositionedBookId);
-                    // After first build, always preserve this object state
-                    mRebuildState = BooklistBuilder.PREF_LIST_REBUILD_STATE_PRESERVED;
-                }
-
-                long t1;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t1 = System.currentTimeMillis();
-                }
-                // Try to sync the previously selected book ID
-                if (mCurrentPositionedBookId != 0) {
-                    // get all positions of the book
-                    targetRows = bookListBuilder.getBookAbsolutePositions(mCurrentPositionedBookId);
-
-                    if (targetRows != null && !targetRows.isEmpty()) {
-                        // First, get the ones that are currently visible...
-                        ArrayList<BookRowInfo> visRows = new ArrayList<>();
-                        for (BookRowInfo i : targetRows) {
-                            if (i.visible) {
-                                visRows.add(i);
-                            }
-                        }
-                        // If we have any visible rows, only consider them for the new position
-                        if (!visRows.isEmpty()) {
-                            targetRows = visRows;
-                        } else {
-                            // Make them ALL visible
-                            for (BookRowInfo rowInfo : targetRows) {
-                                if (!rowInfo.visible) {
-                                    bookListBuilder.ensureAbsolutePositionVisible(
-                                            rowInfo.absolutePosition);
-                                }
-                            }
-                            // Recalculate all positions
-                            for (BookRowInfo rowInfo : targetRows) {
-                                rowInfo.listPosition = bookListBuilder.getPosition(
-                                        rowInfo.absolutePosition);
-                            }
-                        }
-                        // Find the nearest row to the recorded 'top' row.
-//                        int targetRow = bookRows[0];
-//                        int minDist = Math.abs(mTopRow - b.getPosition(targetRow));
-//                        for (int i = 1; i < bookRows.length; i++) {
-//                            int pos = b.getPosition(bookRows[i]);
-//                            int dist = Math.abs(mTopRow - pos);
-//                            if (dist < minDist) {
-//                                targetRow = bookRows[i];
-//                            }
-//                        }
-//                        // Make sure the target row is visible/expanded.
-//                        b.ensureAbsolutePositionVisible(targetRow);
-//                        // Now find the position it will occupy in the view
-//                        mTargetPos = b.getPosition(targetRow);
-                    }
-                } else {
-                    targetRows = null;
-                }
-
-                long t2;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t2 = System.currentTimeMillis();
-                }
-                // Now we have expanded groups as needed, get the list cursor
-                tempList = bookListBuilder.getList();
-                // Clear it so it won't be reused.
-                mCurrentPositionedBookId = 0;
-
-                long t3;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t3 = System.currentTimeMillis();
-                }
-                // get a count() from the cursor in background task because the setAdapter() call
-                // will do a count() and potentially block the UI thread while it pages through the
-                // entire cursor. If we do it here, subsequent calls will be fast.
-                @SuppressWarnings("UnusedAssignment")
-                int count = tempList.getCount();
-
-                long t4;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t4 = System.currentTimeMillis();
-                }
-                mUniqueBooks = tempList.getUniqueBookCount();
-
-                long t5;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t5 = System.currentTimeMillis();
-                }
-                mTotalBooks = tempList.getBookCount();
-
-                long t6;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    //noinspection UnusedAssignment
-                    t6 = System.currentTimeMillis();
-                }
-
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    Logger.info(this, " Build: " + (t1 - t0));
-                    Logger.info(this, " Position: " + (t2 - t1));
-                    Logger.info(this, " Select: " + (t3 - t2));
-                    Logger.info(this,
-                                " Count(" + count + "): " + (t4 - t3)
-                                        + '/' + (t5 - t4) + '/' + (t6 - t5));
-                    Logger.info(this, " ====== ");
-                    Logger.info(this, " Total: " + (t6 - t0));
-                }
-                // Save a flag to say list was loaded at least once successfully
-                mListHasBeenLoaded = true;
-
-            } finally {
-                if (taskContext.isTerminating()) {
-                    // onFinish() will not be called, and we can discard our work...
-                    if (tempList != null && tempList != mListCursor) {
-                        if (mListCursor == null
-                                || (tempList.getBuilder() != mListCursor.getBuilder())) {
-                            tempList.getBuilder().close();
-                        }
-                        tempList.close();
-
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void onFinish(@Nullable final Exception e) {
-            // If activity dead, just do a local cleanup and exit.
-            if (mIsDead) {
-                tempList.close();
-                return;
-            }
-            // Dismiss the progress dialog, if present
-            if (mProgressDialog != null && !mTaskQueue.hasActiveTasks()) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-            }
-            // Update the data
-            if (tempList != null) {
-                displayList(tempList, targetRows);
-            }
-            tempList = null;
-        }
-
     }
 
     /**

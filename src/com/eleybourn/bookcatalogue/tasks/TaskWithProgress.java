@@ -31,6 +31,8 @@ import androidx.fragment.app.FragmentActivity;
  * </ul>
  * <p>
  * So yes, you CAN use member variables.
+ * <p>
+ * ENHANCE: replace the ProgressDialog with a ProgressBar.
  *
  * @param <Results> the type of the result objects for {@link #onPostExecute}.
  */
@@ -52,7 +54,7 @@ public abstract class TaskWithProgress<Results>
      * Constructor.
      *
      * @param taskId          a generic identifier
-     * @param context         the calling fragment
+     * @param context         the caller context
      * @param titelId         titel resource for the progress
      * @param isIndeterminate flag for the progress
      */
@@ -61,20 +63,24 @@ public abstract class TaskWithProgress<Results>
                             final int titelId,
                             final boolean isIndeterminate) {
         mTaskId = taskId;
-        mFragment = ProgressDialogFragment.newInstance(context, titelId, isIndeterminate);
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
+        mFragment = ProgressDialogFragment.newInstance(titelId, isIndeterminate);
+        mFragment.show(context.getSupportFragmentManager(), null);
     }
 
     /**
-     * @param values: [0] String message, [1] Integer position/delta
+     * @param values: [0] String message
+     *                [0] String message, [1] Integer position/delta
      */
     @Override
     protected void onProgressUpdate(final Object... values) {
-        mFragment.onProgress((String) values[0], (Integer) values[1]);
+        switch (values.length) {
+            case 1:
+                mFragment.onProgress((String) values[0], null);
+                break;
+            case 2:
+                mFragment.onProgress((String) values[0], (Integer) values[1]);
+                break;
+        }
     }
 
     /**
@@ -94,7 +100,7 @@ public abstract class TaskWithProgress<Results>
     }
 
     /**
-     * Listener for OnTaskFinished messages from {@link TaskWithProgress#onPostExecute}.
+     * Listener called from {@link TaskWithProgress#onPostExecute}.
      */
     public interface OnTaskFinishedListener {
 
@@ -132,21 +138,18 @@ public abstract class TaskWithProgress<Results>
         /**
          * Convenience routine to show a dialog fragment and start the task.
          *
-         * @param context         FragmentActivity of caller
          * @param messageId       Message to display
          * @param isIndeterminate type of progress
          */
         @NonNull
         @UiThread
-        public static ProgressDialogFragment newInstance(@NonNull final FragmentActivity context,
-                                                         @StringRes final int messageId,
+        public static ProgressDialogFragment newInstance(@StringRes final int messageId,
                                                          final boolean isIndeterminate) {
             ProgressDialogFragment frag = new ProgressDialogFragment();
             Bundle args = new Bundle();
             args.putInt(BKEY_MESSAGE, messageId);
             args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
             frag.setArguments(args);
-            frag.show(context.getSupportFragmentManager(), null);
             return frag;
         }
 
@@ -171,7 +174,9 @@ public abstract class TaskWithProgress<Results>
             Bundle args = getArguments();
             @Deprecated
             ProgressDialog progressDialog = new ProgressDialog(getActivity());
+            // allow the user to cancel with the 'back' key.
             progressDialog.setCancelable(true);
+            // but not by a random touch.
             progressDialog.setCanceledOnTouchOutside(false);
 
             //noinspection ConstantConditions
@@ -210,7 +215,7 @@ public abstract class TaskWithProgress<Results>
          */
         @UiThread
         public void onProgress(@Nullable final String message,
-                               final int progress) {
+                               @Nullable final Integer progress) {
 
             ProgressDialog progressDialog = (ProgressDialog) getDialog();
             if (progressDialog != null) {
@@ -222,7 +227,9 @@ public abstract class TaskWithProgress<Results>
                     if (message != null) {
                         progressDialog.setMessage(message);
                     }
-                    progressDialog.setProgress(progress);
+                    if (progress != null) {
+                        progressDialog.setProgress(progress);
+                    }
                 }
             }
         }

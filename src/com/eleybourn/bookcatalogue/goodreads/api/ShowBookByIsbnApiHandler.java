@@ -24,15 +24,15 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.RTE;
+import java.io.IOException;
 
 import org.apache.http.client.methods.HttpGet;
 
-import java.io.IOException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 /**
  * Class to call the search.books api (using an ISBN).
@@ -43,6 +43,11 @@ public class ShowBookByIsbnApiHandler
         extends ShowBookApiHandler {
 
 
+    /**
+     * Constructor.
+     *
+     * @param manager GoodreadsManager
+     */
     public ShowBookByIsbnApiHandler(@NonNull final GoodreadsManager manager) {
         // TODO: If goodreads fix signed book.show_by_isbn requests, change false to true...
         super(manager, true);
@@ -51,9 +56,10 @@ public class ShowBookByIsbnApiHandler
     /**
      * Perform a search and handle the results.
      *
+     * @param isbn           to use
      * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
      *
-     * @return the array of GoodreadsWork objects.
+     * @return the Bundle of book data.
      */
     @NonNull
     public Bundle get(@NonNull final String isbn,
@@ -67,8 +73,7 @@ public class ShowBookByIsbnApiHandler
         }
 
         // Setup API call
-        String urlBase = GoodreadsManager.BASE_URL
-                + "/book/isbn?format=xml&isbn=%1$s&key=%2$s"; //format=xml&
+        String urlBase = GoodreadsManager.BASE_URL + "/book/isbn?format=xml&isbn=%1$s&key=%2$s";
         String url = String.format(urlBase, isbn, mManager.getDevKey());
         HttpGet get = new HttpGet(url);
 

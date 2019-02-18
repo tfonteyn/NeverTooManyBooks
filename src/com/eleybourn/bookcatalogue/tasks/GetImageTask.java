@@ -21,62 +21,35 @@
 package com.eleybourn.bookcatalogue.tasks;
 
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Task to get a thumbnail from the file system or covers database.
  * It will resize it as required and apply the resulting Bitmap to the related view.
  * <p>
- * This object also has it's own statically defined SimpleTaskQueue for getting thumbnails in
- * background.
+ * We now use standard AsyncTask but run it on the parallel executor.
  *
  * @author Philip Warner
  */
 public class GetImageTask
-        implements SimpleTaskQueue.SimpleTask {
+        extends AsyncTask<Void, Void, Void> {
 
-    /**
-     * Queue for background thumbnail retrieval; allow 2 threads. More is nice, but with
-     * many books to process it introduces what looks like lag when scrolling: 5 tasks
-     * building now-invisible views is pointless.
-     * <p>
-     * Despite above 'allow 2 threads', original code had '1' set; so I presume even 2 was to much.
-     * Given the number of cores has gone up these days, let's see what we can do....
-     */
-    @NonNull
-    private static final SimpleTaskQueue TASK_QUEUE;
-
-    static {
-        int maxTasks = 1;
-        int nr = Runtime.getRuntime().availableProcessors();
-        if (nr > 4) {
-            // just a poke in the dark TODO: experiment more
-            // the covers db will only use 1 thread, but reading from the file system
-            // should use more then 1.
-            maxTasks = 3;
-        }
-        if (DEBUG_SWITCHES.TASK_MANAGER && BuildConfig.DEBUG) {
-            Logger.info(GetImageTask.class, "#cpu: " + nr +  ", #maxTasks: " + maxTasks);
-        }
-        TASK_QUEUE = new SimpleTaskQueue("GetImageTask", maxTasks);
-    }
+    private static final AtomicInteger runningTasks = new AtomicInteger();
 
     /** Reference to the view we are using. */
     @NonNull
@@ -95,8 +68,8 @@ public class GetImageTask
     private Bitmap mBitmap;
     /** Flag indicating image was found in the cache. */
     private boolean mWasInCache;
-    /** Indicated we want the queue manager to call the finished() method. */
-    private boolean mWantFinished = true;
+    /** */
+    private Exception mException;
 
     /**
      * Constructor. Clean the view and save the details of what we want.
@@ -134,21 +107,12 @@ public class GetImageTask
                                 final int maxWidth,
                                 final int maxHeight,
                                 final boolean cacheWasChecked) {
-        GetImageTask t = new GetImageTask(uuid, view, maxWidth, maxHeight, cacheWasChecked);
-        TASK_QUEUE.enqueue(t);
-    }
-
-    /**
-     * Allow other tasks (or subclasses tasks) to be queued.
-     *
-     * @param task Task to put in queue
-     */
-    public static void enqueue(@NonNull final SimpleTaskQueue.SimpleTask task) {
-        TASK_QUEUE.enqueue(task);
+        new GetImageTask(uuid, view, maxWidth, maxHeight, cacheWasChecked)
+                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static boolean hasActiveTasks() {
-        return TASK_QUEUE.hasActiveTasks();
+        return runningTasks.get() != 0;
     }
 
     /**
@@ -161,67 +125,74 @@ public class GetImageTask
         final GetImageTask oldTask = (GetImageTask) imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK);
         if (oldTask != null) {
             imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
-            TASK_QUEUE.remove(oldTask);
+            oldTask.cancel(true);
         }
     }
 
     /**
      * Do the image manipulation.
      * <p>
-     * Code commented out for now: We wait at start to prevent a flood of images
-     * from hitting the UI thread.
-     * <p>
      * TODO: getImageAndPutIntoView is an expensive operation. Make sure its still needed.
      */
     @Override
-    public void run(@NonNull final SimpleTaskContext taskContext) {
-//        try {
-//            // Let the UI have a chance to do something if we are racking up images!
-//            Thread.sleep(10);
-//        } catch (InterruptedException error) {
-//        }
+    protected Void doInBackground(final Void... params) {
+        runningTasks.incrementAndGet();
 
+        try {
+            // Get the view we are targeting and make sure it is valid
+            ImageView view = mView.get();
+            if (view == null) {
+                mView.clear();
+                return null;
+            }
 
-        // Get the view we are targeting and make sure it is valid
-        ImageView v = mView.get();
-        if (v == null) {
-            mView.clear();
-            mWantFinished = false;
-            return;
+            // Make sure the view is still associated with this task.
+            // We don't want to overwrite the wrong image in a recycled view.
+            if (!this.equals(view.getTag(R.id.TAG_GET_THUMBNAIL_TASK))) {
+                return null;
+            }
+
+            if (isCancelled()) {
+                return null;
+            }
+
+            // try cache
+            if (!mCacheWasChecked) {
+                File originalFile = StorageUtils.getCoverFile(mUuid);
+                try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
+                    mBitmap = coversDBAdapter.getImage(originalFile, mUuid, mWidth, mHeight);
+                }
+                mWasInCache = (mBitmap != null);
+            }
+
+            if (isCancelled()) {
+                return null;
+            }
+
+            // wasn't in cache, try file system. Note we do not write to the view obv.
+            if (mBitmap == null) {
+                mBitmap = ImageUtils.getImageAndPutIntoView(null, mUuid,
+                                                            mWidth, mHeight, true,
+                                                            false, false);
+            }
+
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
+            // TEST: does this work when a cancel is done ? catch ANY/ALL ... as we need to make sure the onPostExecute is called.
+            mException = e;
+            Logger.error(e);
+        } finally {
+            runningTasks.decrementAndGet();
         }
-
-        // Make sure the view is still associated with this task.
-        // We don't want to overwrite the wrong image in a recycled view.
-        if (!this.equals(v.getTag(R.id.TAG_GET_THUMBNAIL_TASK))) {
-            mWantFinished = false;
-            return;
-        }
-
-        // try cache
-        if (!mCacheWasChecked) {
-            File originalFile = StorageUtils.getCoverFile(mUuid);
-            CoversDBA coversDBAdapter = taskContext.getCoversDb();
-            mBitmap = coversDBAdapter.getImage(originalFile, mUuid, mWidth, mHeight);
-
-            mWasInCache = (mBitmap != null);
-        }
-
-        // wasn't in cache, try file system
-        if (mBitmap == null) {
-            mBitmap = ImageUtils.getImageAndPutIntoView(null, mUuid,
-                                                        mWidth, mHeight, true,
-                                                        false, false);
-        }
-
-        taskContext.setRequiresFinish(mWantFinished);
+        return null;
     }
 
     /**
      * Handle the results of the task.
      */
     @Override
-    public void onFinish(@Nullable final Exception e) {
-        if (!mWantFinished) {
+    protected void onPostExecute(final Void result) {
+
+        if (isCancelled() || mException != null) {
             return;
         }
 
@@ -243,12 +214,11 @@ public class GetImageTask
                 // delays in displaying image and to avoid contention -- the cache queue only has
                 // one thread.
                 // Tell the cache write it can be recycled if we don't have a valid view.
-                ImageCacheWriterTask.writeToCache(mUuid, mWidth, mHeight,
-                                                  mBitmap, !viewIsValid);
+                ImageCacheWriterTask.writeToCache(mUuid, mWidth, mHeight, mBitmap, !viewIsValid);
             }
             if (viewIsValid) {
                 //LayoutParams lp = new LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());
-                //v.setLayoutParams(lp);
+                //view.setLayoutParams(lp);
                 view.setImageBitmap(mBitmap);
             } else {
                 mBitmap.recycle();

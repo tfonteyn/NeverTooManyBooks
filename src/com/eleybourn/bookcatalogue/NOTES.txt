@@ -21,6 +21,7 @@ ENHANCE: move Publisher, Location, Format ... to separate tables ?
 
 TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
 
+ENHANCE: start replacing Dialog/AlertDialog with fragment based dialogs.
 
 ENHANCE: XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!

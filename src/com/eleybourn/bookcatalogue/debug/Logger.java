@@ -134,7 +134,7 @@ public final class Logger {
     }
 
     /**
-     * Transforms a Java 'Error' into an Exception, so it's not fatal.
+     * For really bad things... 2019-02: right now only an out of memory error.
      * <p>
      * Generates stacktrace
      */

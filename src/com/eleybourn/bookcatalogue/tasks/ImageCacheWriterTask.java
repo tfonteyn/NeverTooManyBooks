@@ -21,32 +21,29 @@
 package com.eleybourn.bookcatalogue.tasks;
 
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.eleybourn.bookcatalogue.database.CoversDBA;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.SimpleTaskQueue.SimpleTaskContext;
 
 /**
  * Background task to save a bitmap into the covers thumbnail database. Runs in background
  * because it involves compression and IO, and can be safely queued. Failures can be ignored
  * because it is just writing to a cache used solely for optimization.
  * <p>
- * This class also has its own static SimpleTaskQueue.
+ * Standard AsyncTask for writing data. There is no point in more than one thread since
+ * the database will force serialization of the updates.
  *
  * @author Philip Warner
  */
 public final class ImageCacheWriterTask
-        implements SimpleTaskQueue.SimpleTask {
+        extends AsyncTask<Void, Void, Void> {
 
-    /**
-     * Single-thread queue for writing data. There is no point in more than one thread since
-     * the database will force serialization of the updates.
-     */
-    private static final SimpleTaskQueue TASK_QUEUE =
-            new SimpleTaskQueue("ImageCacheWriterTask", 1);
+    private static final AtomicInteger runningTasks = new AtomicInteger();
+
     /** Indicates if Bitmap can be recycled when no longer needed. */
     private final boolean mCanRecycle;
     /** Cache ID of this object. */
@@ -84,29 +81,30 @@ public final class ImageCacheWriterTask
                              @NonNull final Bitmap source,
                              final boolean canRecycle) {
 
-        TASK_QUEUE.enqueue(new ImageCacheWriterTask(uuid, maxWidth, maxHeight,
-                                                    source, canRecycle));
+        new ImageCacheWriterTask(uuid, maxWidth, maxHeight, source, canRecycle).execute();
     }
 
     /**
      * @return <tt>true</tt> if there is an active task in the queue.
      */
     public static boolean hasActiveTasks() {
-        return TASK_QUEUE.hasActiveTasks();
+        return runningTasks.get() != 0;
     }
 
     /**
      * Do the main work in the background thread.
      */
     @Override
-    public void run(@NonNull final SimpleTaskContext taskContext) {
+    protected Void doInBackground(final Void... params) {
+        runningTasks.incrementAndGet();
+
         if (mBitmap.isRecycled()) {
             // Was probably recycled by rapid scrolling of view
             mBitmap = null;
         } else {
-            // do not close this db.
-            CoversDBA coversDBAdapter = taskContext.getCoversDb();
-            coversDBAdapter.saveFile(mBitmap, mCacheId);
+            try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
+                coversDBAdapter.saveFile(mBitmap, mCacheId);
+            }
 
             if (mCanRecycle) {
                 mBitmap.recycle();
@@ -114,9 +112,8 @@ public final class ImageCacheWriterTask
             }
         }
         mCacheId = null;
-    }
 
-    @Override
-    public void onFinish(@Nullable final Exception e) {
+        runningTasks.decrementAndGet();
+        return null;
     }
 }

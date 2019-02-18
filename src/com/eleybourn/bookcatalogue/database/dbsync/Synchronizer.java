@@ -166,7 +166,7 @@ public class Synchronizer {
                 }
             }
         } finally {
-            if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.TIMERS && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
                 if (mLock.isHeldByCurrentThread()) {
                     Logger.info(this,
                                 ourThread.getName() + " waited "

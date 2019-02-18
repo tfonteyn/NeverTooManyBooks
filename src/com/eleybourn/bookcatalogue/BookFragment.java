@@ -169,7 +169,7 @@ public class BookFragment
                    @Override
                    public String format(@NonNull final Field field,
                                         @Nullable final String source) {
-                       if (source != null && !source.isEmpty()) {
+                       if (source != null && !source.isEmpty() && !source.equals("0")) {
                            return getString(R.string.lbl_x_pages, source);
                        }
                        return "";

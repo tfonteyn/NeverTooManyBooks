@@ -26,7 +26,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -574,7 +573,7 @@ public class SearchCoordinator {
         if (mBookData.isEmpty()
                 || authors == null || authors.isEmpty()
                 || title == null || title.isEmpty()) {
-            mTaskManager.sendTaskUserMessage(R.string.warning_book_not_found);
+            mTaskManager.sendUserMessage(R.string.warning_book_not_found);
         }
 
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {

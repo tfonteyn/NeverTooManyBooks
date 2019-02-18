@@ -10,6 +10,14 @@ import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -23,14 +31,6 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Quick and easy.
@@ -56,19 +56,13 @@ public final class Prefs {
     }
 
     /**
+     * Used by {@link androidx.preference.SwitchPreference} and standard booleans.
+     *
      * @return boolean global preference
      */
     public static boolean getBoolean(@StringRes final int keyId,
                                      final boolean defaultValue) {
         return getPrefs().getBoolean(BookCatalogueApp.getResString(keyId), defaultValue);
-    }
-
-    /**
-     * @return int (stored as int) global preference
-     */
-    public static int getInt(@StringRes final int keyId,
-                             final int defaultValue) {
-        return getPrefs().getInt(BookCatalogueApp.getResString(keyId), defaultValue);
     }
 
     /**

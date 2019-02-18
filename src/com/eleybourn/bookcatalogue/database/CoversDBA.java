@@ -234,7 +234,7 @@ public final class CoversDBA
     /**
      * Generic function to close the database.
      * It does not 'close' the database in the literal sense, but
-     * performs a cleanup by closing all open statements
+     * performs a cleanup by closing all open statements when there are no instances left.
      * <p>
      * So it should really be called cleanup()
      * But it allows us to use try-with-resources.

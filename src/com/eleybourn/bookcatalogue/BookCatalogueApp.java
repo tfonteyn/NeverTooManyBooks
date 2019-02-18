@@ -43,7 +43,6 @@ import androidx.annotation.StringRes;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 import org.acra.ACRA;
@@ -304,9 +303,6 @@ public class BookCatalogueApp
             // Not much we can do...we want locale set early, but not fatal if it fails.
             Logger.error(e);
         }
-
-        // make sure the static initialization is done (race problem ?)
-        Terminator.init();
 
         // Create the notifier
         mNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

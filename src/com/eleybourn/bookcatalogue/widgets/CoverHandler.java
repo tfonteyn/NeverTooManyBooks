@@ -347,7 +347,7 @@ public class CoverHandler
                             }
                         }
                     });
-            mCoverBrowser.showEditionCovers();
+            mCoverBrowser.fetchEditions();
         } else {
             //Snackbar.make(mIsbnField.getView(), R.string.editions_require_isbn,
             //              Snackbar.LENGTH_LONG).show();

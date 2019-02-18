@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/lbl_textField"
+        android:paddingTop="@dimen/padding_border"
+        android:textIsSelectable="true"
+        tools:text="@string/lbl_title"/>
+
+    <TextView
+        android:id="@+id/author"
+        style="@style/lbl_textField"
+        android:paddingTop="@dimen/padding_border"
+        android:textIsSelectable="true"
+        tools:text="@string/lbl_author"/>
+
+    <AutoCompleteTextView
+        android:id="@+id/loaned_to"
+        style="@style/personalNameTextEntry"
+        android:layout_width="match_parent"
+        android:completionThreshold="2"
+        android:hint="@string/name"
+        tools:text="@string/name" />
+
+    <LinearLayout
+        style="?attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancel"
+            style="?attr/buttonBarNegativeButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:layout_weight="1"
+            android:text="@android:string/cancel" />
+
+        <Button
+            android:id="@+id/return_book"
+            style="?attr/buttonBarNeutralButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="1"
+            android:text="@string/btn_loan_returned" />
+
+        <Button
+            android:id="@+id/confirm"
+            style="?attr/buttonBarPositiveButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_weight="1"
+            android:text="@string/tab_lbl_loan" />
+    </LinearLayout>
+</LinearLayout>

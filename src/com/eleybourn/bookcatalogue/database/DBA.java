@@ -2841,7 +2841,7 @@ public class DBA
      * @return <tt>true</tt> for success.
      */
     @SuppressWarnings("UnusedReturnValue")
-    private boolean updateOrInsertLoan(final long bookId,
+    public boolean updateOrInsertLoan(final long bookId,
                                        @NonNull final String loanee) {
 
         if (getLoaneeByBookId(bookId) == null) {
@@ -3590,7 +3590,7 @@ public class DBA
             throw new TransactionException();
         }
 
-        long t0;
+        long t0 = 0;
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             //noinspection UnusedAssignment
             t0 = System.currentTimeMillis();

@@ -39,6 +39,7 @@ import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.AlertDialogListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
@@ -157,9 +158,9 @@ public class EditBookFragment
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(@NonNull final View v) {
-                doSave(new StandardDialogs.AlertDialogAction() {
+                doSave(new AlertDialogListener() {
                     @Override
-                    public void onPositive() {
+                    public void onPositiveButton() {
                         saveBook();
                         Intent data = new Intent();
                         data.putExtra(UniqueId.KEY_ID, getBook().getId());
@@ -168,12 +169,12 @@ public class EditBookFragment
                     }
 
                     @Override
-                    public void onNeutral() {
+                    public void onNeutralButton() {
                         // Remain editing
                     }
 
                     @Override
-                    public void onNegative() {
+                    public void onNegativeButton() {
                         doCancel();
                     }
                 });
@@ -382,7 +383,7 @@ public class EditBookFragment
      *
      * @param nextStep The next step to be executed on confirm/cancel.
      */
-    private void doSave(@NonNull final StandardDialogs.AlertDialogAction nextStep) {
+    private void doSave(@NonNull final AlertDialogListener nextStep) {
         Book book = getBook();
 
         // ask the currently displayed tab fragment to add it's fields; the others
@@ -421,7 +422,7 @@ public class EditBookFragment
         }
 
         // No special actions required...just do it.
-        nextStep.onPositive();
+        nextStep.onPositiveButton();
     }
 
     private void doCancel() {

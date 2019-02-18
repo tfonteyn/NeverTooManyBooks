@@ -22,21 +22,18 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -57,7 +54,7 @@ public final class StandardDialogs {
      */
     public static void showUserMessage(@NonNull final Activity activity,
                                        @StringRes final int message) {
-        if (0 == Prefs.getPrefs().getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
+        if (0 == Prefs.getListPreference(R.string.pk_ui_messages_use, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message,
@@ -70,7 +67,7 @@ public final class StandardDialogs {
      */
     public static void showUserMessage(@NonNull final Activity activity,
                                        @NonNull final String message) {
-        if (0 == Prefs.getPrefs().getInt(BookCatalogueApp.PREF_APP_USER_MESSAGE, 0)) {
+        if (0 == Prefs.getListPreference(R.string.pk_ui_messages_use, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message,
@@ -227,7 +224,7 @@ public final class StandardDialogs {
     }
 
     public static void confirmSaveDuplicateBook(@NonNull final Context context,
-                                                @NonNull final AlertDialogAction nextStep) {
+                                                @NonNull final AlertDialogListener nextStep) {
         /*
          * If it exists, show a dialog and use it to perform the
          * next action, according to the users choice.
@@ -243,7 +240,7 @@ public final class StandardDialogs {
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
-                                 nextStep.onPositive();
+                                 nextStep.onPositiveButton();
                              }
                          });
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
@@ -251,19 +248,10 @@ public final class StandardDialogs {
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
-                                 nextStep.onNegative();
+                                 nextStep.onNegativeButton();
                              }
                          });
         dialog.show();
     }
 
-    public interface AlertDialogAction {
-
-        void onPositive();
-
-        @SuppressWarnings("unused")
-        void onNeutral();
-
-        void onNegative();
-    }
 }

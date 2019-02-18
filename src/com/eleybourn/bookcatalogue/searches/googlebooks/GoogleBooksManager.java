@@ -9,7 +9,7 @@ import androidx.annotation.WorkerThread;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.tasks.simpletasks.Terminator;
+import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -117,7 +117,7 @@ public final class GoogleBooksManager
         // yes, to many try nesting makes this ugly to read,... but the code is very clean.
         try {
             // get the book list
-            try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+            try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
                 SAXParser parser = factory.newSAXParser();
                 parser.parse(con.inputStream, handler);
             }
@@ -127,7 +127,7 @@ public final class GoogleBooksManager
                 // only using the first one found, maybe future enhancement?
                 url = urlList.get(0);
 
-                try (Terminator.WrappedConnection con = Terminator.getConnection(url)) {
+                try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
                     SAXParser parser = factory.newSAXParser();
                     parser.parse(con.inputStream, entryHandler);
                 }
