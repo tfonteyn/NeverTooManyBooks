@@ -2,13 +2,18 @@ package com.eleybourn.bookcatalogue.backup;
 
 import android.content.SharedPreferences;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import java.io.File;
+import java.io.IOException;
+
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriter;
 import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
@@ -18,9 +23,6 @@ import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 public class BackupTask
         extends TaskWithProgress<ExportSettings> {
@@ -32,10 +34,18 @@ public class BackupTask
     @NonNull
     private final File mTmpFile;
 
+    /**
+     * Constructor.
+     *
+     * @param taskId      a task identifier, will be returned in the task finished listener.
+     * @param context     the caller context
+     * @param settings    the export settings
+     */
+    @UiThread
     public BackupTask(final int taskId,
                       @NonNull final FragmentActivity context,
                       @NonNull final ExportSettings settings) {
-        super(taskId, context, R.string.progress_msg_backing_up, false);
+        super(taskId, UniqueId.TFT_BACKUP, context, false, R.string.progress_msg_backing_up);
         mSettings = settings;
 
         // sanity checks
@@ -49,18 +59,26 @@ public class BackupTask
                     mSettings.file.getAbsoluteFile() + BackupFileDetails.ARCHIVE_EXTENSION);
         }
 
-        // we write to the temp file, and rename it upon success
+        // we write to a temp file, and will rename it upon success (or delete on failure).
         mTmpFile = new File(mSettings.file.getAbsolutePath() + ".tmp");
     }
 
+    @UiThread
     @Override
-    @NonNull
+    protected void onCancelled(final ExportSettings result) {
+        cleanup();
+    }
+
+    @AnyThread
+    private void cleanup() {
+        StorageUtils.deleteFile(mTmpFile);
+    }
+
+    @Override
+    @Nullable
+    @WorkerThread
     protected ExportSettings doInBackground(final Void... params) {
         BackupContainer bkp = new TarBackupContainer(mTmpFile);
-        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-            Logger.info(this, "backup",
-                        "starting|file=" + mTmpFile.getAbsolutePath());
-        }
         try (BackupWriter wrt = bkp.newWriter()) {
             // go go go...
             wrt.backup(mSettings, new BackupWriter.BackupWriterListener() {
@@ -81,43 +99,31 @@ public class BackupTask
 
                 @Override
                 public boolean isCancelled() {
-                    return mFragment.isCancelled();
+                    return BackupTask.this.isCancelled();
                 }
             });
 
-            if (!mFragment.isCancelled()) {
-                // success
-                StorageUtils.deleteFile(mSettings.file);
-                //noinspection ConstantConditions
-                StorageUtils.renameFile(mTmpFile, mSettings.file);
-
-                SharedPreferences.Editor ed = Prefs.getPrefs().edit();
-                // if the backup was a full one (not a 'since') remember that.
-                if ((mSettings.what & ExportSettings.ALL) != 0) {
-                    ed.putString(BackupManager.PREF_LAST_BACKUP_DATE, mBackupDate);
-                }
-                //noinspection ConstantConditions
-                ed.putString(BackupManager.PREF_LAST_BACKUP_FILE, mSettings.file.getAbsolutePath());
-                ed.apply();
-
-                if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                    //noinspection ConstantConditions
-                    Logger.info(this,
-                                "backup", "finished|file="
-                                        + mSettings.file.getAbsolutePath()
-                                        + ", size = " + mSettings.file.length());
-                }
+            if (isCancelled()) {
+                return null;
             }
+
+            // success
+            StorageUtils.deleteFile(mSettings.file);
+            //noinspection ConstantConditions
+            StorageUtils.renameFile(mTmpFile, mSettings.file);
+
+            SharedPreferences.Editor ed = Prefs.getPrefs().edit();
+            // if the backup was a full one (not a 'since') remember that.
+            if ((mSettings.what & ExportSettings.ALL) != 0) {
+                ed.putString(BackupManager.PREF_LAST_BACKUP_DATE, mBackupDate);
+            }
+            ed.putString(BackupManager.PREF_LAST_BACKUP_FILE, mSettings.file.getAbsolutePath());
+            ed.apply();
+
         } catch (IOException e) {
             Logger.error(e);
             mException = e;
-            // cleanup
-            StorageUtils.deleteFile(mTmpFile);
-        } finally {
-            if (mFragment.isCancelled() || mException != null) {
-                // cleanup
-                StorageUtils.deleteFile(mTmpFile);
-            }
+            cleanup();
         }
 
         return mSettings;

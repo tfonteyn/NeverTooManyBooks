@@ -23,7 +23,7 @@ public abstract class PPrefBase<T>
      * Convenience only and not locally preserved.
      * Must be set in the constructor.
      */
-    @Nullable
+    @NonNull
     protected final String mUuid;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
@@ -41,7 +41,7 @@ public abstract class PPrefBase<T>
      * @param defaultValue in memory default
      */
     PPrefBase(@StringRes final int key,
-              @Nullable final String uuid,
+              @NonNull final String uuid,
               @NonNull final T defaultValue) {
         mKey = key;
         mUuid = uuid;
@@ -56,7 +56,7 @@ public abstract class PPrefBase<T>
 
     @Override
     public void remove() {
-        if (mUuid != null) {
+        if (!mUuid.isEmpty()) {
             Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
         }
     }
@@ -68,7 +68,7 @@ public abstract class PPrefBase<T>
      */
     @Override
     public void set(@Nullable final T value) {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             mNonPersistedValue = value;
         } else if (value == null) {
             Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
@@ -103,7 +103,7 @@ public abstract class PPrefBase<T>
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest) {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             // builtin ? then write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
             dest.writeValue(mNonPersistedValue);

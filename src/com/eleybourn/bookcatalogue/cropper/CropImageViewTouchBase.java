@@ -40,8 +40,6 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
     private static final float SCALE_RATE = 1.25F;
     /** Maximum upscaling for a viewed image */
     private static final float SCALE_LIMIT_MAX = Float.MAX_VALUE;
-    @SuppressWarnings("unused")
-    private static final String TAG = "CropImageViewTouchBase";
 
     /**
      * This is the base transformation which is used to show the image

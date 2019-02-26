@@ -24,6 +24,7 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -49,15 +50,15 @@ public class EditBookActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle extras = getIntent().getExtras();
-        EditBookFragment frag = new EditBookFragment();
-        frag.setArguments(extras);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.main_fragment, frag, EditBookFragment.TAG)
-                .commit();
+        if (null == getSupportFragmentManager().findFragmentByTag(EditBookFragment.TAG)) {
+            Fragment frag = new EditBookFragment();
+            frag.setArguments(getIntent().getExtras());
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .add(R.id.main_fragment, frag, EditBookFragment.TAG)
+                    .commit();
+        }
     }
 
     /**

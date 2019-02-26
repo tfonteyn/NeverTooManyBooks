@@ -28,7 +28,7 @@ public class BooleanFilter
     private final DomainDefinition mDomain;
 
     public BooleanFilter(@StringRes final int key,
-                         @Nullable final String uuid,
+                         @NonNull final String uuid,
                          @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
                          @NonNull final DomainDefinition domain) {
         super(key, uuid, P_NOT_USED);

@@ -2,18 +2,19 @@ package com.eleybourn.bookcatalogue.backup.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.fragment.app.FragmentActivity;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileListerAsyncTask;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Object to provide a FileListerFragmentTask specific to archive files.
@@ -37,8 +38,11 @@ public class BackupListerTask
     /**
      * Constructor.
      *
-     * @param root folder to list
+     * @param taskId  a task identifier, will be returned in the task finished listener.
+     * @param context the caller context
+     * @param root    folder to list
      */
+    @UiThread
     BackupListerTask(final int taskId,
                      @NonNull final FragmentActivity context,
                      @NonNull final File root) {

@@ -26,14 +26,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.MessageSwitch.Message;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class used to manage background threads for a {@link BaseActivityWithTasks} subclass.
@@ -72,8 +72,7 @@ public class TaskManager {
      * <p>
      * This object handles all underlying task messages for *every* instance of this class.
      */
-    private static final MessageSwitch<TaskManagerListener, TaskManagerController>
-            MESSAGE_SWITCH = new MessageSwitch<>();
+    private static final MessageSwitch<TaskManagerListener, TaskManagerController> MESSAGE_SWITCH = new MessageSwitch<>();
 
     /**
      * Unique identifier for this instance.
@@ -92,7 +91,7 @@ public class TaskManager {
 
     /**
      * Current progress message to display, even if no tasks running.
-     * Setting to null or blank will remove the ProgressDialog if no tasks are left running.
+     * Setting to null or blank will remove the Progress Dialog if no tasks are left running.
      */
     @Nullable
     private String mBaseMessage;
@@ -213,7 +212,7 @@ public class TaskManager {
     /**
      * Creates and send a {@link TaskProgressMessage} with the base/header message.
      * Used (generally) by {@link BaseActivityWithTasks} to display some text above
-     * the task info. Set to null to ensure ProgressDialog will be removed.
+     * the task info. Set to null to ensure Progress Dialog will be removed.
      */
     public void sendHeaderUpdate(@StringRes final int message) {
         mBaseMessage = getContext().getString(message);
@@ -223,7 +222,7 @@ public class TaskManager {
     /**
      * Creates and send a {@link TaskProgressMessage} with the base/header message.
      * Used (generally) by {@link BaseActivityWithTasks} to display some text above
-     * the task info. Set to null to ensure ProgressDialog will be removed.
+     * the task info. Set to null to ensure Progress Dialog will be removed.
      */
     public void sendHeaderUpdate(@Nullable final String message) {
         mBaseMessage = message;
@@ -381,14 +380,14 @@ public class TaskManager {
     @Override
     @NonNull
     public String toString() {
-        return "TaskManager{" +
-                "mMessageSenderId=" + mMessageSenderId +
-                ", mManagedTasks=" + mManagedTasks +
-                ", mBaseMessage='" + mBaseMessage + '\'' +
-                ", mManagedTaskListener=" + mManagedTaskListener +
-                ", mCancelling=" + mCancelling +
-                ", mIsClosing=" + mIsClosing +
-                '}';
+        return "TaskManager{"
+                + "mMessageSenderId=" + mMessageSenderId
+                + ", mManagedTasks=" + mManagedTasks
+                + ", mBaseMessage='" + mBaseMessage + '\''
+                + ", mManagedTaskListener=" + mManagedTaskListener
+                + ", mCancelling=" + mCancelling
+                + ", mIsClosing=" + mIsClosing
+                + '}';
     }
 
     /**
@@ -417,7 +416,7 @@ public class TaskManager {
 
         void onUserMessage(@NonNull String message);
 
-        void onTaskFinished(@NonNull TaskManager manager,
+        void onTaskFinished(@NonNull TaskManager taskManager,
                             @NonNull ManagedTask task);
     }
 
@@ -425,33 +424,34 @@ public class TaskManager {
             implements Message<TaskManagerListener> {
 
         @NonNull
-        private final TaskManager mManager;
+        private final TaskManager mTaskManager;
         @NonNull
         private final ManagedTask mTask;
 
-        TaskFinishedMessage(@NonNull final TaskManager manager,
+        TaskFinishedMessage(@NonNull final TaskManager taskManager,
                             @NonNull final ManagedTask task) {
-            mManager = manager;
+            mTaskManager = taskManager;
             mTask = task;
         }
 
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                Logger.info(this, "deliver", "'TaskFinishedMessage' to listener: " + listener +
-                        "\n mTask=`" + mTask + '`');
+                Logger.info(this, "deliver",
+                            "'TaskFinishedMessage' to listener: " + listener
+                                    + "\n mTask=`" + mTask + '`');
             }
-            listener.onTaskFinished(mManager, mTask);
+            listener.onTaskFinished(mTaskManager, mTask);
             return false;
         }
 
         @Override
         @NonNull
         public String toString() {
-            return "TaskFinishedMessage{" +
-                    "mManager=" + mManager +
-                    ", mTask=" + mTask +
-                    '}';
+            return "TaskFinishedMessage{"
+                    + "mTaskManager=" + mTaskManager
+                    + ", mTask=" + mTask
+                    + '}';
         }
     }
 
@@ -474,8 +474,9 @@ public class TaskManager {
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                Logger.info(this, "deliver", "'TaskProgressMessage' to listener: " + listener +
-                        "\n mMessage=`" + mMessage + '`');
+                Logger.info(this, "deliver",
+                            "'TaskProgressMessage' to listener: " + listener
+                                    + "\n mMessage=`" + mMessage + '`');
             }
             listener.onProgress(mCount, mMax, mMessage);
             return false;
@@ -484,11 +485,11 @@ public class TaskManager {
         @Override
         @NonNull
         public String toString() {
-            return "TaskProgressMessage{" +
-                    "mCount=" + mCount +
-                    ", mMax=" + mMax +
-                    ", mMessage='" + mMessage + '\'' +
-                    '}';
+            return "TaskProgressMessage{"
+                    + "mCount=" + mCount
+                    + ", mMax=" + mMax
+                    + ", mMessage='" + mMessage + '\''
+                    + '}';
         }
     }
 
@@ -505,8 +506,9 @@ public class TaskManager {
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                Logger.info(this, "deliver", "'TaskUserMessage' to listener: " + listener +
-                        "\n mMessage=`" + mMessage + '`');
+                Logger.info(this, "deliver",
+                            "'TaskUserMessage' to listener: " + listener
+                                    + "\n mMessage=`" + mMessage + '`');
             }
             listener.onUserMessage(mMessage);
             return false;
@@ -515,9 +517,7 @@ public class TaskManager {
         @Override
         @NonNull
         public String toString() {
-            return "TaskUserMessage{" +
-                    "mMessage='" + mMessage + '\'' +
-                    '}';
+            return "TaskUserMessage{mMessage='" + mMessage + '\'' + '}';
         }
     }
 

@@ -19,10 +19,6 @@ import com.eleybourn.bookcatalogue.UniqueId;
 public class AlertDialogFragment
         extends DialogFragment {
 
-    @StringRes
-    private int mTitle;
-    private String mMessage;
-
     /**
      * @param title   resource id
      * @param message resource id
@@ -58,24 +54,19 @@ public class AlertDialogFragment
     @Override
     @NonNull
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            mTitle = savedInstanceState.getInt(UniqueId.BKEY_DIALOG_TITLE);
-            mMessage = savedInstanceState.getString(UniqueId.BKEY_DIALOG_MSG);
+        Bundle args = requireArguments();
+        final int title = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
+        String message;
+        if (args.containsKey(UniqueId.BKEY_DIALOG_MSG_ID)) {
+            message = requireActivity().getString(args.getInt(UniqueId.BKEY_DIALOG_MSG_ID));
         } else {
-            Bundle args = getArguments();
-            //noinspection ConstantConditions
-            mTitle = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
-            if (args.containsKey(UniqueId.BKEY_DIALOG_MSG_ID)) {
-                mMessage = requireActivity().getString(args.getInt(UniqueId.BKEY_DIALOG_MSG_ID));
-            } else {
-                mMessage = args.getString(UniqueId.BKEY_DIALOG_MSG);
-            }
+            message = args.getString(UniqueId.BKEY_DIALOG_MSG);
         }
 
         return new AlertDialog.Builder(getActivity())
                 .setIcon(R.drawable.ic_warning)
-                .setTitle(mTitle)
-                .setMessage(mMessage)
+                .setTitle(title)
+                .setMessage(message)
                 .setPositiveButton(android.R.string.ok,
                                    new DialogInterface.OnClickListener() {
                                        public void onClick(@NonNull final DialogInterface dialog,
@@ -97,10 +88,4 @@ public class AlertDialogFragment
                 .create();
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(UniqueId.BKEY_DIALOG_TITLE, mTitle);
-        outState.putString(UniqueId.BKEY_DIALOG_MSG, mMessage);
-    }
 }

@@ -54,7 +54,7 @@ public abstract class BaseActivity
     /**
      * Override this and return the id you need.
      *
-     * @return the layout id for this activity, or 0 for no layout.
+     * @return the layout id for this activity, or 0 for none (i.e. no UI View).
      */
     protected int getLayoutId() {
         return 0;
@@ -210,9 +210,9 @@ public abstract class BaseActivity
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode,
-                                    final int resultCode,
-                                    @Nullable final Intent data) {
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
         // some activities MIGHT support the navigation panel, but are not (always)

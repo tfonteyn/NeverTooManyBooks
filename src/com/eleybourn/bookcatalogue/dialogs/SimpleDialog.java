@@ -61,6 +61,7 @@ public final class SimpleDialog {
             root.findViewById(R.id.messageBottomDivider).setVisibility(View.GONE);
         }
 
+        //TOMF: DialogFragment
         final AlertDialog dialog = builder.create();
 
         // Create the listener for each item
@@ -425,5 +426,4 @@ public final class SimpleDialog {
             return mRawValue.toString();
         }
     }
-
 }

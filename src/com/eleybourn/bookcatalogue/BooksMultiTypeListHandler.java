@@ -40,6 +40,8 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -65,13 +67,14 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditFormatDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditGenreDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditLanguageDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditLocationDialog;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditPublisherDialog;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditPublisherDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialogFragment;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.LendBookDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -101,7 +104,7 @@ public class BooksMultiTypeListHandler
         implements MultiTypeListHandler {
 
     @NonNull
-    final DBA mDb;
+    private final DBA mDb;
 
     public BooksMultiTypeListHandler(@NonNull final DBA db) {
         mDb = db;
@@ -279,17 +282,17 @@ public class BooksMultiTypeListHandler
     /**
      * Adds 'standard' menu options based on row type.
      *
-     * @param cursorRow Row view pointing to current row for this context menu
+     * @param row Row view pointing to current row for this context menu
      *
      * @see SimpleDialog.SimpleDialogMenuItem : can't use SubMenu.
      */
     void prepareListViewContextMenu(@NonNull final Menu /* in/out */ menu,
-                                    @NonNull final BooklistCursorRow cursorRow) {
+                                    @NonNull final BooklistCursorRow row) {
         menu.clear();
-        int rowKind = cursorRow.getRowKind();
+        int rowKind = row.getRowKind();
         switch (rowKind) {
             case RowKind.BOOK:
-                if (cursorRow.isRead()) {
+                if (row.isRead()) {
                     menu.add(Menu.NONE, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread)
                         .setIcon(R.drawable.ic_check_box_outline_blank);
                 } else {
@@ -305,8 +308,16 @@ public class BooksMultiTypeListHandler
                     .setIcon(R.drawable.ic_note);
 
                 if (Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
-                    menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN, 0, R.string.menu_loan_lend_book)
-                        .setIcon(R.drawable.ic_people);
+                    boolean isAvailable = null == mDb.getLoaneeByBookId(row.getBookId());
+                    if (isAvailable) {
+                        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN, 0,
+                                 R.string.menu_loan_lend_book)
+                            .setIcon(R.drawable.ic_people);
+                    } else {
+                        menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0,
+                                 R.string.menu_loan_return_book)
+                            .setIcon(R.drawable.ic_people);
+                    }
                 }
 
                 menu.add(Menu.NONE, R.id.MENU_SHARE, 0, R.string.share)
@@ -322,7 +333,7 @@ public class BooksMultiTypeListHandler
                     .setIcon(R.drawable.ic_details);
                 menu.add(Menu.NONE, R.id.MENU_AUTHOR_EDIT, 0, R.string.menu_edit_author)
                     .setIcon(R.drawable.ic_edit);
-                if (cursorRow.isAuthorComplete()) {
+                if (row.isAuthorComplete()) {
                     menu.add(Menu.NONE, R.id.MENU_AUTHOR_COMPLETE, 0, R.string.menu_set_incomplete)
                         .setIcon(R.drawable.ic_check_box);
                 } else {
@@ -332,12 +343,12 @@ public class BooksMultiTypeListHandler
                 break;
 
             case RowKind.SERIES:
-                if (cursorRow.getSeriesId() != 0) {
+                if (row.getSeriesId() != 0) {
                     menu.add(Menu.NONE, R.id.MENU_SERIES_DELETE, 0, R.string.menu_delete_series)
                         .setIcon(R.drawable.ic_delete);
                     menu.add(Menu.NONE, R.id.MENU_SERIES_EDIT, 0, R.string.menu_edit_series)
                         .setIcon(R.drawable.ic_edit);
-                    if (cursorRow.isSeriesComplete()) {
+                    if (row.isSeriesComplete()) {
                         menu.add(Menu.NONE, R.id.MENU_SERIES_COMPLETE, 0,
                                  R.string.menu_set_incomplete)
                             .setIcon(R.drawable.ic_check_box);
@@ -350,35 +361,35 @@ public class BooksMultiTypeListHandler
                 break;
 
             case RowKind.PUBLISHER:
-                if (!cursorRow.getPublisherName().isEmpty()) {
+                if (!row.getPublisherName().isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case RowKind.LANGUAGE:
-                if (!cursorRow.getLanguageCode().isEmpty()) {
+                if (!row.getLanguageCode().isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case RowKind.LOCATION:
-                if (!cursorRow.getLocation().isEmpty()) {
+                if (!row.getLocation().isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case RowKind.GENRE:
-                if (!cursorRow.getGenre().isEmpty()) {
+                if (!row.getGenre().isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
 
             case RowKind.FORMAT:
-                if (!cursorRow.getFormat().isEmpty()) {
+                if (!row.getFormat().isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT, 0, R.string.menu_edit)
                         .setIcon(R.drawable.ic_edit);
                 }
@@ -390,8 +401,8 @@ public class BooksMultiTypeListHandler
         }
 
         // add search menus ?
-        boolean hasAuthor = cursorRow.hasAuthorId() && cursorRow.getAuthorId() > 0;
-        boolean hasSeries = cursorRow.hasSeriesId() && cursorRow.getSeriesId() > 0;
+        boolean hasAuthor = row.hasAuthorId() && row.getAuthorId() > 0;
+        boolean hasSeries = row.hasSeriesId() && row.getSeriesId() > 0;
         if (hasAuthor || hasSeries) {
             SubMenu subMenu = menu.addSubMenu(R.string.menu_search);
 
@@ -417,7 +428,7 @@ public class BooksMultiTypeListHandler
 
     /**
      * Handle the 'standard' menu items. If the passed activity implements
-     * {@link BooklistChangeListener} then inform it when changes have been made.
+     * {@link BookChangedListener} then inform it when changes have been made.
      * <p>
      * ENHANCE: Consider using {@link LocalBroadcastManager} instead to all BooklistChangeListener
      *
@@ -442,11 +453,10 @@ public class BooksMultiTypeListHandler
                     @Override
                     public void run() {
                         // Let the activity know
-                        if (activity instanceof BooklistChangeListener) {
-                            final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                            bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                                 BooklistChangeListener.FLAG_AUTHOR
-                                                         | BooklistChangeListener.FLAG_SERIES);
+                        if (activity instanceof BookChangedListener) {
+                            final BookChangedListener bcl = (BookChangedListener) activity;
+                            bcl.onBookChanged(0, BookChangedListener.FLAG_AUTHOR
+                                    | BookChangedListener.FLAG_SERIES, null);
                         }
                     }
                 });
@@ -454,13 +464,11 @@ public class BooksMultiTypeListHandler
 
             case R.id.MENU_BOOK_READ:
                 // toggle the read status
-                if (Book.setRead(db, bookId, !row.isRead())) {
+                if (Book.setRead(bookId, !row.isRead(), db)) {
                     // Let the activity know
-                    if (activity instanceof BooklistChangeListener) {
-                        final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                        bcl.onBookChange(row.getStyle().getExtraFieldsStatus(),
-                                         BooklistChangeListener.FLAG_BOOK_READ,
-                                         row.getAbsolutePosition(), bookId);
+                    if (activity instanceof BookChangedListener) {
+                        final BookChangedListener bcl = (BookChangedListener) activity;
+                        bcl.onBookChanged(bookId, BookChangedListener.FLAG_BOOK_READ, null);
                     }
                 }
                 return true;
@@ -479,193 +487,182 @@ public class BooksMultiTypeListHandler
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_EDIT);
                 return true;
             }
-            case R.id.MENU_BOOK_EDIT_LOAN: {
-                Intent intent = new Intent(activity, EditBookActivity.class);
-                intent.putExtra(UniqueId.KEY_ID, bookId);
-                intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT_LOANS);
-                activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_EDIT);
+
+            case R.id.MENU_BOOK_EDIT_LOAN:
+                LendBookDialogFragment lendFrag = LendBookDialogFragment
+                        .newInstance(bookId, row.getAuthorId(), row.getTitle());
+                lendFrag.show(activity.getSupportFragmentManager(), LendBookDialogFragment.TAG);
                 return true;
-            }
+
+            case R.id.MENU_BOOK_LOAN_RETURNED:
+                mDb.deleteLoan(bookId);
+                // Let the activity know
+                if (activity instanceof BookChangedListener) {
+                    final BookChangedListener bcl = (BookChangedListener) activity;
+                    bcl.onBookChanged(bookId, BookChangedListener.FLAG_BOOK_LOANEE, null);
+                }
+                return true;
+
+            /* ********************************************************************************** */
+
             case R.id.MENU_SHARE:
-                Book book = Book.getBook(db, bookId);
+                Book book = new Book(bookId, db);
                 activity.startActivity(Intent.createChooser(book.getShareBookIntent(activity),
                                                             activity.getString(R.string.share)));
                 return true;
 
             case R.id.MENU_BOOK_SEND_TO_GOODREADS:
-                //TEST sendOneBookToGoodreads
-                GoodreadsUtils.sendOneBookToGoodreads(activity, bookId);
+                //TEST sendOneBook
+                GoodreadsUtils.sendOneBook(activity, bookId);
                 return true;
 
-            case R.id.MENU_SERIES_EDIT: {
-                long id = row.getSeriesId();
-                Series s = db.getSeries(id);
-                Objects.requireNonNull(s);
-                EditSeriesDialog d = new EditSeriesDialog(activity, db, new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the Activity know
-                        if (activity instanceof BooklistChangeListener) {
-                            final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                            bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                                 BooklistChangeListener.FLAG_SERIES);
-                        }
-                    }
-                });
-                d.edit(s);
+            /* ********************************************************************************** */
+
+            case R.id.MENU_SERIES_EDIT:
+                //noinspection ConstantConditions
+                EditSeriesDialogFragment editSeriesDialogFragment = EditSeriesDialogFragment
+                        .newInstance(db.getSeries(row.getSeriesId()));
+                editSeriesDialogFragment.show(activity.getSupportFragmentManager(),
+                                              EditSeriesDialogFragment.TAG);
                 return true;
-            }
-            case R.id.MENU_SERIES_COMPLETE: {
+
+            case R.id.MENU_SERIES_COMPLETE:
                 // toggle the complete status
                 if (Series.setComplete(db, row.getSeriesId(),
                                        !row.isSeriesComplete())) {
                     // Let the activity know
-                    if (activity instanceof BooklistChangeListener) {
-                        final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                        bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                             BooklistChangeListener.FLAG_SERIES);
+                    if (activity instanceof BookChangedListener) {
+                        final BookChangedListener bcl = (BookChangedListener) activity;
+                        bcl.onBookChanged(0, BookChangedListener.FLAG_SERIES, null);
                     }
                 }
                 return true;
-            }
+
             case R.id.MENU_SERIES_DELETE: {
-                long id = row.getSeriesId();
-                Series series = db.getSeries(id);
+                Series series = db.getSeries(row.getSeriesId());
                 if (series != null) {
                     StandardDialogs.deleteSeriesAlert(activity, db, series, new Runnable() {
                         @Override
                         public void run() {
                             // Let the Activity know
-                            if (activity instanceof BooklistChangeListener) {
-                                final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                                bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                                     BooklistChangeListener.FLAG_SERIES);
+                            if (activity instanceof BookChangedListener) {
+                                final BookChangedListener bcl = (BookChangedListener) activity;
+                                bcl.onBookChanged(0, BookChangedListener.FLAG_SERIES, null);
                             }
                         }
                     });
-                } else {
-                    Logger.error("Series " + id + " not found in database?");
                 }
                 return true;
             }
+
+            /* ********************************************************************************** */
+
             case R.id.MENU_AUTHOR_DETAILS: {
                 Intent intent = new Intent(activity, AuthorActivity.class);
                 intent.putExtra(UniqueId.KEY_ID, row.getAuthorId());
                 activity.startActivity(intent);
                 return true;
             }
-            case R.id.MENU_AUTHOR_EDIT: {
-                Author author = db.getAuthor(row.getAuthorId());
-                Objects.requireNonNull(author);
-                EditAuthorDialog d = new EditAuthorDialog(activity, db, new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the Activity know
-                        if (activity instanceof BooklistChangeListener) {
-                            final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                            bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                                 BooklistChangeListener.FLAG_AUTHOR);
-                        }
-                    }
-                });
-                d.edit(author);
+            case R.id.MENU_AUTHOR_EDIT:
+                //noinspection ConstantConditions
+                EditAuthorDialogFragment editAuthorDialogFragment = EditAuthorDialogFragment
+                        .newInstance(db.getAuthor(row.getAuthorId()));
+                editAuthorDialogFragment.show(activity.getSupportFragmentManager(),
+                                              EditAuthorDialogFragment.TAG);
                 return true;
-            }
-            case R.id.MENU_AUTHOR_COMPLETE: {
+
+            case R.id.MENU_AUTHOR_COMPLETE:
                 // toggle the complete status
                 if (Author.setComplete(db, row.getAuthorId(),
                                        !row.isAuthorComplete())) {
                     // Let the activity know
-                    if (activity instanceof BooklistChangeListener) {
-                        final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                        bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                             BooklistChangeListener.FLAG_AUTHOR);
+                    if (activity instanceof BookChangedListener) {
+                        final BookChangedListener bcl = (BookChangedListener) activity;
+                        bcl.onBookChanged(0, BookChangedListener.FLAG_AUTHOR, null);
                     }
                 }
                 return true;
-            }
-            case R.id.MENU_PUBLISHER_EDIT: {
-                Publisher publisher = new Publisher(row.getPublisherName());
-                EditPublisherDialog d = new EditPublisherDialog(activity, db, new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the Activity know
-                        if (activity instanceof BooklistChangeListener) {
-                            final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                            bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                                 BooklistChangeListener.FLAG_PUBLISHER);
-                        }
-                    }
-                });
-                d.edit(publisher);
-                return true;
-            }
-            case R.id.MENU_LANGUAGE_EDIT: {
-                String languageCode = row.getLanguageCode();
-                EditLanguageDialog d = new EditLanguageDialog(activity, db, new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the Activity know
-                        if (activity instanceof BooklistChangeListener) {
-                            final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                            bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                                 BooklistChangeListener.FLAG_LANGUAGE);
-                        }
-                    }
-                });
-                d.edit(languageCode);
-                return true;
-            }
-            case R.id.MENU_LOCATION_EDIT: {
-                String location = row.getLocation();
-                EditLocationDialog d = new EditLocationDialog(activity, db, new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the Activity know
-                        if (activity instanceof BooklistChangeListener) {
-                            final BooklistChangeListener bcl =
-                                    (BooklistChangeListener) activity;
-                            bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                                 BooklistChangeListener.FLAG_LOCATION);
-                        }
-                    }
-                });
-                d.edit(location);
-                return true;
-            }
-            case R.id.MENU_GENRE_EDIT: {
-                String genre = row.getGenre();
-                EditGenreDialog d = new EditGenreDialog(activity, db, new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the Activity know
-                        if (activity instanceof BooklistChangeListener) {
-                            final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                            bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                                 BooklistChangeListener.FLAG_GENRE);
-                        }
-                    }
-                });
-                d.edit(genre);
-                return true;
-            }
-            case R.id.MENU_FORMAT_EDIT: {
-                String format = row.getFormat();
-                EditFormatDialog d = new EditFormatDialog(activity, db, new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the Activity know
-                        if (activity instanceof BooklistChangeListener) {
-                            final BooklistChangeListener bcl = (BooklistChangeListener) activity;
-                            bcl.onBooklistChange(row.getStyle().getExtraFieldsStatus(),
-                                                 BooklistChangeListener.FLAG_FORMAT);
-                        }
-                    }
-                });
-                d.edit(format);
-                return true;
-            }
 
+            /* ********************************************************************************** */
+
+            case R.id.MENU_PUBLISHER_EDIT:
+                EditPublisherDialogFragment publisherDialog = EditPublisherDialogFragment
+                        .newInstance(new Publisher(row.getPublisherName()));
+                publisherDialog.show(activity.getSupportFragmentManager(),
+                                     EditPublisherDialogFragment.TAG);
+                return true;
+
+            /* ********************************************************************************** */
+
+            case R.id.MENU_FORMAT_EDIT:
+                String format = row.getFormat();
+                EditFormatDialog formatDialog = new EditFormatDialog(activity, db, new Runnable() {
+                    @Override
+                    public void run() {
+                        // Let the Activity know
+                        if (activity instanceof BookChangedListener) {
+                            final BookChangedListener bcl = (BookChangedListener) activity;
+                            bcl.onBookChanged(0, BookChangedListener.FLAG_FORMAT, null);
+                        }
+                    }
+                });
+                formatDialog.edit(format);
+                return true;
+
+            case R.id.MENU_GENRE_EDIT:
+                String genre = row.getGenre();
+                EditGenreDialog genreDialog = new EditGenreDialog(activity, db, new Runnable() {
+                    @Override
+                    public void run() {
+                        // Let the Activity know
+                        if (activity instanceof BookChangedListener) {
+                            final BookChangedListener bcl = (BookChangedListener) activity;
+                            bcl.onBookChanged(0, BookChangedListener.FLAG_GENRE, null);
+                        }
+                    }
+                });
+                genreDialog.edit(genre);
+                return true;
+
+            case R.id.MENU_LANGUAGE_EDIT:
+                String languageCode = row.getLanguageCode();
+                EditLanguageDialog languageDialog =
+                        new EditLanguageDialog(activity, db, new Runnable() {
+                            @Override
+                            public void run() {
+                                // Let the Activity know
+                                if (activity instanceof BookChangedListener) {
+                                    final BookChangedListener bcl = (BookChangedListener) activity;
+                                    bcl.onBookChanged(
+                                            0,
+                                            BookChangedListener.FLAG_LANGUAGE,
+                                            null);
+                                }
+                            }
+                        });
+                languageDialog.edit(languageCode);
+                return true;
+
+            case R.id.MENU_LOCATION_EDIT:
+                String location = row.getLocation();
+                EditLocationDialog locationDialog =
+                        new EditLocationDialog(activity, db, new Runnable() {
+                            @Override
+                            public void run() {
+                                // Let the Activity know
+                                if (activity instanceof BookChangedListener) {
+                                    final BookChangedListener bcl = (BookChangedListener) activity;
+                                    bcl.onBookChanged(
+                                            0,
+                                            BookChangedListener.FLAG_LOCATION,
+                                            null);
+                                }
+                            }
+                        });
+                locationDialog.edit(location);
+                return true;
+
+            /* ********************************************************************************** */
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
                 AmazonUtils.openSearchPage(activity, getAuthorFromRow(db, row), null);
@@ -759,50 +756,6 @@ public class BooksMultiTypeListHandler
     }
 
     /**
-     * Interface to be implemented by the Activity/Fragment that hosts a ListView
-     * populated by a {@link com.eleybourn.bookcatalogue.booklist.BooklistBuilder}
-     * <p>
-     * Allows to be notified of changes made to objects in the list.
-     */
-    public interface BooklistChangeListener {
-
-        int FLAG_AUTHOR = 1;
-        int FLAG_SERIES = 1 << 1;
-
-        int FLAG_FORMAT = 1 << 2;
-        int FLAG_PUBLISHER = 1 << 3;
-        int FLAG_LANGUAGE = 1 << 4;
-        int FLAG_LOCATION = 1 << 5;
-        int FLAG_GENRE = 1 << 6;
-        int FLAG_BOOK_READ = 1 << 7;
-
-
-        /**
-         * Called if global changes were made that (potentially) affect the whole list.
-         *
-         * @param extraFieldsInUse a bitmask with the Extra fields being used (visible)
-         *                         in the current {@link BooklistStyle} as configured by the user
-         * @param fieldsChanged    a bitmask build from the flags of {@link BooklistChangeListener}
-         */
-        void onBooklistChange(int extraFieldsInUse,
-                              int fieldsChanged);
-
-        /**
-         * Called if changes were made to a single book.
-         *
-         * @param extraFieldsInUse a bitmask with the Extra fields being used (visible)
-         *                         in the current {@link BooklistStyle} as configured by the user
-         * @param fieldsChanged    a bitmask build from the flags of {@link BooklistChangeListener}
-         * @param rowPosition      the absolute position of the row in the cursor view
-         * @param bookId           the book that was changed
-         */
-        void onBookChange(int extraFieldsInUse,
-                          int fieldsChanged,
-                          int rowPosition,
-                          long bookId);
-    }
-
-    /**
      * Background task to get 'extra' details for a book row. Doing this in a
      * background task keeps the booklist cursor simple and small.
      *
@@ -823,20 +776,14 @@ public class BooksMultiTypeListHandler
         /** Location resource string. */
         private final String mLocationLabel =
                 BookCatalogueApp.getResString(R.string.lbl_location);
-        /** Publisher resource string. */
-        private final String mPublisherLabel =
-                BookCatalogueApp.getResString(R.string.lbl_publisher);
-        /** Format resource string. */
-        private final String mFormatLabel =
-                BookCatalogueApp.getResString(R.string.lbl_format);
 
         /** The filled-in view holder for the book view. */
         @NonNull
         private final BookHolder mHolder;
         /** The book ID to fetch. */
         private final long mBookId;
-        /** Flags indicating which extras to get. */
-        private final int mFlags;
+        /** Bitmask indicating which extras to get. */
+        private final int mExtras;
         /** Resulting location data. */
         private String mLocation;
         /** Resulting publisher data. */
@@ -854,19 +801,21 @@ public class BooksMultiTypeListHandler
          * @param bookId Book to fetch
          * @param holder View holder of view for the book
          */
+        @UiThread
         GetBookExtrasTask(final long bookId,
                           @NonNull final BookHolder holder,
-                          final int flags) {
-            if ((flags & HANDLED) == 0) {
+                          final int extras) {
+            if ((extras & HANDLED) == 0) {
                 throw new IllegalArgumentException("GetBookExtrasTask called for unhandled extras");
             }
 
             mHolder = holder;
             mBookId = bookId;
-            mFlags = flags;
+            mExtras = extras;
         }
 
         @Override
+        @WorkerThread
         protected Boolean doInBackground(final Void... params) {
 
             try (BookCursor cursor = mHolder.mDb.fetchBookById(mBookId)) {
@@ -877,25 +826,25 @@ public class BooksMultiTypeListHandler
 
                 BookCursorRow rowView = cursor.getCursorRow();
 
-                if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
+                if ((mExtras & BooklistStyle.EXTRAS_AUTHOR) != 0) {
                     mAuthor = rowView.getPrimaryAuthorNameFormatted();
                 }
 
-                if ((mFlags & BooklistStyle.EXTRAS_LOCATION) != 0) {
+                if ((mExtras & BooklistStyle.EXTRAS_LOCATION) != 0) {
                     mLocation = rowView.getLocation();
                 }
 
-                if ((mFlags & BooklistStyle.EXTRAS_FORMAT) != 0) {
+                if ((mExtras & BooklistStyle.EXTRAS_FORMAT) != 0) {
                     mFormat = rowView.getFormat();
                 }
 
-                if ((mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
+                if ((mExtras & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
                     mShelves =
                             Bookshelf.toDisplayString(
                                     mHolder.mDb.getBookshelvesByBookId(mBookId));
                 }
 
-                if ((mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
+                if ((mExtras & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
                     String tmpPublisher = rowView.getPublisherName();
                     String tmpPubDate = rowView.getDatePublished();
 
@@ -914,35 +863,32 @@ public class BooksMultiTypeListHandler
         }
 
         @Override
-        protected void onPostExecute(final Boolean result) {
+        @UiThread
+        protected void onPostExecute(@NonNull final Boolean result) {
             if (!result) {
                 return;
             }
 
             synchronized (mHolder) {
-                if ((mFlags & BooklistStyle.EXTRAS_AUTHOR) != 0) {
+                if ((mExtras & BooklistStyle.EXTRAS_AUTHOR) != 0) {
                     mHolder.author.setText(mAuthor);
                 }
+                if ((mExtras & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
+                    mHolder.publisher.setText(mPublisher);
+                }
+                if ((mExtras & BooklistStyle.EXTRAS_FORMAT) != 0) {
+                    mHolder.format.setText(mFormat);
+                }
 
-                if ((mFlags & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
+                if ((mExtras & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
                     mHolder.shelves.setText(
                             BookCatalogueApp.getResString(R.string.name_colon_value,
                                                           mShelvesLabel, mShelves));
                 }
-                if ((mFlags & BooklistStyle.EXTRAS_LOCATION) != 0) {
+                if ((mExtras & BooklistStyle.EXTRAS_LOCATION) != 0) {
                     mHolder.location.setText(
                             BookCatalogueApp.getResString(R.string.name_colon_value,
                                                           mLocationLabel, mLocation));
-                }
-                if ((mFlags & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
-                    mHolder.publisher.setText(
-                            BookCatalogueApp.getResString(R.string.name_colon_value,
-                                                          mPublisherLabel, mPublisher));
-                }
-                if ((mFlags & BooklistStyle.EXTRAS_FORMAT) != 0) {
-                    mHolder.format.setText(
-                            BookCatalogueApp.getResString(R.string.name_colon_value,
-                                                          mFormatLabel, mFormat));
                 }
             }
         }
@@ -1043,7 +989,7 @@ public class BooksMultiTypeListHandler
         /**
          * Constructor.
          *
-         * @param db the databases.
+         * @param db the database.
          */
         BookHolder(@NonNull final DBA db) {
             mDb = db;
@@ -1170,8 +1116,8 @@ public class BooksMultiTypeListHandler
                                                   row.getMaxThumbnailWidth(),
                                                   row.getMaxThumbnailHeight(),
                                                   true,
-                                                  BooklistBuilder.thumbnailsAreCached(),
-                                                  BooklistBuilder.thumbnailsAreGeneratedInBackground());
+                                                  BooklistBuilder.imagesAreCached(),
+                                                  BooklistBuilder.imagesAreGeneratedInBackground());
             }
 
             // Build the flags indicating which extras to get.
@@ -1274,6 +1220,13 @@ public class BooksMultiTypeListHandler
     public static class RatingHolder
             extends GenericStringHolder {
 
+        /**
+         * Constructor.
+         *
+         * @param rowView  Row view that represents a typical row of this kind.
+         * @param source   Column name to use
+         * @param noDataId String ID to use when data is blank
+         */
         RatingHolder(@NonNull final BooklistCursorRow rowView,
                      @NonNull final String source,
                      @StringRes final int noDataId) {
@@ -1307,6 +1260,13 @@ public class BooksMultiTypeListHandler
     public static class LanguageHolder
             extends GenericStringHolder {
 
+        /**
+         * Constructor.
+         *
+         * @param rowView  Row view that represents a typical row of this kind.
+         * @param source   Column name to use
+         * @param noDataId String ID to use when data is blank
+         */
         LanguageHolder(@NonNull final BooklistCursorRow rowView,
                        @NonNull final String source,
                        @StringRes final int noDataId) {
@@ -1331,6 +1291,13 @@ public class BooksMultiTypeListHandler
     public static class ReadUnreadHolder
             extends GenericStringHolder {
 
+        /**
+         * Constructor.
+         *
+         * @param rowView  Row view that represents a typical row of this kind.
+         * @param source   Column name to use
+         * @param noDataId String ID to use when data is blank
+         */
         ReadUnreadHolder(@NonNull final BooklistCursorRow rowView,
                          @NonNull final String source,
                          @StringRes final int noDataId) {
@@ -1360,6 +1327,13 @@ public class BooksMultiTypeListHandler
     public static class MonthHolder
             extends GenericStringHolder {
 
+        /**
+         * Constructor.
+         *
+         * @param rowView  Row view that represents a typical row of this kind.
+         * @param source   Column name to use
+         * @param noDataId String ID to use when data is blank
+         */
         MonthHolder(@NonNull final BooklistCursorRow rowView,
                     @NonNull final String source,
                     @StringRes final int noDataId) {
@@ -1370,19 +1344,19 @@ public class BooksMultiTypeListHandler
         public void set(@NonNull final BooklistCursorRow row,
                         @NonNull final View view,
                         final int level) {
-            String s = row.getString(mSourceCol);
-            if (s != null) {
+            String source = row.getString(mSourceCol);
+            if (source != null) {
                 try {
-                    int i = Integer.parseInt(s);
+                    int i = Integer.parseInt(source);
                     // If valid, get the name
                     if (i > 0 && i <= 12) {
-                        s = DateUtils.getMonthName(i);
+                        source = DateUtils.getMonthName(i);
                     }
-                } catch (NumberFormatException e) {
-                    Logger.error(e);
+                } catch (NumberFormatException ignore) {
+                    // just use the source.
                 }
             }
-            setText(mTextView, s, mNoDataId, level);
+            setText(mTextView, source, mNoDataId, level);
         }
     }
 

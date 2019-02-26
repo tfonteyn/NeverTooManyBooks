@@ -34,8 +34,8 @@ public class BooklistStyleSettingsFragment
         implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
-    /** Fragment tag name. */
-    public static final String TAG = "BooklistStyleSettingsFragment";
+    /** Fragment manager tag. */
+    public static final String TAG = BooklistStyleSettingsFragment.class.getSimpleName();
 
     /** Parameter used to pass data to this activity. */
     public static final String REQUEST_BKEY_STYLE = "Style";
@@ -49,8 +49,7 @@ public class BooklistStyleSettingsFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
 
-        //noinspection ConstantConditions
-        mStyle = getArguments().getParcelable(REQUEST_BKEY_STYLE);
+        mStyle = requireArguments().getParcelable(REQUEST_BKEY_STYLE);
         Objects.requireNonNull(mStyle);
         if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
             Logger.info(this, "onCreatePreferences", mStyle.toString());
@@ -58,9 +57,9 @@ public class BooklistStyleSettingsFragment
 
         // We use the style UUID as the filename for the prefs.
         String uuid = mStyle.getUuid();
-        if (uuid != null) {
+        if (!uuid.isEmpty()) {
             getPreferenceManager().setSharedPreferencesName(uuid);
-        } // else if uuid == null, use global SharedPreferences for editing global defaults
+        } // else if uuid.isEmpty(), use global SharedPreferences for editing global defaults
 
         setPreferencesFromResource(R.xml.preferences_book_style, rootKey);
 

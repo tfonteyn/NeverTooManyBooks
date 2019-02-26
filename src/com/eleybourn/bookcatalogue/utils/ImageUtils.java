@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Bitmap;
@@ -7,12 +8,19 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -20,21 +28,39 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.tasks.GetImageTask;
 import com.eleybourn.bookcatalogue.tasks.ImageCacheWriterTask;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
 public final class ImageUtils {
 
     private static final int BUFFER_SIZE = 65536;
 
     private ImageUtils() {
+    }
+
+    /**
+     * Shrinks the image in the passed file to the specified dimensions.
+     * <p>
+     * Syntax sugar for {@link #getImageAndPutIntoView(ImageView, File, int, int, boolean)}
+     *
+     * @param file      The file of the image
+     * @param maxWidth  Maximum desired width of the image
+     * @param maxHeight Maximum desired height of the image
+     * @param exact     if true, the image will be proportionally scaled to fit box.
+     *
+     * @return The bitmap, or null
+     */
+    @Nullable
+    public static Bitmap getImage(@NonNull final File file,
+                                  final int maxWidth,
+                                  final int maxHeight,
+                                  final boolean exact) {
+        // Get the file, if it exists.
+        if (!file.exists()) {
+            return null;
+        }
+        return getImageAndPutIntoView(null, file.getPath(), maxWidth, maxHeight, exact);
     }
 
     /**
@@ -118,7 +144,7 @@ public final class ImageUtils {
         // See if we can queue it.
         if (allowBackground && destView != null) {
             destView.setImageBitmap(null);
-            GetImageTask.getImage(uuid, destView, maxWidth, maxHeight, cacheWasChecked);
+            GetImageTask.newInstanceAndStart(uuid, destView, maxWidth, maxHeight, cacheWasChecked);
             return null;
         }
 
@@ -380,14 +406,12 @@ public final class ImageUtils {
     /**
      * Show large image in dialog. Closed by click on image area.
      */
-    public static void showZoomedImage(@NonNull final Activity activity,
+    public static void showZoomedImage(@NonNull final FragmentActivity activity,
                                        @Nullable final File image) {
-
-        final ImageSize imageSizes = getImageSizes(activity);
 
         // Check if we have a file and/or it is valid
         if (image == null || !image.exists()) {
-            StandardDialogs.showUserMessage(activity, R.string.warning_cover_field_not_set);
+            UserMessage.showUserMessage(activity, R.string.warning_cover_field_not_set);
         } else {
             BitmapFactory.Options opt = new BitmapFactory.Options();
             opt.inJustDecodeBounds = true;
@@ -395,27 +419,10 @@ public final class ImageUtils {
 
             // If no size info, assume file bad and return appropriate icon
             if (opt.outHeight <= 0 || opt.outWidth <= 0) {
-                StandardDialogs.showUserMessage(activity, R.string.warning_cover_corrupt);
+                UserMessage.showUserMessage(activity, R.string.warning_cover_corrupt);
             } else {
-//                final Dialog dialog = new AlertDialog.Builder(activity, R.style.zoomedCoverImage)
-//                        .create();
-                final Dialog dialog = new AppCompatDialog(activity, R.style.zoomedCoverImage);
-
-                final ImageView cover = new ImageView(activity);
-                getImageAndPutIntoView(cover, image, imageSizes.large, imageSizes.large, true);
-                cover.setAdjustViewBounds(true);
-                cover.setBackgroundResource(R.drawable.border);
-                cover.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                final ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                dialog.setContentView(cover, lp);
-                dialog.show();
+                ZoomedImageDialogFragment frag = ZoomedImageDialogFragment.newInstance(image);
+                frag.show(activity.getSupportFragmentManager(), ZoomedImageDialogFragment.TAG);
             }
         }
     }
@@ -430,6 +437,52 @@ public final class ImageUtils {
         final DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
         return metrics;
+    }
+
+    /**
+     * Wrapper for the zoomed image dialog.
+     */
+    public static class ZoomedImageDialogFragment
+            extends DialogFragment {
+
+        /** Fragment manager tag. */
+        public static final String TAG = ZoomedImageDialogFragment.class.getSimpleName();
+        private File mImageFile;
+
+        public static ZoomedImageDialogFragment newInstance(@NonNull final File image) {
+            ZoomedImageDialogFragment frag = new ZoomedImageDialogFragment();
+            Bundle args = new Bundle();
+            args.putString(UniqueId.BKEY_FILE_SPEC, image.getPath());
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+            mImageFile = new File(
+                    Objects.requireNonNull(requireArguments().getString(UniqueId.BKEY_FILE_SPEC)));
+
+            @SuppressLint("InflateParams")
+            View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_zoomed_image,
+                                                                      null);
+
+            ImageView cover = root.findViewById(R.id.coverImage);
+            ImageSize imageSizes = getImageSizes(requireActivity());
+            getImageAndPutIntoView(cover, mImageFile, imageSizes.large, imageSizes.large, true);
+
+            cover.setAdjustViewBounds(true);
+            cover.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(@NonNull final View v) {
+                    dismiss();
+                }
+            });
+
+            return new AlertDialog.Builder(requireActivity())
+                    .setView(root)
+                    .create();
+        }
     }
 
     /**

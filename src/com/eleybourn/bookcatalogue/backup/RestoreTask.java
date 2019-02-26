@@ -1,18 +1,17 @@
 package com.eleybourn.bookcatalogue.backup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import java.io.IOException;
+
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
-
-import java.io.IOException;
-import java.util.Objects;
 
 public class RestoreTask
         extends TaskWithProgress<ImportSettings> {
@@ -20,10 +19,16 @@ public class RestoreTask
     @NonNull
     private final ImportSettings mSettings;
 
+    /**
+     * @param taskId   a task identifier, will be returned in the task finished listener.
+     * @param context  the caller context
+     * @param settings the import settings
+     */
+    @UiThread
     public RestoreTask(final int taskId,
                        @NonNull final FragmentActivity context,
                        @NonNull final ImportSettings /* in/out */settings) {
-        super(taskId, context, R.string.progress_msg_importing, false);
+        super(taskId, UniqueId.TFT_IMPORT_ARCHIVE, context, false, R.string.progress_msg_importing);
         mSettings = settings;
 
         if ((mSettings.what & ImportSettings.MASK) == 0) {
@@ -33,13 +38,11 @@ public class RestoreTask
 
     @Override
     @NonNull
+    @WorkerThread
     protected ImportSettings doInBackground(final Void... params) {
-        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-            Logger.info(this, "restore",
-                        "starting|file=" + mSettings.file.getAbsolutePath());
-        }
+        //noinspection ConstantConditions
         try (BackupReader reader = BackupManager.readFrom(mSettings.file)) {
-            Objects.requireNonNull(reader);
+            //noinspection ConstantConditions
             reader.restore(mSettings, new BackupReader.BackupReaderListener() {
 
                 private int mProgress;
@@ -58,20 +61,13 @@ public class RestoreTask
 
                 @Override
                 public boolean isCancelled() {
-                    return mFragment.isCancelled();
+                    return RestoreTask.this.isCancelled();
                 }
             });
-
-            if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                Logger.info(BackupManager.class,
-                            "restore|finishing|file=" + mSettings.file.getAbsolutePath()
-                                    + ", size = " + mSettings.file.length());
-            }
         } catch (IOException e) {
             Logger.error(e);
             mException = e;
         }
-
         return mSettings;
     }
 }

@@ -24,6 +24,8 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -58,6 +60,7 @@ public final class ImageCacheWriterTask
      * @param source     Raw bitmap to store
      * @param canRecycle Indicates bitmap should be recycled after use
      */
+    @UiThread
     private ImageCacheWriterTask(@NonNull final String uuid,
                                  final int maxWidth,
                                  final int maxHeight,
@@ -75,6 +78,7 @@ public final class ImageCacheWriterTask
      * @param source     Raw bitmap to store
      * @param canRecycle Indicates bitmap should be recycled after use
      */
+    @UiThread
     static void writeToCache(@NonNull final String uuid,
                              final int maxWidth,
                              final int maxHeight,
@@ -87,6 +91,7 @@ public final class ImageCacheWriterTask
     /**
      * @return <tt>true</tt> if there is an active task in the queue.
      */
+    @UiThread
     public static boolean hasActiveTasks() {
         return runningTasks.get() != 0;
     }
@@ -95,6 +100,7 @@ public final class ImageCacheWriterTask
      * Do the main work in the background thread.
      */
     @Override
+    @WorkerThread
     protected Void doInBackground(final Void... params) {
         runningTasks.incrementAndGet();
 

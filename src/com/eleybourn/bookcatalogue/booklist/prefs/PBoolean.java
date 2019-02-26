@@ -23,7 +23,7 @@ public class PBoolean
      * @param uuid the style id
      */
     public PBoolean(@StringRes final int key,
-                    @Nullable final String uuid) {
+                    @NonNull final String uuid) {
         super(key, uuid, Prefs.getBoolean(key, false));
     }
 
@@ -36,14 +36,14 @@ public class PBoolean
      * @param defaultValue default to use if there is no global default
      */
     public PBoolean(@StringRes final int key,
-                    @Nullable final String uuid,
+                    @NonNull final String uuid,
                     @NonNull final Boolean defaultValue) {
         super(key, uuid, Prefs.getBoolean(key, defaultValue));
     }
 
     @Override
     public void set(@Nullable final Boolean value) {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             mNonPersistedValue = value;
         } else if (value == null) {
             Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
@@ -65,7 +65,7 @@ public class PBoolean
     @NonNull
     @Override
     public Boolean get() {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             return Prefs.getPrefs(mUuid).getBoolean(getKey(), mDefaultValue);

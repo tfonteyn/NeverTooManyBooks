@@ -21,16 +21,11 @@ ENHANCE: move Publisher, Location, Format ... to separate tables ?
 
 TOMF: research 'local' search. The code has some stuff enabled, but not tested. -> check BC 5.2.2 release (not master)
 
-ENHANCE: start replacing Dialog/AlertDialog with fragment based dialogs.
-
 ENHANCE: XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!
  * con: fools / fields will be bigger due to labels/tags / not easy to get 'others' to create import files
 
-TODO: check all activity and fragments and check savedInstanceState versus extras/arguments.
-Not all places save/restore the state when the app is put on pause.
-
-TODO: remove the Apache http client; it's removed from API: 23. Seems to be a requirement for signpost?
+TODO: remove the Apache http client; it's removed from API: 23. Seems to be a requirement for Signpost?
 Signpost claims that the native android HttpURLConnection is buggy... and suggest to always use apache on android
 https://github.com/mttkay/signpost
 

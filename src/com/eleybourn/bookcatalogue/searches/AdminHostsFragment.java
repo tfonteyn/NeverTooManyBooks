@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
-import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 
 /**
  * Allows editing the host url for some of the search sites.
@@ -28,7 +27,8 @@ import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 public class AdminHostsFragment
         extends Fragment {
 
-    public static final String TAG = "AdminHostsFragment";
+    /** Fragment manager tag. */
+    public static final String TAG = AdminHostsFragment.class.getSimpleName();
 
     private EditText amazon_url;
     private EditText google_url;
@@ -37,6 +37,7 @@ public class AdminHostsFragment
     private boolean isCreated;
 
     @Override
+    @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -48,15 +49,16 @@ public class AdminHostsFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //noinspection ConstantConditions
-        amazon_url = getView().findViewById(R.id.amazon_url);
+        View view = requireView();
+
+        amazon_url = view.findViewById(R.id.amazon_url);
         amazon_url.setText(AmazonManager.getBaseURL());
 
-        google_url = getView().findViewById(R.id.google_url);
+        google_url = view.findViewById(R.id.google_url);
         google_url.setText(GoogleBooksManager.getBaseURL());
 
         // needs visibility set in the xml layout if uncommenting these
-//        isfdb_url = getView().findViewById(R.id.isfdb_url);
+//        isfdb_url = view.findViewById(R.id.isfdb_url);
 //        isfdb_url.setText(ISFDBManager.getBaseURL());
 
         isCreated = true;

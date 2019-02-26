@@ -128,6 +128,7 @@
     <string-array name="pe_bob_header">
         <item>Mostrar el número de libros</item>
         <item>Mostrar el primer nivel de cabecera</item>
+        <item>Mostrar el segundo nivel de cabecera</item>
     </string-array>
 
     <!-- Preference - Show thumbnail image for each book -->

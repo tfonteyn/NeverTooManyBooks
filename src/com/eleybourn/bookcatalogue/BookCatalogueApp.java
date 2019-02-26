@@ -40,17 +40,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.debug.DebugReport;
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+import java.util.Objects;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
-import java.util.Objects;
+import com.eleybourn.bookcatalogue.debug.DebugReport;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * BookCatalogue Application implementation. Useful for making globals available and for being a
@@ -101,12 +101,6 @@ import java.util.Objects;
 )
 public class BookCatalogueApp
         extends Application {
-
-    /**
-     * Implementation to use for
-     * {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showUserMessage}.
-     */
-    public static final String PREF_APP_USER_MESSAGE = "App.UserMessage";
 
     /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;

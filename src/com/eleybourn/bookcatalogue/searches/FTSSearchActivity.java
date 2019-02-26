@@ -45,7 +45,6 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -71,6 +70,10 @@ public class FTSSearchActivity
     private final Handler mSCHandler = new Handler();
     /** the database connection. */
     private DBA mDb;
+
+    private String mAuthorSearchText = null;
+    private String mTitleSearchText = null;
+    private String mGenericSearchText = null;
 
     /** search field. */
     private EditText mAuthorView;
@@ -119,30 +122,37 @@ public class FTSSearchActivity
         return R.layout.activity_search_catalogue;
     }
 
+    private void readArgs(@NonNull final Bundle args) {
+        mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+        mTitleSearchText = args.getString(UniqueId.KEY_TITLE);
+        mGenericSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT);
+    }
+
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                readArgs(extras);
+            }
+        } else {
+            readArgs(savedInstanceState);
+        }
 
         mAuthorView = findViewById(R.id.author);
         mTitleView = findViewById(R.id.title);
         mCSearchView = findViewById(R.id.criteria);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            String authorSearchText = extras.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-            if (authorSearchText != null) {
-                mAuthorView.setText(authorSearchText);
-            }
-            String titleSearchText = extras.getString(UniqueId.KEY_TITLE);
-            if (titleSearchText != null) {
-                mTitleView.setText(titleSearchText);
-            }
-            String genericSearchText = extras.getString(UniqueId.BKEY_SEARCH_TEXT);
-            if (genericSearchText != null) {
-                mCSearchView.setText(genericSearchText);
-            }
+        if (mAuthorSearchText != null) {
+            mAuthorView.setText(mAuthorSearchText);
+        }
+        if (mTitleSearchText != null) {
+            mTitleView.setText(mTitleSearchText);
+        }
+        if (mGenericSearchText != null) {
+            mCSearchView.setText(mGenericSearchText);
         }
 
         mDb = new DBA(this);
@@ -184,7 +194,6 @@ public class FTSSearchActivity
         });
 
         // Note: Timer will be started in OnResume().
-        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -224,16 +233,17 @@ public class FTSSearchActivity
      */
     private void doSearch() {
         // Get search criteria
-        String author = mAuthorView.getText().toString().trim();
-        String title = mTitleView.getText().toString().trim();
-        String criteria = mCSearchView.getText().toString().trim();
+        mAuthorSearchText = mAuthorView.getText().toString().trim();
+        mTitleSearchText = mTitleView.getText().toString().trim();
+        mGenericSearchText = mCSearchView.getText().toString().trim();
 
         // Save time to log how long query takes.
         long t0 = System.currentTimeMillis();
 
         // Get the cursor
         String tmpMsg = null;
-        try (Cursor cursor = mDb.searchFts(author, title, criteria)) {
+        try (Cursor cursor = mDb.searchFts(mAuthorSearchText, mTitleSearchText,
+                                           mGenericSearchText)) {
             if (cursor != null) {
                 int count = cursor.getCount();
                 tmpMsg = getString(R.string.books_found, String.valueOf(count));
@@ -288,13 +298,26 @@ public class FTSSearchActivity
     }
 
     /**
-     * When activity pauses, stop timer.
+     * When activity pauses, stop timer and get the search fields.
      */
     @Override
     @CallSuper
     protected void onPause() {
         stopIdleTimer();
+        // Get search criteria
+        mAuthorSearchText = mAuthorView.getText().toString().trim();
+        mTitleSearchText = mTitleView.getText().toString().trim();
+        mGenericSearchText = mCSearchView.getText().toString().trim();
+
         super.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
+        outState.putString(UniqueId.KEY_TITLE, mTitleSearchText);
+        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mGenericSearchText);
     }
 
     /**

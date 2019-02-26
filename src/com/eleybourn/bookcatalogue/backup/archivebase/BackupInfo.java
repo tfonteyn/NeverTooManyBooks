@@ -100,7 +100,7 @@ public class BackupInfo
         mBundle = new Bundle();
     }
 
-    public BackupInfo(@NonNull final Bundle bundle) {
+    private BackupInfo(@NonNull final Bundle bundle) {
         mBundle = bundle;
     }
 

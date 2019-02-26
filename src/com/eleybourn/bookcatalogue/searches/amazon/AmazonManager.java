@@ -22,6 +22,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+/**
+ * <br />
+ * <b>Warning</b>:  file_get_contents(http://webservices.amazon.com/onca/xml?AssociateTag=theagidir-20&amp;Keywords=0586216871&amp;Operation=ItemSearch&amp;ResponseGroup=Medium,Images&amp;SearchIndex=Books&amp;Service=AWSECommerceService&amp;SubscriptionId=AKIAIHF2BM6OTOA23JEQ&amp;Timestamp=2019-02-17T21:53:11.000Z&amp;Signature=dEqLlFLyj4x%2BNJaticEpqKGSQm%2F75tmnnZ7dkegK8K0%3D): failed to open stream: HTTP request failed! HTTP/1.1 503 Service Unavailable
+ *  in <b>/app/getRest_v3.php</b> on line <b>70</b><br />
+ */
 public final class AmazonManager
         implements SearchSites.SearchSiteManager {
 

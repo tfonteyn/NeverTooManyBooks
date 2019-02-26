@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,13 +37,13 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
-
-import java.util.ArrayList;
 
 /**
  * ENHANCE: Ultimately, this should become a Fragment.
@@ -54,9 +55,7 @@ import java.util.ArrayList;
  * for TouchInterceptor which was (reputedly) removed in Android 2.2.
  * <p>
  * Mandatory: {@link #createListAdapter}
- * needs to be implemented returning a suitable {@link SimpleListAdapter}
- * The method {@link SimpleListAdapter#onGetView} should be implemented.
- * Others are optional to override.
+ * needs to be implemented returning a suitable {@link ArrayAdapter}
  * <p>
  * <p>
  * For this code to work, the main view must contain a {@link TouchListView}
@@ -128,7 +127,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
             }
         }
     };
-    protected SimpleListAdapter<T> mListAdapter;
+    protected ArrayAdapter<T> mListAdapter;
     /**
      * Handle 'Add'.
      */
@@ -172,19 +171,25 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
         mDb = new DBA(this);
 
+        if (savedInstanceState == null) {
+            // Look for id and title
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                mRowId = extras.getLong(UniqueId.KEY_ID);
+                mBookTitle = extras.getString(UniqueId.KEY_TITLE);
+            }
+        } else {
+            mRowId = savedInstanceState.getLong(UniqueId.KEY_ID);
+            mBookTitle = savedInstanceState.getString(UniqueId.KEY_TITLE);
+        }
+
         // see getList for full details as to where we "get" the list from
         mList = getList(mBKey, savedInstanceState);
         // setup the adapter
         mListAdapter = createListAdapter(mRowLayoutId, mList);
         setListAdapter(mListAdapter);
 
-        // Look for id and title
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            mRowId = extras.getLong(UniqueId.KEY_ID);
-            mBookTitle = extras.getString(UniqueId.KEY_TITLE);
-            setTextOrHideView(R.id.title, mBookTitle);
-        }
+        setTextOrHideView(R.id.title, mBookTitle);
 
         // Add handlers for 'Save', 'Cancel' and 'Add' (if resources are defined)
         setOnClickListener(R.id.confirm, mSaveListener);
@@ -208,10 +213,10 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         ArrayList<T> list = null;
 
         if (key != null) {
-            if (savedInstanceState != null) {
-                list = savedInstanceState.getParcelableArrayList(key);
-            } else {
+            if (savedInstanceState == null) {
                 list = getIntent().getParcelableArrayListExtra(key);
+            } else {
+                list = savedInstanceState.getParcelableArrayList(key);
             }
         }
 
@@ -255,8 +260,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * get the specific list adapter from the child class.
      */
-    protected abstract SimpleListAdapter<T> createListAdapter(@LayoutRes int rowLayoutId,
-                                                              @NonNull ArrayList<T> list);
+    protected abstract ArrayAdapter<T> createListAdapter(@LayoutRes int rowLayoutId,
+                                                         @NonNull ArrayList<T> list);
 
     /**
      * Called when user clicks the 'Add' button (if present).
@@ -328,7 +333,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * to return a boolean indicating it is OK to continue.
      * <p>
      * Can be overridden to perform other checks.
-     *
+     * <p>
      * IMPORTANT: Individual items on the list might have been saved to the database
      * depending on the child class needs.
      * The list itself is (normally) NOT SAVED -> we only return it in the result.
@@ -409,9 +414,11 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     @Override
     @CallSuper
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
-        outState.putParcelableArrayList(mBKey, mList);
-
         super.onSaveInstanceState(outState);
+
+        outState.putParcelableArrayList(mBKey, mList);
+        outState.putLong(UniqueId.KEY_ID, mRowId);
+        outState.putString(UniqueId.KEY_TITLE, mBookTitle);
     }
 
 //    /**

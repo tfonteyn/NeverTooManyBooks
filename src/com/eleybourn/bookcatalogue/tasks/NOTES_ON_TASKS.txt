@@ -20,7 +20,7 @@ GOALS:
  *
  * {@link BaseActivityWithTasks}
  * Uses a TaskManager (and communicates with it) to handle messages for ManagedTask.
- * Handles progress messages (ProgressDialog) and user messages (toast)
+ * Handles progress messages (Progress Dialog) and user messages (toast)
 
 Also involved are:
 - a Client Listener, for example {@link TaskManager.TaskManagerListener},

@@ -10,6 +10,7 @@ import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
@@ -44,6 +45,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
 
@@ -73,6 +75,21 @@ public final class UniqueId {
     public static final int ACTIVITY_RESULT_OK_BooklistPreferredStyles = 10_101;
     /** need distinct code as it can trickle up. */
     public static final int ACTIVITY_RESULT_OK_BooklistStyleProperties = 10_102;
+
+    /** task fragment tag. */
+    public static final String TFT_GOODREADS_IMPORT_ALL = "grImportAll";
+    public static final String TFT_GOODREADS_SEND_BOOKS = "grSendBooks";
+    public static final String TFT_GOODREADS_SEND_ALL_BOOKS = "grSendAllBooks";
+    public static final String TFT_GOODREADS_SEND_ONE_BOOK = "grSendOneBook";
+    public static final String TFT_BACKUP = "backup";
+    public static final String TFT_IMPORT_ARCHIVE = "restore";
+    public static final String TFT_IMPORT_CSV = "importCSV";
+    public static final String TFT_EXPORT_CSV = "exportCSV";
+    public static final String TFT_BOOKLIST = "booklist";
+    public static final String TFT_LT_VALIDATE = "ltValidate";
+    public static final String TFT_GR_REGISTER = "grRegister";
+    public static final String TFT_FILE_LISTER = "fileLister";
+
     /**
      * Bundle keys for ParcelableArrayList<Entity>.
      */
@@ -88,6 +105,13 @@ public final class UniqueId {
     public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
 
     /**
+     * Search site flags as in {@link com.eleybourn.bookcatalogue.searches.SearchSites}.
+     * <p>
+     * int (bitmask)
+     */
+    public static final String BKEY_SEARCH_SITES = "searchFlags";
+
+    /**
      * Single fileSpecs or uri.
      * <p>
      * String
@@ -100,6 +124,13 @@ public final class UniqueId {
      * ArrayList<String>
      */
     public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array";
+
+    /**
+     * A generic layout resource id.
+     * <p>
+     * int (LayoutId)
+     */
+    public static final String BKEY_LAYOUT_ID = "layoutId";
 
     /**
      * The title to be used by generic Dialogs.
@@ -152,6 +183,13 @@ public final class UniqueId {
     public static final String BKEY_ID_LIST = "idList";
 
     /**
+     * Bundle key to pass a generic {@link java.util.ArrayList<String>} around.
+     * <p>
+     * StringArrayList
+     */
+    public static final String BKEY_LIST = "stringList";
+
+    /**
      * 3 uses:
      * <p>
      * - Indicate if we 'have' a thumbnail or not.
@@ -175,7 +213,7 @@ public final class UniqueId {
      * int (bitmask)
      * setResult
      */
-    public static final String BKEY_IMPORT_RESULT_OPTIONS = "importResult";
+    public static final String BKEY_IMPORT_RESULT = "importResult";
 
     /**
      * The resulting {@link ExportSettings#what} flags after an export.
@@ -183,7 +221,14 @@ public final class UniqueId {
      * int (bitmask)
      * setResult
      */
-    public static final String BKEY_EXPORT_RESULT_OPTIONS = "exportResult";
+    public static final String BKEY_EXPORT_RESULT = "exportResult";
+
+    /**
+     * {@link ExportSettings} or {@link ImportSettings}.
+     * <p>
+     * Parcel
+     */
+    public static final String BKEY_IMPORT_EXPORT_SETTINGS = "importExportSettings";
 
     /**
      * Indicate the called activity made global changes.
@@ -206,13 +251,19 @@ public final class UniqueId {
     public static final String KEY_TITLE = DOM_TITLE.name;
     public static final String KEY_FIRST_PUBLICATION = DOM_FIRST_PUBLICATION.name;
     public static final String KEY_LAST_UPDATE_DATE = DOM_LAST_UPDATE_DATE.name;
+
     public static final String KEY_AUTHOR = DOM_FK_AUTHOR_ID.name;
     public static final String KEY_AUTHOR_FAMILY_NAME = DOM_AUTHOR_FAMILY_NAME.name;
     public static final String KEY_AUTHOR_GIVEN_NAMES = DOM_AUTHOR_GIVEN_NAMES.name;
     public static final String KEY_AUTHOR_FORMATTED = DOM_AUTHOR_FORMATTED.name;
+    public static final String KEY_AUTHOR_IS_COMPLETE = DOM_AUTHOR_IS_COMPLETE.name;
+
     public static final String KEY_BOOKSHELF_NAME = DOM_BOOKSHELF.name;
+
     public static final String KEY_SERIES = DOM_SERIES_NAME.name;
     public static final String KEY_SERIES_NUM = DOM_BOOK_SERIES_NUM.name;
+    public static final String KEY_SERIES_IS_COMPLETE = DOM_SERIES_IS_COMPLETE.name;
+
     public static final String KEY_BOOK_UUID = DOM_BOOK_UUID.name;
     public static final String KEY_BOOK_ISBN = DOM_BOOK_ISBN.name;
     public static final String KEY_BOOK_DATE_ADDED = DOM_BOOK_DATE_ADDED.name;
@@ -238,9 +289,11 @@ public final class UniqueId {
     public static final String KEY_BOOK_READ = DOM_BOOK_READ.name;
     public static final String KEY_BOOK_READ_START = DOM_BOOK_READ_START.name;
     public static final String KEY_BOOK_READ_END = DOM_BOOK_READ_END.name;
+
     public static final String KEY_BOOK_GR_LAST_SYNC_DATE = DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name;
     public static final String KEY_BOOK_LIBRARY_THING_ID = DOM_BOOK_LIBRARY_THING_ID.name;
     public static final String KEY_BOOK_ISFDB_ID = DOM_BOOK_ISFDB_ID.name;
+
 
 
     private UniqueId() {

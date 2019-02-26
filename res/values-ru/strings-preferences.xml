@@ -127,6 +127,7 @@
     <string-array name="pe_bob_header">
         <item>Показывать номера книг</item>
         <item>Показать заголовок</item>
+        <item>Показать заголовок 2 уровня</item>
     </string-array>
 
     <!-- Preference - Show thumbnail image for each book -->

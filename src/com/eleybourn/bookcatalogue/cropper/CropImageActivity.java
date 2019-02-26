@@ -44,8 +44,8 @@ import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -101,14 +101,16 @@ public class CropImageActivity
     boolean mWaitingToPickFace;
     /** These are various options can be specified in the intent. */
     @Nullable
-    private Uri mOptionSaveUri = null;
-    private int mOptionAspectX, mOptionAspectY;
+    private Uri mOptionSaveUri;
+    private int mOptionAspectX;
+    private int mOptionAspectY;
     /** crop circle ? (default: rectangle). */
-    private boolean mOptionCircleCrop = false;
+    private boolean mOptionCircleCrop;
     /** Output image size and whether we should scale the output to fit it (or just crop it). */
-    private int mOptionOutputX, mOptionOutputY;
+    private int mOptionOutputX;
+    private int mOptionOutputY;
     /** Flag indicating if default crop rect is whole image. */
-    private boolean mOptionCropWholeImage = false;
+    private boolean mOptionCropWholeImage;
     private boolean mOptionScale;
     private boolean mOptionScaleUp = true;
     /** Disable face detection. */
@@ -123,7 +125,7 @@ public class CropImageActivity
         int mNumFaces;
 
         // For each face, we create a CropHighlightView for it.
-        private void handleFace(FaceDetector.Face face) {
+        private void handleFace(@NonNull final FaceDetector.Face face) {
             PointF midPoint = new PointF();
 
             int r = ((int) (face.eyesDistance() * mScale)) * 2;
@@ -253,8 +255,8 @@ public class CropImageActivity
                     }
 
                     if (mNumFaces > 1) {
-                        StandardDialogs.showUserMessage(CropImageActivity.this,
-                                                        "Multi face crop help not available.");
+                        UserMessage.showUserMessage(CropImageActivity.this,
+                                                    "Multi face crop help not available.");
                     }
                 }
             });
@@ -267,11 +269,14 @@ public class CropImageActivity
     }
 
     /**
+     * create activity.
+     *
      * intent.putExtra(CropIImage.REQUEST_KEY_SCALE, true);
      * intent.putExtra(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
      * intent.putExtra(CropIImage.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
      * intent.putExtra(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
      * intent.putExtra(CropIImage.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
+     *
      */
     @Override
     @CallSuper
@@ -285,8 +290,7 @@ public class CropImageActivity
 
         warnUserAboutStorageIfNeeded();
 
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
+        Bundle extras = getIntent().getExtras();
         if (extras != null) {
             if (extras.getString(BKEY_CIRCLE_CROP) != null) {
                 mOptionCircleCrop = true;
@@ -352,10 +356,15 @@ public class CropImageActivity
             in = getContentResolver().openInputStream(uri);
             return BitmapFactory.decodeStream(in);
         } catch (FileNotFoundException ignored) {
+            return null;
         }
-        return null;
     }
 
+    /**
+     * Face detection is a partial misnomer.
+     * It will check the flag {@link #mOptionNoFaceDetection} and only do ACTUAL face detection
+     * if that flag == false. Otherwise, it wil still create a HighlightView which we need.
+     */
     private void startFaceDetection() {
         if (isFinishing()) {
             return;
@@ -364,7 +373,7 @@ public class CropImageActivity
         mImageView.setImageBitmapResetBase(mBitmap, true);
 
         CropUtil.startBackgroundJob(
-                this, null, "Please wait\u2026",
+                this, null, getString(R.string.progress_msg_please_wait),
                 new Runnable() {
                     public void run() {
                         final CountDownLatch latch = new CountDownLatch(1);
@@ -562,7 +571,7 @@ public class CropImageActivity
 
         // tell user if needed.
         if (msgId != 0) {
-            StandardDialogs.showUserMessage(this, msgId);
+            UserMessage.showUserMessage(this, msgId);
         }
     }
 }

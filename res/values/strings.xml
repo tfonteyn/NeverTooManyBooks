@@ -7,7 +7,9 @@
 <resources>
 
     <!-- Regular expression !! - TODO: make this user controlled ? -->
-    <string name="series_number_prefixes" translatable="false">(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)</string>
+    <string name="series_number_prefixes" translatable="false">
+        (#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)
+    </string>
 
     <!-- ####################################################################################### -->
     <!-- == order formatters (mainly for RTL which we don't support yet) == -->
@@ -54,14 +56,16 @@
     <!-- ========== ValidatorException error messages; currently never shown. ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="vldt_unable_to_get_value">Unable to get value for \‘%s\’</string>
-    <string name="vldt_integer_expected">Expected an integer value for \‘%s\’</string>
-    <string name="vldt_real_expected">Expected a real number for \‘%s\’</string>
-    <string name="vldt_date_expected">Expected a date for \‘%s\’</string>
-    <string name="vldt_boolean_expected">Expected a boolean value (0,1,t,f,true,false) for \‘%s\’</string>
-    <string name="vldt_non_blank_required">Non-empty value required for \‘%s\’</string>
-    <string name="vldt_blank_required">Empty value required for \‘%s\’</string>
-    <string name="vldt_failed">Validation failed for \‘%s\’</string>
+    <string name="vldt_unable_to_get_value">Unable to get value for ‘%s’</string>
+    <string name="vldt_integer_expected">Expected an integer value for ‘%s’</string>
+    <string name="vldt_real_expected">Expected a real number for ‘%s’</string>
+    <string name="vldt_date_expected">Expected a date for ‘%s’</string>
+    <string name="vldt_boolean_expected">
+        Expected a boolean value (0,1,t,f,true,false) for ‘%s’
+    </string>
+    <string name="vldt_non_blank_required">Non-empty value required for ‘%s’</string>
+    <string name="vldt_blank_required">Empty value required for ‘%s’</string>
+    <string name="vldt_failed">Validation failed for ‘%s’</string>
     <string name="vldt_read_start_after_end">The date reading started is after the end date</string>
 
     <!-- ####################################################################################### -->
@@ -99,11 +103,8 @@
     <string name="error_storage_no_access">Cannot access the SD Card</string>
     <!-- you're out of Shared Storage space... buy a bigger SDCard -->
     <string name="error_storage_no_space_left">Not enough space on the SD Card</string>
-    <!-- when trying to write to Shared Storage, but were denied; write-protected ? -->
-    <string name="error_storage_cannot_write">Could not write to the SD Card</string>
 
     <string name="error_no_external_crop_app">Can not find image crop app</string>
-    <string name="error_no_style_found">Could not find appropriate style</string>
     <string name="error_network_timeout">No response, please try again</string>
     <string name="error_email_failed">Sending the email failed.</string>
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
@@ -120,8 +121,7 @@
 
     <string name="info_no_books_yet">There are no books on this Bookshelf.
         Please add some using the menu at the bottom of this screen.</string>
-    <string name="info_no_bookshelves_yet">You have not created any bookshelves yet.
-        Please add some using the menu at the bottom of this screen.</string>
+
     <string name="info_no_authors_yet">There are no authors for this Book.
         Please add some using the text area and button at the top of this screen.</string>
     <string name="info_no_series_yet">There are no series for this Book.
@@ -133,8 +133,7 @@
         been experiencing crashing or other errors, please consider using the
         “Send Information” button first.
     </string>
-    <string name="info_option_not_available_until_book_saved">
-        This option is not available until the book is saved</string>
+
     <string name="info_share_book_im_reading">I\'m reading %1$s by %2$s %3$s %4$s</string>
     <string name="info_click_on_thumb">Click on a thumbnail to display a larger image</string>
     <string name="info_manage_fields">Selected fields are visible in the add/edit book screens.
@@ -169,12 +168,10 @@
     <string name="warning_select_min_1_field">Select at least one field to update</string>
     <string name="warning_editions_require_isbn">Retrieving other editions requires an ISBN</string>
 
-    <string name="warning_cannot_edit_system">You cannot edit the system values</string>
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf</string>
 
     <string name="warning_required_title">Title must be specified</string>
     <string name="warning_required_author_long">At least one author must be specified</string>
-    <string name="warning_required_author">Author field is blank</string>
     <string name="warning_required_name">Name can not be blank</string>
     <!-- some field was blank while it should not be -->
     <string name="warning_required_field_x">%1$s must not be blank</string>
@@ -183,7 +180,6 @@
     <!-- some unique field already exists; example: when trying to create a duplicate Bookshelf -->
     <string name="warning_thing_already_exists">%1$s already exists</string>
 
-    <string name="warning_title_already_exists">The title already exists</string>
     <string name="warning_author_already_in_list">Author is already in the list</string>
     <string name="warning_series_already_in_list">Series is already in the list</string>
 
@@ -192,22 +188,14 @@
     <string name="warning_no_isbn_stored_for_book">No ISBN stored for book</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s is not a valid ISBN</string>
     <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s is not a valid ISBN or ASIN</string>
-    <string name="warning_invalid_isbn_x_specified_in_search">
-        Invalid ISBN “%1$s” specified in search
-    </string>
-
     <string name="warning_cover_field_not_set">Cover is not set</string>
     <string name="warning_cover_corrupt">Cover is corrupt</string>
     <string name="warning_cover_not_found">Cover Not Found</string>
-    <string name="warning_cover_not_found2">No image found</string>
     <string name="warning_cover_copy_failed">Could not copy cover</string>
 
     <string name="warning_unable_to_find_book">Unable to find the specified book</string>
-    <string name="warning_no_isbn_no_editions">
-        Can not get editions for a book without a valid ISBN
-    </string>
-    <string name="warning_no_editions">No editions available</string>
 
+    <string name="warning_no_editions">No editions available</string>
     <string name="warning_if_day_set_month_and_year_must_be">
         If day is specified, then both month and year must also be specified.</string>
     <string name="warning_if_month_set_year_must_be">
@@ -261,11 +249,11 @@
         Warning, this may take a long time.
     </string>
     <string name="confirm_apply_author_changed">
-        You have changed the author from:\n  “%1$s” to \n  “%2$s”\n
+        You have changed the author from:\n “%1$s” to \n “%2$s”\n
         How do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly.
     </string>
     <string name="confirm_apply_series_changed">
-        You have changed the series from:\n  “%1$s” to \n  “%2$s”\n
+        You have changed the series from:\n “%1$s” to \n “%2$s”\n
         How do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly.
     </string>
 
@@ -273,9 +261,11 @@
     <!-- ========== Progress messages for 'lengthy' actions ========== -->
     <!-- ####################################################################################### -->
 
-    <!-- Showed in progress dialog when an import starts -->
+    <string name="progress_msg_please_wait">Please wait…</string>
+
+    <!-- Shown in progress dialog when an import starts -->
     <string name="progress_msg_backing_up">Backing up…</string>
-    <!-- Showed in progress dialog when an import starts -->
+    <!-- Shown in progress dialog when an import starts -->
     <string name="progress_msg_importing">Importing…</string>
     <string name="progress_msg_upgrading">Upgrading…</string>
     <string name="progress_msg_export_starting">Export starting…</string>
@@ -292,7 +282,6 @@
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting_to_web_site">Connecting to web site…</string>
     <string name="progress_msg_saving_image">Saving image…</string>
-
     <string name="progress_msg_process_cover">Covers…</string>
     <string name="progress_msg_process_preferences">Preferences…</string>
     <string name="progress_msg_process_booklist_style">Booklist Styles…</string>
@@ -317,6 +306,7 @@
     <string name="progress_end_cancelled">Cancelled</string>
     <string name="progress_end_num_books_searched">%s Books Searched</string>
     <string name="progress_end_cancelled_info">Cancelled - %s</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== Library Thing specific ========== -->
     <!-- ####################################################################################### -->
@@ -347,7 +337,7 @@
         Press the button below to reset any of these messages that have been disabled.
     </string>
     <string name="lt_incorrect_key">
-        Your LibraryThing Developer Key was incorrect, or we could not connect to the network to verify.
+        Your LibraryThing Developer Key was incorrect, or we could not connect to verify.
     </string>
     <string name="lt_correct_key">Your LibraryThing Developer Key is valid.</string>
 
@@ -355,8 +345,8 @@
     <!-- ========== Goodreads specific ========== -->
     <!-- ####################################################################################### -->
     <string name="gr_auth_blurb_part1">
-        Goodreads is a web site whose stated mission is “to help people find and share books they love”.
-        They have an extensive database of books and reviews, and if you are a registered
+        Goodreads is a web site whose stated mission is “to help people find and share books they
+        love”. They have an extensive database of books and reviews, and if you are a registered
         Goodreads user, &APP_NAME; can export your books, shelves and reviews to Goodreads
         and import your books, shelves and reviews from Goodreads. &APP_NAME; is a stand-alone
         application and does not require Goodreads, but if you are interested you can register at:
@@ -374,10 +364,10 @@
     <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
     <string name="gr_auth_blurb_part4">
         It looks like you have already authorized this app. If you would like to delete the
-        credentials from this phone, then you can do so by pressing the button below. But it is also
-        important to de-authorize the application at the Goodreads website as well.
-        \n
-        \nForgetting the credentials here will remove the Goodreads option from the main application menu.
+        credentials from this phone, then you can do so by pressing the button below. But it is
+        also important to de-authorize the application at the Goodreads website as well.\n
+        \nForgetting the credentials here will remove the Goodreads option from the main
+        application menu.
     </string>
     <string name="gr_access_error">
         There was a network problem while accessing Goodreads. Please check if the Goodreads web
@@ -402,7 +392,6 @@
     </string>
     <string name="gr_error_while_searching">Error while searching.</string>
     <string name="gr_sync_with_goodreads">Synchronize with Goodreads</string>
-    <string name="gr_search_goodreads">Search Goodreads</string>
     <string name="gr_title_send_book">Send books to Goodreads</string>
     <string name="gr_btn_send_all">Send all</string>
     <string name="gr_btn_send_updated">Send updated</string>
@@ -440,7 +429,7 @@
     </string>
 
     <!-- ####################################################################################### -->
-    <!-- == all strings GoodReads Task & Event related; translation is not really needed but feel free == -->
+    <!-- == GoodReads Task & Event related; translation is not really needed but feel free == -->
     <!-- ####################################################################################### -->
 
     <string name="gr_tq_title_task_errors">Task Errors</string>
@@ -450,10 +439,16 @@
     <string name="gr_tq_btn_cleanup_old_tasks">Cleanup Old Tasks</string>
     <string name="gr_tq_btn_cleanup_old_events">Cleanup Old Events</string>
     <string name="gr_tq_legacy_task">Legacy Task</string>
-    <string name="gr_tq_task_has_been_queued_in_background">Task has been queued in background</string>
+    <string name="gr_tq_task_has_been_queued_in_background">
+        Task has been queued in background
+    </string>
     <string name="gr_tq_requested_task_is_already_queued">Requested task is already queued</string>
-    <string name="gr_tq_export_task_is_already_queued">An export task is already queued and must compete before this task can run</string>
-    <string name="gr_tq_import_task_is_already_queued">An import task is already queued and must compete before this task can run</string>
+    <string name="gr_tq_export_task_is_already_queued">
+        An export task is already queued and must compete before this task can run
+    </string>
+    <string name="gr_tq_import_task_is_already_queued">
+        An import task is already queued and must compete before this task can run
+    </string>
     <string name="gr_tq_completed">Completed</string>
     <string name="gr_tq_failed">Failed</string>
     <string name="gr_tq_queued">Queued</string>
@@ -462,7 +457,7 @@
     <string name="gr_tq_occurred_at">(occurred at %1$s)</string>
     <string name="gr_tq_last_error_e">Last Error: %1$s</string>
     <string name="gr_tq_generic_task_info">Task ID %1$d, Queued at %2$s</string>
-    <string name="gr_tq_events_recorded">( %1$d events recorded)</string>
+    <string name="gr_tq_events_recorded">(%1$d events recorded)</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Hints ========== -->
@@ -597,9 +592,7 @@
     <string name="menu_add_book_by_barcode_scan">Scan Barcode/ISBN</string>
     <string name="menu_add_book_by_isbn">Enter ISBN</string>
     <string name="menu_add_book_manually">Add Manually</string>
-
     <string name="menu_add_bookshelf">Add Bookshelf</string>
-    <string name="menu_add_style">Add style</string>
 
     <string name="menu_clone_style">Clone style</string>
 
@@ -626,10 +619,8 @@
 
     <string name="menu_edit_author">Edit Author…</string>
     <string name="menu_edit_series">Edit Series…</string>
-    <string name="menu_edit_format">Edit Format…</string>
     <string name="menu_edit_bookshelves">Manage Bookshelves…</string>
 
-    <string name="menu_cover_options">Cover Options…</string>
     <string name="menu_cover_crop">Crop</string>
     <string name="menu_cover_replace">Replace…</string>
     <string name="menu_cover_add_from_gallery">From Gallery…</string>
@@ -646,7 +637,6 @@
     <string name="menu_collapse_all">Collapse All</string>
 
     <string name="menu_search">Search…</string>
-    <string name="menu_search_books">Search Books</string>
     <string name="menu_share_this">Share</string>
     <string name="menu_sort_and_style_ellipsis">Sort &amp; Style…</string>
     <string name="menu_clear_filters">Clear Filters</string>
@@ -666,9 +656,6 @@
 
     <!-- Admin GROUP General -->
     <string name="menu_manage_fields">Field Visibility</string>
-    <string name="menu_preferences_booklist">Book List Preferences</string>
-    <string name="menu_preferences_other">Other Preferences</string>
-
     <!-- Admin GROUP -->
     <string name="lbl_data_import_export">Data Import/Export</string>
     <!-- Admin -->
@@ -696,7 +683,6 @@
     <!-- ####################################################################################### -->
 
     <string name="title_add_book">Add book</string>
-    <string name="title_add_style">New style</string>
 
     <string name="title_delete_series">Delete Series</string>
     <string name="title_duplicate_book">Duplicate Book</string>
@@ -723,7 +709,6 @@
     <string name="title_select_style">Select Style</string>
     <string name="title_select_image">Select Image</string>
     <string name="title_select_cover">Select Cover</string>
-    <string name="title_cover_detail">Cover Detail</string>
     <string name="title_scope_of_change">Scope of Change</string>
     <string name="title_search_for">Search Author or Title</string>
 
@@ -734,8 +719,6 @@
     <!-- positive response button texts -->
     <string name="btn_confirm_add_book">Add Book</string>
     <string name="btn_confirm_save_book">Save Book</string>
-    <string name="btn_confirm_add_bs">Add Bookshelf</string>
-    <string name="btn_confirm_save_bs">Save Bookshelf</string>
     <string name="btn_confirm_save">Save</string>
     <string name="btn_confirm_add">Add</string>
     <string name="btn_confirm_update">Update</string>
@@ -771,7 +754,7 @@
     <!-- ####################################################################################### -->
 
     <!-- Short Headings for fields or tabs -->
-    <string name="lbl_by_authors">by %1$s</string>
+    <string name="lbl_by_author_s">by %1$s</string>
     <string name="lbl_by_author">by</string>
     <string name="lbl_family_name">Family Name</string>
     <string name="lbl_given_names">Given Names</string>
@@ -822,7 +805,9 @@
 
     <!-- non-database field labels, like choices on a dialog box -->
     <string name="lbl_allow_asin">Allow ASIN</string>
-    <string name="lbl_toc_same_author">All stories in this anthology are written by the same author</string>
+    <string name="lbl_toc_same_author">
+        All stories in this anthology are written by the same author
+    </string>
 
     <!-- Book edition -->
     <string name="lbl_edition">Edition</string>
@@ -900,7 +885,7 @@
     <string name="book_format_digest">Digest</string>
     <!--  book format string used if a search site indicates it's an eBook -->
     <string name="book_format_ebook">eBook</string>
-    <!-- book format string used if a search site indicates it's some sort of Audio (tape, cd, etc..) -->
+    <!-- book format used if a search site indicates it's some sort of Audio (tape, cd, etc..) -->
     <string name="book_format_audiobook">AudioBook</string>
 
     <!-- ####################################################################################### -->
@@ -939,7 +924,6 @@
     <string name="tab_lbl_loan">Loan</string>
 
     <string name="tab_lbl_search_sites">Search Sites</string>
-    <string name="tab_info_search_sites">Local websites.</string>
     <string name="tab_lbl_search_site_order">Order</string>
     <string name="tab_lbl_search_site_cover_order">Cover Search Order</string>
 
@@ -966,7 +950,7 @@
     <string name="about_donate">
         If you would like to support the development of this application, please donate using a
         my Amazon WishList or the Paypal button below. Being in Australia means I cannot
-        publish a &quot;paid&quot; version. :-)
+        publish a “paid” version. :-)
     </string>
     <string name="about_donate_amazon">Amazon WishList</string>
     <string name="about_dash_or_dash">- Or -</string>
@@ -992,9 +976,7 @@
     <string name="btn_loan_returned">Returned</string>
 
     <!-- a header, with a text field below where the user can type in a name -->
-    <string name="lbl_loan_to">Loan book to:</string>
-    <!-- a header, the name of the person will be below -->
-    <string name="lbl_loaned_to_long">This book has been loaned to:</string>
+    <string name="lbl_lend_to">Lend book to:</string>
     <!-- a one line label, with the name of the person appended -->
     <string name="lbl_loaned_to_name">On Loan to %1$s</string>
 
@@ -1007,13 +989,10 @@
     <!-- ####################################################################################### -->
     <!-- === Import/Export specific strings == -->
     <!-- ####################################################################################### -->
-
-    <!-- options to select 'what' will be imported/exported from/to the archive -->
-    <string name="import_export_info_book_details">The details of the books themselves</string>
-    <string name="import_export_info_preferences">Preferences and user-defined list styles</string>
-
     <!-- Explanatory note for 'import to archive' OPTIONS dialog -->
-    <string name="import_options_dialog_title">Select what will be imported from the archive.</string>
+    <string name="import_options_dialog_title">
+        Select what will be imported from the archive.
+    </string>
     <!-- Explanatory note of the 'import from archive' "all books" option -->
     <string name="import_option_info_all_books">All books in the archive will be imported,
         updating existing books and adding new ones.</string>
@@ -1035,9 +1014,6 @@
     <!-- Explanatory note for export data since last backup -->
     <string name="export_option_books_since_last_full_backup">All books added or updated
         since last full backup</string>
-    <!-- options to select 'what' will be exported to the archive -->
-    <string name="export_info_cover_images">Cover images for all selected books.
-        Will make the export much larger.</string>
     <!-- Explanatory note for 'export from archive' since-date (not yet implemented) -->
     <string name="export_option_books_since_date">All books added or updated since:</string>
     <!-- Explanatory note for 'export from archive' since-date (not yet implemented) -->
@@ -1060,12 +1036,6 @@
     <!-- Displayed when a CSV import fails -->
     <string name="import_error_csv_file_must_contain_any_column">File must contain a column
         with one of the following names: %s</string>
-    <!-- Displayed when a CSV import fails -->
-    <string name="import_error_failed_is_csv_file_location_correct">Import of data failed.
-        Is the file in the correct place?</string>
-    <!-- Displayed when an import fails -->
-    <!-- Displayed when a CSV export fails -->
-    <string name="export_error_csv_failed">Export failed - could not write to SD card</string>
     <!-- offer to send the CSV exported file as an email attachment -->
     <string name="export_csv_email">Would you like to send this export as an email?</string>
 
@@ -1105,17 +1075,51 @@
     <!-- ####################################################################################### -->
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
     <!-- ####################################################################################### -->
-
+    <string name="error_no_style_found">Could not find appropriate style</string>
+    <string name="warning_cannot_edit_system">You cannot edit the system values</string>
+    <string name="warning_cover_not_found2">No image found</string>
+    <string name="warning_title_already_exists">The title already exists</string>
+    <string name="warning_invalid_isbn_x_specified_in_search">
+        Invalid ISBN “%1$s” specified in search
+    </string>
+    <string name="warning_no_isbn_no_editions">
+        Can not get editions for a book without a valid ISBN
+    </string>
+    <string name="info_option_not_available_until_book_saved">
+        This option is not available until the book is saved</string>
+    <string name="info_no_bookshelves_yet">You have not created any bookshelves yet.
+        Please add some using the menu at the bottom of this screen.</string>
+    <string name="error_storage_cannot_write">Could not write to the SD Card</string>
+    <string name="menu_add_style">Add style</string>
+    <string name="menu_edit_format">Edit Format…</string>
+    <string name="menu_cover_options">Cover Options…</string>
+    <string name="menu_search_books">Search Books</string>
+    <string name="menu_preferences_booklist">Book List Preferences</string>
+    <string name="menu_preferences_other">Other Preferences</string>
+    <string name="title_add_style">New style</string>
+    <string name="title_cover_detail">Cover Detail</string>
+    <string name="btn_confirm_add_bs">Add Bookshelf</string>
+    <string name="btn_confirm_save_bs">Save Bookshelf</string>
+    <string name="tab_info_search_sites">Local websites.</string>
+    <string name="lbl_loaned_to_long">This book has been lend to:</string>
+    <string name="import_export_info_book_details">The details of the books themselves</string>
+    <string name="import_export_info_preferences">Preferences and user-defined list styles</string>
+    <string name="export_info_cover_images">Cover images for all selected books.
+        Will make the export much larger.</string>
+    <string name="import_error_failed_is_csv_file_location_correct">Import of data failed.
+        Is the file in the correct place?</string>
+    <string name="export_error_csv_failed">Export failed - could not write to SD card</string>
     <string name="warning_required_series">Series field is blank</string>
+    <string name="warning_required_author">Author field is blank</string>
     <string name="error_starting_import_arg">There was a problem starting the import: %1$s</string>
-    <string name="error_download_thumbnail_failed">Thumbnail Download Failed - Could not write to SDCard</string>
+    <string name="error_download_thumbnail_failed">
+        Thumbnail Download Failed - Could not write to SDCard
+    </string>
     <string name="error_file_must_contain_column">File must contain column named %s</string>
-
+    <string name="gr_search_goodreads">Search Goodreads</string>
     <string name="menu_sort_by">Sort By</string>
     <string name="menu_admin_and_prefs">Admin and Preferences</string>
-
     <string name="btn_do_not_show_again">Do not show again</string>
-
     <string name="anthology_titles">Anthology Titles</string>
     <string name="booklist_background_style">Book list background style</string>
     <string name="textured_background">Textured background image</string>
@@ -1137,23 +1141,19 @@
         the export, or press “back” to cancel:</string>
     <string name="title_import_books_blurb">The books in this archive will be imported. Select on
         one of two options to start the import, or press “back” to cancel:</string>
-
     <string name="hint_startup_screen">
         This is the standard &APP_NAME; startup screen. If you prefer, you can startup directly
         in “My Books”; the preferred startup screen can be changed in preferences.
     </string>
     <string name="hint_booklist_global_properties">
         You can use this screen to set the default characteristics of all book list styles.\n
-        \n
-        Most properties can be overridden by individual styles, but the default values are defined here.\n
-        \n
-        You can change the background, change how lists are displayed at startup, and adjust
-        a variety of other preferences that will be applied to all your styles when possible.\n
-        \n
+        \nMost properties can be overridden by individual styles, but the default values are
+        defined here.\n\n You can change the background, change how lists are displayed at
+        startup, and adjust a variety of other preferences that will be applied to all your
+        styles when possible.\n\n
         You can also edit the styles menu, and the styles themselves from here.
     </string>
-    <string name="hint_tempus_locum" translatable="false">
-        <![CDATA[
+    <string name="hint_tempus_locum" translatable="false"><![CDATA[
         <p><b>The lead developer of BookCatalogue has developed a new app!</b></p>
         <p>Keep track of locations, images, recordings and notes; and if you are into
         science, then manage samples and labels.</p>
@@ -1161,8 +1161,7 @@
         <p><a href="market://details?id=info.philipwarner.fieldassistant">Tempus Locum</a></p>
         <p>or you can see the web site here:</p>
         <p><a href="http://www.tempuslocum.com/">http://www.tempuslocum.com/</a>
-        </p>
-        ]]>
+        </p>]]>
     </string>
 
     <!-- ####################################################################################### -->
@@ -1178,6 +1177,7 @@
     <string name="searching_google_books">Searching Google Books</string>
     <string name="searching_library_thing">Searching LibraryThing</string>
     <string name="searching_goodreads">Searching Goodreads</string>
+
     <string name="searching_isfdb">Searching ISFDB</string>
     <string name="search_criteria">Search Criteria</string>
     <string name="search_internet">Search Internet</string>
@@ -1195,11 +1195,11 @@
     <string name="toc_confirm">Please confirm that these titles are (mostly) correct</string>
     <string name="backup_request">Would you like to backup your database to your sdcard?</string>
     <string name="and_others">et. al.</string>
-    <string name="unsaved_edits">You have unsaved changes. Are you sure you want to continue?</string>
+    <string name="unsaved_edits">
+        You have unsaved changes. Are you sure you want to continue?
+    </string>
     <string name="unsaved_edits_title">Unsaved Changes</string>
-
     <string name="cleanup_files">Cleanup Files</string>
-
     <string name="read_amp_unread">Read &amp; Unread</string>
     <string name="displaying_n_books_in_m_entries">displaying %1$d books, in %2$d entries</string>
 

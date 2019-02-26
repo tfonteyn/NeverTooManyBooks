@@ -7,6 +7,4 @@
 
     <dimen name="padding_book_details_text">10dp</dimen>
 
-    <dimen name="padding_prefs_item">20dp</dimen>
-
 </resources>

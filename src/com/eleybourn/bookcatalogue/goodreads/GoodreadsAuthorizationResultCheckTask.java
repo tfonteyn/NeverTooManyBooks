@@ -29,9 +29,9 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.GoodreadsTask;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 
 import java.io.IOException;
 
@@ -45,6 +45,8 @@ import java.io.IOException;
  * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
+ *
+ * TOMF: convert to AsyncTask
  *
  * @author Philip Warner
  */

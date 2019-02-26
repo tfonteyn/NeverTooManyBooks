@@ -13,21 +13,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.RTE;
-
-import java.io.File;
-import java.util.Objects;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 public class ExportDialogFragment
         extends DialogFragment {
 
-    private final ExportSettings settings = new ExportSettings();
+    /** Fragment manager tag. */
+    public static final String TAG = ExportDialogFragment.class.getSimpleName();
+    private ExportSettings mExportSettings;
+
+    private FragmentActivity mActivity;
 
     /**
      * Constructor.
@@ -36,10 +38,9 @@ public class ExportDialogFragment
      */
     @NonNull
     public static ExportDialogFragment newInstance(@NonNull final ExportSettings settings) {
-        final ExportDialogFragment frag = new ExportDialogFragment();
-        final Bundle args = new Bundle();
-        //noinspection ConstantConditions
-        args.putString(UniqueId.BKEY_FILE_SPEC, settings.file.getAbsolutePath());
+        ExportDialogFragment frag = new ExportDialogFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS, settings);
         frag.setArguments(args);
         return frag;
     }
@@ -63,21 +64,19 @@ public class ExportDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // savedInstanceState not used.
-        Bundle args = getArguments();
-        //noinspection ConstantConditions
-        settings.file = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
+        mActivity = requireActivity();
+        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        mExportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
 
-        View root = requireActivity().getLayoutInflater()
-                                     .inflate(R.layout.dialog_export_options, null);
+        View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_export_options, null);
 
         root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
                 updateOptions();
                 OnExportTypeSelectionDialogResultsListener listener =
-                        (OnExportTypeSelectionDialogResultsListener) requireActivity();
-                listener.onExportTypeSelectionDialogResult(settings);
+                        (OnExportTypeSelectionDialogResultsListener) mActivity;
+                listener.onExportTypeSelectionDialogResult(mExportSettings);
                 dismiss();
             }
         });
@@ -91,7 +90,7 @@ public class ExportDialogFragment
 
         root.findViewById(R.id.xml_tables_check).setVisibility(View.VISIBLE);
 
-        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
+        AlertDialog dialog = new AlertDialog.Builder(mActivity)
                 .setView(root)
                 .setTitle(R.string.lbl_backup)
                 .setIcon(R.drawable.ic_warning)
@@ -105,37 +104,50 @@ public class ExportDialogFragment
         // what to export. All checked == ExportSettings.ALL
         //noinspection ConstantConditions
         if (((Checkable) dialog.findViewById(R.id.xml_tables_check)).isChecked()) {
-            settings.what |= ExportSettings.XML_TABLES;
+            mExportSettings.what |= ExportSettings.XML_TABLES;
         }
         if (((Checkable) dialog.findViewById(R.id.books_check)).isChecked()) {
-            settings.what |= ExportSettings.BOOK_CSV;
+            mExportSettings.what |= ExportSettings.BOOK_CSV;
         }
         if (((Checkable) dialog.findViewById(R.id.covers_check)).isChecked()) {
-            settings.what |= ExportSettings.COVERS;
+            mExportSettings.what |= ExportSettings.COVERS;
         }
         if (((Checkable) dialog.findViewById(R.id.preferences_check)).isChecked()) {
-            settings.what |= ExportSettings.PREFERENCES | ExportSettings.BOOK_LIST_STYLES;
+            mExportSettings.what |= ExportSettings.PREFERENCES | ExportSettings.BOOK_LIST_STYLES;
         }
 
         Checkable radioSinceLastBackup = dialog.findViewById(R.id.radioSinceLastBackup);
         Checkable radioSinceDate = dialog.findViewById(R.id.radioSinceDate);
 
         if (radioSinceLastBackup.isChecked()) {
-            settings.what |= ExportSettings.EXPORT_SINCE;
+            mExportSettings.what |= ExportSettings.EXPORT_SINCE;
             // it's up to the Exporter to determine/set the last backup date.
-            settings.dateFrom = null;
+            mExportSettings.dateFrom = null;
 
         } else if (radioSinceDate.isChecked()) {
             EditText dateSinceView = dialog.findViewById(R.id.txtDate);
             try {
-                settings.what |= ExportSettings.EXPORT_SINCE;
-                settings.dateFrom = DateUtils.parseDate(dateSinceView.getText().toString().trim());
+                mExportSettings.what |= ExportSettings.EXPORT_SINCE;
+                mExportSettings.dateFrom = DateUtils.parseDate(
+                        dateSinceView.getText().toString().trim());
             } catch (RuntimeException e) {
                 //Snackbar.make(v, R.string.no_date, Snackbar.LENGTH_LONG).show();
-                StandardDialogs.showUserMessage(requireActivity(), R.string.warning_date_not_set);
-                settings.what = ExportSettings.NOTHING;
+                UserMessage.showUserMessage(mActivity, R.string.warning_date_not_set);
+                mExportSettings.what = ExportSettings.NOTHING;
             }
         }
+    }
+
+    @Override
+    public void onPause() {
+        updateOptions();
+        super.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS, mExportSettings);
     }
 
     /**

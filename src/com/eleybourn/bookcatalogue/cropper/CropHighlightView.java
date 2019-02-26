@@ -38,8 +38,6 @@ import com.eleybourn.bookcatalogue.R;
  * computeLayout() uses mMatrix to map from image space to screen space.
  */
 class CropHighlightView {
-    @SuppressWarnings("unused")
-    private static final String TAG = "HighlightView";
 
     static final int GROW_NONE = 1;
     private static final int GROW_LEFT_EDGE = (1 << 1);

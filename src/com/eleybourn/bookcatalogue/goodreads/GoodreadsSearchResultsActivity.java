@@ -42,10 +42,10 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.goodreads.api.SearchBooksApiHandler;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Search goodreads for a book and display the list of results.
@@ -80,7 +80,7 @@ public class GoodreadsSearchResultsActivity
         if (criteria != null && !criteria.isEmpty()) {
             doSearch(criteria);
         } else {
-            StandardDialogs.showUserMessage(this, R.string.please_enter_search_criteria);
+            UserMessage.showUserMessage(this, R.string.please_enter_search_criteria);
             setResult(Activity.RESULT_CANCELED);
             finish();
         }
@@ -103,7 +103,7 @@ public class GoodreadsSearchResultsActivity
                 | IOException
                 | RuntimeException e) {
             Logger.error(e, "Failed when searching Goodreads");
-            StandardDialogs.showUserMessage(
+            UserMessage.showUserMessage(
                     this, getString(R.string.gr_error_while_searching) + ' '
                             + getString(
                             R.string.error_if_the_problem_persists));
@@ -114,7 +114,7 @@ public class GoodreadsSearchResultsActivity
 
         // Finish if no results, otherwise display them
         if (works.isEmpty()) {
-            StandardDialogs.showUserMessage(this, R.string.warning_no_matching_book_found);
+            UserMessage.showUserMessage(this, R.string.warning_no_matching_book_found);
             setResult(Activity.RESULT_CANCELED);
             finish();
             return;
@@ -132,9 +132,9 @@ public class GoodreadsSearchResultsActivity
     private void doItemClick(@NonNull final Holder holder) {
         // TODO: Implement edition lookup - requires access to work.editions API from GR
         Logger.debug("Not implemented: see " + holder.titleView + " by " + holder.authorView);
-        StandardDialogs.showUserMessage(this,
-                                        "Not implemented: see " + holder.titleView
-                                                + " by " + holder.authorView);
+        UserMessage.showUserMessage(this,
+                                    "Not implemented: see " + holder.titleView
+                                            + " by " + holder.authorView);
         //Intent i = new Intent(this, GoodreadsW)
     }
 
@@ -170,7 +170,7 @@ public class GoodreadsSearchResultsActivity
         /**
          * Constructor.
          *
-         * @param context caller context
+         * @param context the caller context
          * @param objects the list
          */
         ResultsAdapter(@NonNull final Context context,

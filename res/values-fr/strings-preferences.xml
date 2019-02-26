@@ -126,6 +126,7 @@
     <string-array name="pe_bob_header">
         <item>Montrer le nombre de livres</item>
         <item>Montrer l\'entête de 1er niveau</item>
+        <item>Montrer l\'entête de 2ème niveau</item>
     </string-array>
 
     <!-- Preference - Show thumbnail image for each book -->

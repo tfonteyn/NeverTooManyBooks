@@ -9,38 +9,38 @@
 # it wants to stop the commit.
 #
 
-#
+
 # make sure table types are Temporary (i.e. not Standard)
-#
 function checkTempTableUsage {
   grep -e TableTypes.Standard src/com/eleybourn/bookcatalogue/booklist/BooklistBuilder.java
   if [ $? == 0 ]; then
-	echo "src/com/eleybourn/bookcatalogue/booklist/BooklistBuilder.java contains TableTypes.Standard, aborting"
-	exit 1
+    echo "src/com/eleybourn/bookcatalogue/booklist/BooklistBuilder.java contains TableTypes.Standard, aborting"
+    exit 1
   fi
 
   grep -e TableTypes.Standard src/com/eleybourn/bookcatalogue/booklist/FlattenedBooklist.java
   if [ $? == 0 ]; then
-	echo "src/com/eleybourn/bookcatalogue/booklist/FlattenedBooklist.java contains TableTypes.Standard, aborting"
-	exit 1
+    echo "src/com/eleybourn/bookcatalogue/booklist/FlattenedBooklist.java contains TableTypes.Standard, aborting"
+    exit 1
   fi
 }
-
 
 
 # make sure table create statements are the current ones (i.e. not versions)
 grep -i -e "DATABASE_CREATE.*_v" src/com/eleybourn/bookcatalogue/database/CatalogueDBHelper.java
 if [ $? == 0 ]; then
-	echo "src/com/eleybourn/bookcatalogue/booklist/FlattenedBooklist.java contains versioned create table statements, aborting"
-	exit 1
+  echo "src/com/eleybourn/bookcatalogue/booklist/FlattenedBooklist.java contains versioned create table statements, aborting"
+  exit 1
 fi
 
 MF=AndroidManifest.xml
 echo "Cleaning $MF"
 if [ ! -f $MF ]; then
-	echo "Manifest File not found!"
-	exit 1
+  echo "Manifest File not found!"
+  exit 1
 fi
+
+# backup to the 'outside' with developer keys
 cp $MF ../BC-AndroidManifest_`date +%Y-%m-%d_%H-%M-%S`.xml
 # remove developer keys (all manifest meta-data values really)
 sed -i -e 's/android:value=".*"/android:value=""/g' $MF

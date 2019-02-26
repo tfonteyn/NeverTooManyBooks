@@ -16,7 +16,6 @@ import androidx.core.content.FileProvider;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBHelper;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
 import com.eleybourn.bookcatalogue.scanner.ZxingScanner;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
@@ -24,6 +23,7 @@ import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 import java.io.File;
 import java.security.MessageDigest;
@@ -223,7 +223,7 @@ public final class DebugReport {
 
         } catch (NullPointerException e) {
             Logger.error(e);
-            StandardDialogs.showUserMessage(activity, R.string.error_email_failed);
+            UserMessage.showUserMessage(activity, R.string.error_email_failed);
         }
     }
 

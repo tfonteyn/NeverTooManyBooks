@@ -11,10 +11,10 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
-
-import java.util.List;
 
 /**
  * A read-only adapter for viewing TocEntry's.
@@ -28,7 +28,7 @@ public class TOCAdapter
     /**
      * Constructor.
      *
-     * @param context     The current context.
+     * @param context     the caller context
      * @param rowLayoutId The resource ID for a layout file containing a TextView to use when
      *                    instantiating views.
      * @param objects     The objects to represent in the ListView.

@@ -33,6 +33,20 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -65,20 +79,6 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
@@ -172,7 +172,7 @@ public class DBA
     /**
      * Flag indicating the UPDATE_DATE field from the bundle should be trusted.
      * If this flag is not set, the UPDATE_DATE will be set based on the current time
-     *
+     * <p>
      * Currently down to a single flag, but not switching to a boolean for now.
      */
     public static final int BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT = 1;
@@ -312,10 +312,10 @@ public class DBA
     /**
      * Constructor - takes the context to allow the database to be opened/created.
      * <p>
-     * Small note: don't be tempted to turn this into a singleton...
+     * Note: don't be tempted to turn this into a singleton...
      * multi-threading does not like that.
      *
-     * @param context the Context within which to work
+     * @param context the caller context
      */
     public DBA(@NonNull final Context context) {
         mContext = context;
@@ -1348,7 +1348,7 @@ public class DBA
     }
 
     /**
-     * Gieven a book's uuid, delete the thumbanil (if any).
+     * Given a book's uuid, delete the thumbnail (if any).
      *
      * @param uuid of the book
      */
@@ -1519,7 +1519,7 @@ public class DBA
             book.putLong(UniqueId.KEY_ID, bookId);
 
             return rowsAffected;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             Logger.error(e);
             throw new RuntimeException(
                     "Error updating book from " + book + ": " + e.getLocalizedMessage(), e);
@@ -2842,7 +2842,7 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean updateOrInsertLoan(final long bookId,
-                                       @NonNull final String loanee) {
+                                      @NonNull final String loanee) {
 
         if (getLoaneeByBookId(bookId) == null) {
             return insertLoan(bookId, loanee) > 0;
@@ -3311,13 +3311,10 @@ public class DBA
      * @param book      A collection with the columns to be set. May contain extra data.
      *
      * @return New and filtered ContentValues
-     *
-     * @throws NumberFormatException on parsing issues
      */
     @NonNull
     private ContentValues filterValues(@NonNull final String tableName,
-                                       @NonNull final Book book)
-            throws NumberFormatException {
+                                       @NonNull final Book book) {
 
         TableInfo table = new TableInfo(mSyncedDb, tableName);
 
@@ -3381,7 +3378,7 @@ public class DBA
 
                             //noinspection UnnecessaryDefault
                             default:
-                                Logger.error("unknow storage class for " + columnInfo.toString());
+                                Logger.error("unknown storage class for " + columnInfo.toString());
                                 break;
                         }
                     } catch (@NonNull final NumberFormatException e) {
@@ -3590,7 +3587,7 @@ public class DBA
             throw new TransactionException();
         }
 
-        long t0 = 0;
+        long t0;
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             //noinspection UnusedAssignment
             t0 = System.currentTimeMillis();

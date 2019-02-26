@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -37,19 +36,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import java.util.ArrayList;
+
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorBaseDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import java.util.ArrayList;
 
 /**
  * Activity to edit a list of authors provided in an ArrayList<Author> and return an updated list.
  * <p>
- * Calling point is a Book; see {@link EditAuthorDialog} for list
+ * Calling point is a Book; see {@link EditBookAuthorDialogFragment} for list
  *
  * @author Philip Warner
  */
@@ -59,7 +59,7 @@ public class EditAuthorListActivity
     /** Main screen Author name field. */
     private AutoCompleteTextView mAuthorNameView;
 
-    /** Adapter for mAuthorNameView */
+    /** Adapter for mAuthorNameView. */
     @SuppressWarnings("FieldCanBeLocal")
     private ArrayAdapter<String> mAuthorAdapter;
 
@@ -98,7 +98,7 @@ public class EditAuthorListActivity
     protected void onAdd(@NonNull final View target) {
         String authorName = mAuthorNameView.getText().toString().trim();
         if (authorName.isEmpty()) {
-            StandardDialogs.showUserMessage(this, R.string.warning_required_author);
+            UserMessage.showUserMessage(this, R.string.warning_required_name);
             return;
         }
 
@@ -108,7 +108,7 @@ public class EditAuthorListActivity
         // and check it's not already in the list.
         for (Author author : mList) {
             if (author.equals(newAuthor)) {
-                StandardDialogs.showUserMessage(this, R.string.warning_author_already_in_list);
+                UserMessage.showUserMessage(this, R.string.warning_author_already_in_list);
                 return;
             }
         }
@@ -118,69 +118,16 @@ public class EditAuthorListActivity
 
         // and clear for next entry.
         mAuthorNameView.setText("");
-
     }
 
     /**
-     * Edit an Author from the list.
-     * It could exist (i.e. have an id) or could be a previously added/new one (id==0).
+     * Handle the edits.
      *
-     * @param author to edit
+     * @param author        the original data.
+     * @param newAuthorData a holder for the edited data.
      */
-    private void edit(@NonNull final Author author) {
-
-        // Build the base dialog
-        final View root = getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
-
-        // the dialog fields != screen fields.
-        final EditText familyView = root.findViewById(R.id.family_name);
-        final EditText givenView = root.findViewById(R.id.given_names);
-
-        familyView.setText(author.getFamilyName());
-        givenView.setText(author.getGivenNames());
-
-        final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(root)
-                .setTitle(R.string.title_edit_author)
-                .create();
-
-        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                String newFamily = familyView.getText().toString().trim();
-                if (newFamily.isEmpty()) {
-                    StandardDialogs.showUserMessage(EditAuthorListActivity.this,
-                                                    R.string.warning_required_author);
-                    return;
-                }
-                String newGiven = givenView.getText().toString().trim();
-                dialog.dismiss();
-
-                // anything actually changed ?
-                if (author.getFamilyName().equals(newFamily)
-                        && author.getGivenNames().equals(newGiven)) {
-                    return;
-                }
-
-                // At this point, we know changes were made.
-                // Create a new Author as a holder for the changes.
-                Author newAuthor = new Author(newFamily, newGiven, author.isComplete());
-
-                processChanges(author, newAuthor);
-            }
-        });
-        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-    }
-
     private void processChanges(@NonNull final Author author,
-                                @NonNull final Author newAuthor) {
+                                @NonNull final Author newAuthorData) {
 
         // See if the old one is used by any other books.
         long nrOfReferences = mDb.countBooksByAuthor(author)
@@ -190,13 +137,13 @@ public class EditAuthorListActivity
         // if it's not, then we can simply re-use the old object.
         if (!usedByOthers) {
             /*
-              * Use the original author, but update its fields
-              *
-              * see below and {@link DBA#insertBookDependents} where an *insert* will be done
-              * The 'old' author will be orphaned.
-              * TODO: simplify / don't orphan?
-              */
-            author.copyFrom(newAuthor);
+             * Use the original author, but update its fields
+             *
+             * see below and {@link DBA#insertBookDependents} where an *insert* will be done
+             * The 'old' author will be orphaned.
+             * TODO: simplify / don't orphan?
+             */
+            author.copyFrom(newAuthorData);
             Utils.pruneList(mDb, mList);
             onListChanged();
             return;
@@ -208,7 +155,7 @@ public class EditAuthorListActivity
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.confirm_apply_author_changed,
-                                      author.getSortName(), newAuthor.getSortName(), allBooks))
+                                      author.getSortName(), newAuthorData.getSortName(), allBooks))
                 .setTitle(R.string.title_scope_of_change)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
@@ -236,7 +183,7 @@ public class EditAuthorListActivity
                                                  final int which) {
                                  dialog.dismiss();
 
-                                 author.copyFrom(newAuthor);
+                                 author.copyFrom(newAuthorData);
                                  Utils.pruneList(mDb, mList);
                                  onListChanged();
                              }
@@ -246,7 +193,7 @@ public class EditAuthorListActivity
          * Choosing 'all books':
          * globalReplaceAuthor:
          * - Find/update or insert the new Author.
-         * - update the TOC's of all books so they use the new author id.
+         * - update the TOC of all books so they use the new author id.
          * - update TBL_BOOK_AUTHORS for all books to use the new author id
          * - re-order the 'position' if needed.
          * Result:
@@ -271,9 +218,9 @@ public class EditAuthorListActivity
                                                  final int which) {
                                  dialog.dismiss();
 
-                                 mGlobalChangeMade = mDb.globalReplaceAuthor(author, newAuthor);
+                                 mGlobalChangeMade = mDb.globalReplaceAuthor(author, newAuthorData);
 
-                                 author.copyFrom(newAuthor);
+                                 author.copyFrom(newAuthorData);
                                  Utils.pruneList(mDb, mList);
                                  onListChanged();
                              }
@@ -313,9 +260,44 @@ public class EditAuthorListActivity
         return false;
     }
 
-    protected SimpleListAdapter<Author> createListAdapter(@LayoutRes final int rowLayoutId,
-                                                          @NonNull final ArrayList<Author> list) {
+    protected ArrayAdapter<Author> createListAdapter(@LayoutRes final int rowLayoutId,
+                                                     @NonNull final ArrayList<Author> list) {
         return new AuthorListAdapter(this, rowLayoutId, list);
+    }
+
+    /**
+     * Edit an Author from the list.
+     * It could exist (i.e. have an id) or could be a previously added/new one (id==0).
+     */
+    public static class EditBookAuthorDialogFragment
+            extends EditAuthorBaseDialogFragment {
+
+        /** Fragment manager tag. */
+        public static final String TAG = EditBookAuthorDialogFragment.class.getSimpleName();
+
+        /**
+         * Constructor.
+         *
+         * @param author to edit.
+         */
+        public static EditBookAuthorDialogFragment newInstance(@NonNull final Author author) {
+            EditBookAuthorDialogFragment frag = new EditBookAuthorDialogFragment();
+            Bundle args = new Bundle();
+            args.putParcelable(UniqueId.KEY_AUTHOR, author);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        /**
+         * Handle the edits.
+         *
+         * @param author        the original data.
+         * @param newAuthorData a holder for the edited data.
+         */
+        protected void confirmChanges(@NonNull final Author author,
+                                      @NonNull final Author newAuthorData) {
+            ((EditAuthorListActivity) mActivity).processChanges(author, newAuthorData);
+        }
     }
 
     /**
@@ -369,7 +351,8 @@ public class EditAuthorListActivity
         protected void onRowClick(@NonNull final View target,
                                   @NonNull final Author item,
                                   final int position) {
-            edit(item);
+            EditBookAuthorDialogFragment frag = EditBookAuthorDialogFragment.newInstance(item);
+            frag.show(getSupportFragmentManager(), EditBookAuthorDialogFragment.TAG);
         }
 
         /**

@@ -26,6 +26,13 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -41,13 +48,6 @@ import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -69,7 +69,7 @@ public class SearchCoordinator {
      * <p>
      * This object handles all underlying task messages for every instance of this class.
      */
-    private static final MessageSwitch<SearchManagerListener, SearchManagerController> MESSAGE_SWITCH = new MessageSwitch<>();
+    private static final MessageSwitch<SearchCoordinatorListener, SearchCoordinatorController> MESSAGE_SWITCH = new MessageSwitch<>();
 
     /**
      * Unique identifier for this instance.
@@ -129,7 +129,7 @@ public class SearchCoordinator {
                  * If not, finish and send results back with {@link SearchCoordinator#sendResults}
                  */
                 @Override
-                public void onTaskFinished(@NonNull final TaskManager manager,
+                public void onTaskFinished(@NonNull final TaskManager taskManager,
                                            @NonNull final ManagedTask task) {
                     // display final message from task.
                     String msg = task.getFinalMessage();
@@ -186,14 +186,14 @@ public class SearchCoordinator {
     /**
      * Constructor.
      *
-     * @param taskManager           TaskManager to use
-     * @param searchManagerListener to send results to
+     * @param taskManager               TaskManager to use
+     * @param searchCoordinatorListener to send results to
      */
     public SearchCoordinator(@NonNull final TaskManager taskManager,
-                             @NonNull final SearchManagerListener searchManagerListener) {
+                             @NonNull final SearchCoordinatorListener searchCoordinatorListener) {
 
         /* Controller instance for this specific SearchManager */
-        SearchManagerController controller = new SearchManagerController() {
+        SearchCoordinatorController controller = new SearchCoordinatorController() {
             /**
              *
              */
@@ -214,11 +214,11 @@ public class SearchCoordinator {
         mMessageSenderId = MESSAGE_SWITCH.createSender(controller);
 
         mTaskManager = taskManager;
-        getMessageSwitch().addListener(getId(), searchManagerListener, false);
+        MESSAGE_SWITCH.addListener(getId(), searchCoordinatorListener, false);
     }
 
     @NonNull
-    public static MessageSwitch<SearchManagerListener, SearchManagerController> getMessageSwitch() {
+    public static MessageSwitch<SearchCoordinatorListener, SearchCoordinatorController> getMessageSwitch() {
         return MESSAGE_SWITCH;
     }
 
@@ -231,7 +231,7 @@ public class SearchCoordinator {
      */
     private static boolean hasIsbn(@NonNull final Bundle bundle) {
         String s = bundle.getString(UniqueId.KEY_BOOK_ISBN);
-        return (s != null && !s.trim().isEmpty());
+        return s != null && !s.trim().isEmpty();
     }
 
     /**
@@ -265,7 +265,8 @@ public class SearchCoordinator {
         if (!mManagedTasks.isEmpty()) {
             throw new IllegalStateException(
                     "Attempting to start new search while previous search running");
-        }// dev sanity check
+        }
+        // dev sanity check
         if (author.isEmpty() && title.isEmpty() && isbn.isEmpty()) {
             throw new IllegalArgumentException(
                     "Must specify at least one criteria non-empty: isbn=" + isbn
@@ -582,16 +583,19 @@ public class SearchCoordinator {
         }
         // All done, Pass the data back
         MESSAGE_SWITCH.send(mMessageSenderId,
-                            new MessageSwitch.Message<SearchManagerListener>() {
+                            new MessageSwitch.Message<SearchCoordinatorListener>() {
                                 @Override
-                                public boolean deliver(@NonNull final SearchManagerListener listener) {
+                                public boolean deliver(@NonNull final SearchCoordinatorListener listener) {
                                     if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                                         Logger.info(SearchCoordinator.this,
-                                                    "Delivering to SearchListener=" + listener +
-                                                            "|title=`" + mBookData.getString(
-                                                            UniqueId.KEY_TITLE) + '`');
+                                                    "Delivering to SearchListener="
+                                                            + listener
+                                                            + "|title=`"
+                                                            + mBookData
+                                                            .getString(UniqueId.KEY_TITLE) + '`');
                                     }
-                                    return listener.onSearchFinished(mCancelledFlg, mBookData);
+                                    listener.onSearchFinished(mCancelledFlg, mBookData);
+                                    return true;
                                 }
                             }
         );
@@ -649,6 +653,8 @@ public class SearchCoordinator {
      * Start specific search.
      *
      * @param site to search
+     *
+     * @return <tt>true</tt> if the search was started.
      */
     private boolean startOneSearch(@NonNull final SearchSites.Site site) {
         if (mCancelledFlg) {
@@ -750,7 +756,7 @@ public class SearchCoordinator {
     /**
      * Controller interface for this Object.
      */
-    public interface SearchManagerController {
+    public interface SearchCoordinatorController {
 
         void requestAbort();
 
@@ -763,10 +769,10 @@ public class SearchCoordinator {
      *
      * @author Philip Warner
      */
-    public interface SearchManagerListener {
+    public interface SearchCoordinatorListener {
 
-        boolean onSearchFinished(boolean wasCancelled,
-                                 @NonNull Bundle bookData);
+        void onSearchFinished(boolean wasCancelled,
+                              @NonNull Bundle bookData);
     }
 
 }

@@ -127,6 +127,7 @@
     <string-array name="pe_bob_header">
         <item>Εμφάνιση αριθμού βιβλίων</item>
         <item>Εμφάνιση επικεφαλίδας πρώτου επιπέδου</item>
+        <item>Εμφάνιση τίτλου δευτέρου επιπέδου</item>
     </string-array>
 
     <!-- Preference - Show thumbnail image for each book -->

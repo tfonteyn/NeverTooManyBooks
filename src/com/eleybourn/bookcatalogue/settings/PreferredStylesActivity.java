@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -37,6 +38,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -50,9 +54,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Activity to edit the list of styles.
@@ -75,14 +76,14 @@ public class PreferredStylesActivity
      * Constructor.
      */
     public PreferredStylesActivity() {
-        super(R.layout.activity_booklist_styles_edit_list, R.layout.row_edit_booklist_style_groups,
+        super(R.layout.activity_booklist_styles_edit_list,
+              R.layout.row_edit_booklist_style_groups,
               null);
     }
 
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
         setTitle(R.string.lbl_preferred_styles);
 
@@ -96,7 +97,6 @@ public class PreferredStylesActivity
                                     R.string.hint_booklist_styles_editor, null);
         }
 
-        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -205,9 +205,9 @@ public class PreferredStylesActivity
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode,
-                                    final int resultCode,
-                                    @Nullable final Intent data) {
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             case REQ_EDIT_STYLE: {
@@ -290,8 +290,8 @@ public class PreferredStylesActivity
         }
     }
 
-    protected SimpleListAdapter<BooklistStyle> createListAdapter(@LayoutRes final int rowLayoutId,
-                                                                 @NonNull final ArrayList<BooklistStyle> list) {
+    protected ArrayAdapter<BooklistStyle> createListAdapter(@LayoutRes final int rowLayoutId,
+                                                            @NonNull final ArrayList<BooklistStyle> list) {
         return new BooklistStyleListAdapter(this, rowLayoutId, list);
     }
 
@@ -361,7 +361,7 @@ public class PreferredStylesActivity
          * Delegate to ListView host.
          */
         @Override
-        public void onListChanged() {
+        protected void onListChanged() {
             // will save the menu order + call setResult
             PreferredStylesActivity.this.onListChanged();
         }

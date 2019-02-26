@@ -12,11 +12,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-
-import java.util.List;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 abstract class EditStringDialog {
 
@@ -47,7 +47,7 @@ abstract class EditStringDialog {
     /**
      * AutoCompleteTextView.
      *
-     * @param list      for theAutoCompleteTextView
+     * @param list      for the AutoCompleteTextView
      * @param onChanged Runnable to be started after user confirming
      */
     EditStringDialog(@NonNull final Activity activity,
@@ -87,7 +87,7 @@ abstract class EditStringDialog {
             public void onClick(@NonNull final View v) {
                 String newText = editView.getText().toString().trim();
                 if (newText.isEmpty()) {
-                    StandardDialogs.showUserMessage(mActivity, R.string.warning_required_name);
+                    UserMessage.showUserMessage(mActivity, R.string.warning_required_name);
                     return;
                 }
                 dialog.dismiss();

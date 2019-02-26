@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -36,20 +38,22 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+
+import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Series;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import java.util.ArrayList;
 
 /**
  * Activity to edit a list of series provided in an ArrayList<Series> and return an updated list.
  * <p>
- * Calling point is a Book; see {@link EditSeriesDialog} for list
+ * Calling point is a Book; see {@link EditSeriesDialogFragment} for list
  *
  * @author Philip Warner
  */
@@ -60,7 +64,7 @@ public class EditSeriesListActivity
     private AutoCompleteTextView mSeriesNameView;
     /** Main screen Series Number field. */
     private TextView mSeriesNumberView;
-    /** AutoCompleteTextView for mSeriesNameView. */
+    /** AutoCompleteTextView for mSeriesNameView and the EditView in the dialog box. */
     private ArrayAdapter<String> mSeriesAdapter;
 
     /** flag indicating global changes were made. Used in setResult. */
@@ -100,7 +104,7 @@ public class EditSeriesListActivity
     protected void onAdd(@NonNull final View target) {
         String title = mSeriesNameView.getText().toString().trim();
         if (title.isEmpty()) {
-            StandardDialogs.showUserMessage(this, R.string.warning_required_name);
+            UserMessage.showUserMessage(this, R.string.warning_required_name);
             return;
         }
 
@@ -112,7 +116,7 @@ public class EditSeriesListActivity
         // and check it's not already in the list.
         for (Series series : mList) {
             if (series.equals(newSeries)) {
-                StandardDialogs.showUserMessage(this, R.string.warning_series_already_in_list);
+                UserMessage.showUserMessage(this, R.string.warning_series_already_in_list);
                 return;
             }
         }
@@ -123,134 +127,6 @@ public class EditSeriesListActivity
         // and clear for next entry.
         mSeriesNameView.setText("");
         mSeriesNumberView.setText("");
-    }
-
-    /**
-     * Edit a Series from the list.
-     * It could exist (i.e. have an id) or could be a previously added/new one (id==0).
-     *
-     * @param series to edit
-     */
-    private void edit(@NonNull final Series series) {
-
-        // Build the base dialog
-        final View root = getLayoutInflater().inflate(R.layout.dialog_edit_book_series, null);
-
-        // the dialog fields != screen fields.
-        final AutoCompleteTextView editNameView = root.findViewById(R.id.name);
-        final EditText editNumberView = root.findViewById(R.id.series_num);
-
-        editNameView.setText(series.getName());
-        editNameView.setAdapter(mSeriesAdapter);
-        editNumberView.setText(series.getNumber());
-
-        final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(root)
-                .setTitle(R.string.title_edit_book_series)
-                .create();
-
-        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                String newName = editNameView.getText().toString().trim();
-                if (newName.isEmpty()) {
-                    StandardDialogs.showUserMessage(EditSeriesListActivity.this,
-                                                    R.string.warning_required_name);
-                    return;
-                }
-                String newNumber = editNumberView.getText().toString().trim();
-                dialog.dismiss();
-
-                // anything actually changed ?
-                if (series.getName().equals(newName)) {
-                    if (!series.getNumber().equals(newNumber)) {
-                        // Name is the same. Number is different.
-                        // Number is not part of the Series table, but of the book_series table.
-                        // so just update it and we're done here.
-                        series.setNumber(newNumber);
-                        Series.pruneSeriesList(mList);
-                        Utils.pruneList(mDb, mList);
-                        onListChanged();
-                    }
-                    return;
-                }
-
-                // At this point, we know changes were made.
-                // Create a new Series as a holder for the changes.
-                Series newSeries = new Series(newName, series.isComplete());
-                newSeries.setNumber(newNumber);
-
-                processChanges(series, newSeries);
-            }
-        });
-
-        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-    }
-
-    private void processChanges(@NonNull final Series series,
-                                @NonNull final Series newSeries) {
-
-        //See if the old one is used by any other books.
-        long nrOfReferences = mDb.countBooksInSeries(series);
-        boolean usedByOthers = nrOfReferences > (mRowId == 0 ? 0 : 1);
-
-        // if it's not, then we can simply re-use the old object.
-        if (!usedByOthers) {
-            // Use the original series, but update its fields
-            series.copyFrom(newSeries);
-            Series.pruneSeriesList(mList);
-            Utils.pruneList(mDb, mList);
-            onListChanged();
-            return;
-        }
-
-        // When we get here, we know the names are genuinely different and the old series
-        // is used in more than one place. Ask the user if they want to make the changes globally.
-        String allBooks = getString(R.string.all_books);
-
-        final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(getString(R.string.confirm_apply_series_changed,
-                                      series.getSortName(), newSeries.getSortName(), allBooks))
-                .setTitle(R.string.title_scope_of_change)
-                .setIcon(R.drawable.ic_info_outline)
-                .create();
-
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-
-                                 series.copyFrom(newSeries);
-                                 Series.pruneSeriesList(mList);
-                                 Utils.pruneList(mDb, mList);
-                                 onListChanged();
-                             }
-                         });
-
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks,
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-
-                                 mGlobalChangeMade = mDb.globalReplaceSeries(series, newSeries);
-
-                                 series.copyFrom(newSeries);
-                                 Series.pruneSeriesList(mList);
-                                 Utils.pruneList(mDb, mList);
-                                 onListChanged();
-                             }
-                         });
-
-        dialog.show();
     }
 
     /**
@@ -284,9 +160,200 @@ public class EditSeriesListActivity
         return false;
     }
 
-    protected SimpleListAdapter<Series> createListAdapter(@LayoutRes final int rowLayoutId,
-                                                          @NonNull final ArrayList<Series> list) {
+    protected ArrayAdapter<Series> createListAdapter(@LayoutRes final int rowLayoutId,
+                                                     @NonNull final ArrayList<Series> list) {
         return new SeriesListAdapter(this, rowLayoutId, list);
+    }
+
+    /**
+     * Called from the editor dialog fragment after the user was done.
+     */
+    void processChanges(@NonNull final Series series,
+                        @NonNull final String newName,
+                        final boolean isComplete,
+                        @NonNull final String newNumber) {
+
+        // anything actually changed ?
+        if (series.getName().equals(newName) && series.isComplete() == isComplete) {
+            if (!series.getNumber().equals(newNumber)) {
+                // Number is different.
+                // Number is not part of the Series table, but of the book_series table.
+                // so just update it and we're done here.
+                series.setNumber(newNumber);
+                Series.pruneSeriesList(mList);
+                Utils.pruneList(mDb, mList);
+                onListChanged();
+            }
+            return;
+        }
+
+        // At this point, we know changes were made.
+        // Create a new Series as a holder for the changes.
+        final Series newSeries = new Series(newName, isComplete);
+        newSeries.setNumber(newNumber);
+
+        //See if the old one is used by any other books.
+        long nrOfReferences = mDb.countBooksInSeries(series);
+        boolean usedByOthers = nrOfReferences > (mRowId == 0 ? 0 : 1);
+
+        // if it's not, then we can simply re-use the old object.
+        if (!usedByOthers) {
+            // Use the original series, but update its fields
+            series.copyFrom(newSeries);
+            Series.pruneSeriesList(mList);
+            Utils.pruneList(mDb, mList);
+            onListChanged();
+            return;
+        }
+
+        // At this point, we know the names are genuinely different and the old series is used
+        // in more than one place. Ask the user if they want to make the changes globally.
+        String allBooks = getString(R.string.all_books);
+
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setMessage(getString(R.string.confirm_apply_series_changed,
+                                      series.getSortName(), newSeries.getSortName(),
+                                      allBooks))
+                .setTitle(R.string.title_scope_of_change)
+                .setIcon(R.drawable.ic_info_outline)
+                .create();
+
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                         getString(R.string.btn_this_book),
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+
+                                 series.copyFrom(newSeries);
+                                 Series.pruneSeriesList(mList);
+                                 Utils.pruneList(mDb, mList);
+                                 onListChanged();
+                             }
+                         });
+
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks,
+                         new DialogInterface.OnClickListener() {
+                             public void onClick(@NonNull final DialogInterface dialog,
+                                                 final int which) {
+                                 dialog.dismiss();
+
+                                 mGlobalChangeMade = mDb.globalReplaceSeries(series, newSeries);
+                                 series.copyFrom(newSeries);
+                                 Series.pruneSeriesList(mList);
+                                 Utils.pruneList(mDb, mList);
+                                 onListChanged();
+                             }
+                         });
+
+        dialog.show();
+    }
+
+    /**
+     * Edit a Series from the list.
+     * It could exist (i.e. have an id) or could be a previously added/new one (id==0).
+     */
+    public static class EditBookSeriesDialogFragment
+            extends DialogFragment {
+
+        public static final String TAG = EditBookSeriesDialogFragment.class.getSimpleName();
+
+        private EditSeriesListActivity mActivity;
+
+        private AutoCompleteTextView mNameView;
+        private Checkable mIsCompleteView;
+        private EditText mNumberView;
+
+        private String mName;
+        private boolean mIsComplete;
+        private String mNumber;
+
+        public static EditBookSeriesDialogFragment newInstance(@NonNull final Series series) {
+            EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
+            Bundle args = new Bundle();
+            args.putParcelable(UniqueId.KEY_SERIES, series);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+            mActivity = (EditSeriesListActivity) requireActivity();
+
+            final Series series = requireArguments().getParcelable(UniqueId.KEY_SERIES);
+            if (savedInstanceState == null) {
+                //noinspection ConstantConditions
+                mName = series.getName();
+                mIsComplete = series.isComplete();
+                mNumber = series.getNumber();
+            } else {
+                mName = savedInstanceState.getString(UniqueId.KEY_SERIES);
+                mIsComplete = savedInstanceState.getBoolean(UniqueId.KEY_SERIES_IS_COMPLETE);
+                mNumber = savedInstanceState.getString(UniqueId.KEY_SERIES_NUM);
+            }
+
+            final View root = getLayoutInflater().inflate(R.layout.dialog_edit_book_series, null);
+
+            // the dialog fields != screen fields.
+            mNameView = root.findViewById(R.id.name);
+            mNameView.setText(mName);
+            mNameView.setAdapter(mActivity.mSeriesAdapter);
+
+            mIsCompleteView = root.findViewById(R.id.is_complete);
+            mIsCompleteView.setChecked(mIsComplete);
+
+            mNumberView = root.findViewById(R.id.series_num);
+            mNumberView.setText(mNumber);
+
+            root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(@NonNull final View v) {
+                    mName = mNameView.getText().toString().trim();
+                    if (mName.isEmpty()) {
+                        UserMessage.showUserMessage(requireActivity(),
+                                                    R.string.warning_required_name);
+                        return;
+                    }
+                    mIsComplete = mIsCompleteView.isChecked();
+                    mNumber = mNumberView.getText().toString().trim();
+                    dismiss();
+
+                    //noinspection ConstantConditions
+                    mActivity.processChanges(series, mName, mIsComplete, mNumber);
+
+                }
+            });
+
+            root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(@NonNull final View v) {
+                    dismiss();
+                }
+            });
+
+            return new AlertDialog.Builder(requireActivity())
+                    .setView(root)
+                    .setTitle(R.string.title_edit_book_series)
+                    .create();
+        }
+
+        @Override
+        public void onPause() {
+            mName = mNameView.getText().toString().trim();
+            mIsComplete = mIsCompleteView.isChecked();
+            mNumber = mNumberView.getText().toString().trim();
+
+            super.onPause();
+        }
+
+        @Override
+        public void onSaveInstanceState(@NonNull final Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putString(UniqueId.KEY_SERIES, mName);
+            outState.putBoolean(UniqueId.KEY_SERIES_IS_COMPLETE, mIsComplete);
+            outState.putString(UniqueId.KEY_SERIES_NUM, mNumber);
+        }
     }
 
     /**
@@ -340,7 +407,8 @@ public class EditSeriesListActivity
         public void onRowClick(@NonNull final View target,
                                @NonNull final Series item,
                                final int position) {
-            edit(item);
+            EditBookSeriesDialogFragment frag = EditBookSeriesDialogFragment.newInstance(item);
+            frag.show(getSupportFragmentManager(), EditBookSeriesDialogFragment.TAG);
         }
 
         /**

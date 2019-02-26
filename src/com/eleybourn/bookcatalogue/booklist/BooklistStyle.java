@@ -27,9 +27,19 @@ import android.os.Parcelable;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.MultiSelectListPreference;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
@@ -45,17 +55,6 @@ import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 
 /**
@@ -137,7 +136,7 @@ public class BooklistStyle
     /** the amount of details to show in the header. */
     public static final Integer SUMMARY_SHOW_LEVEL_2 = 1 << 2;
     /** the amount of details to show in the header. */
-    public static final Integer SUMMARY_SHOW_ALL =
+    private static final Integer SUMMARY_SHOW_ALL =
             SUMMARY_SHOW_COUNT | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2;
 
     /** Scaling of text and images. */
@@ -170,10 +169,11 @@ public class BooklistStyle
     private long mId;
 
     /**
-     * the unique uuid based SharedPreference name.
+     * The unique uuid based SharedPreference name.
+     * Will be empty (but not null) for builtin styles
      */
-    @Nullable
-    private String mUuid;
+    @NonNull
+    private String mUuid = "";
 
     /**
      * ID if string representing name of this style.
@@ -270,7 +270,7 @@ public class BooklistStyle
         mNameResId = nameId;
         initPrefs();
         for (int kind : kinds) {
-            mStyleGroups.add(BooklistGroup.newInstance(kind, null));
+            mStyleGroups.add(BooklistGroup.newInstance(kind, mUuid));
         }
     }
 
@@ -305,6 +305,7 @@ public class BooklistStyle
                             final boolean doNew) {
         mId = in.readLong();
         mNameResId = in.readInt();
+        //noinspection ConstantConditions
         mUuid = in.readString();
         if (doNew) {
             mUuid = createUniqueName();
@@ -360,9 +361,9 @@ public class BooklistStyle
     }
 
     /**
-     * @return the UUID, will be null for builtin styles.
+     * @return the UUID, will be empty (but not null) for builtin styles.
      */
-    @Nullable
+    @NonNull
     public String getUuid() {
         return mUuid;
     }
@@ -937,7 +938,7 @@ public class BooklistStyle
      */
     public void delete(@NonNull final DBA db) {
         // cannot delete a builtin or a 'new' style(id==0)
-        if (mId <= 0 || mUuid == null) {
+        if (mId <= 0 || mUuid.isEmpty()) {
             throw new IllegalArgumentException("Builtin Style cannot be deleted");
         }
 
@@ -949,31 +950,26 @@ public class BooklistStyle
     @Override
     @NonNull
     public String toString() {
-        return "\nBooklistStyle{" +
-                "id=" + mId +
-                "\nuuid=`" + mUuid + '`' +
-                "\nmNameResId=" + mNameResId +
-                "\nmDisplayName=" + mDisplayName +
-                "\nmName=`" + mName + '`' +
-
-                "\nmIsPreferred=" + mIsPreferred +
-                "\nmScaleSize=" + mScaleSize +
-                "\nmShowHeaderInfo=" + mShowHeaderInfo +
-
-                "\nmSortAuthor=" + mSortAuthor +
-
-                "\nmExtraShowThumbnails=" + mExtraShowThumbnails +
-                "\nmExtraLargeThumbnails=" + mExtraLargeThumbnails +
-                "\nmExtraShowBookshelves=" + mExtraShowBookshelves +
-                "\nmExtraShowLocation=" + mExtraShowLocation +
-                "\nmExtraShowAuthor=" + mExtraShowAuthor +
-                "\nmExtraShowPublisher=" + mExtraShowPublisher +
-                "\nmExtraShowFormat=" + mExtraShowFormat +
-
-                "\nmStyleGroups=" + mStyleGroups +
-                "\nmFilters=\n" + mFilters +
-
-                '}';
+        return "\nBooklistStyle{"
+                + "id=" + mId
+                + "\nuuid=`" + mUuid + '`'
+                + "\nmNameResId=" + mNameResId
+                + "\nmDisplayName=" + mDisplayName
+                + "\nmName=`" + mName + '`'
+                + "\nmIsPreferred=" + mIsPreferred
+                + "\nmScaleSize=" + mScaleSize
+                + "\nmShowHeaderInfo=" + mShowHeaderInfo
+                + "\nmSortAuthor=" + mSortAuthor
+                + "\nmExtraShowThumbnails=" + mExtraShowThumbnails
+                + "\nmExtraLargeThumbnails=" + mExtraLargeThumbnails
+                + "\nmExtraShowBookshelves=" + mExtraShowBookshelves
+                + "\nmExtraShowLocation=" + mExtraShowLocation
+                + "\nmExtraShowAuthor=" + mExtraShowAuthor
+                + "\nmExtraShowPublisher=" + mExtraShowPublisher
+                + "\nmExtraShowFormat=" + mExtraShowFormat
+                + "\nmStyleGroups=" + mStyleGroups
+                + "\nmFilters=\n" + mFilters
+                + '}';
     }
 
     /**

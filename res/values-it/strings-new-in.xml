@@ -39,7 +39,6 @@
             * Aggiornamento della traduzione tedesca (Robert Wetzlmayr)\n\n
         </p>]]>
     </string>
-
     <string name="new_in_505"><![CDATA[
         <p><b>Novità nella versione 5.0.5</b>\n\n
             * Elenco per “Data di Inserimento” ora ordinato in ordine inverso \n\n
@@ -67,7 +66,7 @@
     </string>
     <string name="new_in_500"><![CDATA[
         <p><b>Novità nella versione 5.0.0</b>\n\n
-            * Vista in sola lettura dei dettagli di un libro, con supporto a \'fling\'! (Vedi \“Altre Opzioni\”) (Nick Silin)\n\n
+            * Vista in sola lettura dei dettagli di un libro, con supporto a “fling”! (Vedi “Altre Opzioni”) (Nick Silin)\n\n
             * Archiviazione (Backup & Importazione) di interi cataloghi, inclusi libri, copertine, preferenze and stili\n\n
             * Interfaccia aggiornata con supporto alla Action Bar per migliore usabilità e operatività in apparecchi senza pulsanti fisici\n\n
             * Supporto al programma di acquisizione Pic2shop (il migliore per fotocamere senza autofocus, in condizioni di luce scarsa e per fotocamere anteriori)\n\n
@@ -82,7 +81,7 @@
     </string>
     <string name="new_in_424"><![CDATA[
         <p><b>Novità nella versione 4.2.4</b>\n\n
-            * Vista in sola lettura dei dettagli di un libro, con supporto a \'fling\'! (Vedi \“Altre Opzioni\”) (Nick Silin)\n\n
+            * Vista in sola lettura dei dettagli di un libro, con supporto a “fling”! (Vedi \“Altre Opzioni\”) (Nick Silin)\n\n
             * Supporto al programma di acquisizione Pic2shop (il migliore per fotocamere senza autofocus, in condizioni di luce scarsa e per fotocamere anteriori)\n\n
             * Verifica preliminare della connessione Internet durante l\'acquisizione dei libri\n\n
             * Nuovi aggiornamenti della traduzione tedesca (Robert Wetzlmayr)\n\n
@@ -94,7 +93,7 @@
         <p><b>Novità nella versione 4.2.3</b>\n\n
             * Migliore gestione dei codici ISBN non validi durante l\'invio a Goodreads\n\n
             * Corrrezione di altri problemi minori\n\n
-            </p>]]>
+        </p>]]>
     </string>
     <string name="new_in_422"><![CDATA[
         <p><b>Novità nella versione 4.2.2</b>\n\n
@@ -103,12 +102,12 @@
             * Invio di un maggiori dettagli in caso di blocco dell\'applicazione o di richiesta di supporto\n\n
             * Ripulitura generale (Nick Silin)\n\n
             * Correzione di errori vari\n\n
-            </p>]]>
+        </p>]]>
     </string>
     <string name="new_in_421"><![CDATA[
         <p><b>Novità nella versione 4.2.1</b>\n\n
-            * Corretto l\'errore che provocava la chiusura dell\'applicazione quando si espandevano le voci dell\'elenco e si usava il comando \'Espandi Tutti\'\n\n
-            </p>]]>
+            * Corretto l\'errore che provocava la chiusura dell\'applicazione quando si espandevano le voci dell\'elenco e si usava il comando “Espandi Tutti”\n\n
+        </p>]]>
     </string>
     <string name="new_in_420"><![CDATA[
         <p><b>Novità nella versione 4.2</b>\n\n
@@ -124,7 +123,7 @@
             * Posizione dei pulsanti OK/Cancella aggiornata per conformità ai nuovi standard Android\n\n
             * Accesso completo alla tastiera in fase di inserimento di codici ASIN\n\n
             * Memorizzazione degli ultimi 5 file di esportazione\n\n
-            * Migliore individuazione delle \'modifiche\' durante la modifica dei libri\n\n
+            * Migliore individuazione delle “modifiche” durante la modifica dei libri\n\n
             * Supporto ad una maggiore varietà di Gallerie e gestori file\n\n
             * Maggiore affidabilità della gestione dati in importazione/esportazione/sincronizzazione\n\n
             * Corretta la gestione dei duplicti dei titoli delle collezioni\n\n

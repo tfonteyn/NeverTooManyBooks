@@ -67,6 +67,7 @@ public class Bookshelf
      * Always call {@link #getStyle(DBA)}}
      */
     private long mStyleId;
+
     /** the style gets cached. It only gets reloaded when the mStyleId != cached one. */
     private BooklistStyle mCachedStyle;
 
@@ -291,6 +292,7 @@ public class Bookshelf
     }
 
     /** {@link Parcelable}. */
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
         return 0;
@@ -339,6 +341,7 @@ public class Bookshelf
     /**
      * Each Bookshelf is defined exactly by a unique ID.
      */
+    @SuppressWarnings("SameReturnValue")
     @Override
     public boolean isUniqueById() {
         return true;

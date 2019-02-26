@@ -25,6 +25,8 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
 import java.lang.ref.WeakReference;
 
@@ -104,7 +106,7 @@ public class GoodreadsWork {
     /**
      * Called in UI thread by background task when it has finished.
      */
-    private void handleTaskFinished(@NonNull final byte[] bytes) {
+    private void onGetImageTaskFinished(@NonNull final byte[] bytes) {
         imageBytes = bytes;
 
         final ImageView imageView = mImageView.get();
@@ -124,7 +126,7 @@ public class GoodreadsWork {
      *
      * @author Philip Warner
      */
-    public static class GetImageTask
+    static class GetImageTask
             extends AsyncTask<Void, Void, Void> {
 
         /** URL of image to fetch. */
@@ -144,6 +146,7 @@ public class GoodreadsWork {
          *
          * @param url to retrieve.
          */
+        @UiThread
         GetImageTask(@NonNull final String url,
                      @NonNull final GoodreadsWork work) {
             mUrl = url;
@@ -154,6 +157,7 @@ public class GoodreadsWork {
          * Just get the bytes from the URL.
          */
         @Override
+        @WorkerThread
         protected Void doInBackground(final Void... params) {
             mBytes = ImageUtils.getBytes(mUrl);
             return null;
@@ -163,8 +167,9 @@ public class GoodreadsWork {
          * Tell the {@link GoodreadsWork} about it.
          */
         @Override
+        @UiThread
         protected void onPostExecute(final Void result) {
-            mWork.handleTaskFinished(mBytes);
+            mWork.onGetImageTaskFinished(mBytes);
         }
     }
 }

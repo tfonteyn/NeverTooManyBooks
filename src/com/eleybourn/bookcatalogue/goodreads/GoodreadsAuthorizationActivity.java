@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer,
@@ -54,8 +54,7 @@ public class GoodreadsAuthorizationActivity
         super.onCreate(savedInstanceState);
 
         // Get the payload and make sure it is what we expect
-        Intent intent = getIntent();
-        Uri uri = intent.getData();
+        Uri uri = getIntent().getData();
 
         //if (uri != null) && uri.toString().startsWith("BookCatalogue")) {
         if (uri != null) {
@@ -67,7 +66,7 @@ public class GoodreadsAuthorizationActivity
             // Handle the auth response by passing it off to a background task to check.
             GoodreadsAuthorizationResultCheckTask task =
                     new GoodreadsAuthorizationResultCheckTask();
-            QueueManager.getQueueManager().enqueueTask(task, QueueManager.QUEUE_SMALL_JOBS);
+            QueueManager.getQueueManager().enqueueTask(task, QueueManager.Q_SMALL_JOBS);
         }
 
         // Bring the main app task back to the top

@@ -1,161 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="new_in_420">
-<![CDATA[
-    <p><b>Novedades en la versión 4.2</b>\n\n
-			* Introducción de fecha que soporta fechas desde 0AD así como fechas parciales\n\n
-			* Las descripciones HTML se muestran correctamente al hacer clic para editar\n\n
-			* Opción para pre-seleccionar la imagen completa al recortar\n\n
-			* Opción para girar automáticamente las imágenes de la cámara\n\n
-			* Opción para utilizar una herramienta de recorte de imágenes externa (experimental)\n\n
-			* Más elementos en el menú de opciones\n\n
-			* Actualización de la traducción al francés (Imkal)\n\n
-			* Actualización de la traducción al alemán (Robert Wetzlmayr)\n\n
-			* Actualización de la traducción al ruso (Nick Silin)\n\n
-			* Cambios en la posición de los botones Aceptar/Cancelar, para adaptarlos al actual estándar de Android\n\n
-			* Teclado completo disponible al introducir ASINs\n\n
-			* Se mantienen los 5 últimos archivos exportados\n\n
-			* Mejoras en la detección de \'cambios\' al editar libros\n\n
-			* Soporte para más Galerías y Exploradores de archivos\n\n
-			* Más fiabilidad en la gestión de fechas de importación/exportación/sincronización\n\n
-			* Corrección en la gestión de títulos duplicados de antologías\n\n
-			* Corrección de otros pequeños errores\n\n
-			Muchas gracias a nuestros beta-testers y traductores!\n\n
-			Gracias a Grunthos por todos los errores reportados. Enviadnos por favor vuestros informes de errores.
-			</p>
-		]]>
+    <string name="new_in_511"><![CDATA[
+        <p><b>Novedades en la versión 5.1.1</b>\n\n
+            * Corrección de errores\n\n
+            * Nuevo estilo: Agrupar por fecha de última actualización\n\n
+            * Nuevo estilo: Agrupar por calificación\n\n
+            * Nuevo estilo: Agrupar por nombre de la biblioteca\n\n
+        </p>]]>
     </string>
-    <string name="new_in_421">
-<![CDATA[
-    <p><b>Novedades en la versión 4.2.1</b>\n\n
-			* Corregido error cuando se expandía la lista utilizando \'Expandir todo\'\n\n
-			</p>
-		]]>
+     <string name="new_in_510"><![CDATA[
+        <p><b>Novedades en la versión 5.1.0</b>\n\n
+            * Traducción al italiano (Eugenio Davolio)\n\n
+            * Traducción al español (José M. Galdo)\n\n
+            * Traducción al turco (Emir Sarı)\n\n
+            * Opción para exportar a archivo sólo libros nuevos / actualizados y para excluir portadas (o libros)\n\n
+            * Mejor tamaño de miniaturas en listas para pantallas de mucha resolución\n\n
+            * Nuevas opciones para buscar libros del mismo autor o serie en Amazon\n\n
+            * Corrección de otros pequeños errores\n\n
+        </p>]]>
     </string>
-
-    <string name="new_in_422">
-<![CDATA[
-    <p><b>Novedades en la versión 4.2.2</b>\n\n
-			* Corrección en la gestión de la imagen de fondo para ciertas versiones de Android\n\n
-			* Mejoras en la gestión de aplicaciones de escaneado no compatibles\n\n
-			* Envío de más detalles de errores, o al solicitar ayuda\n\n
-			* Simplificación de pantallas (Nick Silin)\n\n
-			* Corrección de otros errores\n\n
-			</p>
-		]]>
+    <string name="new_in_509"><![CDATA[
+        <p><b>Novedades en la versión 5.0.9</b>\n\n
+            * Corrección de errores para Android 4.4 (KitKat)\n\n
+            * Actualización de la traducción al alemán (Gideon van Melle)\n\n
+            * Corrección de otros pequeños errores
+        </p>]]>
     </string>
-    <string name="new_in_423">
-<![CDATA[
-    <p><b>Novedades en la versión 4.2.3</b>\n\n
-			* Mejoras en la gestión de ISBNs no válidos al enviar a Goodreads\n\n
-			* Corrección de otros pequeños errores\n\n
-			</p>
-		]]>
-    </string>
-
-    <string name="new_in_424"><![CDATA[
-
-	<p><b>Novedades en la versión 4.2.4</b>\n\n
-		* Vista no editable de los detalles de un libro, con soporte \'fling\'! (Ver \“Otras preferencias\”) (Nick Silin)\n\n
-		* Soporte para el escáner pic2shop (mejor para foco fijo, poca luz y cámaras frontales)\n\n
-		* Comprobación de la conexión a internet al tratar de escanear libros\n\n
-		* Actualización de la traducción al alemán (Robert Wetzlmayr)\n\n
-		* Actualización de la traducción al francés (Djiko)\n\n
-		* Corrección de errores\n\n
-		</p>
-
-    ]]></string>
-
-    <string name="new_in_500"><![CDATA[
-
-	<p><b>Novedades en la versión 5.0.0</b>\n\n
-		* Vista no editable de los detalles de un libro, con soporte \'fling\'! (Ver \“Otras preferencias\”) (Nick Silin)\n\n
-		* Archivado (Backup & Importación) del catálogo completo, incluyendo libros, portadas, preferencias y estilos\n\n
-		* Interfaz actualizada con una barra de acción que funciona mejor en dispositivos sin botones de menú\n\n
-		* Soporte para el escáner pic2shop (mejor para foco fijo, poca luz y cámaras frontales)\n\n
-		* Goodreads aparece ahora en el menú principal, si lo autoriza\n\n
-		* Comprobar conexión a internet antes de intentar escanear libros\n\n
-		* Más actualizaciones en la traducción al alemán (Robert Wetzlmayr)\n\n
-		* Más actualizaciones en la traducción al francés (Imkal & Djiko)\n\n
-		* Más actualizaciones en la traducción al ruso (Nick Silin)\n\n
-		* Cambios internos, en preparación para una interfaz mejorada para tabletas\n\n
-		* Corrección de errores\n\n
-		</p>
-
-    ]]></string>
-
-    <string name="new_in_502">
-		<![CDATA[
-			<p><b>Novedades en la versión 5.0.2</b>\n\n
-				* Corrección de errores\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_503">
-		<![CDATA[
-			<p><b>Novedades en la versión 5.0.3</b>\n\n
-				* Corrección de errores\n\n
-				* Actualización de la traducción al francés (Imkal)\n\n
-			</p>
-		]]>
-    </string>
-    <string name="new_in_504">
-		<![CDATA[
-			<p><b>Novedades en la versión 5.0.4</b>\n\n
-				* Nuevo campo: Idioma\n\n
-				* Actualización de la traducción al francés (Imkal)\n\n
-				* Corrección de errores\n\n
-			</p>
-		]]>
+    <string name="new_in_508"><![CDATA[
+        <p><b>Novedades en la versión 5.0.8</b>\n\n
+            * Actualización de la traducción al alemán (Robert Wetzlmayr)\n\n
+        </p>]]>
     </string>
     <string name="new_in_505"><![CDATA[
-
-			<p><b>Novedades en la versión 5.0.5</b>\n\n
-				* Se puede ordenar por “Fecha de inclusión”, inversa\n\n
-				* Actualización de la traducción al francés (Imkal)\n\n
-				* Corrección de errores\n\n
-			</p>
-
-    ]]></string>
-    <string name="new_in_508">
-		<![CDATA[
-			<p><b>Novedades en la versión 5.0.8</b>\n\n
-				* Actualización de la traducción al alemán (Robert Wetzlmayr)\n\n
-			</p>
-		]]>
+        <p><b>Novedades en la versión 5.0.5</b>\n\n
+            * Se puede ordenar por “Fecha de inclusión”, inversa\n\n
+            * Actualización de la traducción al francés (Imkal)\n\n
+            * Corrección de errores\n\n
+        </p>]]>
     </string>
-
-    <string name="new_in_509">
-		<![CDATA[
-			<p><b>Novedades en la versión 5.0.9</b>\n\n
-				* Corrección de errores para Android 4.4 (KitKat)\n\n
-				* Actualización de la traducción al alemán (Gideon van Melle)\n\n
-				* Corrección de otros pequeños errores
-			</p>
-		]]>
+    <string name="new_in_504"><![CDATA[
+        <p><b>Novedades en la versión 5.0.4</b>\n\n
+            * Nuevo campo: Idioma\n\n
+            * Actualización de la traducción al francés (Imkal)\n\n
+            * Corrección de errores\n\n
+        </p>]]>
     </string>
-    <string name="new_in_510">
-		<![CDATA[
-			<p><b>Novedades en la versión 5.1.0</b>\n\n
-				* Traducción al italiano (Eugenio Davolio)\n\n
-				* Traducción al español (José M. Galdo)\n\n
-				* Traducción al turco (Emir Sarı)\n\n
-				* Opción para exportar a archivo sólo libros nuevos / actualizados y para excluir portadas (o libros)\n\n
-				* Mejor tamaño de miniaturas en listas para pantallas de mucha resolución\n\n
-				* Nuevas opciones para buscar libros del mismo autor o serie en Amazon\n\n
-				* Corrección de otros pequeños errores\n\n
-			</p>
-		]]>
+    <string name="new_in_503"><![CDATA[
+        <p><b>Novedades en la versión 5.0.3</b>\n\n
+            * Corrección de errores\n\n
+            * Actualización de la traducción al francés (Imkal)\n\n
+        </p>]]>
     </string>
-    <string name="new_in_511">
-		<![CDATA[
-			<p><b>Novedades en la versión 5.1.1</b>\n\n
-				* Corrección de errores\n\n
-				* Nuevo estilo: Agrupar por fecha de última actualización\n\n
-				* Nuevo estilo: Agrupar por calificación\n\n
-				* Nuevo estilo: Agrupar por nombre de la biblioteca\n\n
-			</p>
-		]]>
+    <string name="new_in_502"><![CDATA[
+        <p><b>Novedades en la versión 5.0.2</b>\n\n
+            * Corrección de errores\n\n
+        </p>]]>
     </string>
-
+    <string name="new_in_500"><![CDATA[
+        <p><b>Novedades en la versión 5.0.0</b>\n\n
+            * Vista no editable de los detalles de un libro, con soporte “fling”! (Ver “Otras preferencias”) (Nick Silin)\n\n
+            * Archivado (Backup & Importación) del catálogo completo, incluyendo libros, portadas, preferencias y estilos\n\n
+            * Interfaz actualizada con una barra de acción que funciona mejor en dispositivos sin botones de menú\n\n
+            * Soporte para el escáner pic2shop (mejor para foco fijo, poca luz y cámaras frontales)\n\n
+            * Goodreads aparece ahora en el menú principal, si lo autoriza\n\n
+            * Comprobar conexión a internet antes de intentar escanear libros\n\n
+            * Más actualizaciones en la traducción al alemán (Robert Wetzlmayr)\n\n
+            * Más actualizaciones en la traducción al francés (Imkal & Djiko)\n\n
+            * Más actualizaciones en la traducción al ruso (Nick Silin)\n\n
+            * Cambios internos, en preparación para una interfaz mejorada para tabletas\n\n
+            * Corrección de errores\n\n
+        </p>]]>
+    </string>
+    <string name="new_in_424"><![CDATA[
+        <p><b>Novedades en la versión 4.2.4</b>\n\n
+            * Vista no editable de los detalles de un libro, con soporte “fling”! (Ver “Otras preferencias”) (Nick Silin)\n\n
+            * Soporte para el escáner pic2shop (mejor para foco fijo, poca luz y cámaras frontales)\n\n
+            * Comprobación de la conexión a internet al tratar de escanear libros\n\n
+            * Actualización de la traducción al alemán (Robert Wetzlmayr)\n\n
+            * Actualización de la traducción al francés (Djiko)\n\n
+            * Corrección de errores\n\n
+        </p>]]>
+    </string>
+    <string name="new_in_423"><![CDATA[
+        <p><b>Novedades en la versión 4.2.3</b>\n\n
+            * Mejoras en la gestión de ISBNs no válidos al enviar a Goodreads\n\n
+            * Corrección de otros pequeños errores\n\n
+        </p>]]>
+    </string>
+    <string name="new_in_422"><![CDATA[
+        <p><b>Novedades en la versión 4.2.2</b>\n\n
+            * Corrección en la gestión de la imagen de fondo para ciertas versiones de Android\n\n
+            * Mejoras en la gestión de aplicaciones de escaneado no compatibles\n\n
+            * Envío de más detalles de errores, o al solicitar ayuda\n\n
+            * Simplificación de pantallas (Nick Silin)\n\n
+            * Corrección de otros errores\n\n
+        </p>]]>
+    </string>
+    <string name="new_in_421"><![CDATA[
+        <p><b>Novedades en la versión 4.2.1</b>\n\n
+            * Corregido error cuando se expandía la lista utilizando “Expandir todo”\n\n
+        </p>]]>
+    </string>
+    <string name="new_in_420"><![CDATA[
+        <p><b>Novedades en la versión 4.2</b>\n\n
+            * Introducción de fecha que soporta fechas desde 0AD así como fechas parciales\n\n
+            * Las descripciones HTML se muestran correctamente al hacer clic para editar\n\n
+            * Opción para pre-seleccionar la imagen completa al recortar\n\n
+            * Opción para girar automáticamente las imágenes de la cámara\n\n
+            * Opción para utilizar una herramienta de recorte de imágenes externa (experimental)\n\n
+            * Más elementos en el menú de opciones\n\n
+            * Actualización de la traducción al francés (Imkal)\n\n
+            * Actualización de la traducción al alemán (Robert Wetzlmayr)\n\n
+            * Actualización de la traducción al ruso (Nick Silin)\n\n
+            * Cambios en la posición de los botones Aceptar/Cancelar, para adaptarlos al actual estándar de Android\n\n
+            * Teclado completo disponible al introducir ASINs\n\n
+            * Se mantienen los 5 últimos archivos exportados\n\n
+            * Mejoras en la detección de “cambios” al editar libros\n\n
+            * Soporte para más Galerías y Exploradores de archivos\n\n
+            * Más fiabilidad en la gestión de fechas de importación/exportación/sincronización\n\n
+            * Corrección en la gestión de títulos duplicados de antologías\n\n
+            * Corrección de otros pequeños errores\n\n
+            Muchas gracias a nuestros beta-testers y traductores!\n\n
+            Gracias a Grunthos por todos los errores reportados. Enviadnos por favor vuestros informes de errores.
+        </p>]]>
+    </string>
 </resources>

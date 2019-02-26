@@ -30,18 +30,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
-import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.OnPathChangedListener;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
+import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.OnPathChangedListener;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Base class for an Activity to perform file browsing functions consistent with
@@ -63,7 +61,7 @@ public abstract class FileChooserBaseActivity
     /** Flag indicating nature of this activity. */
     private boolean mIsSave;
 
-    public boolean isSave() {
+    protected boolean isSave() {
         return mIsSave;
     }
 
@@ -71,7 +69,7 @@ public abstract class FileChooserBaseActivity
      * Create the fragment we display.
      */
     @NonNull
-    protected abstract FileChooserFragment getChooserFragment();
+    protected abstract FileChooserFragment createChooserFragment();
 
     @Override
     protected int getLayoutId() {
@@ -81,23 +79,18 @@ public abstract class FileChooserBaseActivity
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // Determine the dialog type
-        Bundle extras = getIntent().getExtras();
-        mIsSave = extras != null && BVAL_MODE_SAVE.equals(extras.getString(BKEY_MODE));
+        mIsSave = BVAL_MODE_SAVE.equals(getIntent().getStringExtra(BKEY_MODE));
 
-        // Get and display the fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        if (findViewById(R.id.browser_fragment) != null
-                && fragmentManager.findFragmentById(R.id.browser_fragment) == null) {
+        if (null == getSupportFragmentManager().findFragmentById(R.id.browser_fragment)) {
             // Create the browser
-            FileChooserFragment frag = getChooserFragment();
-            fragmentManager
+            FileChooserFragment frag = createChooserFragment();
+            getSupportFragmentManager()
                     .beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .replace(R.id.browser_fragment, frag, FileChooserFragment.TAG)
+                    .add(R.id.browser_fragment, frag, FileChooserFragment.TAG)
                     .commit();
         }
 
@@ -131,7 +124,6 @@ public abstract class FileChooserBaseActivity
                 }
             });
         }
-        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -157,7 +149,7 @@ public abstract class FileChooserBaseActivity
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if (!file.exists() || !file.isFile()) {
-                StandardDialogs.showUserMessage(this, R.string.warning_select_an_existing_file);
+                UserMessage.showUserMessage(this, R.string.warning_select_an_existing_file);
                 return;
             }
             onOpen(file);
@@ -173,7 +165,7 @@ public abstract class FileChooserBaseActivity
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if (file.exists() && !file.isFile()) {
-                StandardDialogs.showUserMessage(this, R.string.warning_select_a_non_directory);
+                UserMessage.showUserMessage(this, R.string.warning_select_a_non_directory);
                 return;
             }
             onSave(file);

@@ -2,27 +2,26 @@ package com.eleybourn.bookcatalogue.searches.isfdb;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.List;
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 public class Editions
         extends AbstractBase {
 
     private static final String EDITIONS_URL = "/cgi-bin/se.cgi?arg=%s&type=ISBN";
-    private List<String> mEditions;
+    private ArrayList<String> mEditions;
 
     /**
      * Constructor.
-     *
+     * <p>
      * We assume the isbn is already checked & valid.
      */
     public Editions(@NonNull final String isbn) {
@@ -58,7 +57,7 @@ public class Editions
      *
      * @throws SocketTimeoutException on timeout
      */
-    public List<String> fetch()
+    public ArrayList<String> fetch()
             throws SocketTimeoutException {
         if (mEditions == null) {
             mEditions = new ArrayList<>();

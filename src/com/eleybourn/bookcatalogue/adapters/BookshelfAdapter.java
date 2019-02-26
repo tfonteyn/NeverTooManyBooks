@@ -11,14 +11,14 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 
-import java.util.List;
-
 /**
  * Adapter and row Holder for a {@link Bookshelf}.
- *
+ * <p>
  * Displays the name in a TextView.
  */
 public class BookshelfAdapter
@@ -30,14 +30,14 @@ public class BookshelfAdapter
     /**
      * Constructor.
      *
-     * @param context     The current context.
+     * @param context     the caller context
      * @param rowLayoutId The resource ID for a layout file containing a TextView to use when
      *                    instantiating views.
      * @param objects     The objects to represent in the ListView.
      */
     public BookshelfAdapter(@NonNull final Context context,
-                      @LayoutRes final int rowLayoutId,
-                      @NonNull final List<Bookshelf> objects) {
+                            @LayoutRes final int rowLayoutId,
+                            @NonNull final List<Bookshelf> objects) {
         super(context, rowLayoutId, objects);
         mRowLayoutId = rowLayoutId;
     }
@@ -71,6 +71,7 @@ public class BookshelfAdapter
      * Holder pattern for each row.
      */
     private static class Holder {
+
         TextView nameView;
     }
 }

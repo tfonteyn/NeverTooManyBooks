@@ -31,6 +31,16 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -52,16 +62,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.RTE;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
@@ -87,6 +87,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
@@ -102,7 +103,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LOANED_TO_SORT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_IS_COMPLETE;
@@ -214,7 +214,6 @@ public class BooklistBuilder
     private static final String STMT_IX_1 = "ix1";
 
 
-
     @NonNull
     private final Context mContext;
     // not in use for now
@@ -292,7 +291,7 @@ public class BooklistBuilder
     /**
      * Constructor.
      *
-     * @param context context for database
+     * @param context the caller context
      * @param style   Book list style to use
      */
     public BooklistBuilder(@NonNull final Context context,
@@ -318,14 +317,15 @@ public class BooklistBuilder
      * @return the current preferred rebuild state for the list.
      */
     public static int getListRebuildState() {
-        return Prefs.getListPreference(R.string.pk_bob_list_state, PREF_LIST_REBUILD_ALWAYS_EXPANDED);
+        return Prefs.getListPreference(R.string.pk_bob_list_state,
+                                       PREF_LIST_REBUILD_ALWAYS_EXPANDED);
     }
 
-    public static boolean thumbnailsAreCached() {
+    public static boolean imagesAreCached() {
         return Prefs.getBoolean(R.string.pk_bob_thumbnails_cache_resized, false);
     }
 
-    public static boolean thumbnailsAreGeneratedInBackground() {
+    public static boolean imagesAreGeneratedInBackground() {
         return Prefs.getBoolean(R.string.pk_bob_thumbnails_generating_mode, false);
     }
 

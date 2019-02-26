@@ -88,7 +88,7 @@ public abstract class CheckListItemBase<T>
     /**
      * Access the list of {@link CheckListItem} and extract the actual items.
      *
-     * @param list to disect
+     * @param list to dissect
      *
      * @return the extracted list
      */

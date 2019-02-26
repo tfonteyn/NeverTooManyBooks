@@ -1,10 +1,15 @@
 package com.eleybourn.bookcatalogue.backup;
 
-import java.io.File;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-public class ImportSettings {
+import java.io.File;
+
+public class ImportSettings
+        implements Parcelable {
 
     /*
      * options as to *what* should be exported.
@@ -34,14 +39,25 @@ public class ImportSettings {
      * all defined flags.
      */
     public static final int MASK = ALL | IMPORT_ONLY_NEW_OR_UPDATED;
+    public static final Creator<ImportSettings> CREATOR = new Creator<ImportSettings>() {
+        @Override
+        public ImportSettings createFromParcel(@NonNull final Parcel source) {
+            return new ImportSettings(source);
+        }
+
+        @Override
+        public ImportSettings[] newArray(final int size) {
+            return new ImportSettings[size];
+        }
+    };
     /**
      * Bitmask.
      */
     public int what;
-
     /**
      * File to import from.
      */
+    @Nullable
     public File file;
 
     public ImportSettings() {
@@ -51,13 +67,40 @@ public class ImportSettings {
         this.file = file;
     }
 
+    protected ImportSettings(@NonNull final Parcel in) {
+        what = in.readInt();
+        if (in.readInt() == 1) {
+            file = new File(in.readString());
+        }
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(what);
+
+        if (file != null) {
+            // has file
+            dest.writeInt(1);
+            dest.writeString(file.getPath());
+        } else {
+            // no file
+            dest.writeInt(0);
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     @Override
     @NonNull
     public String toString() {
         return "ImportSettings{" +
-            "what=0%" + Integer.toBinaryString(what) +
-            ", file=" + file +
-            '}';
+                "what=0%" + Integer.toBinaryString(what) +
+                ", file=" + file +
+                '}';
     }
 
     public void validate() {

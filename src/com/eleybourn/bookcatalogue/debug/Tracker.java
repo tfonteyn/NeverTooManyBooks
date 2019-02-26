@@ -27,14 +27,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.util.Date;
+
+import org.acra.ACRA;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-
-import org.acra.ACRA;
-
-import java.util.Date;
 
 public final class Tracker {
 
@@ -61,10 +61,10 @@ public final class Tracker {
                 @SuppressWarnings("UnusedAssignment")
                 Bundle extras = ((Activity) a).getIntent().getExtras();
                 if (extras != null) {
-                    Logger.info(a, "onCreate", Tracker.States.Running
+                    Logger.info(a, "onCreate", States.Running
                             + "|extras=" + extras);
                     if (extras.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                        Logger.info(a, "onCreate", Tracker.States.Running
+                        Logger.info(a, "onCreate", States.Running
                                 + "|extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
                     }
                 }
@@ -81,22 +81,23 @@ public final class Tracker {
 
     /**
      * @param fragment           Fragment
+     * @param message            generic string
      * @param savedInstanceState Bundle
      */
     public static void enterOnActivityCreated(@NonNull final Fragment fragment,
+                                              @NonNull final String message,
                                               @Nullable final Bundle savedInstanceState) {
         handleEvent(fragment, States.Enter, "onActivityCreated");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(fragment,
-                        "onActivityCreated", States.Enter
-                                + "|savedInstanceState=" + savedInstanceState);
+            Logger.info(fragment, message + "|onActivityCreated", States.Enter
+                    + "|savedInstanceState=" + savedInstanceState);
             @SuppressWarnings("UnusedAssignment")
             Bundle args = fragment.getArguments();
             if (args != null) {
-                Logger.info(fragment, "onActivityCreated", Tracker.States.Running
-                        + "|args=" + args);
+                Logger.info(fragment, message + "|onActivityCreated",
+                            States.Running + "|args=" + args);
                 if (args.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                    Logger.info(fragment, "onActivityCreated", Tracker.States.Running
+                    Logger.info(fragment, "onActivityCreated", States.Running
                             + "|args=" + args.getBundle(
                             UniqueId.BKEY_BOOK_DATA));
                 }
@@ -133,7 +134,7 @@ public final class Tracker {
                                                 @NonNull final Bundle outState) {
         handleEvent(a, States.Enter, "onSaveInstanceState");
         if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveInstanceState",States.Enter
+            Logger.info(a, "onSaveInstanceState", States.Enter
                     + "|outState=" + outState);
         }
     }
@@ -151,7 +152,7 @@ public final class Tracker {
                                                  final long bookId) {
         handleEvent(a, States.Enter, "onLoadFieldsFromBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onLoadFieldsFromBook",States.Enter
+            Logger.info(a, "onLoadFieldsFromBook", States.Enter
                     + "|bookId=" + bookId);
         }
     }
@@ -169,7 +170,7 @@ public final class Tracker {
                                                final long bookId) {
         handleEvent(a, States.Enter, "onSaveFieldsToBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveFieldsToBook",States.Enter
+            Logger.info(a, "onSaveFieldsToBook", States.Enter
                     + "|bookId=" + bookId);
         }
     }
@@ -178,7 +179,7 @@ public final class Tracker {
                                               final long bookId) {
         handleEvent(a, States.Exit, "onSaveFieldsToBook");
         if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveFieldsToBook",States.Exit
+            Logger.info(a, "onSaveFieldsToBook", States.Exit
                     + "|bookId=" + bookId);
         }
     }

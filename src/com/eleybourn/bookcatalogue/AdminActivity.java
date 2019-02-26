@@ -32,6 +32,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.csv.CsvExporter;
@@ -47,22 +51,18 @@ import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.OnClickListener;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.SimpleDialogItem;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
 import com.eleybourn.bookcatalogue.settings.FieldVisibilitySettingsFragment;
 import com.eleybourn.bookcatalogue.settings.GlobalSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.SettingsActivity;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.TaskQueueListActivity;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * This is the Administration page.
@@ -71,7 +71,7 @@ import java.util.List;
  */
 public class AdminActivity
         extends BaseActivity
-        implements TaskWithProgress.OnTaskFinishedListener {
+        implements ProgressDialogFragment.OnTaskFinishedListener {
 
     /** requestCode for making a backup to archive. // taskId for exporting CSV. */
     private static final int REQ_ARCHIVE_BACKUP = 0;
@@ -197,8 +197,8 @@ public class AdminActivity
             public void onClick(@NonNull final View v) {
                 HintManager.resetHints();
                 //Snackbar.make(v, R.string.hints_have_been_reset, Snackbar.LENGTH_LONG).show();
-                StandardDialogs.showUserMessage(AdminActivity.this,
-                                                R.string.hints_have_been_reset);
+                UserMessage.showUserMessage(AdminActivity.this,
+                                            R.string.hints_have_been_reset);
             }
         });
 
@@ -226,8 +226,8 @@ public class AdminActivity
             public void onClick(@NonNull final View v) {
                 StorageUtils.exportDatabaseFiles(AdminActivity.this);
                 //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
-                StandardDialogs.showUserMessage(AdminActivity.this,
-                                                R.string.progress_end_backup_success);
+                UserMessage.showUserMessage(AdminActivity.this,
+                                            R.string.progress_end_backup_success);
             }
         });
     }
@@ -301,7 +301,7 @@ public class AdminActivity
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                GoodreadsUtils.importAllFromGoodreads(AdminActivity.this, true);
+                GoodreadsUtils.importAll(AdminActivity.this, true);
             }
         });
 
@@ -313,7 +313,7 @@ public class AdminActivity
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                GoodreadsUtils.importAllFromGoodreads(AdminActivity.this, false);
+                GoodreadsUtils.importAll(AdminActivity.this, false);
             }
         });
 
@@ -325,7 +325,7 @@ public class AdminActivity
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                GoodreadsUtils.sendBooksToGoodreads(AdminActivity.this);
+                GoodreadsUtils.sendBooks(AdminActivity.this);
             }
         });
     }
@@ -367,14 +367,14 @@ public class AdminActivity
         File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
         ExportSettings settings = new ExportSettings(file);
         settings.what = ExportSettings.BOOK_CSV;
-        new ExportCSVTask(REQ_CSV_EXPORT, this, settings).execute();
+        new ExportCSVTask(REQ_CSV_EXPORT, UniqueId.TFT_EXPORT_CSV, this, settings).execute();
     }
 
     /**
      * Ask before importing.
      */
     private void confirmToImportFromCSV() {
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.warning_import_be_cautious)
                 .setTitle(R.string.title_import_book_data)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -403,7 +403,7 @@ public class AdminActivity
         List<File> files = StorageUtils.findCsvFiles();
         // If none, exit with message
         if (files.isEmpty()) {
-            StandardDialogs.showUserMessage(this, R.string.import_error_csv_file_not_found);
+            UserMessage.showUserMessage(this, R.string.import_error_csv_file_not_found);
         } else {
             if (files.size() == 1) {
                 // If only 1, just use it
@@ -434,14 +434,14 @@ public class AdminActivity
     private void importFromCSV(@NonNull final File file) {
         ImportSettings settings = new ImportSettings(file);
         settings.what = ImportSettings.BOOK_CSV;
-        new ImportCSVTask(REQ_CSV_IMPORT, this, settings).execute();
+        new ImportCSVTask(REQ_CSV_IMPORT, UniqueId.TFT_IMPORT_CSV, this, settings).execute();
     }
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode,
-                                    final int resultCode,
-                                    @Nullable final Intent data) {
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         // collect all data
         if (data != null) {
@@ -469,16 +469,17 @@ public class AdminActivity
     /**
      * Called when a task finishes.
      *
-     * @param result not used
+     * @param taskId  a task identifier
+     * @param success <tt>true</tt> for success
+     * @param result  not used
      */
     @Override
     public void onTaskFinished(final int taskId,
-                               final boolean failed,
-                               final boolean cancelled,
+                               final boolean success,
                                @Nullable final Object result) {
         switch (taskId) {
             case REQ_CSV_EXPORT:
-                if (!cancelled) {
+                if (success) {
                     onExportFinished();
                 }
                 break;
@@ -492,7 +493,7 @@ public class AdminActivity
      * Callback for the CSV export task.
      */
     private void onExportFinished() {
-        AlertDialog dialog = new AlertDialog.Builder(AdminActivity.this)
+        final AlertDialog dialog = new AlertDialog.Builder(AdminActivity.this)
                 .setTitle(R.string.export_csv_email)
                 .setIcon(R.drawable.ic_send)
                 .create();
@@ -557,7 +558,7 @@ public class AdminActivity
             startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));
         } catch (NullPointerException e) {
             Logger.error(e);
-            StandardDialogs.showUserMessage(AdminActivity.this, R.string.error_email_failed);
+            UserMessage.showUserMessage(AdminActivity.this, R.string.error_email_failed);
         }
     }
 }

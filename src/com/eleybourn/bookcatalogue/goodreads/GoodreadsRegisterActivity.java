@@ -30,15 +30,19 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 import java.io.IOException;
 
@@ -49,7 +53,8 @@ import java.io.IOException;
  * @author Philip Warner
  */
 public class GoodreadsRegisterActivity
-        extends BaseActivity {
+        extends BaseActivity
+        implements ProgressDialogFragment.OnTaskFinishedListener {
 
     /**
      * Called by button click to start a non-UI-thread task to do the work.
@@ -107,15 +112,28 @@ public class GoodreadsRegisterActivity
         }
     }
 
+    @Override
+    public void onTaskFinished(final int taskId,
+                               final boolean success,
+                               final Object result) {
+        UserMessage.showUserMessage(this, (Integer)result);
+    }
+
     private static class RequestAuthTask
             extends TaskWithProgress<Integer> {
 
+        /**
+         * @param context the caller context
+         */
+        @UiThread
         RequestAuthTask(@NonNull final FragmentActivity context) {
-            super(0, context, R.string.progress_msg_connecting_to_web_site, true);
+            super(0, UniqueId.TFT_GR_REGISTER, context, true,
+                  R.string.progress_msg_connecting_to_web_site);
         }
 
         @Override
         @Nullable
+        @WorkerThread
         protected Integer doInBackground(final Void... params) {
             GoodreadsManager grMgr = new GoodreadsManager();
             // This next step can take several seconds....
@@ -131,16 +149,11 @@ public class GoodreadsRegisterActivity
             } else {
                 return R.string.gr_auth_access_already_auth;
             }
-            if (mFragment.isCancelled()) {
+            if (isCancelled()) {
+                // return value not used as onPostExecute is not called
                 return R.string.progress_end_cancelled;
             }
             return R.string.info_authorized;
-        }
-
-        @Override
-        protected void onPostExecute(@NonNull final Integer result) {
-            StandardDialogs.showUserMessage(result);
-            super.onPostExecute(result);
         }
     }
 }

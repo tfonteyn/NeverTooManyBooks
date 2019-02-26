@@ -84,19 +84,20 @@ final class MenuHandler {
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_ADD_BY_SCAN:
                 intent = new Intent(activity, BookSearchActivity.class);
-                intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchActivity.BY_SCAN);
+                intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchByIsbnFragment.TAG);
+                intent.putExtra(BookSearchActivity.BKEY_IS_SCAN_MODE, true);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_SEARCH);
                 return true;
 
             case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN:
                 intent = new Intent(activity, BookSearchActivity.class);
-                intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchActivity.BY_ISBN);
+                intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchByIsbnFragment.TAG);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_SEARCH);
                 return true;
 
             case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT:
                 intent = new Intent(activity, BookSearchActivity.class);
-                intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchActivity.BY_TEXT);
+                intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchByTextFragment.TAG);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_SEARCH);
                 return true;
 
@@ -104,7 +105,6 @@ final class MenuHandler {
                 intent = new Intent(activity, EditBookActivity.class);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_EDIT);
                 return true;
-
 
             default:
                 return false;
@@ -194,5 +194,4 @@ final class MenuHandler {
                 return false;
         }
     }
-
 }

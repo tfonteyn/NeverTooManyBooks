@@ -3,24 +3,23 @@ package com.eleybourn.bookcatalogue.booklist.prefs;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-
-import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.utils.Prefs;
+
 /**
  * An List<Integer> is stored as a CSV String.
- *
+ * <p>
  * No equivalent Preference widget
  */
 public class PIntList
         extends PCollectionBase<Integer, List<Integer>> {
 
-    public PIntList(@StringRes final int key,
-                    @Nullable final String uuid) {
+    protected PIntList(@StringRes final int key,
+                       @NonNull final String uuid) {
         super(key, uuid, new ArrayList<Integer>());
         mNonPersistedValue = new ArrayList<>();
     }
@@ -35,7 +34,7 @@ public class PIntList
     @NonNull
     @Override
     public List<Integer> get() {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             String sValues = Prefs.getPrefs(mUuid).getString(getKey(), null);

@@ -69,6 +69,7 @@ public class StringList<E> {
             @NonNull
             @Override
             public E decode(@NonNull final String element) {
+                //noinspection unchecked
                 return (E) element;
             }
 

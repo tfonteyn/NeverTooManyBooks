@@ -16,7 +16,7 @@ import com.amazon.device.associates.OpenSearchPageRequest;
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -147,7 +147,7 @@ public final class AmazonUtils {
         } catch (RuntimeException e) {
             // An Amazon error should not crash the app
             Logger.error(e, "Unable to call the Amazon API");
-            StandardDialogs.showUserMessage(activity, R.string.error_unexpected_error);
+            UserMessage.showUserMessage(activity, R.string.error_unexpected_error);
             /* This code works, but Amazon have a nasty tendency to cancel Associate IDs... */
 //            String baseUrl = "http://www.amazon.com/gp/search?"
 //                    + "index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";

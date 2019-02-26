@@ -32,14 +32,6 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
-import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
-import com.eleybourn.bookcatalogue.utils.UniqueMap;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -49,11 +41,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
+import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
+import com.eleybourn.bookcatalogue.utils.UniqueMap;
+
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
@@ -75,7 +76,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_MONTH;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_STATUS;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
@@ -122,7 +122,7 @@ public class BooklistGroup
     /**
      * the name of the Preference file (comes from the style that contains this group.
      */
-    @Nullable
+    @NonNull
     String mUuid;
     /**
      * The domains represented by this group.
@@ -149,6 +149,7 @@ public class BooklistGroup
      */
     protected BooklistGroup(@NonNull final Parcel in) {
         kind = in.readInt();
+        //noinspection ConstantConditions
         mUuid = in.readString();
         mDomains = new ArrayList<>();
         in.readList(mDomains, getClass().getClassLoader());
@@ -823,7 +824,7 @@ public class BooklistGroup
 
         /**
          * Hardcoded constructor for a BOOK
-         *
+         * <p>
          * Note we suppress the 'null' use.
          */
         @SuppressWarnings("ConstantConditions")

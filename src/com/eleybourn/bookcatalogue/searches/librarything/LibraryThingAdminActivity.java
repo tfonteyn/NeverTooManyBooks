@@ -32,17 +32,21 @@ import android.widget.EditText;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 
+import java.io.File;
+
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.File;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * This is the Administration page. It contains details about LibraryThing links
@@ -52,7 +56,8 @@ import java.io.File;
  * @author Philip Warner
  */
 public class LibraryThingAdminActivity
-        extends BaseActivity {
+        extends BaseActivity
+        implements ProgressDialogFragment.OnTaskFinishedListener {
 
     @Override
     protected int getLayoutId() {
@@ -124,20 +129,33 @@ public class LibraryThingAdminActivity
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
+    @Override
+    public void onTaskFinished(final int taskId,
+                               final boolean success,
+                               final Object result) {
+        UserMessage.showUserMessage(this, (Integer)result);
+    }
+
+    /**
+     * Request a known valid ISBN from LT to see if the user key is valid.
+     */
     private static class ValidateKey
             extends TaskWithProgress<Integer> {
 
         /**
          * Constructor.
          *
-         * @param context the calling fragment
+         * @param context the caller context
          */
+        @UiThread
         ValidateKey(@NonNull final FragmentActivity context) {
-            super(0, context, R.string.progress_msg_connecting_to_web_site, true);
+            super(0, UniqueId.TFT_LT_VALIDATE, context, true,
+                  R.string.progress_msg_connecting_to_web_site);
         }
 
         @Override
         @Nullable
+        @WorkerThread
         protected Integer doInBackground(final Void... params) {
             LibraryThingManager ltm = new LibraryThingManager();
             File tmpFile = ltm.getCoverImage("0451451783", SearchSites.ImageSizes.SMALL);
@@ -153,16 +171,11 @@ public class LibraryThingAdminActivity
                     return R.string.lt_correct_key;
                 }
             }
-            if (mFragment.isCancelled()) {
+            if (isCancelled()) {
+                // return value not used as onPostExecute is not called
                 return R.string.progress_end_cancelled;
             }
             return R.string.warning_cover_not_found;
-        }
-
-        @Override
-        protected void onPostExecute(@NonNull final Integer result) {
-            StandardDialogs.showUserMessage(result);
-            super.onPostExecute(result);
         }
     }
 }

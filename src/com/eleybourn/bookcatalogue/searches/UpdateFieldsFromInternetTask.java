@@ -20,12 +20,19 @@
 
 package com.eleybourn.bookcatalogue.searches;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
@@ -35,6 +42,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.UpdateFieldsFromInternetActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -47,14 +55,6 @@ import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * ManagedTask to update requested fields by doing a search.
  * <p>
@@ -64,7 +64,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class UpdateFieldsFromInternetTask
         extends ManagedTask
-        implements SearchCoordinator.SearchManagerListener {
+        implements SearchCoordinator.SearchCoordinatorListener {
 
     /** The fields that the user requested to update. */
     @NonNull
@@ -177,7 +177,7 @@ public class UpdateFieldsFromInternetTask
     /**
      * By default, the update is for all books. By calling this before starting the task,
      * you can limit it to one book.
-     *
+     * <p>
      * This call is mutually exclusive with {@link #setBookId(List)}.
      *
      * @param bookId for the book to update
@@ -192,7 +192,7 @@ public class UpdateFieldsFromInternetTask
     /**
      * By default, the update is for all books. By calling this before starting the task,
      * you can limit it to a set of books.
-     *
+     * <p>
      * This call is mutually exclusive with {@link #setBookId(long)}.
      *
      * @param idList a list of book ids to update
@@ -208,11 +208,9 @@ public class UpdateFieldsFromInternetTask
     public void runTask()
             throws InterruptedException {
         int progressCounter = 0;
-        // the 'order by' makes sure we update the 'oldest' book to 'newest'
-        // So if we get interrupted, we can pick up the thread (arf...) again later.
-
-
-        try (Cursor books = mDb.fetchBooksForFieldUpdate(mBookWhereClause)) {
+        // the 'order by' used in fetchBooksForFieldUpdate makes sure we update the 'oldest'
+        // book to 'newest'. So if we get interrupted, we can pick up the thread (arf...) later.
+        try (BookCursor books = mDb.fetchBooksForFieldUpdate(mBookWhereClause)) {
 
             mTaskManager.setMaxProgress(this, books.getCount());
             while (books.moveToNext() && !isCancelled()) {
@@ -227,9 +225,10 @@ public class UpdateFieldsFromInternetTask
                 }
 
                 // Get the book ID
-                mCurrentBookId = mOriginalBookData.getLong(UniqueId.KEY_ID);
+                mCurrentBookId = books.getId();
                 // Get the book UUID
                 mCurrentUuid = mOriginalBookData.getString(UniqueId.KEY_BOOK_UUID);
+
                 // Get the array data about the book
                 mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
                                                          mDb.getAuthorsByBookId(mCurrentBookId));
@@ -271,7 +270,7 @@ public class UpdateFieldsFromInternetTask
                 // Start searching, then wait...
                 mSearchCoordinator.search(mSearchSites, author, title, isbn,
                                           mCurrentBookFieldUsages.containsKey(
-                                              UniqueId.BKEY_THUMBNAIL));
+                                                  UniqueId.BKEY_THUMBNAIL));
 
                 mSearchLock.lock();
                 try {
@@ -344,8 +343,8 @@ public class UpdateFieldsFromInternetTask
             case UniqueId.BKEY_AUTHOR_ARRAY:
                 // We should never have a book without authors, but be paranoid
                 if (mOriginalBookData.containsKey(usage.fieldId)) {
-                    ArrayList<Author> list = mOriginalBookData.getParcelableArrayList(
-                            UniqueId.BKEY_AUTHOR_ARRAY);
+                    ArrayList<Author> list =
+                            mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                     if (list == null || list.isEmpty()) {
                         fieldUsages.put(usage.fieldId, usage);
                     }
@@ -354,8 +353,8 @@ public class UpdateFieldsFromInternetTask
 
             case UniqueId.BKEY_SERIES_ARRAY:
                 if (mOriginalBookData.containsKey(usage.fieldId)) {
-                    ArrayList<Series> list = mOriginalBookData.getParcelableArrayList(
-                            UniqueId.BKEY_SERIES_ARRAY);
+                    ArrayList<Series> list =
+                            mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
                     if (list == null || list.isEmpty()) {
                         fieldUsages.put(usage.fieldId, usage);
                     }
@@ -364,8 +363,8 @@ public class UpdateFieldsFromInternetTask
 
             case UniqueId.BKEY_TOC_ENTRY_ARRAY:
                 if (mOriginalBookData.containsKey(usage.fieldId)) {
-                    ArrayList<TocEntry> list = mOriginalBookData.getParcelableArrayList(
-                            UniqueId.BKEY_TOC_ENTRY_ARRAY);
+                    ArrayList<TocEntry> list =
+                            mOriginalBookData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
                     if (list == null || list.isEmpty()) {
                         fieldUsages.put(usage.fieldId, usage);
                     }
@@ -393,11 +392,10 @@ public class UpdateFieldsFromInternetTask
     /**
      * Called in the main thread for this object when the search for one book has completed.
      */
-    @SuppressWarnings("SameReturnValue")
-    public boolean onSearchFinished(final boolean wasCancelled,
-                                    @NonNull final Bundle bookData) {
+    public void onSearchFinished(final boolean wasCancelled,
+                                 @NonNull final Bundle bookData) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "onSearchFinished","bookId=" + mCurrentBookId);
+            Logger.info(this, "onSearchFinished", "bookId=" + mCurrentBookId);
         }
 
 
@@ -425,8 +423,6 @@ public class UpdateFieldsFromInternetTask
         } finally {
             mSearchLock.unlock();
         }
-
-        return true;
     }
 
     /**
@@ -442,7 +438,7 @@ public class UpdateFieldsFromInternetTask
                                       @NonNull final Bundle newBookData,
                                       @NonNull final Bundle originalBookData) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "processSearchResults","bookId=" + bookId);
+            Logger.info(this, "processSearchResults", "bookId=" + bookId);
         }
         // First, filter the data to remove keys we don't care about
         List<String> toRemove = new ArrayList<>();
@@ -495,7 +491,7 @@ public class UpdateFieldsFromInternetTask
 
         // Update
         if (!newBookData.isEmpty()) {
-            mDb.updateBook(bookId, Book.getBook(mDb, bookId, newBookData), 0);
+            mDb.updateBook(bookId, new Book(newBookData), 0);
         }
 
     }

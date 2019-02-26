@@ -17,32 +17,31 @@ import androidx.fragment.app.Fragment;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
-import java.util.Objects;
-
+/**
+ * Optionally limit the sites to search on by setting {@link UniqueId#BKEY_SEARCH_SITES}.
+ * By default uses {@link SearchSites.Site#SEARCH_ALL}.
+ */
 public abstract class BookSearchBaseFragment
         extends Fragment
-        implements SearchCoordinator.SearchManagerListener {
+        implements SearchCoordinator.SearchCoordinatorListener {
 
     static final int REQ_BOOK_EDIT = 0;
-    /**
-     * Optionally limit the sites to search on.
-     * By default uses {@link SearchSites.Site#SEARCH_ALL}
-     */
-    private static final String REQUEST_BKEY_SEARCH_SITES = "SearchSites";
+
     /** stores an active search id, or 0 when none active. */
     private static final String BKEY_SEARCH_MANAGER_ID = "SearchManagerId";
     /** the last book data (intent) we got from a successful EditBook. */
     private static final String BKEY_LAST_BOOK_INTENT = "LastBookIntent";
-    /** activity request code */
+    /** activity request code. */
     private static final int REQ_PREFERRED_SEARCH_SITES = 10;
 
+    /** hosting activity. */
     protected BookSearchActivity mActivity;
 
     /** Database instance. */
@@ -82,32 +81,22 @@ public abstract class BookSearchBaseFragment
 
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        // cache to avoid multiple calls to requireActivity()
         mActivity = (BookSearchActivity) requireActivity();
-
         super.onActivityCreated(savedInstanceState);
 
         mDb = new DBA(mActivity);
 
-        if (savedInstanceState != null) {
-            mSearchManagerId = savedInstanceState.getLong(BKEY_SEARCH_MANAGER_ID);
-            // optional, use ALL if not there
-            mSearchSites = savedInstanceState.getInt(REQUEST_BKEY_SEARCH_SITES,
-                                                     SearchSites.Site.SEARCH_ALL);
-        } else {
-            Bundle args = getArguments();
-            //noinspection ConstantConditions
-            mSearchManagerId = args.getLong(BKEY_SEARCH_MANAGER_ID);
-            // optional, use ALL if not there
-            mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
-        }
+        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        mSearchManagerId = args.getLong(BKEY_SEARCH_MANAGER_ID);
+        // optional, use ALL if not there
+        mSearchSites = args.getInt(UniqueId.BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
 
         if ((mSearchSites & SearchSites.Site.SEARCH_LIBRARY_THING) != 0) {
             LibraryThingManager.showLtAlertIfNecessary(mActivity, false, "search");
         }
 
         if (!NetworkUtils.isNetworkAvailable(mActivity)) {
-            StandardDialogs.showUserMessage(mActivity, R.string.error_no_internet_connection);
+            UserMessage.showUserMessage(mActivity, R.string.error_no_internet_connection);
         }
     }
 
@@ -134,7 +123,7 @@ public abstract class BookSearchBaseFragment
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(requireContext(), SearchAdminActivity.class);
                 intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                SearchAdminActivity.TAB_SEARCH_ORDER);
+                                SearchAdminActivity.TAB_ORDER);
                 startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
@@ -160,7 +149,7 @@ public abstract class BookSearchBaseFragment
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
      * The results will arrive in
-     * {@link SearchCoordinator.SearchManagerListener#onSearchFinished(boolean, Bundle)}
+     * {@link SearchCoordinator.SearchCoordinatorListener#onSearchFinished(boolean, Bundle)}
      *
      * @return <tt>true</tt> if search was started.
      */
@@ -185,8 +174,7 @@ public abstract class BookSearchBaseFragment
             Tracker.handleEvent(this, Tracker.States.Running,
                                 "Created SearchManager=" + mSearchManagerId);
 
-            mActivity.getTaskManager()
-                     .sendHeaderUpdate(R.string.progress_msg_searching);
+            mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_searching);
             // kick of the searches
             searchCoordinator.search(mSearchSites, authorSearchText, titleSearchText,
                                      isbnSearchText, true);
@@ -194,7 +182,7 @@ public abstract class BookSearchBaseFragment
 
         } catch (RuntimeException e) {
             Logger.error(e);
-            StandardDialogs.showUserMessage(mActivity, R.string.error_search_failed);
+            UserMessage.showUserMessage(mActivity, R.string.error_search_failed);
             mActivity.setResult(Activity.RESULT_CANCELED);
             mActivity.finish();
         }
@@ -232,7 +220,7 @@ public abstract class BookSearchBaseFragment
             // no changes committed, we got data to use temporarily
             case REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    //noinspection ConstantConditions
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
                                                     mSearchSites);
                 }
@@ -265,9 +253,8 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putLong(BKEY_SEARCH_MANAGER_ID, mSearchManagerId);
         outState.putParcelable(BKEY_LAST_BOOK_INTENT, mLastBookData);
-
-        super.onSaveInstanceState(outState);
     }
 }

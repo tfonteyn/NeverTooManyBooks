@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
@@ -13,7 +12,6 @@ import androidx.preference.PreferenceScreen;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Hosting activity for Preference editing.
@@ -31,20 +29,12 @@ public class SettingsActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
-            // Create the fragment only when the activity is created for the first time.
-            // i.e. not after orientation changes
-            Fragment frag = getSupportFragmentManager().findFragmentByTag(tag);
-            if (frag == null) {
-                frag = getFragment(tag);
-            }
-            // forward any/all arguments to the actual fragment.
+        Bundle extras = getIntent().getExtras();
+        //noinspection ConstantConditions
+        String tag = extras.getString(UniqueId.BKEY_FRAGMENT_TAG, GlobalSettingsFragment.TAG);
+        if (null == getSupportFragmentManager().findFragmentByTag(tag)) {
+            Fragment frag = createFragment(tag);
             frag.setArguments(getIntent().getExtras());
-            Logger.info(this, "onCreate");
-
-            FragmentManager.enableDebugLogging(true);
-
             getSupportFragmentManager()
                     .beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -60,26 +50,16 @@ public class SettingsActivity
      *
      * @return new instance
      */
-    private Fragment getFragment(@NonNull final String tag) {
-        Fragment frag;
-        switch (tag) {
-            case GlobalSettingsFragment.TAG:
-                frag = new GlobalSettingsFragment();
-                break;
-
-            case FieldVisibilitySettingsFragment.TAG:
-                frag = new FieldVisibilitySettingsFragment();
-                break;
-
-            case BooklistStyleSettingsFragment.TAG:
-                frag = new BooklistStyleSettingsFragment();
-                break;
-
-            default:
-                Logger.error("tag=" + tag);
-                frag = new GlobalSettingsFragment();
+    private Fragment createFragment(@NonNull final String tag) {
+        if (GlobalSettingsFragment.TAG.equals(tag)) {
+            return new GlobalSettingsFragment();
+        } else if (FieldVisibilitySettingsFragment.TAG.equals(tag)) {
+            return new FieldVisibilitySettingsFragment();
+        } else if (BooklistStyleSettingsFragment.TAG.equals(tag)) {
+            return new BooklistStyleSettingsFragment();
+        } else {
+            throw new IllegalArgumentException("tag=" + tag);
         }
-        return frag;
     }
 
     /**
@@ -97,7 +77,7 @@ public class SettingsActivity
 
         // start a NEW copy of the same fragment
         //noinspection ConstantConditions
-        Fragment frag = getFragment(caller.getTag());
+        Fragment frag = createFragment(caller.getTag());
         // and set it to start with the new root key (screen)
         Bundle args = new Bundle();
         args.putAll(caller.getArguments());

@@ -46,7 +46,10 @@
     <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
     <string name="pk_scanning_beep_if_isbn_invalid" translatable="false">SoundManager.BeepIfScannedIsbnInvalid</string>
 
-    <!-- ListPreference -->
+    <!-- ListPreference
+         Implementation to use for
+         {@link com.eleybourn.bookcatalogue.dialogs.StandardDialogs#showUserMessage}.
+     -->
     <string name="pt_ui_messages_use">Messages use</string>
     <string name="pk_ui_messages_use" translatable="false">App.UserMessage</string>
     <string-array name="pe_ui_messages_use">

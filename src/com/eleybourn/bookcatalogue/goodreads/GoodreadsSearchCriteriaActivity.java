@@ -37,7 +37,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Activity to handle searching Goodreads for books that did not automatically convert.
@@ -54,7 +54,6 @@ public class GoodreadsSearchCriteriaActivity
         extends BaseActivity {
 
     private DBA mDb;
-    private long mBookId;
 
     private TextView mCriteriaView;
 
@@ -72,24 +71,19 @@ public class GoodreadsSearchCriteriaActivity
 
         mCriteriaView = findViewById(R.id.search_text);
 
-        Bundle extras = getIntent().getExtras();
-
         // Look for a book ID
-        if (extras != null && extras.containsKey(UniqueId.KEY_ID)) {
-            mBookId = extras.getLong(UniqueId.KEY_ID);
-        }
-
+        long bookId = getIntent().getLongExtra(UniqueId.KEY_ID, 0);
         // If we have a book, fill in criteria AND try a search
-        if (mBookId != 0) {
+        if (bookId != 0) {
             // Initial value; try to build from passed book, if available.
             StringBuilder criteria = new StringBuilder();
 
             findViewById(R.id.original_details).setVisibility(View.VISIBLE);
 
-            try (BookCursor cursor = mDb.fetchBookById(mBookId)) {
+            try (BookCursor cursor = mDb.fetchBookById(bookId)) {
                 if (!cursor.moveToFirst()) {
-                    StandardDialogs.showUserMessage(this,
-                                                    R.string.warning_book_no_longer_exists);
+                    UserMessage.showUserMessage(this,
+                                                R.string.warning_book_no_longer_exists);
                     setResult(Activity.RESULT_CANCELED);
                     finish();
                     return;
@@ -130,7 +124,7 @@ public class GoodreadsSearchCriteriaActivity
     private void doSearch() {
         String criteria = mCriteriaView.getText().toString().trim();
         if (criteria.isEmpty()) {
-            StandardDialogs.showUserMessage(this, R.string.please_enter_search_criteria);
+            UserMessage.showUserMessage(this, R.string.please_enter_search_criteria);
             return;
         }
 

@@ -25,11 +25,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 
 /**
  * Class layered on top of {@link XmlFilter} to implement a simple set of XML filters to extract
@@ -402,7 +402,7 @@ public class SimpleXmlFilter {
             implements DataStoreProvider {
 
         @NonNull
-        public final DataStoreProvider parent;
+        final DataStoreProvider parent;
         @Nullable
         private final XmlFilter mFilter;
         String collectField;
@@ -412,6 +412,7 @@ public class SimpleXmlFilter {
         XmlListener listener = null;
         @Nullable
         XmlHandler finishHandler = null;
+
         @Nullable
         private Bundle mLocalBundle = null;
         @Nullable
@@ -423,6 +424,11 @@ public class SimpleXmlFilter {
 
         private boolean mIsArrayItem = false;
 
+        /**
+         * Constructor.
+         *
+         * @param root the root filter
+         */
         BuilderContext(@NonNull final XmlFilter root,
                        @NonNull final DataStoreProvider parent,
                        @NonNull final List<String> tags) {
@@ -478,7 +484,7 @@ public class SimpleXmlFilter {
             return b;
         }
 
-        public boolean isArray() {
+        boolean isArray() {
             return mIsArray;
         }
 
@@ -522,9 +528,9 @@ public class SimpleXmlFilter {
     private abstract static class AttrFilter {
 
         @NonNull
-        public final String name;
+        final String name;
         @NonNull
-        public final String key;
+        final String key;
 
         AttrFilter(@NonNull final String key,
                    @NonNull final String name) {

@@ -22,22 +22,18 @@ package com.eleybourn.bookcatalogue.dialogs;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+
+import java.util.List;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.List;
 
 /**
  * ENHANCE: decide Toast/Snackbar ? it's a preference setting for now... but overkill (bigger app)
@@ -50,57 +46,15 @@ public final class StandardDialogs {
     }
 
     /**
-     * Shielding the actual implementation of Toast/Snackbar or whatever is next.
-     */
-    public static void showUserMessage(@NonNull final Activity activity,
-                                       @StringRes final int message) {
-        if (0 == Prefs.getListPreference(R.string.pk_ui_messages_use, 0)) {
-            Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
-        } else {
-            Snackbar.make(activity.getWindow().getDecorView(), message,
-                          Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * Shielding the actual implementation of Toast/Snackbar or whatever is next.
-     */
-    public static void showUserMessage(@NonNull final Activity activity,
-                                       @NonNull final String message) {
-        if (0 == Prefs.getListPreference(R.string.pk_ui_messages_use, 0)) {
-            Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
-        } else {
-            Snackbar.make(activity.getWindow().getDecorView(), message,
-                          Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * Problem child: called from a task (thread) which has no activity/context at all.
-     * Hardwired to use the application context.
-     * *will* only be called from a UI thread.
-     * <p>
-     * Does mean we can't use SnackBar
-     */
-    public static void showUserMessage(@NonNull final String message) {
-        Toast.makeText(BookCatalogueApp.getAppContext(), message, Toast.LENGTH_LONG).show();
-    }
-
-    public static void showUserMessage(@StringRes final int message) {
-        Toast.makeText(BookCatalogueApp.getAppContext(), message, Toast.LENGTH_LONG).show();
-    }
-    /* ========================================================================================== */
-
-    /**
      * Show a dialog asking if unsaved edits should be ignored. Finish activity if so.
      */
     public static void showConfirmUnsavedEditsDialog(@NonNull final Activity activity,
                                                      @Nullable final Runnable onConfirm) {
-        AlertDialog dialog = new AlertDialog.Builder(activity)
+        final AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.lbl_details_have_changed)
                 .setMessage(R.string.confirm_unsaved_changes)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setCancelable(false)
+                .setCancelable(false) //TEST: might be better to allow canceling
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE,
@@ -142,9 +96,11 @@ public final class StandardDialogs {
                                           series.getName()))
                 .setTitle(R.string.title_delete_series)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setCancelable(false)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                         context.getString(android.R.string.ok),
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
@@ -167,9 +123,9 @@ public final class StandardDialogs {
     }
 
     public static void deleteBookAlert(@NonNull final Context context,
-                                      @NonNull final DBA db,
-                                      final long bookId,
-                                      @NonNull final Runnable onDeleted) {
+                                       @NonNull final DBA db,
+                                       final long bookId,
+                                       @NonNull final Runnable onDeleted) {
 
         String UNKNOWN = '<' + BookCatalogueApp.getResString(R.string.unknown_uc) + '>';
         List<Author> authorList = db.getAuthorsByBookId(bookId);
@@ -199,6 +155,7 @@ public final class StandardDialogs {
                         (context.getString(R.string.confirm_really_delete_book, title, authors)))
                 .setTitle(R.string.menu_delete_book)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setCancelable(false)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
@@ -229,10 +186,11 @@ public final class StandardDialogs {
          * If it exists, show a dialog and use it to perform the
          * next action, according to the users choice.
          */
-        AlertDialog dialog = new AlertDialog.Builder(context)
+        final AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.title_duplicate_book)
                 .setMessage(context.getString(R.string.confirm_duplicate_book_message))
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setCancelable(false)
                 .create();
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,

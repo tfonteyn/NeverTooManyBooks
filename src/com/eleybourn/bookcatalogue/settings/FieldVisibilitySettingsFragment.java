@@ -33,7 +33,8 @@ import java.util.Map;
 public class FieldVisibilitySettingsFragment
         extends PreferenceFragmentCompat {
 
-    public static final String TAG = "FieldVisibilitySettingsFragment";
+    /** Fragment manager tag. */
+    public static final String TAG = FieldVisibilitySettingsFragment.class.getSimpleName();
 
     //NEWKIND: new fields visibility
     /** list of all the Fields that support hiding. */

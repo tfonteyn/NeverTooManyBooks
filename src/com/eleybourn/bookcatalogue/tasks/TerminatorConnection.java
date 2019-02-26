@@ -43,7 +43,7 @@ public class TerminatorConnection
     /** for synchronization. */
     private static final Object INPUT_STREAM_LOCK = new Object();
     @NonNull
-    public final HttpURLConnection con;
+    private final HttpURLConnection con;
     @NonNull
     public final BufferedInputStream inputStream;
 
@@ -135,7 +135,7 @@ public class TerminatorConnection
      * {@link TerminatorConnection} is always called from a background task, so we cannot
      * start another background task from there. An old-fashioned Thread/Runnable is fine though.
      */
-    public static class InterruptThread
+    static class InterruptThread
             implements Runnable {
 
         // needed to keep the reference alive?

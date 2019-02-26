@@ -39,8 +39,8 @@ import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,7 +55,8 @@ public class FileChooserFragment
         extends Fragment
         implements FileListerAsyncTask.FileListerListener {
 
-    public static final String TAG = "FileChooserFragment";
+    /** Fragment manager tag. */
+    public static final String TAG = FileChooserFragment.class.getSimpleName();
 
     private static final String BKEY_ROOT_PATH = "rootPath";
     private static final String BKEY_LIST = "list";
@@ -66,10 +67,10 @@ public class FileChooserFragment
         public void onClick(@NonNull final View v) {
             String parent = mRootPath.getParent();
             if (parent == null) {
-                //Snackbar.make(getView(),
+                //Snackbar.make(requireView(),
                 // R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
-                StandardDialogs.showUserMessage(requireActivity(),
-                                                R.string.warning_no_parent_directory_found);
+                UserMessage.showUserMessage(requireActivity(),
+                                            R.string.warning_no_parent_directory_found);
                 return;
             }
             mRootPath = new File(parent);
@@ -97,10 +98,10 @@ public class FileChooserFragment
         }
 
         // Build the fragment and save the details
+        FileChooserFragment frag = new FileChooserFragment();
         Bundle args = new Bundle();
         args.putString(BKEY_ROOT_PATH, path);
         args.putString(UniqueId.BKEY_FILE_SPEC, fileName);
-        FileChooserFragment frag = new FileChooserFragment();
         frag.setArguments(args);
         return frag;
     }
@@ -118,6 +119,7 @@ public class FileChooserFragment
     }
 
     @Override
+    @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -129,28 +131,27 @@ public class FileChooserFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mFilenameField = getView().findViewById(R.id.file_name);
-        mPathField = getView().findViewById(R.id.path);
+        View view = requireView();
+        mFilenameField = view.findViewById(R.id.file_name);
+        mPathField = view.findViewById(R.id.path);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState == null) {
+            Bundle args = requireArguments();
+            mRootPath = new File(Objects.requireNonNull(args.getString(BKEY_ROOT_PATH)));
+            mFilenameField.setText(args.getString(UniqueId.BKEY_FILE_SPEC));
+            mPathField.setText(mRootPath.getAbsolutePath());
+            tellActivityPathChanged();
+        } else {
             mRootPath =
                     new File(Objects.requireNonNull(savedInstanceState.getString(BKEY_ROOT_PATH)));
             ArrayList<FileDetails> list = savedInstanceState.getParcelableArrayList(BKEY_LIST);
             Objects.requireNonNull(list);
             onGotFileList(mRootPath, list);
-        } else {
-            Bundle args = getArguments();
-            //noinspection ConstantConditions
-            mRootPath = new File(Objects.requireNonNull(args.getString(BKEY_ROOT_PATH)));
-            mFilenameField.setText(args.getString(UniqueId.BKEY_FILE_SPEC));
-            mPathField.setText(mRootPath.getAbsolutePath());
-            tellActivityPathChanged();
         }
 
         // 'up' directory
-        getView().findViewById(R.id.row_path_up).setOnClickListener(onPathUpClickListener);
-        getView().findViewById(R.id.btn_path_up).setOnClickListener(onPathUpClickListener);
+        view.findViewById(R.id.row_path_up).setOnClickListener(onPathUpClickListener);
+        view.findViewById(R.id.btn_path_up).setOnClickListener(onPathUpClickListener);
     }
 
     /**
@@ -166,9 +167,9 @@ public class FileChooserFragment
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putString(BKEY_ROOT_PATH, mRootPath.getAbsolutePath());
         outState.putParcelableArrayList(BKEY_LIST, mList);
-        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -196,8 +197,7 @@ public class FileChooserFragment
 
         // Setup and display the list
         ListAdapter adapter = new FileDetailsAdapter(requireContext(), mList);
-        //noinspection ConstantConditions
-        ListView lv = getView().findViewById(android.R.id.list);
+        ListView lv = requireView().findViewById(android.R.id.list);
         lv.setAdapter(adapter);
     }
 

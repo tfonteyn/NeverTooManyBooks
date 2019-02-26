@@ -65,7 +65,7 @@
     <string name="lbl_notes">Заметки</string>
     <string name="lbl_loaned_to_long">Книга дана вдолг:</string>
     <string name="nobody">Никто</string>
-    <string name="lbl_loan_to">Одолжить книгу:</string>
+    <string name="lbl_lend_to">Одолжить книгу:</string>
     <string name="btn_loan_returned">Возвращена</string>
     <string name="name">Имя</string>
     <string name="about_lbl_website">Веб-адрес проекта:</string>
@@ -262,7 +262,7 @@
     <string name="gr_tq_occurred_at">(случилось в %1$s)</string>
     <string name="unknown_uc">НЕИЗВЕСТНО</string>
     <string name="warning_book_was_deleted_uc">ЭТА КИНГА БЫЛА УДАЛЕНА</string>
-    <string name="lbl_by_authors">к %1$s</string>
+    <string name="lbl_by_author_s">к %1$s</string>
     <string name="warning_no_matching_book_found">Нет совпавших книг</string>
     <string name="warning_no_isbn_stored_for_book">Нет ISBN хранящегося для книги</string>
     <string name="title_select_an_action">Выберете дествие</string>

@@ -19,6 +19,8 @@
         android:textIsSelectable="true"
         tools:text="@string/lbl_author"/>
 
+    <View style="@style/divider_horizontalList" />
+
     <AutoCompleteTextView
         android:id="@+id/loaned_to"
         style="@style/personalNameTextEntry"

@@ -42,6 +42,12 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -60,16 +66,11 @@ import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFra
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.settings.FieldVisibilitySettingsFragment;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Based class for {@link BookFragment} and {@link EditBookBaseFragment}.
+ * <p>
+ * This class supports the loading of a book. See {@link #loadFieldsFrom}.
  *
  * @author pjw
  */
@@ -120,33 +121,28 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * If we (the Fragment) is a {@link BookManager} then load the {@link Book}.
+     * If the child class is a {@link BookManager} then load the {@link Book}.
      */
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
-
         super.onActivityCreated(savedInstanceState);
 
         mDb = new DBA(mActivity);
 
         if (this instanceof BookManager) {
-            long bookId;
-            Bundle bookData;
-
-            if (savedInstanceState != null) {
-                bookId = savedInstanceState.getLong(UniqueId.KEY_ID, 0);
-                bookData = savedInstanceState.getBundle(UniqueId.BKEY_BOOK_DATA);
+            Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+            Bundle bookData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
+            Book book;
+            if (bookData != null) {
+                // if we have a populated bundle, use that.
+                book = new Book(bookData);
             } else {
-                Bundle args = getArguments();
-                //noinspection ConstantConditions
-                bookId = args.getLong(UniqueId.KEY_ID, 0);
-                bookData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
+                // otherwise, try to load from the database. If that fails, it's a new book.
+                long bookId = args.getLong(UniqueId.KEY_ID, 0);
+                book = new Book(bookId, mDb);
             }
-
-            Book book = Book.getBook(mDb, bookId, bookData);
             getBookManager().setBook(book);
         }
 
@@ -169,7 +165,7 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * Here we trigger the Fragment to load it's Fields from the Book.
+     * Trigger the Fragment to load it's Fields from the Book.
      */
     @Override
     @CallSuper
@@ -242,6 +238,16 @@ public abstract class BookBaseFragment
 
     //<editor-fold desc="Fragment shutdown">
 
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (this instanceof BookManager) {
+            outState.putLong(UniqueId.KEY_ID, getBookManager().getBook().getId());
+            outState.putBundle(UniqueId.BKEY_BOOK_DATA, getBookManager().getBook().getRawData());
+        }
+    }
+
     @Override
     @CallSuper
     public void onDestroy() {
@@ -267,12 +273,6 @@ public abstract class BookBaseFragment
                                     @NonNull final MenuInflater inflater) {
 
         /*
-         * Only one of these two is made visible (or none if the book is not persisted yet).
-         */
-        menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
-        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
-
-        /*
          * MENU_GROUP_BOOK is shown only when the book is persisted in the database.
          */
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete_book)
@@ -288,7 +288,7 @@ public abstract class BookBaseFragment
         if (Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
             menu.add(R.id.MENU_BOOK_EDIT_LOAN, R.id.MENU_BOOK_EDIT_LOAN, 0,
                      R.string.menu_loan_lend_book);
-            menu.add(R.id.MENU_BOOK_LOAN_RETURNED, R.id.MENU_BOOK_EDIT_LOAN, 0,
+            menu.add(R.id.MENU_BOOK_LOAN_RETURNED, R.id.MENU_BOOK_LOAN_RETURNED, 0,
                      R.string.menu_loan_return_book);
         }
         MenuHandler.addAmazonSearchSubMenu(menu);
@@ -309,16 +309,6 @@ public abstract class BookBaseFragment
 
         boolean bookExists = book.getId() != 0;
         menu.setGroupVisible(R.id.MENU_GROUP_BOOK, bookExists);
-
-        boolean isRead = book.getBoolean(Book.IS_READ);
-        menu.setGroupVisible(R.id.MENU_BOOK_READ, bookExists && !isRead);
-        menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
-
-        if (Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
-            boolean isAvailable = null == mDb.getLoaneeByBookId(book.getId());
-            menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
-            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
-        }
 
         MenuHandler.prepareAmazonSearchSubMenu(menu, book);
     }
@@ -368,29 +358,6 @@ public abstract class BookBaseFragment
                                                    getString(R.string.share)));
                 return true;
 
-            case R.id.MENU_BOOK_EDIT_LOAN:
-                boolean isAvailable = null == mDb.getLoaneeByBookId(book.getId());
-                if (isAvailable) {
-                    //TOMF: obv. when this is called when we're ON the edit screen... oops... but loan will be a dialog soon anyhow.
-                    Intent intentLoan = new Intent(mActivity, EditBookActivity.class);
-                    intentLoan.putExtra(UniqueId.KEY_ID, book.getId());
-                    intentLoan.putExtra(EditBookFragment.REQUEST_BKEY_TAB,
-                                        EditBookFragment.TAB_EDIT_LOANS);
-                    mActivity.startActivityForResult(intentLoan, BooksOnBookshelf.REQ_BOOK_EDIT);
-                } else {
-                    mDb.deleteLoan(book.getId());
-                }
-                return true;
-
-            case R.id.MENU_BOOK_READ:
-                // toggle 'read' status
-                boolean isRead = book.getBoolean(Book.IS_READ);
-                if (book.setRead(mDb, !isRead)) {
-                    // reverse value obv.
-                    mFields.getField(R.id.read).setValue(isRead ? "0" : "1");
-                }
-                return true;
-
             default:
                 if (MenuHandler.handleAmazonSearchSubMenu(mActivity, item, book)) {
                     return true;
@@ -426,13 +393,11 @@ public abstract class BookBaseFragment
 
         // Get the list to use in the AutoCompleteTextView
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line,
-                                   list);
+                new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line, list);
         mFields.setAdapter(field.id, adapter);
 
         // Get the drop-down button for the list and setup dialog
-        //noinspection ConstantConditions
-        getView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
+        requireView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
                 SimpleDialog.selectObjectDialog(
@@ -468,19 +433,12 @@ public abstract class BookBaseFragment
             return;
         }
 
-        //noinspection ConstantConditions
-        getView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
+        requireView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                TextFieldEditorDialogFragment frag = new TextFieldEditorDialogFragment();
-                Bundle args = new Bundle();
-                args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
-                args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
-                args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
-                args.putString(TextFieldEditorDialogFragment.BKEY_TEXT,
-                               field.getValue().toString());
-                args.putBoolean(TextFieldEditorDialogFragment.BKEY_MULTI_LINE, multiLine);
-                frag.setArguments(args);
+                TextFieldEditorDialogFragment frag =
+                        TextFieldEditorDialogFragment.newInstance(callerTag, field, dialogTitleId,
+                                                                  multiLine);
                 frag.show(requireFragmentManager(), null);
             }
         });
@@ -503,25 +461,10 @@ public abstract class BookBaseFragment
 
         field.getView().setOnClickListener(new View.OnClickListener() {
             public void onClick(@NonNull final View v) {
-                Object value = field.getValue();
-                String date;
-                if (todayIfNone && value.toString().isEmpty()) {
-                    date = DateUtils.localSqlDateForToday();
-                } else {
-                    date = value.toString();
-                }
+                PartialDatePickerDialogFragment frag =
+                        PartialDatePickerDialogFragment.newInstance(callerTag, field,
+                                                                    dialogTitleId, todayIfNone);
 
-                if (DEBUG_SWITCHES.DATETIME && BuildConfig.DEBUG) {
-                    Logger.info(this, "initPartialDatePicker", "date.toString(): " + date);
-                }
-
-                PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
-                Bundle args = new Bundle();
-                args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
-                args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
-                args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
-                args.putString(PartialDatePickerDialogFragment.BKEY_DATE, date);
-                frag.setArguments(args);
                 frag.show(requireFragmentManager(), null);
             }
         });
@@ -546,14 +489,11 @@ public abstract class BookBaseFragment
         field.getView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                CheckListEditorDialogFragment<T> frag = new CheckListEditorDialogFragment<>();
-                Bundle args = new Bundle();
-                args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
-                args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
-                args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
-                args.putParcelableArrayList(CheckListEditorDialogFragment.BKEY_CHECK_LIST,
-                                            listGetter.getList());
-                frag.setArguments(args);
+                CheckListEditorDialogFragment<T> frag =
+                        CheckListEditorDialogFragment.newInstance(callerTag, field,
+                                                                  dialogTitleId,
+                                                                  listGetter);
+
                 frag.show(requireFragmentManager(), null);
             }
         });
@@ -576,8 +516,8 @@ public abstract class BookBaseFragment
                     long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);
                     if (bookId > 0) {
                         // replace current book with the updated one,
-                        // no attempt is made to merge if in edit mode.
-                        Book book = Book.getBook(mDb, bookId);
+                        // ENHANCE: merge if in edit mode.
+                        Book book = new Book(bookId, mDb);
                         getBookManager().setBook(book);
                         loadFieldsFrom(book);
                     } else {
@@ -673,8 +613,7 @@ public abstract class BookBaseFragment
     private void showHideField(final boolean hideIfEmpty,
                                @IdRes final int fieldId,
                                @NonNull @IdRes final int... relatedFields) {
-        //noinspection ConstantConditions
-        final View view = getView().findViewById(fieldId);
+        final View view = requireView().findViewById(fieldId);
         if (view != null) {
             int visibility = view.getVisibility();
             if (hideIfEmpty) {
@@ -690,7 +629,7 @@ public abstract class BookBaseFragment
 
             // Set the related views
             for (int i : relatedFields) {
-                View rv = getView().findViewById(i);
+                View rv = requireView().findViewById(i);
                 if (rv != null) {
                     rv.setVisibility(visibility);
                 }

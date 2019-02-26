@@ -124,7 +124,7 @@ public class DBHelper
     /**
      * Constructor.
      *
-     * @param context      the context
+     * @param context      the caller context
      * @param factory      the cursor factor
      * @param synchronizer needed in onCreate/onUpgrade
      */
@@ -138,7 +138,7 @@ public class DBHelper
     }
 
     /**
-     * @param context caller context
+     * @param context the caller context
      *
      * @return the physical path of the database file.
      */
@@ -552,15 +552,6 @@ public class DBHelper
         syncedDb.analyze();
     }
 
-    public static class UpgradeException extends RuntimeException {
-
-        private static final long serialVersionUID = -6910121313418068318L;
-
-        UpgradeException(final String message) {
-            super(message);
-        }
-    }
-
     /**
      * This function is called each time the database is upgraded.
      * It will run all upgrade scripts between the oldVersion and the newVersion.
@@ -780,5 +771,15 @@ public class DBHelper
         createIndices(syncedDb, true);
         // Rebuild all triggers
         createTriggers(syncedDb);
+    }
+
+    public static class UpgradeException
+            extends RuntimeException {
+
+        private static final long serialVersionUID = -6910121313418068318L;
+
+        UpgradeException(final String message) {
+            super(message);
+        }
     }
 }

@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -37,6 +36,8 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -57,11 +58,12 @@ import com.eleybourn.bookcatalogue.database.DBCleaner;
 import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Single Activity to be the 'Main' activity for the app.
@@ -70,7 +72,8 @@ import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
  * @author Philip Warner
  */
 public class StartupActivity
-        extends AppCompatActivity {
+        extends AppCompatActivity
+        implements ProgressDialogFragment.OnProgressCancelledListener {
 
     /** the 'LastVersion' e.g. the version which was installed before the current one. */
     public static final String PREF_STARTUP_LAST_VERSION = "Startup.LastVersion";
@@ -98,20 +101,9 @@ public class StartupActivity
     private static WeakReference<StartupActivity> mStartupActivity;
     /** TaskId holder. Added when started. Removed when stopped. */
     private final Set<Integer> mAllTasks = new HashSet<>();
-    /**
-     * Progress Dialog for startup tasks.
-     * <p>
-     *
-     * @deprecated API: 26 this is a global requirement:
-     * ProgressDialog is deprecated
-     * https://developer.android.com/reference/android/app/ProgressDialog
-     * Suggested: ProgressBar or Notification.
-     * https://materialdoc.com/components/progress
-     * https://materialdoc.com/patterns/notifications/
-     */
+    /** Progress Dialog for startup tasks. */
     @Nullable
-    @Deprecated
-    private ProgressDialog mProgressDialog;
+    private ProgressDialogFragment mProgressDialog;
     /** Flag indicating a backup is required after startup. */
     private boolean mBackupRequired;
     /** stage the startup is at. */
@@ -153,57 +145,6 @@ public class StartupActivity
         }
     }
 
-    private void initStorage() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    UniqueId.REQ_ANDROID_PERMISSIONS);
-            return;
-        }
-        int msgId = StorageUtils.initSharedDirectories();
-        if (msgId != 0) {
-            StandardDialogs.showUserMessage(msgId);
-        }
-        startNextStage();
-    }
-
-    private void openProgressDialog() {
-        mProgressDialog = ProgressDialog.show(
-                this,
-                getString(R.string.lbl_application_startup),
-                getString(R.string.progress_msg_starting_up),
-                true,
-                true,
-                new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(@NonNull final DialogInterface dialog) {
-                        // Cancelling the list cancels the activity.
-                        finish();
-                    }
-                });
-    }
-
-    private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-    }
-
-    private void openDBA() {
-        try {
-            mDb = new DBA(this);
-        } catch (DBHelper.UpgradeException e) {
-            Logger.info(this, e.getLocalizedMessage());
-            BookCatalogueApp.showNotification(this, R.string.error_unknown,
-                                              e.getLocalizedMessage());
-            finish();
-        }
-    }
-
     /**
      * determines the order of startup stages.
      */
@@ -219,14 +160,12 @@ public class StartupActivity
                 openProgressDialog();
 
                 openDBA();
-
                 startTasks();
                 break;
 
             case 2:
                 // Get rid of the progress dialog
                 closeProgressDialog();
-
                 // tasks are done.
                 if (mDb != null) {
                     mDb.close();
@@ -257,7 +196,7 @@ public class StartupActivity
         if (mStartupTasksShouldBeStarted) {
             mStartupActivity = new WeakReference<>(this);
 
-            updateProgress(R.string.progress_msg_starting_up);
+            updateProgress(getString(R.string.progress_msg_starting_up));
 
             int taskId = 0;
             new BuildLanguageMappingsTask(++taskId).execute();
@@ -288,38 +227,6 @@ public class StartupActivity
     }
 
     /**
-     * Update the progress dialog, if it has not been dismissed.
-     */
-    public void updateProgress(@StringRes final int stringId) {
-        updateProgress(getString(stringId));
-    }
-
-    /**
-     * Update the progress dialog, if it has not been dismissed.
-     */
-    public void updateProgress(@NonNull final String message) {
-        // If mProgressDialog is null, it has been dismissed. Don't update.
-        if (mProgressDialog == null) {
-            return;
-        }
-
-        // There is a small chance that this message could be set to display
-        // *after* the activity is finished,
-        // so we check and we also trap, log and ignore errors.
-        // See http://code.google.com/p/android/issues/detail?id=3953
-        if (!isFinishing()) {
-            try {
-                mProgressDialog.setMessage(message);
-                if (!mProgressDialog.isShowing()) {
-                    mProgressDialog.show();
-                }
-            } catch (RuntimeException e) {
-                Logger.error(e);
-            }
-        }
-    }
-
-    /**
      * Called in UI thread after last startup task completes, or if there are no tasks to queue.
      */
     private void checkForUpgrades() {
@@ -337,10 +244,10 @@ public class StartupActivity
             return;
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
+        final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.about_lbl_upgrade)
                 .setIcon(R.drawable.ic_info_outline)
+                .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
                 .create();
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
@@ -355,11 +262,16 @@ public class StartupActivity
         mUpgradeMessageShown = true;
     }
 
+    /**
+     * If the backup-counter has reached zer, prompt the user to make a backup.
+     *
+     * Note the backup is not done here; we just set a flag if requested.
+     */
     private void backupRequired() {
         mBackupRequired = false;
 
         if (decreaseStartupCounters()) {
-            AlertDialog dialog = new AlertDialog.Builder(this)
+            final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setMessage(R.string.backup_request)
                     .setTitle(R.string.lbl_backup_dialog)
                     .setIcon(R.drawable.ic_help_outline)
@@ -395,6 +307,75 @@ public class StartupActivity
     }
 
     /**
+     * Last step: start the main user activity.
+     * If requested earlier, run a backup now.
+     */
+    private void gotoMainScreen() {
+        Intent intent = new Intent(this, BooksOnBookshelf.class);
+        startActivity(intent);
+
+        if (mBackupRequired) {
+            Intent backupIntent = new Intent(this, BackupAndRestoreActivity.class);
+            backupIntent.putExtra(BackupAndRestoreActivity.BKEY_MODE,
+                                  BackupAndRestoreActivity.BVAL_MODE_SAVE);
+            startActivity(backupIntent);
+        }
+
+        // We are done here.
+        finish();
+    }
+
+
+
+    private void openProgressDialog() {
+        mProgressDialog = ProgressDialogFragment
+                .newInstance(R.string.lbl_application_startup, true,0);
+        mProgressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.TAG);
+        mProgressDialog.setMessage(getString(R.string.progress_msg_starting_up));
+    }
+
+    /**
+     * Update the progress dialog, if it has not been dismissed.
+     */
+    public void updateProgress(@StringRes final int stringId) {
+        updateProgress(getString(stringId));
+    }
+
+    /**
+     * Update the progress dialog, if it has not been dismissed.
+     */
+    public void updateProgress(@NonNull final String message) {
+        // If mProgressDialog is null, it has been dismissed. Don't update.
+        if (mProgressDialog == null) {
+            return;
+        }
+
+        // There is a small chance that this message could be set to display
+        // *after* the activity is finished,
+        // so we check and we also trap, log and ignore errors.
+        // See http://code.google.com/p/android/issues/detail?id=3953
+        if (!isFinishing()) {
+            try {
+                mProgressDialog.setMessage(message);
+            } catch (RuntimeException e) {
+                Logger.error(e);
+            }
+        }
+    }
+
+    @Override
+    public void onProgressCancelled(@Nullable final Integer taskId) {
+        // Cancelling the progress dialog cancels the activity.
+        finish();
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+    }
+    /**
      * Decrease and store the number of times the app was opened.
      * Used for proposing Backup/Amazon
      *
@@ -417,22 +398,34 @@ public class StartupActivity
         return opened == 0;
     }
 
-    /**
-     * Last step.
-     */
-    private void gotoMainScreen() {
-        Intent intent = new Intent(this, BooksOnBookshelf.class);
-        startActivity(intent);
 
-        if (mBackupRequired) {
-            Intent backupIntent = new Intent(this, BackupAndRestoreActivity.class);
-            backupIntent.putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                                  BackupAndRestoreActivity.BVAL_MODE_SAVE);
-            startActivity(backupIntent);
+
+    private void initStorage() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    UniqueId.REQ_ANDROID_PERMISSIONS);
+            return;
         }
+        int msgId = StorageUtils.initSharedDirectories();
+        if (msgId != 0) {
+            UserMessage.showUserMessage(this, msgId);
+        }
+        startNextStage();
+    }
 
-        // We are done here.
-        finish();
+    private void openDBA() {
+        try {
+            mDb = new DBA(this);
+        } catch (DBHelper.UpgradeException e) {
+            Logger.info(this, e.getLocalizedMessage());
+            BookCatalogueApp.showNotification(this, R.string.error_unknown,
+                                              e.getLocalizedMessage());
+            finish();
+        }
     }
 
     /**
@@ -485,8 +478,10 @@ public class StartupActivity
      * Because it is in the UI thread, it is not possible for this code to be called until after
      * onCreate() completes, so a race condition is not possible. Equally well, tasks should only
      * be queued in onCreate().
+     *
+     * @param taskId a task identifier.
      */
-    public void onStartupTaskFinished(final int taskId) {
+    private void onStartupTaskFinished(final int taskId) {
         mAllTasks.remove(taskId);
         if (BuildConfig.DEBUG) {
             Logger.info(this, "Task finished: " + taskId);
@@ -505,12 +500,14 @@ public class StartupActivity
         /**
          * Constructor.
          *
-         * @param taskId a generic identifier
+         * @param taskId a task identifier, will be returned in the task finished listener.
          */
+        @UiThread
         StartupTask(final int taskId) {
             mTaskId = taskId;
         }
 
+        @UiThread
         @Override
         protected void onProgressUpdate(@StringRes final Integer... values) {
             StartupActivity a = StartupActivity.getActiveActivity();
@@ -519,6 +516,7 @@ public class StartupActivity
             }
         }
 
+        @UiThread
         @Override
         protected void onPostExecute(final Void result) {
             StartupActivity a = StartupActivity.getActiveActivity();
@@ -531,12 +529,17 @@ public class StartupActivity
     /**
      * Run 'analyse' on our databases.
      */
-    public static class AnalyzeDbTask
+    static class AnalyzeDbTask
             extends StartupTask {
 
         @NonNull
         private final DBA mDb;
 
+        /**
+         * @param taskId a task identifier, will be returned in the task finished listener.
+         * @param db     the database
+         */
+        @UiThread
         AnalyzeDbTask(final int taskId,
                       @NonNull final DBA db) {
             super(taskId);
@@ -560,7 +563,7 @@ public class StartupActivity
                      .apply();
             }
 
-            if (BooklistBuilder.thumbnailsAreCached()) {
+            if (BooklistBuilder.imagesAreCached()) {
                 try (CoversDBA cdb = CoversDBA.getInstance()) {
                     cdb.analyze();
                 }
@@ -574,14 +577,15 @@ public class StartupActivity
      * Build the dedicated SharedPreferences file with the language mappings.
      * Only build once per Locale.
      */
-    public static class BuildLanguageMappingsTask
+    static class BuildLanguageMappingsTask
             extends StartupTask {
 
         /**
          * Constructor.
          *
-         * @param taskId a generic identifier
+         * @param taskId a task identifier, will be returned in the task finished listener.
          */
+        @UiThread
         BuildLanguageMappingsTask(final int taskId) {
             super(taskId);
         }
@@ -604,7 +608,7 @@ public class StartupActivity
     /**
      * Data cleaning. This is done each startup. TODO: is that needed ?
      */
-    public static class DBCleanerTask
+    static class DBCleanerTask
             extends StartupTask {
 
         @NonNull
@@ -613,14 +617,17 @@ public class StartupActivity
         /**
          * Constructor.
          *
-         * @param taskId a generic identifier
+         * @param taskId a task identifier, will be returned in the task finished listener.
+         * @param db     the database
          */
+        @UiThread
         DBCleanerTask(final int taskId,
                       @NonNull final DBA db) {
             super(taskId);
             mDb = db;
         }
 
+        @WorkerThread
         @Override
         protected Void doInBackground(final Void... params) {
             publishProgress(R.string.progress_msg_cleaning_database);
@@ -650,7 +657,7 @@ public class StartupActivity
      *
      * @author Philip Warner
      */
-    public static class RebuildFtsTask
+    static class RebuildFtsTask
             extends StartupTask {
 
         @NonNull
@@ -659,8 +666,10 @@ public class StartupActivity
         /**
          * Constructor.
          *
-         * @param taskId a generic identifier
+         * @param taskId a task identifier, will be returned in the task finished listener.
+         * @param db     the database
          */
+        @UiThread
         RebuildFtsTask(final int taskId,
                        @NonNull final DBA db) {
             super(taskId);
@@ -668,6 +677,7 @@ public class StartupActivity
         }
 
         @Override
+        @WorkerThread
         protected Void doInBackground(final Void... params) {
             publishProgress(R.string.progress_msg_rebuilding_search_index);
 

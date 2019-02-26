@@ -60,7 +60,7 @@
     <string name="lbl_notes">Poznámky</string>
     <string name="lbl_loaned_to_long">Tato kniha byla půjčena:</string>
     <string name="nobody">Nikdo</string>
-    <string name="lbl_loan_to">Půjčit knihu:</string>
+    <string name="lbl_lend_to">Půjčit knihu:</string>
     <string name="btn_loan_returned">Vráceno</string>
     <string name="name">Jméno</string>
     <string name="about_lbl_website">WWW stránky:</string>
@@ -257,7 +257,7 @@
     <string name="gr_tq_occurred_at">(nastal v %1$s)</string>
     <string name="unknown_uc">NEZNÁMÉ</string>
     <string name="warning_book_was_deleted_uc">TATO KNIHA BYLA SMAZÁNA</string>
-    <string name="lbl_by_authors">(kým) %1$s</string>
+    <string name="lbl_by_author_s">(kým) %1$s</string>
     <string name="warning_no_matching_book_found">Nebyla nalezena odpovídající kniha</string>
     <string name="warning_no_isbn_stored_for_book">Kniha nemá uložen ISBN</string>
     <string name="title_select_an_action">Zvolte akci</string>

@@ -2,23 +2,23 @@ package com.eleybourn.bookcatalogue.booklist.prefs;
 
 import android.content.SharedPreferences;
 
-import com.eleybourn.bookcatalogue.utils.Prefs;
-
-import java.util.Set;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.util.Set;
+
+import com.eleybourn.bookcatalogue.utils.Prefs;
+
 /**
  * Used for {@link androidx.preference.MultiSelectListPreference}
- *
+ * <p>
  * We basically want a bitmask/int.
  * But the Preference insists on a Set<String>
  */
 public class PBitmask
-    extends PPrefBase<Integer>
-    implements PInt {
+        extends PPrefBase<Integer>
+        implements PInt {
 
     /**
      * Constructor. Uses the global setting as the default value,
@@ -29,7 +29,7 @@ public class PBitmask
      * @param defaultValue default to use if there is no global default
      */
     public PBitmask(@StringRes final int key,
-                    @Nullable final String uuid,
+                    @NonNull final String uuid,
                     final int defaultValue) {
         super(key, uuid, Prefs.getMultiSelectListPreference(key, defaultValue));
     }
@@ -39,7 +39,7 @@ public class PBitmask
      */
     @Override
     public void set(@Nullable final Integer value) {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             mNonPersistedValue = value;
         } else if (value == null) {
             Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
@@ -68,7 +68,7 @@ public class PBitmask
     @NonNull
     @Override
     public Integer get() {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             Set<String> sValue = Prefs.getPrefs(mUuid).getStringSet(getKey(), null);

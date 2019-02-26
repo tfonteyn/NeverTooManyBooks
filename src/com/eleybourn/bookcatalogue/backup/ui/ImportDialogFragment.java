@@ -13,6 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
+
+import java.io.IOException;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -23,26 +27,28 @@ import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.RTE;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
-
 public class ImportDialogFragment
         extends DialogFragment {
 
-    private final ImportSettings settings = new ImportSettings();
+    /** Fragment manager tag. */
+    public static final String TAG = ImportDialogFragment.class.getSimpleName();
+
+    private ImportSettings mImportSettings;
+
+    private FragmentActivity mActivity;
 
     /**
      * Constructor.
      *
      * @param settings import configuration settings
+     *
      * @return Created fragment
      */
     @NonNull
     public static ImportDialogFragment newInstance(@NonNull final ImportSettings settings) {
         ImportDialogFragment frag = new ImportDialogFragment();
         Bundle args = new Bundle();
-        args.putString(UniqueId.BKEY_FILE_SPEC, settings.file.getAbsolutePath());
+        args.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS, settings);
         frag.setArguments(args);
         return frag;
     }
@@ -66,21 +72,19 @@ public class ImportDialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // savedInstanceState not used.
-        Bundle args = getArguments();
-        //noinspection ConstantConditions
-        settings.file = new File(Objects.requireNonNull(args.getString(UniqueId.BKEY_FILE_SPEC)));
+        mActivity = requireActivity();
+        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        mImportSettings = args.getParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS);
 
-        View root = requireActivity().getLayoutInflater().inflate(R.layout.dialog_import_options,
-                                                                  null);
+        View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_import_options, null);
 
         root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
                 updateOptions();
                 OnImportTypeSelectionDialogResultsListener listener =
-                        (OnImportTypeSelectionDialogResultsListener) requireActivity();
-                listener.onImportTypeSelectionDialogResult(settings);
+                        (OnImportTypeSelectionDialogResultsListener) mActivity;
+                listener.onImportTypeSelectionDialogResult(mImportSettings);
                 dismiss();
             }
         });
@@ -99,7 +103,7 @@ public class ImportDialogFragment
             blurb.setText(R.string.import_warning_old_archive);
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
+        AlertDialog dialog = new AlertDialog.Builder(mActivity)
                 .setView(root)
                 .setTitle(R.string.lbl_import_from_archive)
                 .setIcon(R.drawable.ic_warning)
@@ -113,18 +117,18 @@ public class ImportDialogFragment
         // what to import. All three checked == ImportSettings.ALL
         //noinspection ConstantConditions
         if (((Checkable) dialog.findViewById(R.id.books_check)).isChecked()) {
-            settings.what |= ImportSettings.BOOK_CSV;
+            mImportSettings.what |= ImportSettings.BOOK_CSV;
         }
         if (((Checkable) dialog.findViewById(R.id.covers_check)).isChecked()) {
-            settings.what |= ImportSettings.COVERS;
+            mImportSettings.what |= ImportSettings.COVERS;
         }
         if (((Checkable) dialog.findViewById(R.id.preferences_check)).isChecked()) {
-            settings.what |= ImportSettings.PREFERENCES | ImportSettings.BOOK_LIST_STYLES;
+            mImportSettings.what |= ImportSettings.PREFERENCES | ImportSettings.BOOK_LIST_STYLES;
         }
 
         Checkable radioNewAndUpdatedBooks = dialog.findViewById(R.id.radioNewAndUpdatedBooks);
         if (radioNewAndUpdatedBooks.isChecked()) {
-            settings.what |= ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED;
+            mImportSettings.what |= ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED;
         }
     }
 
@@ -133,7 +137,8 @@ public class ImportDialogFragment
      */
     private boolean archiveHasValidDates() {
         boolean mArchiveHasValidDates;
-        try (BackupReader reader = BackupManager.readFrom(settings.file)) {
+        //noinspection ConstantConditions
+        try (BackupReader reader = BackupManager.readFrom(mImportSettings.file)) {
             Objects.requireNonNull(reader);
             BackupInfo info = reader.getInfo();
             reader.close();
@@ -143,6 +148,18 @@ public class ImportDialogFragment
             mArchiveHasValidDates = false;
         }
         return mArchiveHasValidDates;
+    }
+
+    @Override
+    public void onPause() {
+        updateOptions();
+        super.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(UniqueId.BKEY_IMPORT_EXPORT_SETTINGS, mImportSettings);
     }
 
     /**

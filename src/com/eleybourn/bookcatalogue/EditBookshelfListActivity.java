@@ -34,18 +34,18 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 import com.eleybourn.bookcatalogue.adapters.BookshelfAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialog;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
-
-import java.util.ArrayList;
 
 
 /**
@@ -55,8 +55,10 @@ import java.util.ArrayList;
  * we don't want/need a {@link TouchListView}
  */
 public class EditBookshelfListActivity
-        extends BaseListActivity {
+        extends BaseListActivity
+        implements EditBookshelfDialogFragment.OnBookshelfChangedListener {
 
+    /** the list we're editing. */
     private ArrayList<Bookshelf> mList;
 
     @Override
@@ -135,7 +137,7 @@ public class EditBookshelfListActivity
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
                     // e.g. count > 2, then you can delete '1'
-                    StandardDialogs.showUserMessage(this, R.string.warning_cannot_delete_1st_bs);
+                    UserMessage.showUserMessage(this, R.string.warning_cannot_delete_1st_bs);
                 }
                 return true;
 
@@ -193,19 +195,16 @@ public class EditBookshelfListActivity
      * @param bookshelf to edit
      */
     private void doEditDialog(@NonNull final Bookshelf bookshelf) {
-        EditBookshelfDialog d =
-                new EditBookshelfDialog(this, mDb,
-                                        new EditBookshelfDialog.OnChanged() {
+        EditBookshelfDialogFragment d = EditBookshelfDialogFragment.newInstance(bookshelf);
+        d.show(getSupportFragmentManager(), EditBookshelfDialogFragment.TAG);
+    }
 
-                                            @Override
-                                            public void onChanged(final long bookshelfId,
-                                                                  final int booksMoved) {
-                                                populateList();
-                                                Intent data = new Intent();
-                                                data.putExtra(UniqueId.KEY_ID, bookshelfId);
-                                                setResult(Activity.RESULT_OK, data);
-                                            }
-                                        });
-        d.edit(bookshelf);
+    @Override
+    public void onBookshelfChanged(final long bookshelfId,
+                                   final int booksMoved) {
+        populateList();
+        Intent data = new Intent();
+        data.putExtra(UniqueId.KEY_ID, bookshelfId);
+        setResult(Activity.RESULT_OK, data);
     }
 }

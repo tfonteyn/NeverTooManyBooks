@@ -27,9 +27,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +38,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
+
 /**
  * Non-error messages easier to find in the logfile.
  * They always start with either:
@@ -49,8 +49,7 @@ import java.util.Date;
  * <p>
  * error methods will always print a stacktrace (even if you do not pass in an exception)
  * <p>
- * ENHANCE: Remove Log.error! Replace with ACRA?
- * ACRA.getErrorReporter().handleException(e);
+ * Log.d: compiled in, but stripped out at runtime
  */
 public final class Logger {
 
@@ -58,8 +57,7 @@ public final class Logger {
 
     private static final String TAG = "BC_Logger";
     @SuppressLint("SimpleDateFormat")
-    private static final DateFormat DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private Logger() {
     }
@@ -86,7 +84,7 @@ public final class Logger {
     public static void info(@NonNull final Class clazz,
                             @Nullable final String message) {
         String msg = "INFO|" + clazz.getCanonicalName() + '|' + message;
-        Log.e(TAG, msg);
+        Log.d(TAG, msg);
         writeToErrorLog(msg);
     }
 
@@ -98,7 +96,7 @@ public final class Logger {
      */
     public static void info(@NonNull final Object object,
                             @Nullable final String message) {
-        info(object,"",message);
+        info(object, "", message);
     }
 
     /**
@@ -118,7 +116,7 @@ public final class Logger {
         }
         msg.append(message);
         String m = msg.toString();
-        Log.e(TAG, m);
+        Log.d(TAG, m);
         writeToErrorLog(m);
     }
 
@@ -169,12 +167,9 @@ public final class Logger {
                     + "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n"
                     + message + '\n';
         }
-        // Log the exception to the console in full when in debug, but only the message
-        // when deployed. Either way, the exception will be in the physical logfile.
+
         if (/* always log */ BuildConfig.DEBUG) {
-            Log.e(TAG, error + '\n' + stacktrace);
-        } else {
-            Log.e(TAG, message);
+            Log.d(TAG, error + '\n' + stacktrace);
         }
 
         writeToErrorLog(error + stacktrace);

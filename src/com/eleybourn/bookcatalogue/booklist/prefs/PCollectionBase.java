@@ -7,16 +7,16 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.utils.Prefs;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.eleybourn.bookcatalogue.utils.Prefs;
+
 /**
  * Base for a Collection (List, Set,...) of elements (Integer, String, ...)
- *
+ * <p>
  * All of them are written as a CSV String to preserve the order.
  *
  * @param <E> type of collection element
@@ -34,14 +34,14 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      * @param defaultValue in memory default
      */
     PCollectionBase(final int key,
-                    @Nullable final String uuid,
+                    @NonNull final String uuid,
                     @NonNull final T defaultValue) {
         super(key, uuid, defaultValue);
     }
 
     @Override
     public void set(@Nullable final T value) {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             mNonPersistedValue = value;
         } else if (value == null) {
             Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
@@ -55,8 +55,8 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      * Bypass the real type
      */
     public void set(@Nullable final Set<String> value) {
-        if (mUuid == null) {
-            throw new IllegalArgumentException("uuid was null");
+        if (mUuid.isEmpty()) {
+            throw new IllegalArgumentException("uuid was empty");
         }
 
         if (value == null) {
@@ -78,7 +78,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     public void clear() {
-        if (mUuid == null ) {
+        if (mUuid.isEmpty()) {
             //noinspection ConstantConditions
             mNonPersistedValue.clear();
         } else {
@@ -92,7 +92,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      * @param value to add
      */
     public void add(@NonNull final E value) {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             //noinspection ConstantConditions
             mNonPersistedValue.add(value);
         } else {
@@ -107,7 +107,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     public void remove(@NonNull final E value) {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             //noinspection ConstantConditions
             mNonPersistedValue.remove(value);
         } else {
@@ -131,7 +131,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest) {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             // builtin ? then write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
             //noinspection ConstantConditions

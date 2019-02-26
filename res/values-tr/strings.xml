@@ -64,7 +64,7 @@
     <string name="lbl_notes">Notlar</string>
     <string name="lbl_loaned_to_long">Kitabın ödünç verildiği kişi:</string>
     <string name="nobody">Hiç kimse</string>
-    <string name="lbl_loan_to">Şuna ödünç ver:</string>
+    <string name="lbl_lend_to">Şuna ödünç ver:</string>
     <string name="btn_loan_returned">Geri geldi</string>
     <string name="name">Ad</string>
     <string name="about_lbl_website">İnteret Sayfası</string>
@@ -262,7 +262,7 @@
     <string name="gr_tq_occurred_at">(%1$s içinde oluştu)</string>
     <string name="unknown_uc">BİLİNMEYEN</string>
     <string name="warning_book_was_deleted_uc">BU BETİK SİLİNDİ</string>
-    <string name="lbl_by_authors">%1$s ile</string>
+    <string name="lbl_by_author_s">%1$s ile</string>
     <string name="warning_no_matching_book_found">Eşleşen kitap bulunamadı</string>
     <string name="warning_no_isbn_stored_for_book">Bu kitap için bir ISBN depolanmamış</string>
     <string name="title_select_an_action">Bir eylem seçin</string>

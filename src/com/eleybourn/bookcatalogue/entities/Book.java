@@ -33,8 +33,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.FileProvider;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BookSearchActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -49,12 +54,6 @@ import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Represents the underlying data for a book.
@@ -140,12 +139,16 @@ public class Book
     }
 
     /**
-     * Private constructor.
+     * Constructor.
      * <p>
-     * Either load from database if existing book, or a new Book.
+     * If a valid bookId exists it will populate the Book from the database.
+     * Otherwise will leave the Book blank for new books.
+     *
+     * @param bookId of book (may be 0 for new)
+     * @param db     database, used to load the book data IF the bookId is valid.
      */
-    private Book(@NonNull final DBA db,
-                 final long bookId) {
+    public Book(final long bookId,
+                @NonNull final DBA db) {
         initValidatorsAndAccessors();
         if (bookId > 0) {
             reload(db, bookId);
@@ -154,8 +157,11 @@ public class Book
 
     /**
      * Constructor.
+     * <p>
+     * Populate a book object with the fields from the bundle.
+     * Can contain an id, but does not have.
      *
-     * @param bookData Bundle with book data; can but does not have to, contain the id.
+     * @param bookData Bundle with book data
      */
     public Book(@NonNull final Bundle bookData) {
         initValidatorsAndAccessors();
@@ -163,49 +169,16 @@ public class Book
     }
 
     /**
-     * This function will populate the Book in three different ways.
-     * <p>
-     * 1. If fields (BKEY_BOOK_DATA) have been passed from another activity
-     * (e.g. {@link BookSearchActivity}) it will populate the Book from the bundle
-     * <p>
-     * 2. If a valid bookId exists it will populate the Book from the database
-     * <p>
-     * 3. It will leave the Book blank for new books.
-     * <p>
-     * So *always* returns a valid Book.
+     * static helper to set the read-status for a given book id.
      *
-     * @param bookId   of book (may be 0 for new)
-     * @param bookData Bundle with book data (may be null)
+     * ENHANCE: create a dedicated SQL entry instead of loading the full book first.
      */
-    @NonNull
-    public static Book getBook(@NonNull final DBA db,
-                               final long bookId,
-                               @Nullable final Bundle bookData) {
-        // if we have a populated bundle, use that.
-        if (bookData != null) {
-            return new Book(bookData);
-        }
-        // otherwise, create a new book and try to load the data from the database.
-        return new Book(db, bookId);
-    }
-
-    /**
-     * shortcut if we don't have a bundle.
-     *
-     * @param bookId of book (may be 0 for new)
-     */
-    @NonNull
-    public static Book getBook(@NonNull final DBA db,
-                               final long bookId) {
-        return new Book(db, bookId);
-    }
-
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean setRead(@NonNull final DBA db,
-                                  final long bookId,
-                                  final boolean isRead) {
+    public static boolean setRead(final long bookId,
+                                  final boolean isRead,
+                                  @NonNull final DBA db) {
         // load from database
-        Book book = getBook(db, bookId);
+        Book book = new Book(bookId, db);
         book.putBoolean(Book.IS_READ, isRead);
         book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
         return db.updateBook(bookId, book, 0) == 1;
@@ -301,7 +274,7 @@ public class Book
         bookData.putString(UniqueId.KEY_BOOK_PUBLISHER,
                            getString(UniqueId.KEY_BOOK_PUBLISHER));
         bookData.putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                        getLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
+                         getLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
         bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED,
                            getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
         bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED,
@@ -324,13 +297,13 @@ public class Book
 
         // partially edition info, partially use-owned info.
         bookData.putLong(UniqueId.KEY_BOOK_EDITION_BITMASK,
-                        getLong(UniqueId.KEY_BOOK_EDITION_BITMASK));
+                         getLong(UniqueId.KEY_BOOK_EDITION_BITMASK));
 
         // user data
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
         bookData.putLong(UniqueId.KEY_BOOK_SIGNED,
-                            getLong(UniqueId.KEY_BOOK_SIGNED));
+                         getLong(UniqueId.KEY_BOOK_SIGNED));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
         bookData.putLong(UniqueId.KEY_BOOK_READ,
@@ -613,25 +586,25 @@ public class Book
                                             TocEntry.Type.MULTIPLE_AUTHORS));
     }
 
-    /**
-     * Lend this book to someone.
-     *
-     * @param db     the database
-     * @param loanee person to lend to
-     */
-    public void lend(final DBA db,
-                     final String loanee) {
-        db.insertLoan(getId(), loanee);
-    }
-
-    /**
-     * A loaned book is returned.
-     *
-     * @param db the database
-     */
-    public void loanReturned(final DBA db) {
-        db.deleteLoan(getId());
-    }
+//    /**
+//     * Lend this book to someone.
+//     *
+//     * @param db     the database
+//     * @param loanee person to lend to
+//     */
+//    public void lend(final DBA db,
+//                     final String loanee) {
+//        db.insertLoan(getId(), loanee);
+//    }
+//
+//    /**
+//     * A loaned book is returned.
+//     *
+//     * @param db the database
+//     */
+//    public void loanReturned(final DBA db) {
+//        db.deleteLoan(getId());
+//    }
 
     /**
      * Used to edit the Editions of this Book.

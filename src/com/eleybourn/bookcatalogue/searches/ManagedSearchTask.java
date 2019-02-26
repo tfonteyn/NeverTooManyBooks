@@ -78,7 +78,7 @@ public class ManagedSearchTask
      * Constructor. Will search according to passed parameters. If an ISBN
      * is provided that will be used to the exclusion of all others.
      *
-     * @param taskId     identifier for this task.
+     * @param taskId a task identifier, will be returned in the task finished listener.
      * @param threadName name for the thread
      * @param manager    TaskHandler implementation
      */

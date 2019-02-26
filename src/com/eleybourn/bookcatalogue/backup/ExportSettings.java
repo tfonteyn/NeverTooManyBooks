@@ -1,5 +1,8 @@
 package com.eleybourn.bookcatalogue.backup;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -7,7 +10,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.Objects;
 
-public class ExportSettings {
+public class ExportSettings implements Parcelable {
 
     /*
      * options as to *what* should be exported
@@ -74,6 +77,57 @@ public class ExportSettings {
     public ExportSettings(@NonNull final File file) {
         this.file = file;
     }
+
+    protected ExportSettings(@NonNull final Parcel in) {
+        what = in.readInt();
+        if (in.readInt() == 1) {
+            file = new File(in.readString());
+        }
+        if (in.readInt() == 1) {
+            dateFrom = new Date(in.readLong());
+        }
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(what);
+
+        if (file != null) {
+            // has file
+            dest.writeInt(1);
+            dest.writeString(file.getPath());
+        } else {
+            // no file
+            dest.writeInt(0);
+        }
+
+        if (dateFrom != null) {
+            // has date
+            dest.writeInt(1);
+            dest.writeLong(dateFrom.getTime());
+        } else {
+            // no date
+            dest.writeInt(0);
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<ExportSettings> CREATOR = new Creator<ExportSettings>() {
+        @Override
+        public ExportSettings createFromParcel(@NonNull final Parcel source) {
+            return new ExportSettings(source);
+        }
+
+        @Override
+        public ExportSettings[] newArray(final int size) {
+            return new ExportSettings[size];
+        }
+    };
 
     public void validate() {
         // if we want 'since', we *must* have a valid dateFrom

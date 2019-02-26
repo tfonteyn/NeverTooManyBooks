@@ -71,7 +71,7 @@
     </string>
     <string name="new_in_500"><![CDATA[
         <p><b>Nieuw in 5.0.0</b>\n\n
-            * Een niet-bewerkbaar overzicht van de boekdetails met \'fling\' ondersteuning! (Zie \“Ander Voorkeuren\”) (Nick Silin)\n\n
+            * Een niet-bewerkbaar overzicht van de boekdetails met “fling” ondersteuning! (Zie “Andere Voorkeuren”) (Nick Silin)\n\n
             * Archivering (Back-up & Importeren) van de gehele catalogus, inclusief boeken, omslagen, voorkeuren en stijlen\n\n
             * Geüpdate interface met Actiebalk ondersteuning voor gebruiksgemak en om beter te werken op apparaten zonder menu-knoppen\n\n
             * Ondersteuning voor de pic2shop scanner (beter voor camera\'s met vaste focus, omstandigheden met weinig licht en voor webcam camera\'s)\n\n
@@ -86,7 +86,7 @@
     </string>
     <string name="new_in_424"><![CDATA[
         <p><b>New in 4.2.4</b>\n\n
-            * Een niet-bewerkbare weergave van boekdetails met \'fling\' ondersteuning! (Zie \“Andere voorkeuren\”) (Nick Silin)\n\n
+            * Een niet-bewerkbare weergave van boekdetails met “fling” ondersteuning! (Zie “Andere voorkeuren”) (Nick Silin)\n\n
             * Ondersteuning voor pic2shop scanner (beter voor vaste focus, minder licht en voor webcam camera\'s)\n\n
             * Eerdere controle van internetverbinding bij het scnnen van boeken\n\n
             * Meer Duitse vertalingsupdates (Robert Wetzlmayr)\n\n
@@ -110,7 +110,7 @@
     </string>
     <string name="new_in_421"><![CDATA[
         <p><b>New in 4.2.1</b>\n\n
-            * Crash gefixt bij uitklappen lijstitems en gebruiken van \'Alles uitklappen\'\n\n
+            * Crash gefixt bij uitklappen lijstitems en gebruiken van “Alles uitklappen”\n\n
         </p>]]>
     </string>
     <string name="new_in_420"><![CDATA[
@@ -127,7 +127,7 @@
             * Bijgewerkte OK/Annuleren knop posities conform de Android standaards\n\n
             * Volledig toetsenbord beschikbaar bij invullen ASINs\n\n
             * Bewaren van 5 voorgaande exportbestanden\n\n
-            * Betere detectie van \'veranderingen\' bij bewerken van boeken\n\n
+            * Betere detectie van “veranderingen” bij bewerken van boeken\n\n
             * Ondersteuning voor een meer typen vane galerij- en bestandsbrowsers\n\n
             * Betrouwbaardere datum afhandeling bij import/export/sync\n\n
             * Herstelde afhandeling van dubbele bloemlezingtitels\n\n

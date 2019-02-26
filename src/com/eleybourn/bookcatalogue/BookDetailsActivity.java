@@ -24,6 +24,7 @@ import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -32,7 +33,8 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
  * Hosting activity for showing a book.
  */
 public class BookDetailsActivity
-        extends BaseActivity {
+        extends BaseActivity
+        implements BookChangedListener {
 
     @Override
     protected int getLayoutId() {
@@ -44,14 +46,24 @@ public class BookDetailsActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle extras = getIntent().getExtras();
-        BookFragment frag = new BookFragment();
-        frag.setArguments(extras);
+        if (null == getSupportFragmentManager().findFragmentByTag(BookFragment.TAG)) {
+            Fragment frag = new BookFragment();
+            frag.setArguments(getIntent().getExtras());
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .add(R.id.main_fragment, frag, BookFragment.TAG)
+                    .commit();
+        }
+    }
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.main_fragment, frag, BookFragment.TAG)
-                .commit();
+    @Override
+    public void onBookChanged(final long bookId,
+                              final int fieldsChanged,
+                              @Nullable final Bundle data) {
+        BookFragment frag = (BookFragment) getSupportFragmentManager()
+                .findFragmentByTag(BookFragment.TAG);
+        //noinspection ConstantConditions
+        frag.onBookChanged(bookId, fieldsChanged, data);
     }
 }

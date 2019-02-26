@@ -124,9 +124,9 @@
     <!-- Preference - Determines what is show in book list header -->
     <string name="pt_bob_header">Details in de koptekst</string>
     <string-array name="pe_bob_header">
-        <item>Toon aantal boeken</item>
-        <item>Toon 1ste niveau koptekst</item>
-        <item>Toon 2de niveau koptekst</item>
+        <item>Aantal boeken</item>
+        <item>Toon 1ste niveau</item>
+        <item>Toon 2de niveau</item>
     </string-array>
 
     <!-- Preference - Show thumbnail image for each book -->

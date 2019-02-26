@@ -386,6 +386,7 @@ public class Author
     /**
      * Each author is defined exactly by a unique ID.
      */
+    @SuppressWarnings("SameReturnValue")
     @Override
     public boolean isUniqueById() {
         return true;

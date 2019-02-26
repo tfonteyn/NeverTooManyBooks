@@ -940,7 +940,7 @@ public class GoodreadsManager
     }
 
     @AnyThread
-    public boolean noKey() {
+    private boolean noKey() {
         boolean noKey = DEV_KEY.isEmpty() || DEV_SECRET.isEmpty();
         if (noKey) {
             Logger.info(this, "No dev keys");

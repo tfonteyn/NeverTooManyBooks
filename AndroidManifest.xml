@@ -20,7 +20,6 @@
     <!-- for the 'loan' functionality -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-    <!-- supportsRtl: to satisfy lint -->
     <application
         android:name=".BookCatalogueApp"
         android:allowBackup="true"
@@ -133,8 +132,8 @@
         <activity android:name=".searches.librarything.LibraryThingAdminActivity" />
 
         <!-- AdminActivity: Background tasks / Events -->
-        <activity android:name=".tasks.taskqueue.TaskQueueListActivity" />
-        <activity android:name=".tasks.taskqueue.EventQueueListActivity" />
+        <activity android:name=".goodreads.taskqueue.TaskQueueListActivity" />
+        <activity android:name=".goodreads.taskqueue.EventQueueListActivity" />
 
         <!-- AdminActivity: Search Sites configuration -->
         <activity

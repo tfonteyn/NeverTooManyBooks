@@ -25,10 +25,6 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +34,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Switchboard class for disconnecting listener instances from task instances. Maintains
@@ -65,7 +65,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class MessageSwitch<T, U> {
 
     /** Handler object for posting to main thread and for testing if running on UI thread. */
-    private static final Handler mHandler = new Handler();
+    private static final Handler HANDLER = new Handler();
     /** ID counter for unique sender IDs; set > 0 to allow for possible future static senders. */
     @NonNull
     private static final AtomicLong SENDER_ID_COUNTER = new AtomicLong(1024L);
@@ -106,7 +106,7 @@ public class MessageSwitch<T, U> {
                             @NonNull final T listener,
                             final boolean deliverLast) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "addListener",listener + "|senderId=" + senderId);
+            Logger.info(this, "addListener", listener + "|senderId=" + senderId);
         }
         // Add the listener to the queue, creating the queue if necessary
         MessageListeners queue;
@@ -124,20 +124,20 @@ public class MessageSwitch<T, U> {
             // If there was a message then send to the passed listener
             if (routingSlip != null) {
                 // Do it on the UI thread.
-                if (mHandler.getLooper().getThread() == Thread.currentThread()) {
+                if (HANDLER.getLooper().getThread() == Thread.currentThread()) {
                     if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                        Logger.info(this,"addListener",
-                                    "|UI thread|delivering to listener: " +
-                                            listener + "|msg=" + routingSlip.message.toString());
+                        Logger.info(this, "addListener",
+                                    "|UI thread|delivering to listener: "
+                                            + listener + "|msg=" + routingSlip.message.toString());
                     }
                     routingSlip.message.deliver(listener);
                 } else {
                     if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                        Logger.info(this,"addListener",
-                                    "|post runnable|delivering to listener: " +
-                                            listener + "|msg=" + routingSlip.message.toString());
+                        Logger.info(this, "addListener",
+                                    "|post runnable|delivering to listener: "
+                                            + listener + "|msg=" + routingSlip.message.toString());
                     }
-                    mHandler.post(new Runnable() {
+                    HANDLER.post(new Runnable() {
                         @Override
                         public void run() {
                             routingSlip.message.deliver(listener);
@@ -154,8 +154,8 @@ public class MessageSwitch<T, U> {
     public void removeListener(@NonNull final Long senderId,
                                @NonNull final T listener) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "removeListener","senderId=" +
-                    senderId + '|' + listener);
+            Logger.info(this, "removeListener",
+                        "senderId=" + senderId + '|' + listener);
         }
         synchronized (mListeners) {
             MessageListeners queue = mListeners.get(senderId);
@@ -174,9 +174,10 @@ public class MessageSwitch<T, U> {
     public void send(@NonNull final Long senderId,
                      @NonNull final Message<T> message) {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-            Logger.info(this, "send","senderId=" +
-                    senderId + "|message: " + message);
+            Logger.info(this, "send",
+                        "senderId=" + senderId + "|message: " + message);
         }
+
         // Create a routing slip
         RoutingSlip m = new MessageRoutingSlip(senderId, message);
         // Add to queue
@@ -208,9 +209,9 @@ public class MessageSwitch<T, U> {
     /**
      * Remove a sender and it's queue.
      */
-    private void removeSender(@NonNull final MessageSender<U> s) {
+    private void removeSender(@NonNull final MessageSender<U> sender) {
         synchronized (mSenders) {
-            mSenders.remove(s.getId());
+            mSenders.remove(sender.getId());
         }
     }
 
@@ -219,10 +220,10 @@ public class MessageSwitch<T, U> {
      * to process the queued messages.
      */
     private void startProcessingMessages() {
-        if (mHandler.getLooper().getThread() == Thread.currentThread()) {
+        if (HANDLER.getLooper().getThread() == Thread.currentThread()) {
             processMessages();
         } else {
-            mHandler.post(new Runnable() {
+            HANDLER.post(new Runnable() {
                               @Override
                               public void run() {
                                   processMessages();
@@ -390,12 +391,12 @@ public class MessageSwitch<T, U> {
     private class MessageRoutingSlip
             implements RoutingSlip {
 
-        /** Destination queue (sender ID). */
-        @NonNull
-        private final Long mDestination;
         /** Message to deliver. */
         @NonNull
         final Message<T> message;
+        /** Destination queue (sender ID). */
+        @NonNull
+        private final Long mDestination;
 
         /** Constructor. */
         MessageRoutingSlip(@NonNull final Long destination,
@@ -427,9 +428,9 @@ public class MessageSwitch<T, U> {
                     T listener = queueIterator.next();
                     try {
                         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                            Logger.info(this,"deliver",
-                                        "queueIterator|listener=" +
-                                                listener + "|msg=" + message.toString());
+                            Logger.info(this, "deliver",
+                                        "queueIterator|listener="
+                                                + listener + "|msg=" + message.toString());
                         }
                         if (message.deliver(listener)) {
                             handled = true;

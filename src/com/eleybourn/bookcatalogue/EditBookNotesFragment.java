@@ -30,6 +30,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
@@ -41,9 +44,6 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class is called by {@link EditBookFragment} and displays the Notes Tab.
  */
@@ -53,7 +53,8 @@ public class EditBookNotesFragment
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Integer>,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
 
-    public static final String TAG = "EditBookNotesFragment";
+    /** Fragment manager tag. */
+    public static final String TAG = EditBookNotesFragment.class.getSimpleName();
 
     /**
      * Field drop down lists.
@@ -61,6 +62,7 @@ public class EditBookNotesFragment
      * them when really needed.
      */
     private List<String> mLocations;
+    /** Field drop down list. */
     private List<String> mPricePaidCurrencies;
 
     /* ------------------------------------------------------------------------------------------ */
@@ -68,8 +70,7 @@ public class EditBookNotesFragment
     @Override
     @NonNull
     protected BookManager getBookManager() {
-        //noinspection ConstantConditions
-        return ((EditBookFragment) getParentFragment()).getBookManager();
+        return ((EditBookFragment) requireParentFragment()).getBookManager();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -77,7 +78,7 @@ public class EditBookNotesFragment
     //<editor-fold desc="Fragment startup">
 
     @Override
-    @NonNull
+    @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -95,8 +96,7 @@ public class EditBookNotesFragment
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //noinspection ConstantConditions
-        ViewUtils.fixFocusSettings(getView());
+        ViewUtils.fixFocusSettings(requireView());
     }
 
     @CallSuper
@@ -229,10 +229,8 @@ public class EditBookNotesFragment
 
     //<editor-fold desc="Field editors callbacks">
     @Override
-    public void onCheckListEditorSave(@NonNull final CheckListEditorDialogFragment dialog,
-                                      final int destinationFieldId,
+    public void onCheckListEditorSave(final int destinationFieldId,
                                       @NonNull final List<CheckListItem<Integer>> list) {
-        dialog.dismiss();
 
         if (destinationFieldId == R.id.edition) {
             ArrayList<Integer> result = new Book.EditionCheckListItem().extractList(list);
@@ -243,12 +241,10 @@ public class EditBookNotesFragment
     }
 
     @Override
-    public void onPartialDatePickerSave(@NonNull final PartialDatePickerDialogFragment dialog,
-                                        final int destinationFieldId,
+    public void onPartialDatePickerSave(final int destinationFieldId,
                                         @Nullable final Integer year,
                                         @Nullable final Integer month,
                                         @Nullable final Integer day) {
-        dialog.dismiss();
         mFields.getField(destinationFieldId).setValue(DateUtils.buildPartialDate(year, month, day));
     }
 

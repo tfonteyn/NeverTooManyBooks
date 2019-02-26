@@ -28,6 +28,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
@@ -44,7 +45,6 @@ import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleGroupsActivity.GroupWrapper;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 
 import java.io.Serializable;
@@ -76,10 +76,7 @@ public class EditBooklistStyleGroupsActivity
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
-        // Get the intent and get the style and other settings
         Intent intent = getIntent();
-
         mStyle = intent.getParcelableExtra(REQUEST_BKEY_STYLE);
         Objects.requireNonNull(mStyle);
 
@@ -93,7 +90,6 @@ public class EditBooklistStyleGroupsActivity
             HintManager.displayHint(getLayoutInflater(),
                                     R.string.hint_booklist_style_groups, null);
         }
-        Tracker.exitOnCreate(this);
     }
 
     /**
@@ -156,8 +152,8 @@ public class EditBooklistStyleGroupsActivity
         return true;
     }
 
-    protected SimpleListAdapter<GroupWrapper> createListAdapter(@LayoutRes final int rowLayoutId,
-                                                                @NonNull final ArrayList<GroupWrapper> list) {
+    protected ArrayAdapter<GroupWrapper> createListAdapter(@LayoutRes final int rowLayoutId,
+                                                           @NonNull final ArrayList<GroupWrapper> list) {
         return new GroupWrapperListAdapter(this, rowLayoutId, list);
     }
 
@@ -187,6 +183,7 @@ public class EditBooklistStyleGroupsActivity
         final BooklistGroup group;
         /** Whether this groups is present in the style. */
         boolean present;
+        @NonNull
         final String uuid;
 
         /** Constructor. */
@@ -200,7 +197,9 @@ public class EditBooklistStyleGroupsActivity
 
         GroupWrapper(@NonNull final Parcel in) {
             present = in.readByte() != 0;
+            //noinspection ConstantConditions
             uuid = in.readString();
+            //noinspection ConstantConditions
             group = BooklistGroup.newInstance(in.readInt(), uuid);
         }
 

@@ -24,8 +24,11 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
@@ -74,6 +77,7 @@ public class GetImageTask
     /**
      * Constructor. Clean the view and save the details of what we want.
      */
+    @UiThread
     private GetImageTask(@NonNull final String hash,
                          @NonNull final ImageView v,
                          final int maxWidth,
@@ -102,11 +106,12 @@ public class GetImageTask
      * thread checks the cache only if there are no background cache-related tasks
      * currently running.
      */
-    public static void getImage(@NonNull final String uuid,
-                                @NonNull final ImageView view,
-                                final int maxWidth,
-                                final int maxHeight,
-                                final boolean cacheWasChecked) {
+    @UiThread
+    public static void newInstanceAndStart(@NonNull final String uuid,
+                                           @NonNull final ImageView view,
+                                           final int maxWidth,
+                                           final int maxHeight,
+                                           final boolean cacheWasChecked) {
         new GetImageTask(uuid, view, maxWidth, maxHeight, cacheWasChecked)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -129,12 +134,20 @@ public class GetImageTask
         }
     }
 
+
+    @Override
+    @UiThread
+    protected void onCancelled(final Void result) {
+        cleanup();
+    }
+
     /**
      * Do the image manipulation.
      * <p>
      * TODO: getImageAndPutIntoView is an expensive operation. Make sure its still needed.
      */
     @Override
+    @WorkerThread
     protected Void doInBackground(final Void... params) {
         runningTasks.incrementAndGet();
 
@@ -177,22 +190,25 @@ public class GetImageTask
             }
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
-            // TEST: does this work when a cancel is done ? catch ANY/ALL ... as we need to make sure the onPostExecute is called.
             mException = e;
             Logger.error(e);
-        } finally {
-            runningTasks.decrementAndGet();
         }
         return null;
+    }
+
+    @AnyThread
+    private void cleanup() {
+        runningTasks.decrementAndGet();
     }
 
     /**
      * Handle the results of the task.
      */
     @Override
+    @UiThread
     protected void onPostExecute(final Void result) {
 
-        if (isCancelled() || mException != null) {
+        if (mException != null) {
             return;
         }
 
@@ -209,7 +225,7 @@ public class GetImageTask
         }
 
         if (mBitmap != null) {
-            if (!mWasInCache && BooklistBuilder.thumbnailsAreCached()) {
+            if (!mWasInCache && BooklistBuilder.imagesAreCached()) {
                 // Queue the image to be written to the cache. Do it in a separate queue to avoid
                 // delays in displaying image and to avoid contention -- the cache queue only has
                 // one thread.

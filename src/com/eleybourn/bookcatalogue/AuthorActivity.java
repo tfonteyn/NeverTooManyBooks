@@ -10,14 +10,13 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 import com.eleybourn.bookcatalogue.adapters.TOCAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Display all TocEntry's for an Author.
@@ -36,11 +35,9 @@ public class AuthorActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle extras = getIntent().getExtras();
-        Objects.requireNonNull(extras);
-        final long authorId = extras.getLong(UniqueId.KEY_ID);
-        mDb = new DBA(this);
+        long authorId = getIntent().getLongExtra(UniqueId.KEY_ID, 0);
 
+        mDb = new DBA(this);
         final Author author = mDb.getAuthor(authorId);
         //noinspection ConstantConditions
         setTitle(author.getDisplayName());

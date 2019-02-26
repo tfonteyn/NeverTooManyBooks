@@ -20,8 +20,17 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
@@ -31,20 +40,14 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Objects;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Handler for a displayed Cover ImageView element.
@@ -64,21 +67,23 @@ import java.util.Objects;
 public class CoverHandler
         implements SimpleDialog.ViewContextMenu {
 
+    /**
+     * request code: use with {@link CoverBrowser#setTargetFragment(Fragment, int)}
+     * and in {@link #onActivityResult(int, int, Intent)}.
+     */
+    static final int REQ_ALT_EDITION = 0;
     /** request code: use internal routines for cropping images. */
-    private static final int REQ_CROP_IMAGE_INTERNAL = 0;
+    private static final int REQ_CROP_IMAGE_INTERNAL = 1;
     /** request code: start an intent for an external application to do the cropping. */
-    private static final int REQ_CROP_IMAGE_EXTERNAL = 1;
-
+    private static final int REQ_CROP_IMAGE_EXTERNAL = 2;
     /** request code: start an intent to get an image from the Camera. */
-    private static final int REQ_ACTION_IMAGE_CAPTURE = 2;
+    private static final int REQ_ACTION_IMAGE_CAPTURE = 3;
     /** request code: start an intent to get an image from the an app that provides content. */
-    private static final int REQ_ACTION_GET_CONTENT = 3;
-
+    private static final int REQ_ACTION_GET_CONTENT = 4;
     /** Counter used to prevent images being reused accidentally. */
     private static int mTempImageCounter;
-    //TODO: eliminate this one if we can
     @NonNull
-    private final Activity mActivity;
+    private final FragmentActivity mActivity;
     @NonNull
     private final Fragment mFragment;
 
@@ -96,6 +101,7 @@ public class CoverHandler
     private final ImageUtils.ImageSize mImageSize;
     @Nullable
     private CoverBrowser mCoverBrowser;
+
     /** Used to display a hint if user rotates a camera image. */
     private boolean mGotCameraImage;
 
@@ -127,6 +133,27 @@ public class CoverHandler
                     ImageUtils.showZoomedImage(mActivity, getCoverFile());
                 }
             });
+        }
+    }
+
+    /**
+     * When the user clicks the switcher in the {@link CoverBrowser}, we take that image and
+     * stuff it into the view.
+     *
+     * @param fileSpec the file
+     */
+    private void onImageSelected(@NonNull final String fileSpec) {
+        if (mCoverBrowser != null) {
+            // the new file we got
+            File newFile = new File(fileSpec);
+            // Get the current file we want to loose
+            File bookFile = getCoverFile();
+            // copy new file on top of old.
+            StorageUtils.renameFile(newFile, bookFile);
+            // Update the ImageView with the new image
+            populateCoverView();
+            mCoverBrowser.dismiss();
+            mCoverBrowser = null;
         }
     }
 
@@ -325,33 +352,22 @@ public class CoverHandler
      * the user to choose one.
      */
     private void addCoverFromAlternativeEditions() {
+        if (LibraryThingManager.noKey()) {
+            LibraryThingManager.needLibraryThingAlert(mActivity, true, "cover_browser");
+            return;
+        }
+
         String isbn = mIsbnField.getValue().toString();
         if (IsbnUtils.isValid(isbn)) {
-            mCoverBrowser = new CoverBrowser(
-                    mActivity, isbn,
-                    SearchSites.Site.SEARCH_ALL,
-                    new CoverBrowser.OnImageSelectedListener() {
-                        @Override
-                        public void onImageSelected(@NonNull final String fileSpec) {
-                            if (mCoverBrowser != null) {
-                                // the new file we got
-                                File newFile = new File(fileSpec);
-                                // Get the current file we want to loose
-                                File bookFile = getCoverFile();
-                                // copy new file on top of old.
-                                StorageUtils.renameFile(newFile, bookFile);
-                                // Update the ImageView with the new image
-                                populateCoverView();
-                                mCoverBrowser.close();
-                                mCoverBrowser = null;
-                            }
-                        }
-                    });
-            mCoverBrowser.fetchEditions();
+            mCoverBrowser = CoverBrowser.newInstance(isbn, SearchSites.Site.SEARCH_ALL);
+            // allow a callback when the user clicks on the image they want to use.
+            // at least we don't need to travel round to the Activity this way.
+            mCoverBrowser.setTargetFragment(mFragment, REQ_ALT_EDITION);
+            mCoverBrowser.show(mActivity.getSupportFragmentManager(), CoverBrowser.TAG);
         } else {
             //Snackbar.make(mIsbnField.getView(), R.string.editions_require_isbn,
             //              Snackbar.LENGTH_LONG).show();
-            StandardDialogs.showUserMessage(mActivity, R.string.warning_editions_require_isbn);
+            UserMessage.showUserMessage(mActivity, R.string.warning_editions_require_isbn);
         }
     }
 
@@ -444,13 +460,13 @@ public class CoverHandler
                 String s = mActivity.getString(
                         R.string.warning_cover_copy_failed) + ". "
                         + mActivity.getString(R.string.error_if_the_problem_persists);
-                StandardDialogs.showUserMessage(mActivity, s);
+                UserMessage.showUserMessage(mActivity, s);
             }
         } else {
             /* Deal with the case where the chooser returns a null intent. This seems to happen
              * when the filename is not properly understood by the chooser (eg. an apostrophe in
              * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
-            StandardDialogs.showUserMessage(mActivity, R.string.warning_cover_copy_failed);
+            UserMessage.showUserMessage(mActivity, R.string.warning_cover_copy_failed);
         }
     }
 
@@ -465,11 +481,9 @@ public class CoverHandler
         while (true) {
             try {
                 File file = getCoverFile();
-
-                Bitmap bitmap = ImageUtils
-                        .getImageAndPutIntoView(null, file,
-                                                mImageSize.large * 2,
-                                                mImageSize.large * 2, true);
+                Bitmap bitmap = ImageUtils.getImage(file,
+                                                    mImageSize.large * 2,
+                                                    mImageSize.large * 2, true);
                 if (bitmap == null) {
                     return;
                 }
@@ -581,7 +595,7 @@ public class CoverHandler
             List<ResolveInfo> list = mActivity.getPackageManager()
                                               .queryIntentActivities(intent, 0);
             if (list.isEmpty()) {
-                StandardDialogs.showUserMessage(mActivity, R.string.error_no_external_crop_app);
+                UserMessage.showUserMessage(mActivity, R.string.error_no_external_crop_app);
             } else {
                 mFragment.startActivityForResult(intent, REQ_CROP_IMAGE_EXTERNAL);
             }
@@ -632,7 +646,7 @@ public class CoverHandler
      */
     public void dismissCoverBrowser() {
         if (mCoverBrowser != null) {
-            mCoverBrowser.close();
+            mCoverBrowser.dismiss();
             mCoverBrowser = null;
         }
     }
@@ -648,7 +662,7 @@ public class CoverHandler
     /**
      * Handles results from Camera, Image Gallery, Cropping.
      * <p>
-     * Note: rotating is done locally.
+     * Note: rotating is done locally in {@link #rotateImage(long)}.
      *
      * @return <tt>true</tt> when handled, <tt>false</tt> if unknown requestCode
      */
@@ -657,12 +671,19 @@ public class CoverHandler
                                     final int resultCode,
                                     @Nullable final Intent data) {
         switch (requestCode) {
+            // coming back CoverBrowser with the selected image.
+            case REQ_ALT_EDITION:
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data);
+                    onImageSelected(data.getStringExtra(UniqueId.BKEY_FILE_SPEC));
+                }
+                return true;
+
             case REQ_ACTION_IMAGE_CAPTURE:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
 
                     Bundle extras = data.getExtras();
-                    /* there *has* to be 'extras' */
                     Objects.requireNonNull(extras);
                     addCoverFromCamera(requestCode, resultCode, extras);
                 }

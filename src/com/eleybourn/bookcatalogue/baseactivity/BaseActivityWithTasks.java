@@ -20,9 +20,6 @@
 
 package com.eleybourn.bookcatalogue.baseactivity;
 
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
@@ -33,14 +30,13 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.debug.Tracker.States;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.MessageSwitch;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager.TaskManagerController;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager.TaskManagerListener;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * TODO: Remove this! Fragments makes BaseActivityWithTasks mostly redundant.
@@ -65,22 +61,23 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager.TaskManagerLis
  * @author Philip Warner
  */
 public abstract class BaseActivityWithTasks
-        extends BaseActivity {
+        extends BaseActivity
+        implements ProgressDialogFragment.OnProgressCancelledListener {
 
     private static final String BKEY_TASK_MANAGER_ID = "TaskManagerId";
     /** ID of associated TaskManager. */
     private long mTaskManagerId;
-    /** ProgressDialog for this activity. */
+    /** DialogFragment for this activity. */
     @Nullable
-    private ProgressDialog mProgressDialog;
+    private ProgressDialogFragment mProgressDialog;
     /** Associated TaskManager. */
     @Nullable
     private TaskManager mTaskManager;
-    /** Max value for ProgressDialog. */
+    /** Max value for Progress. */
     private int mProgressMax;
-    /** Current value for ProgressDialog. */
+    /** Current value for Progress. */
     private int mProgressCount;
-    /** Message for ProgressDialog. */
+    /** Message for Progress. */
     @NonNull
     private String mProgressMessage = "";
     /**
@@ -89,11 +86,11 @@ public abstract class BaseActivityWithTasks
     @NonNull
     private final TaskManagerListener mTaskListener = new TaskManagerListener() {
         /**
-         * @param manager   TaskManager
-         * @param task      task which is finishing.
+         * @param taskManager TaskManager
+         * @param task        task which is finishing.
          */
         @Override
-        public void onTaskFinished(@NonNull final TaskManager manager,
+        public void onTaskFinished(@NonNull final TaskManager taskManager,
                                    @NonNull final ManagedTask task) {
             if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
                 Logger.info(BaseActivityWithTasks.this,
@@ -147,7 +144,7 @@ public abstract class BaseActivityWithTasks
                 Logger.info(BaseActivityWithTasks.this,
                             "onUserMessage", "msg=`" + message);
             }
-            StandardDialogs.showUserMessage(BaseActivityWithTasks.this, message);
+            UserMessage.showUserMessage(BaseActivityWithTasks.this, message);
         }
     };
 
@@ -157,26 +154,24 @@ public abstract class BaseActivityWithTasks
     @Override
     public void onBackPressed() {
         // clean up any running tasks.
-        cancelAndUpdateProgress();
+        cancelAndUpdateProgress(true);
         super.onBackPressed();
     }
 
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // Restore mTaskManagerId if present
         if (savedInstanceState != null) {
             mTaskManagerId = savedInstanceState.getLong(BKEY_TASK_MANAGER_ID);
         }
-        Tracker.exitOnCreate(this);
     }
 
     /**
      * Get the task manager for this activity.
-     * If we had a TaskManager before we did a sleep, try to get it back using the mTaskManagerId
+     * If we had a TaskManager before we took a nap, try to get it back using the mTaskManagerId
      * we saved in onSaveInstanceState.
      * Creates one if we don't yet have one.
      */
@@ -184,8 +179,8 @@ public abstract class BaseActivityWithTasks
     public TaskManager getTaskManager() {
         if (mTaskManager == null) {
             if (mTaskManagerId != 0) {
-                TaskManagerController controller = TaskManager.getMessageSwitch()
-                                                              .getController(mTaskManagerId);
+                TaskManagerController controller =
+                        TaskManager.getMessageSwitch().getController(mTaskManagerId);
                 if (controller != null) {
                     mTaskManager = controller.getTaskManager();
                 } else {
@@ -196,9 +191,9 @@ public abstract class BaseActivityWithTasks
 
             // Create if necessary
             if (mTaskManager == null) {
-                TaskManager tm = new TaskManager(this);
-                mTaskManagerId = tm.getId();
-                mTaskManager = tm;
+                TaskManager taskManager = new TaskManager(this);
+                mTaskManagerId = taskManager.getId();
+                mTaskManager = taskManager;
             }
         }
         return mTaskManager;
@@ -228,9 +223,7 @@ public abstract class BaseActivityWithTasks
         if (!isFinishing()) {
             // Restore mTaskManager if present
             getTaskManager();
-            // Listen
-            TaskManager.getMessageSwitch()
-                       .addListener(mTaskManagerId, mTaskListener, true);
+            TaskManager.getMessageSwitch().addListener(mTaskManagerId, mTaskListener, true);
         }
     }
 
@@ -242,12 +235,12 @@ public abstract class BaseActivityWithTasks
     protected void onTaskFinished(@NonNull final ManagedTask task) {
         String message = task.getFinalMessage();
         if (message != null && !message.isEmpty()) {
-            StandardDialogs.showUserMessage(BaseActivityWithTasks.this, message);
+            UserMessage.showUserMessage(BaseActivityWithTasks.this, message);
         }
     }
 
     /**
-     * Setup the ProgressDialog according to our needs.
+     * Setup the dialog according to our needs.
      */
     private void initProgressDialog() {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
@@ -268,13 +261,15 @@ public abstract class BaseActivityWithTasks
 
         // Create dialog if necessary
         if (mProgressDialog == null) {
-            createProgressDialog(wantInDeterminate);
+            //TODO: no dialog title. Should we have one ?
+            mProgressDialog = ProgressDialogFragment.newInstance(0, wantInDeterminate, 0);
+            mProgressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.TAG);
         }
 
         if (mProgressMax > 0) {
             mProgressDialog.setMax(mProgressMax);
         }
-        mProgressDialog.setProgress(mProgressCount);
+        mProgressDialog.onProgress(mProgressCount);
 
         // Set message; if we are cancelling we override the message
         if (mTaskManager != null && mTaskManager.isCancelling()) {
@@ -282,26 +277,11 @@ public abstract class BaseActivityWithTasks
         } else {
             mProgressDialog.setMessage(mProgressMessage);
         }
-
-        // Show it if necessary
-        mProgressDialog.show();
     }
 
-    private void createProgressDialog(final boolean wantInDeterminate) {
-        mProgressDialog = new ProgressDialog(BaseActivityWithTasks.this);
-        mProgressDialog.setIndeterminate(wantInDeterminate);
-        mProgressDialog.setProgressStyle(wantInDeterminate ? ProgressDialog.STYLE_SPINNER
-                                                           : ProgressDialog.STYLE_HORIZONTAL);
-
-        // allow back button only
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.setOnCancelListener(new OnCancelListener() {
-            public void onCancel(@NonNull final DialogInterface dialog) {
-                cancelAndUpdateProgress();
-            }
-        });
-    }
-
+    /**
+     * Dismiss the Progress Dialog, and null it so we can recreate when needed.
+     */
     private void closeProgressDialog() {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
             Logger.info(BaseActivityWithTasks.this, "closeProgressDialog");
@@ -313,10 +293,22 @@ public abstract class BaseActivityWithTasks
     }
 
     /**
+     * Called when the progress dialog was cancelled.
+     *
+     * @param taskId for the task; null if there was no embedded task.
+     */
+    @Override
+    public void onProgressCancelled(@Nullable final Integer taskId) {
+        cancelAndUpdateProgress(false);
+    }
+
+    /**
      * Cancel all tasks, and if the progress is showing,
      * update it (it will check task manager status).
+     *
+     * @param showProgress if <tt>true</tt> we'll force the progress dialog to show.
      */
-    private void cancelAndUpdateProgress() {
+    private void cancelAndUpdateProgress(final boolean showProgress) {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
             Logger.info(BaseActivityWithTasks.this, "cancelAndUpdateProgress");
         }
@@ -325,7 +317,7 @@ public abstract class BaseActivityWithTasks
             closeProgressDialog();
         }
 
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+        if (mProgressDialog != null && mProgressDialog.isVisible() && showProgress) {
             initProgressDialog();
         }
     }
@@ -336,9 +328,9 @@ public abstract class BaseActivityWithTasks
     @Override
     @CallSuper
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (mTaskManagerId != 0) {
             outState.putLong(BaseActivityWithTasks.BKEY_TASK_MANAGER_ID, mTaskManagerId);
         }
-        super.onSaveInstanceState(outState);
     }
 }

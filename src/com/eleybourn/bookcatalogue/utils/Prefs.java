@@ -49,9 +49,6 @@ public final class Prefs {
 
     @NonNull
     public static SharedPreferences getPrefs(@NonNull final String uuid) {
-        if (uuid == null) {
-            throw new IllegalStateException();
-        }
         return BookCatalogueApp.getAppContext().getSharedPreferences(uuid, Context.MODE_PRIVATE);
     }
 

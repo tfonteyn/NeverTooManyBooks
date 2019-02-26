@@ -16,7 +16,6 @@ import com.eleybourn.bookcatalogue.entities.Book;
  * Full list:
  * {@link EditBookFieldsFragment}
  * {@link EditBookNotesFragment}
- * {@link EditBookLoanedFragment}
  * {@link EditBookTOCFragment}
  */
 public abstract class EditBookBaseFragment
@@ -24,7 +23,7 @@ public abstract class EditBookBaseFragment
         implements DataEditor {
 
     /**
-     * Here we trigger the Fragment to save it's Fields to the Book.
+     * Trigger the Fragment to save it's Fields to the Book.
      */
     @Override
     @CallSuper
@@ -48,11 +47,12 @@ public abstract class EditBookBaseFragment
      * We simply copy all {@link Fields.Field} into the {@link DataManager} e.g. the {@link Book}
      * <p>
      * Override as needed, calling super if needed.
+     *
+     * @param book field content will be copied to this object
      */
     protected void onSaveFieldsToBook(@NonNull final Book book) {
         Tracker.enterOnSaveFieldsToBook(this, book.getId());
         mFields.putAllInto(book);
         Tracker.exitOnSaveFieldsToBook(this, book.getId());
     }
-
 }

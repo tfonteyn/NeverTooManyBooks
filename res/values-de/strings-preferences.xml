@@ -126,6 +126,7 @@
     <string-array name="pe_bob_header">
         <item>Anzahl der Bücher anzeigen</item>
         <item>Titel der Bücher anzeigen</item>
+        <item>Überschrift 2. Ebene anzeigen</item>
     </string-array>
 
     <!-- Preference - Show thumbnail image for each book -->

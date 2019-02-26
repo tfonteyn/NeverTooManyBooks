@@ -68,8 +68,7 @@ public abstract class ManagedTask
      * <p>
      * This object handles all underlying task messages for every instance of this class.
      */
-    private static final MessageSwitch<ManagedTaskListener, ManagedTaskController>
-            MESSAGE_SWITCH = new MessageSwitch<>();
+    private static final MessageSwitch<ManagedTaskListener, ManagedTaskController> MESSAGE_SWITCH = new MessageSwitch<>();
     /** The manager who we will use for progress etc, and who we will inform about our state. */
     @NonNull
     protected final TaskManager mTaskManager;

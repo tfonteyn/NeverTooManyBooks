@@ -64,7 +64,7 @@
     <string name="lbl_notes">Notities</string>
     <string name="lbl_loaned_to_long">Dit boek is uitgeleend aan:</string>
     <string name="nobody">Niemand</string>
-    <string name="lbl_loan_to">Leen boek aan:</string>
+    <string name="lbl_lend_to">Leen boek aan:</string>
     <string name="btn_loan_returned">Teruggebracht</string>
     <string name="name">Naam</string>
     <string name="about_lbl_website">Webpagina:</string>
@@ -267,7 +267,7 @@
     <string name="gr_tq_occurred_at">(opgetreden op %1$s)</string>
     <string name="unknown_uc">ONBEKEND</string>
     <string name="warning_book_was_deleted_uc">DIT BOEK IS VERWIJDERD</string>
-    <string name="lbl_by_authors">door %1$s</string>
+    <string name="lbl_by_author_s">door %1$s</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
     <string name="warning_no_isbn_stored_for_book">Geen ISBN opgeslagen voor boek</string>
     <string name="title_select_an_action">Selecteer een actie</string>

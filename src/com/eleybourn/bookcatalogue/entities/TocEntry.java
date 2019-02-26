@@ -25,16 +25,16 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
@@ -86,8 +86,8 @@ public class TocEntry
     /**
      * Constructor.
      *
-     * @param author Author of title
-     * @param title  Title
+     * @param author          Author of title
+     * @param title           Title
      * @param publicationDate year of first publication
      */
     public TocEntry(@NonNull final Author author,
@@ -101,9 +101,9 @@ public class TocEntry
     /**
      * Full constructor.
      *
-     * @param id     row id
-     * @param author Author of title
-     * @param title  Title
+     * @param id              row id
+     * @param author          Author of title
+     * @param title           Title
      * @param publicationDate year of first publication
      */
     public TocEntry(final long id,
@@ -144,6 +144,30 @@ public class TocEntry
         return !singleAuthor;
     }
 
+    /**
+     * Constructor that will attempt to parse a single string into an TocEntry.
+     */
+    public static TocEntry fromString(@NonNull final String encodedString) {
+        // V82: Giants In The Sky * Blish, James
+        // V83: Giants In The Sky (1952) * Blish, James
+        List<String> list = new StringList<String>()
+                .decode(FIELD_SEPARATOR, encodedString, false);
+
+        Author author = Author.fromString(list.get(1));
+        String title = list.get(0);
+
+        //FIXME: fine for now, but should be made foolproof for full dates
+        // (via DateUtils) instead of just the 4 digit year
+        Matcher matcher = TocEntry.YEAR_FROM_STRING.matcher(title);
+        if (matcher.find()) {
+            return new TocEntry(author,
+                                title.replace(matcher.group(0), "").trim(),
+                                matcher.group(1));
+        } else {
+            return new TocEntry(author, title, "");
+        }
+    }
+
     /** {@link Parcelable}. */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
@@ -160,31 +184,6 @@ public class TocEntry
     public int describeContents() {
         return 0;
     }
-
-    /**
-     * Constructor that will attempt to parse a single string into an TocEntry.
-     */
-    public static TocEntry fromString(@NonNull final String encodedString) {
-        // V82: Giants In The Sky * Blish, James
-        // V83: Giants In The Sky (1952) * Blish, James
-        List<String> list = new StringList<String>()
-                .decode(FIELD_SEPARATOR, encodedString, false);
-
-        Author author =  Author.fromString(list.get(1));
-        String title = list.get(0);
-
-        //FIXME: fine for now, but should be made foolproof for full dates
-        // (via DateUtils) instead of just the 4 digit year
-        Matcher matcher = TocEntry.YEAR_FROM_STRING.matcher(title);
-        if (matcher.find()) {
-            return new TocEntry(author,
-                                title.replace(matcher.group(0), "").trim(),
-                                matcher.group(1));
-        } else {
-            return new TocEntry(author, title, "");
-        }
-    }
-
 
     @Override
     @NonNull
@@ -261,6 +260,7 @@ public class TocEntry
      * Each TocEntry is defined exactly by a unique ID.
      */
     @Override
+    @SuppressWarnings("SameReturnValue")
     public boolean isUniqueById() {
         return true;
     }

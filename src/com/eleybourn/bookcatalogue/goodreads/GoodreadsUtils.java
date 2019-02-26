@@ -3,25 +3,26 @@ package com.eleybourn.bookcatalogue.goodreads;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 public final class GoodreadsUtils {
 
@@ -61,9 +62,8 @@ public final class GoodreadsUtils {
     @SuppressWarnings("unused")
     @UiThread
     public static void showGoodreadsOptions(@NonNull final BaseActivity activity) {
-        LayoutInflater inf = activity.getLayoutInflater();
         @SuppressLint("InflateParams")
-        View root = inf.inflate(R.layout.goodreads_options_list, null);
+        View root = activity.getLayoutInflater().inflate(R.layout.goodreads_options_list, null);
 
         final AlertDialog dialog = new AlertDialog.Builder(activity).setView(root).create();
         dialog.setTitle(R.string.title_select_an_action);
@@ -77,7 +77,7 @@ public final class GoodreadsUtils {
         view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                importAllFromGoodreads(activity, true);
+                importAll(activity, true);
                 dialog.dismiss();
             }
         });
@@ -90,7 +90,7 @@ public final class GoodreadsUtils {
         view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                importAllFromGoodreads(activity, false);
+                importAll(activity, false);
                 dialog.dismiss();
             }
         });
@@ -103,123 +103,63 @@ public final class GoodreadsUtils {
         view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                sendBooksToGoodreads(activity);
+                sendBooks(activity);
                 dialog.dismiss();
             }
         });
 
     }
 
-    /**
-     * Check that no other sync-related jobs are queued, and that Goodreads is
-     * authorized for this app.
-     * <p>
-     * This does network access and should not be called in the UI thread.
-     *
-     * @return StringRes id of message for user; or 0 for all ok, -1 when there are no credentials.
-     */
-    @WorkerThread
-    private static int checkCanSendToGoodreads() {
-        if (QueueManager.getQueueManager().hasActiveTasks(Task.CAT_GOODREADS_EXPORT_ALL)) {
-            return R.string.gr_tq_requested_task_is_already_queued;
-        }
-        if (QueueManager.getQueueManager().hasActiveTasks(Task.CAT_GOODREADS_IMPORT_ALL)) {
-            return R.string.gr_tq_import_task_is_already_queued;
-        }
-
-        return checkGoodreadsAuth();
-    }
-
-    /**
-     * Check that goodreads is authorized for this app, and optionally allow user to request
-     * auth or more info.
-     * <p>
-     * This does network access and should not be called in the UI thread.
-     *
-     * @return StringRes id of message for user; or 0 for all ok, -1 when there are no credentials.
-     */
-    @WorkerThread
-    private static int checkGoodreadsAuth() {
-        // Make sure GR is authorized for this app
-        GoodreadsManager grMgr = new GoodreadsManager();
-
-        if (!GoodreadsManager.hasCredentials() || !grMgr.hasValidCredentials()) {
-            return -1;
-        }
-
-        return 0;
-    }
-
-    /**
-     * Start a background task that exports a single books to goodreads.
-     */
-    public static void sendOneBookToGoodreads(@NonNull final FragmentActivity context,
-                                              final long bookId) {
-        new TaskWithProgress<Integer>(0, context,
-                                      R.string.progress_msg_connecting_to_web_site, true) {
-
-            @Override
-            protected Integer doInBackground(final Void... params) {
-                int msg = checkCanSendToGoodreads();
-                if (msg == 0) {
-                    QueueManager.getQueueManager()
-                                .enqueueTask(new SendOneBookTask(bookId), QueueManager.QUEUE_MAIN);
-                    return R.string.gr_tq_task_has_been_queued_in_background;
-                }
-                return msg;
-            }
-
-            @Override
-            protected void onPostExecute(final Integer result) {
-                if (result == -1) {
-                    goodreadsAuthAlert(mFragment.requireActivity());
-                } else {
-                    StandardDialogs.showUserMessage(result);
-                }
-
-                super.onPostExecute(result);
-            }
-        }.execute();
-    }
 
     /**
      * Ask the user which books to send, then send them.
      * <p>
-     * Optionally, display a dialog warning the user that goodreads authentication is
-     * required; gives them the options: 'request now', 'more info' or 'cancel'.
+     * Optionally, display a dialog warning the user that goodreads authentication is required;
+     * gives them the options: 'request now', 'more info' or 'cancel'.
      */
-    public static void sendBooksToGoodreads(@NonNull final FragmentActivity context) {
+    public static void sendBooks(@NonNull final FragmentActivity context) {
 
-        new TaskWithProgress<Integer>(0, context,
-                                      R.string.progress_msg_connecting_to_web_site, true) {
+        new TaskWithProgress<Integer>(0, UniqueId.TFT_GOODREADS_SEND_BOOKS,
+                                      context, true,
+                                      R.string.progress_msg_connecting_to_web_site) {
 
             @Override
+            @WorkerThread
             protected Integer doInBackground(final Void... params) {
-                return checkCanSendToGoodreads();
+                return checkWeCanExport();
             }
 
             @Override
+            @UiThread
             protected void onPostExecute(@NonNull final Integer result) {
-                final FragmentActivity context = mFragment.requireActivity();
+                // cleanup the progress first
+                super.onPostExecute(null);
+
                 switch (result) {
                     case 0:
-                        showConfirmationDialog(context);
+                        // let the user choose which books to send
+                        showConfirmationDialog(mFragment.requireActivity());
                         break;
 
                     case -1:
-                        goodreadsAuthAlert(context);
-                        return;
+                        // ask to register
+                        goodreadsAuthAlert(mFragment.requireActivity());
+                        break;
 
                     default:
-                        StandardDialogs.showUserMessage(result);
+                        // specific response.
+                        UserMessage.showUserMessage(mFragment.requireActivity(), result);
                         break;
                 }
-
-                super.onPostExecute(null);
             }
         }.execute();
     }
 
+    /**
+     * Called from {@link #sendBooks} to let the user confirm which books to send.
+     *
+     * @param context the caller context
+     */
     @UiThread
     private static void showConfirmationDialog(@NonNull final FragmentActivity context) {
         // Get the title
@@ -236,7 +176,7 @@ public final class GoodreadsUtils {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  dialog.dismiss();
-                                 sendBooksToGoodreads(context, true);
+                                 sendAllBooks(context, true);
                              }
                          });
 
@@ -246,7 +186,7 @@ public final class GoodreadsUtils {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  dialog.dismiss();
-                                 sendBooksToGoodreads(context, false);
+                                 sendAllBooks(context, false);
                              }
                          });
 
@@ -264,31 +204,41 @@ public final class GoodreadsUtils {
 
     /**
      * Start a background task that exports all books to goodreads.
+     *
+     * @param context     the caller context
+     * @param updatesOnly <tt>true</tt> if you only want to send updated book,
+     *                    <tt>false</tt> to send ALL books.
      */
-    private static void sendBooksToGoodreads(@NonNull final FragmentActivity context,
-                                             final boolean updatesOnly) {
+    private static void sendAllBooks(@NonNull final FragmentActivity context,
+                                     final boolean updatesOnly) {
 
-        new TaskWithProgress<Integer>(0, context,
-                                      R.string.progress_msg_connecting_to_web_site,
-                                      true) {
-
+        new TaskWithProgress<Integer>(0, UniqueId.TFT_GOODREADS_SEND_ALL_BOOKS,
+                                      context, true,
+                                      R.string.progress_msg_connecting_to_web_site) {
             @Override
+            @WorkerThread
+            @Nullable
             protected Integer doInBackground(final Void... params) {
-                int msg = checkCanSendToGoodreads();
+                int msg = checkWeCanExport();
                 if (msg == 0) {
-                    QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(updatesOnly),
-                                                               QueueManager.QUEUE_MAIN);
+                    if (isCancelled()) {
+                        return null;
+                    }
+                    QueueManager.getQueueManager()
+                                .enqueueTask(new SendAllBooksTask(updatesOnly),
+                                             QueueManager.Q_MAIN);
                     return R.string.gr_tq_task_has_been_queued_in_background;
                 }
                 return msg;
             }
 
             @Override
+            @UiThread
             protected void onPostExecute(@NonNull final Integer result) {
                 if (result == -1) {
                     goodreadsAuthAlert(mFragment.requireActivity());
                 } else {
-                    StandardDialogs.showUserMessage(result);
+                    UserMessage.showUserMessage(mFragment.requireActivity(), result);
                 }
                 super.onPostExecute(result);
             }
@@ -296,54 +246,155 @@ public final class GoodreadsUtils {
     }
 
     /**
-     * Start a background task that imports books from goodreads.
-     * <p>
-     * We use a FragmentTask so that network access does not occur in the UI thread.
+     * Start a background task that exports a single books to goodreads.
+     *
+     * @param context the caller context
+     * @param bookId  the book to send
      */
-    public static void importAllFromGoodreads(@NonNull final BaseActivity context,
-                                              final boolean isSync) {
+    public static void sendOneBook(@NonNull final FragmentActivity context,
+                                   final long bookId) {
 
-        new TaskWithProgress<Integer>(0, context,
-                                      R.string.progress_msg_connecting_to_web_site,
-                                      true) {
+        new TaskWithProgress<Integer>(0, UniqueId.TFT_GOODREADS_SEND_ONE_BOOK,
+                                      context, true,
+                                      R.string.progress_msg_connecting_to_web_site) {
+
+            @Override
+            @WorkerThread
+            protected Integer doInBackground(final Void... params) {
+                int msg = checkWeCanExport();
+                if (msg == 0) {
+                    QueueManager.getQueueManager().enqueueTask(new SendOneBookTask(bookId),
+                                                               QueueManager.Q_SMALL_JOBS);
+                    return R.string.gr_tq_task_has_been_queued_in_background;
+                }
+                return msg;
+            }
+
+            @Override
+            @UiThread
+            protected void onPostExecute(final Integer result) {
+                if (result == -1) {
+                    goodreadsAuthAlert(mFragment.requireActivity());
+                } else {
+                    UserMessage.showUserMessage(mFragment.requireActivity(), result);
+                }
+
+                super.onPostExecute(result);
+            }
+        }.execute();
+    }
+
+    /**
+     * Start a background task that imports books from goodreads.
+     */
+    public static void importAll(@NonNull final BaseActivity context,
+                                 final boolean isSync) {
+
+        new TaskWithProgress<Integer>(0, UniqueId.TFT_GOODREADS_IMPORT_ALL,
+                                      context, true,
+                                      R.string.progress_msg_connecting_to_web_site) {
 
             @Override
             @Nullable
+            @WorkerThread
             protected Integer doInBackground(final Void... params) {
-                if (QueueManager.getQueueManager().hasActiveTasks(Task.CAT_GOODREADS_IMPORT_ALL)) {
-                    return R.string.gr_tq_requested_task_is_already_queued;
-                }
+                int msg = checkWeCanImport();
+                if (msg == 0) {
+                    if (isCancelled()) {
+                        return null;
+                    }
 
-                if (QueueManager.getQueueManager().hasActiveTasks(Task.CAT_GOODREADS_EXPORT_ALL)) {
-                    return R.string.gr_tq_export_task_is_already_queued;
-                }
-
-                int msg = checkGoodreadsAuth();
-                if (msg == -1 || msg != 0) {
-                    return msg;
-                }
-
-                if (!mFragment.isCancelled()) {
-                    QueueManager.getQueueManager()
-                                .enqueueTask(new ImportAllTask(isSync), QueueManager.QUEUE_MAIN);
+                    QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync),
+                                                               QueueManager.Q_MAIN);
                     return R.string.gr_tq_task_has_been_queued_in_background;
                 }
-                return null;
+                return msg;
             }
 
             @Override
-            protected void onPostExecute(@Nullable final Integer result) {
-                if (result != null) {
-                    if (result == -1) {
-                        goodreadsAuthAlert(context);
-                    } else {
-                        StandardDialogs.showUserMessage(result);
-                    }
+            @UiThread
+            protected void onPostExecute(@NonNull final Integer result) {
+                // cleanup the progress first
+                super.onPostExecute(null);
+
+                switch (result) {
+                    case -1:
+                        // ask to register
+                        goodreadsAuthAlert(mFragment.requireActivity());
+                        break;
+
+                    default:
+                        // specific response.
+                        UserMessage.showUserMessage(mFragment.requireActivity(), result);
+                        break;
                 }
-                super.onPostExecute(result);
             }
 
         }.execute();
+    }
+
+    /**
+     * Check that no other sync-related jobs are queued, and that Goodreads is
+     * authorized for this app.
+     * <p>
+     * This does network access and should not be called in the UI thread.
+     *
+     * @return StringRes id of message for user; or 0 for all ok, -1 when there are no credentials.
+     */
+    @WorkerThread
+    @StringRes
+    private static int checkWeCanExport() {
+        if (QueueManager.getQueueManager().hasActiveTasks(Task.CAT_GOODREADS_EXPORT_ALL)) {
+            return R.string.gr_tq_requested_task_is_already_queued;
+        }
+        if (QueueManager.getQueueManager().hasActiveTasks(Task.CAT_GOODREADS_IMPORT_ALL)) {
+            return R.string.gr_tq_import_task_is_already_queued;
+        }
+
+        return checkGoodreadsAuth();
+    }
+
+    /**
+     * Check that no other sync-related jobs are queued, and that Goodreads is
+     * authorized for this app.
+     * <p>
+     * This does network access and should not be called in the UI thread.
+     *
+     * @return StringRes id of message for user; or 0 for all ok, -1 when there are no credentials.
+     */
+    @WorkerThread
+    @StringRes
+    private static int checkWeCanImport() {
+        if (QueueManager.getQueueManager()
+                        .hasActiveTasks(Task.CAT_GOODREADS_IMPORT_ALL)) {
+            return R.string.gr_tq_requested_task_is_already_queued;
+        }
+
+        if (QueueManager.getQueueManager()
+                        .hasActiveTasks(Task.CAT_GOODREADS_EXPORT_ALL)) {
+            return R.string.gr_tq_export_task_is_already_queued;
+        }
+
+        return checkGoodreadsAuth();
+    }
+
+    /**
+     * Check that goodreads is authorized for this app, and optionally allow user to request
+     * auth or more info.
+     * <p>
+     * This does network access and should not be called in the UI thread.
+     *
+     * @return StringRes id of message for user; or 0 for all ok, -1 when there are no credentials.
+     */
+    @WorkerThread
+    @StringRes
+    private static int checkGoodreadsAuth() {
+        // Make sure GR is authorized for this app
+        GoodreadsManager grMgr = new GoodreadsManager();
+        if (!GoodreadsManager.hasCredentials() || !grMgr.hasValidCredentials()) {
+            return -1;
+        }
+        return 0;
     }
 
     /**
@@ -389,6 +440,5 @@ public final class GoodreadsUtils {
                          });
 
         dialog.show();
-
     }
 }

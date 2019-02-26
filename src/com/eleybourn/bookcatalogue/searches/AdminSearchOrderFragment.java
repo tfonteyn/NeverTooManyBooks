@@ -30,13 +30,15 @@ public class AdminSearchOrderFragment
         extends Fragment
         implements TouchListView.OnDropListener {
 
-    public static final String TAG = "AdminSearchOrderFragment";
+    /** Fragment manager tag. */
+    public static final String TAG = AdminSearchOrderFragment.class.getSimpleName();
 
     private ListView mListView;
     private ArrayList<SearchSites.Site> mList;
     private SearchSiteListAdapter mListAdapter;
 
     @Override
+    @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -47,13 +49,11 @@ public class AdminSearchOrderFragment
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Bundle args = getArguments();
-        //noinspection ConstantConditions
+        Bundle args = requireArguments();
         mList = args.getParcelableArrayList(SearchSites.BKEY_SEARCH_SITES);
 
         mListAdapter = new SearchSiteListAdapter(requireContext(), mList);
-        //noinspection ConstantConditions
-        mListView = getView().findViewById(android.R.id.list);
+        mListView = requireView().findViewById(android.R.id.list);
         mListView.setAdapter(mListAdapter);
 
         // Do not add handler for 'onDrop' from the TouchListView;

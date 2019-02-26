@@ -14,19 +14,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 
-import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
+
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
 
-    public static final String TAG = "BookSearchByTextFragment";
+    /** Fragment manager tag. */
+    public static final String TAG = BookSearchByTextFragment.class.getSimpleName();
 
     /** A list of author names we have already searched for in this session. */
     @NonNull
@@ -42,6 +43,7 @@ public class BookSearchByTextFragment
     private String mTitleSearchText = "";
 
     @Override
+    @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -51,16 +53,9 @@ public class BookSearchByTextFragment
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            mAuthorSearchText = savedInstanceState.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
-            mTitleSearchText = savedInstanceState.getString(UniqueId.KEY_TITLE, "");
-        } else {
-            Bundle args = getArguments();
-            //noinspection ConstantConditions
-            mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
-            mTitleSearchText = args.getString(UniqueId.KEY_TITLE, "");
-        }
+        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
+        mTitleSearchText = args.getString(UniqueId.KEY_TITLE, "");
 
         ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
@@ -68,13 +63,13 @@ public class BookSearchByTextFragment
             actionBar.setSubtitle(null);
         }
 
-        //noinspection ConstantConditions
-        mTitleView = getView().findViewById(R.id.title);
-        mAuthorView = getView().findViewById(R.id.author);
+        View view = requireView();
+        mTitleView = view.findViewById(R.id.title);
+        mAuthorView = view.findViewById(R.id.author);
 
         populateAuthorList();
 
-        getView().findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             public void onClick(@NonNull final View v) {
                 mAuthorSearchText = mAuthorView.getText().toString().trim();
                 mTitleSearchText = mTitleView.getText().toString().trim();
@@ -126,7 +121,7 @@ public class BookSearchByTextFragment
 
         //sanity check
         if ((mAuthorSearchText.isEmpty()) || mTitleSearchText.isEmpty()) {
-            StandardDialogs.showUserMessage(mActivity, R.string.warning_required_at_least_one);
+            UserMessage.showUserMessage(mActivity, R.string.warning_required_at_least_one);
             return;
         }
         if (super.startSearch(mAuthorSearchText, mTitleSearchText, "")) {
@@ -141,15 +136,13 @@ public class BookSearchByTextFragment
      * <p>
      * The details will get sent to {@link EditBookActivity}
      */
-    @SuppressWarnings("SameReturnValue")
-    public boolean onSearchFinished(final boolean wasCancelled,
-                                    @NonNull final Bundle bookData) {
+    public void onSearchFinished(final boolean wasCancelled,
+                                 @NonNull final Bundle bookData) {
         Tracker.handleEvent(this, Tracker.States.Enter,
                             "onSearchFinished|SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {
-                mActivity.getTaskManager()
-                         .sendHeaderUpdate(R.string.progress_msg_adding_book);
+                mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_adding_book);
                 Intent intent = new Intent(getContext(), EditBookActivity.class);
                 intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, REQ_BOOK_EDIT);
@@ -158,7 +151,6 @@ public class BookSearchByTextFragment
                 mAuthorView.setText("");
                 mTitleView.setText("");
             }
-            return true;
         } finally {
             // Clean up
             mSearchManagerId = 0;
@@ -188,12 +180,18 @@ public class BookSearchByTextFragment
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mAuthorSearchText = mAuthorView.getText().toString().trim();
+        mTitleSearchText = mTitleView.getText().toString().trim();
+    }
+
+    @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
         outState.putString(UniqueId.KEY_TITLE, mTitleSearchText);
-
-        super.onSaveInstanceState(outState);
     }
 
     /**

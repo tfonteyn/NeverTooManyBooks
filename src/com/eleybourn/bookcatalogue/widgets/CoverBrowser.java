@@ -20,15 +20,17 @@
 
 package com.eleybourn.bookcatalogue.widgets;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -41,8 +43,11 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AppCompatDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -55,19 +60,28 @@ import java.util.Map;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.dialogs.editordialog.EditorDialogFragment;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.SearchSites.ImageSizes;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.ThemeUtils;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
  * an image from a list to use as the (new) book cover image.
+ * <p>
+ * To send the clicked image (fileSpec) back, the caller must use
+ * {@link #setTargetFragment(Fragment, int)}.
+ * <p>
+ * This class then uses {@link #getTargetFragment()#onActivityResult(int, int, Intent)}.
+ * <p>
+ * The above is an alternative solution to {@link EditorDialogFragment} and its use of the
+ * fragment manager/tag. TODO: test & pick one solution of the two.
  *
  * <p>
  * ENHANCE: For each edition, try to get TWO images from a different site each.
@@ -77,31 +91,20 @@ import com.eleybourn.bookcatalogue.utils.ThemeUtils;
  * @author Philip Warner
  */
 public class CoverBrowser
-        implements AutoCloseable {
+        extends DialogFragment {
 
-    /** Handler when an image is finally selected. */
-    @NonNull
-    private final OnImageSelectedListener mOnImageSelectedListener;
-    /** ISBN of book to lookup. */
-    @NonNull
-    private final String mIsbn;
+    /** Fragment manager tag. */
+    public static final String TAG = CoverBrowser.class.getSimpleName();
 
-    /** Calling context. */
-    @NonNull
-    private final Activity mActivity;
-
-    private final int mPreviewSizeWidth;
-    private final int mPreviewSizeHeight;
-    @ColorInt
-    private final int mImageBackgroundColor;
-
-    /** The Dialog. */
-    @NonNull
-    private final Dialog mDialog;
-    @NonNull
-    private final android.util.DisplayMetrics mMetric;
     /** Holder for all active tasks, so we can cancel them if needed. */
     private final Set<AsyncTask> mAllTasks = new HashSet<>();
+    /** ISBN of book to lookup. */
+    private String mIsbn;
+    private int mPreviewSizeWidth;
+    private int mPreviewSizeHeight;
+    @ColorInt
+    private int mImageBackgroundColor;
+
     /** List of all editions for the given ISBN. */
     private List<String> mAlternativeEditions;
     /** Handles downloading, checking and cleanup of files. */
@@ -109,91 +112,89 @@ public class CoverBrowser
     /** Indicates a 'shutdown()' has been requested. */
     private boolean mShutdown;
 
+    /** cached activity. */
+    private BaseActivity mActivity;
+    private PagerLayout mPagerView;
+    private ImageSwitcher mImageSwitcherView;
+    private TextView mSwitcherMessageView;
+
     /**
-     * Constructor.
+     * @param isbn        ISBN of book
+     * @param searchFlags bitmask with sites to search,
+     *                    see {@link SearchSites.Site#SEARCH_ALL} and individual flags
      *
-     * @param activity                Calling context
-     * @param isbn                    ISBN of book
-     * @param searchFlags             bitmask with sites to search,
-     *                                see {@link SearchSites.Site#SEARCH_ALL} and individual flags
-     * @param onImageSelectedListener Handler to call when book selected
+     * @return the instance
      */
-    public CoverBrowser(@NonNull final Activity activity,
-                        @NonNull final String isbn,
-                        final int searchFlags,
-                        @NonNull final OnImageSelectedListener onImageSelectedListener) {
+    @NonNull
+    public static CoverBrowser newInstance(@NonNull final String isbn,
+                                           final int searchFlags) {
         // dev sanity check
         if ((searchFlags & SearchSites.Site.SEARCH_ALL) == 0) {
             throw new IllegalArgumentException("Must specify at least one source to use");
         }
+        if (LibraryThingManager.noKey()) {
+            throw new IllegalStateException("LibraryThing Key must be tested before calling this");
+        }
 
-        mActivity = activity;
-        mIsbn = isbn;
-        mOnImageSelectedListener = onImageSelectedListener;
+        CoverBrowser frag = new CoverBrowser();
+        Bundle args = new Bundle();
+        args.putInt(UniqueId.BKEY_SEARCH_SITES, searchFlags);
+        args.putString(UniqueId.KEY_BOOK_ISBN, isbn);
+        frag.setArguments(args);
+        return frag;
+    }
 
-        mMetric = ImageUtils.getDisplayMetrics(activity);
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        mActivity = (BaseActivity) requireActivity();
 
-        // Calculate some image sizes to display
-        int previewSize = Math.max(mMetric.widthPixels, mMetric.heightPixels) / 5;
-        // for code clarity kept as two variable names.
-        mPreviewSizeWidth = previewSize;
-        mPreviewSizeHeight = previewSize;
-        mImageBackgroundColor = mActivity.getResources().getColor(R.color.CoverBrowser_background);
+        Bundle args = requireArguments();
+        mIsbn = args.getString(UniqueId.KEY_BOOK_ISBN);
+        int searchFlags = args.getInt(UniqueId.BKEY_SEARCH_SITES);
 
         // Create an object to manage the downloaded files
         mFileManager = new FileManager(searchFlags);
 
-        mDialog = new AppCompatDialog(mActivity, ThemeUtils.getDialogThemeResId());
-//        mDialog = new AlertDialog.Builder(mActivity).create();
+        // Calculate some image sizes to display
+        android.util.DisplayMetrics metric = ImageUtils.getDisplayMetrics(mActivity);
+        int previewSize = Math.max(metric.widthPixels, metric.heightPixels) / 5;
+        // for code clarity kept as two variable names.
+        mPreviewSizeWidth = previewSize;
+        mPreviewSizeHeight = previewSize;
+
+        mImageBackgroundColor = getResources().getColor(R.color.CoverBrowser_background);
+
+        @SuppressLint("InflateParams")
+        View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_cover_browser, null);
+
+        // The switcher will be used to display larger versions; needed for onItemClick().
+        mImageSwitcherView = root.findViewById(R.id.switcher);
+        mSwitcherMessageView = root.findViewById(R.id.switcherStatus);
+
+        mPagerView = root.findViewById(R.id.gallery);
+        mPagerView.setMinimumWidth(metric.widthPixels);
+
+        return new AlertDialog.Builder(mActivity)
+                .setView(root)
+                .setTitle(R.string.title_finding_editions)
+                .create();
     }
 
-    /**
-     * Close down everything.
-     */
     @Override
-    public void close() {
-        mShutdown = true;
-        // cancel any active tasks.
-        synchronized (mAllTasks) {
-            for (AsyncTask task : mAllTasks) {
-                task.cancel(true);
-            }
-        }
+    public void onStart() {
+        super.onStart();
 
-        mDialog.dismiss();
-
-        if (mFileManager != null) {
-            mFileManager.purge();
-            mFileManager = null;
-        }
+        fetchEditions();
     }
-
 
     /**
      * Start a search for alternative editions of the book (isbn).
      */
-    void fetchEditions() {
-
-        LibraryThingManager mLibraryThing = new LibraryThingManager();
-        if (mLibraryThing.noKey()) {
-            LibraryThingManager.needLibraryThingAlert(mActivity, true, "cover_browser");
-            return;
-        }
-
-        if (!IsbnUtils.isValid(mIsbn)) {
-            StandardDialogs.showUserMessage(mActivity, R.string.warning_no_isbn_no_editions);
-            close();
-            return;
-        }
-
+    private void fetchEditions() {
         GetEditionsTask task = new GetEditionsTask(this, mIsbn);
         addTask(task);
         task.execute();
-
-        // Setup the basic dialog
-        mDialog.setContentView(R.layout.dialog_cover_browser);
-        mDialog.setTitle(R.string.title_finding_editions);
-        mDialog.show();
     }
 
     /**
@@ -207,24 +208,20 @@ public class CoverBrowser
         mAlternativeEditions = editions;
 
         if (mAlternativeEditions == null || mAlternativeEditions.isEmpty()) {
-            StandardDialogs.showUserMessage(mActivity, R.string.warning_no_editions);
-            close();
+            UserMessage.showUserMessage(mActivity, R.string.warning_no_editions);
+            dismiss();
             return;
         }
 
-        mDialog.setTitle(R.string.title_select_cover);
+        final Dialog dialog = getDialog();
+        //noinspection ConstantConditions
+        dialog.setTitle(R.string.title_select_cover);
 
         // Setup the Gallery.
-        final PagerLayout container = mDialog.findViewById(R.id.gallery);
-        container.setMinimumWidth(mMetric.widthPixels);
-
-        final ViewPager gallery = container.getViewPager();
-
-        // The switcher will be used to display larger versions; needed for onItemClick().
-        final ImageSwitcher switcher = mDialog.findViewById(R.id.switcher);
+        final ViewPager gallery = mPagerView.getViewPager();
 
         // Use our custom adapter to load images
-        final PagerAdapter adapter = new CoverImagePagerAdapter(switcher);
+        final PagerAdapter adapter = new CoverImagePagerAdapter();
         gallery.setAdapter(adapter);
 
         //Necessary or the pager will only have one extra page to show
@@ -242,24 +239,34 @@ public class CoverBrowser
                 new PagerLayout.LayoutParams(mPreviewSizeWidth, mPreviewSizeHeight));
 
         // Show help message
-        final TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
-        msgVw.setText(R.string.info_click_on_thumb);
-        msgVw.setVisibility(View.VISIBLE);
+        mSwitcherMessageView.setText(R.string.info_click_on_thumb);
+        mSwitcherMessageView.setVisibility(View.VISIBLE);
 
         // When the large image is clicked, send it back to the caller and terminate.
-        switcher.setOnClickListener(new OnClickListener() {
+        mImageSwitcherView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                String newSpec = (String) switcher.getTag();
+                String newSpec = (String) mImageSwitcherView.getTag();
                 if (newSpec != null) {
-                    mOnImageSelectedListener.onImageSelected(newSpec);
+                    Intent data = new Intent();
+                    data.putExtra(UniqueId.BKEY_FILE_SPEC, newSpec);
+                    // Was a target fragment was set ?
+                    Fragment targetFragment = getTargetFragment();
+                    if (targetFragment != null) {
+                        targetFragment.onActivityResult(CoverHandler.REQ_ALT_EDITION,
+                                                        Activity.RESULT_OK, data);
+                    } else {
+                        // if not, assume the activity wants us.
+                        mActivity.onActivityResult(CoverHandler.REQ_ALT_EDITION,
+                                                   Activity.RESULT_OK, data);
+                    }
                 }
-                mDialog.dismiss();
+                dialog.dismiss();
             }
         });
 
         // Required object. Just create an ImageView
-        switcher.setFactory(new ViewFactory() {
+        mImageSwitcherView.setFactory(new ViewFactory() {
             @NonNull
             @Override
             public View makeView() {
@@ -273,14 +280,24 @@ public class CoverBrowser
                 return view;
             }
         });
+    }
 
-        // When the dialog is closed, close all resources.
-        mDialog.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(@NonNull final DialogInterface dialog) {
-                close();
+    @Override
+    public void onDismiss(@NonNull final DialogInterface dialog) {
+        mShutdown = true;
+        // cancel any active tasks.
+        synchronized (mAllTasks) {
+            for (AsyncTask task : mAllTasks) {
+                task.cancel(true);
             }
-        });
+        }
+
+        if (mFileManager != null) {
+            mFileManager.purge();
+            mFileManager = null;
+        }
+
+        super.onDismiss(dialog);
     }
 
     /**
@@ -305,14 +322,6 @@ public class CoverBrowser
         synchronized (mAllTasks) {
             mAllTasks.remove(task);
         }
-    }
-
-    /**
-     * Interface called when image is selected.
-     */
-    public interface OnImageSelectedListener {
-
-        void onImageSelected(@NonNull String fileSpec);
     }
 
     /**
@@ -353,7 +362,7 @@ public class CoverBrowser
                     opt.inJustDecodeBounds = true;
                     BitmapFactory.decodeFile(file.getAbsolutePath(), opt);
                     // If too small, it's no good
-                    ok = (opt.outHeight >= 8 && opt.outWidth >= 8);
+                    ok = opt.outHeight >= 8 && opt.outWidth >= 8;
                 } catch (RuntimeException e) {
                     // Failed to decode; probably not an image
                     ok = false;
@@ -395,7 +404,6 @@ public class CoverBrowser
 
                 String fileSpec;
                 String key = isbn + '_' + size;
-
                 synchronized (files) {
                     fileSpec = files.get(key);
                 }
@@ -486,6 +494,7 @@ public class CoverBrowser
          * @param coverBrowser to send results to
          * @param isbn         to search for
          */
+        @UiThread
         GetEditionsTask(@NonNull final CoverBrowser coverBrowser,
                         @NonNull final String isbn) {
             mIsbn = isbn;
@@ -494,6 +503,7 @@ public class CoverBrowser
 
         @Override
         @Nullable
+        @WorkerThread
         protected List<String> doInBackground(final Void... params) {
             // Get some editions
             // ENHANCE: the list of editions should be expanded to include other sites
@@ -507,6 +517,7 @@ public class CoverBrowser
         }
 
         @Override
+        @UiThread
         protected void onPostExecute(final List<String> result) {
             mCallback.showGallery(this, result);
         }
@@ -538,6 +549,7 @@ public class CoverBrowser
          * @param fileManager to use
          * @param isbn        in the editions list for the ISBN to use
          */
+        @UiThread
         GetImageTask(@NonNull final CoverImagePagerAdapter adapter,
                      @NonNull final FileManager fileManager,
                      @NonNull final String isbn) {
@@ -554,6 +566,7 @@ public class CoverBrowser
          * @param fileManager to use
          * @param isbn        in the editions list for the ISBN to use
          */
+        @UiThread
         GetImageTask(@NonNull final CoverImagePagerAdapter adapter,
                      @NonNull final FileManager fileManager,
                      @NonNull final String isbn,
@@ -582,6 +595,7 @@ public class CoverBrowser
         }
 
         @Override
+        @UiThread
         protected void onPostExecute(final Void result) {
             if (isCancelled() || mFileSpec == null || mFileSpec.isEmpty()) {
                 return;
@@ -606,16 +620,12 @@ public class CoverBrowser
 
         @DrawableRes
         private final int mGalleryItemBackground;
-        @NonNull
-        private final ImageSwitcher mSwitcher;
 
         /**
          * Constructor.
-         *
-         * @param switcher to use
          */
-        CoverImagePagerAdapter(@NonNull final ImageSwitcher switcher) {
-            mSwitcher = switcher;
+        CoverImagePagerAdapter() {
+
             // Setup the background
             TypedArray ta = mActivity.obtainStyledAttributes(R.styleable.CoverGallery);
             mGalleryItemBackground = ta.getResourceId(
@@ -628,7 +638,7 @@ public class CoverBrowser
         public Object instantiateItem(@NonNull final ViewGroup container,
                                       final int position) {
             ImageView coverImage = new ImageView(mActivity);
-            // If we are shutdown, just return a view
+            // If we are shut down, just return a view
             if (mShutdown) {
                 return coverImage;
             }
@@ -637,7 +647,7 @@ public class CoverBrowser
             //coverImage.setScaleType(ImageView.ScaleType.FIT_XY);
             coverImage.setBackgroundResource(mGalleryItemBackground);
 
-            // now go fetch an image based on the isbn
+            // fetch an image based on the isbn
             final String isbn = mAlternativeEditions.get(position);
 
             // See if file is present
@@ -663,12 +673,11 @@ public class CoverBrowser
             coverImage.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(@NonNull final View v) {
-                    mSwitcher.setVisibility(View.GONE);
+                    mImageSwitcherView.setVisibility(View.GONE);
 
                     // Show status message
-                    final TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
-                    msgVw.setText(R.string.progress_msg_loading);
-                    msgVw.setVisibility(View.VISIBLE);
+                    mSwitcherMessageView.setText(R.string.progress_msg_loading);
+                    mSwitcherMessageView.setVisibility(View.VISIBLE);
                     // get the full size image.
                     GetImageTask task = new GetImageTask(CoverImagePagerAdapter.this,
                                                          mFileManager, isbn);
@@ -691,22 +700,21 @@ public class CoverBrowser
 
             // Update the ImageSwitcher
             File file = new File(fileSpec);
-            TextView msgVw = mDialog.findViewById(R.id.switcherStatus);
             if (file.exists() && file.length() > 100) {
                 Drawable image = new BitmapDrawable(
                         mActivity.getResources(),
-                        ImageUtils.getImageAndPutIntoView(null, file,
-                                                          mPreviewSizeWidth * 4,
-                                                          mPreviewSizeHeight * 4,
-                                                          true));
-                mSwitcher.setImageDrawable(image);
-                mSwitcher.setTag(file.getAbsolutePath());
-                msgVw.setVisibility(View.GONE);
-                mSwitcher.setVisibility(View.VISIBLE);
+                        ImageUtils.getImage(file,
+                                            mPreviewSizeWidth * 4,
+                                            mPreviewSizeHeight * 4,
+                                            true));
+                mImageSwitcherView.setImageDrawable(image);
+                mImageSwitcherView.setTag(file.getAbsolutePath());
+                mSwitcherMessageView.setVisibility(View.GONE);
+                mImageSwitcherView.setVisibility(View.VISIBLE);
             } else {
-                msgVw.setVisibility(View.VISIBLE);
-                mSwitcher.setVisibility(View.GONE);
-                msgVw.setText(R.string.warning_cover_not_found);
+                mSwitcherMessageView.setVisibility(View.VISIBLE);
+                mImageSwitcherView.setVisibility(View.GONE);
+                mSwitcherMessageView.setText(R.string.warning_cover_not_found);
             }
         }
 

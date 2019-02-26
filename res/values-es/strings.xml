@@ -65,7 +65,7 @@
     <string name="lbl_notes">Notas</string>
     <string name="lbl_loaned_to_long">Este libro ha sido prestado a:</string>
     <string name="nobody">Nadie</string>
-    <string name="lbl_loan_to">Libro prestado a:</string>
+    <string name="lbl_lend_to">Libro prestado a:</string>
     <string name="btn_loan_returned">Devuelto</string>
     <string name="name">Nombre</string>
     <string name="about_lbl_website">Página web</string>
@@ -267,7 +267,7 @@
     <string name="gr_tq_occurred_at">(ocurrido en %1$s)</string>
     <string name="unknown_uc">DESCONOCIDO</string>
     <string name="warning_book_was_deleted_uc">ESTE LIBRO HA SIDO ELIMINADO</string>
-    <string name="lbl_by_authors">por %1$s</string>
+    <string name="lbl_by_author_s">por %1$s</string>
     <string name="warning_no_matching_book_found">No se ha encontrado ningún libro</string>
     <string name="warning_no_isbn_stored_for_book">No se ha guardado ISBN para el libro</string>
     <string name="title_select_an_action">Seleccione una opción</string>

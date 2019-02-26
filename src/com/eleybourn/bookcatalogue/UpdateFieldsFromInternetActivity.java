@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,20 +38,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.UpdateFieldsFromInternetTask;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * NEWKIND: must stay in sync with {@link UpdateFieldsFromInternetTask}.
@@ -106,10 +105,23 @@ public class UpdateFieldsFromInternetActivity
                     finish();
                 }
             };
+    /** display reminder only. */
+    private String mAuthorFormatted;
+    /** display reminder only. */
+    private String mTitle;
 
     @Override
     protected int getLayoutId() {
         return R.layout.activity_update_from_internet;
+    }
+
+    private void readArgs(@NonNull final Bundle args) {
+        mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
+        mBookId = args.getLong(UniqueId.KEY_ID, 0L);
+        if (mBookId > 0) {
+            mAuthorFormatted = args.getString(UniqueId.KEY_AUTHOR_FORMATTED);
+            mTitle = args.getString(UniqueId.KEY_TITLE);
+        }
     }
 
     @Override
@@ -117,20 +129,22 @@ public class UpdateFieldsFromInternetActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            mBookId = extras.getLong(UniqueId.KEY_ID, 0L);
-            if (mBookId > 0) {
-                // we're only requesting ONE book to be updated.
-                TextView authorView = findViewById(R.id.author);
-                authorView.setText(extras.getString(UniqueId.KEY_AUTHOR_FORMATTED));
-                TextView titleView = findViewById(R.id.title);
-                titleView.setText(extras.getString(UniqueId.KEY_TITLE));
-
-                findViewById(R.id.row_book).setVisibility(View.VISIBLE);
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                readArgs(extras);
             }
+        } else {
+            readArgs(savedInstanceState);
+        }
 
-            mSearchSites = extras.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
+        // we're only requesting ONE book to be updated.
+        if (mBookId > 0) {
+            TextView authorView = findViewById(R.id.author);
+            authorView.setText(mAuthorFormatted);
+            TextView titleView = findViewById(R.id.title);
+            titleView.setText(mTitle);
+            findViewById(R.id.row_book).setVisibility(View.VISIBLE);
         }
 
         setTitle(R.string.lbl_update_fields_to_update);
@@ -160,6 +174,15 @@ public class UpdateFieldsFromInternetActivity
                 finish();
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(REQUEST_BKEY_SEARCH_SITES, mSearchSites);
+        outState.putLong(UniqueId.KEY_ID, mBookId);
+        outState.putString(UniqueId.KEY_AUTHOR_FORMATTED, mAuthorFormatted);
+        outState.putString(UniqueId.KEY_TITLE, mTitle);
     }
 
     /**
@@ -245,7 +268,7 @@ public class UpdateFieldsFromInternetActivity
 
         for (Fields.FieldUsage usage : mFieldUsages.values()) {
             View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
-                                                        mListContainer, false);
+                                                   mListContainer, false);
 
             TextView fieldLabel = row.findViewById(R.id.field);
             fieldLabel.setText(usage.getLabel(this));
@@ -273,11 +296,11 @@ public class UpdateFieldsFromInternetActivity
     /**
      * After confirmation, start the process.
      */
-    public void handleConfirm() {
+    private void handleConfirm() {
         // sanity check
         if (!hasSelections()) {
-            StandardDialogs.showUserMessage(UpdateFieldsFromInternetActivity.this,
-                                            R.string.warning_select_min_1_field);
+            UserMessage.showUserMessage(UpdateFieldsFromInternetActivity.this,
+                                        R.string.warning_select_min_1_field);
             return;
         }
 
@@ -287,11 +310,12 @@ public class UpdateFieldsFromInternetActivity
         //noinspection ConstantConditions
         if (mBookId == 0 && coversWanted.isSelected()) {
             // Verify - this can be a dangerous operation
-            AlertDialog dialog = new AlertDialog.Builder(UpdateFieldsFromInternetActivity.this)
-                    .setMessage(R.string.confirm_overwrite_thumbnail)
-                    .setTitle(R.string.lbl_update_fields)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .create();
+            final AlertDialog dialog =
+                    new AlertDialog.Builder(UpdateFieldsFromInternetActivity.this)
+                            .setMessage(R.string.confirm_overwrite_thumbnail)
+                            .setTitle(R.string.lbl_update_fields)
+                            .setIconAttribute(android.R.attr.alertDialogIcon)
+                            .create();
 
             dialog.setButton(
                     AlertDialog.BUTTON_POSITIVE,
@@ -354,7 +378,7 @@ public class UpdateFieldsFromInternetActivity
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(this, SearchAdminActivity.class);
                 intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                SearchAdminActivity.TAB_SEARCH_ORDER);
+                                SearchAdminActivity.TAB_ORDER);
                 startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
@@ -366,9 +390,9 @@ public class UpdateFieldsFromInternetActivity
 
     @Override
     @CallSuper
-    protected void onActivityResult(final int requestCode,
-                                    final int resultCode,
-                                    @Nullable final Intent data) {
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
         switch (requestCode) {
             // no changes committed, we got data to use temporarily

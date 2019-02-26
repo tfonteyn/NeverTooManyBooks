@@ -65,7 +65,7 @@
     <string name="lbl_notes">Notatki</string>
     <string name="lbl_loaned_to_long">Ta książka została wypożyczona:</string>
     <string name="nobody">Nikt</string>
-    <string name="lbl_loan_to">Wypożycz książkę:</string>
+    <string name="lbl_lend_to">Wypożycz książkę:</string>
     <string name="btn_loan_returned">Zwrócona</string>
     <string name="name">Imię i nazwisko</string>
     <string name="about_lbl_website">Strona	 WWW:</string>

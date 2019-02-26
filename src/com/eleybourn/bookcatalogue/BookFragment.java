@@ -20,14 +20,18 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 import com.eleybourn.bookcatalogue.adapters.TOCAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
+import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.LendBookDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
@@ -37,16 +41,15 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
-import java.util.ArrayList;
-
 /**
  * Class for representing read-only book details.
  */
 public class BookFragment
         extends BookBaseFragment
-        implements BookManager {
+        implements BookManager, BookChangedListener {
 
-    public static final String TAG = "BookFragment";
+    /** Fragment manager tag. */
+    public static final String TAG = BookFragment.class.getSimpleName();
 
     static final String REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION = "FBLP";
     static final String REQUEST_BKEY_FLATTENED_BOOKLIST = "FBL";
@@ -105,6 +108,7 @@ public class BookFragment
     //<editor-fold desc="Fragment startup">
 
     @Override
+    @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -120,15 +124,11 @@ public class BookFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        // cache to avoid multiple calls to requireActivity()
         mActivity = (BaseActivity) requireActivity();
-
+        // parent takes care of loading the book.
         super.onActivityCreated(savedInstanceState);
 
-        Bundle args = getArguments();
-        if (args != null) {
-            initBooklist(args, savedInstanceState);
-        }
+        initBooklist(savedInstanceState);
 
         if (savedInstanceState == null) {
             HintManager.displayHint(mActivity.getLayoutInflater(),
@@ -169,7 +169,7 @@ public class BookFragment
                    @Override
                    public String format(@NonNull final Field field,
                                         @Nullable final String source) {
-                       if (source != null && !source.isEmpty() && !source.equals("0")) {
+                       if (source != null && !source.isEmpty() && !"0".equals(source)) {
                            return getString(R.string.lbl_x_pages, source);
                        }
                        return "";
@@ -237,14 +237,11 @@ public class BookFragment
         mFields.add(R.id.loaned_to, "", UniqueId.KEY_BOOK_LOANEE);
     }
 
-    /**
-     * returning here from somewhere else (e.g. from editing the book) and have an ID...reload!
-     */
     @CallSuper
     @Override
     public void onResume() {
         Tracker.enterOnResume(this);
-        // we need the book before the super will load the fields
+        // returning here from somewhere else (e.g. from editing the book) and have an ID...reload!
         long bookId = getBook().getId();
         if (bookId != 0) {
             getBook().reload(mDb, bookId);
@@ -278,7 +275,7 @@ public class BookFragment
         // handle 'text' DoNotFetch fields
         ArrayList<Bookshelf> bsList = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
-        populateLoanedToField(book.getId());
+        populateLoanedToField(mDb.getLoaneeByBookId(book.getId()));
 
         // handle composite fields
         populatePublishingSection(book);
@@ -292,8 +289,7 @@ public class BookFragment
         // non-text fields
         Field editionsField = mFields.getField(R.id.edition);
         if ("0".equals(editionsField.getValue().toString())) {
-            //noinspection ConstantConditions
-            getView().findViewById(R.id.row_edition).setVisibility(View.GONE);
+            requireView().findViewById(R.id.row_edition).setVisibility(View.GONE);
             // can't do this as our field is a number field
             //showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
         }
@@ -310,10 +306,12 @@ public class BookFragment
     /**
      * If we are passed a flat book list, get it and validate it.
      */
-    private void initBooklist(@NonNull final Bundle args,
-                              @Nullable final Bundle savedInstanceState) {
+    private void initBooklist(@Nullable final Bundle savedInstanceState) {
 
-        String list = args.getString(REQUEST_BKEY_FLATTENED_BOOKLIST);
+        if (getArguments() == null) {
+            return;
+        }
+        String list = requireArguments().getString(REQUEST_BKEY_FLATTENED_BOOKLIST);
         if (list == null || list.isEmpty()) {
             return;
         }
@@ -329,13 +327,9 @@ public class BookFragment
             return;
         }
 
+        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         // ok, we absolutely have a list, get the position we need to be on.
-        int pos;
-        if (savedInstanceState != null) {
-            pos = savedInstanceState.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, 0);
-        } else {
-            pos = args.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, 0);
-        }
+        int pos = args.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, 0);
 
         mFlattenedBooklist.moveTo(pos);
         // the book might have moved around. So see if we can find it.
@@ -354,8 +348,7 @@ public class BookFragment
 
         // finally, enable the listener for flings
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
-        //noinspection ConstantConditions
-        getView().setOnTouchListener(new View.OnTouchListener() {
+        requireView().setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(@NonNull final View v,
@@ -384,8 +377,7 @@ public class BookFragment
             }
             mFields.getField(R.id.author).setValue(builder.toString());
         }
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.author).setVisibility(visible ? View.VISIBLE : View.GONE);
+        requireView().findViewById(R.id.author).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     void populateSeriesListField(@NonNull final Book book) {
@@ -403,9 +395,9 @@ public class BookFragment
 
             mFields.getField(R.id.series).setValue(builder.toString());
         }
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
+        View view = requireView();
+        view.findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
+        view.findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -440,8 +432,7 @@ public class BookFragment
         if (result.isEmpty()
                 && !mFields.getField(R.id.price_listed).getValue().toString().isEmpty()
                 && !mFields.getField(R.id.first_publication).getValue().toString().isEmpty()) {
-            //noinspection ConstantConditions
-            getView().findViewById(R.id.lbl_publishing).setVisibility(View.GONE);
+            requireView().findViewById(R.id.lbl_publishing).setVisibility(View.GONE);
         }
     }
 
@@ -449,34 +440,34 @@ public class BookFragment
      * Inflates 'Loaned' field showing a person the book loaned to.
      * Allows returning the book via a context menu.
      *
-     * @param bookId of the loaned book
+     * @param loanee the one who shall not be mentioned.
      */
-    private void populateLoanedToField(final long bookId) {
-        String personLoanedTo = mDb.getLoaneeByBookId(bookId);
-        if (personLoanedTo != null) {
-            personLoanedTo = getString(R.string.lbl_loaned_to_name,
-                                       personLoanedTo);
+    private void populateLoanedToField(@Nullable final String loanee) {
+        Field field = mFields.getField(R.id.loaned_to);
+        if (loanee == null || loanee.isEmpty()) {
+            field.setValue("");
+            field.getView().setVisibility(View.GONE);
         } else {
-            personLoanedTo = "";
-        }
-        mFields.getField(R.id.loaned_to).setValue(personLoanedTo);
+            field.setValue(getString(R.string.lbl_loaned_to_name, loanee));
+            field.getView().setVisibility(View.VISIBLE);
 
-        mFields.getField(R.id.loaned_to).getView()
-               .setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-                   /**
-                    * (yes, icons are not supported and won't show.
-                    * Still leaving the setIcon calls in for now.)
-                    */
-                   @Override
-                   @CallSuper
-                   public void onCreateContextMenu(@NonNull final ContextMenu menu,
-                                                   @NonNull final View v,
-                                                   @NonNull final ContextMenu.ContextMenuInfo menuInfo) {
-                       menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0,
-                                R.string.menu_loan_return_book)
-                           .setIcon(R.drawable.ic_people);
-                   }
-               });
+            field.getView()
+                 .setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                     /**
+                      * (yes, icons are not supported and won't show.
+                      * Still leaving the setIcon calls in for now.)
+                      */
+                     @Override
+                     @CallSuper
+                     public void onCreateContextMenu(@NonNull final ContextMenu menu,
+                                                     @NonNull final View v,
+                                                     @NonNull final ContextMenu.ContextMenuInfo menuInfo) {
+                         menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0,
+                                  R.string.menu_loan_return_book)
+                             .setIcon(R.drawable.ic_people);
+                     }
+                 });
+        }
     }
 
     /**
@@ -493,29 +484,27 @@ public class BookFragment
                 && !list.isEmpty();
 
         if (visible) {
-            //noinspection ConstantConditions
-            final ListView contentSection = getView().findViewById(R.id.toc);
+            final ListView contentSection = requireView().findViewById(R.id.toc);
 
             ArrayAdapter<TocEntry> adapter =
                     new TOCAdapter(mActivity, R.layout.row_toc_entry_with_author, list);
             contentSection.setAdapter(adapter);
 
-            getView().findViewById(R.id.toc_button)
-                     .setOnClickListener(new View.OnClickListener() {
-                         @Override
-                         public void onClick(@NonNull final View v) {
-                             if (contentSection.getVisibility() == View.VISIBLE) {
-                                 contentSection.setVisibility(View.GONE);
-                             } else {
-                                 contentSection.setVisibility(View.VISIBLE);
-                                 ViewUtils.justifyListViewHeightBasedOnChildren(contentSection);
+            requireView().findViewById(R.id.toc_button)
+                         .setOnClickListener(new View.OnClickListener() {
+                             @Override
+                             public void onClick(@NonNull final View v) {
+                                 if (contentSection.getVisibility() == View.VISIBLE) {
+                                     contentSection.setVisibility(View.GONE);
+                                 } else {
+                                     contentSection.setVisibility(View.VISIBLE);
+                                     ViewUtils.justifyListViewHeightBasedOnChildren(contentSection);
+                                 }
                              }
-                         }
-                     });
+                         });
         }
 
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.row_toc).setVisibility(visible ? View.VISIBLE : View.GONE);
+        requireView().findViewById(R.id.row_toc).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
     //</editor-fold>
 
@@ -551,13 +540,11 @@ public class BookFragment
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
-        outState.putLong(UniqueId.KEY_ID, getBook().getId());
-        outState.putBundle(UniqueId.BKEY_BOOK_DATA, getBook().getRawData());
+        super.onSaveInstanceState(outState);
         if (mFlattenedBooklist != null) {
             outState.putInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION,
                             (int) mFlattenedBooklist.getPosition());
         }
-        super.onSaveInstanceState(outState);
     }
 
     //</editor-fold>
@@ -570,21 +557,13 @@ public class BookFragment
     public boolean onContextItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_LOAN_RETURNED:
-                loanIsReturned();
+                mDb.deleteLoan(getBook().getId());
+                populateLoanedToField(null);
                 return true;
 
             default:
                 return super.onContextItemSelected(item);
         }
-    }
-
-    /**
-     * A book was returned. Update the database, and hide the loan view.
-     */
-    protected void loanIsReturned() {
-        getBook().loanReturned(mDb);
-        mFields.getField(R.id.loaned_to).setValue("");
-        mFields.getField(R.id.loaned_to).getView().setVisibility(View.GONE);
     }
 
     /**
@@ -600,7 +579,30 @@ public class BookFragment
             .setIcon(R.drawable.ic_edit)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
+        /*
+         * Only one of these two is made visible (or none if the book is not persisted yet).
+         */
+        menu.add(R.id.MENU_BOOK_READ, R.id.MENU_BOOK_READ, 0, R.string.menu_set_read);
+        menu.add(R.id.MENU_BOOK_UNREAD, R.id.MENU_BOOK_READ, 0, R.string.menu_set_unread);
+
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        boolean bookExists = getBook().getId() != 0;
+
+        boolean isRead = getBook().getBoolean(Book.IS_READ);
+        menu.setGroupVisible(R.id.MENU_BOOK_READ, bookExists && !isRead);
+        menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
+
+        if (Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
+            boolean isAvailable = null == mDb.getLoaneeByBookId(getBook().getId());
+            menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
+            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
+        }
+
+        super.onPrepareOptionsMenu(menu);
     }
 
     /**
@@ -619,6 +621,25 @@ public class BookFragment
                 intent.putExtra(UniqueId.KEY_ID, getBook().getId());
                 intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                return true;
+
+            case R.id.MENU_BOOK_READ:
+                // toggle 'read' status
+                boolean isRead = getBook().getBoolean(Book.IS_READ);
+                if (getBook().setRead(mDb, !isRead)) {
+                    // reverse value obv.
+                    mFields.getField(R.id.read).setValue(isRead ? "0" : "1");
+                }
+                return true;
+
+            case R.id.MENU_BOOK_EDIT_LOAN:
+                LendBookDialogFragment lendFrag = LendBookDialogFragment.newInstance(getBook());
+                lendFrag.show(requireFragmentManager(), LendBookDialogFragment.TAG);
+                return true;
+
+            case R.id.MENU_BOOK_LOAN_RETURNED:
+                mDb.deleteLoan(getBook().getId());
+                populateLoanedToField(null);
                 return true;
 
             default:
@@ -648,6 +669,26 @@ public class BookFragment
                     super.onActivityResult(requestCode, resultCode, data);
                 }
                 break;
+        }
+    }
+
+    /**
+     * Called when a book was changed externally.
+     *
+     * @param bookId        the book that was changed, or 0 if the change was global
+     * @param fieldsChanged a bitmask build from the flags of {@link BookChangedListener}
+     * @param data          bundle with custom data, can be null
+     */
+    @Override
+    public void onBookChanged(final long bookId,
+                              final int fieldsChanged,
+                              @Nullable final Bundle data) {
+        if (data != null) {
+            if ((fieldsChanged & BookChangedListener.FLAG_BOOK_LOANEE) != 0) {
+                populateLoanedToField(data.getString(UniqueId.KEY_BOOK_LOANEE));
+            } else {
+                Logger.error("bookId=" + bookId + ", fieldsChanged=" + fieldsChanged);
+            }
         }
     }
 

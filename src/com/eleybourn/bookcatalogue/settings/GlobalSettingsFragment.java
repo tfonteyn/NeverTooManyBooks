@@ -16,7 +16,8 @@ public class GlobalSettingsFragment
         implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
-    public static final String TAG = "GlobalSettingsFragment";
+    /** Fragment manager tag. */
+    public static final String TAG = GlobalSettingsFragment.class.getSimpleName();
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,

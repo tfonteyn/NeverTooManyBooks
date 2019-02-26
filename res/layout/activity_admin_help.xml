@@ -33,7 +33,8 @@
             <TextView
                 android:id="@+id/help_page"
                 style="@style/link_url"
-                tools:text="help page url"/>
+                tools:text="help page url"
+                tools:ignore="SelectableText" />
 
             <TextView
                 android:layout_width="match_parent"

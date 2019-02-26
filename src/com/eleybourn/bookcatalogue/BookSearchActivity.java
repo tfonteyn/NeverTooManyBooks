@@ -23,13 +23,12 @@ package com.eleybourn.bookcatalogue;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
-
-import java.util.Objects;
 
 /**
  * This class will search the internet for book details based on either
@@ -48,13 +47,9 @@ public class BookSearchActivity
         extends BaseActivityWithTasks {
 
     /** 'by' what criteria to search. */
-    public static final String REQUEST_BKEY_BY = "by";
+    public static final String REQUEST_BKEY_BY = "tag";
     /** option for 'by'. */
-    public static final String BY_ISBN = "isbn";
-    /** option for 'by'. */
-    public static final String BY_TEXT = "text";
-    /** option for 'by'. */
-    public static final String BY_SCAN = "scan";
+    public static final String BKEY_IS_SCAN_MODE = "isScanMode";
 
     @Override
     protected int getLayoutId() {
@@ -67,32 +62,32 @@ public class BookSearchActivity
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
-        Objects.requireNonNull(extras);
-        String searchBy = extras.getString(REQUEST_BKEY_BY, BY_ISBN);
-
-        Fragment frag;
-        String tag;
-        switch (searchBy) {
-            case BY_SCAN:
-            case BY_ISBN:
-                frag = new BookSearchByIsbnFragment();
-                tag = BookSearchByIsbnFragment.TAG;
-                break;
-
-            case BY_TEXT:
-                frag = new BookSearchByTextFragment();
-                tag = BookSearchByTextFragment.TAG;
-                break;
-
-            default:
-                throw new IllegalStateException();
+        //noinspection ConstantConditions
+        String tag = extras.getString(REQUEST_BKEY_BY, BookSearchByIsbnFragment.TAG);
+        if (null == getSupportFragmentManager().findFragmentByTag(tag)) {
+            Fragment frag = createFragment(tag);
+            frag.setArguments(getIntent().getExtras());
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .add(R.id.main_fragment, frag, tag)
+                    .commit();
         }
-        frag.setArguments(extras);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.main_fragment, frag, tag)
-                .commit();
+    }
+
+    /**
+     * @param tag for the required fragment
+     *
+     * @return a new fragment instance from the tag.
+     */
+    private Fragment createFragment(@NonNull final String tag) {
+        if (BookSearchByIsbnFragment.TAG.equals(tag)) {
+            return new BookSearchByIsbnFragment();
+        } else if (BookSearchByTextFragment.TAG.equals(tag)) {
+            return new BookSearchByTextFragment();
+        } else {
+            throw new IllegalArgumentException("tag=" + tag);
+        }
     }
 }

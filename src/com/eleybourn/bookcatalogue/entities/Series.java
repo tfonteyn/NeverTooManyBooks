@@ -26,13 +26,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
-import com.eleybourn.bookcatalogue.utils.StringList;
-import com.eleybourn.bookcatalogue.utils.Utils;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -40,6 +33,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
+import com.eleybourn.bookcatalogue.utils.StringList;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
@@ -462,6 +462,7 @@ public class Series
      * Each position in a series ('Elric(1)', 'Elric(2)' etc) will have the same
      * ID, so they are not unique by ID.
      */
+    @SuppressWarnings("SameReturnValue")
     @Override
     public boolean isUniqueById() {
         return false;

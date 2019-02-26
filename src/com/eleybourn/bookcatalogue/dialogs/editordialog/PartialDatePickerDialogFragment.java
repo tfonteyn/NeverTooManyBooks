@@ -40,12 +40,19 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
-
 import java.util.Calendar;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
@@ -57,14 +64,11 @@ public class PartialDatePickerDialogFragment
         EditorDialogFragment<PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener> {
 
     /** a standard sql style date string, must be correct. */
-    public static final String BKEY_DATE = "date";
+    private static final String BKEY_DATE = "date";
     /** or the date split into components, which can partial. */
-    @SuppressWarnings("WeakerAccess")
-    public static final String BKEY_YEAR = "year";
-    @SuppressWarnings("WeakerAccess")
-    public static final String BKEY_MONTH = "month";
-    @SuppressWarnings("WeakerAccess")
-    public static final String BKEY_DAY = "day";
+    private static final String BKEY_YEAR = "year";
+    private static final String BKEY_MONTH = "month";
+    private static final String BKEY_DAY = "day";
 
     /** Currently displayed; null if empty/invalid. */
     @Nullable
@@ -75,31 +79,56 @@ public class PartialDatePickerDialogFragment
     private Integer mDay;
 
     /**
+     * Constructor.
+     *
+     * @param callerTag     tag of the calling fragment to send results back to.
+     * @param field         the field whose content we want to edit
+     * @param dialogTitleId titel resource id for the dialog
+     * @param todayIfNone   <tt>true</tt> if we should use 'today' if the field was empty.
+     *
+     * @return the new instance
+     */
+    public static PartialDatePickerDialogFragment newInstance(@NonNull final String callerTag,
+                                                              @NonNull final Fields.Field field,
+                                                              @StringRes final int dialogTitleId,
+                                                              final boolean todayIfNone) {
+        Object value = field.getValue();
+        String date;
+        if (todayIfNone && value.toString().isEmpty()) {
+            date = DateUtils.localSqlDateForToday();
+        } else {
+            date = value.toString();
+        }
+        if (DEBUG_SWITCHES.DATETIME && BuildConfig.DEBUG) {
+            Logger.info(PartialDatePickerDialogFragment.class,
+                        "newInstance", "date.toString(): " + date);
+        }
+
+        PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
+        Bundle args = new Bundle();
+        args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
+        args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
+        args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
+        args.putString(PartialDatePickerDialogFragment.BKEY_DATE, date);
+        frag.setArguments(args);
+        return frag;
+    }
+
+    /**
      * Create the underlying dialog.
      */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        super.onCreateDialog(savedInstanceState);
+        readBaseArgs(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(BKEY_DATE)) {
-                setDate(savedInstanceState.getString(BKEY_DATE, ""));
-            } else {
-                mYear = savedInstanceState.getInt(BKEY_YEAR);
-                mMonth = savedInstanceState.getInt(BKEY_MONTH);
-                mDay = savedInstanceState.getInt(BKEY_DAY);
-            }
+        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        if (args.containsKey(BKEY_DATE)) {
+            setDate(args.getString(BKEY_DATE, ""));
         } else {
-            Bundle args = getArguments();
-            //noinspection ConstantConditions
-            if (args.containsKey(BKEY_DATE)) {
-                setDate(args.getString(BKEY_DATE, ""));
-            } else {
-                mYear = args.getInt(BKEY_YEAR);
-                mMonth = args.getInt(BKEY_MONTH);
-                mDay = args.getInt(BKEY_DAY);
-            }
+            mYear = args.getInt(BKEY_YEAR);
+            mMonth = args.getInt(BKEY_MONTH);
+            mDay = args.getInt(BKEY_DAY);
         }
 
         // Create the dialog and listen (locally) for its events
@@ -108,6 +137,7 @@ public class PartialDatePickerDialogFragment
             editor.setTitle(mTitleId);
         }
         editor.setDate(mYear, mMonth, mDay);
+
         return editor;
     }
 
@@ -166,6 +196,7 @@ public class PartialDatePickerDialogFragment
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (mYear != null) {
             outState.putInt(BKEY_YEAR, mYear);
         }
@@ -175,18 +206,6 @@ public class PartialDatePickerDialogFragment
         if (mDay != null) {
             outState.putInt(BKEY_DAY, mDay);
         }
-        super.onSaveInstanceState(outState);
-    }
-
-    /**
-     * The dialog calls this to report back the user input.
-     */
-    private void reportChanges(@Nullable final Integer year,
-                               @Nullable final Integer month,
-                               @Nullable final Integer day) {
-        getFragmentListener()
-                .onPartialDatePickerSave(PartialDatePickerDialogFragment.this,
-                                         mDestinationFieldId, year, month, day);
     }
 
     /**
@@ -194,13 +213,11 @@ public class PartialDatePickerDialogFragment
      */
     public interface OnPartialDatePickerResultsListener {
 
-        void onPartialDatePickerSave(@NonNull PartialDatePickerDialogFragment dialog,
-                                     @IdRes int destinationFieldId,
+        void onPartialDatePickerSave(@IdRes int destinationFieldId,
                                      @Nullable Integer year,
                                      @Nullable Integer month,
                                      @Nullable Integer day);
     }
-
 
     /**
      * The custom dialog.
@@ -476,16 +493,18 @@ public class PartialDatePickerDialogFragment
                                 // require year, if month is non-null,
                                 // require month, if day non-null
                                 if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-                                    StandardDialogs.showUserMessage(
+                                    UserMessage.showUserMessage(
                                             mActivity,
                                             R.string.warning_if_day_set_month_and_year_must_be);
                                 } else if (mMonth != null && mMonth > 0 && mYear == null) {
-                                    StandardDialogs.showUserMessage(
+                                    UserMessage.showUserMessage(
                                             mActivity,
                                             R.string.warning_if_month_set_year_must_be);
                                 } else {
-                                    reportChanges(mYear, mMonth, mDay);
-
+                                    dismiss();
+                                    getFragmentListener()
+                                            .onPartialDatePickerSave(mDestinationFieldId,
+                                                                     year, month, day);
                                 }
                             }
                         }

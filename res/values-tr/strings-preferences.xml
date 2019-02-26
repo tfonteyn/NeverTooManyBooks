@@ -126,6 +126,7 @@
     <string-array name="pe_bob_header">
         <item>Kitap sayısını göster</item>
         <item>Başlığı göster</item>
+        <item>2. seviye başlığı göster</item>
     </string-array>
 
     <!-- Preference - Show thumbnail image for each book -->

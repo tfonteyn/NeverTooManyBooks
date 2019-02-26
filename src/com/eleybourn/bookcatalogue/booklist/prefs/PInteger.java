@@ -1,29 +1,28 @@
 package com.eleybourn.bookcatalogue.booklist.prefs;
 
-import com.eleybourn.bookcatalogue.utils.Prefs;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import com.eleybourn.bookcatalogue.utils.Prefs;
 
 /**
  * An Integer is stored as a String
- *
+ * <p>
  * Used for {@link androidx.preference.ListPreference}
  * The Preference uses 'select 1 of many' type and insists on a String.
  */
 public class PInteger
-    extends PPrefBase<Integer>
-    implements PInt {
+        extends PPrefBase<Integer>
+        implements PInt {
 
     /**
      * Constructor. Uses the global setting as the default value, or 0 if none.
      *
-     * @param key   of the preference
-     * @param uuid  the style id
+     * @param key  of the preference
+     * @param uuid the style id
      */
     public PInteger(@StringRes final int key,
-                    @Nullable final String uuid) {
+                    @NonNull final String uuid) {
         super(key, uuid, Prefs.getListPreference(key, 0));
     }
 
@@ -36,7 +35,7 @@ public class PInteger
      * @param defaultValue default to use if there is no global default
      */
     protected PInteger(@StringRes final int key,
-                       @Nullable final String uuid,
+                       @NonNull final String uuid,
                        @NonNull final Integer defaultValue) {
         super(key, uuid, Prefs.getListPreference(key, defaultValue));
     }
@@ -44,7 +43,7 @@ public class PInteger
     @NonNull
     @Override
     public Integer get() {
-        if (mUuid == null) {
+        if (mUuid.isEmpty()) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             // Use a workaround for the real default value not being a String.

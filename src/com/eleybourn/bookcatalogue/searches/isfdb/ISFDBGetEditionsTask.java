@@ -4,14 +4,16 @@ import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
+
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
 
-import java.net.SocketTimeoutException;
-import java.util.List;
-
 public class ISFDBGetEditionsTask
-        extends AsyncTask<Void, Void, List<String>> {
+        extends AsyncTask<Void, Void, ArrayList<String>> {
 
     @NonNull
     private final String mIsbn;
@@ -24,6 +26,7 @@ public class ISFDBGetEditionsTask
      * @param isbn     to search for
      * @param callback to send results to
      */
+    @UiThread
     public ISFDBGetEditionsTask(@NonNull final String isbn,
                                 @NonNull final ISFDBResultsListener callback) {
         mIsbn = isbn;
@@ -32,7 +35,8 @@ public class ISFDBGetEditionsTask
 
     @Override
     @Nullable
-    protected List<String> doInBackground(final Void... params) {
+    @WorkerThread
+    protected ArrayList<String> doInBackground(final Void... params) {
         Editions bookEditions = new Editions(mIsbn);
         try {
             return bookEditions.fetch();
@@ -43,7 +47,8 @@ public class ISFDBGetEditionsTask
     }
 
     @Override
-    protected void onPostExecute(final List<String> result) {
+    @UiThread
+    protected void onPostExecute(final ArrayList<String> result) {
         mCallback.onGotISFDBEditions(result);
     }
 }

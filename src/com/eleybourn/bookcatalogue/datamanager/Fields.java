@@ -49,6 +49,17 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
+import java.io.Serializable;
+import java.lang.ref.WeakReference;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -62,17 +73,6 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.RTE;
-
-import java.io.Serializable;
-import java.lang.ref.WeakReference;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 /**
  * This is the class that manages data and views for an Activity; access to the data that
@@ -141,8 +141,7 @@ import java.util.Objects;
  *
  * @author Philip Warner
  */
-public class Fields
-        extends ArrayList<Fields.Field> {
+public class Fields {
 
     /**
      * Each field has an entry in the Preferences.
@@ -150,14 +149,15 @@ public class Fields
      */
     public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
 
-    private static final long serialVersionUID = -4528188641451863555L;
     /** The activity related to this object. */
     @NonNull
-    private final FieldsContext mContext;
+    private final FieldsContext mFieldContext;
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final List<FieldCrossValidator> mCrossValidators = new ArrayList<>();
     /** All validator exceptions caught. */
     private final List<ValidatorException> mValidationExceptions = new ArrayList<>();
+    /** the list with all fields. */
+    private final ArrayList<Fields.Field> mAllFields = new ArrayList<>();
     /** TextEdit fields will be watched. */
     @Nullable
     private AfterFieldChangeListener mAfterFieldChangeListener;
@@ -168,7 +168,7 @@ public class Fields
      * @param fragment The parent fragment which contains all Views this object will manage.
      */
     public Fields(@NonNull final Fragment fragment) {
-        mContext = new FragmentContext(fragment);
+        mFieldContext = new FragmentContext(fragment);
     }
 
     /**
@@ -178,7 +178,7 @@ public class Fields
      */
     @SuppressWarnings("unused")
     Fields(@NonNull final Activity activity) {
-        mContext = new ActivityContext(activity);
+        mFieldContext = new ActivityContext(activity);
     }
 
     /**
@@ -209,7 +209,7 @@ public class Fields
             msg += ". Fields is NULL.";
         } else {
             msg += ". Fields is valid.";
-            FieldsContext context = fields.getContext();
+            FieldsContext context = fields.getFieldContext();
             msg += ". Context is " + context.getClass().getCanonicalName() + '.';
             Object ownerContext = context.dbgGetOwnerContext();
             msg += ". Owner is ";
@@ -241,13 +241,14 @@ public class Fields
     }
 
     /**
-     * Accessor for related FieldsContext.
+     * Accessor for related FieldsContext. This would be one of:
+     * {@link ActivityContext} or {@link FragmentContext}.
      *
      * @return FieldsContext for this collection.
      */
     @NonNull
-    private FieldsContext getContext() {
-        return mContext;
+    private FieldsContext getFieldContext() {
+        return mFieldContext;
     }
 
     /**
@@ -278,7 +279,7 @@ public class Fields
                      @NonNull final String sourceColumn,
                      @NonNull final String visibilityGroup) {
         Field field = new Field(this, fieldId, sourceColumn, visibilityGroup);
-        add(field);
+        mAllFields.add(field);
         return field;
     }
 
@@ -290,7 +291,7 @@ public class Fields
     @SuppressWarnings("WeakerAccess")
     @NonNull
     public Field getField(@IdRes final int fieldId) {
-        for (Field f : this) {
+        for (Field f : mAllFields) {
             if (f.id == fieldId) {
                 return f;
             }
@@ -322,7 +323,7 @@ public class Fields
      */
     @SuppressWarnings("unused")
     public void setAllFrom(@NonNull final Cursor cursor) {
-        for (Field field : this) {
+        for (Field field : mAllFields) {
             field.setValueFrom(cursor);
         }
     }
@@ -334,7 +335,7 @@ public class Fields
      */
     @SuppressWarnings("WeakerAccess")
     public void setAllFrom(@NonNull final Bundle values) {
-        for (Field field : this) {
+        for (Field field : mAllFields) {
             field.setValueFrom(values);
         }
     }
@@ -351,7 +352,7 @@ public class Fields
         if (withOverwrite) {
             setAllFrom(values);
         } else {
-            for (Field field : this) {
+            for (Field field : mAllFields) {
                 if (!field.mColumn.isEmpty() && values.containsKey(field.mColumn)) {
                     String val = values.getString(field.mColumn);
                     if (val != null) {
@@ -360,7 +361,6 @@ public class Fields
                 }
             }
         }
-
     }
 
     /**
@@ -369,7 +369,7 @@ public class Fields
      * @param dataManager DataManager to load Field objects from.
      */
     public void setAllFrom(@NonNull final DataManager dataManager) {
-        for (Field field : this) {
+        for (Field field : mAllFields) {
             field.setValueFrom(dataManager);
         }
     }
@@ -380,7 +380,7 @@ public class Fields
      * @param dataManager DataManager to put Field objects in.
      */
     public void putAllInto(@NonNull final DataManager dataManager) {
-        for (Field field : this) {
+        for (Field field : mAllFields) {
             if (!field.mColumn.isEmpty()) {
                 field.putValueInto(dataManager);
             }
@@ -392,7 +392,7 @@ public class Fields
      */
     @SuppressWarnings("WeakerAccess")
     public void resetVisibility() {
-        for (Field field : this) {
+        for (Field field : mAllFields) {
             field.resetVisibility();
         }
     }
@@ -451,7 +451,7 @@ public class Fields
     private boolean validateAllFields(@NonNull final Bundle values,
                                       final boolean crossValidating) {
         boolean isOk = true;
-        for (Field field : this) {
+        for (Field field : mAllFields) {
             if (field.mFieldValidator != null) {
                 try {
                     field.mFieldValidator.validate(this, field, values, crossValidating);
@@ -581,7 +581,7 @@ public class Fields
     /**
      * Interface for view-specific accessors. One of these will be implemented for
      * each view type that is supported.
-     *
+     * <p>
      * TOMF: would it be enough to make this generic ? i.e instead of String be able to use a boolean ?
      *
      * @author Philip Warner
@@ -697,6 +697,7 @@ public class Fields
     private interface FieldsContext {
 
         /** DEBUG only. */
+        @Nullable
         Object dbgGetOwnerContext();
 
         @Nullable
@@ -1079,7 +1080,7 @@ public class Fields
         private final Context mContext;
 
         /**
-         * @param context so we can get the strings to display
+         * @param context the caller context for resource
          */
         @SuppressWarnings("WeakerAccess")
         public BinaryYesNoEmptyFormatter(@NonNull final Context context) {
@@ -1359,12 +1360,20 @@ public class Fields
         }
 
         @Override
+        @Nullable
         public Object dbgGetOwnerContext() {
             return mActivity.get();
         }
 
         @Override
+        @Nullable
         public View findViewById(@IdRes final int id) {
+            if (mActivity.get() == null) {
+                if (/* always show debug */ BuildConfig.DEBUG) {
+                    Logger.debug("Activity is NULL");
+                }
+                return null;
+            }
             return mActivity.get().findViewById(id);
         }
     }
@@ -1381,6 +1390,7 @@ public class Fields
         }
 
         @Override
+        @Nullable
         public Object dbgGetOwnerContext() {
             return mFragment.get();
         }
@@ -1483,8 +1493,8 @@ public class Fields
             mColumn = sourceColumn;
             group = visibilityGroupName;
 
-            // Lookup the view
-            final View view = mFields.get().getContext().findViewById(id);
+            // Lookup the view. Fields will have the context set to the activity/fragment.
+            final View view = mFields.get().getFieldContext().findViewById(id);
 
             // Set the appropriate accessor
             if (view == null) {
@@ -1518,7 +1528,11 @@ public class Fields
 
                         @Override
                         public void afterTextChanged(@NonNull final Editable s) {
-                            setValue(s.toString());
+                            // when the device is rotated, I've not found a way yet
+                            // to disable/enable the text watcher like the Edit accessor set()
+                            // does.
+                            // so.. the extract() had to be added here.
+                            setValue(extract(s.toString()));
                         }
                     };
                     et.addTextChangedListener(mTextWatcher);
@@ -1615,7 +1629,7 @@ public class Fields
          */
         private void resetVisibility() {
             // Lookup the view
-            final View view = mFields.get().getContext().findViewById(id);
+            final View view = mFields.get().getFieldContext().findViewById(id);
             if (view != null) {
                 mIsVisible = Fields.isVisible(group);
                 view.setVisibility(mIsVisible ? View.VISIBLE : View.GONE);
@@ -1666,7 +1680,7 @@ public class Fields
         @SuppressWarnings("unchecked")
         @NonNull
         public <T extends View> T getView() {
-            T view = (T) mFields.get().getContext().findViewById(id);
+            T view = (T) mFields.get().getFieldContext().findViewById(id);
             if (view == null) {
                 debugNullView(this);
                 throw new NullPointerException("view is NULL");

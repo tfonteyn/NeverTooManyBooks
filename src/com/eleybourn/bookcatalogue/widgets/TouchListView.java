@@ -275,7 +275,7 @@ public class TouchListView
      * A row is draggable if it has a drag icon.
      */
     private boolean isDraggableRow(@NonNull final View view) {
-        return (view.findViewById(grabberId) != null);
+        return view.findViewById(grabberId) != null;
     }
 
     /**

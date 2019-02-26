@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -29,12 +30,16 @@ import android.widget.CompoundButton;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
-
-import com.eleybourn.bookcatalogue.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.eleybourn.bookcatalogue.BookBaseFragment;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 
 /**
  * DialogFragment to edit a list of checkbox options.
@@ -46,28 +51,48 @@ public class CheckListEditorDialogFragment<T>
         EditorDialogFragment<CheckListEditorDialogFragment.OnCheckListEditorResultsListener<T>> {
 
     /** Argument. */
-    public static final String BKEY_CHECK_LIST = "list";
-
+    private static final String BKEY_CHECK_LIST = "list";
     /** The list of items to display. Object + checkbox. */
     @Nullable
     private ArrayList<CheckListItem<T>> mList;
+
+    /**
+     * Constructor.
+     *
+     * @param callerTag     tag of the calling fragment to send results back to.
+     * @param field         the field whose content we want to edit
+     * @param dialogTitleId titel resource id for the dialog
+     * @param listGetter    callback interface for getting the list to use.
+     * @param <T>           type of the {@link CheckListItem}
+     *
+     * @return the new instance
+     */
+    public static <T> CheckListEditorDialogFragment<T> newInstance(
+            @NonNull final String callerTag,
+            @NonNull final Fields.Field field,
+            @StringRes final int dialogTitleId,
+            @NonNull final BookBaseFragment.CheckListEditorListGetter<T> listGetter) {
+
+        CheckListEditorDialogFragment<T> frag = new CheckListEditorDialogFragment<>();
+        Bundle args = new Bundle();
+        args.putString(UniqueId.BKEY_CALLER_TAG, callerTag);
+        args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
+        args.putInt(UniqueId.BKEY_FIELD_ID, field.id);
+        args.putParcelableArrayList(BKEY_CHECK_LIST, listGetter.getList());
+        frag.setArguments(args);
+        return frag;
+    }
 
     /**
      * Create the underlying dialog.
      */
     @NonNull
     @Override
-    public CheckListEditorDialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        super.onCreateDialog(savedInstanceState);
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+        readBaseArgs(savedInstanceState);
 
-        // Restore saved state info
-        if (savedInstanceState != null) {
-            mList = savedInstanceState.getParcelableArrayList(BKEY_CHECK_LIST);
-        } else {
-            Bundle args = getArguments();
-            //noinspection ConstantConditions
-            mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
-        }
+        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
 
         CheckListEditorDialog editor = new CheckListEditorDialog(requireActivity());
         if (mTitleId != 0) {
@@ -96,19 +121,10 @@ public class CheckListEditorDialogFragment<T>
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (mList != null) {
             outState.putParcelableArrayList(BKEY_CHECK_LIST, mList);
         }
-        super.onSaveInstanceState(outState);
-    }
-
-    /**
-     * The dialog calls this to report back the user input.
-     *
-     * @param result - with options
-     */
-    private void reportChanges(@NonNull final ArrayList<CheckListItem<T>> result) {
-        getFragmentListener().onCheckListEditorSave(this, mDestinationFieldId, result);
     }
 
     /**
@@ -121,12 +137,10 @@ public class CheckListEditorDialogFragment<T>
         /**
          * reports the results after this dialog was confirmed.
          *
-         * @param dialog             the dialog
          * @param destinationFieldId the field this dialog is bound to
          * @param list               the list of options
          */
-        void onCheckListEditorSave(@NonNull CheckListEditorDialogFragment dialog,
-                                   int destinationFieldId,
+        void onCheckListEditorSave(int destinationFieldId,
                                    @NonNull List<CheckListItem<T>> list);
     }
 
@@ -145,7 +159,7 @@ public class CheckListEditorDialogFragment<T>
         /**
          * Constructor.
          *
-         * @param context - Calling context
+         * @param context the caller context
          */
         CheckListEditorDialog(@NonNull final Context context) {
             super(context);
@@ -162,7 +176,8 @@ public class CheckListEditorDialogFragment<T>
                     new View.OnClickListener() {
                         @Override
                         public void onClick(@NonNull final View v) {
-                            reportChanges(mList);
+                            dismiss();
+                            getFragmentListener().onCheckListEditorSave(mDestinationFieldId, mList);
                         }
                     }
             );

@@ -27,8 +27,18 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
@@ -41,27 +51,17 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ListReviewsApiHandler.ReviewFields;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.GoodreadsTask;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Task;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Import all a users 'reviews' from goodreads; a users 'reviews' consists of all the books that
@@ -125,21 +125,6 @@ public class ImportAllTask
         }
     }
 
-    /**
-     * Add the value to the list if the value is actually 'real'.
-     *
-     * @param list  to add to
-     * @param value to add
-     */
-    private static void addIfHasValue(@NonNull final List<String> list,
-                                      @Nullable final String value) {
-        if (value != null) {
-            String v = value.trim();
-            if (!v.isEmpty()) {
-                list.add(v);
-            }
-        }
-    }
 
     /**
      * Do the actual work.
@@ -157,7 +142,7 @@ public class ImportAllTask
             if (mIsSync) {
                 GoodreadsManager.setLastSyncDate(mStartDate);
                 QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(true),
-                                                           QueueManager.QUEUE_MAIN);
+                                                           QueueManager.Q_MAIN);
             }
             return ok;
         } catch (AuthorizationException e) {
@@ -366,7 +351,7 @@ public class ImportAllTask
         // data for the given book (taken from the cursor), not just replace it.
         Book book = new Book(buildBundle(db, bookCursorRow, review));
 
-        db.updateBook(bookCursorRow.getId(), book,DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
+        db.updateBook(bookCursorRow.getId(), book, DBA.BOOK_UPDATE_USE_UPDATE_DATE_IF_PRESENT);
     }
 
     /**
@@ -620,6 +605,22 @@ public class ImportAllTask
         val = DateUtils.utcSqlDateTime(d);
         book.putString(destKey, val);
         return val;
+    }
+
+    /**
+     * Add the value to the list if the value is actually 'real'.
+     *
+     * @param list  to add to
+     * @param value to add
+     */
+    private void addIfHasValue(@NonNull final List<String> list,
+                               @Nullable final String value) {
+        if (value != null) {
+            String v = value.trim();
+            if (!v.isEmpty()) {
+                list.add(v);
+            }
+        }
     }
 
     /**

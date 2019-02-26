@@ -36,6 +36,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -54,9 +57,6 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
  */
@@ -67,7 +67,8 @@ public class EditBookFieldsFragment
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener,
         TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener {
 
-    public static final String TAG = "EditBookFieldsFragment";
+    /** Fragment manager tag. */
+    public static final String TAG = EditBookFieldsFragment.class.getSimpleName();
 
     private static final int REQ_EDIT_AUTHORS = 0;
     private static final int REQ_EDIT_SERIES = 1;
@@ -78,9 +79,13 @@ public class EditBookFieldsFragment
      * them when really needed.
      */
     private List<String> mFormats;
+    /** Field drop down list. */
     private List<String> mGenres;
+    /** Field drop down list. */
     private List<String> mLanguages;
+    /** Field drop down list. */
     private List<String> mPublishers;
+    /** Field drop down list. */
     private List<String> mListPriceCurrencies;
 
     private CoverHandler mCoverHandler;
@@ -89,8 +94,7 @@ public class EditBookFieldsFragment
     @Override
     @NonNull
     protected BookManager getBookManager() {
-        //noinspection ConstantConditions
-        return ((EditBookFragment) getParentFragment()).getBookManager();
+        return ((EditBookFragment) requireParentFragment()).getBookManager();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -98,7 +102,7 @@ public class EditBookFieldsFragment
     //<editor-fold desc="Fragment startup">
 
     @Override
-    @NonNull
+    @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -116,8 +120,7 @@ public class EditBookFieldsFragment
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //noinspection ConstantConditions
-        ViewUtils.fixFocusSettings(getView());
+        ViewUtils.fixFocusSettings(requireView());
     }
 
     /**
@@ -142,8 +145,8 @@ public class EditBookFieldsFragment
                     public void onClick(@NonNull final View v) {
                         Intent intent = new Intent(requireActivity(), EditAuthorListActivity.class);
                         intent.putExtra(UniqueId.BKEY_AUTHOR_ARRAY,
-                                        getBookManager().getBook().getList(
-                                                UniqueId.BKEY_AUTHOR_ARRAY));
+                                        getBookManager().getBook()
+                                                        .getList(UniqueId.BKEY_AUTHOR_ARRAY));
 
                         intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId());
                         intent.putExtra(UniqueId.KEY_TITLE,
@@ -160,8 +163,8 @@ public class EditBookFieldsFragment
                     public void onClick(@NonNull final View v) {
                         Intent intent = new Intent(requireActivity(), EditSeriesListActivity.class);
                         intent.putExtra(UniqueId.BKEY_SERIES_ARRAY,
-                                        getBookManager().getBook().getList(
-                                                UniqueId.BKEY_SERIES_ARRAY));
+                                        getBookManager().getBook()
+                                                        .getList(UniqueId.BKEY_SERIES_ARRAY));
 
                         intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId());
                         intent.putExtra(UniqueId.KEY_TITLE,
@@ -210,8 +213,7 @@ public class EditBookFieldsFragment
                 new View.OnClickListener() {
                     public void onClick(@NonNull final View v) {
                         Checkable cb = (Checkable) v;
-                        EditBookFragment frag = (EditBookFragment) getParentFragment();
-                        //noinspection ConstantConditions
+                        EditBookFragment frag = (EditBookFragment) requireParentFragment();
                         frag.addTOCTab(cb.isChecked());
                     }
                 });
@@ -335,9 +337,9 @@ public class EditBookFieldsFragment
             }
             mFields.getField(R.id.name).setValue(newText);
         }
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        getView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
+        requireView().findViewById(R.id.lbl_series).setVisibility(
+                visible ? View.VISIBLE : View.GONE);
+        requireView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     //</editor-fold>
@@ -412,10 +414,8 @@ public class EditBookFieldsFragment
 
     //<editor-fold desc="Field editors callbacks">
     @Override
-    public void onCheckListEditorSave(@NonNull final CheckListEditorDialogFragment dialog,
-                                      final int destinationFieldId,
+    public void onCheckListEditorSave(final int destinationFieldId,
                                       @NonNull final List<CheckListItem<Bookshelf>> list) {
-        dialog.dismiss();
 
         if (destinationFieldId == R.id.bookshelves) {
             ArrayList<Bookshelf> bsList = new Book.BookshelfCheckListItem().extractList(list);
@@ -425,20 +425,16 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    public void onTextFieldEditorSave(@NonNull final TextFieldEditorDialogFragment dialog,
-                                      final int destinationFieldId,
+    public void onTextFieldEditorSave(final int destinationFieldId,
                                       @NonNull final String newText) {
-        dialog.dismiss();
         mFields.getField(destinationFieldId).setValue(newText);
     }
 
     @Override
-    public void onPartialDatePickerSave(@NonNull final PartialDatePickerDialogFragment dialog,
-                                        final int destinationFieldId,
+    public void onPartialDatePickerSave(final int destinationFieldId,
                                         @Nullable final Integer year,
                                         @Nullable final Integer month,
                                         @Nullable final Integer day) {
-        dialog.dismiss();
         mFields.getField(destinationFieldId).setValue(DateUtils.buildPartialDate(year, month, day));
     }
 

@@ -14,8 +14,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -121,7 +121,7 @@ public final class ScannerManager {
         int messageId = noScanner ? R.string.info_install_scanner
                                    : R.string.warning_bad_scanner;
 
-        AlertDialog dialog = new AlertDialog.Builder(activity)
+        final AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.title_install_scan)
                 .setMessage(messageId)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -174,7 +174,7 @@ public final class ScannerManager {
             activity.setResult(Activity.RESULT_CANCELED);
             activity.finish();
         } catch (ActivityNotFoundException e) {
-            StandardDialogs.showUserMessage(activity, R.string.error_google_play_missing);
+            UserMessage.showUserMessage(activity, R.string.error_google_play_missing);
             Logger.error(e);
         }
     }

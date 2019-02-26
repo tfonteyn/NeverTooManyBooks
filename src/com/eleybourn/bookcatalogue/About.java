@@ -61,7 +61,7 @@ public class About
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
 
-        /* Version Number */
+        // Version Number
         TextView view = findViewById(R.id.version);
         PackageInfo packageInfo = BookCatalogueApp.getPackageInfo(0);
         if (packageInfo != null) {
@@ -134,7 +134,7 @@ public class About
         view.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    void sendContactEmail(@StringRes final int stringId) {
+    private void sendContactEmail(@StringRes final int stringId) {
         try {
             Intent emailIntent = new Intent(Intent.ACTION_SEND);
             emailIntent.setType("text/plain");

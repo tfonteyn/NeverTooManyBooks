@@ -14,7 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.EditBookFragment;
@@ -23,21 +26,18 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.dialogs.ContextDialogItem;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.BindableItemCursor;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.Event;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.EventsCursor;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.GoodreadsTask;
-import com.eleybourn.bookcatalogue.tasks.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.Event;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.EventsCursor;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A Task *MUST* be serializable.
@@ -213,8 +213,7 @@ public abstract class SendBooksTask
         public void retry() {
             QueueManager qm = QueueManager.getQueueManager();
             SendOneBookTask task = new SendOneBookTask(mBookId);
-            // TODO: MAKE IT USE THE SAME QUEUE? Why????
-            qm.enqueueTask(task, QueueManager.QUEUE_SMALL_JOBS);
+            qm.enqueueTask(task, QueueManager.Q_SMALL_JOBS);
             qm.deleteEvent(getId());
         }
 
@@ -282,7 +281,7 @@ public abstract class SendBooksTask
 
             holder.titleView.setText(title);
             holder.authorView.setText(
-                    String.format(context.getString(R.string.lbl_by_authors), author));
+                    String.format(context.getString(R.string.lbl_by_author_s), author));
             holder.errorView.setText(getDescription());
 
             String date = String.format(context.getString(R.string.gr_tq_occurred_at),
@@ -292,15 +291,16 @@ public abstract class SendBooksTask
             holder.retryView.setVisibility(View.GONE);
 
             holder.buttonView.setChecked(eventsCursor.isSelected());
-            holder.buttonView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(@NonNull final CompoundButton buttonView,
-                                             final boolean isChecked) {
-                    BookEventHolder holder = (BookEventHolder)
-                            buttonView.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
-                    eventsCursor.setSelected(holder.rowId, isChecked);
-                }
-            });
+            holder.buttonView.setOnCheckedChangeListener(
+                    new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(@NonNull final CompoundButton buttonView,
+                                                     final boolean isChecked) {
+                            BookEventHolder holder = (BookEventHolder)
+                                    buttonView.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
+                            eventsCursor.setSelected(holder.rowId, isChecked);
+                        }
+                    });
 
             // get book details
             String isbn = db.getBookIsbn(mBookId);
@@ -337,8 +337,10 @@ public abstract class SendBooksTask
                             try {
                                 GrSendBookEvent event =
                                         (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
+                                long bookId = event.getBookId();
+
                                 Intent intent = new Intent(context, EditBookActivity.class);
-                                intent.putExtra(UniqueId.KEY_ID, event.getBookId());
+                                intent.putExtra(UniqueId.KEY_ID, bookId);
                                 intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB,
                                                 EditBookFragment.TAB_EDIT);
                                 context.startActivity(intent);
@@ -359,43 +361,39 @@ public abstract class SendBooksTask
 //                                    view.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
 //                            Intent intent = new Intent(context,
 //                                                       GoodreadsSearchCriteriaActivity.class);
-//                            intent.putExtra(
-//                                    GoodreadsSearchCriteriaActivity.REQUEST_BKEY_BOOK_ID,
-//                                    holder.event.getId());
+//                            intent.putExtra(UniqueId.KEY_ID, holder.event.getId());
 //                            context.startActivity(intent);
 //                        }
 //                    }));
 
             // DELETE EVENT
-            items.add(
-                    new ContextDialogItem(
-                            context.getString(R.string.gr_tq_menu_delete_event),
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    QueueManager.getQueueManager().deleteEvent(id);
-                                }
-                            }));
+            items.add(new ContextDialogItem(
+                    context.getString(R.string.gr_tq_menu_delete_event),
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            QueueManager.getQueueManager().deleteEvent(id);
+                        }
+                    }));
 
             // RETRY EVENT
             String isbn = db.getBookIsbn(mBookId);
             if (isbn != null && !isbn.isEmpty()) {
-                items.add(
-                        new ContextDialogItem(
-                                context.getString(R.string.retry),
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            GrSendBookEvent event =
-                                                    (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
-                                            event.retry();
-                                            QueueManager.getQueueManager().deleteEvent(id);
-                                        } catch (RuntimeException ignore) {
-                                            // not a book event?
-                                        }
-                                    }
-                                }));
+                items.add(new ContextDialogItem(
+                        context.getString(R.string.retry),
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    GrSendBookEvent event =
+                                            (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
+                                    event.retry();
+                                    QueueManager.getQueueManager().deleteEvent(id);
+                                } catch (RuntimeException ignore) {
+                                    // not a book event?
+                                }
+                            }
+                        }));
             }
         }
 

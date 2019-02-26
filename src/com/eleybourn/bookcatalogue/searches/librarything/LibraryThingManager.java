@@ -171,7 +171,7 @@ public class LibraryThingManager
     /**
      * Check if we have a key; if not alert the user.
      *
-     * @param context    caller context
+     * @param context    the caller context
      * @param required   <tt>true</tt> if we must have access to LT.
      *                   <tt>false</tt> it it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
@@ -180,8 +180,7 @@ public class LibraryThingManager
     public static void showLtAlertIfNecessary(@NonNull final Context context,
                                               final boolean required,
                                               @NonNull final String prefSuffix) {
-        LibraryThingManager ltm = new LibraryThingManager();
-        if (ltm.noKey()) {
+        if (LibraryThingManager.noKey()) {
             needLibraryThingAlert(context, required, prefSuffix);
         }
     }
@@ -189,7 +188,7 @@ public class LibraryThingManager
     /**
      * Alert the user if not shown before that we require or would benefit from LT access.
      *
-     * @param context    caller context
+     * @param context    the caller context
      * @param required   <tt>true</tt> if we must have access to LT.
      *                   <tt>false</tt> it it would be beneficial.
      * @param prefSuffix String used to flag in preferences if we showed the alert from
@@ -307,6 +306,31 @@ public class LibraryThingManager
             Logger.info(LibraryThingManager.class, "searchEditions|editions=" + editions);
         }
         return editions;
+    }
+
+    /**
+     * external users (to this class) should call this before doing any searches.
+     *
+     * @return <tt>true</tt> if there is no dev key configured.
+     */
+    public static boolean noKey() {
+        boolean noKey = getDevKey().isEmpty();
+        if (noKey) {
+            Logger.info(LibraryThingManager.class, "LT dev key not available");
+        }
+        return noKey;
+    }
+
+    /**
+     * @return the dev key, CAN BE EMPTY but won't be null
+     */
+    @NonNull
+    private static String getDevKey() {
+        String key = Prefs.getPrefs().getString(PREFS_DEV_KEY, null);
+        if (key != null && !key.isEmpty()) {
+            return key.replaceAll("[\\r\\t\\n\\s]*", "");
+        }
+        return "";
     }
 
     /**
@@ -428,31 +452,6 @@ public class LibraryThingManager
     @WorkerThread
     public boolean isAvailable() {
         return !noKey() && NetworkUtils.isAlive(getBaseURL());
-    }
-
-    /**
-     * external users (to this class) should call this before doing any searches.
-     *
-     * @return <tt>true</tt> if there is no dev key configured.
-     */
-    public boolean noKey() {
-        boolean noKey = getDevKey().isEmpty();
-        if (noKey) {
-            Logger.info(this, "LT dev key not available");
-        }
-        return noKey;
-    }
-
-    /**
-     * @return the dev key, CAN BE EMPTY but won't be null
-     */
-    @NonNull
-    private String getDevKey() {
-        String key = Prefs.getPrefs().getString(PREFS_DEV_KEY, null);
-        if (key != null && !key.isEmpty()) {
-            return key.replaceAll("[\\r\\t\\n\\s]*", "");
-        }
-        return "";
     }
 
 }
