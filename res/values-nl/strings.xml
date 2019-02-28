@@ -2,7 +2,7 @@
  define entities that can be used inside of other string (not possible with standard Android resources
  e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
-<!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
     <!-- ========== not in use ========== -->
@@ -93,7 +93,7 @@
     <string name="menu_populate_toc">Automatisch titels invullen (alleen ISFDB)</string>
     <string name="error_auto_toc_population_failed">Automatisch titels invullen mislukt</string>
     <string name="lbl_anthology">Bloemlezing</string>
-    <string name="toc_confirm">Bevestig dat deze titels (merendeels) correct zijn</string>
+    <string name="warning_toc_confirm">Bevestig dat deze titels (merendeels) correct zijn</string>
     <string name="menu_cover_add_from_camera">Van Camera…</string>
     <string name="title_cover">Omslag miniatuur</string>
     <string name="menu_cover_rotate">Omdraaien miniatuur…</string>
@@ -107,7 +107,7 @@
     <string name="title_duplicate_book">Dupliceer Boek</string>
     <string name="confirm_duplicate_book_message">Het boek dat u wilt toevoegen is al aanwezig in de database, weet u zeker dat u nog een exemplaar wilt toevoegen?</string>
     <string name="menu_cover_add_from_gallery">Van Galerij…</string>
-    <string name="backup_request">Wilt u  een back-up van uw database op uw SD kaart maken?</string>
+    <string name="warning_backup_request">Wilt u  een back-up van uw database op uw SD kaart maken?</string>
     <string name="lbl_backup_dialog">Back-up maken?</string>
     <string name="searching_amazon_books">Zoek bij Amazon</string>
     <string name="searching_google_books">Zoeken bij Google Books</string>
@@ -173,7 +173,7 @@
     <string name="title_edit_series">Serie details bewerken</string>
     <string name="title_select_cover">Selecteer omslagafbeelding</string>
     <string name="warning_no_isbn_no_editions">Kan geen uitgavegegevens verkrijgen van een boek zonder ISBN</string>
-    <string name="unsaved_edits">De door u gemaakte veranderingen zijn niet opgeslagen. Wilt u toch doorgaan?</string>
+    <string name="warning_unsaved_edits">De door u gemaakte veranderingen zijn niet opgeslagen. Wilt u toch doorgaan?</string>
     <string name="unsaved_edits_title">Niet opgeslagen veranderingen</string>
     <string name="confirm_apply_author_changed">U heeft de auteursnaam veranderd van:\n  \‘%1$s\’ naar \n  \‘%2$s\’\nHoe wilt u deze verandering toepassen?\nNB: De keuze \‘%3$s\’ wordt onmiddelijk toegepast.</string>
     <string name="btn_this_book">Dit boek</string>
@@ -693,7 +693,6 @@
     <string name="search_with_text">Zoeken: %1$s</string>
     <string name="searching_isfdb">Zoeken bij ISFDB</string>
     <string name="send_mail">Bericht versturen…</string>
-    <string name="share">Delen</string>
     <string name="error_storage_no_access">Opslag niet beschikbaar</string>
     <string name="error_storage_no_space_left">Niet genoeg opslag</string>
     <string name="error_storage_not_available">Klaarmaken opslag</string>
@@ -759,4 +758,7 @@
     <string name="book_format_trade_paperback">Trade Paperback</string>
     <string name="error_google_play_missing">Google Play / Market is niet geïnstalleerd</string>
     <string name="books_found">%1$s boeken gevonden</string>
+    <string name="lbl_style">Stijl</string>
+    <string name="progress_msg_please_wait">Even geduld...</string>
+    <string name="error_not_available">niet beschikbaar</string>
 </resources>

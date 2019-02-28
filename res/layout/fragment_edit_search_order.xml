@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tlv="http://schemas.android.com/apk/res-auto"
     android:id="@+id/body"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,7 +9,7 @@
     android:paddingTop="@dimen/padding_border_double">
     <!-- paddingTop is there to stop the overspill from the TabLayout (bug?)-->
 
-    <view xmlns:tlv="http://schemas.android.com/apk/res/com.eleybourn.bookcatalogue"
+    <view
         android:id="@android:id/list"
         class="com.eleybourn.bookcatalogue.widgets.TouchListView"
         style="@style/tlv_TouchListView"

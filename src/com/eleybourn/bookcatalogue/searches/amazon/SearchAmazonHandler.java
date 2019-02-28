@@ -314,8 +314,7 @@ public class SearchAmazonHandler
             // and format with 'digits' decimal places
             addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED,
                                         String.format("%." + decDigits + 'f', price));
-            addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
-                                        mCurrencyCode);
+            addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, mCurrencyCode);
         } catch (NumberFormatException ignore) {
             if (BuildConfig.DEBUG) {
                 Logger.info(this, "handleListPrice",

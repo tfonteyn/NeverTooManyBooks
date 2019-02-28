@@ -871,7 +871,7 @@ public class DBA
             return true;
         }
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
             Logger.info(this, "globalReplaceAuthor",
                         "from=" + from.getId() + ", to=" + to.getId());
         }
@@ -1998,10 +1998,9 @@ public class DBA
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(fromId),
                                                                   String.valueOf(toId)})) {
 
-            int count = cursor.getCount();
-            if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
                 Logger.info(this, "globalReplacePositionedBookItem",
-                            "Re-position, total count=" + count);
+                            "Re-position, total count=" + cursor.getCount());
             }
 
             // Get the column indexes we need
@@ -2038,7 +2037,7 @@ public class DBA
                 replacementIdPosStmt.bindLong(1, bookId);
                 replacementIdPosStmt.bindLong(2, toId);
                 long replacementIdPos = replacementIdPosStmt.simpleQueryForLong();
-                if (BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
                     Logger.info(this, "globalReplacePositionedBookItem",
                                 "id=" + bookId + ", to=" + toId + "=> replacementIdPos=" + replacementIdPos);
                 }
@@ -2050,7 +2049,7 @@ public class DBA
                 // If the deleted object was more prominent than the new object,
                 // move the new one up
                 if (replacementIdPos > pos) {
-                    if (BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
                         Logger.info(this, "globalReplacePositionedBookItem",
                                     "id=" + bookId + ", pos=" + pos
                                             + ", replacementIdPos=" + replacementIdPos);
@@ -2070,7 +2069,7 @@ public class DBA
                 long minPos = checkMinStmt.simpleQueryForLong();
                 // If it's > 1, move it to 1
                 if (minPos > 1) {
-                    if (BuildConfig.DEBUG) {
+                    if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
                         Logger.info(this, "globalReplacePositionedBookItem",
                                     "id=" + bookId + ", pos to 1, minPos=" + minPos);
                     }
@@ -3119,7 +3118,7 @@ public class DBA
             return true;
         }
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
             Logger.info(this, "globalReplaceSeries",
                         "from=" + from.getId() + ", to=" + to.getId());
         }

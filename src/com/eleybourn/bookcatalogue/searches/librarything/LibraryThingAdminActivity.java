@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,16 +35,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -70,7 +68,7 @@ public class LibraryThingAdminActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.library_thing);
 
-        /* LT Registration Link. */
+        // LT Registration Link.
         findViewById(R.id.register_url).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -80,7 +78,7 @@ public class LibraryThingAdminActivity
             }
         });
 
-        /* DevKey Link. */
+        // DevKey Link.
         findViewById(R.id.dev_key_url).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -105,7 +103,15 @@ public class LibraryThingAdminActivity
                      .apply();
 
                 if (!devKey.isEmpty()) {
-                    new ValidateKey(LibraryThingAdminActivity.this).execute();
+                    //noinspection unchecked
+                    ProgressDialogFragment<Integer> frag = (ProgressDialogFragment)
+                            getSupportFragmentManager().findFragmentByTag(ValidateKey.TAG);
+                    if (frag == null) {
+                        frag = ProgressDialogFragment.newInstance(
+                                R.string.progress_msg_connecting_to_web_site, true, 0);
+                        frag.show(getSupportFragmentManager(), ValidateKey.TAG);
+                    }
+                    new ValidateKey(frag).execute();
                 }
             }
         });
@@ -133,28 +139,41 @@ public class LibraryThingAdminActivity
     public void onTaskFinished(final int taskId,
                                final boolean success,
                                final Object result) {
-        UserMessage.showUserMessage(this, (Integer)result);
+        UserMessage.showUserMessage(this, (Integer) result);
     }
 
     /**
      * Request a known valid ISBN from LT to see if the user key is valid.
      */
     private static class ValidateKey
-            extends TaskWithProgress<Integer> {
+            extends AsyncTask<Void, Object, Integer> {
+
+        private static final String TAG = ValidateKey.class.getSimpleName();
+
+        /** Generic identifier. */
+        private static final int M_TASK_ID = R.id.TASK_ID_LT_VALIDATE_KEY;
+        /**
+         * {@link #doInBackground} should catch exceptions, and set this field.
+         * {@link #onPostExecute} can then check it.
+         */
+        @Nullable
+        protected Exception mException;
+
+        protected ProgressDialogFragment<Integer> mFragment;
 
         /**
          * Constructor.
          *
-         * @param context the caller context
+         * @param frag fragment to use for progress updates.
          */
         @UiThread
-        ValidateKey(@NonNull final FragmentActivity context) {
-            super(0, UniqueId.TFT_LT_VALIDATE, context, true,
-                  R.string.progress_msg_connecting_to_web_site);
+        ValidateKey(@NonNull final ProgressDialogFragment<Integer> frag) {
+            mFragment = frag;
+            mFragment.setTask(M_TASK_ID, this);
         }
 
         @Override
-        @Nullable
+        @NonNull
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
             LibraryThingManager ltm = new LibraryThingManager();
@@ -176,6 +195,18 @@ public class LibraryThingAdminActivity
                 return R.string.progress_end_cancelled;
             }
             return R.string.warning_cover_not_found;
+        }
+
+        /**
+         * If the task was cancelled (by the user cancelling the progress dialog) then
+         * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
+         *
+         * @param result of the task
+         */
+        @Override
+        @UiThread
+        protected void onPostExecute(@NonNull final Integer result) {
+            mFragment.taskFinished(M_TASK_ID, mException == null, result);
         }
     }
 }

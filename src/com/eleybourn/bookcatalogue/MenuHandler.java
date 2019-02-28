@@ -84,20 +84,20 @@ final class MenuHandler {
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_ADD_BY_SCAN:
                 intent = new Intent(activity, BookSearchActivity.class);
-                intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchByIsbnFragment.TAG);
-                intent.putExtra(BookSearchActivity.BKEY_IS_SCAN_MODE, true);
+                intent.putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
+                intent.putExtra(BookSearchByIsbnFragment.BKEY_IS_SCAN_MODE, true);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_SEARCH);
                 return true;
 
             case R.id.MENU_BOOK_ADD_BY_SEARCH_ISBN:
                 intent = new Intent(activity, BookSearchActivity.class);
-                intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchByIsbnFragment.TAG);
+                intent.putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_SEARCH);
                 return true;
 
             case R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT:
                 intent = new Intent(activity, BookSearchActivity.class);
-                intent.putExtra(BookSearchActivity.REQUEST_BKEY_BY, BookSearchByTextFragment.TAG);
+                intent.putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByTextFragment.TAG);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_SEARCH);
                 return true;
 

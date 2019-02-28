@@ -2,7 +2,7 @@
  define entities that can be used inside of other string (not possible with standard Android resources
  e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
-<!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
     <string name="title_add_book">Přidat knihu</string>
@@ -89,7 +89,7 @@
     <string name="menu_populate_toc">Automaticky naplnit tituly (EXPERIMENTÁLNÍ FUNKCE)</string>
     <string name="error_auto_toc_population_failed">Automatické naplnění titulů selhalo</string>
     <string name="lbl_anthology">Antologie</string>
-    <string name="toc_confirm">Prosím zkontrolujte, zda jsou tyto antologie v pořádku</string>
+    <string name="warning_toc_confirm">Prosím zkontrolujte, zda jsou tyto antologie v pořádku</string>
     <string name="menu_cover_add_from_camera">Z fotoaparátu…</string>
     <string name="title_cover">Náhled obálky</string>
     <string name="menu_cover_rotate">Otočit náhled…</string>
@@ -103,7 +103,7 @@
     <string name="title_duplicate_book">Duplicitní kniha</string>
     <string name="confirm_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
     <string name="menu_cover_add_from_gallery">Z galerie…</string>
-    <string name="backup_request">Přejete si zálohovat Vaši databázi na SD kartu</string>
+    <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu</string>
     <string name="lbl_backup_dialog">Zálohovat?</string>
     <string name="searching_amazon_books">Vyhledávám na Amazonu</string>
     <string name="searching_google_books">Vyhledávám na Google Books</string>
@@ -168,7 +168,7 @@
     <string name="title_edit_series">Upravit detaily série</string>
     <string name="title_select_cover">Vybrat obálku</string>
     <string name="warning_no_isbn_no_editions">Nelze získat edici pro knihu bez ISBN kódu</string>
-    <string name="unsaved_edits">Změny nejsou uloženy. Určitě si přejete pokračovat?</string>
+    <string name="warning_unsaved_edits">Změny nejsou uloženy. Určitě si přejete pokračovat?</string>
     <string name="unsaved_edits_title">Změny nejsou uloženy</string>
     <string name="confirm_apply_author_changed">Změnil jste autora z:\n  \‘%1$s\’ na \n  \‘%2$s\’\nJak si přejete aplikovat tuto změnu?\nUpozornění: Volba \‘%3$s\’ bude aplikována okamžitě.</string>
     <string name="btn_this_book">Tato kniha</string>

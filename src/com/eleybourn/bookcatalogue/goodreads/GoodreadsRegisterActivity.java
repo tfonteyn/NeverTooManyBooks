@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.goodreads;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,17 +35,15 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 
+import java.io.IOException;
+
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-
-import java.io.IOException;
 
 /**
  * Activity to allow the user to authorize the application to access their Goodreads account and
@@ -59,8 +58,16 @@ public class GoodreadsRegisterActivity
     /**
      * Called by button click to start a non-UI-thread task to do the work.
      */
-    public static void requestAuthorizationInBackground(@NonNull final FragmentActivity activity) {
-        new RequestAuthTask(activity).execute();
+    public static void requestAuthorization(@NonNull final FragmentActivity context) {
+        //noinspection unchecked
+        ProgressDialogFragment<Integer> frag = (ProgressDialogFragment)
+                context.getSupportFragmentManager().findFragmentByTag(RequestAuthTask.TAG);
+        if (frag == null) {
+            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_connecting_to_web_site,
+                                                      true, 0);
+            frag.show(context.getSupportFragmentManager(), RequestAuthTask.TAG);
+        }
+        new RequestAuthTask(frag).execute();
     }
 
     @Override
@@ -89,7 +96,7 @@ public class GoodreadsRegisterActivity
         findViewById(R.id.authorize).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                requestAuthorizationInBackground(GoodreadsRegisterActivity.this);
+                requestAuthorization(GoodreadsRegisterActivity.this);
             }
         });
 
@@ -116,23 +123,37 @@ public class GoodreadsRegisterActivity
     public void onTaskFinished(final int taskId,
                                final boolean success,
                                final Object result) {
-        UserMessage.showUserMessage(this, (Integer)result);
+        UserMessage.showUserMessage(this, (Integer) result);
     }
 
     private static class RequestAuthTask
-            extends TaskWithProgress<Integer> {
+            extends AsyncTask<Void, Object, Integer> {
+
+        private static final String TAG = RequestAuthTask.class.getSimpleName();
+        /** Generic identifier. */
+        private static final int M_TASK_ID = R.id.TASK_ID_GR_REQUEST_AUTH;
+        /**
+         * {@link #doInBackground} should catch exceptions, and set this field.
+         * {@link #onPostExecute} can then check it.
+         */
+        @Nullable
+        protected Exception mException;
+
+        protected ProgressDialogFragment<Integer> mFragment;
 
         /**
-         * @param context the caller context
+         * Constructor.
+         *
+         * @param frag fragment to use for progress updates.
          */
         @UiThread
-        RequestAuthTask(@NonNull final FragmentActivity context) {
-            super(0, UniqueId.TFT_GR_REGISTER, context, true,
-                  R.string.progress_msg_connecting_to_web_site);
+        RequestAuthTask(@NonNull final ProgressDialogFragment<Integer> frag) {
+            mFragment = frag;
+            mFragment.setTask(M_TASK_ID, this);
         }
 
         @Override
-        @Nullable
+        @NonNull
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
             GoodreadsManager grMgr = new GoodreadsManager();
@@ -154,6 +175,18 @@ public class GoodreadsRegisterActivity
                 return R.string.progress_end_cancelled;
             }
             return R.string.info_authorized;
+        }
+
+        /**
+         * If the task was cancelled (by the user cancelling the progress dialog) then
+         * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
+         *
+         * @param result of the task
+         */
+        @Override
+        @UiThread
+        protected void onPostExecute(@NonNull final Integer result) {
+            mFragment.taskFinished(M_TASK_ID, mException == null, result);
         }
     }
 }

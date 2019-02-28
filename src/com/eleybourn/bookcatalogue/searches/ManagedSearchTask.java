@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
@@ -146,7 +147,7 @@ public class ManagedSearchTask
     @WorkerThread
     protected void runTask() {
 
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
             Logger.info(this, "runTask", getString(mProgressTitleResId));
         }
         // keys? site up? etc...

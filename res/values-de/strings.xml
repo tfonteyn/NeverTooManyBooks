@@ -2,7 +2,7 @@
  define entities that can be used inside of other string (not possible with standard Android resources
  e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
-<!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
     <!-- ========== not in use ========== -->
@@ -112,7 +112,7 @@
     <string name="error_auto_toc_population_failed">Das automatische Ausfüllen der
         Anthologie-Titel ist fehlgeschlagen</string>
     <string name="lbl_anthology">Anthologie</string>
-    <string name="toc_confirm">Bitte bestätigen Sie dass diese Anthologie-Titel korrekt sind.</string>
+    <string name="warning_toc_confirm">Bitte bestätigen Sie dass diese Anthologie-Titel korrekt sind.</string>
     <string name="menu_cover_add_from_camera">Von Kamera…</string>
     <string name="title_cover">Cover-Bild</string>
     <string name="menu_cover_rotate">Cover-Bild drehen…</string>
@@ -126,7 +126,7 @@
     <string name="confirm_duplicate_book_message">Das hinzuzufügende Buch besteht bereits in
         der Datenbank. Sind Sie sicher, dass Sie noch eine Kopie hinzufügen möchten?</string>
     <string name="menu_cover_add_from_gallery">Aus der Fotogalerie…</string>
-    <string name="backup_request">Möchten Sie ihre Datenbank auf SD-Karte sichern?</string>
+    <string name="warning_backup_request">Möchten Sie ihre Datenbank auf SD-Karte sichern?</string>
     <string name="lbl_backup_dialog">Sicherungskopie?</string>
     <string name="searching_amazon_books">Suche bei Amazon</string>
     <string name="searching_google_books">Suche bei Google Books</string>
@@ -195,7 +195,7 @@
     <string name="title_edit_series">Einzelheiten der Serie bearbeiten</string>
     <string name="title_select_cover">Cover auswählen</string>
     <string name="warning_no_isbn_no_editions">Für ein Buch ohne ISBN können keine Ausgaben ermittelt werden</string>
-    <string name="unsaved_edits">Es bestehen nicht gespeicherte Änderungen. Sind Sie sicher, dass sie fortfahren wollen?</string>
+    <string name="warning_unsaved_edits">Es bestehen nicht gespeicherte Änderungen. Sind Sie sicher, dass sie fortfahren wollen?</string>
     <string name="unsaved_edits_title">Ungespeicherte Änderungen</string>
     <string name="confirm_apply_author_changed">Der Autor wurde geändert von\n  \‘%1$s\’ in \n  \‘%2$s\’\nWie wollen Sie diese Änderung übernehmen?\nHinweis: Die Auswahl \‘%3$s\’ wird sofort übernommen.</string>
     <string name="btn_this_book">Dieses Buch</string>

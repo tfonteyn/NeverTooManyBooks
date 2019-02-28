@@ -320,7 +320,7 @@ public class BooksMultiTypeListHandler
                     }
                 }
 
-                menu.add(Menu.NONE, R.id.MENU_SHARE, 0, R.string.share)
+                menu.add(Menu.NONE, R.id.MENU_SHARE, 0, R.string.menu_share_this)
                     .setIcon(R.drawable.ic_share);
 
                 menu.add(Menu.NONE, R.id.MENU_BOOK_SEND_TO_GOODREADS, 0,
@@ -508,7 +508,7 @@ public class BooksMultiTypeListHandler
             case R.id.MENU_SHARE:
                 Book book = new Book(bookId, db);
                 activity.startActivity(Intent.createChooser(book.getShareBookIntent(activity),
-                                                            activity.getString(R.string.share)));
+                                                            activity.getString(R.string.menu_share_this)));
                 return true;
 
             case R.id.MENU_BOOK_SEND_TO_GOODREADS:

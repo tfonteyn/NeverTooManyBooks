@@ -3,6 +3,7 @@ package com.eleybourn.bookcatalogue.goodreads;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -16,18 +17,24 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 public final class GoodreadsUtils {
 
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
+
+    /** task progress fragment tag. */
+    private static final String TAG_GOODREADS_IMPORT_ALL = "grImportAll";
+    private static final String TAG_GOODREADS_SEND_BOOKS = "grSendBooks";
+    private static final String TAG_GOODREADS_SEND_ALL_BOOKS = "grSendAllBooks";
+    private static final String TAG_GOODREADS_SEND_ONE_BOOK = "grSendOneBook";
 
     /** can be part of an image 'name' from Goodreads indicating there is no cover image. */
     private static final String NO_COVER = "nocover";
@@ -119,22 +126,46 @@ public final class GoodreadsUtils {
      */
     public static void sendBooks(@NonNull final FragmentActivity context) {
 
-        new TaskWithProgress<Integer>(0, UniqueId.TFT_GOODREADS_SEND_BOOKS,
-                                      context, true,
-                                      R.string.progress_msg_connecting_to_web_site) {
+        new AsyncTask<Void, Object, Integer>() {
+            ProgressDialogFragment<Integer> mFragment;
+            /**
+             * {@link #doInBackground} should catch exceptions, and set this field.
+             * {@link #onPostExecute} can then check it.
+             */
+            @Nullable
+            private Exception mException;
 
             @Override
+            protected void onPreExecute() {
+                //noinspection unchecked
+                mFragment = (ProgressDialogFragment)
+                        context.getSupportFragmentManager()
+                               .findFragmentByTag(TAG_GOODREADS_SEND_BOOKS);
+                if (mFragment == null) {
+                    mFragment = ProgressDialogFragment.newInstance(
+                            R.string.progress_msg_connecting_to_web_site, true, 0);
+                    mFragment.show(context.getSupportFragmentManager(), TAG_GOODREADS_SEND_BOOKS);
+                }
+            }
+
+            @Override
+            @NonNull
             @WorkerThread
             protected Integer doInBackground(final Void... params) {
-                return checkWeCanExport();
+                try {
+                    return checkWeCanExport();
+                } catch (RuntimeException e) {
+                    Logger.error(e);
+                    mException = e;
+                    return R.string.error_unexpected_error;
+                }
             }
 
             @Override
             @UiThread
             protected void onPostExecute(@NonNull final Integer result) {
                 // cleanup the progress first
-                super.onPostExecute(null);
-
+                mFragment.taskFinished(R.id.TASK_ID_GR_SEND_BOOKS, mException == null, result);
                 switch (result) {
                     case 0:
                         // let the user choose which books to send
@@ -212,35 +243,61 @@ public final class GoodreadsUtils {
     private static void sendAllBooks(@NonNull final FragmentActivity context,
                                      final boolean updatesOnly) {
 
-        new TaskWithProgress<Integer>(0, UniqueId.TFT_GOODREADS_SEND_ALL_BOOKS,
-                                      context, true,
-                                      R.string.progress_msg_connecting_to_web_site) {
+        new AsyncTask<Void, Object, Integer>() {
+            ProgressDialogFragment<Integer> mFragment;
+            /**
+             * {@link #doInBackground} should catch exceptions, and set this field.
+             * {@link #onPostExecute} can then check it.
+             */
+            @Nullable
+            private Exception mException;
+
+            @Override
+            protected void onPreExecute() {
+                //noinspection unchecked
+                mFragment = (ProgressDialogFragment)
+                        context.getSupportFragmentManager()
+                               .findFragmentByTag(TAG_GOODREADS_SEND_ALL_BOOKS);
+                if (mFragment == null) {
+                    mFragment = ProgressDialogFragment.newInstance(
+                            R.string.progress_msg_connecting_to_web_site, true, 0);
+                    mFragment.show(context.getSupportFragmentManager(),
+                                   TAG_GOODREADS_SEND_ALL_BOOKS);
+                }
+            }
+
             @Override
             @WorkerThread
-            @Nullable
+            @NonNull
             protected Integer doInBackground(final Void... params) {
-                int msg = checkWeCanExport();
-                if (msg == 0) {
-                    if (isCancelled()) {
-                        return null;
+                try {
+                    int msg = checkWeCanExport();
+                    if (msg == 0) {
+                        if (isCancelled()) {
+                            return R.string.progress_end_cancelled;
+                        }
+                        QueueManager.getQueueManager()
+                                    .enqueueTask(new SendAllBooksTask(updatesOnly),
+                                                 QueueManager.Q_MAIN);
+                        return R.string.gr_tq_task_has_been_queued_in_background;
                     }
-                    QueueManager.getQueueManager()
-                                .enqueueTask(new SendAllBooksTask(updatesOnly),
-                                             QueueManager.Q_MAIN);
-                    return R.string.gr_tq_task_has_been_queued_in_background;
+                    return msg;
+                } catch (RuntimeException e) {
+                    Logger.error(e);
+                    mException = e;
+                    return R.string.error_unexpected_error;
                 }
-                return msg;
             }
 
             @Override
             @UiThread
             protected void onPostExecute(@NonNull final Integer result) {
+                mFragment.taskFinished(R.id.TASK_ID_GR_SEND_ALL_BOOKS, mException == null, result);
                 if (result == -1) {
                     goodreadsAuthAlert(mFragment.requireActivity());
                 } else {
                     UserMessage.showUserMessage(mFragment.requireActivity(), result);
                 }
-                super.onPostExecute(result);
             }
         }.execute();
     }
@@ -254,32 +311,60 @@ public final class GoodreadsUtils {
     public static void sendOneBook(@NonNull final FragmentActivity context,
                                    final long bookId) {
 
-        new TaskWithProgress<Integer>(0, UniqueId.TFT_GOODREADS_SEND_ONE_BOOK,
-                                      context, true,
-                                      R.string.progress_msg_connecting_to_web_site) {
+        new AsyncTask<Void, Object, Integer>() {
+            ProgressDialogFragment<Integer> mFragment;
+            /**
+             * {@link #doInBackground} should catch exceptions, and set this field.
+             * {@link #onPostExecute} can then check it.
+             */
+            @Nullable
+            private Exception mException;
 
             @Override
+            protected void onPreExecute() {
+                //noinspection unchecked
+                mFragment = (ProgressDialogFragment)
+                        context.getSupportFragmentManager()
+                               .findFragmentByTag(TAG_GOODREADS_SEND_ONE_BOOK);
+                if (mFragment == null) {
+                    mFragment = ProgressDialogFragment.newInstance(
+                            R.string.progress_msg_connecting_to_web_site, true, 0);
+                    mFragment.show(context.getSupportFragmentManager(),
+                                   TAG_GOODREADS_SEND_ONE_BOOK);
+                }
+            }
+
+            @Override
+            @NonNull
             @WorkerThread
             protected Integer doInBackground(final Void... params) {
-                int msg = checkWeCanExport();
-                if (msg == 0) {
-                    QueueManager.getQueueManager().enqueueTask(new SendOneBookTask(bookId),
-                                                               QueueManager.Q_SMALL_JOBS);
-                    return R.string.gr_tq_task_has_been_queued_in_background;
+                try {
+                    int msg = checkWeCanExport();
+                    if (isCancelled()) {
+                        return R.string.progress_end_cancelled;
+                    }
+                    if (msg == 0) {
+                        QueueManager.getQueueManager().enqueueTask(new SendOneBookTask(bookId),
+                                                                   QueueManager.Q_SMALL_JOBS);
+                        return R.string.gr_tq_task_has_been_queued_in_background;
+                    }
+                    return msg;
+                } catch (RuntimeException e) {
+                    Logger.error(e);
+                    mException = e;
+                    return R.string.error_unexpected_error;
                 }
-                return msg;
             }
 
             @Override
             @UiThread
-            protected void onPostExecute(final Integer result) {
+            protected void onPostExecute(@NonNull final Integer result) {
+                mFragment.taskFinished(R.id.TASK_ID_GR_SEND_ONE_BOOK, mException == null, result);
                 if (result == -1) {
                     goodreadsAuthAlert(mFragment.requireActivity());
                 } else {
                     UserMessage.showUserMessage(mFragment.requireActivity(), result);
                 }
-
-                super.onPostExecute(result);
             }
         }.execute();
     }
@@ -290,33 +375,56 @@ public final class GoodreadsUtils {
     public static void importAll(@NonNull final BaseActivity context,
                                  final boolean isSync) {
 
-        new TaskWithProgress<Integer>(0, UniqueId.TFT_GOODREADS_IMPORT_ALL,
-                                      context, true,
-                                      R.string.progress_msg_connecting_to_web_site) {
+        new AsyncTask<Void, Object, Integer>() {
+            ProgressDialogFragment<Integer> mFragment;
+            /**
+             * {@link #doInBackground} should catch exceptions, and set this field.
+             * {@link #onPostExecute} can then check it.
+             */
+            @Nullable
+            private Exception mException;
 
             @Override
-            @Nullable
+            protected void onPreExecute() {
+                //noinspection unchecked
+                mFragment = (ProgressDialogFragment)
+                        context.getSupportFragmentManager()
+                               .findFragmentByTag(TAG_GOODREADS_IMPORT_ALL);
+                if (mFragment == null) {
+                    mFragment = ProgressDialogFragment.newInstance(
+                            R.string.progress_msg_connecting_to_web_site, true, 0);
+                    mFragment.show(context.getSupportFragmentManager(), TAG_GOODREADS_IMPORT_ALL);
+                }
+            }
+
+            @Override
+            @NonNull
             @WorkerThread
             protected Integer doInBackground(final Void... params) {
-                int msg = checkWeCanImport();
-                if (msg == 0) {
-                    if (isCancelled()) {
-                        return null;
-                    }
+                try {
+                    int msg = checkWeCanImport();
+                    if (msg == 0) {
+                        if (isCancelled()) {
+                            return R.string.progress_end_cancelled;
+                        }
 
-                    QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync),
-                                                               QueueManager.Q_MAIN);
-                    return R.string.gr_tq_task_has_been_queued_in_background;
+                        QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync),
+                                                                   QueueManager.Q_MAIN);
+                        return R.string.gr_tq_task_has_been_queued_in_background;
+                    }
+                    return msg;
+                } catch (RuntimeException e) {
+                    Logger.error(e);
+                    mException = e;
+                    return R.string.error_unexpected_error;
                 }
-                return msg;
             }
 
             @Override
             @UiThread
             protected void onPostExecute(@NonNull final Integer result) {
                 // cleanup the progress first
-                super.onPostExecute(null);
-
+                mFragment.taskFinished(R.id.TASK_ID_GR_IMPORT_ALL, mException == null, result);
                 switch (result) {
                     case -1:
                         // ask to register
@@ -369,7 +477,6 @@ public final class GoodreadsUtils {
                         .hasActiveTasks(Task.CAT_GOODREADS_IMPORT_ALL)) {
             return R.string.gr_tq_requested_task_is_already_queued;
         }
-
         if (QueueManager.getQueueManager()
                         .hasActiveTasks(Task.CAT_GOODREADS_EXPORT_ALL)) {
             return R.string.gr_tq_export_task_is_already_queued;
@@ -414,8 +521,7 @@ public final class GoodreadsUtils {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  dialog.dismiss();
-                                 GoodreadsRegisterActivity
-                                         .requestAuthorizationInBackground(context);
+                                 GoodreadsRegisterActivity.requestAuthorization(context);
                              }
                          });
 

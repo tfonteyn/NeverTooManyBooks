@@ -73,14 +73,10 @@ public class AdminActivity
         extends BaseActivity
         implements ProgressDialogFragment.OnTaskFinishedListener {
 
-    /** requestCode for making a backup to archive. // taskId for exporting CSV. */
+    /** requestCode for making a backup to archive. */
     private static final int REQ_ARCHIVE_BACKUP = 0;
-    /** requestCode for doing a restore/import from archive.  // taskId for importing CSV. */
+    /** requestCode for doing a restore/import from archive. */
     private static final int REQ_ARCHIVE_RESTORE = 1;
-    /** requestCode for making a backup to archive. // taskId for exporting CSV. */
-    private static final int REQ_CSV_EXPORT = 2;
-    /** requestCode for doing a restore/import from archive.  // taskId for importing CSV. */
-    private static final int REQ_CSV_IMPORT = 3;
 
     private static final int REQ_ADMIN_SEARCH_SETTINGS = 10;
 
@@ -235,7 +231,7 @@ public class AdminActivity
     private void setupImportExport() {
         View v;
 
-        /* Export (backup) to Archive */
+        // Export (backup) to Archive
         v = findViewById(R.id.lbl_backup);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -251,7 +247,7 @@ public class AdminActivity
         });
 
 
-        /* Import from Archive - Start the restore activity*/
+        // Import from Archive - Start the restore activity
         v = findViewById(R.id.lbl_import_from_archive);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -267,7 +263,7 @@ public class AdminActivity
         });
 
 
-        /* Export to CSV */
+        // Export to CSV
         v = findViewById(R.id.lbl_export);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -279,7 +275,7 @@ public class AdminActivity
         });
 
 
-        /* Import From CSV */
+        // Import From CSV
         v = findViewById(R.id.lbl_import);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -294,7 +290,7 @@ public class AdminActivity
 
     private void setupGoodreadsImportExport() {
         View v;
-        /* Goodreads Synchronize */
+        // Goodreads Synchronize
         v = findViewById(R.id.lbl_sync_with_goodreads);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -306,7 +302,7 @@ public class AdminActivity
         });
 
 
-        /* Goodreads Import */
+        // Goodreads Import
         v = findViewById(R.id.lbl_import_all_from_goodreads);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -318,7 +314,7 @@ public class AdminActivity
         });
 
 
-        /* Goodreads Export (send to) */
+        // Goodreads Export (send to)
         v = findViewById(R.id.lbl_send_books_to_goodreads);
         // Make line flash when clicked.
         v.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -367,7 +363,14 @@ public class AdminActivity
         File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
         ExportSettings settings = new ExportSettings(file);
         settings.what = ExportSettings.BOOK_CSV;
-        new ExportCSVTask(REQ_CSV_EXPORT, UniqueId.TFT_EXPORT_CSV, this, settings).execute();
+        //noinspection unchecked
+        ProgressDialogFragment<Void> frag = (ProgressDialogFragment)
+                getSupportFragmentManager().findFragmentByTag(ExportCSVTask.TAG);
+        if (frag == null) {
+            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up, false, 0);
+            frag.show(getSupportFragmentManager(), ExportCSVTask.TAG);
+        }
+        new ExportCSVTask(frag, settings).execute();
     }
 
     /**
@@ -434,7 +437,14 @@ public class AdminActivity
     private void importFromCSV(@NonNull final File file) {
         ImportSettings settings = new ImportSettings(file);
         settings.what = ImportSettings.BOOK_CSV;
-        new ImportCSVTask(REQ_CSV_IMPORT, UniqueId.TFT_IMPORT_CSV, this, settings).execute();
+        //noinspection unchecked
+        ProgressDialogFragment<Void> frag = (ProgressDialogFragment)
+                getSupportFragmentManager().findFragmentByTag(ImportCSVTask.TAG);
+        if (frag == null) {
+            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_importing, false, 0);
+            frag.show(getSupportFragmentManager(), ImportCSVTask.TAG);
+        }
+        new ImportCSVTask(frag, settings).execute();
     }
 
     @Override
@@ -461,7 +471,6 @@ public class AdminActivity
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
-
         }
         Tracker.exitOnActivityResult(this);
     }
@@ -478,13 +487,13 @@ public class AdminActivity
                                final boolean success,
                                @Nullable final Object result) {
         switch (taskId) {
-            case REQ_CSV_EXPORT:
+            case R.id.TASK_ID_CSV_EXPORT:
                 if (success) {
                     onExportFinished();
                 }
                 break;
 
-            case REQ_CSV_IMPORT:
+            case R.id.TASK_ID_CSV_IMPORT:
                 break;
         }
     }
@@ -520,11 +529,9 @@ public class AdminActivity
 
         if (!isFinishing()) {
             try {
-                //
                 // Catch errors resulting from 'back' being pressed multiple times so that
                 // the activity is destroyed before the dialog can be shown.
                 // See http://code.google.com/p/android/issues/detail?id=3953
-                //
                 dialog.show();
             } catch (RuntimeException e) {
                 Logger.error(e);
@@ -553,8 +560,6 @@ public class AdminActivity
 
             uris.add(coverURI);
             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-
-
             startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));
         } catch (NullPointerException e) {
             Logger.error(e);

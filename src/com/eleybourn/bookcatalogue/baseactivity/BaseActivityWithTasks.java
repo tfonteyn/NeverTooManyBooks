@@ -67,7 +67,7 @@ public abstract class BaseActivityWithTasks
     private static final String BKEY_TASK_MANAGER_ID = "TaskManagerId";
     /** ID of associated TaskManager. */
     private long mTaskManagerId;
-    /** DialogFragment for this activity. */
+    /** Progress Dialog for this activity. */
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     /** Associated TaskManager. */
@@ -125,7 +125,7 @@ public abstract class BaseActivityWithTasks
             //
             // but when updating a single book, I found timing issues where a 'real' message could
             // arrive with progress 1/1. And the dialog does not close.. and all is blocked.
-            // so, now using ||. Last progress msg might be lost though. Important or not ?
+            // so, now using ||. Last progress msg might be lost though. See if we care ?
 
             // If empty, close any dialog
             if ((mProgressMessage.isEmpty()) || mProgressMax == mProgressCount) {
@@ -140,20 +140,15 @@ public abstract class BaseActivityWithTasks
          */
         @Override
         public void onUserMessage(@NonNull final String message) {
-            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                Logger.info(BaseActivityWithTasks.this,
-                            "onUserMessage", "msg=`" + message);
-            }
             UserMessage.showUserMessage(BaseActivityWithTasks.this, message);
         }
     };
 
     /**
-     * When the user clicks 'back/up'.
+     * When the user clicks 'back/up', clean up any running tasks.
      */
     @Override
     public void onBackPressed() {
-        // clean up any running tasks.
         cancelAndUpdateProgress(true);
         super.onBackPressed();
     }
@@ -261,9 +256,14 @@ public abstract class BaseActivityWithTasks
 
         // Create dialog if necessary
         if (mProgressDialog == null) {
-            //TODO: no dialog title. Should we have one ?
-            mProgressDialog = ProgressDialogFragment.newInstance(0, wantInDeterminate, 0);
-            mProgressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.TAG);
+            mProgressDialog = (ProgressDialogFragment) getSupportFragmentManager()
+                    .findFragmentByTag(ProgressDialogFragment.TAG);
+            if (mProgressDialog == null) {
+                //TODO: no dialog title. Should we have one ?
+                mProgressDialog = ProgressDialogFragment.newInstance(0, wantInDeterminate, 0);
+                // specific tags for specific tasks? -> NO, as the dialog is shared.
+                mProgressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.TAG);
+            }
         }
 
         if (mProgressMax > 0) {

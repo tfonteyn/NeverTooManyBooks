@@ -76,20 +76,6 @@ public final class UniqueId {
     /** need distinct code as it can trickle up. */
     public static final int ACTIVITY_RESULT_OK_BooklistStyleProperties = 10_102;
 
-    /** task fragment tag. */
-    public static final String TFT_GOODREADS_IMPORT_ALL = "grImportAll";
-    public static final String TFT_GOODREADS_SEND_BOOKS = "grSendBooks";
-    public static final String TFT_GOODREADS_SEND_ALL_BOOKS = "grSendAllBooks";
-    public static final String TFT_GOODREADS_SEND_ONE_BOOK = "grSendOneBook";
-    public static final String TFT_BACKUP = "backup";
-    public static final String TFT_IMPORT_ARCHIVE = "restore";
-    public static final String TFT_IMPORT_CSV = "importCSV";
-    public static final String TFT_EXPORT_CSV = "exportCSV";
-    public static final String TFT_BOOKLIST = "booklist";
-    public static final String TFT_LT_VALIDATE = "ltValidate";
-    public static final String TFT_GR_REGISTER = "grRegister";
-    public static final String TFT_FILE_LISTER = "fileLister";
-
     /**
      * Bundle keys for ParcelableArrayList<Entity>.
      */
@@ -181,13 +167,6 @@ public final class UniqueId {
      * IntegerArrayList
      */
     public static final String BKEY_ID_LIST = "idList";
-
-    /**
-     * Bundle key to pass a generic {@link java.util.ArrayList<String>} around.
-     * <p>
-     * StringArrayList
-     */
-    public static final String BKEY_LIST = "stringList";
 
     /**
      * 3 uses:
@@ -293,7 +272,6 @@ public final class UniqueId {
     public static final String KEY_BOOK_GR_LAST_SYNC_DATE = DOM_BOOK_GOODREADS_LAST_SYNC_DATE.name;
     public static final String KEY_BOOK_LIBRARY_THING_ID = DOM_BOOK_LIBRARY_THING_ID.name;
     public static final String KEY_BOOK_ISFDB_ID = DOM_BOOK_ISFDB_ID.name;
-
 
 
     private UniqueId() {

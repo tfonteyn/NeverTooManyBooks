@@ -46,11 +46,6 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 public class BookSearchActivity
         extends BaseActivityWithTasks {
 
-    /** 'by' what criteria to search. */
-    public static final String REQUEST_BKEY_BY = "tag";
-    /** option for 'by'. */
-    public static final String BKEY_IS_SCAN_MODE = "isScanMode";
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -63,7 +58,7 @@ public class BookSearchActivity
 
         Bundle extras = getIntent().getExtras();
         //noinspection ConstantConditions
-        String tag = extras.getString(REQUEST_BKEY_BY, BookSearchByIsbnFragment.TAG);
+        String tag = extras.getString(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
         if (null == getSupportFragmentManager().findFragmentByTag(tag)) {
             Fragment frag = createFragment(tag);
             frag.setArguments(getIntent().getExtras());

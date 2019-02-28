@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
@@ -50,7 +51,7 @@ public class TerminatorConnection
     /** Constructor. */
     private TerminatorConnection(@NonNull final URL url)
             throws IOException {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG_SWITCHES.NETWORK && BuildConfig.DEBUG) {
             Logger.info(this, "Getting connection: " + url);
         }
 
@@ -153,7 +154,7 @@ public class TerminatorConnection
                 Thread.sleep(KILL_CONNECT_DELAY);
             } catch (InterruptedException ignore) {
             }
-            if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.NETWORK && BuildConfig.DEBUG) {
                 Logger.info(this, "Closing WrappedConnection.");
             }
             con.close();

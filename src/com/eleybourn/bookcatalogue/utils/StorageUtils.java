@@ -81,8 +81,11 @@ public final class StorageUtils {
     public static final int ERROR_CANNOT_STAT = -2;
     /** buffer size for file copy operations. */
     private static final int FILE_COPY_BUFFER_SIZE = 32768;
+
     /** our root directory to be created on the 'external storage' aka Shared Storage. */
-    private static final String DIRECTORY_NAME = "bookCatalogue";
+    private static final String DIRECTORY_NAME = "bookCatalogue2";
+    //private static final String DIRECTORY_NAME = "bookCatalogue";
+
     /** root external storage aka Shared Storage. */
     private static final String SHARED_STORAGE_PATH =
             Environment.getExternalStorageDirectory() + File.separator + DIRECTORY_NAME;

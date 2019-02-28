@@ -24,17 +24,12 @@
             android:paddingStart="@dimen/padding_border">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/padding_border_double"
-                android:text="@string/help"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
                 android:id="@+id/help_page"
                 style="@style/link_url"
-                tools:text="help page url"
-                tools:ignore="SelectableText" />
+                android:layout_width="match_parent"
+                android:gravity="center_horizontal"
+                tools:ignore="SelectableText"
+                tools:text="help page url" />
 
             <TextView
                 android:layout_width="match_parent"

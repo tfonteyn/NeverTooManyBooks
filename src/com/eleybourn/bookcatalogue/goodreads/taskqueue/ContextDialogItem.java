@@ -28,6 +28,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.R;
+
 
 /**
  * Class to make building a 'context menu' for an AlertDialog a little easier.
@@ -61,7 +63,7 @@ public class ContextDialogItem
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
             items.toArray(itemArray);
             final AlertDialog dialog = new AlertDialog.Builder(context)
-                    .setTitle(com.eleybourn.bookcatalogue.R.string.title_select_an_action)
+                    .setTitle(R.string.title_select_an_action)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setItems(itemArray, new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog,

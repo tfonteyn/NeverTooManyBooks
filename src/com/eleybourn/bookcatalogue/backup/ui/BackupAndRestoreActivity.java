@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
@@ -49,7 +50,6 @@ import com.eleybourn.bookcatalogue.filechooser.FileChooserBaseActivity;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment;
 import com.eleybourn.bookcatalogue.filechooser.FileListerAsyncTask;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -67,17 +67,6 @@ public class BackupAndRestoreActivity
         ImportDialogFragment.OnImportTypeSelectionDialogResultsListener,
         ExportDialogFragment.OnExportTypeSelectionDialogResultsListener {
 
-    /**
-     * ID's to use when kicking of the tasks for doing a backup or restore.
-     * We get it back in {@link #onTaskFinished} so we know the type of task.
-     * <p>
-     * Note: could use {@link #isSave()} of course. But keeping it future proof.
-     * Option 3 ? cloud ? etc....
-     */
-    private static final int TASK_ID_FILE_LISTER = 0;
-    private static final int TASK_ID_SAVE_TO_ARCHIVE = 1;
-    private static final int TASK_ID_READ_FROM_ARCHIVE = 2;
-
     @CallSuper
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -93,7 +82,7 @@ public class BackupAndRestoreActivity
     private String getDefaultFileName() {
         if (isSave()) {
             final String sqlDate = DateUtils.localSqlDateForToday();
-            return BackupFileDetails.ARCHIVE_PREFIX
+            return getString(R.string.app_name) + '-'
                     + sqlDate.replace(" ", "-")
                              .replace(":", "")
                     + BackupFileDetails.ARCHIVE_EXTENSION;
@@ -123,7 +112,15 @@ public class BackupAndRestoreActivity
     @Override
     public FileListerAsyncTask getFileLister(@NonNull final FragmentActivity context,
                                              @NonNull final File root) {
-        return new BackupListerTask(TASK_ID_FILE_LISTER, this, root);
+        //noinspection unchecked
+        ProgressDialogFragment<ArrayList<FileChooserFragment.FileDetails>> frag = (ProgressDialogFragment)
+                getSupportFragmentManager().findFragmentByTag(BackupListerTask.TAG);
+        if (frag == null) {
+            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_searching_directory,
+                                                      true, 0);
+            frag.show(getSupportFragmentManager(), BackupListerTask.TAG);
+        }
+        return new BackupListerTask(frag, root);
     }
 
     /**
@@ -146,9 +143,15 @@ public class BackupAndRestoreActivity
                                         final int which) {
                         // User wants to import all.
                         settings.what = ImportSettings.ALL;
-                        new RestoreTask(TASK_ID_READ_FROM_ARCHIVE,
-                                        BackupAndRestoreActivity.this,
-                                        settings).execute();
+                        //noinspection unchecked
+                        ProgressDialogFragment<ImportSettings> frag = (ProgressDialogFragment)
+                                getSupportFragmentManager().findFragmentByTag(RestoreTask.TAG);
+                        if (frag == null) {
+                            frag = ProgressDialogFragment.newInstance(
+                                    R.string.progress_msg_importing, false, 0);
+                            frag.show(getSupportFragmentManager(), RestoreTask.TAG);
+                        }
+                        new RestoreTask(frag, settings).execute();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -181,7 +184,14 @@ public class BackupAndRestoreActivity
         if (settings.what == ImportSettings.NOTHING) {
             return;
         }
-        new RestoreTask(TASK_ID_READ_FROM_ARCHIVE,this, settings).execute();
+        //noinspection unchecked
+        ProgressDialogFragment<ImportSettings> frag = (ProgressDialogFragment)
+                getSupportFragmentManager().findFragmentByTag(RestoreTask.TAG);
+        if (frag == null) {
+            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_importing, false, 0);
+            frag.show(getSupportFragmentManager(), RestoreTask.TAG);
+        }
+        new RestoreTask(frag, settings).execute();
     }
 
     /**
@@ -201,8 +211,15 @@ public class BackupAndRestoreActivity
                                         final int which) {
                         // User wants to backup all.
                         settings.what = ExportSettings.ALL;
-                        new BackupTask(TASK_ID_SAVE_TO_ARCHIVE,
-                                       BackupAndRestoreActivity.this, settings).execute();
+                        //noinspection unchecked
+                        ProgressDialogFragment<ExportSettings> frag = (ProgressDialogFragment)
+                                getSupportFragmentManager().findFragmentByTag(BackupTask.TAG);
+                        if (frag == null) {
+                            frag = ProgressDialogFragment.newInstance(
+                                    R.string.progress_msg_backing_up, false, 0);
+                            frag.show(getSupportFragmentManager(), BackupTask.TAG);
+                        }
+                        new BackupTask(frag, settings).execute();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -251,12 +268,18 @@ public class BackupAndRestoreActivity
             // make sure; cannot have a dateFrom when not asking for a time limited export
             settings.dateFrom = null;
         }
-
-        new BackupTask(TASK_ID_SAVE_TO_ARCHIVE,this, settings).execute();
+        //noinspection unchecked
+        ProgressDialogFragment<ExportSettings> frag = (ProgressDialogFragment)
+                getSupportFragmentManager().findFragmentByTag(BackupTask.TAG);
+        if (frag == null) {
+            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up, false, 0);
+            frag.show(getSupportFragmentManager(), BackupTask.TAG);
+        }
+        new BackupTask(frag, settings).execute();
     }
 
     /**
-     * Listener for {@link TaskWithProgress} tasks.
+     * Listener for tasks.
      *
      * @param taskId  a task identifier
      * @param success <tt>true</tt> for success.
@@ -271,17 +294,17 @@ public class BackupAndRestoreActivity
 
         // Is it a task we care about?
         switch (taskId) {
-            case TASK_ID_SAVE_TO_ARCHIVE:
+            case R.id.TASK_ID_SAVE_TO_ARCHIVE:
                 ExportSettings exportSettings = (ExportSettings) Objects.requireNonNull(result);
                 handleSaveToArchiveResults(success, exportSettings);
                 break;
 
-            case TASK_ID_READ_FROM_ARCHIVE:
+            case R.id.TASK_ID_READ_FROM_ARCHIVE:
                 ImportSettings importSettings = (ImportSettings) Objects.requireNonNull(result);
                 handleReadFromArchiveResults(success, importSettings);
                 break;
 
-            case TASK_ID_FILE_LISTER:
+            case R.id.TASK_ID_FILE_LISTER:
                 break;
 
             default:
@@ -320,12 +343,13 @@ public class BackupAndRestoreActivity
         if ((resultSettings.what & ImportSettings.PREFERENCES) != 0) {
             Prefs.migratePreV200preferences(
                     BookCatalogueApp.getAppContext()
-                                    .getSharedPreferences("bookCatalogue",
+                                    .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE,
                                                           Context.MODE_PRIVATE).getAll()
             );
             // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences("bookCatalogue");
             BookCatalogueApp.getAppContext()
-                            .getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE)
+                            .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE,
+                                                  Context.MODE_PRIVATE)
                             .edit().clear().apply();
         }
 

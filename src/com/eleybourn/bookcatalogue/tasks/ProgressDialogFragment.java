@@ -20,6 +20,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * // At this point the fragment may have been recreated due to a rotation,
@@ -41,7 +42,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
  * <p>
  * <p>
  * <p>
- * Progress support for {@link TaskWithProgress}.
+ * Progress support for {@link AsyncTask}.
  * <p>
  * We're using setRetainInstance(true); so the task survives together with this fragment.
  * Do we still need to use onSaveInstanceState ? I suppose not ? TEST
@@ -49,6 +50,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 public class ProgressDialogFragment<Results>
         extends DialogFragment {
 
+    /** tag to use if no custom tag is needed. */
     public static final String TAG = ProgressDialogFragment.class.getSimpleName();
 
     private static final String BKEY_DIALOG_IS_INDETERMINATE = "isIndeterminate";
@@ -73,7 +75,9 @@ public class ProgressDialogFragment<Results>
     private String mMessage;
     /** the task. */
     @Nullable
-    private TaskWithProgress<Results> mTask;
+    private AsyncTask<Void, Object, Results> mTask;
+    @Nullable
+    private Integer mTaskId;
 
     /**
      * @param titelId         Titel for the dialog, can be 0 for no title.
@@ -92,6 +96,7 @@ public class ProgressDialogFragment<Results>
         ProgressDialogFragment<Results> frag = new ProgressDialogFragment<>();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, titelId);
+        //args.putString(BKEY_CURRENT_MESSAGE, message);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
         args.putInt(BKEY_MAX, max);
         frag.setArguments(args);
@@ -101,9 +106,12 @@ public class ProgressDialogFragment<Results>
     /**
      * Can optionally (but usually is) be linked with a task.
      *
-     * @param task that will use us for progress updates.
+     * @param taskId id of task
+     * @param task   that will use us for progress updates.
      */
-    public void setTask(@Nullable final TaskWithProgress<Results> task) {
+    public void setTask(final int taskId,
+                        @Nullable final AsyncTask<Void, Object, Results> task) {
+        mTaskId = taskId;
         mTask = task;
     }
 
@@ -121,12 +129,13 @@ public class ProgressDialogFragment<Results>
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-
+        Logger.info(this,"onCreateDialog");
         @SuppressLint("InflateParams")
         View root = requireActivity().getLayoutInflater()
                                      .inflate(R.layout.fragment_task_progress, null);
         mProgressBar = root.findViewById(R.id.progressBar);
         mMessageView = root.findViewById(R.id.message);
+        Logger.info(this,"onCreateDialog", mMessageView.toString());
 
         // these are fixed
         int titleId = requireArguments().getInt(UniqueId.BKEY_DIALOG_TITLE);
@@ -138,7 +147,6 @@ public class ProgressDialogFragment<Results>
         // initial/current message.
         mMessage = args.getString(BKEY_CURRENT_MESSAGE);
         if (mMessage != null) {
-            //noinspection ConstantConditions
             mMessageView.setText(mMessage);
         }
         // current and max values for a 'determinate' progress bar.
@@ -160,6 +168,10 @@ public class ProgressDialogFragment<Results>
         //ENHANCE: this is really needed, as it would be to easy to cancel. But we SHOULD add a specific cancel-button!
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
+    }
+
+    public void setTitle(@StringRes final int titleId) {
+        requireDialog().setTitle(titleId);
     }
 
     /**
@@ -255,16 +267,12 @@ public class ProgressDialogFragment<Results>
 
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
-        Integer taskId = null;
-        if (mTask != null) {
-            taskId = mTask.getTaskId();
-        }
-
-        // Tell the caller we're done.
+        // Tell the caller we're done. mTaskId will be null if there is no task.
+        //noinspection InstanceofIncompatibleInterface
         if (getTargetFragment() instanceof ProgressDialogFragment.OnProgressCancelledListener) {
-            ((OnProgressCancelledListener) getTargetFragment()).onProgressCancelled(taskId);
+            ((OnProgressCancelledListener) getTargetFragment()).onProgressCancelled(mTaskId);
         } else if (getActivity() instanceof ProgressDialogFragment.OnProgressCancelledListener) {
-            ((OnProgressCancelledListener) getActivity()).onProgressCancelled(taskId);
+            ((OnProgressCancelledListener) getActivity()).onProgressCancelled(mTaskId);
         }
     }
 
@@ -287,7 +295,6 @@ public class ProgressDialogFragment<Results>
         }
     }
 
-
     /**
      * Called when the task finishes.
      *
@@ -296,9 +303,9 @@ public class ProgressDialogFragment<Results>
      * @param result  task result object
      */
     @UiThread
-    void taskFinished(final int taskId,
-                      final boolean success,
-                      @Nullable final Results result) {
+    public void taskFinished(final int taskId,
+                             final boolean success,
+                             @Nullable final Results result) {
         // Make sure we check if it is resumed because we will crash if trying to dismiss
         // the dialog after the user has switched to another app.
         if (isResumed()) {
@@ -307,9 +314,11 @@ public class ProgressDialogFragment<Results>
 
         // If we aren't resumed, setting the task to null will allow us to dismiss ourselves in
         // onResume().
+        mTaskId = null;
         mTask = null;
 
         // Tell the caller we're done.
+        //noinspection InstanceofIncompatibleInterface
         if (getTargetFragment() instanceof OnTaskFinishedListener) {
             ((OnTaskFinishedListener) getTargetFragment()).onTaskFinished(taskId, success, result);
         } else if (getActivity() instanceof OnTaskFinishedListener) {
@@ -346,6 +355,7 @@ public class ProgressDialogFragment<Results>
         /**
          * @param success <tt>true</tt> if the task finished successfully
          * @param result  the return object from the {@link AsyncTask#doInBackground} call
+         *                Nullable/NonNull is up to the implementation.
          */
         void onTaskFinished(int taskId,
                             boolean success,

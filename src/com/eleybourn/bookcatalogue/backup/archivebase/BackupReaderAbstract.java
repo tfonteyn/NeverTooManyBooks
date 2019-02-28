@@ -173,7 +173,8 @@ public abstract class BackupReaderAbstract
                             // read them into the 'old' prefs. Migration is done at a later stage.
                             try (XmlImporter importer = new XmlImporter()) {
                                 importer.doPreferences(entity, new ForwardingListener(),
-                                                       Prefs.getPrefs("bookCatalogue"));
+                                                       Prefs.getPrefs(
+                                                               Prefs.PREF_LEGACY_BOOK_CATALOGUE));
                             }
                             entitiesRead |= ImportSettings.PREFERENCES;
                         }

@@ -12,7 +12,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.Csv;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -99,18 +101,18 @@ public abstract class BaseSettingsFragment
             StringBuilder text = new StringBuilder();
             for (String s : msp.getValues()) {
                 int index = msp.findIndexOfValue(s);
-//                    if (index == -1) {
-//                        Logger.debug("MultiSelectListPreference:"
-//                                             + "\n s=" + s
-//                                             + "\n key=" + msp.getKey()
-//                                             + "\n entries=" + Csv.join(",", msp.getEntries())
-//                                             + "\n entryValues=" + Csv.join(",", msp.getEntryValues())
-//                                             + "\n values=" + msp.getValues()
-//
-//                        );
-//                    } else {
+                    if (index == -1) {
+                        Logger.debug("MultiSelectListPreference:"
+                                             + "\n s=" + s
+                                             + "\n key=" + msp.getKey()
+                                             + "\n entries=" + Csv.join(",", Arrays.asList(msp.getEntries()))
+                                             + "\n entryValues=" + Csv.join(",", Arrays.asList(msp.getEntryValues()))
+                                             + "\n values=" + msp.getValues()
+
+                        );
+                    } else {
                 text.append(msp.getEntries()[index]).append('\n');
-//                    }
+                    }
             }
             return text;
         } else if (preference instanceof PreferenceScreen) {

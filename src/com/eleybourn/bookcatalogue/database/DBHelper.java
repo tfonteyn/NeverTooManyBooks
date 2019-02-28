@@ -616,13 +616,13 @@ public class DBHelper
             Prefs.migratePreV200preferences(
                     BookCatalogueApp
                             .getAppContext()
-                            .getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE)
+                            .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE)
                             .getAll());
 
             // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences("bookCatalogue");
             BookCatalogueApp
                     .getAppContext()
-                    .getSharedPreferences("bookCatalogue", Context.MODE_PRIVATE)
+                    .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE)
                     .edit().clear().apply();
 
             // this trigger was modified/renamed.

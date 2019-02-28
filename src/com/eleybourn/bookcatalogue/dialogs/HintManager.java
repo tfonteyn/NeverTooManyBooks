@@ -90,9 +90,6 @@ public final class HintManager {
         mHints.put(R.string.gr_explain_goodreads_no_match,
                    new Hint("explain_goodreads_no_match"));
 
-        // advert
-        //mHints.put(R.string.hint_tempus_locum, new Hint("hint_tempus_locum"));
-
         mHints.put(R.string.hint_autorotate_camera_images,
                    new Hint("hint_autorotate_camera_images"));
         mHints.put(R.string.hint_view_only_book_details,

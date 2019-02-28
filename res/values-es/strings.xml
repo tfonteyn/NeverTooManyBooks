@@ -2,7 +2,7 @@
  define entities that can be used inside of other string (not possible with standard Android resources
  e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
-<!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
     <!-- ========== not in use ========== -->
@@ -94,7 +94,7 @@
     <string name="menu_populate_toc">Actualización automática de títulos (EXPERIMENTAL)</string>
     <string name="error_auto_toc_population_failed">La actualización automática de títulos ha fallado</string>
     <string name="lbl_anthology">Antología</string>
-    <string name="toc_confirm">Por favor, confirme que los títulos de la antología son (en su mayoría) correctos</string>
+    <string name="warning_toc_confirm">Por favor, confirme que los títulos de la antología son (en su mayoría) correctos</string>
     <string name="menu_cover_add_from_camera">Desde la cámara…</string>
     <string name="title_cover">Portada</string>
     <string name="menu_cover_rotate">Girar imagen…</string>
@@ -108,7 +108,7 @@
     <string name="title_duplicate_book">Libro duplicado</string>
     <string name="confirm_duplicate_book_message">El libro que intenta añadir ya está en la base de datos. ¿Desea añadir otra copia?</string>
     <string name="menu_cover_add_from_gallery">Desde la galería…</string>
-    <string name="backup_request">¿Desea realizar una copia de la base de datos a la tarjeta SD?</string>
+    <string name="warning_backup_request">¿Desea realizar una copia de la base de datos a la tarjeta SD?</string>
     <string name="lbl_backup_dialog">¿Realizar copia?</string>
     <string name="searching_amazon_books">Buscando en Amazon</string>
     <string name="searching_google_books">Buscando en Google Books</string>
@@ -174,7 +174,7 @@
     <string name="title_edit_series">Modificar serie</string>
     <string name="title_select_cover">Seleccionar portada</string>
     <string name="warning_no_isbn_no_editions">No se pueden obtener ediciones para un libro sin ISBN</string>
-    <string name="unsaved_edits">No ha guardado los cambios. ¿Está seguro de que desea continuar?</string>
+    <string name="warning_unsaved_edits">No ha guardado los cambios. ¿Está seguro de que desea continuar?</string>
     <string name="unsaved_edits_title">Cambios sin guardar</string>
     <string name="confirm_apply_author_changed">Ha cambiado el autor de :\n  \‘%1$s\’ a \n  \‘%2$s\’\n¿Cómo quiere aplicar este cambio?\nNota: La opción \‘%3$s\’ se aplicará de manera inmediata.</string>
     <string name="btn_this_book">Este libro</string>

@@ -1,10 +1,11 @@
 package com.eleybourn.bookcatalogue.backup.csv;
 
+import android.os.AsyncTask;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.FragmentActivity;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,29 +15,35 @@ import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.backup.LocalCoverFinder;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 
 public class ImportCSVTask
-        extends TaskWithProgress<Void> {
+        extends AsyncTask<Void, Object, Void> {
 
+    public static final String TAG = ImportCSVTask.class.getSimpleName();
+    /** Generic identifier. */
+    private static final int M_TASK_ID = R.id.TASK_ID_CSV_IMPORT;
     private final ImportSettings mSettings;
     private final CsvImporter mImporter;
+    /**
+     * {@link #doInBackground} should catch exceptions, and set this field.
+     * {@link #onPostExecute} can then check it.
+     */
+    @Nullable
+    protected Exception mException;
+
+    protected ProgressDialogFragment<Void> mFragment;
 
     /**
      * Constructor.
      *
-     * @param taskId      a task identifier, will be returned in the task finished listener.
-     * @param fragmentTag tag for the progress fragment
-     * @param context     the caller context
-     * @param settings    the import settings
+     * @param settings the import settings
      */
     @UiThread
-    public ImportCSVTask(final int taskId,
-                         @NonNull final String fragmentTag,
-                         @NonNull final FragmentActivity context,
+    public ImportCSVTask(@NonNull final ProgressDialogFragment<Void> frag,
                          @NonNull final ImportSettings settings) {
-
-        super(taskId, fragmentTag, context, false, R.string.progress_msg_importing);
+        mFragment = frag;
+        mFragment.setTask(M_TASK_ID, this);
         mSettings = settings;
         mImporter = new CsvImporter(settings);
     }
@@ -74,5 +81,26 @@ public class ImportCSVTask
         }
 
         return null;
+    }
+
+    /**
+     * @param values: [0] String message, [1] Integer position/delta
+     */
+    @Override
+    @UiThread
+    protected void onProgressUpdate(@NonNull final Object... values) {
+        mFragment.onProgress((String) values[0], (Integer) values[1]);
+    }
+
+    /**
+     * If the task was cancelled (by the user cancelling the progress dialog) then
+     * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
+     *
+     * @param result of the task
+     */
+    @Override
+    @UiThread
+    protected void onPostExecute(@Nullable final Void result) {
+        mFragment.taskFinished(M_TASK_ID, mException == null, result);
     }
 }

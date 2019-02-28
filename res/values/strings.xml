@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?><!--
- define entities that can be used inside of other string (not possible with standard Android resources
- e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
+ define entities that can be used inside of other string (not possible with standard Android
+ resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
-<!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
-
     <!-- Regular expression !! - TODO: make this user controlled ? -->
     <string name="series_number_prefixes" translatable="false">
         (#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)
@@ -103,6 +102,8 @@
     <string name="error_storage_no_access">Cannot access the SD Card</string>
     <!-- you're out of Shared Storage space... buy a bigger SDCard -->
     <string name="error_storage_no_space_left">Not enough space on the SD Card</string>
+
+    <string name="error_not_available">not available</string>
 
     <string name="error_no_external_crop_app">Can not find image crop app</string>
     <string name="error_network_timeout">No response, please try again</string>
@@ -204,6 +205,15 @@
     <string name="warning_book_was_deleted_uc">THIS BOOK HAS BEEN DELETED</string>
     <string name="warning_book_no_longer_exists">The specified book no longer exists</string>
 
+    <string name="warning_toc_confirm">
+        Please confirm that these titles are (mostly) correct
+    </string>
+    <string name="warning_backup_request">
+        Would you like to backup your database to your sdcard?
+    </string>
+    <string name="warning_unsaved_edits">
+        You have unsaved changes. Are you sure you want to continue?
+    </string>
 
     <!-- Displayed when a user tries to browse higher than the root directory,
      or if the parent is unable to be read -->
@@ -352,11 +362,12 @@
         application and does not require Goodreads, but if you are interested you can register at:
     </string>
     <string name="gr_auth_blurb_part2">
-        Once you are registered, or if you are already a Goodreads user, you can authorize &APP_NAME;
-        access your Goodreads data by pressing the button below. It will take you to a web page
-        where you will need to login to Goodreads and authorize this application. We will never see
-        your password, and you can disable access via the Goodreads website. Due to the vagaries of
-        the web, you may end up on a blank web page. Just click the back button to return here!
+        Once you are registered, or if you are already a Goodreads user, you can authorize
+        &APP_NAME; access your Goodreads data by pressing the button below.
+        It will take you to a web page where you will need to login to Goodreads and authorize
+        this application. We will never see your password, and you can disable access via the
+        Goodreads website. Due to the vagaries of the web, you may end up on a blank web page.
+        Just click the back button to return here!
     </string>
     <string name="gr_auth_blurb_part3">
         But remember…there is no need to do any of this: &APP_NAME; works just fine without it!
@@ -386,8 +397,8 @@
     <string name="gr_auth_successful">Goodreads authorization successful</string>
     <string name="gr_import_all_from_goodreads">Import all from Goodreads</string>
     <string name="gr_action_cannot_be_completed">
-        This action can not be completed until this application is authorized via the Goodreads web
-        site. Once you have authorized this application, please retry.\n
+        This action can not be completed until this application is authorized via the Goodreads
+        web site. Once you have authorized this application, please retry.\n
         \nDo you want to authorize it now?
     </string>
     <string name="gr_error_while_searching">Error while searching.</string>
@@ -406,7 +417,8 @@
         \nYou can choose to send all of your books, or only the books you have updated
         since they were last copied to or from Goodreads (including all books that have
         not been sent yet) or you can cancel the update.\n
-        \nIf you have never sent any books then there is no difference between the first two options.
+        \nIf you have never sent any books then there is no difference between the first
+        two options.
     </string>
     <string name="gr_explain_goodreads_no_isbn">
         The selected book does not have an ISBN; it is not possible to automatically synchronize
@@ -475,17 +487,19 @@
     <string name="hint_booklist_styles_editor">
         You can use this screen to customize the list of styles that will be displayed in your
         default styles menu.\n
-        \nA “tick” indicates the style will be shown in the list, “un-tick” to hide it and vice versa.\n
-        \nIf no styles are ticked, then all styles will be shown.\n
-        \nYou can re-order the hierarchy by dragging the icon at the extreme right of each row up or down.\n
-        \nLong-clicking anywhere else in a row will allow you to edit or clone the details of a specific style.
-        \nIf you cloned a style, and changed your mind, you will need to delete it yourself.
+        \nA “tick” indicates the style will be shown in the list, “un-tick” to hide it and vice
+        versa.\n\nIf no styles are ticked, then all styles will be shown.\n
+        \nYou can re-order the hierarchy by dragging the icon at the extreme right of each row
+        up or down.\n\nLong-clicking anywhere else in a row will allow you to edit or clone the
+        details of a specific style.\n
+        If you cloned a style, and changed your mind, you will need to delete it yourself.
     </string>
     <!-- 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_groups">
-        You can use this screen to modify the hierarchy of headings for a specific book list style.\n
-        \nA “tick” indicates the heading will be shown in the list, “un-tick” to hide it and vice versa.\n
-        \nYou can re-order the hierarchy by dragging the icon at the extreme right of each row up or down.
+        You can use this screen to modify the hierarchy of headings for a specific book list
+        style.\n\nA “tick” indicates the heading will be shown in the list, “un-tick” to hide it
+        and vice versa.\n\nYou can re-order the hierarchy by dragging the icon at the extreme
+        right of each row up or down.
     </string>
     <!-- 2018-12-26: modified text, translations need updating -->
     <string name="hint_booklist_style_properties">
@@ -501,8 +515,8 @@
         case deleting one of those books will delete all instances from the list.
     </string>
     <string name="hint_series_book_may_appear_more_than_once">
-        If shown in every series, a single book may appear more than once in a list. In such a case
-        deleting one of those books will delete all instances from the list.
+        If shown in every series, a single book may appear more than once in a list.
+        In such a case deleting one of those books will delete all instances from the list.
     </string>
     <string name="hint_background_tasks">
         From here you can see the currently running tasks as well as previous tasks that have
@@ -540,7 +554,7 @@
     </string>
     <!-- A hint describing the benefit of following the Amazon links -->
     <string name="hint_amazon_links_blurb"><![CDATA[
-        <p>If you buy things from Amazon after selecting the  <i>“%1$s”</i>, <i>“%2$s”</i> or <i>“%3$s”</i>
+        <p>If you buy things from Amazon after selecting the <i>“%1$s”</i>, <i>“%2$s”</i> or <i>“%3$s”</i>
         menu items, a proportion of the purchase price will be sent to the developers of %4$s.</p>
         <p>You can also use the
          <a href=“https://github.com/eleybourn/Book-Catalogue/wiki/Frequently-Asked-Questions-%%28FAQ%%29”>links on our FAQ</a>
@@ -895,20 +909,21 @@
     <string name="style_is_user_defined">User-defined</string>
     <string name="style_is_builtin">Builtin</string>
 
-    <string name="style_builtin_author_series">Author then Series</string>
+    <!-- Should be as short as possible -->
+    <string name="style_builtin_author_series">Author, Series</string>
     <string name="style_builtin_series">Series</string>
     <string name="style_builtin_title_first_letter">Title first letter</string>
-    <string name="style_builtin_genre">Genre name</string>
+    <string name="style_builtin_genre">Genre</string>
     <string name="style_builtin_loaned">Lending</string>
-    <string name="style_builtin_read_and_unread">Read and Unread</string>
-    <string name="style_builtin_publication_date">Publication date</string>
+    <string name="style_builtin_read_and_unread">Read/Unread</string>
+    <string name="style_builtin_publication_date">Pub. Date</string>
     <string name="style_builtin_added_date">Added date</string>
-    <string name="style_builtin_author_year">Author and Year</string>
+    <string name="style_builtin_author_year">Author,Year</string>
     <string name="style_builtin_compact">Compact</string>
     <string name="style_builtin_read_date">Date Read</string>
-    <string name="style_builtin_unread">Unread (Author/Series)</string>
+    <string name="style_builtin_unread">Unread (Auth/Ser)</string>
     <string name="style_builtin_update_date">Update date</string>
-    <string name="style_builtin_acquired_date">Date Acquired</string>
+    <string name="style_builtin_acquired_date">Acquired</string>
 
     <!-- ####################################################################################### -->
     <!-- == TAB labels - need to be short == -->
@@ -1153,16 +1168,6 @@
         styles when possible.\n\n
         You can also edit the styles menu, and the styles themselves from here.
     </string>
-    <string name="hint_tempus_locum" translatable="false"><![CDATA[
-        <p><b>The lead developer of BookCatalogue has developed a new app!</b></p>
-        <p>Keep track of locations, images, recordings and notes; and if you are into
-        science, then manage samples and labels.</p>
-        <p>Please check it out in the Play Store:</p>
-        <p><a href="market://details?id=info.philipwarner.fieldassistant">Tempus Locum</a></p>
-        <p>or you can see the web site here:</p>
-        <p><a href="http://www.tempuslocum.com/">http://www.tempuslocum.com/</a>
-        </p>]]>
-    </string>
 
     <!-- ####################################################################################### -->
     <!-- ========== need cleaning/renaming/moving...  ========== -->
@@ -1191,13 +1196,8 @@
     <!-- was called 'not_set' but androidx preference has a bug making its own 'not_set' public -->
     <string name="field_not_set">Not Set</string>
     <string name="field_not_set_with_brackets">(Not Set)</string>
-
-    <string name="toc_confirm">Please confirm that these titles are (mostly) correct</string>
-    <string name="backup_request">Would you like to backup your database to your sdcard?</string>
     <string name="and_others">et. al.</string>
-    <string name="unsaved_edits">
-        You have unsaved changes. Are you sure you want to continue?
-    </string>
+
     <string name="unsaved_edits_title">Unsaved Changes</string>
     <string name="cleanup_files">Cleanup Files</string>
     <string name="read_amp_unread">Read &amp; Unread</string>
@@ -1206,7 +1206,6 @@
     <!-- name of virtual bookshelf which displays all books; also used in list filters -->
     <string name="all_books">All Books</string>
     <string name="done">Done</string>
-    <string name="share">Share</string>
     <string name="send_mail">Send email…</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
@@ -1217,15 +1216,11 @@
     <!-- Name of the 'Default' bookshelf, created when app first installed. Needs to be short. -->
     <string name="initial_bookshelf">Default</string>
 
-    <string name="debug" translatable="false">Debug</string>
-    <string name="debug_history" translatable="false">History</string>
-
-    <string name="import_export_xml_tables">as XML</string>
-    <string name="import_export_info_xml_tables">as XML</string>
+    <string name="import_export_xml_tables">XML</string>
+    <string name="import_export_info_xml_tables">XML</string>
     <string name="info_tap_to_edit">Tap here to edit the name</string>
 
     <string name="books_found">%1$s books found</string>
-    <string name="error_not_available">not available</string>
     <string name="searching_titelbank">Searching TitelBank</string>
 
 </resources>

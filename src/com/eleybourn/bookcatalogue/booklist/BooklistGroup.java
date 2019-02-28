@@ -225,7 +225,6 @@ public class BooklistGroup
 
     @NonNull
     CompoundKey getCompoundKey() {
-        //noinspection ConstantConditions
         return RowKind.get(kind).getCompoundKey();
     }
 
@@ -239,7 +238,7 @@ public class BooklistGroup
     }
 
     /**
-     * Only ever init the Preferences if you have a valid UUID (null is valid).
+     * Only ever init the Preferences if you have a valid UUID.
      */
     protected void initPrefs() {
     }
@@ -281,8 +280,11 @@ public class BooklistGroup
      */
     private void readObject(@NonNull final ObjectInputStream in)
             throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
+        //use a temporary empty uuid so storage is memory only for the groups.
+        // we'll set the real uuid at the end of the import and convert them.
+        mUuid = "";
         initPrefs();
+        in.defaultReadObject();
     }
 
     /**
@@ -360,8 +362,9 @@ public class BooklistGroup
         }
 
         /**
-         * Only ever init the Preferences if you have a valid UUID (null is valid).
+         * Only ever init the Preferences if you have a valid UUID.
          */
+        @Override
         protected void initPrefs() {
             mAllSeries = new PBoolean(R.string.pk_bob_books_under_multiple_series, mUuid);
         }
@@ -419,7 +422,7 @@ public class BooklistGroup
          */
         private void writeObject(@NonNull final ObjectOutputStream out)
                 throws IOException {
-            out.defaultWriteObject();
+            super.writeObject(out);
             // version must use writeObject
             out.writeObject(BooklistStyle.realSerialVersion);
 
@@ -436,8 +439,7 @@ public class BooklistGroup
          */
         private void readObject(@NonNull final ObjectInputStream in)
                 throws IOException, ClassNotFoundException {
-            in.defaultReadObject();
-            initPrefs();
+            super.readObject(in);
 
             Object object = in.readObject();
             if (object == null || object instanceof Boolean) {
@@ -447,6 +449,11 @@ public class BooklistGroup
             }
             //long version = (Long)object;
             mAllSeries.set((Boolean) in.readObject());
+        }
+
+        @Override
+        public void setUuid(@NonNull final String uuid) {
+            super.setUuid(uuid);
         }
     }
 
@@ -508,8 +515,9 @@ public class BooklistGroup
         }
 
         /**
-         * Only ever init the Preferences if you have a valid UUID (null is valid).
+         * Only ever init the Preferences if you have a valid UUID.
          */
+        @Override
         protected void initPrefs() {
             mAllAuthors = new PBoolean(R.string.pk_bob_books_under_multiple_authors, mUuid);
             mGivenNameFirst = new PBoolean(R.string.pk_bob_format_author_name, mUuid);
@@ -583,7 +591,7 @@ public class BooklistGroup
          */
         private void writeObject(@NonNull final ObjectOutputStream out)
                 throws IOException {
-            out.defaultWriteObject();
+            super.writeObject(out);
             // version must use writeObject to be compat with original code
             out.writeObject(BooklistStyle.realSerialVersion);
 
@@ -601,8 +609,8 @@ public class BooklistGroup
          */
         private void readObject(@NonNull final ObjectInputStream in)
                 throws IOException, ClassNotFoundException {
-            in.defaultReadObject();
-            initPrefs();
+            super.readObject(in);
+
             Object object = in.readObject();
             if (object == null || object instanceof Boolean) {
                 // pre v5.
@@ -613,6 +621,11 @@ public class BooklistGroup
             long version = (Long) object;
             mAllAuthors.set((Boolean) in.readObject());
             mGivenNameFirst.set((Boolean) in.readObject());
+        }
+
+        @Override
+        public void setUuid(@NonNull final String uuid) {
+            super.setUuid(uuid);
         }
     }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
     <!-- ####################################################################################### -->
@@ -47,4 +47,8 @@
     <string name="lbl_isbn" translatable="false">ISBN</string>
 
     <string name="brackets" translatable="false">(%1$s)</string>
+
+    <!-- debug user visible strings, not normally seen -->
+    <string name="debug" translatable="false">Debug</string>
+    <string name="debug_history" translatable="false">History</string>
 </resources>

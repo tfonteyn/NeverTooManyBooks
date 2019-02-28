@@ -208,7 +208,7 @@
     <!-- Single use / specialised styles -->
     <!-- *************************************************************************************** -->
     <style name="link_url">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingBottom">@dimen/padding_border</item>
         <item name="android:paddingStart">@dimen/padding_border_triple</item>

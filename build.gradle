@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 
-if (project.hasProperty("BookCatalogue.signing")
-        && new File(project.property("BookCatalogue.signing")).exists()) {
-    apply from: project.property("MyProject.signing")
-}
+//if (project.hasProperty("BookCatalogue.signing")
+//        && new File(project.property("BookCatalogue.signing")).exists()) {
+//    apply from: project.property("MyProject.signing")
+//}
 
 buildscript {
     repositories {
@@ -40,7 +40,7 @@ dependencies {
     // implementation androidx.viewpager2:viewpager2 1.0.0-alpha01
     implementation 'androidx.fragment:fragment:1.1.0-alpha04'
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha02'
-    // implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     //
     implementation 'com.google.android.material:material:1.1.0-alpha03'
     //
@@ -94,6 +94,7 @@ android {
     //  5.1     22      85.4%
     //  5.0     21      88.9%
     defaultConfig {
+        applicationId "com.hardbacknutter.nevertomanybooks.private"
         minSdkVersion 21
         targetSdkVersion 28
     }

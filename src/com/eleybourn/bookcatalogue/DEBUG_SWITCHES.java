@@ -8,7 +8,6 @@ import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
-import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -28,13 +27,18 @@ public final class DEBUG_SWITCHES {
 
     public static final boolean TMP_ANTHOLOGY = false;
 
+    /**
+     * Add a debug menu to the main activity's options menu.
+     */
+    public static final boolean SHOW_DEBUG_MENU = true;
 
-    public static final boolean BOOKLIST_BUILDER = true;
+
+    public static final boolean BOOKLIST_BUILDER = false;
 
     /** specific to debugging the broken {@link BooklistBuilder#rebuild()}. */
-    public static final boolean BOOKLIST_BUILDER_REBUILD = true;
+    public static final boolean BOOKLIST_BUILDER_REBUILD = false;
 
-    public static final boolean BOOKS_ON_BOOKSHELF = true;
+    public static final boolean BOOKS_ON_BOOKSHELF = false;
 
     /** enable timers for performance measurements. */
     public static final boolean TIMERS = false;
@@ -54,11 +58,12 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.utils.StorageUtils}. */
     public static final boolean STORAGE_UTILS = false;
 
-    /** {@link TaskManager}. */
-    public static final boolean TASK_MANAGER = false;
-
     /** {@link SearchCoordinator} and related. */
     public static final boolean SEARCH_INTERNET = false;
+
+    /** Network access. */
+    public static final boolean NETWORK = false;
+
 
     /** {@link ISFDBBook}. */
     public static final boolean ISFDB_SEARCH = false;
@@ -68,9 +73,6 @@ public final class DEBUG_SWITCHES {
 
     /** reading/writing a backup file. */
     public static final boolean BACKUP = false;
-
-    /** all things that can happen during startup only. */
-    public static final boolean STARTUP = false;
 
     /** everything related to Dates/Timezone. */
     public static final boolean DATETIME = false;
@@ -154,6 +156,11 @@ public final class DEBUG_SWITCHES {
      * {@link SynchronizedStatement#executeUpdateDelete()}
      */
     public static final boolean DB_SYNC_ROWS_AFFECTED = false;
+
+    /**
+     * Specific debug for the global replace author/series/...
+     */
+    public static final boolean DBA_GLOBAL_REPLACE = false;
 
     /* ****************************************************************************************** */
 

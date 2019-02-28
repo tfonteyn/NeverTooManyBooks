@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- BEGIN predefined task ids -->
+    <item name="TASK_ID_GET_BOOKLIST" type="id" />
+
+    <item name="TASK_ID_FILE_LISTER" type="id" />
+    <item name="TASK_ID_READ_FROM_ARCHIVE" type="id" />
+    <item name="TASK_ID_SAVE_TO_ARCHIVE" type="id" />
+    <item name="TASK_ID_CSV_IMPORT" type="id" />
+    <item name="TASK_ID_CSV_EXPORT" type="id" />
+
+    <item name="TASK_ID_LT_VALIDATE_KEY" type="id" />
+
+    <item name="TASK_ID_GR_REQUEST_AUTH" type="id" />
+    <item name="TASK_ID_GR_SEND_BOOKS" type="id" />
+    <item name="TASK_ID_GR_SEND_ALL_BOOKS" type="id" />
+    <item name="TASK_ID_GR_SEND_ONE_BOOK" type="id" />
+    <item name="TASK_ID_GR_IMPORT_ALL" type="id" />
+
+    <!-- END predefined task ids -->
+
     <item name="TAG_EVENT" type="id" />
     <item name="TAG_TASK" type="id" />
     <item name="TAG_TASK_HOLDER" type="id" />

@@ -355,7 +355,7 @@ public abstract class BookBaseFragment
 
             case R.id.MENU_SHARE:
                 startActivity(Intent.createChooser(book.getShareBookIntent(mActivity),
-                                                   getString(R.string.share)));
+                                                   getString(R.string.menu_share_this)));
                 return true;
 
             default:

@@ -40,6 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -247,7 +248,7 @@ public class FTSSearchActivity
             if (cursor != null) {
                 int count = cursor.getCount();
                 tmpMsg = getString(R.string.books_found, String.valueOf(count));
-                if (BuildConfig.DEBUG) {
+                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                     t0 = System.currentTimeMillis() - t0;
                     tmpMsg += "  in " + t0 + "ms)";
                 }

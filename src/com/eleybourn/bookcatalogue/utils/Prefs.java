@@ -39,6 +39,8 @@ import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
  */
 public final class Prefs {
 
+    public static final String PREF_LEGACY_BOOK_CATALOGUE = "bookCatalogue";
+
     private Prefs() {
     }
 
@@ -168,9 +170,9 @@ public final class Prefs {
                         break;
 
                     case "App.OpenBookReadOnly":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_open_book_read_only),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(
+                                BookCatalogueApp.getResString(R.string.pk_bob_open_book_read_only),
+                                (Boolean) oldValue);
                         break;
 
                     case "BookList.Global.BooklistState":
@@ -304,16 +306,14 @@ public final class Prefs {
                         int con = (Boolean) oldValue ? BooklistStyle.SCALE_SIZE_SMALLER
                                                      : BooklistStyle.SCALE_SIZE_NORMAL;
                         // this is now a PInteger, stored as a string
-                        ed.putString(BookCatalogueApp.getResString(
-                                R.string.pk_bob_item_size),
+                        ed.putString(BookCatalogueApp.getResString(R.string.pk_bob_item_size),
                                      String.valueOf(con));
                         break;
 
                     case "BookList.ShowHeaderInfo":
-                        int shi = ((Integer) oldValue);
+                        int shi = ((Integer) oldValue) & BooklistStyle.SUMMARY_SHOW_ALL;
                         // this is now a PBitmask, stored as a Set
-                        ed.putStringSet(BookCatalogueApp.getResString(
-                                R.string.pk_bob_header),
+                        ed.putStringSet(BookCatalogueApp.getResString(R.string.pk_bob_header),
                                         toStringSet(shi));
                         break;
 
@@ -347,13 +347,11 @@ public final class Prefs {
                         break;
 
                     case "BooksOnBookshelf.TOP_ROW":
-                        ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW,
-                                  (Integer) oldValue);
+                        ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW, (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.TOP_ROW_TOP":
-                        ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW_OFFSET,
-                                  (Integer) oldValue);
+                        ed.putInt(BooksOnBookshelf.PREF_BOB_TOP_ROW_OFFSET, (Integer) oldValue);
                         break;
 
                     case "BooksOnBookshelf.LIST_STYLE":
@@ -428,19 +426,33 @@ public final class Prefs {
         ed.apply();
     }
 
+    /**
+     * Convert a set where each element represents one bit to an int bitmask
+     *
+     * @param set the set
+     *
+     * @return the value
+     */
     @NonNull
-    public static Integer toInteger(@NonNull final Set<String> sValue) {
+    public static Integer toInteger(@NonNull final Set<String> set) {
         int tmp = 0;
-        for (String s : sValue) {
+        for (String s : set) {
             tmp += Integer.parseInt(s);
         }
         return tmp;
     }
 
+    /**
+     * Convert an int (bitmask) to a set where each element represents one bit.
+     *
+     * @param bitmask the value
+     *
+     * @return the set
+     */
     @NonNull
-    public static Set<String> toStringSet(@NonNull final Integer value) {
+    public static Set<String> toStringSet(@NonNull final Integer bitmask) {
         Set<String> set = new HashSet<>();
-        int tmp = value;
+        int tmp = bitmask;
         int bit = 1;
         while (tmp != 0) {
             if ((tmp & 1) == 1) {

@@ -136,7 +136,7 @@ public class BooklistStyle
     /** the amount of details to show in the header. */
     public static final Integer SUMMARY_SHOW_LEVEL_2 = 1 << 2;
     /** the amount of details to show in the header. */
-    private static final Integer SUMMARY_SHOW_ALL =
+    public static final Integer SUMMARY_SHOW_ALL =
             SUMMARY_SHOW_COUNT | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2;
 
     /** Scaling of text and images. */
@@ -808,6 +808,10 @@ public class BooklistStyle
      */
     private void readObject(@NonNull final ObjectInputStream in)
             throws IOException, ClassNotFoundException {
+        // pre-v5 we did not have a UUID, create one so the prefs file will be written.
+        mUuid = createUniqueName();
+        initPrefs();
+
         in.defaultReadObject();
 
         Object object = in.readObject();
@@ -819,9 +823,6 @@ public class BooklistStyle
             object = in.readObject();
         } // else it's a pre-version object, just use it
 
-        // pre-v5 we did not have a UUID, create one so the prefs file will be written.
-        mUuid = createUniqueName();
-        initPrefs();
 
         SharedPreferences.Editor ed = Prefs.getPrefs(mUuid).edit();
         mExtraShowThumbnails.set(ed, (Boolean) object);
@@ -875,7 +876,8 @@ public class BooklistStyle
         if (version > 3) {
             Integer i = (Integer) in.readObject();
             if (i != null) {
-                mShowHeaderInfo.set(ed, i);
+                // incoming has extra unused bits, strip those off.
+                mShowHeaderInfo.set(ed, i & SUMMARY_SHOW_ALL);
             }
         }
 

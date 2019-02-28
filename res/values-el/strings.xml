@@ -2,7 +2,7 @@
  define entities that can be used inside of other string (not possible with standard Android resources
  e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
-<!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
 
@@ -95,7 +95,7 @@
     <string name="menu_populate_toc">Αυτόματη συμπλήρωση τίτλων (ΠΕΙΡΑΜΑΤΙΚΟ)</string>
     <string name="error_auto_toc_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε</string>
     <string name="lbl_anthology">Ανθολογία</string>
-    <string name="toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί</string>
+    <string name="warning_toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί</string>
     <string name="menu_cover_add_from_camera">Από κάμερα…</string>
     <string name="title_cover">Μικρογραφία Εξωφύλλου</string>
     <string name="menu_cover_rotate">Περιστροφή Μικρογραφίας…</string>
@@ -109,7 +109,7 @@
     <string name="title_duplicate_book">Διπλοεγγραφή Βιβλίου</string>
     <string name="confirm_duplicate_book_message">Το βιβλίο που προσπαθείτε να προσθέσετε υπάρχει ήδη στη βάση δεδομένων, είστε σίγουροι ότι θέλετε να προσθέσετε και άλλο αντίγραφο;</string>
     <string name="menu_cover_add_from_gallery">Από φωτογραφίες…</string>
-    <string name="backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
+    <string name="warning_backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
     <string name="lbl_backup_dialog">Δημιουργία αντιγράφου;</string>
     <string name="searching_amazon_books">Αναζήτηση στο Amazon</string>
     <string name="searching_google_books">Αναζήτηση στο Google Books</string>
@@ -174,7 +174,7 @@
     <string name="title_edit_series">Επεξεργασία λεπτομερειών Σειράς</string>
     <string name="title_select_cover">Επιλογή εξωφύλλου</string>
     <string name="warning_no_isbn_no_editions">Δεν μπορούν να ληφθούν εκδόσεις για βιβλίο χωρίς ISBN</string>
-    <string name="unsaved_edits">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
+    <string name="warning_unsaved_edits">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
     <string name="unsaved_edits_title">Μη αποθηκευμένες αλλαγές</string>
     <string name="confirm_apply_author_changed">Αλλάξατε τον συγγραφέα από:\n  \‘%1$s\’ σε \n  \‘%2$s\’\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή \‘%3$s\’ θα εφαρμοστεί στιγμιαία.</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>

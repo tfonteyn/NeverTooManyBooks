@@ -1,31 +1,34 @@
 package com.eleybourn.bookcatalogue.backup;
 
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 import java.io.IOException;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriter;
 import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
 import com.eleybourn.bookcatalogue.backup.ui.BackupFileDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 public class BackupTask
-        extends TaskWithProgress<ExportSettings> {
+        extends AsyncTask<Void, Object, ExportSettings> {
+
+    public static final String TAG = BackupTask.class.getSimpleName();
+    /** Generic identifier. */
+    private static final int M_TASK_ID = R.id.TASK_ID_SAVE_TO_ARCHIVE;
 
     private final String mBackupDate = DateUtils.utcSqlDateTimeForToday();
 
@@ -35,19 +38,26 @@ public class BackupTask
     private final File mTmpFile;
 
     /**
+     * {@link #doInBackground} should catch exceptions, and set this field.
+     * {@link #onPostExecute} can then check it.
+     */
+    @Nullable
+    protected Exception mException;
+
+    protected ProgressDialogFragment<ExportSettings> mFragment;
+
+    /**
      * Constructor.
      *
-     * @param taskId      a task identifier, will be returned in the task finished listener.
-     * @param context     the caller context
-     * @param settings    the export settings
+     * @param settings the export settings
      */
     @UiThread
-    public BackupTask(final int taskId,
-                      @NonNull final FragmentActivity context,
+    public BackupTask(@NonNull final ProgressDialogFragment<ExportSettings> frag,
                       @NonNull final ExportSettings settings) {
-        super(taskId, UniqueId.TFT_BACKUP, context, false, R.string.progress_msg_backing_up);
-        mSettings = settings;
 
+        mFragment = frag;
+        mFragment.setTask(M_TASK_ID, this);
+        mSettings = settings;
         // sanity checks
         if ((mSettings.file == null) || ((mSettings.what & ExportSettings.MASK) == 0)) {
             throw new IllegalArgumentException("Options must be specified: " + mSettings);
@@ -55,8 +65,8 @@ public class BackupTask
 
         // Ensure the file key extension is what we want
         if (!BackupFileDetails.isArchive(mSettings.file)) {
-            mSettings.file = new File(
-                    mSettings.file.getAbsoluteFile() + BackupFileDetails.ARCHIVE_EXTENSION);
+            mSettings.file = new File(mSettings.file.getAbsoluteFile()
+                                              + BackupFileDetails.ARCHIVE_EXTENSION);
         }
 
         // we write to a temp file, and will rename it upon success (or delete on failure).
@@ -75,7 +85,7 @@ public class BackupTask
     }
 
     @Override
-    @Nullable
+    @NonNull
     @WorkerThread
     protected ExportSettings doInBackground(final Void... params) {
         BackupContainer bkp = new TarBackupContainer(mTmpFile);
@@ -104,7 +114,7 @@ public class BackupTask
             });
 
             if (isCancelled()) {
-                return null;
+                return mSettings;
             }
 
             // success
@@ -127,5 +137,26 @@ public class BackupTask
         }
 
         return mSettings;
+    }
+
+    /**
+     * @param values: [0] String message, [1] Integer position/delta
+     */
+    @Override
+    @UiThread
+    protected void onProgressUpdate(@NonNull final Object... values) {
+        mFragment.onProgress((String) values[0], (Integer) values[1]);
+    }
+
+    /**
+     * If the task was cancelled (by the user cancelling the progress dialog) then
+     * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
+     *
+     * @param result of the task
+     */
+    @Override
+    @UiThread
+    protected void onPostExecute(@NonNull final ExportSettings result) {
+        mFragment.taskFinished(M_TASK_ID, mException == null, result);
     }
 }

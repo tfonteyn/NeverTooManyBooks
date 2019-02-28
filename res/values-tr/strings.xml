@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><!--
- define entities that can be used inside of other string (not possible with standard Android resources
- e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
- cannot put these into an external file: https://issuetracker.google.com/issues/68434088 --><!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
-
+ define entities that can be used inside of other string (not possible with standard Android
+ resources e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
+ cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 <resources>
 
     <!-- ========== not in use ========== -->
@@ -93,7 +93,7 @@
     <string name="menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
     <string name="error_auto_toc_population_failed">Kitap adlarının kendiliğinden doldurulması başarısız oldu</string>
     <string name="lbl_anthology">Seçmeler</string>
-    <string name="toc_confirm">Lütfen bu seçki adlarının doğru olduğunu onaylayın</string>
+    <string name="warning_toc_confirm">Lütfen bu seçki adlarının doğru olduğunu onaylayın</string>
     <string name="menu_cover_add_from_camera">Kameradan…</string>
     <string name="title_cover">Kapak resmi</string>
     <string name="menu_cover_rotate">Resmi döndür…</string>
@@ -106,7 +106,7 @@
     <string name="title_duplicate_book">Kitabı kopyala</string>
     <string name="confirm_duplicate_book_message">Eklemeye çalıştığınız kitap veritabanında zaten var, tekrar eklemek istediğinizden emin misiniz?</string>
     <string name="menu_cover_add_from_gallery">Galeriden…</string>
-    <string name="backup_request">Veritabanınızı SD karta yedeklemek ister misiniz?</string>
+    <string name="warning_backup_request">Veritabanınızı SD karta yedeklemek ister misiniz?</string>
     <string name="lbl_backup_dialog">Yedekle</string>
     <string name="searching_amazon_books">Amazon aranıyor</string>
     <string name="searching_google_books">Google Kitaplar aranıyor</string>
@@ -170,7 +170,7 @@
     <string name="title_edit_series">Seri ayrıntılarını düzenle</string>
     <string name="title_select_cover">Kapak seç</string>
     <string name="warning_no_isbn_no_editions">ISBN\'si olmayan bir kitabın diğer sürümlerine ulaşılamaz</string>
-    <string name="unsaved_edits">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
+    <string name="warning_unsaved_edits">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="unsaved_edits_title">Kaydedilmemiş değişiklikler</string>
     <string name="confirm_apply_author_changed">Yazarı şundan:\n  \‘%1$s\’ şuna:\n  \‘%2$s\’ değiştirdiniz.\nDeğişiklikleri nasıl uygulamak istersiniz?\nNot: \‘%3$s\’ seçimi anında uygulanacaktır.</string>
     <string name="btn_this_book">Bu kitap</string>

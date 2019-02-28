@@ -1,18 +1,12 @@
 package com.eleybourn.bookcatalogue.filechooser;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.fragment.app.FragmentActivity;
-
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
-import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.tasks.TaskWithProgress;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -20,17 +14,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+
 /**
  * Partially implements a FragmentTask to build a list of files in the background.
  *
  * @author pjw
  */
 public abstract class FileListerAsyncTask
-        extends TaskWithProgress<ArrayList<FileDetails>> {
+        extends AsyncTask<Void, Object, ArrayList<FileDetails>> {
+
+    private final int mTaskId;
 
     @NonNull
     private final File mRoot;
-
     /**
      * Perform case-insensitive sorting using default locale.
      */
@@ -42,21 +40,29 @@ public abstract class FileListerAsyncTask
                      .compareTo(o2.getFile().getName().toLowerCase());
         }
     };
+    /**
+     * {@link #doInBackground} should catch exceptions, and set this field.
+     * {@link #onPostExecute} can then check it.
+     */
+    @Nullable
+    protected Exception mException;
+
+    protected ProgressDialogFragment<ArrayList<FileDetails>> mFragment;
 
     /**
      * Constructor.
      *
-     * @param taskId  a task identifier, will be returned in the task finished listener.
-     * @param context the caller context
-     * @param root    folder to list
+     * @param taskId a task identifier, will be returned in the task finished listener.
+     * @param root   folder to list
      */
     @UiThread
-    protected FileListerAsyncTask(final int taskId,
-                                  @NonNull final FragmentActivity context,
+    protected FileListerAsyncTask(@NonNull final ProgressDialogFragment<ArrayList<FileDetails>> frag,
+                                  final int taskId,
                                   @NonNull final File root) {
-        super(taskId, UniqueId.TFT_FILE_LISTER, context, true,
-              R.string.progress_msg_searching_directory);
+        mTaskId = taskId;
         mRoot = root;
+        mFragment = frag;
+        mFragment.setTask(mTaskId, this);
     }
 
     /** @return a FileFilter appropriate to the types of files being listed. */
@@ -79,6 +85,12 @@ public abstract class FileListerAsyncTask
         return dirs;
     }
 
+    /**
+     * If the task was cancelled (by the user cancelling the progress dialog) then
+     * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
+     *
+     * @param result of the task
+     */
     @Override
     @UiThread
     protected void onPostExecute(@Nullable final ArrayList<FileDetails> result) {
@@ -89,7 +101,7 @@ public abstract class FileListerAsyncTask
                 ((FileListerListener) activity).onGotFileList(mRoot, result);
             }
         }
-        super.onPostExecute(result);
+        mFragment.taskFinished(mTaskId, mException == null, result);
     }
 
     /**

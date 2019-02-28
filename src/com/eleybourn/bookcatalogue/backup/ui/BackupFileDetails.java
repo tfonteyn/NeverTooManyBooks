@@ -46,8 +46,6 @@ public class BackupFileDetails
 
     /** @see #isArchive(File) */
     public static final String ARCHIVE_EXTENSION = ".bcbk";
-    /** prefix. */
-    public static final String ARCHIVE_PREFIX = "BookCatalogue-";
 
     /** File for this item. */
     @NonNull

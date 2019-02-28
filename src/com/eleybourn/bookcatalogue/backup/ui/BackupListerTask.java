@@ -3,18 +3,19 @@ package com.eleybourn.bookcatalogue.backup.ui;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.filechooser.FileListerAsyncTask;
+import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 
 /**
  * Object to provide a FileListerFragmentTask specific to archive files.
@@ -24,6 +25,7 @@ import com.eleybourn.bookcatalogue.filechooser.FileListerAsyncTask;
 public class BackupListerTask
         extends FileListerAsyncTask {
 
+    public static final String TAG = BackupListerTask.class.getSimpleName();
     /**
      * Construct a file filter to select only directories and backup files.
      */
@@ -38,15 +40,12 @@ public class BackupListerTask
     /**
      * Constructor.
      *
-     * @param taskId  a task identifier, will be returned in the task finished listener.
-     * @param context the caller context
      * @param root    folder to list
      */
     @UiThread
-    BackupListerTask(final int taskId,
-                     @NonNull final FragmentActivity context,
+    BackupListerTask(@NonNull final ProgressDialogFragment<ArrayList<FileDetails>> frag,
                      @NonNull final File root) {
-        super(taskId, context, root);
+        super(frag, R.id.TASK_ID_FILE_LISTER, root);
     }
 
     /**

@@ -86,7 +86,7 @@
             android:singleLine="false"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textIsSelectable="true"
-            tools:text="/mnt/sdcard/foobar/bookCatalogue/path/asd/asd/asd/asd/as/da/sd/asd" />
+            tools:text="/mnt/sdcard/foobar/mydir/path/asd/asd/asd/asd/as/da/sd/asd" />
     </LinearLayout>
 
     <View

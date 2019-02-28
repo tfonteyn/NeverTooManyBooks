@@ -53,7 +53,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
- * BookCatalogue Application implementation. Useful for making globals available and for being a
+ * Application implementation. Useful for making globals available and for being a
  * central location for logically application-specific objects such as preferences.
  *
  * @author Philip Warner

@@ -2,7 +2,7 @@
  define entities that can be used inside of other string (not possible with standard Android resources
  e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
-<!DOCTYPE resources [<!ENTITY APP_NAME "BookCatalogue">]>
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
 
@@ -94,7 +94,7 @@
     <string name="menu_populate_toc">Автоматически заполнить названия (ЭКСПЕРИМЕНТАЛЬНО)</string>
     <string name="error_auto_toc_population_failed">Автоматическое заполнение названий не удалось</string>
     <string name="lbl_anthology">Антология</string>
-    <string name="toc_confirm">Пожалуйста, подтвердите, что названия антологий (в основном) правильны</string>
+    <string name="warning_toc_confirm">Пожалуйста, подтвердите, что названия антологий (в основном) правильны</string>
     <string name="menu_cover_add_from_camera">С камеры…</string>
     <string name="title_cover">Эскиз обложки</string>
     <string name="menu_cover_rotate">Повернуть миниатюру…</string>
@@ -108,7 +108,7 @@
     <string name="title_duplicate_book">Копия книги</string>
     <string name="confirm_duplicate_book_message">Книга, которую Вы пытаетесь добавить уже есть в базе. Вы уверены, что хотите добавить ещё одну копию этой книги?</string>
     <string name="menu_cover_add_from_gallery">Из галереи…</string>
-    <string name="backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
+    <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
     <string name="lbl_backup_dialog">Резервная копия?</string>
     <string name="searching_amazon_books">Поиск в Amazon</string>
     <string name="searching_google_books">Поиск в Google Books</string>
@@ -173,7 +173,7 @@
     <string name="title_edit_series">Редактировать информацию о серии</string>
     <string name="title_select_cover">Выбрать обложку</string>
     <string name="warning_no_isbn_no_editions">Нельзя получить издание книги без ISBN</string>
-    <string name="unsaved_edits">У Вас есть несохранённые изменения. Вы уверены что хотите продолжить?</string>
+    <string name="warning_unsaved_edits">У Вас есть несохранённые изменения. Вы уверены что хотите продолжить?</string>
     <string name="unsaved_edits_title">Несохранённые изменения</string>
     <string name="confirm_apply_author_changed">Вы изменили имя автора с:\n  \‘%1$s\’ на \n  \‘%2$s\’\nКак вы хотите применить это изменение?\nЗамечание: выбор \‘%3$s\’ будет применён немедленно.</string>
     <string name="btn_this_book">Эта книга</string>

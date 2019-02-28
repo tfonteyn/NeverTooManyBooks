@@ -256,7 +256,6 @@ public class EditBooklistStyleGroupsActivity
                     @Override
                     public void onClick(@NonNull View v) {
                         Holder h = (Holder) v.getTag();
-                        //noinspection ConstantConditions
                         boolean newStatus = !h.groupWrapper.present;
                         h.groupWrapper.present = newStatus;
                         h.checkable.setChecked(newStatus);

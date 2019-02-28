@@ -509,7 +509,7 @@ public class EditBookTOCFragment
 
             StringBuilder msg = new StringBuilder();
             if (hasTOC) {
-                msg.append(getString(R.string.toc_confirm)).append("\n\n");
+                msg.append(getString(R.string.warning_toc_confirm)).append("\n\n");
                 for (TocEntry t : tocEntries) {
                     msg.append(t.getTitle()).append(", ");
                 }

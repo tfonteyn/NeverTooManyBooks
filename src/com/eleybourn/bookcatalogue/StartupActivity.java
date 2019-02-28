@@ -81,6 +81,7 @@ public class StartupActivity
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     public static final String PREFS_STARTUP_COUNTDOWN = "Startup.StartCountdown";
+    private static final String TAG = StartupActivity.class.getSimpleName();
     /** Number of app startup's between offers to backup. */
     private static final int PROMPT_WAIT_BACKUP = 5;
     /** Number of app startup's between displaying the Amazon hint. */
@@ -264,7 +265,7 @@ public class StartupActivity
 
     /**
      * If the backup-counter has reached zer, prompt the user to make a backup.
-     *
+     * <p>
      * Note the backup is not done here; we just set a flag if requested.
      */
     private void backupRequired() {
@@ -272,7 +273,7 @@ public class StartupActivity
 
         if (decreaseStartupCounters()) {
             final AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setMessage(R.string.backup_request)
+                    .setMessage(R.string.warning_backup_request)
                     .setTitle(R.string.lbl_backup_dialog)
                     .setIcon(R.drawable.ic_help_outline)
                     .create();
@@ -326,12 +327,15 @@ public class StartupActivity
     }
 
 
-
     private void openProgressDialog() {
-        mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.lbl_application_startup, true,0);
-        mProgressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.TAG);
-        mProgressDialog.setMessage(getString(R.string.progress_msg_starting_up));
+        mProgressDialog = (ProgressDialogFragment)
+                getSupportFragmentManager().findFragmentByTag(TAG);
+        if (mProgressDialog == null) {
+            mProgressDialog = ProgressDialogFragment
+                    .newInstance(R.string.progress_msg_starting_up, true, 0);
+            mProgressDialog.show(getSupportFragmentManager(), TAG);
+            // can't do setMessage right here.. the dialog will not be created yet.
+        }
     }
 
     /**
@@ -375,6 +379,7 @@ public class StartupActivity
             mProgressDialog = null;
         }
     }
+
     /**
      * Decrease and store the number of times the app was opened.
      * Used for proposing Backup/Amazon
@@ -397,7 +402,6 @@ public class StartupActivity
         mShowAmazonHint = (startCount % PROMPT_WAIT_AMAZON) == 0;
         return opened == 0;
     }
-
 
 
     private void initStorage() {
@@ -483,10 +487,6 @@ public class StartupActivity
      */
     private void onStartupTaskFinished(final int taskId) {
         mAllTasks.remove(taskId);
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, "Task finished: " + taskId);
-        }
-
         if (mAllTasks.isEmpty()) {
             startNextStage();
         }

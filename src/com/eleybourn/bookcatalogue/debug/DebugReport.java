@@ -14,6 +14,12 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
+import java.io.File;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
@@ -24,12 +30,6 @@ import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-
-import java.io.File;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class DebugReport {
 
@@ -112,8 +112,8 @@ public final class DebugReport {
         emailIntent.setType("plain/text");
         emailIntent.putExtra(Intent.EXTRA_EMAIL,
                              activity.getString(R.string.email_debug).split(";"));
-        String subject = '[' + activity.getString(R.string.app_name) + "] " + activity.getString(
-                R.string.debug_subject);
+        String subject = '[' + activity.getString(R.string.app_name) + "] "
+                + activity.getString(R.string.debug_subject);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         StringBuilder message = new StringBuilder();
 
@@ -133,8 +133,8 @@ public final class DebugReport {
 
 
         message.append("SDK: ").append(Build.VERSION.RELEASE)
-               .append(" (").append(Build.VERSION.SDK_INT).append(' ').append(Build.TAGS).append(
-                ")\n")
+               .append(" (").append(Build.VERSION.SDK_INT)
+               .append(' ').append(Build.TAGS).append(")\n")
                .append("Phone Model: ").append(Build.MODEL).append('\n')
                .append("Phone Manufacturer: ").append(Build.MANUFACTURER).append('\n')
                .append("Phone Device: ").append(Build.DEVICE).append('\n')
@@ -146,13 +146,14 @@ public final class DebugReport {
 
         // Scanners installed
         try {
-            message.append("Pref. Scanner: ").append(
-                    Prefs.getListPreference(R.string.pk_scanning_preferred_scanner, -1)).append('\n');
+            message.append("Pref. Scanner: ")
+                   .append(Prefs.getListPreference(R.string.pk_scanning_preferred_scanner, -1))
+                   .append('\n');
             String[] scanners = new String[]{
                     ZxingScanner.ACTION,
                     Pic2ShopScanner.Free.ACTION,
                     Pic2ShopScanner.Pro.ACTION,
-            };
+                    };
             for (String scanner : scanners) {
                 message.append("Scanner [").append(scanner).append("]:\n");
                 final Intent mainIntent = new Intent(scanner, null);
@@ -211,9 +212,9 @@ public final class DebugReport {
             for (String fileSpec : files) {
                 File file = StorageUtils.getFile(fileSpec);
                 if (file.exists() && file.length() > 0) {
-                    Uri u = FileProvider
-                            .getUriForFile(activity, GenericFileProvider.AUTHORITY, file);
-                    attachmentUris.add(u);
+                    attachmentUris.add(FileProvider.getUriForFile(activity,
+                                                                  GenericFileProvider.AUTHORITY,
+                                                                  file));
                 }
             }
 
