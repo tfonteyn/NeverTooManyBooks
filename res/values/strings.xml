@@ -819,9 +819,7 @@
 
     <!-- non-database field labels, like choices on a dialog box -->
     <string name="lbl_allow_asin">Allow ASIN</string>
-    <string name="lbl_toc_same_author">
-        All stories in this anthology are written by the same author
-    </string>
+    <string name="lbl_toc_same_author">All stories in this anthology are by the same author</string>
 
     <!-- Book edition -->
     <string name="lbl_edition">Edition</string>
@@ -1191,7 +1189,7 @@
     <string name="search_with_text">Search: %1$s</string>
     <string name="show_results">Show Results</string>
     <string name="results_found">Results Found</string>
-    <string name="rebuild_fts">Rebuild FTS (alpha only!)</string>
+    <string name="rebuild_fts">Rebuild FTS\n(Experimental!)</string>
 
     <!-- was called 'not_set' but androidx preference has a bug making its own 'not_set' public -->
     <string name="field_not_set">Not Set</string>

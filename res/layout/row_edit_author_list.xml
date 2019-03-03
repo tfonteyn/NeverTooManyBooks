@@ -1,79 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/SLA_ROW"
+    android:id="@id/TLV_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
-    <!--
-        NOTE:
-        The outer layout is used because this item appears in a TouchListView which uses
-        the outer element padding, and we want to set our own padding.
+    android:padding="@dimen/padding_border_double">
 
-        With careful analysis, we could probably put padding on the right elements.
-        But this is clearer and easier.
-    -->
-    <RelativeLayout
-        android:id="@+id/row_real"
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@id/TLV_ROW_DELETE"
+        style="@style/tlv_delete_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:padding="@dimen/padding_border_double"
-        tools:ignore="UselessParent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/TLV_ROW_DETAILS"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_delete"
+        tools:ignore="ContentDescription" />
 
-        <ImageButton
-            android:id="@id/SLA_ROW_DELETE"
-            style="@style/tlv_delete_button"
-            app:srcCompat="@drawable/ic_delete"
-            tools:ignore="ContentDescription" />
+    <LinearLayout
+        android:id="@id/TLV_ROW_DETAILS"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
+        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DELETE"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/grabber"
-            style="@style/tlv_dragHandle"
-            app:srcCompat="@drawable/ic_drag_handle"
-            tools:ignore="ContentDescription" />
-
-        <RelativeLayout
-            android:id="@id/SLA_ROW_DETAILS"
+        <TextView
+            android:id="@+id/row_author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/SLA_ROW_DELETE"
-            android:layout_toStartOf="@id/grabber"
-            android:orientation="vertical"
-            android:padding="2dp">
+            android:ellipsize="marquee"
+            android:paddingStart="@dimen/padding_border_double"
+            android:paddingEnd="@dimen/padding_border_double"
+            android:singleLine="true"
+            android:textIsSelectable="false"
+            android:textSize="16sp"
+            tools:text="row_author"
+            />
 
-            <TextView
-                android:id="@+id/row_author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:ellipsize="marquee"
-                android:gravity="start"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border"
-                android:singleLine="true"
-                android:textSize="16sp"
-                android:textIsSelectable="false"
-                tools:text="row_author"/>
+        <TextView
+            android:id="@+id/row_author_sort"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:paddingStart="@dimen/padding_border_double"
+            android:paddingEnd="@dimen/padding_border_double"
+            android:singleLine="true"
+            android:textIsSelectable="false"
+            android:textSize="12sp"
+            tools:text="row_author_sort"
+            />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/row_author_sort"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_below="@id/row_author"
-                android:ellipsize="marquee"
-                android:gravity="start"
-                android:paddingEnd="@dimen/padding_border"
-                android:paddingStart="@dimen/padding_border"
-                android:singleLine="true"
-                android:textSize="12sp"
-                android:textIsSelectable="false"
-                tools:text="row_author_sort"/>
-        </RelativeLayout>
-    </RelativeLayout>
+    <ImageView
+        android:id="@id/TLV_ROW_GRABBER"
+        style="@style/tlv_dragHandle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_border_double"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_drag_handle"
+        tools:ignore="ContentDescription" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

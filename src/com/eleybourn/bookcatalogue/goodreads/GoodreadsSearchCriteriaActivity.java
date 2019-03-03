@@ -110,7 +110,7 @@ public class GoodreadsSearchCriteriaActivity
             findViewById(R.id.original_details).setVisibility(View.GONE);
         }
 
-        findViewById(R.id.search).setOnClickListener(new OnClickListener() {
+        findViewById(R.id.btn_search).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
                 doSearch();

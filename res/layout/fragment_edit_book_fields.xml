@@ -6,377 +6,421 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:focusableInTouchMode="true"
-    tools:ignore="DuplicateIds">
+    android:focusableInTouchMode="true">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical"
-        android:padding="@dimen/padding_border_double">
+        android:padding="@dimen/padding_border_double"
+        android:focusableInTouchMode="true">
 
         <ImageView
             android:id="@+id/coverImage"
             style="@style/coverImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:focusable="true"
-            tools:src="@drawable/ic_image"
-            tools:ignore="ContentDescription" />
+            app:layout_constraintBottom_toTopOf="@id/lbl_author"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_image" />
 
-        <RelativeLayout
-            android:id="@+id/row_author"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/lbl_author"
+            style="@style/lbl_editField"
+            android:labelFor="@id/author"
+            android:text="@string/lbl_author"
+            app:layout_constraintBottom_toTopOf="@id/author"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/coverImage" />
 
-            <TextView
-                android:id="@+id/lbl_author"
-                style="@style/lbl_editField"
-                android:text="@string/lbl_author" />
+        <Button
+            android:id="@+id/author"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/lbl_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author">
 
-            <Button
-                android:id="@+id/author"
-                style="@style/buttonDataEntry"
+            <requestFocus
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/lbl_author"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true">
+                android:layout_height="wrap_content" />
+        </Button>
 
-                <requestFocus />
-            </Button>
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/lbl_title"
+            style="@style/lbl_editField"
+            android:labelFor="@id/title"
+            android:text="@string/lbl_title"
+            app:layout_constraintBottom_toTopOf="@id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/author" />
 
-        <RelativeLayout
-            android:id="@+id/row_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/title"
+            style="@style/titleTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/lbl_isbn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            tools:ignore="Autofill" />
 
-            <TextView
-                android:id="@+id/lbl_title"
-                style="@style/lbl_editField"
-                android:labelFor="@id/title"
-                android:text="@string/lbl_title" />
+        <TextView
+            android:id="@+id/lbl_isbn"
+            style="@style/lbl_editField"
+            android:labelFor="@id/isbn"
+            android:text="@string/lbl_isbn"
+            app:layout_constraintBottom_toTopOf="@id/isbn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title" />
 
-            <EditText
-                android:id="@+id/title"
-                style="@style/titleTextEntry"
-                android:layout_below="@id/lbl_title"
-                tools:ignore="Autofill" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/row_isbn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/lbl_isbn"
-                style="@style/lbl_editField"
-                android:layout_alignParentTop="false"
-                android:layout_centerVertical="true"
-                android:labelFor="@+id/isbn"
-                android:text="@string/lbl_isbn" />
-
-            <!-- not using style isbnEntryField -->
-            <EditText
-                android:id="@+id/isbn"
-                style="@style/simpleTextEntry"
-                android:layout_alignParentStart="false"
-                android:layout_toEndOf="@id/lbl_isbn"
-                android:inputType="textCapCharacters|textNoSuggestions"
-                tools:ignore="Autofill" />
-        </RelativeLayout>
+        <!-- not using style isbnEntryField -->
+        <EditText
+            android:id="@+id/isbn"
+            style="@style/simpleTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="textCapCharacters|textNoSuggestions"
+            app:layout_constraintBottom_toTopOf="@id/is_anthology"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+            tools:ignore="Autofill" />
 
         <CheckBox
             android:id="@+id/is_anthology"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_is_anthology"
+            app:layout_constraintBottom_toTopOf="@id/lbl_series"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/isbn" />
+
+        <TextView
+            android:id="@+id/lbl_series"
+            style="@style/lbl_editField"
+            android:labelFor="@id/series"
+            android:text="@string/lbl_series"
+            app:layout_constraintBottom_toTopOf="@id/series"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/is_anthology" />
+
+        <Button
+            android:id="@+id/series"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/lbl_publishing"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_series" />
+
+        <TextView
+            android:id="@+id/lbl_publishing"
+            style="@style/lbl_editField"
+            android:labelFor="@id/publisher"
+            android:text="@string/lbl_publisher"
+            app:layout_constraintBottom_toTopOf="@id/publisher"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/series" />
+
+        <AutoCompleteTextView
+            android:id="@+id/publisher"
+            style="@style/personalNameTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:completionThreshold="2"
+            app:layout_constraintBottom_toTopOf="@id/lbl_date_published"
+            app:layout_constraintEnd_toStartOf="@id/btn_publisher"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publishing" />
+
+        <ImageButton
+            android:id="@+id/btn_publisher"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="@string/lbl_is_anthology" />
+            app:layout_constraintBottom_toTopOf="@id/lbl_date_published"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/publisher"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription" />
 
-        <RelativeLayout
-            android:id="@+id/row_series"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/lbl_date_published"
+            style="@style/lbl_editField"
+            android:text="@string/lbl_date_published"
+            app:layout_constraintBottom_toTopOf="@id/date_published"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/publisher" />
 
-            <TextView
-                android:id="@+id/lbl_series"
-                style="@style/lbl_editField"
-                android:text="@string/lbl_series" />
+        <Button
+            android:id="@+id/date_published"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/lbl_first_publication"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_date_published" />
 
-            <Button
-                android:id="@+id/name"
-                style="@style/buttonDataEntry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/lbl_series"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true" />
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/lbl_first_publication"
+            style="@style/lbl_editField"
+            android:text="@string/lbl_first_publication"
+            app:layout_constraintBottom_toTopOf="@id/first_publication"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/date_published" />
 
-        <RelativeLayout
-            android:id="@+id/row_publisher"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/first_publication"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/lbl_bookshelves"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_first_publication" />
 
-            <TextView
-                android:id="@+id/lbl_publishing"
-                style="@style/lbl_editField"
-                android:labelFor="@id/publisher"
-                android:text="@string/lbl_publisher" />
+        <TextView
+            android:id="@+id/lbl_bookshelves"
+            style="@style/lbl_editField"
+            android:text="@string/lbl_bookshelves_long"
+            app:layout_constraintBottom_toTopOf="@id/bookshelves"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/first_publication" />
 
-            <AutoCompleteTextView
-                android:id="@+id/publisher"
-                style="@style/personalNameTextEntry"
-                android:layout_below="@id/lbl_publishing"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/btn_publisher"
-                android:completionThreshold="2" />
+        <Button
+            android:id="@+id/bookshelves"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/lbl_pages"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves" />
 
-            <ImageButton
-                android:id="@+id/btn_publisher"
-                style="@style/itemEditButton"
-                android:layout_alignBottom="@id/publisher"
-                app:srcCompat="@drawable/ic_arrow_drop_down"
-                tools:ignore="ContentDescription" />
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/lbl_pages"
+            style="@style/lbl_editField"
+            android:labelFor="@id/pages"
+            android:text="@string/lbl_pages"
+            app:layout_constraintBottom_toTopOf="@id/pages"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bookshelves" />
 
-        <RelativeLayout
-            android:id="@+id/row_date_published"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <!-- input type text, so details like 'intro pages', 'appendix pages' etc can be used -->
+        <EditText
+            android:id="@+id/pages"
+            style="@style/simpleTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            app:layout_constraintBottom_toTopOf="@id/lbl_price_listed"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_pages"
+            tools:ignore="Autofill"
+            tools:text="999" />
 
-            <TextView
-                android:id="@+id/lbl_date_published"
-                style="@style/lbl_editField"
-                android:text="@string/lbl_date_published" />
+        <TextView
+            android:id="@+id/lbl_price_listed"
+            style="@style/lbl_editField"
+            android:labelFor="@id/price_listed"
+            android:text="@string/lbl_price_listed"
+            app:layout_constraintBottom_toTopOf="@id/price_listed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pages" />
 
-            <Button
-                android:id="@+id/date_published"
-                style="@style/buttonDataEntry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/lbl_date_published"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true" />
-        </RelativeLayout>
+        <EditText
+            android:id="@+id/price_listed"
+            style="@style/priceTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBaseline_toBaselineOf="@id/price_listed_currency"
+            app:layout_constraintBottom_toTopOf="@id/lbl_format"
+            app:layout_constraintEnd_toStartOf="@id/price_listed_currency"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
+            tools:ignore="Autofill"
+            tools:text="14.99" />
 
-        <RelativeLayout
-            android:id="@+id/row_first_publication"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <AutoCompleteTextView
+            android:id="@+id/price_listed_currency"
+            style="@style/currencyTextEntry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="..."
+            app:layout_constraintBottom_toTopOf="@id/lbl_format"
+            app:layout_constraintEnd_toStartOf="@id/btn_price_listed_currency"
+            app:layout_constraintStart_toEndOf="@id/price_listed"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
+            tools:ignore="Autofill,HardcodedText" />
 
-            <TextView
-                android:id="@+id/lbl_first_publication"
-                style="@style/lbl_editField"
-                android:text="@string/lbl_first_publication" />
+        <ImageButton
+            android:id="@+id/btn_price_listed_currency"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/lbl_format"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/price_listed_currency"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription" />
 
-            <Button
-                android:id="@+id/first_publication"
-                style="@style/buttonDataEntry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/lbl_first_publication"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true" />
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/lbl_format"
+            style="@style/lbl_editField"
+            android:labelFor="@id/format"
+            android:text="@string/lbl_format"
+            app:layout_constraintBottom_toTopOf="@id/format"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/price_listed" />
 
-        <RelativeLayout
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <AutoCompleteTextView
+            android:id="@+id/format"
+            style="@style/bookFormatTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:completionThreshold="2"
+            app:layout_constraintBottom_toTopOf="@id/lbl_genre"
+            app:layout_constraintEnd_toStartOf="@id/btn_format"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_format" />
 
-            <TextView
-                android:id="@+id/lbl_bookshelves"
-                style="@style/lbl_editField"
-                android:text="@string/lbl_bookshelves_long" />
+        <ImageButton
+            android:id="@+id/btn_format"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/lbl_genre"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/format"
+            app:layout_constraintTop_toBottomOf="@id/lbl_format"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription" />
 
-            <Button
-                android:id="@+id/bookshelves"
-                style="@style/buttonDataEntry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/lbl_bookshelves"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true" />
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/lbl_genre"
+            style="@style/lbl_editField"
+            android:labelFor="@id/genre"
+            android:text="@string/lbl_genre"
+            app:layout_constraintBottom_toTopOf="@id/genre"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/format" />
 
-        <RelativeLayout
-            android:id="@+id/row_pages"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <AutoCompleteTextView
+            android:id="@+id/genre"
+            style="@style/simpleTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:completionThreshold="2"
+            android:inputType="textCapWords"
+            app:layout_constraintBottom_toTopOf="@id/lbl_language"
+            app:layout_constraintEnd_toStartOf="@id/btn_genre"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_genre" />
 
-            <TextView
-                android:id="@+id/lbl_pages"
-                style="@style/lbl_editField"
-                android:labelFor="@id/pages"
-                android:text="@string/lbl_pages" />
+        <ImageButton
+            android:id="@+id/btn_genre"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/lbl_language"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/genre"
+            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription" />
 
-            <!-- input type text, so details like 'intro pages', 'appendix pages' etc can be used -->
-            <EditText
-                android:id="@+id/pages"
-                style="@style/simpleTextEntry"
-                android:layout_below="@id/lbl_pages"
-                android:layout_centerVertical="true"
-                android:inputType="text"
-                tools:text="999"
-                tools:ignore="Autofill" />
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/lbl_language"
+            style="@style/lbl_editField"
+            android:labelFor="@id/language"
+            android:text="@string/lbl_language"
+            app:layout_constraintBottom_toTopOf="@id/language"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/genre" />
 
-        <RelativeLayout
-            android:id="@+id/row_price_listed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <AutoCompleteTextView
+            android:id="@+id/language"
+            style="@style/languageTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:completionThreshold="2"
+            app:layout_constraintBottom_toTopOf="@id/lbl_description"
+            app:layout_constraintEnd_toStartOf="@id/btn_language"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_language" />
 
-            <TextView
-                android:id="@+id/lbl_price_listed"
-                style="@style/lbl_editField"
-                android:labelFor="@id/price_listed"
-                android:text="@string/lbl_price_listed" />
+        <ImageButton
+            android:id="@+id/btn_language"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/lbl_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/language"
+            app:layout_constraintTop_toBottomOf="@id/lbl_language"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription" />
 
-            <EditText
-                android:id="@+id/price_listed"
-                style="@style/priceTextEntry"
-                android:layout_width="wrap_content"
-                android:layout_below="@id/lbl_price_listed"
-                android:layout_toStartOf="@id/price_listed_currency"
-                tools:ignore="Autofill"
-                tools:text="14.99" />
 
-            <AutoCompleteTextView
-                android:id="@+id/price_listed_currency"
-                style="@style/currencyTextEntry"
-                android:layout_below="@id/lbl_price_listed"
-                android:layout_toStartOf="@id/btn_price_listed_currency"
-                android:hint="..."
-                tools:ignore="Autofill,HardcodedText" />
+        <TextView
+            android:id="@+id/lbl_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="@string/lbl_description"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            app:layout_constraintBottom_toTopOf="@id/description_divider"
+            app:layout_constraintEnd_toStartOf="@id/btn_description"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/language" />
 
-            <ImageButton
-                android:id="@+id/btn_price_listed_currency"
-                style="@style/itemEditButton"
-                android:layout_alignBottom="@id/price_listed"
-                app:srcCompat="@drawable/ic_arrow_drop_down"
-                tools:ignore="ContentDescription" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/row_format"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/lbl_format"
-                style="@style/lbl_editField"
-                android:labelFor="@id/format"
-                android:text="@string/lbl_format" />
-
-            <AutoCompleteTextView
-                android:id="@+id/format"
-                style="@style/bookFormatTextEntry"
-                android:layout_below="@id/lbl_format"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/btn_format"
-                android:completionThreshold="2"
-                android:singleLine="true" />
-
-            <ImageButton
-                android:id="@+id/btn_format"
-                style="@style/itemEditButton"
-                android:layout_alignBottom="@id/format"
-                app:srcCompat="@drawable/ic_arrow_drop_down"
-                tools:ignore="ContentDescription" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/row_genre"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/lbl_genre"
-                style="@style/lbl_editField"
-                android:labelFor="@id/genre"
-                android:text="@string/lbl_genre" />
-
-            <AutoCompleteTextView
-                android:id="@+id/genre"
-                style="@style/simpleTextEntry"
-                android:layout_below="@id/lbl_genre"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/btn_genre"
-                android:completionThreshold="2"
-                android:inputType="textCapWords" />
-
-            <ImageButton
-                android:id="@+id/btn_genre"
-                style="@style/itemEditButton"
-                android:layout_alignBottom="@id/genre"
-                app:srcCompat="@drawable/ic_arrow_drop_down"
-                tools:ignore="ContentDescription" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/row_language"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/lbl_language"
-                style="@style/lbl_editField"
-                android:labelFor="@id/language"
-                android:text="@string/lbl_language" />
-
-            <AutoCompleteTextView
-                android:id="@+id/language"
-                style="@style/languageTextEntry"
-                android:layout_below="@id/lbl_language"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/btn_language"
-                android:completionThreshold="2"
-                android:singleLine="true" />
-
-            <ImageButton
-                android:id="@+id/btn_language"
-                style="@style/itemEditButton"
-                android:layout_alignBottom="@id/language"
-                app:srcCompat="@drawable/ic_arrow_drop_down"
-                tools:ignore="ContentDescription" />
-        </RelativeLayout>
-
-        <!-- the id for the layout is only for use by a debug method -->
-        <RelativeLayout
-            android:id="@+id/row_lbl_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/lbl_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="12dp"
-                android:text="@string/lbl_description"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-            <ImageButton
-                android:id="@+id/btn_description"
-                style="@style/itemEditButton"
-                android:layout_alignBottom="@id/lbl_description"
-                app:srcCompat="@drawable/ic_edit"
-                tools:ignore="ContentDescription" />
-        </RelativeLayout>
+        <ImageButton
+            android:id="@+id/btn_description"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/description_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lbl_description"
+            app:layout_constraintTop_toBottomOf="@id/language"
+            app:srcCompat="@drawable/ic_edit"
+            tools:ignore="ContentDescription" />
 
         <View
             android:id="@+id/description_divider"
-            style="@style/divider_horizontalList" />
+            style="@style/divider_horizontalList"
+            app:layout_constraintBottom_toTopOf="@id/description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_description" />
 
         <TextView
             android:id="@+id/description"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:autoLink="web"
             android:hint="@string/field_not_set"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="true" />
-    </LinearLayout>
+            android:textIsSelectable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description_divider"
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

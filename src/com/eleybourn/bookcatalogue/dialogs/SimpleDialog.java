@@ -61,7 +61,7 @@ public final class SimpleDialog {
             root.findViewById(R.id.messageBottomDivider).setVisibility(View.GONE);
         }
 
-        //TOMF: DialogFragment
+        //TOMF: DialogFragment?
         final AlertDialog dialog = builder.create();
 
         // Create the listener for each item
@@ -225,7 +225,7 @@ public final class SimpleDialog {
      * Marker interface to indicate the {@link BaseActivity} has a {@link View}
      * using this type of context menu.
      * <p>
-     * Multiple views are supported; i.e. the view ,ust be passed to every method.
+     * Multiple views are supported; i.e. the view must be passed to every method.
      */
     public interface ViewContextMenu {
 

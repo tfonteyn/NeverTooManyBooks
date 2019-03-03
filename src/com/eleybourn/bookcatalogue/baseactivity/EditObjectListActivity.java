@@ -63,7 +63,7 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
  *     id:
  *        android:id="@android:id/list"
  *     attributes:
- *        tlv:ic_grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@+id/ic_grabber")
+ *        tlv:grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@id/TLV_ROW_GRABBER")
  *        tlv:remove_mode="none"
  *        tlv:normal_height="64dip" ---- or some similar value
  *  </pre>

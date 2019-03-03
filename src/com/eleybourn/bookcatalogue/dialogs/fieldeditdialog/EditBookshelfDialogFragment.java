@@ -66,6 +66,7 @@ public class EditBookshelfDialogFragment
         EditBookshelfDialogFragment frag = new EditBookshelfDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(BKEY_BOOKSHELF, bookshelf);
+        frag.setArguments(args);
         return frag;
     }
 

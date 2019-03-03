@@ -41,7 +41,6 @@ import androidx.appcompat.app.AlertDialog;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
@@ -138,16 +137,20 @@ public class UpdateFieldsFromInternetActivity
             readArgs(savedInstanceState);
         }
 
+        setTitle(R.string.lbl_update_fields_to_update);
+
         // we're only requesting ONE book to be updated.
         if (mBookId > 0) {
             TextView authorView = findViewById(R.id.author);
             authorView.setText(mAuthorFormatted);
             TextView titleView = findViewById(R.id.title);
             titleView.setText(mTitle);
-            findViewById(R.id.row_book).setVisibility(View.VISIBLE);
+            findViewById(R.id.title).setVisibility(View.VISIBLE);
+            findViewById(R.id.author).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.title).setVisibility(View.GONE);
+            findViewById(R.id.author).setVisibility(View.GONE);
         }
-
-        setTitle(R.string.lbl_update_fields_to_update);
 
         if ((mSearchSites & SearchSites.Site.SEARCH_LIBRARY_THING) != 0) {
             LibraryThingManager.showLtAlertIfNecessary(this, false,
@@ -199,7 +202,7 @@ public class UpdateFieldsFromInternetActivity
                      R.string.lbl_cover, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES,
                      R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
-        addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+        addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, UniqueId.KEY_BOOK_TOC_BITMASK,
                      R.string.lbl_table_of_content, Fields.FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.KEY_BOOK_PUBLISHER,
                      R.string.lbl_publisher, Fields.FieldUsage.Usage.CopyIfBlank, false);
@@ -318,8 +321,7 @@ public class UpdateFieldsFromInternetActivity
                             .create();
 
             dialog.setButton(
-                    AlertDialog.BUTTON_POSITIVE,
-                    getString(R.string.yes),
+                    AlertDialog.BUTTON_POSITIVE, getString(R.string.yes),
                     new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
@@ -328,8 +330,7 @@ public class UpdateFieldsFromInternetActivity
                         }
                     });
             dialog.setButton(
-                    AlertDialog.BUTTON_NEGATIVE,
-                    getString(android.R.string.cancel),
+                    AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                     new DialogInterface.OnClickListener() {
                         @SuppressWarnings("EmptyMethod")
                         public void onClick(@NonNull final DialogInterface dialog,
@@ -338,8 +339,7 @@ public class UpdateFieldsFromInternetActivity
                         }
                     });
             dialog.setButton(
-                    AlertDialog.BUTTON_NEUTRAL,
-                    getString(R.string.no),
+                    AlertDialog.BUTTON_NEUTRAL, getString(R.string.no),
                     new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
@@ -385,7 +385,6 @@ public class UpdateFieldsFromInternetActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     @Override
@@ -398,7 +397,7 @@ public class UpdateFieldsFromInternetActivity
             // no changes committed, we got data to use temporarily
             case REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    //noinspection ConstantConditions
                     mSearchSites = data.getIntExtra(SearchAdminActivity.RESULT_SEARCH_SITES,
                                                     mSearchSites);
                 }

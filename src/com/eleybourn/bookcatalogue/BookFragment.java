@@ -277,21 +277,30 @@ public class BookFragment
         mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
         populateLoanedToField(mDb.getLoaneeByBookId(book.getId()));
 
-        // handle composite fields
-        populatePublishingSection(book);
-
         // handle non-text fields
         populateTOC(book);
 
         // hide unwanted and empty text fields
         showHideFields(true);
 
-        // non-text fields
+        // non-text fields:
+
+        // hide publishing header if no fields populated.
+        if (mFields.getField(R.id.publisher).isVisible()
+                || mFields.getField(R.id.date_published).isVisible()
+                || mFields.getField(R.id.price_listed).isVisible()
+                || mFields.getField(R.id.first_publication).isVisible()) {
+
+            requireView().findViewById(R.id.lbl_publishing).setVisibility(View.VISIBLE);
+        } else {
+            requireView().findViewById(R.id.lbl_publishing).setVisibility(View.GONE);
+        }
+
+        // can't use showHideFields as the field could contain "0"
         Field editionsField = mFields.getField(R.id.edition);
         if ("0".equals(editionsField.getValue().toString())) {
-            requireView().findViewById(R.id.row_edition).setVisibility(View.GONE);
-            // can't do this as our field is a number field
-            //showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
+            requireView().findViewById(R.id.lbl_edition).setVisibility(View.GONE);
+            requireView().findViewById(R.id.edition).setVisibility(View.GONE);
         }
 
         Tracker.exitOnLoadFieldsFromBook(this, book.getId());
@@ -400,41 +409,6 @@ public class BookFragment
         view.findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    /**
-     * Formats 'Publishing' section
-     * <p>
-     * 'publisher' and 'date published' are combined
-     * 'first published' and 'list price' are previously handled automatically
-     * <p>
-     * If all 4 are empty, the section header is hidden.
-     */
-    private void populatePublishingSection(@NonNull final Book book) {
-
-        String datePublished = mFields.getField(R.id.date_published)
-                                      .format(book.getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
-        boolean hasPublishDate = !datePublished.isEmpty();
-
-        String publisher = book.getString(UniqueId.KEY_BOOK_PUBLISHER);
-        boolean hasPublisher = !publisher.isEmpty();
-
-        String result = "";
-        if (hasPublisher && hasPublishDate) {
-            // combine publisher and date into one field
-            result = publisher + " (" + datePublished + ')';
-        } else if (hasPublisher) {
-            result = publisher;
-        } else if (hasPublishDate) {
-            result = datePublished;
-        }
-        mFields.getField(R.id.publisher).setValue(result);
-
-        // hide header if no fields populated.
-        if (result.isEmpty()
-                && !mFields.getField(R.id.price_listed).getValue().toString().isEmpty()
-                && !mFields.getField(R.id.first_publication).getValue().toString().isEmpty()) {
-            requireView().findViewById(R.id.lbl_publishing).setVisibility(View.GONE);
-        }
-    }
 
     /**
      * Inflates 'Loaned' field showing a person the book loaned to.
@@ -477,34 +451,35 @@ public class BookFragment
         //ENHANCE: add to mFields?
         ArrayList<TocEntry> list = book.getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
-        // only show if: field in use + it's flagged as an ant + the ant has titles
-        boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK)
-                && book.isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                                 TocEntry.Type.MULTIPLE_WORKS)
+        // only show if: field in use + it's flagged as having a toc + the toc actually has titles
+        boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_TOC_BITMASK)
+                && book.isBitSet(UniqueId.KEY_BOOK_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS)
                 && !list.isEmpty();
 
-        if (visible) {
-            final ListView contentSection = requireView().findViewById(R.id.toc);
+        View tocLabel = requireView().findViewById(R.id.lbl_toc);
+        View tocButton = requireView().findViewById(R.id.toc_button);
+        final ListView tocList = requireView().findViewById(R.id.toc);
 
+        if (visible) {
             ArrayAdapter<TocEntry> adapter =
                     new TOCAdapter(mActivity, R.layout.row_toc_entry_with_author, list);
-            contentSection.setAdapter(adapter);
+            tocList.setAdapter(adapter);
 
-            requireView().findViewById(R.id.toc_button)
-                         .setOnClickListener(new View.OnClickListener() {
-                             @Override
-                             public void onClick(@NonNull final View v) {
-                                 if (contentSection.getVisibility() == View.VISIBLE) {
-                                     contentSection.setVisibility(View.GONE);
-                                 } else {
-                                     contentSection.setVisibility(View.VISIBLE);
-                                     ViewUtils.justifyListViewHeightBasedOnChildren(contentSection);
-                                 }
-                             }
-                         });
+            tocButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(@NonNull final View v) {
+                    if (tocList.getVisibility() == View.VISIBLE) {
+                        tocList.setVisibility(View.GONE);
+                    } else {
+                        tocList.setVisibility(View.VISIBLE);
+                        ViewUtils.justifyListViewHeightBasedOnChildren(tocList);
+                    }
+                }
+            });
         }
 
-        requireView().findViewById(R.id.row_toc).setVisibility(visible ? View.VISIBLE : View.GONE);
+        tocLabel.setVisibility(visible ? View.VISIBLE : View.GONE);
+        tocButton.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
     //</editor-fold>
 

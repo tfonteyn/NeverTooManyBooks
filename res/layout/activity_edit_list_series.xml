@@ -1,87 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tlv="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingEnd="@dimen/padding_border"
-    android:paddingStart="@dimen/padding_border">
+    android:paddingStart="@dimen/padding_border"
+    android:paddingEnd="@dimen/padding_border">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar" />
+        style="@style/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/title"
         style="@style/txt_row_bookDetail"
-        android:layout_below="@id/toolbar"
-        tools:text="Book Title goes here"/>
-
-    <LinearLayout
-        android:id="@+id/top_buttons"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
-        android:orientation="horizontal">
+        android:textIsSelectable="true"
+        app:layout_constraintBottom_toTopOf="@id/author"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:text="Book Title goes here" />
 
-        <AutoCompleteTextView
-            android:id="@+id/name"
-            style="@style/titleTextEntry"
-            android:layout_weight="2"
-            android:completionThreshold="2"
-            android:hint="@string/lbl_series"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border" />
-
-        <EditText
-            android:id="@+id/series_num"
-            style="@style/seriesNumberEntry"
-            android:layout_width="150sp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:hint="@string/lbl_series_num"
-            tools:ignore="Autofill" />
-
-        <Button
-            android:id="@+id/add"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/btn_confirm_add" />
-    </LinearLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
+    <AutoCompleteTextView
+        android:id="@+id/series"
+        style="@style/titleTextEntry"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonbar_cancel_save"
-        android:layout_below="@id/top_buttons"
-        android:fillViewport="true">
+        android:completionThreshold="2"
+        android:hint="@string/lbl_series"
+        android:paddingStart="@dimen/padding_border"
+        android:paddingEnd="@dimen/padding_border"
+        app:layout_constraintBottom_toTopOf="@android:id/list"
+        app:layout_constraintEnd_toStartOf="@id/series_num"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
 
-        <view
-            android:id="@android:id/list"
-            class="com.eleybourn.bookcatalogue.widgets.TouchListView"
-            style="@style/tlv_TouchListView"
-            tlv:grabber="@+id/grabber"
-            tlv:normal_height="64dip"
-            tlv:remove_mode="none" />
-    </ScrollView>
+    <EditText
+        android:id="@+id/series_num"
+        style="@style/seriesNumberEntry"
+        android:layout_width="80sp"
+        android:layout_height="wrap_content"
+        android:hint="@string/lbl_series_num"
+        app:layout_constraintBottom_toTopOf="@android:id/list"
+        app:layout_constraintEnd_toStartOf="@id/add"
+        app:layout_constraintStart_toEndOf="@id/series"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:ignore="Autofill" />
+
+    <Button
+        android:id="@+id/add"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="@string/btn_confirm_add"
+        app:layout_constraintBottom_toTopOf="@android:id/list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/series_num"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <com.eleybourn.bookcatalogue.widgets.TouchListView
+        android:id="@android:id/list"
+        style="@style/tlv_TouchListView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/series"
+        tlv:grabber="@id/TLV_ROW_GRABBER"
+        tlv:normal_height="64dp"
+        tlv:remove_mode="none" />
 
     <TextView
         android:id="@android:id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/buttonbar_cancel_save"
-        android:layout_below="@id/top_buttons"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:text="@string/info_no_series_yet"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/series" />
 
     <include
         android:id="@+id/buttonbar_cancel_save"
         layout="@layout/inc_buttonbar_cancel_save"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@android:id/list" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -30,7 +30,7 @@
                 android:text="@string/lbl_allow_asin" />
 
             <Button
-                android:id="@+id/search"
+                android:id="@+id/btn_search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/menu_search" />

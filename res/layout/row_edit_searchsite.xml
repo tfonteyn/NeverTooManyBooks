@@ -1,65 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/SLA_ROW"
+    android:id="@id/TLV_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
-    <!--
-        NOTE:
-        The outer layout is used because this item appears in a TouchListView which uses
-        the outer element padding, and we want to set our own padding.
+    android:padding="@dimen/padding_border_double">
 
-        With careful analysis, we could probably put padding on the right elements.
-        But this is clearer and easier.
-    -->
-    <RelativeLayout
-        android:id="@+id/row_real"
-        android:layout_width="match_parent"
+    <CheckedTextView
+        android:id="@+id/row_check"
+        style="@style/tlv_checkable_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:padding="@dimen/padding_border_double"
-        tools:ignore="UselessParent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/TLV_ROW_DETAILS"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:checked="true" />
 
-        <CheckedTextView
-            android:id="@+id/row_check"
-            style="@style/tlv_checkable_button"
-            tools:checked="true"/>
+    <LinearLayout
+        android:id="@id/TLV_ROW_DETAILS"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
+        app:layout_constraintStart_toEndOf="@id/row_check"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
-            android:id="@id/SLA_ROW_DETAILS"
+        <TextView
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"
-            android:layout_toStartOf="@id/grabber"
-            android:layout_toEndOf="@id/row_check"
-            android:orientation="vertical"
-            android:padding="2dp">
+            android:ellipsize="marquee"
+            android:paddingStart="@dimen/padding_border_double"
+            android:paddingEnd="@dimen/padding_border_double"
+            android:singleLine="true"
+            android:textIsSelectable="false"
+            android:textSize="16sp"
+            tools:text="site name" />
 
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:gravity="start"
-                android:singleLine="false"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textIsSelectable="false"
-                tools:text="site name" />
-        </RelativeLayout>
+    </LinearLayout>
 
-        <ImageView
-            android:id="@+id/grabber"
-            style="@style/tlv_dragHandle"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_centerVertical="true"
-            app:srcCompat="@drawable/ic_drag_handle"
-            tools:ignore="ContentDescription" />
-    </RelativeLayout>
+    <ImageView
+        android:id="@id/TLV_ROW_GRABBER"
+        style="@style/tlv_dragHandle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_border_double"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_drag_handle"
+        tools:ignore="ContentDescription" />
 
-    <View style="@style/divider_horizontalList" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

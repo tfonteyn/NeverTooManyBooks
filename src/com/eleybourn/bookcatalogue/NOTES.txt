@@ -45,6 +45,7 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/317 - Add statistics
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature request: collapsed series
 
 Searches
+https://openlibrary.org/developers/api
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/546 - Worldcat support
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/348 - ISSN (serials)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/723 - add book by search: allow publisher + present list of finds instead of using first found.

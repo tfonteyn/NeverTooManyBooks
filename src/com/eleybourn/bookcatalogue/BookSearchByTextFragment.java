@@ -47,7 +47,7 @@ public class BookSearchByTextFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.booksearch_by_text, container, false);
+        return inflater.inflate(R.layout.fragment_booksearch_by_text, container, false);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class BookSearchByTextFragment
 
         populateAuthorList();
 
-        view.findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_search).setOnClickListener(new View.OnClickListener() {
             public void onClick(@NonNull final View v) {
                 mAuthorSearchText = mAuthorView.getText().toString().trim();
                 mTitleSearchText = mTitleView.getText().toString().trim();

@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAppearance="@android:style/TextAppearance.Medium"
-        tools:text="field name" />
+        tools:text="field name"
+        android:textIsSelectable="true" />
 
     <CheckBox
         android:id="@+id/usage"

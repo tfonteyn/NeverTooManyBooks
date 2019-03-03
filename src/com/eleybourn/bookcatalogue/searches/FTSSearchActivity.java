@@ -28,6 +28,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -120,7 +122,7 @@ public class FTSSearchActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_search_catalogue;
+        return R.layout.activity_search_fts;
     }
 
     private void readArgs(@NonNull final Bundle args) {
@@ -175,16 +177,8 @@ public class FTSSearchActivity
         mTitleView.addTextChangedListener(mTextWatcher);
         mCSearchView.addTextChangedListener(mTextWatcher);
 
-        // Handle the 'FTS Rebuild' button.
-        findViewById(R.id.rebuild).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                mDb.rebuildFts();
-            }
-        });
-
         // Handle the 'Search' button.
-        findViewById(R.id.search).setOnClickListener(new OnClickListener() {
+        findViewById(R.id.btn_search).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
                 Intent data = new Intent();
@@ -196,6 +190,24 @@ public class FTSSearchActivity
 
         // Note: Timer will be started in OnResume().
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        return super.onCreateOptionsMenu(menu);    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.MENU_REBUILD_FTS:
+                mDb.rebuildFts();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }    }
 
     /**
      * start the idle timer.

@@ -45,7 +45,7 @@ public class AuthorActivity
         // the list of TOC entries.
         final ArrayList<TocEntry> list = mDb.getTocEntryByAuthor(author);
 
-        final ArrayAdapter<TocEntry> adapter = new TOCAdapter(this, R.layout.row_anthology, list);
+        final ArrayAdapter<TocEntry> adapter = new TOCAdapter(this, R.layout.row_toc_entry, list);
         setListAdapter(adapter);
     }
 

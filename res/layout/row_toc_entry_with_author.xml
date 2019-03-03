@@ -1,47 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/SLA_ROW"
+    android:id="@id/TLV_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/padding_border">
+    android:padding="@dimen/padding_border_double">
 
     <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="marquee"
-        android:gravity="start"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border"
         android:singleLine="false"
         android:textIsSelectable="false"
         android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The" />
 
     <TextView
-        android:id="@+id/author"
+        android:id="@+id/year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
+        android:textIsSelectable="false"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@id/author"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/author"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:text="(1971)" />
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:ellipsize="marquee"
         android:paddingStart="@dimen/padding_border"
         android:paddingEnd="@dimen/padding_border"
         android:singleLine="true"
         android:textIsSelectable="false"
         android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@id/year"
+        app:layout_constraintTop_toBottomOf="@id/title"
         tools:text="Philip J. Farmer" />
 
-    <TextView
-        android:id="@+id/year"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/title"
-        android:layout_toEndOf="@id/author"
-        android:layout_alignBaseline="@id/author"
-        android:textIsSelectable="false"
-        android:textSize="12sp"
-        tools:text="(1971)" />
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

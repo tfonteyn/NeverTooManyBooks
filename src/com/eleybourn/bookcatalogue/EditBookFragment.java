@@ -207,7 +207,7 @@ public class EditBookFragment
         tab = mTabLayout.newTab().setText(R.string.tab_lbl_notes).setTag(holder);
         mTabLayout.addTab(tab);
 
-        addTOCTab(getBook().isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+        addTOCTab(getBook().isBitSet(UniqueId.KEY_BOOK_TOC_BITMASK,
                                      TocEntry.Type.MULTIPLE_WORKS));
 
         // any specific tab desired as 'selected' ?
@@ -222,7 +222,7 @@ public class EditBookFragment
                 break;
 
             case TAB_EDIT_ANTHOLOGY:
-                if (Fields.isVisible(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK)) {
+                if (Fields.isVisible(UniqueId.KEY_BOOK_TOC_BITMASK)) {
                     showTab = tabWanted;
                 }
                 break;

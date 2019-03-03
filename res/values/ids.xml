@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- used by {@link BooksMultiTypeListHandler} for the row details (book, level 1,2,3) -->
+    <item name="BLB_ROW_DETAILS" type="id" />
+
+    <item name="TAG_EVENT" type="id" />
+    <item name="TAG_TASK" type="id" />
+    <item name="TAG_TASK_HOLDER" type="id" />
+    <!-- Goodreads BookEvent Holder -->
+    <item name="TAG_BOOK_EVENT_HOLDER" type="id" />
+    <!-- only used in {@link GoodreadsWork} but the Tagger class wants a @IdRes -->
+    <item name="TAG_GOODREADS_WORK" type="id" />
+    <!-- tags a Cover Image View with the task responsible to fetch the image -->
+    <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
+    <!-- used for tagging items in a list of items used in a selection dialog -->
+    <item name="TAG_DIALOG_ITEM" type="id" />
+
     <!-- BEGIN predefined task ids -->
     <item name="TASK_ID_GET_BOOKLIST" type="id" />
 
@@ -19,18 +34,6 @@
     <item name="TASK_ID_GR_IMPORT_ALL" type="id" />
 
     <!-- END predefined task ids -->
-
-    <item name="TAG_EVENT" type="id" />
-    <item name="TAG_TASK" type="id" />
-    <item name="TAG_TASK_HOLDER" type="id" />
-    <!-- Goodreads BookEvent Holder -->
-    <item name="TAG_BOOK_EVENT_HOLDER" type="id" />
-    <!-- only used in {@link GoodreadsWork} but the Tagger class wants a @IdRes -->
-    <item name="TAG_GOODREADS_WORK" type="id" />
-    <!-- tags a Cover Image View with the task responsible to fetch the image -->
-    <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
-        <!-- used for tagging items in a list of items used in a selection dialog -->
-    <item name="TAG_DIALOG_ITEM" type="id" />
 
     <!-- BEGIN predefined menu items -->
 
@@ -93,7 +96,6 @@
     <item name="MENU_DEBUG_DUMP_TRACKER" type="id"/>
     <item name="MENU_DEBUG_EXPORT_DATABASE" type="id"/>
 
-
     <!-- Amazon search options submenu -->
     <item name="SUBMENU_AMAZON_SEARCH" type="id"/>
     <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id"/>
@@ -114,17 +116,18 @@
 
     <!-- options menu: on-the-fly access to setting search order -->
     <item name="MENU_PREFS_SEARCH_SITES" type="id"/>
+    <!-- options menu: on the FTS search activity -->
+    <item name="MENU_REBUILD_FTS" type="id" />
+
 
     <!-- END predefined menu items -->
 
-    <!-- BEGIN used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
-    <item name="SLA_ROW" type="id" />
-    <item name="SLA_ROW_DETAILS" type="id" />
-    <item name="SLA_ROW_DELETE" type="id"/>
-    <item name="SLA_ROW_TAG" type="id"/>
+    <!-- BEGIN used by {@link TouchListView} and classes interacting with the TLV -->
+    <item name="TLV_ROW" type="id" />
+    <item name="TLV_ROW_DETAILS" type="id" />
+    <item name="TLV_ROW_DELETE" type="id"/>
+    <item name="TLV_ROW_TAG" type="id"/>
+    <item name="TLV_ROW_GRABBER" type="id"/>
     <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
-
-    <!-- used by {@link BooksMultiTypeListHandler} for the row details (book, level 1,2,3) -->
-    <item name="BLB_ROW_DETAILS" type="id" />
 
 </resources>

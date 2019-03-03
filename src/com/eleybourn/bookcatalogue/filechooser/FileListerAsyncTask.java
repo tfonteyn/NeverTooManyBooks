@@ -25,21 +25,21 @@ import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 public abstract class FileListerAsyncTask
         extends AsyncTask<Void, Object, ArrayList<FileDetails>> {
 
-    private final int mTaskId;
-
-    @NonNull
-    private final File mRoot;
     /**
      * Perform case-insensitive sorting using default locale.
      */
-    private final Comparator<FileDetails> mComparator = new Comparator<FileDetails>() {
+    private static final Comparator<FileDetails> FILE_DETAILS_COMPARATOR =
+            new Comparator<FileDetails>() {
 
-        public int compare(@NonNull final FileDetails o1,
-                           @NonNull final FileDetails o2) {
-            return o1.getFile().getName().toLowerCase()
-                     .compareTo(o2.getFile().getName().toLowerCase());
-        }
-    };
+                public int compare(@NonNull final FileDetails o1,
+                                   @NonNull final FileDetails o2) {
+                    return o1.getFile().getName().toLowerCase()
+                             .compareTo(o2.getFile().getName().toLowerCase());
+                }
+            };
+    private final int mTaskId;
+    @NonNull
+    private final File mRoot;
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
@@ -81,7 +81,7 @@ public abstract class FileListerAsyncTask
         File[] files = mRoot.listFiles(getFilter());
         // Filter/fill-in using the subclass
         ArrayList<FileDetails> dirs = processList(files);
-        Collections.sort(dirs, mComparator);
+        Collections.sort(dirs, FILE_DETAILS_COMPARATOR);
         return dirs;
     }
 

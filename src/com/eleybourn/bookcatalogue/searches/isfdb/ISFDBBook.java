@@ -337,7 +337,7 @@ public class ISFDBBook
                     bookData.putString(ISFDB_BKEY_BOOK_TYPE, tmp);
                     Integer type = TYPE_MAP.get(tmp);
                     if (type != null) {
-                        bookData.putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
+                        bookData.putLong(UniqueId.KEY_BOOK_TOC_BITMASK, type);
                     }
 
                 } else if ("Notes:".equalsIgnoreCase(fieldName)) {
@@ -401,7 +401,7 @@ public class ISFDBBook
             if (TocEntry.hasMultipleAuthors(toc)) {
                 type |= TocEntry.Type.MULTIPLE_AUTHORS;
             }
-            bookData.putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
+            bookData.putLong(UniqueId.KEY_BOOK_TOC_BITMASK, type);
         }
 
         // try to deduce the first publication date

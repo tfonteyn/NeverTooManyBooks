@@ -17,55 +17,46 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.R;
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
-
-import java.util.Objects;
 
 /**
  * This has now become a modified copy from {@link ListActivity} but extending {@link BaseActivity}.
  * <p>
- * You must have a layout with the file name
- * res/layout/list_activity.xml
- * and containing something like this:
+ * Example layout:
  * <pre>
- * <?xml version="1.0" encoding="utf-8"?>
- * <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
- * android:layout_width="match_parent"
- * android:layout_height="match_parent"
- * android:orientation="vertical">
+ * {@code
+ *  <?xml version="1.0" encoding="utf-8"?>
+ *  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ *    android:layout_width="match_parent"
+ *    android:layout_height="match_parent"
+ *    android:orientation="vertical">
  *
- * <FrameLayout
- * android:id="@+id/header"
- * android:layout_width="match_parent"
- * android:layout_height="wrap_content"
- * android:orientation="vertical" />
+ *    <androidx.appcompat.widget.Toolbar
+ *      android:id="@+id/toolbar"
+ *      style="@style/toolbar" />
  *
- * <FrameLayout
- * android:layout_width="match_parent"
- * android:layout_height="0dp"
- * android:layout_weight="1"
- * android:orientation="vertical">
+ *    <FrameLayout
+ *      android:layout_width="match_parent"
+ *      android:layout_height="0dp"
+ *      android:layout_weight="1"
+ *      android:orientation="vertical">
  *
- * <ListView
- * android:id="@android:id/list"
- * android:layout_width="match_parent"
- * android:layout_height="match_parent" />
+ *      <ListView
+ *        android:id="@android:id/list"
+ *        android:layout_width="match_parent"
+ *        android:layout_height="match_parent" />
  *
- * <TextView
- * android:id="@android:id/empty"
- * android:layout_width="wrap_content"
- * android:layout_height="wrap_content"
- * android:visibility="gone" />
- * </FrameLayout>
+ *      <TextView
+ *        android:id="@android:id/empty"
+ *        android:layout_width="match_parent"
+ *        android:layout_height="match_parent" />
  *
- * <FrameLayout
- * android:id="@+id/footer"
- * android:layout_width="match_parent"
- * android:layout_height="wrap_content"
- * android:orientation="vertical" />
+ *    </FrameLayout>
  * </LinearLayout>
+ * }
  * </pre>
  */
 public abstract class BaseListActivity
@@ -100,7 +91,7 @@ public abstract class BaseListActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.list_activity;
+        return 0;
     }
 
     @Override

@@ -248,7 +248,7 @@ public final class UniqueId {
     public static final String KEY_BOOK_DATE_ADDED = DOM_BOOK_DATE_ADDED.name;
     public static final String KEY_BOOK_DATE_PUBLISHED = DOM_BOOK_DATE_PUBLISHED.name;
     public static final String KEY_BOOK_DATE_ACQUIRED = DOM_BOOK_DATE_ACQUIRED.name;
-    public static final String KEY_BOOK_ANTHOLOGY_BITMASK = DOM_BOOK_ANTHOLOGY_BITMASK.name;
+    public static final String KEY_BOOK_TOC_BITMASK = DOM_BOOK_ANTHOLOGY_BITMASK.name;
     public static final String KEY_BOOK_EDITION_BITMASK = DOM_BOOK_EDITION_BITMASK.name;
     public static final String KEY_BOOK_FORMAT = DOM_BOOK_FORMAT.name;
     public static final String KEY_BOOK_GENRE = DOM_BOOK_GENRE.name;

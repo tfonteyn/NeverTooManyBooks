@@ -102,18 +102,18 @@ public abstract class SimpleListAdapter<T>
             // build holder
             holder = new SimpleHolder();
             // If we use a TouchListView, then don't enable the whole row, so buttons keep working
-            holder.row = convertView.findViewById(R.id.SLA_ROW_DETAILS);
+            holder.row = convertView.findViewById(R.id.TLV_ROW_DETAILS);
             if (holder.row == null) {
                 // but if we did not define a details row subview, try row anyhow
-                holder.row = convertView.findViewById(R.id.SLA_ROW);
+                holder.row = convertView.findViewById(R.id.TLV_ROW);
             }
 
-            holder.deleteRowButton = convertView.findViewById(R.id.SLA_ROW_DELETE);
+            holder.deleteRowButton = convertView.findViewById(R.id.TLV_ROW_DELETE);
 
-            convertView.setTag(R.id.SLA_ROW_TAG, holder);
+            convertView.setTag(R.id.TLV_ROW_TAG, holder);
 
         } else {
-            holder = (SimpleHolder) convertView.getTag(R.id.SLA_ROW_TAG);
+            holder = (SimpleHolder) convertView.getTag(R.id.TLV_ROW_TAG);
         }
 
         if (holder.row != null) {

@@ -1,36 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tlv="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/list_wrapper"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar" />
+        style="@style/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/touchListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ScrollView
-        android:id="@+id/body"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/buttonbar_cancel_save"
-        android:layout_below="@id/toolbar"
-        android:fillViewport="true">
-
-        <view
-            android:id="@android:id/list"
-            class="com.eleybourn.bookcatalogue.widgets.TouchListView"
-            style="@style/tlv_TouchListView"
-            tlv:grabber="@+id/grabber"
-            tlv:normal_height="32dp"
-            tlv:remove_mode="none" />
-    </ScrollView>
+    <com.eleybourn.bookcatalogue.widgets.TouchListView
+        android:id="@+id/touchListView"
+        style="@style/tlv_TouchListView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tlv:grabber="@id/TLV_ROW_GRABBER"
+        tlv:normal_height="32dp"
+        tlv:remove_mode="none" />
 
     <include
         android:id="@+id/buttonbar_cancel_save"
         layout="@layout/inc_buttonbar_cancel_save"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
-</RelativeLayout>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/touchListView" />
+</androidx.constraintlayout.widget.ConstraintLayout>

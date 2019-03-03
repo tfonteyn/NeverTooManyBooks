@@ -78,14 +78,14 @@ public class Book
     public static final String IS_SIGNED = "+IsSigned";
 
     /**
-     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_ANTHOLOGY_BITMASK}.
+     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_TOC_BITMASK}.
      * Type: Boolean
      * true: anthology by one or more authors
      */
     public static final String HAS_MULTIPLE_WORKS = "+HasMultiWorks";
 
     /**
-     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_ANTHOLOGY_BITMASK}.
+     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_TOC_BITMASK}.
      * Type: Boolean
      * true: anthology by multiple authors
      */
@@ -273,8 +273,8 @@ public class Book
         // publication data
         bookData.putString(UniqueId.KEY_BOOK_PUBLISHER,
                            getString(UniqueId.KEY_BOOK_PUBLISHER));
-        bookData.putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
-                         getLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK));
+        bookData.putLong(UniqueId.KEY_BOOK_TOC_BITMASK,
+                         getLong(UniqueId.KEY_BOOK_TOC_BITMASK));
         bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED,
                            getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
         bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED,
@@ -563,7 +563,7 @@ public class Book
         addValidator(UniqueId.KEY_TITLE, NON_BLANK_VALIDATOR);
         addValidator(UniqueId.KEY_BOOK_PAGES, BLANK_OR_INTEGER_VALIDATOR);
 
-        addValidator(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, INTEGER_VALIDATOR);
+        addValidator(UniqueId.KEY_BOOK_TOC_BITMASK, INTEGER_VALIDATOR);
         addValidator(UniqueId.KEY_BOOK_EDITION_BITMASK, INTEGER_VALIDATOR);
 
         addValidator(UniqueId.KEY_BOOK_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR);
@@ -578,11 +578,11 @@ public class Book
 
         /* set/reset the single bit TocEntry.Type.MULTIPLE_WORKS in the bitmask. */
         addAccessor(HAS_MULTIPLE_WORKS,
-                    new BitmaskDataAccessor(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                    new BitmaskDataAccessor(UniqueId.KEY_BOOK_TOC_BITMASK,
                                             TocEntry.Type.MULTIPLE_WORKS));
         /* set/reset the single bit TocEntry.Type.MULTIPLE_AUTHORS in the bitmask. */
         addAccessor(HAS_MULTIPLE_AUTHORS,
-                    new BitmaskDataAccessor(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                    new BitmaskDataAccessor(UniqueId.KEY_BOOK_TOC_BITMASK,
                                             TocEntry.Type.MULTIPLE_AUTHORS));
     }
 

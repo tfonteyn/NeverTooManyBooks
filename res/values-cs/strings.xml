@@ -251,7 +251,7 @@
     <string name="menu_add_book_manually">Přidat ručně</string>
     <string name="search_internet">Prohledat internet</string>
     <string name="show_results">Zobrazit výsledky</string>
-    <string name="rebuild_fts">Obnovit FTS (neotestovaná funkce!)</string>
+    <string name="rebuild_fts">Obnovit FTS\n(neotestovaná funkce!)</string>
     <string name="gr_title_send_book">Poslat knihu do Goodreads</string>
     <string name="gr_tq_legacy_task">Odkaz úlohy</string>
     <string name="gr_tq_occurred_at">(nastal v %1$s)</string>

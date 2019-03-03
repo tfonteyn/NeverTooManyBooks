@@ -429,7 +429,7 @@ public class CsvImporter
     /**
      * Database access is strictly limited to fetching id's.
      * <p>
-     * Ignore the actual value of the UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK! it will be
+     * Ignore the actual value of the UniqueId.KEY_BOOK_TOC_BITMASK! it will be
      * 'reset' to mirror what we actually have when storing the book data
      */
     private void handleAnthology(@NonNull final DBA db,

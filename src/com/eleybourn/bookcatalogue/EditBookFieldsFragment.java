@@ -149,14 +149,14 @@ public class EditBookFieldsFragment
                                                         .getList(UniqueId.BKEY_AUTHOR_ARRAY));
 
                         intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId());
-                        intent.putExtra(UniqueId.KEY_TITLE,
-                                        mFields.getField(R.id.title).getValue().toString());
+                        intent.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title)
+                                                                   .getValue().toString().trim());
                         startActivityForResult(intent, REQ_EDIT_AUTHORS);
                     }
                 });
 
         // defined, but handled manually
-        mFields.add(R.id.name, "", UniqueId.KEY_SERIES)
+        mFields.add(R.id.series, "", UniqueId.KEY_SERIES)
                .getView().setOnClickListener(
                 new OnClickListener() {
                     @Override
@@ -167,8 +167,8 @@ public class EditBookFieldsFragment
                                                         .getList(UniqueId.BKEY_SERIES_ARRAY));
 
                         intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId());
-                        intent.putExtra(UniqueId.KEY_TITLE,
-                                        mFields.getField(R.id.title).getValue().toString());
+                        intent.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title)
+                                                                   .getValue().toString().trim());
                         startActivityForResult(intent, REQ_EDIT_SERIES);
                     }
                 });
@@ -257,7 +257,7 @@ public class EditBookFieldsFragment
         ArrayList<Bookshelf> bsList = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
 
-        boolean isAnt = book.isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+        boolean isAnt = book.isBitSet(UniqueId.KEY_BOOK_TOC_BITMASK,
                                       TocEntry.Type.MULTIPLE_WORKS);
         mFields.getField(R.id.is_anthology).setValue(isAnt ? "1" : "0");
 
@@ -323,7 +323,7 @@ public class EditBookFieldsFragment
     }
 
     private void populateSeriesListField(@NonNull final Book book) {
-        boolean visible = mFields.getField(R.id.name).isVisible();
+        boolean visible = mFields.getField(R.id.series).isVisible();
         if (visible) {
             ArrayList<Series> list = book.getList(UniqueId.BKEY_SERIES_ARRAY);
             if (!list.isEmpty() && Utils.pruneList(mDb, list)) {
@@ -335,11 +335,11 @@ public class EditBookFieldsFragment
             if (newText.isEmpty()) {
                 newText = getString(R.string.btn_set_series);
             }
-            mFields.getField(R.id.name).setValue(newText);
+            mFields.getField(R.id.series).setValue(newText);
         }
         requireView().findViewById(R.id.lbl_series).setVisibility(
                 visible ? View.VISIBLE : View.GONE);
-        requireView().findViewById(R.id.name).setVisibility(visible ? View.VISIBLE : View.GONE);
+        requireView().findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     //</editor-fold>

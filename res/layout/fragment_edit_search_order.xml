@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.eleybourn.bookcatalogue.widgets.TouchListView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tlv="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/body"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_alignParentBottom="true"
-    android:fillViewport="true"
-    android:paddingTop="@dimen/padding_border_double">
-    <!-- paddingTop is there to stop the overspill from the TabLayout (bug?)-->
-
-    <view
-        android:id="@android:id/list"
-        class="com.eleybourn.bookcatalogue.widgets.TouchListView"
-        style="@style/tlv_TouchListView"
-        tlv:grabber="@+id/grabber"
-        tlv:normal_height="64dip"
-        tlv:remove_mode="none" />
-</ScrollView>
+    android:id="@android:id/list"
+    style="@style/tlv_TouchListView"
+    tlv:grabber="@id/TLV_ROW_GRABBER"
+    tlv:normal_height="64dip"
+    tlv:remove_mode="none" />

@@ -207,7 +207,7 @@ public class BookSearchByIsbnFragment
             }
         });
 
-        root.findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.btn_search).setOnClickListener(new View.OnClickListener() {
             public void onClick(@NonNull final View v) {
                 //noinspection ConstantConditions
                 mIsbnSearchText = mIsbnView.getText().toString().trim();

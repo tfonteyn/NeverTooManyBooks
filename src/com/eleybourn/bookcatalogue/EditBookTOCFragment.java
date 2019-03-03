@@ -139,11 +139,11 @@ public class EditBookTOCFragment
         super.onActivityCreated(savedInstanceState);
 
         View view = requireView();
-        mPubDateTextView = view.findViewById(R.id.add_year);
-        mTitleTextView = view.findViewById(R.id.add_title);
+        mPubDateTextView = view.findViewById(R.id.first_publication);
+        mTitleTextView = view.findViewById(R.id.title);
 
         // Author AutoCompleteTextView
-        mAuthorTextView = view.findViewById(R.id.add_author);
+        mAuthorTextView = view.findViewById(R.id.author);
         ArrayAdapter<String> authorAdapter =
                 new ArrayAdapter<>(requireActivity(),
                                    android.R.layout.simple_dropdown_item_1line,
@@ -156,7 +156,7 @@ public class EditBookTOCFragment
         // used to call Search sites to populate the TOC
         mIsbn = getBookManager().getBook().getString(UniqueId.KEY_BOOK_ISBN);
 
-        mAddButton = view.findViewById(R.id.add_button);
+        mAddButton = view.findViewById(R.id.btn_add);
         mAddButton.setOnClickListener(new View.OnClickListener() {
             /**
              * Add the author/title from the edit fields as a new row in the TOC list.
@@ -255,7 +255,7 @@ public class EditBookTOCFragment
     //<editor-fold desc="Fragment shutdown">
 
     private void populateSingleAuthorStatus(@NonNull final Book book) {
-        boolean singleAuthor = !book.isBitSet(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+        boolean singleAuthor = !book.isBitSet(UniqueId.KEY_BOOK_TOC_BITMASK,
                                               TocEntry.Type.MULTIPLE_AUTHORS);
         mSingleAuthor.setChecked(singleAuthor);
         mAuthorTextView.setVisibility(singleAuthor ? View.GONE : View.VISIBLE);
@@ -298,7 +298,7 @@ public class EditBookTOCFragment
         if (!mSingleAuthor.isChecked()) {
             type |= TocEntry.Type.MULTIPLE_AUTHORS;
         }
-        book.putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
+        book.putLong(UniqueId.KEY_BOOK_TOC_BITMASK, type);
 
         Tracker.exitOnSaveFieldsToBook(this, book.getId());
     }
@@ -434,7 +434,7 @@ public class EditBookTOCFragment
     private void commitISFDBData(final long tocBitMask,
                                  @NonNull final List<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
-            getBookManager().getBook().putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, tocBitMask);
+            getBookManager().getBook().putLong(UniqueId.KEY_BOOK_TOC_BITMASK, tocBitMask);
             populateSingleAuthorStatus(getBookManager().getBook());
         }
 
@@ -502,7 +502,7 @@ public class EditBookTOCFragment
             final EditBookTOCFragment targetFragment = (EditBookTOCFragment) getTargetFragment();
             Bundle args = requireArguments();
             boolean hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
-            final long tocBitMask = args.getLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
+            final long tocBitMask = args.getLong(UniqueId.KEY_BOOK_TOC_BITMASK);
             ArrayList<TocEntry> tocEntries =
                     args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
             boolean hasTOC = tocEntries != null && !tocEntries.isEmpty();

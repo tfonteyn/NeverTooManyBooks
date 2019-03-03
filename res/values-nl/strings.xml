@@ -87,7 +87,7 @@
     <string name="info_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="anthology_titles">Bloemlezing titels</string>
     <string name="about_donate_amazon">Amazon Verlanglijst</string>
-    <string name="lbl_toc_same_author">Alle verhalen in deze bloemlezing zijn geschreven door dezelfde auteur</string>
+    <string name="lbl_toc_same_author">Alle verhalen in deze bloemlezing zijn van dezelfde auteur</string>
     <string name="menu_delete_toc_entry">Verwijder titels uit bloemlezing</string>
     <string name="lbl_is_anthology">Is dit boek een bloemlezing?</string>
     <string name="menu_populate_toc">Automatisch titels invullen (alleen ISFDB)</string>
@@ -261,7 +261,7 @@
     <string name="menu_add_book_manually">Handmatig toevoegen</string>
     <string name="search_internet">Internet doorzoeken</string>
     <string name="show_results">Toon resultaten</string>
-    <string name="rebuild_fts">FTS opnieuw opbouwen (alleen alpha!)</string>
+    <string name="rebuild_fts">FTS opnieuw opbouwen\n(Experimenteel!)</string>
     <string name="gr_title_send_book">Zend boeken naar Goodreads</string>
     <string name="gr_tq_legacy_task">Verouderde taken</string>
     <string name="gr_tq_occurred_at">(opgetreden op %1$s)</string>

@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <View
-        style="@style/divider_horizontalList"
-        android:layout_height="2dp"
-        android:paddingTop="2dp" />
+    <View style="@style/divider_horizontalList" />
 
     <CheckBox
         android:id="@+id/xml_tables_check"
@@ -16,7 +13,7 @@
         android:checked="false"
         android:text="@string/import_export_xml_tables"
         android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <CheckBox
         android:id="@+id/books_check"
@@ -36,9 +33,6 @@
         android:checked="true"
         android:text="@string/lbl_preferences" />
 
-    <View
-        style="@style/divider_horizontalList"
-        android:layout_height="2dp"
-        android:paddingBottom="2dp" />
+    <View style="@style/divider_horizontalList" />
 
 </LinearLayout>

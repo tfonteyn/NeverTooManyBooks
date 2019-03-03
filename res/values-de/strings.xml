@@ -300,7 +300,7 @@ anschließend auf eine leeren Seite landen. Klicken Sie einfach auf den “Zurü
     <string name="menu_add_book_manually">Manuell hinzufügen</string>
     <string name="search_internet">Internet durchsuchen</string>
     <string name="show_results">Ergebnisse anzeigen</string>
-    <string name="rebuild_fts">FTS neu aufbauen(nur alpha!)</string>
+    <string name="rebuild_fts">FTS neu aufbauen\n(nur alpha!)</string>
     <string name="gr_title_send_book">Bücher zu Goodreads senden</string>
     <string name="gr_tq_legacy_task">Veraltete Aufgaben</string>
     <string name="gr_tq_occurred_at">(ist bei %1$s aufgetreten)</string>

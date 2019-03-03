@@ -1,50 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:background="?attr/colorPrimary" />
+        android:background="?attr/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@id/tab_fragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/tab_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/buttonbar_cancel_save"
-        android:layout_below="@id/tab_panel"
+        android:layout_height="0dp"
         android:gravity="fill"
-        android:orientation="horizontal" />
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/confirm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tab_panel" />
 
     <!-- not an include: confirm button is specific "add book" -->
-    <LinearLayout
-        android:id="@+id/buttonbar_cancel_save"
-        style="?attr/buttonBarStyle"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/cancel"
+        style="?attr/buttonBarNegativeButtonStyle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:text="@android:string/cancel"
+        app:layout_constraintBaseline_toBaselineOf="@id/confirm"
+        app:layout_constraintEnd_toStartOf="@id/confirm"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/cancel"
-            style="?attr/buttonBarNegativeButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@android:string/cancel" />
+    <Button
+        android:id="@+id/confirm"
+        style="?attr/buttonBarPositiveButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_confirm_add_book"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cancel"
+        app:layout_constraintTop_toBottomOf="@id/tab_fragment" />
 
-        <Button
-            android:id="@+id/confirm"
-            style="?attr/buttonBarPositiveButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/btn_confirm_add_book" />
-    </LinearLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

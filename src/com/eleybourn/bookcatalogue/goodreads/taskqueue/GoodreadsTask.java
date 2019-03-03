@@ -76,7 +76,7 @@ public abstract class GoodreadsTask
     public View newListItemView(@NonNull final Context context,
                                 @NonNull final BindableItemCursor cursor,
                                 @NonNull final ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.task_info, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.row_task_info, parent, false);
         view.setTag(R.id.TAG_TASK, this);
 
         TaskHolder holder = new TaskHolder();

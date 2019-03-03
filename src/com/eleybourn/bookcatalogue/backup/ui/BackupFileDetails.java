@@ -104,7 +104,7 @@ public class BackupFileDetails
                           @NonNull final Context context) {
 
         // Set the basic data
-        TextView filenameView = convertView.findViewById(R.id.name);
+        TextView filenameView = convertView.findViewById(R.id.filename);
         filenameView.setText(mFile.getName());
 
         ImageView imageView = convertView.findViewById(R.id.icon);

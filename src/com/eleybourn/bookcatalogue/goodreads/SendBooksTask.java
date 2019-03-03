@@ -227,7 +227,7 @@ public abstract class SendBooksTask
                                     @NonNull final BindableItemCursor cursor,
                                     @NonNull final ViewGroup parent) {
             View view = LayoutInflater.from(context)
-                                      .inflate(R.layout.row_book_event_info, parent, false);
+                                      .inflate(R.layout.row_event_info, parent, false);
             view.setTag(R.id.TAG_EVENT, this);
             BookEventHolder holder = new BookEventHolder();
             holder.event = this;

@@ -22,11 +22,10 @@
 
     <!-- maybe split this up into a base and a concrete style... -->
     <style name="majorSectionHeader">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">12dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:drawableBottom">?attr/dividerHorizontal</item>
         <item name="android:paddingBottom">2dp</item>
     </style>
 
@@ -44,13 +43,19 @@
     <!-- Field labels -->
     <!-- *************************************************************************************** -->
 
-    <!-- generic field labels -->
+    <!-- generic field labels where the data is below the label -->
     <style name="lbl_textField">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:layout_alignParentStart">true</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- generic field labels where the data is on the side of the label -->
+    <style name="lbl_textField_inline" parent="lbl_textField">
+        <item name="android:paddingStart">@dimen/padding_border_double</item>
+        <item name="android:paddingEnd">@dimen/padding_border</item>
     </style>
 
     <!-- field labels for editable fields; almost identical to lbl_textField for now, but allows future customization -->

@@ -1,81 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/SLA_ROW"
+    android:id="@id/TLV_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:padding="@dimen/padding_border_double">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <CheckedTextView
+        android:id="@+id/row_check"
+        style="@style/tlv_checkable_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:padding="@dimen/padding_border_double"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/TLV_ROW_DETAILS"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:checked="true" />
 
-        <CheckedTextView
-            android:id="@+id/row_check"
-            style="@style/tlv_checkable_button"
-            tools:checked="true"/>
+    <LinearLayout
+        android:id="@id/TLV_ROW_DETAILS"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
+        app:layout_constraintStart_toEndOf="@id/row_check"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
-            android:id="@id/SLA_ROW_DETAILS"
+        <TextView
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/row_check"
-            android:layout_toStartOf="@id/grabber"
-            android:orientation="vertical"
-            android:longClickable="true"
-            android:padding="2dp">
+            android:ellipsize="marquee"
+            android:singleLine="false"
+            android:textIsSelectable="false"
+            android:textSize="16sp"
+            tools:text="style name" />
 
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:ellipsize="marquee"
-                android:gravity="start"
-                android:singleLine="false"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="style name"
-                android:textIsSelectable="false" />
+        <TextView
+            android:id="@+id/groups"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:paddingStart="@dimen/padding_border_double"
+            android:paddingEnd="@dimen/padding_border_double"
+            android:gravity="start"
+            android:singleLine="false"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="groups"
+            android:textIsSelectable="false" />
 
-            <TextView
-                android:id="@+id/groups"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/name"
-                android:ellipsize="marquee"
-                android:gravity="start"
-                android:singleLine="false"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="groups"
-                android:textIsSelectable="false" />
+        <TextView
+            android:id="@+id/kind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:gravity="start"
+            android:paddingStart="@dimen/padding_border_double"
+            android:paddingEnd="@dimen/padding_border_double"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            tools:text="kind"
+            android:textIsSelectable="false" />
 
-            <TextView
-                android:id="@+id/kind"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/groups"
-                android:ellipsize="marquee"
-                android:gravity="start"
-                android:paddingEnd="10sp"
-                android:paddingStart="10sp"
-                android:singleLine="true"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                tools:text="kind"
-                android:textIsSelectable="false" />
-        </RelativeLayout>
+    </LinearLayout>
 
-        <ImageView
-            android:id="@+id/grabber"
-            style="@style/tlv_dragHandle"
-            app:srcCompat="@drawable/ic_drag_handle"
-            tools:ignore="ContentDescription" />
+    <ImageView
+        android:id="@id/TLV_ROW_GRABBER"
+        style="@style/tlv_dragHandle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_border_double"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_drag_handle"
+        tools:ignore="ContentDescription" />
 
-    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
-    <View style="@style/divider_horizontalList" />
-</LinearLayout>
+
+

@@ -311,7 +311,7 @@ public class EditSeriesListActivity
                 public void onClick(@NonNull final View v) {
                     mName = mNameView.getText().toString().trim();
                     if (mName.isEmpty()) {
-                        UserMessage.showUserMessage(requireActivity(),
+                        UserMessage.showUserMessage(mActivity,
                                                     R.string.warning_required_name);
                         return;
                     }
@@ -332,7 +332,7 @@ public class EditSeriesListActivity
                 }
             });
 
-            return new AlertDialog.Builder(requireActivity())
+            return new AlertDialog.Builder(mActivity)
                     .setView(root)
                     .setTitle(R.string.title_edit_book_series)
                     .create();

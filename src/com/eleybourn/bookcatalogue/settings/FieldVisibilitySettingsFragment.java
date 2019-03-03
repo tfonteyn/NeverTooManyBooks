@@ -57,7 +57,7 @@ public class FieldVisibilitySettingsFragment
         FIELD_LIST.put(R.string.lbl_pages, UniqueId.KEY_BOOK_PAGES);
         FIELD_LIST.put(R.string.lbl_price_listed, UniqueId.KEY_BOOK_PRICE_LISTED);
 
-        FIELD_LIST.put(R.string.lbl_table_of_content, UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK);
+        FIELD_LIST.put(R.string.lbl_table_of_content, UniqueId.KEY_BOOK_TOC_BITMASK);
 
         // **** PERSONAL FIELDS ****
         FIELD_LIST.put(R.string.lbl_bookshelf, UniqueId.KEY_BOOKSHELF_NAME);

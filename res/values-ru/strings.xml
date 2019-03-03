@@ -256,7 +256,7 @@
     <string name="menu_add_book_manually">Добавить вручную</string>
     <string name="search_internet">Поиск в Интернете</string>
     <string name="show_results">Показать результаты</string>
-    <string name="rebuild_fts">Переобрать FTS (только альфа-версия!)</string>
+    <string name="rebuild_fts">Переобрать FTS\n(только альфа-версия!)</string>
     <string name="gr_title_send_book">Отправить книги на Goodreads</string>
     <string name="gr_tq_legacy_task">Действующая задача</string>
     <string name="gr_tq_occurred_at">(случилось в %1$s)</string>

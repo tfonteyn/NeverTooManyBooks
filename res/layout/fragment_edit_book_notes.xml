@@ -1,228 +1,226 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="@dimen/padding_border_double">
 
         <CheckBox
             android:id="@+id/read"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/lbl_is_read" />
+            android:text="@string/lbl_is_read"
+            app:layout_constraintBottom_toTopOf="@id/lbl_rating"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/lbl_rating"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:labelFor="@+id/rating"
             android:text="@string/lbl_rating"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/rating"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/read" />
 
         <RatingBar
             android:id="@+id/rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:numStars="5" />
+            android:numStars="5"
+            app:layout_constraintBottom_toTopOf="@id/lbl_notes"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_rating" />
 
-        <View style="@style/divider_horizontalList" />
+        <TextView
+            android:id="@+id/lbl_notes"
+            style="@style/lbl_editField"
+            android:labelFor="@+id/notes"
+            android:text="@string/menu_edit_book_notes"
+            app:layout_constraintBottom_toTopOf="@id/notes"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rating" />
 
-        <RelativeLayout
-            android:id="@+id/row_notes"
-            android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/notes"
+            style="@style/multiLineTextEntry"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+            app:layout_constraintBottom_toTopOf="@id/lbl_date_acquired"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_notes"
+            tools:ignore="Autofill" />
 
-            <TextView
-                android:id="@+id/lbl_notes"
-                style="@style/lbl_editField"
-                android:text="@string/menu_edit_book_notes" />
+        <TextView
+            android:id="@+id/lbl_date_acquired"
+            style="@style/lbl_editField"
+            android:text="@string/lbl_date_acquired"
+            app:layout_constraintBottom_toTopOf="@id/date_acquired"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/notes" />
 
-            <EditText
-                android:id="@+id/notes"
-                style="@style/multiLineTextEntry"
-                android:layout_below="@id/lbl_notes"
-                tools:ignore="LabelFor,Autofill" />
-
-        </RelativeLayout>
-
-        <View style="@style/divider_horizontalList" />
-
-        <RelativeLayout
-            android:id="@+id/row_date_acquired"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/date_acquired"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            app:layout_constraintBottom_toTopOf="@id/lbl_price_paid"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired" />
 
-            <TextView
-                android:id="@+id/lbl_date_acquired"
-                style="@style/lbl_editField"
-                android:text="@string/lbl_date_acquired"/>
+        <TextView
+            android:id="@+id/lbl_price_paid"
+            style="@style/lbl_editField"
+            android:labelFor="@id/price_paid"
+            android:text="@string/lbl_price_paid"
+            app:layout_constraintBottom_toTopOf="@id/price_paid"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/date_acquired" />
 
-            <Button
-                android:id="@+id/date_acquired"
-                style="@style/buttonDataEntry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/lbl_date_acquired" />
-        </RelativeLayout>
+        <EditText
+            android:id="@+id/price_paid"
+            style="@style/priceTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBaseline_toBaselineOf="@id/price_paid_currency"
+            app:layout_constraintBottom_toTopOf="@id/signed"
+            app:layout_constraintEnd_toStartOf="@id/price_paid_currency"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
+            tools:ignore="Autofill"
+            tools:text="14.99" />
 
-        <RelativeLayout
-            android:id="@+id/row_price_paid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <AutoCompleteTextView
+            android:id="@+id/price_paid_currency"
+            style="@style/currencyTextEntry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="..."
+            app:layout_constraintBottom_toTopOf="@id/signed"
+            app:layout_constraintEnd_toStartOf="@id/btn_price_paid_currency"
+            app:layout_constraintStart_toEndOf="@id/price_paid"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
+            tools:ignore="Autofill,HardcodedText" />
 
-            <TextView
-                android:id="@+id/lbl_price_paid"
-                style="@style/lbl_editField"
-                android:labelFor="@id/price_paid"
-                android:text="@string/lbl_price_paid" />
-
-            <EditText
-                android:id="@+id/price_paid"
-                style="@style/priceTextEntry"
-                android:layout_width="wrap_content"
-                android:layout_below="@id/lbl_price_paid"
-                android:layout_toStartOf="@id/price_paid_currency"
-                tools:ignore="Autofill"
-                tools:text="14.99" />
-
-            <AutoCompleteTextView
-                android:id="@+id/price_paid_currency"
-                style="@style/currencyTextEntry"
-                android:layout_below="@id/lbl_price_paid"
-                android:layout_toStartOf="@id/btn_price_paid_currency"
-                android:hint="..."
-                tools:ignore="Autofill,HardcodedText"/>
-
-            <ImageButton
-                android:id="@+id/btn_price_paid_currency"
-                style="@style/itemEditButton"
-                android:layout_alignBottom="@id/price_paid"
-                app:srcCompat="@drawable/ic_arrow_drop_down"
-                tools:ignore="ContentDescription" />
-        </RelativeLayout>
-
-        <View style="@style/divider_horizontalList" />
+        <ImageButton
+            android:id="@+id/btn_price_paid_currency"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/signed"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/price_paid_currency"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription" />
 
         <CheckBox
             android:id="@+id/signed"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/lbl_is_signed" />
+            android:text="@string/lbl_is_signed"
+            app:layout_constraintBottom_toTopOf="@id/lbl_edition"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/price_paid" />
 
-        <RelativeLayout
-            android:id="@+id/row_edition"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/lbl_edition"
+            style="@style/lbl_editField"
+            android:text="@string/lbl_edition"
+            app:layout_constraintBottom_toTopOf="@id/edition"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/signed" />
+
+        <Button
+            android:id="@+id/edition"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            app:layout_constraintBottom_toTopOf="@id/lbl_read_start"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_edition" />
 
-            <TextView
-                android:id="@+id/lbl_edition"
-                style="@style/lbl_editField"
-                android:text="@string/lbl_edition" />
+        <TextView
+            android:id="@+id/lbl_read_start"
+            style="@style/lbl_editField"
+            android:text="@string/lbl_read_start"
+            app:layout_constraintBottom_toTopOf="@id/read_start"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edition" />
 
-            <Button
-                android:id="@+id/edition"
-                style="@style/buttonDataEntry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/lbl_edition" />
-        </RelativeLayout>
-
-        <View style="@style/divider_horizontalList" />
-
-        <RelativeLayout
-            android:id="@+id/row_read_start"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/read_start"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            app:layout_constraintBottom_toTopOf="@id/lbl_read_end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_start" />
 
-            <TextView
-                android:id="@+id/lbl_read_start"
-                style="@style/lbl_editField"
-                android:text="@string/lbl_read_start" />
+        <TextView
+            android:id="@+id/lbl_read_end"
+            style="@style/lbl_editField"
+            android:text="@string/lbl_read_end"
+            app:layout_constraintBottom_toTopOf="@id/read_end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/read_start" />
 
-            <Button
-                android:id="@+id/read_start"
-                style="@style/buttonDataEntry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/lbl_read_start" />
-        </RelativeLayout>
-
-        <View style="@style/divider_horizontalList" />
-
-        <RelativeLayout
-            android:id="@+id/row_read_end"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/read_end"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            app:layout_constraintBottom_toTopOf="@id/lbl_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_end" />
 
-            <TextView
-                android:id="@+id/lbl_read_end"
-                style="@style/lbl_editField"
-                android:text="@string/lbl_read_end" />
+        <TextView
+            android:id="@+id/lbl_location"
+            style="@style/lbl_editField"
+            android:labelFor="@id/location"
+            android:text="@string/lbl_location_long"
+            app:layout_constraintBottom_toTopOf="@id/location"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/read_end" />
 
-            <Button
-                android:id="@+id/read_end"
-                style="@style/buttonDataEntry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/lbl_read_end" />
-        </RelativeLayout>
-
-        <View style="@style/divider_horizontalList" />
-
-        <RelativeLayout
-            android:id="@+id/row_location"
-            android:layout_width="match_parent"
+        <AutoCompleteTextView
+            android:id="@+id/location"
+            style="@style/simpleTextEntry"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+            android:completionThreshold="2"
+            android:inputType="textCapSentences"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_location"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_location" />
 
-            <TextView
-                android:id="@+id/lbl_location"
-                style="@style/lbl_editField"
-                android:text="@string/lbl_location_long"
-                android:labelFor="@id/location"/>
+        <ImageButton
+            android:id="@+id/btn_location"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/location"
+            app:layout_constraintTop_toBottomOf="@id/lbl_location"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription" />
 
-            <AutoCompleteTextView
-                android:id="@+id/location"
-                style="@style/simpleTextEntry"
-                android:layout_below="@id/lbl_location"
-                android:layout_toStartOf="@id/btn_location"
-                android:layout_centerVertical="true"
-                android:completionThreshold="2"
-                android:inputType="textCapSentences" />
-
-            <ImageButton
-                android:id="@+id/btn_location"
-                style="@style/itemEditButton"
-                android:layout_alignBottom="@id/location"
-                app:srcCompat="@drawable/ic_expand_more"
-                tools:ignore="ContentDescription" />
-
-        </RelativeLayout>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

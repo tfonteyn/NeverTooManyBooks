@@ -1061,12 +1061,12 @@ public class DBA
         // Handle ANTHOLOGY_BITMASK only, no handling of actual titles here
         ArrayList<TocEntry> tocEntries = book.getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
         if (!tocEntries.isEmpty()) {
-            // definitively an anthology, overrule whatever the KEY_BOOK_ANTHOLOGY_BITMASK was.
+            // definitively an anthology, overrule whatever the KEY_BOOK_TOC_BITMASK was.
             int type = TocEntry.Type.MULTIPLE_WORKS;
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
                 type |= TocEntry.Type.MULTIPLE_AUTHORS;
             }
-            book.putLong(UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK, type);
+            book.putLong(UniqueId.KEY_BOOK_TOC_BITMASK, type);
         }
 
         //ENHANCE: handle price fields for legacy embedded currencies.
@@ -1101,7 +1101,7 @@ public class DBA
                 UniqueId.KEY_BOOK_DATE_PUBLISHED,
                 UniqueId.KEY_FIRST_PUBLICATION,
                 UniqueId.KEY_BOOK_EDITION_BITMASK,
-                UniqueId.KEY_BOOK_ANTHOLOGY_BITMASK,
+                UniqueId.KEY_BOOK_TOC_BITMASK,
 
                 UniqueId.KEY_BOOK_PRICE_LISTED,
                 UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,

@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -150,8 +151,10 @@ public class FileChooserFragment
         }
 
         // 'up' directory
-        view.findViewById(R.id.row_path_up).setOnClickListener(onPathUpClickListener);
         view.findViewById(R.id.btn_path_up).setOnClickListener(onPathUpClickListener);
+
+        requireActivity().getWindow()
+                         .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     /**
@@ -244,7 +247,7 @@ public class FileChooserFragment
             final FileDetails item = getItem(position);
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_file_info,
-                                                                        null);
+                                                                        parent, false);
             }
 
             //noinspection ConstantConditions

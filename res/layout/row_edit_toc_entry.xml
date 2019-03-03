@@ -1,86 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/SLA_ROW"
+    android:id="@id/TLV_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
-    <!--
-        NOTE:
-        The outer layout is used because this item appears in a TouchListView which uses
-        the outer element padding, and we want to set our own padding.
+    android:padding="@dimen/padding_border_double">
 
-        With careful analysis, we could probably put padding on the right elements.
-        But this is clearer and easier.
-    -->
-    <RelativeLayout
-        android:id="@+id/row_real"
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@id/TLV_ROW_DELETE"
+        style="@style/tlv_delete_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:padding="@dimen/padding_border_double"
-        tools:ignore="UselessParent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/TLV_ROW_DETAILS"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_delete"
+        tools:ignore="ContentDescription" />
 
-        <ImageButton
-            android:id="@id/SLA_ROW_DELETE"
-            style="@style/tlv_delete_button"
-            app:srcCompat="@drawable/ic_delete"
-            tools:ignore="ContentDescription" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@id/TLV_ROW_DETAILS"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
+        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DELETE"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/grabber"
-            style="@style/tlv_dragHandle"
-            app:srcCompat="@drawable/ic_drag_handle"
-            tools:ignore="ContentDescription" />
-
-        <RelativeLayout
-            android:id="@id/SLA_ROW_DETAILS"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/SLA_ROW_DELETE"
-            android:layout_toStartOf="@id/grabber"
-            android:padding="2dp">
+            android:ellipsize="marquee"
+            android:paddingStart="@dimen/padding_border_double"
+            android:paddingEnd="@dimen/padding_border_double"
+            android:singleLine="true"
+            android:textIsSelectable="false"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/year"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Story title"
+            />
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:gravity="start"
-                android:paddingStart="@dimen/padding_border"
-                android:paddingEnd="@dimen/padding_border"
-                android:singleLine="true"
-                android:textIsSelectable="false"
-                android:textSize="16sp"
-                tools:text="Story title" />
+        <TextView
+            android:id="@+id/year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:paddingStart="@dimen/padding_border_double"
+            android:paddingEnd="@dimen/padding_border"
+            android:singleLine="true"
+            android:textIsSelectable="false"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/author"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:text="(1987)"
+            />
 
-            <TextView
-                android:id="@+id/year"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/title"
-                android:textSize="12sp"
-                tools:text="(1960)" />
+        <TextView
+            android:id="@+id/author"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:paddingStart="@dimen/padding_border"
+            android:paddingEnd="@dimen/padding_border_double"
+            android:singleLine="true"
+            android:textIsSelectable="false"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/year"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:text="the Author"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/title"
-                android:layout_toEndOf="@id/year"
-                android:ellipsize="marquee"
-                android:paddingStart="@dimen/padding_border"
-                android:paddingEnd="@dimen/padding_border"
-                android:singleLine="true"
-                android:textIsSelectable="false"
-                android:textSize="12sp"
-                tools:text="the Author" />
+    <ImageView
+        android:id="@id/TLV_ROW_GRABBER"
+        style="@style/tlv_dragHandle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_border_double"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_drag_handle"
+        tools:ignore="ContentDescription" />
 
-        </RelativeLayout>
-    </RelativeLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,50 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar" />
-
-    <LinearLayout
-        android:id="@+id/row_book"
-        android:layout_width="match_parent"
+        style="@style/toolbar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/padding_border"
-        android:layout_below="@id/toolbar"
-        android:visibility="gone"
-        tools:visibility="visible">
-        <TextView
-            android:id="@+id/title"
-            style="@style/txt_row_bookMajorDetail"
-            tools:text="Anna Karenina" />
+        app:layout_constraintBottom_toTopOf="@id/title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/author"
-            style="@style/txt_row_bookDetail"
-            android:layout_marginTop="@dimen/padding_border"
-            android:paddingBottom="8dp"
-            tools:text="by Lev Tolstoy" />
+    <TextView
+        android:id="@+id/title"
+        style="@style/txt_row_bookMajorDetail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textIsSelectable="true"
+        app:layout_constraintBottom_toTopOf="@id/author"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:text="Anna Karenina" />
 
-    </LinearLayout>
+    <TextView
+        android:id="@+id/author"
+        style="@style/txt_row_bookDetail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/padding_border"
+        android:textIsSelectable="true"
+        app:layout_constraintBottom_toTopOf="@id/select_fields_blurb"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:text="by Lev Tolstoy" />
+
     <TextView
         android:id="@+id/select_fields_blurb"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/row_book"
         android:paddingTop="@dimen/padding_border"
-        android:text="@string/info_select_fields_to_update" />
+        android:text="@string/info_select_fields_to_update"
+        app:layout_constraintBottom_toTopOf="@id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/author" />
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/buttonbar_cancel_update"
-        android:layout_below="@id/select_fields_blurb"
-        android:scrollbars="vertical">
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_update"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_fields_blurb">
 
         <LinearLayout
             android:id="@+id/manage_fields_scrollview"
@@ -60,7 +76,10 @@
     <include
         android:id="@+id/buttonbar_cancel_update"
         layout="@layout/inc_buttonbar_cancel_update"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
-</RelativeLayout>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scrollView" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@
     android:id="@+id/name"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="@dimen/padding_border"
     android:textAppearance="?android:attr/textAppearanceLarge"
     tools:text="Bookshelf name"
     android:textIsSelectable="false"

@@ -563,33 +563,34 @@ public abstract class BookBaseFragment
         mFields.resetVisibility();
 
         // actual book
-        showHideField(hideIfEmpty, R.id.coverImage, R.id.row_image);
-        showHideField(hideIfEmpty, R.id.isbn, R.id.row_isbn, R.id.lbl_isbn);
+        showHideField(hideIfEmpty, R.id.coverImage);
+        showHideField(hideIfEmpty, R.id.isbn, R.id.lbl_isbn);
         showHideField(hideIfEmpty, R.id.description, R.id.lbl_description);
-        showHideField(hideIfEmpty, R.id.publisher, R.id.row_publisher, R.id.lbl_publishing);
-        showHideField(hideIfEmpty, R.id.date_published, R.id.row_date_published,
-                      R.id.lbl_publishing);
-        showHideField(hideIfEmpty, R.id.first_publication, R.id.row_first_publication);
-        showHideField(hideIfEmpty, R.id.pages, R.id.row_pages, R.id.lbl_pages);
-        showHideField(hideIfEmpty, R.id.price_listed, R.id.row_price_listed, R.id.lbl_price_listed);
-        showHideField(hideIfEmpty, R.id.format, R.id.row_format, R.id.lbl_format);
-        showHideField(hideIfEmpty, R.id.genre, R.id.row_genre, R.id.lbl_genre);
-        showHideField(hideIfEmpty, R.id.language, R.id.row_language, R.id.lbl_language);
+        showHideField(hideIfEmpty, R.id.pages, R.id.lbl_pages);
+        showHideField(hideIfEmpty, R.id.format, R.id.lbl_format);
+        showHideField(hideIfEmpty, R.id.genre, R.id.lbl_genre);
+        showHideField(hideIfEmpty, R.id.language, R.id.lbl_language);
 //        showHideField(hideIfEmpty, R.id.toc, R.id.row_toc);
+
+        // publishing related fields.
+        showHideField(hideIfEmpty, R.id.publisher);
+        showHideField(hideIfEmpty, R.id.date_published);
+        showHideField(hideIfEmpty, R.id.first_publication, R.id.lbl_first_publication);
+        showHideField(hideIfEmpty, R.id.price_listed, R.id.lbl_price_listed);
 
         // personal fields
         showHideField(hideIfEmpty, R.id.bookshelves, R.id.name, R.id.lbl_bookshelves);
-//        showHideField(hideIfEmpty, R.id.read, R.id.row_read, R.id.lbl_read);
+//        showHideField(hideIfEmpty, R.id.read, R.id.lbl_read);
 
-        showHideField(hideIfEmpty, R.id.edition, R.id.row_edition, R.id.lbl_edition);
-        showHideField(hideIfEmpty, R.id.notes, R.id.row_notes);
-        showHideField(hideIfEmpty, R.id.location, R.id.row_location, R.id.lbl_location);
-        showHideField(hideIfEmpty, R.id.date_acquired, R.id.row_date_acquired);
-        showHideField(hideIfEmpty, R.id.price_paid, R.id.row_price_paid, R.id.lbl_price_paid);
-        showHideField(hideIfEmpty, R.id.read_start, R.id.row_read_start, R.id.lbl_read_start);
-        showHideField(hideIfEmpty, R.id.read_end, R.id.row_read_end, R.id.lbl_read_end);
-        showHideField(hideIfEmpty, R.id.signed, R.id.row_signed);
-        showHideField(hideIfEmpty, R.id.rating, R.id.row_rating, R.id.lbl_rating);
+        showHideField(hideIfEmpty, R.id.edition, R.id.lbl_edition);
+        showHideField(hideIfEmpty, R.id.notes);
+        showHideField(hideIfEmpty, R.id.location, R.id.lbl_location, R.id.lbl_location_long);
+        showHideField(hideIfEmpty, R.id.date_acquired, R.id.lbl_date_acquired);
+        showHideField(hideIfEmpty, R.id.price_paid, R.id.lbl_price_paid);
+        showHideField(hideIfEmpty, R.id.read_start, R.id.lbl_read_start);
+        showHideField(hideIfEmpty, R.id.read_end, R.id.lbl_read_end);
+        showHideField(hideIfEmpty, R.id.signed, R.id.lbl_signed);
+        showHideField(hideIfEmpty, R.id.rating, R.id.lbl_rating);
 
         // other
         showHideField(hideIfEmpty, R.id.loaned_to);
@@ -603,7 +604,7 @@ public abstract class BookBaseFragment
      * Don't show a field if it is already hidden (assumed by user preference)
      * <p>
      * ImageView:
-     * use the visibility status of the ImageView to show/hide the relatedFields
+     * use the visibility status of the ImageView itself to show/hide the relatedFields
      *
      * @param hideIfEmpty   hide if empty
      * @param fieldId       layout resource id of the field
@@ -620,7 +621,7 @@ public abstract class BookBaseFragment
                 if (visibility != View.GONE) {
                     // Determine if we should hide it
                     if (!(view instanceof ImageView)) {
-                        final String value = mFields.getField(fieldId).getValue().toString();
+                        final String value = mFields.getField(fieldId).getValue().toString().trim();
                         visibility = !value.isEmpty() ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
                     }
@@ -628,8 +629,8 @@ public abstract class BookBaseFragment
             }
 
             // Set the related views
-            for (int i : relatedFields) {
-                View rv = requireView().findViewById(i);
+            for (int relatedFieldId : relatedFields) {
+                View rv = requireView().findViewById(relatedFieldId);
                 if (rv != null) {
                     rv.setVisibility(visibility);
                 }
@@ -833,7 +834,7 @@ public abstract class BookBaseFragment
             }
             sb.append(view.getClass().getCanonicalName())
               .append(" (").append(view.getId()).append(')')
-              .append(view.getId() == R.id.row_lbl_description ? "DESC! ->" : " ->");
+              .append(" ->");
 
             if (view instanceof TextView) {
                 String s = ((TextView) view).getText().toString().trim();

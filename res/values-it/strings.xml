@@ -258,7 +258,7 @@
     <string name="menu_add_book_manually">Aggiungi Manualmente</string>
     <string name="search_internet">Cerca in Internet</string>
     <string name="show_results">Mostra risultati</string>
-    <string name="rebuild_fts">Ricrea FTS (sperimentale!)</string>
+    <string name="rebuild_fts">Ricrea FTS\n(sperimentale!)</string>
     <string name="gr_title_send_book">Invia libri a Goodreads</string>
     <string name="gr_tq_legacy_task">Operazione obsoleta</string>
     <string name="gr_tq_occurred_at">(si è verificata a %1$s)</string>

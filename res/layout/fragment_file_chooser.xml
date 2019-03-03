@@ -1,79 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingEnd="@dimen/padding_border"
-    android:paddingStart="@dimen/padding_border">
+    android:paddingStart="@dimen/padding_border"
+    android:paddingEnd="@dimen/padding_border">
 
-    <RelativeLayout
-        android:id="@+id/row_path_up"
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@+id/btn_path_up"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:focusableInTouchMode="true">
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="@string/up_folder"
+        android:padding="@dimen/padding_border_double"
+        app:layout_constraintBottom_toTopOf="@id/header_divider"
+        app:layout_constraintEnd_toStartOf="@id/path"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_folder_open"
+        />
 
-        <ImageButton
-            android:id="@+id/btn_path_up"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:padding="@dimen/padding_border_double"
-            android:contentDescription="@string/up_folder"
-            android:background="?android:selectableItemBackground"
-            android:text="@string/up_folder"
-            app:srcCompat="@drawable/ic_folder_open" />
-
-        <TextView
-            android:id="@+id/path"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignWithParentIfMissing="true"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/btn_path_up"
-            android:layout_alignParentEnd="true"
-            android:gravity="center_vertical"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textStyle="bold"
-            tools:text="/foo/bar/gum"
-            android:textIsSelectable="false" />
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/path"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="false"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/header_divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_path_up"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="/foo/bar/gum"
+        />
 
     <View
         android:id="@+id/header_divider"
         style="@style/divider_horizontalList"
-        android:layout_below="@id/row_path_up" />
+        app:layout_constraintBottom_toTopOf="@android:id/list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_path_up"
+        />
 
     <com.eleybourn.bookcatalogue.widgets.FastScrollListView
         android:id="@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/footer_divider"
-        android:layout_below="@id/header_divider"
-        android:paddingEnd="@dimen/padding_border_double"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:paddingStart="@dimen/padding_border_double"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:paddingEnd="@dimen/padding_border_double"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintBottom_toTopOf="@id/footer_divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_divider">
+
+        <requestFocus />
+    </com.eleybourn.bookcatalogue.widgets.FastScrollListView>
 
     <View
         android:id="@+id/footer_divider"
         style="@style/divider_horizontalList"
-        android:layout_above="@+id/file_name" />
+        app:layout_constraintBottom_toTopOf="@id/file_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@android:id/list"
+        />
 
     <!-- no style used on purpose -->
     <EditText
         android:id="@+id/file_name"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:importantForAutofill="no"
         android:inputType="text"
-        android:paddingBottom="@dimen/padding_border_double"
         android:paddingTop="@dimen/padding_border_double"
+        android:paddingBottom="@dimen/padding_border_double"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/footer_divider"
         tools:ignore="LabelFor,UnusedAttribute"
         tools:text="fred.bcbk"
-        android:importantForAutofill="no" />
+        />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

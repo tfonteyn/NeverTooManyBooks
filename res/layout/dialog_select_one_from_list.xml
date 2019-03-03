@@ -10,10 +10,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:singleLine="false"
-        android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:text="some message"
-        android:textIsSelectable="false" />
+        android:textIsSelectable="false"
+        android:textStyle="bold"
+        tools:text="some message" />
 
     <View
         android:id="@+id/messageBottomDivider"
@@ -30,7 +30,7 @@
             android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+        android:orientation="vertical" />
     </ScrollView>
 
 </LinearLayout>
