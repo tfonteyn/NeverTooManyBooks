@@ -39,7 +39,7 @@ import java.util.Locale;
  * be needed.
  */
 public class EditLanguageDialog
-        extends EditStringDialog {
+        extends EditStringBaseDialog {
 
     public EditLanguageDialog(@NonNull final Activity activity,
                               @NonNull final DBA db,

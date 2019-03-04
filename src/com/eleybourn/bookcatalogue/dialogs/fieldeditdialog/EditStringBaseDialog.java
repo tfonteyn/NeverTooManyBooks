@@ -18,7 +18,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
-abstract class EditStringDialog {
+public abstract class EditStringBaseDialog {
 
     @NonNull
     protected final DBA mDb;
@@ -35,9 +35,9 @@ abstract class EditStringDialog {
      *
      * @param onChanged Runnable to be started after user confirming
      */
-    EditStringDialog(@NonNull final Activity activity,
-                     @NonNull final DBA db,
-                     @Nullable final Runnable onChanged) {
+    EditStringBaseDialog(@NonNull final Activity activity,
+                         @NonNull final DBA db,
+                         @Nullable final Runnable onChanged) {
         mActivity = activity;
         mDb = db;
         mOnChanged = onChanged;
@@ -50,10 +50,10 @@ abstract class EditStringDialog {
      * @param list      for the AutoCompleteTextView
      * @param onChanged Runnable to be started after user confirming
      */
-    EditStringDialog(@NonNull final Activity activity,
-                     @NonNull final DBA db,
-                     @NonNull final List<String> list,
-                     @Nullable final Runnable onChanged) {
+    EditStringBaseDialog(@NonNull final Activity activity,
+                         @NonNull final DBA db,
+                         @NonNull final List<String> list,
+                         @Nullable final Runnable onChanged) {
         mActivity = activity;
         mDb = db;
         mOnChanged = onChanged;

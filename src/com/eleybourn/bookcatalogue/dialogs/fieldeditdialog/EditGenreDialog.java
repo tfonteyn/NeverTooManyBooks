@@ -29,7 +29,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 
 public class EditGenreDialog
-        extends EditStringDialog {
+        extends EditStringBaseDialog {
 
     public EditGenreDialog(@NonNull final Activity activity,
                            @NonNull final DBA db,

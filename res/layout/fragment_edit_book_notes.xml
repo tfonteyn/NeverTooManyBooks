@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_border_double">
+        android:padding="@dimen/border_double">
 
         <CheckBox
             android:id="@+id/read"
@@ -108,10 +108,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="..."
-            app:layout_constraintBottom_toTopOf="@id/signed"
+            app:layout_constraintBaseline_toBaselineOf="@id/price_paid"
             app:layout_constraintEnd_toStartOf="@id/btn_price_paid_currency"
             app:layout_constraintStart_toEndOf="@id/price_paid"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
             tools:ignore="Autofill,HardcodedText" />
 
         <ImageButton
@@ -119,10 +118,10 @@
             style="@style/itemEditButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/signed"
+            app:layout_constraintBottom_toBottomOf="@id/price_paid_currency"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_paid_currency"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
+            app:layout_constraintTop_toTopOf="@id/price_paid_currency"
             app:srcCompat="@drawable/ic_arrow_drop_down"
             tools:ignore="ContentDescription" />
 
@@ -215,10 +214,10 @@
             style="@style/itemEditButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/location"
-            app:layout_constraintTop_toBottomOf="@id/lbl_location"
+            app:layout_constraintTop_toTopOf="@id/location"
             app:srcCompat="@drawable/ic_arrow_drop_down"
             tools:ignore="ContentDescription" />
 

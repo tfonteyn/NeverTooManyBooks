@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -20,16 +19,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="@dimen/padding_border"
-            android:paddingEnd="@dimen/padding_border">
+            android:paddingStart="@dimen/border"
+            android:paddingEnd="@dimen/border">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:paddingStart="@dimen/padding_border"
-                android:paddingEnd="@dimen/padding_border">
+                android:paddingStart="@dimen/border"
+                android:paddingEnd="@dimen/border">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -43,8 +42,8 @@
                     android:id="@+id/version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingStart="@dimen/padding_border"
-                    android:paddingEnd="@dimen/padding_border"
+                    android:paddingStart="@dimen/border"
+                    android:paddingEnd="@dimen/border"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textIsSelectable="true"
                     android:textStyle="bold"
@@ -54,20 +53,22 @@
             <TextView
                 android:id="@+id/website"
                 style="@style/link_url"
+                android:layout_gravity="center_horizontal"
                 tools:ignore="SelectableText"
                 tools:text="website url" />
 
             <TextView
                 android:id="@+id/sourcecode"
                 style="@style/link_url"
+                android:layout_gravity="center_horizontal"
                 tools:ignore="SelectableText"
                 tools:text="sourcecode url" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/padding_border"
-                android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/border"
+                android:paddingEnd="@dimen/border"
                 android:text="@string/about_lbl_contacts"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -84,34 +85,26 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/padding_border"
-                android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/border"
+                android:paddingEnd="@dimen/border"
                 android:text="@string/about_lbl_special_thanks"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/padding_border_triple"
-                android:paddingEnd="@dimen/padding_border_triple"
-                android:text="@string/about_translators"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                style="@style/txt_blurb"
+                android:text="@string/about_translators" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/padding_border"
-                android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/border"
+                android:paddingEnd="@dimen/border"
                 android:text="@string/about_lbl_donate"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/padding_border_triple"
-                android:paddingEnd="@dimen/padding_border_triple"
-                android:text="@string/about_donate"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                style="@style/txt_blurb"
+                android:text="@string/about_donate" />
 
             <TextView
                 android:id="@+id/amazon_url"
@@ -133,19 +126,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/padding_border"
-                android:paddingEnd="@dimen/padding_border"
+                android:paddingStart="@dimen/border"
+                android:paddingEnd="@dimen/border"
                 android:text="@string/amazon"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/amazon_links_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/padding_border_triple"
-                android:paddingEnd="@dimen/padding_border_triple"
-                android:paddingBottom="@dimen/padding_border"
-                android:textAppearance="?android:attr/textAppearanceSmall"
+                style="@style/txt_blurb"
                 tools:ignore="SelectableText"
                 tools:text="@string/hint_amazon_links_blurb" />
         </LinearLayout>

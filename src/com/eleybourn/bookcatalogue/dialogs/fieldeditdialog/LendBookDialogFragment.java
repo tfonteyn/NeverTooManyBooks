@@ -190,11 +190,11 @@ public class LendBookDialogFragment
         // see if there was a fragment?
         if (getParentFragment() instanceof BookChangedListener) {
             ((BookChangedListener) getParentFragment())
-                    .onBookChanged(bookId, BookChangedListener.FLAG_BOOK_LOANEE, data);
+                    .onBookChanged(bookId, BookChangedListener.BOOK_LOANEE, data);
             // or directly to an activity?
         } else if (requireActivity() instanceof BookChangedListener) {
             ((BookChangedListener) requireActivity())
-                    .onBookChanged(bookId, BookChangedListener.FLAG_BOOK_LOANEE, data);
+                    .onBookChanged(bookId, BookChangedListener.BOOK_LOANEE, data);
         }
     }
 

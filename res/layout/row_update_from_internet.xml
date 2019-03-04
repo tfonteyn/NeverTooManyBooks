@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/padding_border"
-    android:paddingEnd="@dimen/padding_border">
+    android:padding="@dimen/border">
 
     <TextView
         android:id="@+id/field"

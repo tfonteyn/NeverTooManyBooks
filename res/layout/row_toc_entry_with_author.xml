@@ -5,7 +5,7 @@
     android:id="@id/TLV_ROW"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/padding_border_double">
+    android:padding="@dimen/border_double">
 
     <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView
@@ -37,8 +37,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="marquee"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border"
+        android:paddingStart="@dimen/border"
+        android:paddingEnd="@dimen/border"
         android:singleLine="true"
         android:textIsSelectable="false"
         android:textSize="12sp"

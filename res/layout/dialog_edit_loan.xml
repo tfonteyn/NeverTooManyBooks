@@ -8,14 +8,14 @@
     <TextView
         android:id="@+id/title"
         style="@style/lbl_textField"
-        android:paddingTop="@dimen/padding_border"
+        android:layout_marginTop="@dimen/border"
         android:textIsSelectable="true"
         tools:text="@string/lbl_title"/>
 
     <TextView
         android:id="@+id/author"
         style="@style/lbl_textField"
-        android:paddingTop="@dimen/padding_border"
+        android:layout_marginTop="@dimen/border"
         android:textIsSelectable="true"
         tools:text="@string/lbl_author"/>
 

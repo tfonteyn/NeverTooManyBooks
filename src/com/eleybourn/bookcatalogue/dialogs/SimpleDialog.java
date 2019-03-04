@@ -86,7 +86,7 @@ public final class SimpleDialog {
         };
 
         // Add the items to the dialog
-        ViewGroup list = root.findViewById(android.R.id.list);
+        ViewGroup list = root.findViewById(R.id.item_list);
         for (SimpleDialogItem item : items) {
             View view = item.getView(inflater);
             view.setOnClickListener(listener);

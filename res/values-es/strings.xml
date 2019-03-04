@@ -712,7 +712,7 @@
     <string name="lbl_signed">Firmado</string>
     <string name="tab_lbl_notes">Notas</string>
     <string name="lbl_cover">Portada</string>
-    <string name="import_options_dialog_title">Seleccione lo que se importará del archivo.</string>
+    <string name="import_options_dialog_title">Seleccione lo que se importará.</string>
     <string name="send_mail">Enviar correo electrónico…</string>
     <string name="menu_set_read">Marcar como leído</string>
     <string name="menu_set_unread">Marcar como no leído</string>

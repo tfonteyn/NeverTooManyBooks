@@ -794,7 +794,7 @@
     <string name="lbl_signed">Signé</string>
     <string name="tab_lbl_notes">Les notes</string>
     <string name="lbl_cover">Couverture</string>
-    <string name="import_options_dialog_title">Sélectionnez ce qui sera importé de l\'archive.</string>
+    <string name="import_options_dialog_title">Sélectionnez ce qui sera importé.</string>
     <string name="send_mail">Envoyer un email…</string>
     <string name="menu_set_incomplete">Marquer comme incomplet</string>
     <string name="menu_set_complete">Marquer comme complet</string>

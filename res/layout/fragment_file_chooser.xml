@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingStart="@dimen/padding_border"
-    android:paddingEnd="@dimen/padding_border">
+    android:padding="@dimen/border_double">
 
     <ImageButton
         android:id="@+id/btn_path_up"
@@ -14,18 +13,18 @@
         android:layout_height="wrap_content"
         android:background="?android:selectableItemBackground"
         android:contentDescription="@string/up_folder"
-        android:padding="@dimen/padding_border_double"
+        android:padding="@dimen/border_double"
         app:layout_constraintBottom_toTopOf="@id/header_divider"
         app:layout_constraintEnd_toStartOf="@id/path"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_folder_open"
-        />
+        app:srcCompat="@drawable/ic_folder_open" />
 
     <TextView
         android:id="@+id/path"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:padding="@dimen/border_double"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textIsSelectable="false"
         android:textStyle="bold"
@@ -33,8 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn_path_up"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="/foo/bar/gum"
-        />
+        tools:text="/foo/bar/gum" />
 
     <View
         android:id="@+id/header_divider"
@@ -42,15 +40,12 @@
         app:layout_constraintBottom_toTopOf="@android:id/list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_path_up"
-        />
+        app:layout_constraintTop_toBottomOf="@id/btn_path_up" />
 
     <com.eleybourn.bookcatalogue.widgets.FastScrollListView
         android:id="@android:id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:paddingStart="@dimen/padding_border_double"
-        android:paddingEnd="@dimen/padding_border_double"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintBottom_toTopOf="@id/footer_divider"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,8 +61,7 @@
         app:layout_constraintBottom_toTopOf="@id/file_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@android:id/list"
-        />
+        app:layout_constraintTop_toBottomOf="@android:id/list" />
 
     <!-- no style used on purpose -->
     <EditText
@@ -76,15 +70,12 @@
         android:layout_height="wrap_content"
         android:importantForAutofill="no"
         android:inputType="text"
-        android:paddingTop="@dimen/padding_border_double"
-        android:paddingBottom="@dimen/padding_border_double"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/footer_divider"
         tools:ignore="LabelFor,UnusedAttribute"
-        tools:text="fred.bcbk"
-        />
+        tools:text="fred.bcbk" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

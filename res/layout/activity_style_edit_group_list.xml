@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tlv="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/list_wrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,13 +10,13 @@
         style="@style/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/view"
+        app:layout_constraintBottom_toTopOf="@android:id/list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.eleybourn.bookcatalogue.widgets.TouchListView
-        android:id="@+id/view"
+        android:id="@android:id/list"
         style="@style/tlv_TouchListView"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -26,7 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         tlv:grabber="@id/TLV_ROW_GRABBER"
-        tlv:normal_height="32dp"
+        tlv:normal_height="64dp"
         tlv:remove_mode="none" />
 
     <include
@@ -37,5 +36,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view" />
+        app:layout_constraintTop_toBottomOf="@android:id/list" />
 </androidx.constraintlayout.widget.ConstraintLayout>

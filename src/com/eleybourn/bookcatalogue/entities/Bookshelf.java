@@ -34,6 +34,7 @@ public class Bookshelf
      * but backwards compatibility rules here.
      */
     public static final Character MULTI_SHELF_SEPARATOR = ',';
+
     /** {@link Parcelable}. */
     public static final Creator<Bookshelf> CREATOR =
             new Creator<Bookshelf>() {
@@ -47,6 +48,7 @@ public class Bookshelf
                     return new Bookshelf[size];
                 }
             };
+
     /**
      * Preference name - the bookshelf to load next time we startup.
      * Storing the name and not the id. If you export/import... the id will be different.
@@ -70,7 +72,6 @@ public class Bookshelf
 
     /** the style gets cached. It only gets reloaded when the mStyleId != cached one. */
     private BooklistStyle mCachedStyle;
-
 
     /**
      * Constructor without ID.

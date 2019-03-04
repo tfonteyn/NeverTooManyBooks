@@ -121,7 +121,7 @@ public class EditSeriesDialogFragment
                 // Let the Activity know
                 if (mActivity instanceof BookChangedListener) {
                     final BookChangedListener bcl = (BookChangedListener) mActivity;
-                    bcl.onBookChanged(0, BookChangedListener.FLAG_SERIES, null);
+                    bcl.onBookChanged(0, BookChangedListener.SERIES, null);
                 }
             }
         });

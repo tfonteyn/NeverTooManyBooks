@@ -53,7 +53,7 @@ public class ElementContext {
      */
     public ElementContext(@NonNull final XmlFilter filter) {
         mFilter = filter;
-        // the others as per SAX promises.
+        // the others as per SAX promises, see full constructor java doc.
         mUri = "";
         mLocalName = "";
         mQName = "";

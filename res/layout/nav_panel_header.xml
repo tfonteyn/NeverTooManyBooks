@@ -11,7 +11,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/padding_border_quad"
+        android:paddingTop="@dimen/border_quad"
         app:srcCompat="@drawable/bc_launcher4"
         tools:ignore="ContentDescription" />
     <TextView

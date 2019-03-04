@@ -659,7 +659,7 @@ public class BookFragment
                               final int fieldsChanged,
                               @Nullable final Bundle data) {
         if (data != null) {
-            if ((fieldsChanged & BookChangedListener.FLAG_BOOK_LOANEE) != 0) {
+            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
                 populateLoanedToField(data.getString(UniqueId.KEY_BOOK_LOANEE));
             } else {
                 Logger.error("bookId=" + bookId + ", fieldsChanged=" + fieldsChanged);

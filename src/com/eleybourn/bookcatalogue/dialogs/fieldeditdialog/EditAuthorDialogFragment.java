@@ -68,7 +68,7 @@ public class EditAuthorDialogFragment
         // Let the Activity know
         if (mActivity instanceof BookChangedListener) {
             final BookChangedListener bcl = (BookChangedListener) mActivity;
-            bcl.onBookChanged(0, BookChangedListener.FLAG_AUTHOR, null);
+            bcl.onBookChanged(0, BookChangedListener.AUTHOR, null);
         }
     }
 }

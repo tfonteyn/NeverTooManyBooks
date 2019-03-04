@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingTop="@dimen/padding_border">
+    android:paddingTop="@dimen/border">
 
     <!-- the "BLB_ROW_DETAILS" level is used by {@link BooksMultiTypeListHandler} to hide/show rows -->
     <LinearLayout
@@ -25,9 +25,7 @@
             tools:drawableEnd="@drawable/ic_lock"
             tools:text="Expandable top level" />
 
-        <View
-            style="@style/divider_horizontalList"
-            android:paddingBottom="@dimen/padding_border" />
+        <View style="@style/divider_horizontalList" />
     </LinearLayout>
 
 </LinearLayout>

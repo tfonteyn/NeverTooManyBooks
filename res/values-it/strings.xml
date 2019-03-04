@@ -700,7 +700,7 @@
     <string name="lbl_signed">Firmato</string>
     <string name="tab_lbl_notes">Note</string>
     <string name="lbl_cover">Copertina</string>
-    <string name="import_options_dialog_title">Seleziona cosa verrà importato dall\'archivio.</string>
+    <string name="import_options_dialog_title">Seleziona cosa verrà importato.</string>
     <string name="send_mail">Invia una email…</string>
     <string name="menu_set_read">Contrassegna come letto</string>
     <string name="menu_set_unread">Contrassegna come non letto</string>

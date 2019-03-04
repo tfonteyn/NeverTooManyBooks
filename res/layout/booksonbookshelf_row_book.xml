@@ -20,7 +20,7 @@
         android:layout_weight="1"
         android:gravity="start"
         android:orientation="vertical"
-        android:padding="@dimen/padding_border">
+        android:padding="@dimen/border">
 
         <TextView
             android:id="@+id/series_num_long"

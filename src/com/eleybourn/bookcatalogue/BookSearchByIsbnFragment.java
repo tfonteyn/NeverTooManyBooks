@@ -113,7 +113,7 @@ public class BookSearchByIsbnFragment
         if (mScanMode) {
             return null;
         }
-        return inflater.inflate(R.layout.booksearch_by_isbn, container, false);
+        return inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
     }
 
     @Override

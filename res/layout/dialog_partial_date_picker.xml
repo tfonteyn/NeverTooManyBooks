@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/padding_border"
-    android:paddingRight="@dimen/padding_border">
+    style="@style/dialogFrame"
+    android:layout_gravity="center_horizontal">
 
     <LinearLayout
         android:id="@+id/dateSelector"
@@ -15,6 +11,7 @@
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal">
 
+        <!-- the order of the 3 columns will be changed dynamically depending on the Locale -->
         <LinearLayout
             android:id="@+id/yearSelector"
             android:layout_width="wrap_content"
@@ -39,9 +36,9 @@
                 android:id="@+id/year"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ems="4"
                 android:hint="@string/lbl_year"
                 android:inputType="number"
-                android:ems="4"
                 android:text="2000"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 tools:ignore="HardcodedText,Autofill" />

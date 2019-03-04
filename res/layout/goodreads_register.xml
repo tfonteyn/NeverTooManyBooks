@@ -18,15 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border">
+            android:paddingEnd="@dimen/border"
+            android:paddingStart="@dimen/border">
 
             <!-- BLURB 1 -->
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border_quad"
                 android:text="@string/gr_auth_blurb_part1"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -35,17 +34,16 @@
             <TextView
                 android:id="@+id/goodreads_url"
                 style="@style/link_url"
-                android:gravity="center"
-                tools:text="Goodreads url here"
-                android:textIsSelectable="false" />
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/border_double"
+                android:textIsSelectable="false"
+                tools:text="Goodreads url here" />
 
             <!-- BLURB 2 -->
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border_quad"
-                android:paddingTop="@dimen/padding_border_quad"
                 android:text="@string/gr_auth_blurb_part2"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -56,6 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/border_double"
                 android:text="@string/gr_title_auth_access" />
 
             <!-- BLURB 3 -->
@@ -63,8 +62,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border_quad"
-                android:paddingTop="@dimen/padding_border_quad"
                 android:text="@string/gr_auth_blurb_part3"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
             <!-- BUTTON -->
@@ -73,8 +70,6 @@
                 android:id="@+id/forget_blurb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border_quad"
-                android:paddingTop="@dimen/padding_border_quad"
                 android:text="@string/gr_auth_blurb_part4"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -83,6 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/border_double"
                 android:text="@string/gr_btn_forget_credentials" />
 
             <!-- BLURB 3 -->

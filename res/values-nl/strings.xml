@@ -717,7 +717,7 @@
     <string name="book_format_ebook">E-boek</string>
     <string name="btn_merge">Samenvoegen</string>
     <string name="btn_options">Opties</string>
-    <string name="import_options_dialog_title">Selecteer wat je wil importeren uit het archief</string>
+    <string name="import_options_dialog_title">Selecteer wat je wil importeren.</string>
     <string name="lbl_cover">Omslag</string>
     <string name="lbl_date_acquired_day">Dag verworven</string>
     <string name="lbl_date_acquired_month">Maand verworven</string>
@@ -759,6 +759,6 @@
     <string name="error_google_play_missing">Google Play / Market is niet geïnstalleerd</string>
     <string name="books_found">%1$s boeken gevonden</string>
     <string name="lbl_style">Stijl</string>
-    <string name="progress_msg_please_wait">Even geduld...</string>
+    <string name="progress_msg_please_wait">Even geduld…</string>
     <string name="error_not_available">niet beschikbaar</string>
 </resources>

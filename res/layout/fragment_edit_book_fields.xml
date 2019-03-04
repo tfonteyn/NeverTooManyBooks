@@ -12,8 +12,8 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_border_double"
-        android:focusableInTouchMode="true">
+        android:focusableInTouchMode="true"
+        android:padding="@dimen/border_double">
 
         <ImageView
             android:id="@+id/coverImage"
@@ -148,10 +148,10 @@
             style="@style/itemEditButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/lbl_date_published"
+            app:layout_constraintBottom_toBottomOf="@id/publisher"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/publisher"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
+            app:layout_constraintTop_toTopOf="@id/publisher"
             app:srcCompat="@drawable/ic_arrow_drop_down"
             tools:ignore="ContentDescription" />
 
@@ -260,10 +260,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="..."
-            app:layout_constraintBottom_toTopOf="@id/lbl_format"
+            app:layout_constraintBaseline_toBaselineOf="@id/price_listed"
             app:layout_constraintEnd_toStartOf="@id/btn_price_listed_currency"
             app:layout_constraintStart_toEndOf="@id/price_listed"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
             tools:ignore="Autofill,HardcodedText" />
 
         <ImageButton
@@ -271,10 +270,10 @@
             style="@style/itemEditButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/lbl_format"
+            app:layout_constraintBottom_toBottomOf="@id/price_listed_currency"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_listed_currency"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
+            app:layout_constraintTop_toTopOf="@id/price_listed_currency"
             app:srcCompat="@drawable/ic_arrow_drop_down"
             tools:ignore="ContentDescription" />
 
@@ -303,10 +302,10 @@
             style="@style/itemEditButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/lbl_genre"
+            app:layout_constraintBottom_toBottomOf="@id/format"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/format"
-            app:layout_constraintTop_toBottomOf="@id/lbl_format"
+            app:layout_constraintTop_toTopOf="@id/format"
             app:srcCompat="@drawable/ic_arrow_drop_down"
             tools:ignore="ContentDescription" />
 
@@ -336,10 +335,10 @@
             style="@style/itemEditButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/lbl_language"
+            app:layout_constraintBottom_toBottomOf="@id/genre"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/genre"
-            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
+            app:layout_constraintTop_toTopOf="@id/genre"
             app:srcCompat="@drawable/ic_arrow_drop_down"
             tools:ignore="ContentDescription" />
 
@@ -368,10 +367,10 @@
             style="@style/itemEditButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/lbl_description"
+            app:layout_constraintBottom_toBottomOf="@id/language"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/language"
-            app:layout_constraintTop_toBottomOf="@id/lbl_language"
+            app:layout_constraintTop_toTopOf="@id/language"
             app:srcCompat="@drawable/ic_arrow_drop_down"
             tools:ignore="ContentDescription" />
 
@@ -380,7 +379,7 @@
             android:id="@+id/lbl_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingTop="12dp"
+            android:layout_marginTop="@dimen/border_double"
             android:text="@string/lbl_description"
             android:textAppearance="?android:attr/textAppearanceLarge"
             app:layout_constraintBottom_toTopOf="@id/description_divider"
@@ -393,10 +392,10 @@
             style="@style/itemEditButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/description_divider"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_description"
-            app:layout_constraintTop_toBottomOf="@id/language"
+            app:layout_constraintTop_toTopOf="@id/lbl_description"
             app:srcCompat="@drawable/ic_edit"
             tools:ignore="ContentDescription" />
 
@@ -420,7 +419,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/description_divider"
-            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."/>
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

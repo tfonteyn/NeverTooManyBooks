@@ -199,6 +199,6 @@ public final class Utils {
          * @return <tt>true</tt> if comparing ONLY by id ensures uniqueness.
          */
         boolean isUniqueById();
-    }
 
+    }
 }

@@ -40,8 +40,7 @@
     <string name="goodreads" translatable="false">Goodreads</string>
     <string name="google_books" translatable="false">Google Books</string>
     <string name="library_thing" translatable="false">LibraryThing</string>
-
-    <string name="url_ISFDB" translatable="false">http://www.isfdb.org</string>
+    <string name="ISFDB" translatable="false">ISFDB</string>
 
     <!--  acronyms -->
     <string name="lbl_isbn" translatable="false">ISBN</string>

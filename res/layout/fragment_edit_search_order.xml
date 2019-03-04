@@ -4,6 +4,7 @@
     xmlns:tlv="http://schemas.android.com/apk/res-auto"
     android:id="@android:id/list"
     style="@style/tlv_TouchListView"
+    android:padding="@dimen/border"
     tlv:grabber="@id/TLV_ROW_GRABBER"
     tlv:normal_height="64dip"
     tlv:remove_mode="none" />

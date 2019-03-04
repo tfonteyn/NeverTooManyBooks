@@ -95,6 +95,7 @@ public class EditAuthorListActivity
      *
      * @param target The view that was clicked ('add' button).
      */
+    @Override
     protected void onAdd(@NonNull final View target) {
         String authorName = mAuthorNameView.getText().toString().trim();
         if (authorName.isEmpty()) {
@@ -260,6 +261,7 @@ public class EditAuthorListActivity
         return false;
     }
 
+    @Override
     protected ArrayAdapter<Author> createListAdapter(@LayoutRes final int rowLayoutId,
                                                      @NonNull final ArrayList<Author> list) {
         return new AuthorListAdapter(this, rowLayoutId, list);

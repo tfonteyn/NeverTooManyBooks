@@ -70,7 +70,7 @@ public class EditBooklistStyleGroupsActivity
      * Constructor.
      */
     public EditBooklistStyleGroupsActivity() {
-        super(R.layout.booklist_style_edit_group_list, R.layout.row_edit_booklist_style, null);
+        super(R.layout.activity_style_edit_group_list, R.layout.row_edit_booklist_style, null);
     }
 
     @Override

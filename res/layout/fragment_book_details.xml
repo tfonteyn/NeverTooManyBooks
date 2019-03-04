@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:padding="@dimen/padding_border">
+    android:padding="@dimen/border">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -99,8 +99,8 @@
             style="@style/txt_row_bookMinorDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/padding_border_double"
-            android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/border_double"
+            android:paddingEnd="@dimen/border"
             android:textIsSelectable="true"
             app:layout_constraintBottom_toTopOf="@id/lbl_series"
             app:layout_constraintEnd_toStartOf="@id/format"
@@ -156,8 +156,8 @@
         <TextView
             android:id="@+id/lbl_toc"
             style="@style/lbl_textField"
-            android:paddingTop="@dimen/padding_border"
-            android:paddingBottom="@dimen/padding_border"
+            android:paddingTop="@dimen/border"
+            android:paddingBottom="@dimen/border"
             android:text="@string/lbl_table_of_content"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/toc"
@@ -172,8 +172,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="@android:color/transparent"
-            android:paddingStart="@dimen/padding_border_double"
-            android:paddingEnd="@dimen/padding_border_double"
+            android:paddingStart="@dimen/border_double"
+            android:paddingEnd="@dimen/border_double"
             android:visibility="gone"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_toc"
             app:layout_constraintStart_toEndOf="@id/lbl_toc"
@@ -182,19 +182,22 @@
             tools:visibility="visible"
             />
 
-        <!-- don't set padding on the toc. The toc height is calculated as needed. -->
+        <!-- don't set padding on the toc. The toc height is calculated as needed.
+        Note the id is not "android:id/list".
+        -->
         <ListView
             android:id="@+id/toc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="@dimen/padding_border"
+            android:paddingBottom="@dimen/border"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/lbl_publishing"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_toc"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            tools:ignore="NestedScrolling" />
 
         <!-- Publishing -->
 
@@ -226,8 +229,8 @@
             style="@style/txt_row_bookMinorDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/padding_border"
-            android:paddingEnd="@dimen/padding_border"
+            android:paddingStart="@dimen/border"
+            android:paddingEnd="@dimen/border"
             android:textIsSelectable="true"
             app:layout_constraintBaseline_toBaselineOf="@id/publisher"
             app:layout_constraintBottom_toTopOf="@id/lbl_price_listed"
@@ -288,7 +291,7 @@
         <TextView
             android:id="@+id/lbl_bookshelves"
             style="@style/lbl_textField"
-            android:paddingTop="@dimen/padding_border"
+            android:paddingTop="@dimen/border"
             android:text="@string/lbl_bookshelves_long"
             app:layout_constraintBottom_toTopOf="@id/bookshelves"
             app:layout_constraintStart_toStartOf="parent"
@@ -367,7 +370,7 @@
             style="@style/txt_row_bookDetail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/padding_border"
+            android:paddingBottom="@dimen/border"
             android:textIsSelectable="true"
             app:layout_constraintBottom_toTopOf="@id/lbl_edition"
             app:layout_constraintEnd_toEndOf="parent"
@@ -559,8 +562,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_description"
-            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-            tools:ignore="SelectableText" />
+            tools:ignore="SelectableText"
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

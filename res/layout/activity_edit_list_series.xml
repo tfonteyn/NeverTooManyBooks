@@ -5,9 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingStart="@dimen/padding_border"
-    android:paddingEnd="@dimen/padding_border">
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -38,8 +36,8 @@
         android:layout_height="wrap_content"
         android:completionThreshold="2"
         android:hint="@string/lbl_series"
-        android:paddingStart="@dimen/padding_border"
-        android:paddingEnd="@dimen/padding_border"
+        android:paddingStart="@dimen/border"
+        android:paddingEnd="@dimen/border"
         app:layout_constraintBottom_toTopOf="@android:id/list"
         app:layout_constraintEnd_toStartOf="@id/series_num"
         app:layout_constraintStart_toStartOf="parent"

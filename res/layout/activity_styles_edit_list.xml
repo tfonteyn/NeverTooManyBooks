@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tlv="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/list_wrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingStart="@dimen/padding_border"
-    android:paddingEnd="@dimen/padding_border">
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -16,7 +13,7 @@
         android:id="@android:id/list"
         style="@style/tlv_TouchListView"
         tlv:grabber="@id/TLV_ROW_GRABBER"
-        tlv:normal_height="32dp"
+        tlv:normal_height="64dp"
         tlv:remove_mode="none" />
 
 </LinearLayout>

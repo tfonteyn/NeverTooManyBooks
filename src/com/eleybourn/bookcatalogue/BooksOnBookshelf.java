@@ -1075,12 +1075,12 @@ public class BooksOnBookshelf
 
         if (bookId > 0) {
             //ENHANCE: make this more efficient.
-            if ((fieldsChanged & BookChangedListener.FLAG_BOOK_READ) != 0) {
+            if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
                 savePosition();
                 initBookList(false);
                 return;
             }
-            if ((fieldsChanged & BookChangedListener.FLAG_BOOK_LOANEE) != 0) {
+            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
                 // we don't display the lend-status in the list for now.
 //                if (data != null) {
 //                    data.getString(UniqueId.KEY_BOOK_LOANEE);
@@ -1290,7 +1290,7 @@ public class BooksOnBookshelf
 
             LayoutInflater inf = mActivity.getLayoutInflater();
             @SuppressLint("InflateParams")
-            View root = inf.inflate(R.layout.booklist_style_menu, null);
+            View root = inf.inflate(R.layout.dialog_styles_menu, null);
 
             // first section is a list of the styles
             ViewGroup viewGroup = root.findViewById(R.id.radio_buttons);
@@ -1341,7 +1341,7 @@ public class BooksOnBookshelf
         private void addStyleButtonMenuItem(@NonNull final LayoutInflater inf,
                                             @NonNull final ViewGroup radioGroup,
                                             @NonNull final BooklistStyle style) {
-            CompoundButton btn = (CompoundButton) inf.inflate(R.layout.booklist_style_menu_radio,
+            CompoundButton btn = (CompoundButton) inf.inflate(R.layout.row_style_menu_radio,
                                                               radioGroup, false);
             btn.setText(style.getDisplayName());
             btn.setChecked(mCurrentStyleId == style.getId());
@@ -1369,7 +1369,7 @@ public class BooksOnBookshelf
                                           @StringRes final int stringId,
                                           @NonNull final OnClickListener listener) {
 
-            TextView textView = (TextView) inf.inflate(R.layout.booklist_style_menu_text,
+            TextView textView = (TextView) inf.inflate(R.layout.row_style_menu_text,
                                                        viewGroup, false);
             Typeface tf = textView.getTypeface();
             textView.setTypeface(tf, Typeface.ITALIC);

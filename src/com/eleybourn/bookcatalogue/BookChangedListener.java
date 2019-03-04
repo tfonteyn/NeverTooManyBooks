@@ -9,17 +9,17 @@ import androidx.annotation.Nullable;
  */
 public interface BookChangedListener {
 
-    int FLAG_AUTHOR = 1;
-    int FLAG_SERIES = 1 << 1;
+    int AUTHOR = 1;
+    int SERIES = 1 << 1;
 
-    int FLAG_FORMAT = 1 << 2;
-    int FLAG_GENRE = 1 << 3;
-    int FLAG_LANGUAGE = 1 << 4;
-    int FLAG_LOCATION = 1 << 5;
-    int FLAG_PUBLISHER = 1 << 6;
+    int FORMAT = 1 << 2;
+    int GENRE = 1 << 3;
+    int LANGUAGE = 1 << 4;
+    int LOCATION = 1 << 5;
+    int PUBLISHER = 1 << 6;
 
-    int FLAG_BOOK_READ = 1 << 7;
-    int FLAG_BOOK_LOANEE = 1 << 8;
+    int BOOK_READ = 1 << 7;
+    int BOOK_LOANEE = 1 << 8;
 
     /**
      * Called if changes were made.

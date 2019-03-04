@@ -9,9 +9,9 @@
     <style name="base_groupHeader">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
-        <item name="android:paddingTop">@dimen/padding_border_double</item>
-        <item name="android:paddingBottom">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/border</item>
+        <item name="android:paddingTop">@dimen/border_double</item>
+        <item name="android:paddingBottom">@dimen/border</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
@@ -54,8 +54,8 @@
 
     <!-- generic field labels where the data is on the side of the label -->
     <style name="lbl_textField_inline" parent="lbl_textField">
-        <item name="android:paddingStart">@dimen/padding_border_double</item>
-        <item name="android:paddingEnd">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/border_double</item>
+        <item name="android:paddingEnd">@dimen/border</item>
     </style>
 
     <!-- field labels for editable fields; almost identical to lbl_textField for now, but allows future customization -->
@@ -136,13 +136,13 @@
     <style name="isbnEntryField">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/padding_border_double</item>
-        <item name="android:layout_marginEnd">@dimen/padding_border_double</item>
+        <item name="android:layout_marginStart">@dimen/border_double</item>
+        <item name="android:layout_marginEnd">@dimen/border_double</item>
         <item name="android:layout_weight">1</item>
         <item name="android:digits">1234567890xX</item>
         <item name="android:gravity">start</item>
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
-        <item name="android:padding">@dimen/padding_border_double</item>
+        <item name="android:padding">@dimen/border_double</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
     </style>
@@ -161,8 +161,8 @@
         <item name="android:inputType">text|textCapCharacters</item>
         <item name="android:ems">3</item>
         <item name="android:maxLength">3</item>
-        <item name="android:paddingStart">@dimen/padding_border_double</item>
-        <item name="android:paddingEnd">@dimen/padding_border_double</item>
+        <item name="android:paddingStart">@dimen/border_double</item>
+        <item name="android:paddingEnd">@dimen/border_double</item>
         <item name="android:completionThreshold">1</item>
         <item name="android:singleLine">true</item>
     </style>
@@ -215,9 +215,9 @@
     <style name="link_url">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingBottom">@dimen/padding_border</item>
-        <item name="android:paddingStart">@dimen/padding_border_triple</item>
-        <item name="android:paddingEnd">@dimen/padding_border_triple</item>
+        <item name="android:paddingBottom">@dimen/border</item>
+        <item name="android:paddingStart">@dimen/border_triple</item>
+        <item name="android:paddingEnd">@dimen/border_triple</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
     </style>
@@ -242,12 +242,20 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="txt_blurb">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">@dimen/border_triple</item>
+        <item name="android:paddingEnd">@dimen/border_triple</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
     <!-- the outer frame (e.g. 'root') for a Dialog -->
     <style name="dialogFrame">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:padding">@dimen/padding_border_double</item>
+        <item name="android:padding">@dimen/border_double</item>
     </style>
 
     <!-- Style for keys on the isbn search keyboard -->
@@ -264,13 +272,6 @@
         <item name="android:checkMark">@drawable/ic_checked_selector</item>
         <item name="android:padding">0dp</item>
     </style>
-    <!-- CheckedTextView for 'lock' (aka 'complete') status of a series,author etc... -->
-    <style name="ctv_lock">
-        <item name="android:layout_weight">0</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:checkMark">@drawable/ic_lock_selector</item>
-        <item name="android:padding">0dp</item>
-    </style>
 
     <!-- *************************************************************************************** -->
     <!-- TouchListView icons -->
@@ -284,8 +285,8 @@
         <item name="android:checkMark">?android:attr/textCheckMark</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
-        <item name="android:paddingStart">@dimen/padding_border_double</item>
-        <item name="android:paddingEnd">@dimen/padding_border_double</item>
+        <item name="android:paddingStart">@dimen/border_double</item>
+        <item name="android:paddingEnd">@dimen/border_double</item>
     </style>
 
     <style name="tlv_delete_button">
@@ -299,8 +300,8 @@
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:gravity">start</item>
         <item name="android:background">?android:selectableItemBackground</item>
-        <item name="android:paddingEnd">@dimen/padding_border</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="android:paddingEnd">@dimen/border</item>
+        <item name="android:paddingStart">@dimen/border</item>
     </style>
 
     <style name="tlv_dragHandle">
@@ -331,7 +332,7 @@
         <item name="android:layout_weight">0</item>
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_centerVertical">true</item>
-        <item name="android:padding">@dimen/padding_border</item>
+        <item name="android:padding">@dimen/border</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:scaleType">centerInside</item>
         <item name="android:background">@drawable/border</item>
@@ -359,8 +360,8 @@
         <item name="android:layout_alignParentEnd">true</item>
         <item name="android:layout_centerVertical">true</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:paddingEnd">@dimen/padding_border</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
+        <item name="android:paddingEnd">@dimen/border</item>
+        <item name="android:paddingStart">@dimen/border</item>
         <item name="android:background">?android:selectableItemBackground</item>
         <item name="android:focusable">true</item>
     </style>
@@ -374,10 +375,10 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingStart">@dimen/padding_border_quad</item>
-        <item name="android:paddingTop">@dimen/padding_border</item>
-        <item name="android:paddingBottom">@dimen/padding_border</item>
-        <item name="android:drawablePadding">@dimen/padding_border_quad</item>
+        <item name="android:paddingStart">@dimen/border_quad</item>
+        <item name="android:paddingTop">@dimen/border</item>
+        <item name="android:paddingBottom">@dimen/border</item>
+        <item name="android:drawablePadding">@dimen/border_quad</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
@@ -385,8 +386,8 @@
     <style name="row_option_checkable">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/padding_border</item>
-        <item name="android:paddingBottom">@dimen/padding_border</item>
+        <item name="android:paddingTop">@dimen/border</item>
+        <item name="android:paddingBottom">@dimen/border</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
@@ -394,8 +395,8 @@
     <style name="row_option_info">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/padding_border_quad</item>
-        <item name="android:paddingEnd">@dimen/padding_border_quad</item>
+        <item name="android:paddingStart">@dimen/border_quad</item>
+        <item name="android:paddingEnd">@dimen/border_quad</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
@@ -406,8 +407,8 @@
     <style name="row_booklist_fields_book_title">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
-        <item name="android:paddingEnd">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/border</item>
+        <item name="android:paddingEnd">@dimen/border</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:singleLine">false</item>
     </style>
@@ -415,8 +416,8 @@
     <style name="row_booklist_fields_extras">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/padding_border</item>
-        <item name="android:paddingEnd">@dimen/padding_border</item>
+        <item name="android:paddingStart">@dimen/border</item>
+        <item name="android:paddingEnd">@dimen/border</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textIsSelectable">false</item>
     </style>
@@ -426,13 +427,15 @@
     <!-- *************************************************************************************** -->
 
     <style name="nav_panel_header">
-        <item name="android:padding">@dimen/padding_border_triple</item>
+        <item name="android:padding">@dimen/border_triple</item>
         <item name="android:background">?attr/color_background_nav_header</item>
     </style>
 
     <style name="nav_panel_main">
         <item name="android:background">?attr/color_background_nav_panel</item>
     </style>
+
+
 
 
     <!-- *************************************************************************************** -->

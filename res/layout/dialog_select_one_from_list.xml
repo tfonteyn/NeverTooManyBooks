@@ -22,12 +22,12 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/padding_border"
-        android:layout_marginRight="@dimen/padding_border"
-        android:layout_marginTop="@dimen/padding_border">
+        android:layout_marginLeft="@dimen/border"
+        android:layout_marginRight="@dimen/border"
+        android:layout_marginTop="@dimen/border">
 
         <LinearLayout
-            android:id="@android:id/list"
+            android:id="@+id/item_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
         android:orientation="vertical" />

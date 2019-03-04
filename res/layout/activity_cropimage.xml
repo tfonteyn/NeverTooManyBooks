@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/padding_border_double">
+    android:padding="@dimen/border_double">
 
     <view
         android:id="@+id/coverImage"

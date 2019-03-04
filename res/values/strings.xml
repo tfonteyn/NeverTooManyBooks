@@ -377,7 +377,7 @@
         It looks like you have already authorized this app. If you would like to delete the
         credentials from this phone, then you can do so by pressing the button below. But it is
         also important to de-authorize the application at the Goodreads website as well.\n
-        \nForgetting the credentials here will remove the Goodreads option from the main
+        Forgetting the credentials here will remove the Goodreads option from the main
         application menu.
     </string>
     <string name="gr_access_error">
@@ -1003,9 +1003,7 @@
     <!-- === Import/Export specific strings == -->
     <!-- ####################################################################################### -->
     <!-- Explanatory note for 'import to archive' OPTIONS dialog -->
-    <string name="import_options_dialog_title">
-        Select what will be imported from the archive.
-    </string>
+    <string name="import_options_dialog_title">Select what will be imported.</string>
     <!-- Explanatory note of the 'import from archive' "all books" option -->
     <string name="import_option_info_all_books">All books in the archive will be imported,
         updating existing books and adding new ones.</string>

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/padding_border_double"
+    android:padding="@dimen/border_double"
     android:orientation="vertical">
 <!-- paddingTop is there to stop overspill from the TabLayout (bug?)-->
 
@@ -17,7 +17,7 @@
         android:id="@+id/google_url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="http://books.google.com"
+        android:hint="https://books.google.com"
         android:inputType="textUri"
         tools:ignore="Autofill,HardcodedText" />
 
@@ -31,7 +31,7 @@
         android:id="@+id/amazon_url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="http://www.amazon.com"
+        android:hint="https://www.amazon.com"
         android:inputType="textUri"
         tools:ignore="Autofill,HardcodedText" />
 
@@ -39,8 +39,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/url_ISFDB"
-        android:visibility="gone" />
+        android:text="@string/ISFDB"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <!-- no style used on purpose -->
     <EditText
@@ -50,5 +51,6 @@
         android:hint="http://www.isfdb.org/"
         android:inputType="textUri"
         android:visibility="gone"
+        tools:visibility="visible"
         tools:ignore="Autofill,HardcodedText" />
 </LinearLayout>

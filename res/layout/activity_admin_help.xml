@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -20,8 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingEnd="@dimen/padding_border"
-            android:paddingStart="@dimen/padding_border">
+            android:paddingEnd="@dimen/border"
+            android:paddingStart="@dimen/border">
 
             <TextView
                 android:id="@+id/help_page"
@@ -34,8 +33,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border_quad"
-                android:paddingTop="@dimen/padding_border_double"
+
                 android:text="@string/debug_send_info_text"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -43,14 +41,14 @@
                 android:id="@+id/send_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/border_double"
+                android:layout_marginBottom="@dimen/border_double"
                 android:text="@string/about_send_info" />
 
             <TextView
                 android:id="@+id/cleanup_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/padding_border_quad"
-                android:paddingTop="@dimen/padding_border_double"
                 android:text="@string/info_cleanup_files_text"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -58,6 +56,8 @@
                 android:id="@+id/cleanup_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/border_double"
+                android:layout_marginBottom="@dimen/border_double"
                 android:text="@string/cleanup_files" />
         </LinearLayout>
 

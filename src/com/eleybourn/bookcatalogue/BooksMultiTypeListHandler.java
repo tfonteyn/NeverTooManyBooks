@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -445,31 +446,23 @@ public class BooksMultiTypeListHandler
                                   @NonNull final BooklistCursorRow row,
                                   @NonNull final FragmentActivity activity) {
 
-        long bookId = row.getBookId();
+        final long bookId = row.getBookId();
 
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_DELETE:
-                StandardDialogs.deleteBookAlert(activity, db, bookId, new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the activity know
-                        if (activity instanceof BookChangedListener) {
-                            final BookChangedListener bcl = (BookChangedListener) activity;
-                            bcl.onBookChanged(0, BookChangedListener.FLAG_AUTHOR
-                                    | BookChangedListener.FLAG_SERIES, null);
-                        }
-                    }
-                });
+                StandardDialogs.deleteBookAlert(
+                        activity, db, bookId,
+                        new TellActivity(activity, bookId,
+                                         BookChangedListener.AUTHOR
+                                                 | BookChangedListener.SERIES
+                        ));
+
                 return true;
 
             case R.id.MENU_BOOK_READ:
                 // toggle the read status
                 if (Book.setRead(bookId, !row.isRead(), db)) {
-                    // Let the activity know
-                    if (activity instanceof BookChangedListener) {
-                        final BookChangedListener bcl = (BookChangedListener) activity;
-                        bcl.onBookChanged(bookId, BookChangedListener.FLAG_BOOK_READ, null);
-                    }
+                    new TellActivity(activity, bookId, BookChangedListener.BOOK_READ).run();
                 }
                 return true;
 
@@ -489,18 +482,14 @@ public class BooksMultiTypeListHandler
             }
 
             case R.id.MENU_BOOK_EDIT_LOAN:
-                LendBookDialogFragment lendFrag = LendBookDialogFragment
-                        .newInstance(bookId, row.getAuthorId(), row.getTitle());
-                lendFrag.show(activity.getSupportFragmentManager(), LendBookDialogFragment.TAG);
+                LendBookDialogFragment
+                        .newInstance(bookId, row.getAuthorId(), row.getTitle())
+                        .show(activity.getSupportFragmentManager(), LendBookDialogFragment.TAG);
                 return true;
 
             case R.id.MENU_BOOK_LOAN_RETURNED:
                 mDb.deleteLoan(bookId);
-                // Let the activity know
-                if (activity instanceof BookChangedListener) {
-                    final BookChangedListener bcl = (BookChangedListener) activity;
-                    bcl.onBookChanged(bookId, BookChangedListener.FLAG_BOOK_LOANEE, null);
-                }
+                new TellActivity(activity, bookId, BookChangedListener.BOOK_LOANEE).run();
                 return true;
 
             /* ********************************************************************************** */
@@ -508,7 +497,8 @@ public class BooksMultiTypeListHandler
             case R.id.MENU_SHARE:
                 Book book = new Book(bookId, db);
                 activity.startActivity(Intent.createChooser(book.getShareBookIntent(activity),
-                                                            activity.getString(R.string.menu_share_this)));
+                                                            activity.getString(
+                                                                    R.string.menu_share_this)));
                 return true;
 
             case R.id.MENU_BOOK_SEND_TO_GOODREADS:
@@ -520,37 +510,26 @@ public class BooksMultiTypeListHandler
 
             case R.id.MENU_SERIES_EDIT:
                 //noinspection ConstantConditions
-                EditSeriesDialogFragment editSeriesDialogFragment = EditSeriesDialogFragment
-                        .newInstance(db.getSeries(row.getSeriesId()));
-                editSeriesDialogFragment.show(activity.getSupportFragmentManager(),
-                                              EditSeriesDialogFragment.TAG);
+                EditSeriesDialogFragment
+                        .newInstance(db.getSeries(row.getSeriesId()))
+                        .show(activity.getSupportFragmentManager(),
+                              EditSeriesDialogFragment.TAG);
                 return true;
 
             case R.id.MENU_SERIES_COMPLETE:
                 // toggle the complete status
                 if (Series.setComplete(db, row.getSeriesId(),
                                        !row.isSeriesComplete())) {
-                    // Let the activity know
-                    if (activity instanceof BookChangedListener) {
-                        final BookChangedListener bcl = (BookChangedListener) activity;
-                        bcl.onBookChanged(0, BookChangedListener.FLAG_SERIES, null);
-                    }
+                    new TellActivity(activity, 0, BookChangedListener.SERIES).run();
                 }
                 return true;
 
             case R.id.MENU_SERIES_DELETE: {
                 Series series = db.getSeries(row.getSeriesId());
                 if (series != null) {
-                    StandardDialogs.deleteSeriesAlert(activity, db, series, new Runnable() {
-                        @Override
-                        public void run() {
-                            // Let the Activity know
-                            if (activity instanceof BookChangedListener) {
-                                final BookChangedListener bcl = (BookChangedListener) activity;
-                                bcl.onBookChanged(0, BookChangedListener.FLAG_SERIES, null);
-                            }
-                        }
-                    });
+                    StandardDialogs.deleteSeriesAlert(
+                            activity, db, series,
+                            new TellActivity(activity, 0, BookChangedListener.SERIES));
                 }
                 return true;
             }
@@ -563,103 +542,55 @@ public class BooksMultiTypeListHandler
                 activity.startActivity(intent);
                 return true;
             }
+
             case R.id.MENU_AUTHOR_EDIT:
                 //noinspection ConstantConditions
-                EditAuthorDialogFragment editAuthorDialogFragment = EditAuthorDialogFragment
-                        .newInstance(db.getAuthor(row.getAuthorId()));
-                editAuthorDialogFragment.show(activity.getSupportFragmentManager(),
-                                              EditAuthorDialogFragment.TAG);
+                EditAuthorDialogFragment
+                        .newInstance(db.getAuthor(row.getAuthorId()))
+                        .show(activity.getSupportFragmentManager(),
+                              EditAuthorDialogFragment.TAG);
                 return true;
 
             case R.id.MENU_AUTHOR_COMPLETE:
                 // toggle the complete status
-                if (Author.setComplete(db, row.getAuthorId(),
-                                       !row.isAuthorComplete())) {
-                    // Let the activity know
-                    if (activity instanceof BookChangedListener) {
-                        final BookChangedListener bcl = (BookChangedListener) activity;
-                        bcl.onBookChanged(0, BookChangedListener.FLAG_AUTHOR, null);
-                    }
+                if (Author.setComplete(db, row.getAuthorId(), !row.isAuthorComplete())) {
+                    new TellActivity(activity, 0, BookChangedListener.AUTHOR).run();
                 }
                 return true;
 
             /* ********************************************************************************** */
 
             case R.id.MENU_PUBLISHER_EDIT:
-                EditPublisherDialogFragment publisherDialog = EditPublisherDialogFragment
-                        .newInstance(new Publisher(row.getPublisherName()));
-                publisherDialog.show(activity.getSupportFragmentManager(),
-                                     EditPublisherDialogFragment.TAG);
+                EditPublisherDialogFragment
+                        .newInstance(new Publisher(row.getPublisherName()))
+                        .show(activity.getSupportFragmentManager(),
+                              EditPublisherDialogFragment.TAG);
                 return true;
 
             /* ********************************************************************************** */
 
             case R.id.MENU_FORMAT_EDIT:
-                String format = row.getFormat();
-                EditFormatDialog formatDialog = new EditFormatDialog(activity, db, new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the Activity know
-                        if (activity instanceof BookChangedListener) {
-                            final BookChangedListener bcl = (BookChangedListener) activity;
-                            bcl.onBookChanged(0, BookChangedListener.FLAG_FORMAT, null);
-                        }
-                    }
-                });
-                formatDialog.edit(format);
+                new EditFormatDialog(activity, db,
+                                     new TellActivity(activity, 0, BookChangedListener.FORMAT))
+                        .edit(row.getFormat());
                 return true;
 
             case R.id.MENU_GENRE_EDIT:
-                String genre = row.getGenre();
-                EditGenreDialog genreDialog = new EditGenreDialog(activity, db, new Runnable() {
-                    @Override
-                    public void run() {
-                        // Let the Activity know
-                        if (activity instanceof BookChangedListener) {
-                            final BookChangedListener bcl = (BookChangedListener) activity;
-                            bcl.onBookChanged(0, BookChangedListener.FLAG_GENRE, null);
-                        }
-                    }
-                });
-                genreDialog.edit(genre);
+                new EditGenreDialog(activity, db,
+                                    new TellActivity(activity, 0, BookChangedListener.GENRE))
+                        .edit(row.getGenre());
                 return true;
 
             case R.id.MENU_LANGUAGE_EDIT:
-                String languageCode = row.getLanguageCode();
-                EditLanguageDialog languageDialog =
-                        new EditLanguageDialog(activity, db, new Runnable() {
-                            @Override
-                            public void run() {
-                                // Let the Activity know
-                                if (activity instanceof BookChangedListener) {
-                                    final BookChangedListener bcl = (BookChangedListener) activity;
-                                    bcl.onBookChanged(
-                                            0,
-                                            BookChangedListener.FLAG_LANGUAGE,
-                                            null);
-                                }
-                            }
-                        });
-                languageDialog.edit(languageCode);
+                new EditLanguageDialog(activity, db,
+                                       new TellActivity(activity, 0, BookChangedListener.LANGUAGE))
+                        .edit(row.getLanguageCode());
                 return true;
 
             case R.id.MENU_LOCATION_EDIT:
-                String location = row.getLocation();
-                EditLocationDialog locationDialog =
-                        new EditLocationDialog(activity, db, new Runnable() {
-                            @Override
-                            public void run() {
-                                // Let the Activity know
-                                if (activity instanceof BookChangedListener) {
-                                    final BookChangedListener bcl = (BookChangedListener) activity;
-                                    bcl.onBookChanged(
-                                            0,
-                                            BookChangedListener.FLAG_LOCATION,
-                                            null);
-                                }
-                            }
-                        });
-                locationDialog.edit(location);
+                new EditLocationDialog(activity, db,
+                                       new TellActivity(activity, 0, BookChangedListener.LOCATION))
+                        .edit(row.getLocation());
                 return true;
 
             /* ********************************************************************************** */
@@ -673,8 +604,8 @@ public class BooksMultiTypeListHandler
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonUtils.openSearchPage(activity, getAuthorFromRow(db, row),
-                                           getSeriesFromRow(db, row));
+                AmazonUtils.openSearchPage(activity,
+                                           getAuthorFromRow(db, row), getSeriesFromRow(db, row));
                 return true;
 
             default:
@@ -709,6 +640,7 @@ public class BooksMultiTypeListHandler
                                                  DatabaseDefinitions.DOM_SERIES_IS_COMPLETE.name,
                                                  R.string.field_not_set_with_brackets);
 
+                // plain old Strings
             case RowKind.TITLE_LETTER:
             case RowKind.PUBLISHER:
             case RowKind.GENRE:
@@ -729,7 +661,7 @@ public class BooksMultiTypeListHandler
                 return new GenericStringHolder(rowView, rowKind.getDisplayDomain().name,
                                                R.string.field_not_set_with_brackets);
 
-            /* Months are displayed by name */
+            // Months are displayed by name
             case RowKind.DATE_PUBLISHED_MONTH:
             case RowKind.DATE_FIRST_PUBLICATION_MONTH:
             case RowKind.DATE_ACQUIRED_MONTH:
@@ -739,7 +671,7 @@ public class BooksMultiTypeListHandler
                 return new MonthHolder(rowView, rowKind.getDisplayDomain().name,
                                        R.string.field_not_set_with_brackets);
 
-            /* some special formatting holders */
+            // some special formatting holders
             case RowKind.RATING:
                 return new RatingHolder(rowView, rowKind.getDisplayDomain().name,
                                         R.string.field_not_set_with_brackets);
@@ -756,10 +688,43 @@ public class BooksMultiTypeListHandler
     }
 
     /**
-     * Background task to get 'extra' details for a book row. Doing this in a
-     * background task keeps the booklist cursor simple and small.
-     *
-     * @author Philip Warner
+     * Runnable used to tell the activity that a field (or set of) has changed.
+     */
+    private static class TellActivity
+            implements Runnable {
+
+        private final Activity mActivity;
+        private final int mFields;
+        private final long mBookId;
+
+        /**
+         * Constructor.
+         *
+         * @param activity to tell
+         * @param bookId   single book id, or 0 for all
+         * @param fields   that changed
+         */
+        TellActivity(@NonNull final Activity activity,
+                     final long bookId,
+                     final int fields) {
+            mActivity = activity;
+            mBookId = bookId;
+            mFields = fields;
+        }
+
+        @Override
+        public void run() {
+            // Let the Activity know
+            if (mActivity instanceof BookChangedListener) {
+                final BookChangedListener bcl = (BookChangedListener) mActivity;
+                bcl.onBookChanged(mBookId, mFields, null);
+            }
+        }
+    }
+
+    /**
+     * Background task to get 'extra' details for a book row.
+     * Doing this in a background task keeps the booklist cursor simple and small.
      */
     private static class GetBookExtrasTask
             extends AsyncTask<Void, Void, Boolean> {
@@ -896,8 +861,6 @@ public class BooksMultiTypeListHandler
 
     /**
      * Implementation of general code used by Booklist holders.
-     *
-     * @author Philip Warner
      */
     public abstract static class BooklistHolder
             extends MultiTypeHolder<BooklistCursorRow> {
@@ -958,8 +921,6 @@ public class BooksMultiTypeListHandler
 
     /**
      * Holder for a {@link RowKind#BOOK} row.
-     *
-     * @author Philip Warner
      */
     public static class BookHolder
             extends BooklistHolder {
@@ -1151,10 +1112,7 @@ public class BooksMultiTypeListHandler
 
     /**
      * Holder to handle any field that can be displayed as a simple string.
-     * Assumes there is a 'name' TextView and an optional enclosing ViewGroup
-     * called ROW_INFO.
-     *
-     * @author Philip Warner
+     * Assumes there is a 'name' TextView and an optional enclosing ViewGroup called ROW_INFO.
      */
     public static class GenericStringHolder
             extends BooklistHolder {
@@ -1214,8 +1172,6 @@ public class BooksMultiTypeListHandler
 
     /**
      * Holder for a row that displays a 'rating'.
-     *
-     * @author Philip Warner
      */
     public static class RatingHolder
             extends GenericStringHolder {
@@ -1319,10 +1275,8 @@ public class BooksMultiTypeListHandler
     }
 
     /**
-     * Holder for a row that displays a 'month'. This code turns a month number into a
-     * locale-based month name.
-     *
-     * @author Philip Warner
+     * Holder for a row that displays a 'month'.
+     * This code turns a month number into a locale-based month name.
      */
     public static class MonthHolder
             extends GenericStringHolder {

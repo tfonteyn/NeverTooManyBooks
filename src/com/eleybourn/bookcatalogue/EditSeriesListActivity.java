@@ -160,6 +160,7 @@ public class EditSeriesListActivity
         return false;
     }
 
+    @Override
     protected ArrayAdapter<Series> createListAdapter(@LayoutRes final int rowLayoutId,
                                                      @NonNull final ArrayList<Series> list) {
         return new SeriesListAdapter(this, rowLayoutId, list);
@@ -296,7 +297,7 @@ public class EditSeriesListActivity
             final View root = getLayoutInflater().inflate(R.layout.dialog_edit_book_series, null);
 
             // the dialog fields != screen fields.
-            mNameView = root.findViewById(R.id.name);
+            mNameView = root.findViewById(R.id.series);
             mNameView.setText(mName);
             mNameView.setAdapter(mActivity.mSeriesAdapter);
 

@@ -116,7 +116,7 @@ public class BackupFileDetails
             fileDetails.setVisibility(View.GONE);
         } else {
             // Display details
-            imageView.setImageDrawable(context.getDrawable(R.drawable.bc_archive));
+            imageView.setImageDrawable(context.getDrawable(R.drawable.ic_business_center));
             fileDetails.setVisibility(View.VISIBLE);
 
             TextView fileContentView = convertView.findViewById(R.id.file_content);

@@ -76,7 +76,7 @@ public class PreferredStylesActivity
      * Constructor.
      */
     public PreferredStylesActivity() {
-        super(R.layout.activity_booklist_styles_edit_list,
+        super(R.layout.activity_styles_edit_list,
               R.layout.row_edit_booklist_style_groups,
               null);
     }

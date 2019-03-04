@@ -13,8 +13,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/padding_border"
-        android:paddingTop="@dimen/padding_border"
+        android:layout_marginTop="@dimen/border"
+        android:layout_marginBottom="@dimen/border"
         android:text="@string/warning_immediate_global_changes"
         android:textSize="16sp" />
 
