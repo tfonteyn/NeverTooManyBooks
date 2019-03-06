@@ -6,9 +6,9 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.utils.RTE;
-
 import java.util.Arrays;
+
+import com.eleybourn.bookcatalogue.utils.RTE;
 
 /**
  * Based on the pic2shop client code at github, this object will start pic2shop and
@@ -72,8 +72,8 @@ public class Pic2ShopScanner
         if (isFreeScannerAppInstalled(activity)) {
             intent = new Intent(Free.ACTION);
         } else {
-            intent = new Intent(Pro.ACTION);
-            intent.putExtra(Pro.FORMATS, Pro.BARCODE_TYPES);
+            intent = new Intent(Pro.ACTION)
+                    .putExtra(Pro.FORMATS, Pro.BARCODE_TYPES);
         }
         activity.startActivityForResult(intent, requestCode);
     }

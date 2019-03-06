@@ -12,8 +12,5 @@
     <com.eleybourn.bookcatalogue.widgets.TouchListView
         android:id="@android:id/list"
         style="@style/tlv_TouchListView"
-        tlv:grabber="@id/TLV_ROW_GRABBER"
-        tlv:normal_height="64dp"
-        tlv:remove_mode="none" />
-
+        tlv:grabber="@id/TLV_ROW_GRABBER" />
 </LinearLayout>

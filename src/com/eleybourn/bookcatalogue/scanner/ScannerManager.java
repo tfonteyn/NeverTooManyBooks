@@ -168,8 +168,7 @@ public final class ScannerManager {
     private static void installScanner(@NonNull final Activity activity,
                                        @NonNull final String uri) {
         try {
-            Intent marketIntent = new Intent(Intent.ACTION_VIEW,
-                                             Uri.parse(uri));
+            Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
             activity.startActivity(marketIntent);
             activity.setResult(Activity.RESULT_CANCELED);
             activity.finish();

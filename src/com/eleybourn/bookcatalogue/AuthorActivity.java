@@ -66,11 +66,11 @@ public class AuthorActivity
         final TocEntry entry = (TocEntry) parent.getItemAtPosition(position);
         // see note on dba method about Integer vs. Long
         final ArrayList<Integer> books = mDb.getBookIdsByTocEntry(entry.getId());
-        Intent intent = new Intent(this, BooksOnBookshelf.class);
-        // clear the back-stack. We want to keep BooksOnBookshelf on top
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        // bring up list, filtered on the book id's
-        intent.putExtra(UniqueId.BKEY_ID_LIST, books);
+        Intent intent = new Intent(this, BooksOnBookshelf.class)
+                // clear the back-stack. We want to keep BooksOnBookshelf on top
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                // bring up list, filtered on the book id's
+                .putExtra(UniqueId.BKEY_ID_LIST, books);
         startActivity(intent);
         finish();
     }

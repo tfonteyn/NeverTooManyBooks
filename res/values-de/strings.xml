@@ -505,7 +505,7 @@
         \nSie können den Namen ändern, die Gruppierung bearbeiten und so die Hierarchie
         ändern und eine Vielzahl anderer Einstellungen anpassen, um einen Stil zu erstellen,
         der für Sie passend ist.\n
-        \nEbenso ist es möglich, 'Buchfilter' zu verwenden, mit denen die Auswahl von
+        \nEbenso ist es möglich, ‘Buchfilter’ zu verwenden, mit denen die Auswahl von
         Bücher in der Listenanzeige verändert wird, etwa um nur ungelesenen Bücher anzuzeigen.
     </string>
     <string name="hint_booklist_global_properties">
@@ -622,7 +622,7 @@
         Die ISBN des gewählten Buchs könnte nicht in Goodreads gefunden werden. Dafür gibt es
         zwei mögliche Ursachen: Entweder sind die Daten des Buchs falsch (Sie sollten die ISBN
         überprüfen) oder das Buch gibt es nicht in googdreads.\n
-        \nWenn Sie die Daten in &APP_NAME; ändern, drücken sie den 'Wiederholen'-Button und
+        \nWenn Sie die Daten in &APP_NAME; ändern, drücken sie den ‘Wiederholen’-Button und
         überprüfen Sie, ob die Hintergrundaufgabe erfolgreich ist.\n
         \nWenn die Daten korrekt wirken und das Buch trotzdem nicht gefunden wird, muss ein
         Buch mit dieser ISBN manuell zu Goodreads über deren Website hinzugefügt werden.
@@ -647,7 +647,7 @@
     <string name="hint_booklist_style_menu">
         Hier können Sie den Stil der Liste wählen.\n
         \nSie können auch dieses Menü anpassen und Ihre eigenen Stile erzeugen. Klicken Sie
-        dafür auf 'Anpassen' am Ende der Liste.
+        dafür auf ‘Anpassen’ am Ende der Liste.
     </string>
     <string name="menu_edit_format">Format bearbeiten…</string>
     <string name="title_edit_format">Formatname bearbeiten</string>
@@ -720,10 +720,10 @@
         “Einstellungen” mit Hilfe des Menü-Buttons oder des Menü-Symbols bearbeiten.
     </string>
 
-    <!-- This is the heading of the 'Details' tab when editing a book. It needs to be short.
+    <!-- This is the heading of the ‘Details’ tab when editing a book. It needs to be short.
      "Book Details" is too long. -->
     <string name="tab_lbl_details">Details</string>
-    <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short.
+    <!-- This is the heading of the ‘Loan’ tab when editing a book. It needs to be short.
     "Loan Book" is too long. -->
     <string name="tab_lbl_loan">Leihen</string>
 
@@ -747,7 +747,7 @@
     <string name="lbl_advanced_options">Erweiterte Optionen</string>
     <string name="progress_msg_backing_up">Sichere…</string>
     <string name="progress_msg_importing">Importiere…</string>
-    <!--  Content description for the 'up' icon in the folder browser -->
+    <!--  Content description for the ‘up’ icon in the folder browser -->
     <string name="up_folder">Nach oben</string>
     <!-- Displayed when a user tries to browse higher than the root directory, or if the parent is unable to be read -->
     <string name="warning_no_parent_directory_found">
@@ -776,21 +776,21 @@
         Bitte überprüfen Sie, ob auf die SD-Karte zugegriffen werden kann.
     </string>
 
-    <!-- Short Heading for 'Language' field in book details -->
+    <!-- Short Heading for ‘Language’ field in book details -->
     <string name="lbl_language">Sprache</string>
-    <!--  Explanatory text for 'import' dialogue -->
+    <!--  Explanatory text for ‘import’ dialogue -->
     <string name="title_import_books_blurb">
         Die Bücher aus diesem Archiv werden importiert. Tippen Sie auf eine der beiden Optionen,
         um den Import zu starten, oder auf ‘Zurück’, um abzubrechen:
     </string>
-    <!-- Description of the 'import all books' option -->
+    <!-- Description of the ‘import all books’ option -->
     <string name="import_option_info_all_books">
         Alle Bücher aus diesem Archiv werden importiert. Vorhandene Bücher werden aktualisiert
         und neue Bücher hinzugefügt.
     </string>
-    <!-- Menu text for the 'import/export new & changed' option -->
+    <!-- Menu text for the ‘import/export new & changed’ option -->
     <string name="import_option_new_and_changed_books">Neue und aktualisierte Bücher</string>
-    <!-- Description of the 'import new & changed' option -->
+    <!-- Description of the ‘import new & changed’ option -->
     <string name="import_option_info_new_and_changed_books">
         Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu
         synchronisieren.
@@ -801,7 +801,7 @@
     </string>
     <!-- Part of the progress message displayed when importing books -->
     <string name="progress_msg_n_created_m_updated">%1$s erzeugt, %2$s aktualisiert</string>
-    <!--  Explanatory text for 'export' dialogue -->
+    <!--  Explanatory text for ‘export’ dialogue -->
     <string name="title_export_books">
         Die Bücher aus Ihrem Katalog werden exportiert. Tippen Sie auf eine der beiden Optionen,
         um den Export zu starten, oder auf ‘Zurück’, um abzubrechen:
@@ -811,12 +811,12 @@
         %1$s Cover bearbeitet (%2$s fehlen, %3$s übersprungen)
     </string>
 
-    <!-- Explanatory note for 'export all' option -->
+    <!-- Explanatory note for ‘export all’ option -->
     <string name="export_info_backup_all">
         Alle Bücher, Cover, Einstellungen und benutzerdefinierten Stile werden in das Archiv
         exportiert.
     </string>
-    <!-- Explanatory note for 'advanced export' option -->
+    <!-- Explanatory note for ‘advanced export’ option -->
     <string name="export_options_dialog_title">
         Wählen Sie, was in das Archiv exportiert wird.
     </string>
@@ -855,21 +855,21 @@
         <item quantity="other">%1$d Bücher werden angezeigt</item>
     </plurals>
 
-    <!-- Short text for 'n books' -->
+    <!-- Short text for ‘n books’ -->
     <plurals name="n_books">
         <!--<item quantity="zero">Kein Buch</item>-->
         <item quantity="one">Ein Buch</item>
         <item quantity="other">%1$s Bücher</item>
     </plurals>
 
-    <!-- Short text for 'n covers' -->
+    <!-- Short text for ‘n covers’ -->
     <plurals name="n_covers">
         <!--<item quantity="zero">Kein Cover</item>-->
         <item quantity="one">Ein Cover</item>
         <item quantity="other">%1$s Cover</item>
     </plurals>
 
-    <!-- Short text for 'n stars' -->
+    <!-- Short text for ‘n stars’ -->
     <plurals name="n_stars">
         <!--<item quantity="zero">%1$s Sterne</item>-->
         <item quantity="one">%1$s Stern</item>
@@ -891,10 +891,10 @@
         Listeneintrag zeigt weitere Optionen.
     </string>
 
-    <!-- Heading in 'about' dialog -->
+    <!-- Heading in ‘about’ dialog -->
     <string name="about_lbl_special_thanks">Danksagung</string>
 
-    <!-- Credits in the 'about' dialog -->
+    <!-- Credits in the ‘about’ dialog -->
     <string name="about_translators">
         &APP_NAME; ist das Ergebnis der Arbeit vieler Personen und würde nicht so weit
         verbreitet sein ohne die großzügige Arbeit unserer freiwilligen Übersetzer:

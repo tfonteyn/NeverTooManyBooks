@@ -203,8 +203,8 @@ public class EditBookshelfListActivity
     public void onBookshelfChanged(final long bookshelfId,
                                    final int booksMoved) {
         populateList();
-        Intent data = new Intent();
-        data.putExtra(UniqueId.KEY_ID, bookshelfId);
+        Intent data = new Intent()
+                .putExtra(UniqueId.KEY_ID, bookshelfId);
         setResult(Activity.RESULT_OK, data);
     }
 }

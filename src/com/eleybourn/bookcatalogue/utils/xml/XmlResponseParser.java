@@ -23,15 +23,15 @@ package com.eleybourn.bookcatalogue.utils.xml;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.debug.Logger;
+import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.util.ArrayList;
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Base class for parsing the output any web request that returns an XML response.

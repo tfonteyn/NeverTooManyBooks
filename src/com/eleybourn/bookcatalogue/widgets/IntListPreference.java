@@ -36,10 +36,10 @@ public class IntListPreference
     private String mSummary;
     private boolean mValueSet;
 
-    public IntListPreference(Context context,
-                             AttributeSet attrs,
-                             int defStyleAttr,
-                             int defStyleRes) {
+    public IntListPreference(final Context context,
+                             final AttributeSet attrs,
+                             final int defStyleAttr,
+                             final int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
         final Resources res = context.getResources();
@@ -56,26 +56,26 @@ public class IntListPreference
         }
     }
 
-    public IntListPreference(Context context,
-                             AttributeSet attrs,
-                             int defStyleAttr) {
+    public IntListPreference(final Context context,
+                             final AttributeSet attrs,
+                             final int defStyleAttr) {
         this(context, attrs, defStyleAttr, 0);
     }
 
-    public IntListPreference(Context context,
-                             AttributeSet attrs) {
+    public IntListPreference(final Context context,
+                             final AttributeSet attrs) {
         this(context, attrs,
              TypedArrayUtils_getAttr(context, androidx.preference.R.attr.dialogPreferenceStyle,
                                      android.R.attr.dialogPreferenceStyle));
     }
 
-    public IntListPreference(Context context) {
+    public IntListPreference(final Context context) {
         this(context, null);
     }
 
-    public static int TypedArrayUtils_getAttr(@NonNull Context context,
-                                              int attr,
-                                              int fallbackAttr) {
+    public static int TypedArrayUtils_getAttr(@NonNull final Context context,
+                                              final int attr,
+                                              final int fallbackAttr) {
         TypedValue value = new TypedValue();
         context.getTheme().resolveAttribute(attr, value, true);
         if (value.resourceId != 0) {
@@ -113,7 +113,7 @@ public class IntListPreference
      *
      * @see #setEntries(CharSequence[])
      */
-    public void setEntries(@ArrayRes int entriesResId) {
+    public void setEntries(@ArrayRes final int entriesResId) {
         setEntries(getContext().getResources().getTextArray(entriesResId));
     }
 
@@ -124,7 +124,7 @@ public class IntListPreference
      *
      * @param entryValues The array to be used as values to save for the preference.
      */
-    public void setEntryValues(int[] entryValues) {
+    public void setEntryValues(final int[] entryValues) {
         mEntryValues = entryValues;
     }
 
@@ -142,7 +142,7 @@ public class IntListPreference
      *
      * @see #setEntryValues(int[])
      */
-    public void setEntryValues(@ArrayRes int entryValuesResId) {
+    public void setEntryValues(@ArrayRes final int entryValuesResId) {
         setEntryValues(getContext().getResources().getIntArray(entryValuesResId));
     }
 
@@ -174,7 +174,7 @@ public class IntListPreference
      * @param summary The summary for the preference.
      */
     @Override
-    public void setSummary(CharSequence summary) {
+    public void setSummary(@Nullable final CharSequence summary) {
         super.setSummary(summary);
         if (summary == null && mSummary != null) {
             mSummary = null;
@@ -199,7 +199,7 @@ public class IntListPreference
      *
      * @param value The value to set for the key.
      */
-    public void setValue(int value) {
+    public void setValue(final int value) {
         // Always persist/notify the first time.
         final boolean changed = (mValue != value);
         if (changed || !mValueSet) {
@@ -230,7 +230,7 @@ public class IntListPreference
      *
      * @return The index of the value, or -1 if not found.
      */
-    public int findIndexOfValue(int value) {
+    public int findIndexOfValue(final int value) {
         if (mEntryValues != null) {
             for (int i = mEntryValues.length - 1; i >= 0; i--) {
                 if (mEntryValues[i] == value) {
@@ -250,7 +250,7 @@ public class IntListPreference
      *
      * @param index The index of the value to set.
      */
-    public void setValueIndex(int index) {
+    public void setValueIndex(final int index) {
         if (mEntryValues != null) {
             setValue(mEntryValues[index]);
         }

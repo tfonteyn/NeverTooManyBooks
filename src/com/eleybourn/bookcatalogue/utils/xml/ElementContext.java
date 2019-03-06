@@ -110,7 +110,6 @@ public class ElementContext {
     }
 
     /**
-     *
      * @return the body of the tag, trimmed.
      */
     @NonNull
@@ -119,7 +118,6 @@ public class ElementContext {
     }
 
     /**
-     *
      * @param body of the tag.
      */
     public void setBody(final String body) {

@@ -129,13 +129,13 @@ public class ProgressDialogFragment<Results>
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Logger.info(this,"onCreateDialog");
+        Logger.info(this, "onCreateDialog");
         @SuppressLint("InflateParams")
         View root = requireActivity().getLayoutInflater()
                                      .inflate(R.layout.fragment_task_progress, null);
         mProgressBar = root.findViewById(R.id.progressBar);
         mMessageView = root.findViewById(R.id.message);
-        Logger.info(this,"onCreateDialog", mMessageView.toString());
+        Logger.info(this, "onCreateDialog", mMessageView.toString());
 
         // these are fixed
         int titleId = requireArguments().getInt(UniqueId.BKEY_DIALOG_TITLE);
@@ -276,7 +276,7 @@ public class ProgressDialogFragment<Results>
         }
     }
 
-    /** When we are dismissed we need to cancel the task if it's still alive */
+    /** When we are dismissed we need to cancel the task if it's still alive. */
     @Override
     public void onDismiss(@NonNull final DialogInterface dialog) {
         super.onDismiss(dialog);

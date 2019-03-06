@@ -33,9 +33,13 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -46,11 +50,6 @@ import com.eleybourn.bookcatalogue.booklist.EditBooklistStyleGroupsActivity.Grou
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Activity to edit the groups associated with a style (include/exclude and/or move up/down).
@@ -70,7 +69,12 @@ public class EditBooklistStyleGroupsActivity
      * Constructor.
      */
     public EditBooklistStyleGroupsActivity() {
-        super(R.layout.activity_style_edit_group_list, R.layout.row_edit_booklist_style, null);
+        super(null);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_style_edit_group_list;
     }
 
     @Override
@@ -84,7 +88,7 @@ public class EditBooklistStyleGroupsActivity
         super.onCreate(savedInstanceState);
 
         setTitle(getString(R.string.name_colon_value,
-                                getString(R.string.pg_groupings), mStyle.getDisplayName()));
+                           getString(R.string.pg_groupings), mStyle.getDisplayName()));
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
@@ -117,7 +121,7 @@ public class EditBooklistStyleGroupsActivity
 
     /**
      * Called when user clicks the 'Save' button.
-     *
+     * <p>
      * Adds the style to the resulting data
      *
      * @param data A newly created Intent to store output if necessary.
@@ -152,9 +156,8 @@ public class EditBooklistStyleGroupsActivity
         return true;
     }
 
-    protected ArrayAdapter<GroupWrapper> createListAdapter(@LayoutRes final int rowLayoutId,
-                                                           @NonNull final ArrayList<GroupWrapper> list) {
-        return new GroupWrapperListAdapter(this, rowLayoutId, list);
+    protected ArrayAdapter<GroupWrapper> createListAdapter(@NonNull final ArrayList<GroupWrapper> list) {
+        return new GroupWrapperListAdapter(this, list);
     }
 
     /**
@@ -167,24 +170,24 @@ public class EditBooklistStyleGroupsActivity
         /** {@link Parcelable}. */
         public static final Creator<GroupWrapper> CREATOR =
                 new Creator<GroupWrapper>() {
-            @Override
-            public GroupWrapper createFromParcel(@NonNull final Parcel source) {
-                return new GroupWrapper(source);
-            }
+                    @Override
+                    public GroupWrapper createFromParcel(@NonNull final Parcel source) {
+                        return new GroupWrapper(source);
+                    }
 
-            @Override
-            public GroupWrapper[] newArray(final int size) {
-                return new GroupWrapper[size];
-            }
-        };
+                    @Override
+                    public GroupWrapper[] newArray(final int size) {
+                        return new GroupWrapper[size];
+                    }
+                };
         private static final long serialVersionUID = 3108094089675884238L;
         /** The actual group. */
         @NonNull
         final BooklistGroup group;
-        /** Whether this groups is present in the style. */
-        boolean present;
         @NonNull
         final String uuid;
+        /** Whether this groups is present in the style. */
+        boolean present;
 
         /** Constructor. */
         GroupWrapper(@NonNull final BooklistGroup group,
@@ -225,18 +228,26 @@ public class EditBooklistStyleGroupsActivity
      */
     private static class Holder {
 
+        @NonNull
+        final CheckedTextView checkableView;
+        @NonNull
+        final TextView nameView;
         GroupWrapper groupWrapper;
-        CheckedTextView checkable;
-        TextView name;
+
+        public Holder(@NonNull final View rowView) {
+            nameView = rowView.findViewById(R.id.name);
+            checkableView = rowView.findViewById(R.id.TLV_ROW_CHECKABLE);
+
+            rowView.setTag(this);
+        }
     }
 
     protected class GroupWrapperListAdapter
             extends SimpleListAdapter<GroupWrapper> {
 
         GroupWrapperListAdapter(@NonNull final Context context,
-                                @LayoutRes final int rowLayoutId,
                                 @NonNull final ArrayList<GroupWrapper> items) {
-            super(context, rowLayoutId, items);
+            super(context, R.layout.row_edit_booklist_style, items);
         }
 
         @Override
@@ -244,21 +255,17 @@ public class EditBooklistStyleGroupsActivity
                               @NonNull final GroupWrapper item) {
             Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
-                holder = new Holder();
-                holder.name = convertView.findViewById(R.id.name);
-                holder.checkable = convertView.findViewById(R.id.row_check);
-
-                convertView.setTag(holder);
-                holder.checkable.setTag(holder);
+                holder = new Holder(convertView);
+                holder.checkableView.setTag(holder);
 
                 // Handle a click on the CheckedTextView
-                holder.checkable.setOnClickListener(new OnClickListener() {
+                holder.checkableView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull View v) {
                         Holder h = (Holder) v.getTag();
                         boolean newStatus = !h.groupWrapper.present;
                         h.groupWrapper.present = newStatus;
-                        h.checkable.setChecked(newStatus);
+                        h.checkableView.setChecked(newStatus);
                         // no need to update the list, item itself is updated
                         //onListChanged();
                     }
@@ -266,8 +273,8 @@ public class EditBooklistStyleGroupsActivity
             }
             // Setup the variant fields in the holder
             holder.groupWrapper = item;
-            holder.name.setText(item.group.getName());
-            holder.checkable.setChecked(holder.groupWrapper.present);
+            holder.nameView.setText(item.group.getName());
+            holder.checkableView.setChecked(holder.groupWrapper.present);
         }
 
         /**

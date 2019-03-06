@@ -467,16 +467,17 @@ public class BooksMultiTypeListHandler
                 return true;
 
             case R.id.MENU_BOOK_EDIT: {
-                Intent intent = new Intent(activity, EditBookActivity.class);
-                intent.putExtra(UniqueId.KEY_ID, bookId);
-                intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
+                Intent intent = new Intent(activity, EditBookActivity.class)
+                        .putExtra(UniqueId.KEY_ID, bookId)
+                        .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_EDIT);
                 return true;
             }
             case R.id.MENU_BOOK_EDIT_NOTES: {
-                Intent intent = new Intent(activity, EditBookActivity.class);
-                intent.putExtra(UniqueId.KEY_ID, bookId);
-                intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT_NOTES);
+                Intent intent = new Intent(activity, EditBookActivity.class)
+                        .putExtra(UniqueId.KEY_ID, bookId)
+                        .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
+                                  EditBookFragment.TAB_EDIT_NOTES);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_EDIT);
                 return true;
             }
@@ -537,8 +538,8 @@ public class BooksMultiTypeListHandler
             /* ********************************************************************************** */
 
             case R.id.MENU_AUTHOR_DETAILS: {
-                Intent intent = new Intent(activity, AuthorActivity.class);
-                intent.putExtra(UniqueId.KEY_ID, row.getAuthorId());
+                Intent intent = new Intent(activity, AuthorActivity.class)
+                        .putExtra(UniqueId.KEY_ID, row.getAuthorId());
                 activity.startActivity(intent);
                 return true;
             }
@@ -640,7 +641,7 @@ public class BooksMultiTypeListHandler
                                                  DatabaseDefinitions.DOM_SERIES_IS_COMPLETE.name,
                                                  R.string.field_not_set_with_brackets);
 
-                // plain old Strings
+            // plain old Strings
             case RowKind.TITLE_LETTER:
             case RowKind.PUBLISHER:
             case RowKind.GENRE:

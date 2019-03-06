@@ -31,7 +31,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -70,8 +69,12 @@ public class EditAuthorListActivity
      * Constructor; pass the superclass the main and row based layouts to use.
      */
     public EditAuthorListActivity() {
-        super(R.layout.activity_edit_list_author, R.layout.row_edit_author_list,
-              UniqueId.BKEY_AUTHOR_ARRAY);
+        super(UniqueId.BKEY_AUTHOR_ARRAY);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_edit_list_author;
     }
 
     @Override
@@ -262,9 +265,8 @@ public class EditAuthorListActivity
     }
 
     @Override
-    protected ArrayAdapter<Author> createListAdapter(@LayoutRes final int rowLayoutId,
-                                                     @NonNull final ArrayList<Author> list) {
-        return new AuthorListAdapter(this, rowLayoutId, list);
+    protected ArrayAdapter<Author> createListAdapter(@NonNull final ArrayList<Author> list) {
+        return new AuthorListAdapter(this, list);
     }
 
     /**
@@ -281,6 +283,8 @@ public class EditAuthorListActivity
          * Constructor.
          *
          * @param author to edit.
+         *
+         * @return the instance
          */
         public static EditBookAuthorDialogFragment newInstance(@NonNull final Author author) {
             EditBookAuthorDialogFragment frag = new EditBookAuthorDialogFragment();
@@ -307,17 +311,25 @@ public class EditAuthorListActivity
      */
     private static class Holder {
 
-        TextView rowAuthorView;
-        TextView rowAuthorSortView;
+        @NonNull
+        final TextView rowAuthorView;
+        @NonNull
+        final TextView rowAuthorSortView;
+
+        Holder(@NonNull final View rowView) {
+            rowAuthorView = rowView.findViewById(R.id.row_author);
+            rowAuthorSortView = rowView.findViewById(R.id.row_author_sort);
+
+            rowView.setTag(this);
+        }
     }
 
     protected class AuthorListAdapter
             extends SimpleListAdapter<Author> {
 
         AuthorListAdapter(@NonNull final Context context,
-                          @LayoutRes final int rowLayoutId,
                           @NonNull final ArrayList<Author> items) {
-            super(context, rowLayoutId, items);
+            super(context, R.layout.row_edit_author_list, items);
         }
 
         @Override
@@ -325,25 +337,19 @@ public class EditAuthorListActivity
                                  @NonNull final Author item) {
             Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
-                // New view, so build the Holder
-                holder = new Holder();
-                holder.rowAuthorView = convertView.findViewById(R.id.row_author);
-                holder.rowAuthorSortView = convertView.findViewById(R.id.row_author_sort);
+                holder = new Holder(convertView);
+            }
 
-                convertView.setTag(holder);
-            }
             // Setup the variant fields in the holder.
-            if (holder.rowAuthorView != null) {
-                holder.rowAuthorView.setText(item.getDisplayName());
+            holder.rowAuthorView.setText(item.getDisplayName());
+
+            if (item.getDisplayName().equals(item.getSortName())) {
+                holder.rowAuthorSortView.setVisibility(View.GONE);
+            } else {
+                holder.rowAuthorSortView.setVisibility(View.VISIBLE);
+                holder.rowAuthorSortView.setText(item.getSortName());
             }
-            if (holder.rowAuthorSortView != null) {
-                if (item.getDisplayName().equals(item.getSortName())) {
-                    holder.rowAuthorSortView.setVisibility(View.GONE);
-                } else {
-                    holder.rowAuthorSortView.setVisibility(View.VISIBLE);
-                    holder.rowAuthorSortView.setText(item.getSortName());
-                }
-            }
+
         }
 
         /**

@@ -22,13 +22,13 @@ package com.eleybourn.bookcatalogue.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Provides a number of static methods to manipulate string lists.

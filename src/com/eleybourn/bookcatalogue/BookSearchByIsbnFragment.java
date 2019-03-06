@@ -80,7 +80,8 @@ public class BookSearchByIsbnFragment
     /** all digits in ISBN strings. */
     private static final String ISBN_DIGITS = "0123456789xX";
     /** listener/acceptor for all ISBN digits. */
-    private static final DigitsKeyListener ISBN_LISTENER = DigitsKeyListener.getInstance(ISBN_DIGITS);
+    private static final DigitsKeyListener ISBN_LISTENER = DigitsKeyListener.getInstance(
+            ISBN_DIGITS);
     /** filter to remove all ASIN digits from ISBN strings (leave xX!). */
     private static final String ISBN_REGEX = "[qwertyuiopasdfghjklzcvbnmQWERTYUIOPASDFGHJKLZCVBNM]";
     /** flag indicating we're running in SCAN mode. */
@@ -361,10 +362,10 @@ public class BookSearchByIsbnFragment
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
-                                 Intent intent = new Intent(getContext(), EditBookActivity.class);
-                                 intent.putExtra(UniqueId.KEY_ID, existingId);
-                                 intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB,
-                                                 EditBookFragment.TAB_EDIT);
+                                 Intent intent = new Intent(getContext(), EditBookActivity.class)
+                                         .putExtra(UniqueId.KEY_ID, existingId)
+                                         .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
+                                                   EditBookFragment.TAB_EDIT);
                                  startActivityForResult(intent, REQ_BOOK_EDIT);
                              }
                          });
@@ -415,15 +416,15 @@ public class BookSearchByIsbnFragment
      * The details will get sent to {@link EditBookActivity}
      */
     public void onSearchFinished(final boolean wasCancelled,
-                                    @NonNull final Bundle bookData) {
+                                 @NonNull final Bundle bookData) {
         Tracker.handleEvent(this, Tracker.States.Enter,
                             "onSearchFinished|SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {
                 mActivity.getTaskManager()
                          .sendHeaderUpdate(R.string.progress_msg_adding_book);
-                Intent intent = new Intent(mActivity, EditBookActivity.class);
-                intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                Intent intent = new Intent(mActivity, EditBookActivity.class)
+                        .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, REQ_BOOK_EDIT);
 
                 // Clear the data entry fields ready for the next one (mScanMode has no view)

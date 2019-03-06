@@ -23,6 +23,7 @@ public class ImportCSVTask
     public static final String TAG = ImportCSVTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_CSV_IMPORT;
+    protected final ProgressDialogFragment<Void> mFragment;
     private final ImportSettings mSettings;
     private final CsvImporter mImporter;
     /**
@@ -31,8 +32,6 @@ public class ImportCSVTask
      */
     @Nullable
     protected Exception mException;
-
-    protected ProgressDialogFragment<Void> mFragment;
 
     /**
      * Constructor.

@@ -143,14 +143,14 @@ public class EditBookFieldsFragment
                 new OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
-                        Intent intent = new Intent(requireActivity(), EditAuthorListActivity.class);
-                        intent.putExtra(UniqueId.BKEY_AUTHOR_ARRAY,
-                                        getBookManager().getBook()
-                                                        .getList(UniqueId.BKEY_AUTHOR_ARRAY));
+                        String title = mFields.getField(R.id.title).getValue().toString().trim();
+                        ArrayList<Author> list =
+                                getBookManager().getBook().getList(UniqueId.BKEY_AUTHOR_ARRAY);
 
-                        intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId());
-                        intent.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title)
-                                                                   .getValue().toString().trim());
+                        Intent intent = new Intent(requireActivity(), EditAuthorListActivity.class)
+                                .putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId())
+                                .putExtra(UniqueId.KEY_TITLE, title)
+                                .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, list);
                         startActivityForResult(intent, REQ_EDIT_AUTHORS);
                     }
                 });
@@ -161,14 +161,14 @@ public class EditBookFieldsFragment
                 new OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
-                        Intent intent = new Intent(requireActivity(), EditSeriesListActivity.class);
-                        intent.putExtra(UniqueId.BKEY_SERIES_ARRAY,
-                                        getBookManager().getBook()
-                                                        .getList(UniqueId.BKEY_SERIES_ARRAY));
+                        String title = mFields.getField(R.id.title).getValue().toString().trim();
+                        ArrayList<Series> list =
+                                getBookManager().getBook().getList(UniqueId.BKEY_SERIES_ARRAY);
 
-                        intent.putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId());
-                        intent.putExtra(UniqueId.KEY_TITLE, mFields.getField(R.id.title)
-                                                                   .getValue().toString().trim());
+                        Intent intent = new Intent(requireActivity(), EditSeriesListActivity.class)
+                                .putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId())
+                                .putExtra(UniqueId.KEY_TITLE, title)
+                                .putExtra(UniqueId.BKEY_SERIES_ARRAY, list);
                         startActivityForResult(intent, REQ_EDIT_SERIES);
                     }
                 });

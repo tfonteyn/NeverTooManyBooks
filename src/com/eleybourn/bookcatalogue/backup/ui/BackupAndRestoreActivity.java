@@ -362,8 +362,8 @@ public class BackupAndRestoreActivity
                     public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         dialog.dismiss();
-                        Intent data = new Intent();
-                        data.putExtra(UniqueId.BKEY_IMPORT_RESULT, resultSettings.what);
+                        Intent data = new Intent()
+                                .putExtra(UniqueId.BKEY_IMPORT_RESULT, resultSettings.what);
                         setResult(Activity.RESULT_OK, data);
                         finish();
                     }
@@ -409,8 +409,8 @@ public class BackupAndRestoreActivity
                     public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         dialog.dismiss();
-                        Intent data = new Intent();
-                        data.putExtra(UniqueId.BKEY_EXPORT_RESULT, resultSettings.what);
+                        Intent data = new Intent()
+                                .putExtra(UniqueId.BKEY_EXPORT_RESULT, resultSettings.what);
                         setResult(Activity.RESULT_OK, data);
                         finish();
                     }

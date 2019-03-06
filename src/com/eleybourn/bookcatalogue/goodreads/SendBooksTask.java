@@ -26,15 +26,15 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.goodreads.taskqueue.ContextDialogItem;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.entities.Author;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.BindableItemCursor;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.ContextDialogItem;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Event;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.EventsCursor;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
@@ -339,10 +339,10 @@ public abstract class SendBooksTask
                                         (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
                                 long bookId = event.getBookId();
 
-                                Intent intent = new Intent(context, EditBookActivity.class);
-                                intent.putExtra(UniqueId.KEY_ID, bookId);
-                                intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB,
-                                                EditBookFragment.TAB_EDIT);
+                                Intent intent = new Intent(context, EditBookActivity.class)
+                                        .putExtra(UniqueId.KEY_ID, bookId)
+                                        .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
+                                                  EditBookFragment.TAB_EDIT);
                                 context.startActivity(intent);
                             } catch (RuntimeException ignore) {
                                 // not a book event?
@@ -360,8 +360,8 @@ public abstract class SendBooksTask
 //                            BookEventHolder holder = (BookEventHolder)
 //                                    view.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
 //                            Intent intent = new Intent(context,
-//                                                       GoodreadsSearchCriteriaActivity.class);
-//                            intent.putExtra(UniqueId.KEY_ID, holder.event.getId());
+//                                                       GoodreadsSearchCriteriaActivity.class)
+//                                  .putExtra(UniqueId.KEY_ID, holder.event.getId());
 //                            context.startActivity(intent);
 //                        }
 //                    }));

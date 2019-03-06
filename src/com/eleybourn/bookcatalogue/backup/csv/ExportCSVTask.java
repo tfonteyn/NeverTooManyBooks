@@ -24,9 +24,9 @@ public class ExportCSVTask
     public static final String TAG = ExportCSVTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_CSV_EXPORT;
+    protected final ProgressDialogFragment<Void> mFragment;
     @NonNull
     private final CsvExporter mExporter;
-
     private final File tmpFile;
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
@@ -34,8 +34,6 @@ public class ExportCSVTask
      */
     @Nullable
     protected Exception mException;
-
-    protected ProgressDialogFragment<Void> mFragment;
 
     /**
      * Constructor.

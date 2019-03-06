@@ -25,6 +25,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:focusable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
         app:layout_constraintStart_toEndOf="@id/TLV_ROW_DELETE"

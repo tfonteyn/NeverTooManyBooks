@@ -183,6 +183,8 @@ public class SynchronizedDb {
         } while (true);
     }
 
+    /** Debug usage. */
+    @SuppressWarnings("unused")
     public void getInfo(@NonNull final SQLiteDatabase db) {
         String[] sql = {"select sqlite_version() AS sqlite_version",
                         "PRAGMA encoding",

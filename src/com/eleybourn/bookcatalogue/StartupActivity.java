@@ -316,9 +316,9 @@ public class StartupActivity
         startActivity(intent);
 
         if (mBackupRequired) {
-            Intent backupIntent = new Intent(this, BackupAndRestoreActivity.class);
-            backupIntent.putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                                  BackupAndRestoreActivity.BVAL_MODE_SAVE);
+            Intent backupIntent = new Intent(this, BackupAndRestoreActivity.class)
+                    .putExtra(BackupAndRestoreActivity.BKEY_MODE,
+                              BackupAndRestoreActivity.BVAL_MODE_SAVE);
             startActivity(backupIntent);
         }
 
@@ -551,8 +551,11 @@ public class StartupActivity
             publishProgress(R.string.progress_msg_optimizing_databases);
 
             mDb.analyze();
-            //TOMF: for use during test... remove when done.
-            mDb.recreateTriggers();
+            // small hack to make sure we always update the triggers.
+            // Makes creating/modifying triggers MUCH easier.
+            if (BuildConfig.DEBUG) {
+                mDb.recreateTriggers();
+            }
 
             if (Prefs.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED,
                                             false)) {

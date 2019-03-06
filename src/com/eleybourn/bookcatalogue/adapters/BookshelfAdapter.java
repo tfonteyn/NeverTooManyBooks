@@ -51,14 +51,13 @@ public class BookshelfAdapter
         final Bookshelf item = getItem(position);
 
         Holder holder;
-
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(mRowLayoutId, null);
-            holder = new Holder();
-            holder.nameView = convertView.findViewById(R.id.name);
-            convertView.setTag(holder);
-        } else {
+        if (convertView != null) {
+            // Recycling: just get the holder
             holder = (Holder) convertView.getTag();
+        } else {
+            // Not recycling, get a new View and make the holder for it.
+            convertView = LayoutInflater.from(getContext()).inflate(mRowLayoutId, null);
+            holder = new Holder(convertView);
         }
 
         //noinspection ConstantConditions
@@ -72,6 +71,12 @@ public class BookshelfAdapter
      */
     private static class Holder {
 
-        TextView nameView;
+        @NonNull
+        final TextView nameView;
+
+        public Holder(@NonNull final View rowView) {
+            nameView = rowView.findViewById(R.id.name);
+            rowView.setTag(this);
+        }
     }
 }

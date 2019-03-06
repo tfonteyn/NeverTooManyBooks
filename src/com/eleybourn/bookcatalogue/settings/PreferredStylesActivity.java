@@ -35,7 +35,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -76,9 +75,12 @@ public class PreferredStylesActivity
      * Constructor.
      */
     public PreferredStylesActivity() {
-        super(R.layout.activity_styles_edit_list,
-              R.layout.row_edit_booklist_style_groups,
-              null);
+        super(null);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_styles_edit_list;
     }
 
     @Override
@@ -96,7 +98,6 @@ public class PreferredStylesActivity
             HintManager.displayHint(getLayoutInflater(),
                                     R.string.hint_booklist_styles_editor, null);
         }
-
     }
 
     /**
@@ -188,9 +189,9 @@ public class PreferredStylesActivity
         if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
             Logger.info(this, "editStyle", style.toString());
         }
-        Intent intent = new Intent(this, SettingsActivity.class);
-        intent.putExtra(UniqueId.BKEY_FRAGMENT_TAG, BooklistStyleSettingsFragment.TAG);
-        intent.putExtra(BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE, (Parcelable) style);
+        Intent intent = new Intent(this, SettingsActivity.class)
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BooklistStyleSettingsFragment.TAG)
+                .putExtra(BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE, (Parcelable) style);
         startActivityForResult(intent, REQ_EDIT_STYLE);
     }
 
@@ -290,9 +291,8 @@ public class PreferredStylesActivity
         }
     }
 
-    protected ArrayAdapter<BooklistStyle> createListAdapter(@LayoutRes final int rowLayoutId,
-                                                            @NonNull final ArrayList<BooklistStyle> list) {
-        return new BooklistStyleListAdapter(this, rowLayoutId, list);
+    protected ArrayAdapter<BooklistStyle> createListAdapter(@NonNull final ArrayList<BooklistStyle> list) {
+        return new BooklistStyleListAdapter(this, list);
     }
 
     /**
@@ -300,21 +300,32 @@ public class PreferredStylesActivity
      */
     private static class Holder {
 
+        @NonNull
+        final CheckedTextView checkableView;
+        @NonNull
+        final TextView nameView;
+        @NonNull
+        final TextView groupsView;
+        @NonNull
+        final TextView kindView;
         BooklistStyle style;
-        CheckedTextView checkableView;
-        TextView nameView;
 
-        TextView groupsView;
-        TextView kindView;
+        public Holder(@NonNull final View rowView) {
+            nameView = rowView.findViewById(R.id.name);
+            checkableView = rowView.findViewById(R.id.TLV_ROW_CHECKABLE);
+            groupsView = rowView.findViewById(R.id.groups);
+            kindView = rowView.findViewById(R.id.kind);
+
+            rowView.setTag(this);
+        }
     }
 
     private class BooklistStyleListAdapter
             extends SimpleListAdapter<BooklistStyle> {
 
         BooklistStyleListAdapter(@NonNull final Context context,
-                                 @LayoutRes final int rowLayoutId,
                                  @NonNull final ArrayList<BooklistStyle> items) {
-            super(context, rowLayoutId, items);
+            super(context, R.layout.row_edit_booklist_style_groups, items);
         }
 
         @Override
@@ -322,13 +333,7 @@ public class PreferredStylesActivity
                               @NonNull final BooklistStyle item) {
             Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
-                holder = new Holder();
-                holder.nameView = convertView.findViewById(R.id.name);
-                holder.checkableView = convertView.findViewById(R.id.row_check);
-                holder.groupsView = convertView.findViewById(R.id.groups);
-                holder.kindView = convertView.findViewById(R.id.kind);
-
-                convertView.setTag(holder);
+                holder = new Holder(convertView);
                 holder.checkableView.setTag(holder);
 
                 // Handle clicks on the CheckedTextView

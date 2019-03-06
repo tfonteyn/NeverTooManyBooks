@@ -111,9 +111,8 @@ public class AdminActivity
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this,
-                                           SettingsActivity.class);
-                intent.putExtra(UniqueId.BKEY_FRAGMENT_TAG, FieldVisibilitySettingsFragment.TAG);
+                Intent intent = new Intent(AdminActivity.this, SettingsActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, FieldVisibilitySettingsFragment.TAG);
                 startActivity(intent);
             }
         });
@@ -126,9 +125,8 @@ public class AdminActivity
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this,
-                                           SettingsActivity.class);
-                intent.putExtra(UniqueId.BKEY_FRAGMENT_TAG, GlobalSettingsFragment.TAG);
+                Intent intent = new Intent(AdminActivity.this, SettingsActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, GlobalSettingsFragment.TAG);
                 startActivity(intent);
             }
         });
@@ -239,9 +237,9 @@ public class AdminActivity
             @Override
             public void onClick(@NonNull final View v) {
                 Intent intent = new Intent(AdminActivity.this,
-                                           BackupAndRestoreActivity.class);
-                intent.putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                                BackupAndRestoreActivity.BVAL_MODE_SAVE);
+                                           BackupAndRestoreActivity.class)
+                        .putExtra(BackupAndRestoreActivity.BKEY_MODE,
+                                  BackupAndRestoreActivity.BVAL_MODE_SAVE);
                 startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
             }
         });
@@ -255,9 +253,9 @@ public class AdminActivity
             @Override
             public void onClick(@NonNull final View v) {
                 Intent intent = new Intent(AdminActivity.this,
-                                           BackupAndRestoreActivity.class);
-                intent.putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                                BackupAndRestoreActivity.BVAL_MODE_OPEN);
+                                           BackupAndRestoreActivity.class)
+                        .putExtra(BackupAndRestoreActivity.BKEY_MODE,
+                                  BackupAndRestoreActivity.BVAL_MODE_OPEN);
                 startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
             }
         });
@@ -547,9 +545,9 @@ public class AdminActivity
         String subject = '[' + getString(R.string.app_name) + "] "
                 + getString(R.string.lbl_export_to_csv);
 
-        final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        emailIntent.setType("plain/text");
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
+                .setType("plain/text")
+                .putExtra(Intent.EXTRA_SUBJECT, subject);
 
         ArrayList<Uri> uris = new ArrayList<>();
         try {
@@ -559,8 +557,8 @@ public class AdminActivity
                                                       csvExportFile);
 
             uris.add(coverURI);
-            emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));
+            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+            startActivity(Intent.createChooser(intent, getString(R.string.send_mail)));
         } catch (NullPointerException e) {
             Logger.error(e);
             UserMessage.showUserMessage(AdminActivity.this, R.string.error_email_failed);

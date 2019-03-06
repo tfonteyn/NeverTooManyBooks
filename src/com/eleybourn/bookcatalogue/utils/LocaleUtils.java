@@ -8,14 +8,14 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Static class. There is only ONE Locale *active* at any given time.

@@ -48,21 +48,16 @@ public class TOCAdapter
         final TocEntry item = getItem(position);
 
         Holder holder;
-
-        if (convertView == null) {
+        if (convertView != null) {
+            // Recycling: just get the holder
+            holder = (Holder) convertView.getTag();
+        } else {
+            // Not recycling, get a new View and make the holder for it.
             convertView = LayoutInflater.from(getContext()).inflate(mRowLayoutId, null);
-            // New view, so build the Holder
-            holder = new Holder();
-            holder.titleView = convertView.findViewById(R.id.title);
-            holder.authorView = convertView.findViewById(R.id.author);
-            holder.firstPublicationView = convertView.findViewById(R.id.year);
+            holder = new Holder(convertView);
 
             // make it flash
             convertView.setBackgroundResource(android.R.drawable.list_selector_background);
-
-            convertView.setTag(holder);
-        } else {
-            holder = (Holder) convertView.getTag();
         }
 
         //noinspection ConstantConditions
@@ -91,9 +86,22 @@ public class TOCAdapter
      */
     private static class Holder {
 
-        TextView titleView;
-        TextView authorView;
-        TextView firstPublicationView;
+        @NonNull
+        final TextView titleView;
+        @Nullable
+        final TextView authorView;
+        @Nullable
+        final TextView firstPublicationView;
+
+        public Holder(@NonNull final View rowView) {
+            titleView = rowView.findViewById(R.id.title);
+            // optional
+            authorView = rowView.findViewById(R.id.author);
+            // optional
+            firstPublicationView = rowView.findViewById(R.id.year);
+
+            rowView.setTag(this);
+        }
     }
 
 }

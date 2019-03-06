@@ -27,7 +27,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * connections instead of the full-blown queue based system with 'SimpleTask'.
  */
 @WorkerThread
-public class TerminatorConnection
+public final class TerminatorConnection
         implements AutoCloseable {
 
     /** initial connection time to websites timeout. */
@@ -44,9 +44,9 @@ public class TerminatorConnection
     /** for synchronization. */
     private static final Object INPUT_STREAM_LOCK = new Object();
     @NonNull
-    private final HttpURLConnection con;
-    @NonNull
     public final BufferedInputStream inputStream;
+    @NonNull
+    private final HttpURLConnection con;
 
     /** Constructor. */
     private TerminatorConnection(@NonNull final URL url)

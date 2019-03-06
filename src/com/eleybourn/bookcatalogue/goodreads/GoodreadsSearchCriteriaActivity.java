@@ -128,8 +128,8 @@ public class GoodreadsSearchCriteriaActivity
             return;
         }
 
-        Intent intent = new Intent(this, GoodreadsSearchResultsActivity.class);
-        intent.putExtra(GoodreadsSearchResultsActivity.BKEY_SEARCH_CRITERIA, criteria);
+        Intent intent = new Intent(this, GoodreadsSearchResultsActivity.class)
+                .putExtra(GoodreadsSearchResultsActivity.BKEY_SEARCH_CRITERIA, criteria);
         startActivity(intent);
     }
 

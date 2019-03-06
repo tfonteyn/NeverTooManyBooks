@@ -30,16 +30,16 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Task to get a thumbnail from the file system or covers database.
@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GetImageTask
         extends AsyncTask<Void, Void, Void> {
 
-    private static final AtomicInteger runningTasks = new AtomicInteger();
+    private static final AtomicInteger RUNNING_TASKS = new AtomicInteger();
 
     /** Reference to the view we are using. */
     @NonNull
@@ -117,7 +117,7 @@ public class GetImageTask
     }
 
     public static boolean hasActiveTasks() {
-        return runningTasks.get() != 0;
+        return RUNNING_TASKS.get() != 0;
     }
 
     /**
@@ -149,7 +149,7 @@ public class GetImageTask
     @Override
     @WorkerThread
     protected Void doInBackground(final Void... params) {
-        runningTasks.incrementAndGet();
+        RUNNING_TASKS.incrementAndGet();
 
         try {
             // Get the view we are targeting and make sure it is valid
@@ -198,7 +198,7 @@ public class GetImageTask
 
     @AnyThread
     private void cleanup() {
-        runningTasks.decrementAndGet();
+        RUNNING_TASKS.decrementAndGet();
     }
 
     /**

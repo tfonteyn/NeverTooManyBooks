@@ -531,8 +531,9 @@ public final class GoodreadsUtils {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  dialog.dismiss();
-                                 Intent i = new Intent(context, GoodreadsRegisterActivity.class);
-                                 context.startActivity(i);
+                                 Intent intent = new Intent(context,
+                                                            GoodreadsRegisterActivity.class);
+                                 context.startActivity(intent);
                              }
                          });
 

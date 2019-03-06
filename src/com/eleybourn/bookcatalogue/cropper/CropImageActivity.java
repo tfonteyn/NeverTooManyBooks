@@ -42,11 +42,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
-import com.eleybourn.bookcatalogue.utils.UserMessage;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -54,6 +49,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
+import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * ENHANCE: maybe update the crop code ?
@@ -270,13 +270,12 @@ public class CropImageActivity
 
     /**
      * create activity.
-     *
+     * <p>
      * intent.putExtra(CropIImage.REQUEST_KEY_SCALE, true);
      * intent.putExtra(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
      * intent.putExtra(CropIImage.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
      * intent.putExtra(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
      * intent.putExtra(CropIImage.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
-     *
      */
     @Override
     @CallSuper
@@ -494,8 +493,8 @@ public class CropImageActivity
 
             Bundle resultExtras = new Bundle();
             resultExtras.putParcelable(BKEY_DATA, croppedImage);
-            Intent data = new Intent("inline-data");
-            data.putExtras(resultExtras);
+            Intent data = new Intent("inline-data")
+                    .putExtras(resultExtras);
             setResult(Activity.RESULT_OK, data);
             finish();
         } else {
@@ -516,8 +515,8 @@ public class CropImageActivity
             // we were not asked to save anything, but we're ok with that
             setResult(Activity.RESULT_OK);
         } else {
-            Intent intent = new Intent(mOptionSaveUri.toString());
-            intent.putExtras(extras);
+            Intent intent = new Intent(mOptionSaveUri.toString())
+                    .putExtras(extras);
             try (OutputStream outputStream = getContentResolver().openOutputStream(
                     mOptionSaveUri)) {
                 if (outputStream != null) {

@@ -108,13 +108,13 @@ public final class DebugReport {
         StorageUtils.exportFile(DBHelper.getDatabasePath(activity), tmpDbFile.getName());
 
         // setup the mail message
-        final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        emailIntent.setType("plain/text");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL,
-                             activity.getString(R.string.email_debug).split(";"));
         String subject = '[' + activity.getString(R.string.app_name) + "] "
                 + activity.getString(R.string.debug_subject);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE)
+                .setType("plain/text")
+                .putExtra(Intent.EXTRA_SUBJECT, subject)
+                .putExtra(Intent.EXTRA_EMAIL, activity.getString(R.string.email_debug)
+                                                      .split(";"));
         StringBuilder message = new StringBuilder();
 
         try {

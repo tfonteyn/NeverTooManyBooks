@@ -143,8 +143,8 @@ public class BookSearchByTextFragment
         try {
             if (!wasCancelled) {
                 mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_adding_book);
-                Intent intent = new Intent(getContext(), EditBookActivity.class);
-                intent.putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
+                Intent intent = new Intent(getContext(), EditBookActivity.class)
+                        .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
                 startActivityForResult(intent, REQ_BOOK_EDIT);
 
                 // Clear the data entry fields ready for the next one

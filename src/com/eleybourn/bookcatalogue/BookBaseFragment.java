@@ -337,19 +337,18 @@ public abstract class BookBaseFragment
                 return true;
 
             case R.id.MENU_BOOK_DUPLICATE:
-                Intent intent = new Intent(mActivity, EditBookActivity.class);
-                intent.putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
+                Intent intent = new Intent(mActivity, EditBookActivity.class)
+                        .putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
                 startActivityForResult(intent, UniqueId.REQ_BOOK_DUPLICATE);
                 return true;
 
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
-                Intent intentUpdateFields = new Intent(mActivity,
-                                                       UpdateFieldsFromInternetActivity.class);
-                intentUpdateFields.putExtra(UniqueId.KEY_ID, book.getId());
-                intentUpdateFields.putExtra(UniqueId.KEY_TITLE,
-                                            book.getString(UniqueId.KEY_TITLE));
-                intentUpdateFields.putExtra(UniqueId.KEY_AUTHOR_FORMATTED,
-                                            book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
+                Intent intentUpdateFields =
+                        new Intent(mActivity, UpdateFieldsFromInternetActivity.class)
+                                .putExtra(UniqueId.KEY_ID, book.getId())
+                                .putExtra(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE))
+                                .putExtra(UniqueId.KEY_AUTHOR_FORMATTED,
+                                          book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
                 startActivityForResult(intentUpdateFields, REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET);
                 return true;
 

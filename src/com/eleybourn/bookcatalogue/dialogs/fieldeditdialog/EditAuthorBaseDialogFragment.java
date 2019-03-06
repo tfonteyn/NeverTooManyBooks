@@ -57,7 +57,7 @@ public abstract class EditAuthorBaseDialogFragment
             mIsComplete = savedInstanceState.getBoolean(UniqueId.KEY_AUTHOR_IS_COMPLETE);
         }
 
-        final View root = getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
+        final View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
 
         ArrayAdapter<String> mFamilyNameAdapter =
                 new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line,
@@ -110,7 +110,7 @@ public abstract class EditAuthorBaseDialogFragment
             }
         });
 
-        return new AlertDialog.Builder(requireActivity())
+        return new AlertDialog.Builder(mActivity)
                 .setView(root)
                 .setTitle(R.string.title_edit_author)
                 .create();

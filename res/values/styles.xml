@@ -300,8 +300,8 @@
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:gravity">start</item>
         <item name="android:background">?android:selectableItemBackground</item>
-        <item name="android:paddingEnd">@dimen/border</item>
-        <item name="android:paddingStart">@dimen/border</item>
+        <item name="android:paddingEnd">@dimen/border_double</item>
+        <item name="android:paddingStart">@dimen/border_double</item>
     </style>
 
     <style name="tlv_dragHandle">
@@ -311,6 +311,8 @@
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:paddingEnd">@dimen/border_double</item>
+        <item name="android:paddingStart">@dimen/border_double</item>
     </style>
 
     <!-- the actual list view -->

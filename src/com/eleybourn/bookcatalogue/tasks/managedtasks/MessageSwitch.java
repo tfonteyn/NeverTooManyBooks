@@ -224,11 +224,11 @@ public class MessageSwitch<T, U> {
             processMessages();
         } else {
             HANDLER.post(new Runnable() {
-                              @Override
-                              public void run() {
-                                  processMessages();
-                              }
-                          }
+                             @Override
+                             public void run() {
+                                 processMessages();
+                             }
+                         }
             );
         }
     }

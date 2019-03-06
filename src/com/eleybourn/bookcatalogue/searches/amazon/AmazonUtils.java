@@ -80,8 +80,7 @@ public final class AmazonUtils {
             }
         } catch (NotInitializedException e) {
             Logger.error(e, "Unable to use Amazon API, starting external browser instead");
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url + SUFFIX_EXTRAS));
-            context.startActivity(intent);
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url + SUFFIX_EXTRAS)));
         }
     }
 
@@ -153,8 +152,7 @@ public final class AmazonUtils {
 //                    + "index=books&tag=philipwarneri-20&tracking_id=philipwarner-20";
 //            String extra = buildSearchArgs(author, series);
 //            if (extra != null && !extra.isEmpty()) {
-//            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra));
-//                activity.startActivity(intent);
+//               activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + extra)));
 //            }
         }
     }

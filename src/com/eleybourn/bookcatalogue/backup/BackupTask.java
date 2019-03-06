@@ -44,7 +44,7 @@ public class BackupTask
     @Nullable
     protected Exception mException;
 
-    protected ProgressDialogFragment<ExportSettings> mFragment;
+    protected final ProgressDialogFragment<ExportSettings> mFragment;
 
     /**
      * Constructor.

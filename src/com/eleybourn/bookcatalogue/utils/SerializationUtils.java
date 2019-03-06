@@ -23,8 +23,6 @@ package com.eleybourn.bookcatalogue.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +30,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Collection of methods to wrap common serialization routines.

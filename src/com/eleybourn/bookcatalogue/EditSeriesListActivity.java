@@ -34,7 +34,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -74,8 +73,12 @@ public class EditSeriesListActivity
      * Constructor; pass the superclass the main and row based layouts to use.
      */
     public EditSeriesListActivity() {
-        super(R.layout.activity_edit_list_series, R.layout.row_edit_series_list,
-              UniqueId.BKEY_SERIES_ARRAY);
+        super(UniqueId.BKEY_SERIES_ARRAY);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_edit_list_series;
     }
 
     @Override
@@ -88,7 +91,7 @@ public class EditSeriesListActivity
                                             android.R.layout.simple_dropdown_item_1line,
                                             mDb.getAllSeriesNames());
 
-        mSeriesNameView = findViewById(R.id.name);
+        mSeriesNameView = findViewById(R.id.series);
         mSeriesNameView.setAdapter(mSeriesAdapter);
         mSeriesNumberView = findViewById(R.id.series_num);
 
@@ -161,9 +164,8 @@ public class EditSeriesListActivity
     }
 
     @Override
-    protected ArrayAdapter<Series> createListAdapter(@LayoutRes final int rowLayoutId,
-                                                     @NonNull final ArrayList<Series> list) {
-        return new SeriesListAdapter(this, rowLayoutId, list);
+    protected ArrayAdapter<Series> createListAdapter(@NonNull final ArrayList<Series> list) {
+        return new SeriesListAdapter(this, list);
     }
 
     /**
@@ -269,6 +271,13 @@ public class EditSeriesListActivity
         private boolean mIsComplete;
         private String mNumber;
 
+        /**
+         * Constructor.
+         *
+         * @param series to edit
+         *
+         * @return the instance
+         */
         public static EditBookSeriesDialogFragment newInstance(@NonNull final Series series) {
             EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
             Bundle args = new Bundle();
@@ -362,17 +371,25 @@ public class EditSeriesListActivity
      */
     private static class Holder {
 
-        TextView rowSeriesView;
-        TextView rowSeriesSortView;
+        @NonNull
+        final TextView rowSeriesView;
+        @NonNull
+        final TextView rowSeriesSortView;
+
+        Holder(@NonNull final View rowView) {
+            rowSeriesView = rowView.findViewById(R.id.row_series);
+            rowSeriesSortView = rowView.findViewById(R.id.row_series_sort);
+
+            rowView.setTag(this);
+        }
     }
 
     protected class SeriesListAdapter
             extends SimpleListAdapter<Series> {
 
         SeriesListAdapter(@NonNull final Context context,
-                          @LayoutRes final int rowLayoutId,
                           @NonNull final ArrayList<Series> items) {
-            super(context, rowLayoutId, items);
+            super(context, R.layout.row_edit_series_list, items);
         }
 
         @Override
@@ -381,24 +398,18 @@ public class EditSeriesListActivity
             Holder holder = (Holder) convertView.getTag();
             if (holder == null) {
                 // New view, so build the Holder
-                holder = new Holder();
-                holder.rowSeriesView = convertView.findViewById(R.id.row_series);
-                holder.rowSeriesSortView = convertView.findViewById(R.id.row_series_sort);
-
-                convertView.setTag(holder);
+                holder = new Holder(convertView);
             }
             // Setup the variant fields in the holder
-            if (holder.rowSeriesView != null) {
-                holder.rowSeriesView.setText(item.getDisplayName());
+            holder.rowSeriesView.setText(item.getDisplayName());
+
+            if (item.getDisplayName().equals(item.getSortName())) {
+                holder.rowSeriesSortView.setVisibility(View.GONE);
+            } else {
+                holder.rowSeriesSortView.setVisibility(View.VISIBLE);
+                holder.rowSeriesSortView.setText(item.getSortName());
             }
-            if (holder.rowSeriesSortView != null) {
-                if (item.getDisplayName().equals(item.getSortName())) {
-                    holder.rowSeriesSortView.setVisibility(View.GONE);
-                } else {
-                    holder.rowSeriesSortView.setVisibility(View.VISIBLE);
-                    holder.rowSeriesSortView.setText(item.getSortName());
-                }
-            }
+
         }
 
         /**

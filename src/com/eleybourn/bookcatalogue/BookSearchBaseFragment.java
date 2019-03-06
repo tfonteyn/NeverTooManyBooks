@@ -121,9 +121,9 @@ public abstract class BookSearchBaseFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
-                Intent intent = new Intent(requireContext(), SearchAdminActivity.class);
-                intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                SearchAdminActivity.TAB_ORDER);
+                Intent intent = new Intent(requireContext(), SearchAdminActivity.class)
+                        .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
+                                  SearchAdminActivity.TAB_ORDER);
                 startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES);
                 return true;
 

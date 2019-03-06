@@ -29,8 +29,8 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer,
@@ -70,10 +70,10 @@ public class GoodreadsAuthorizationActivity
         }
 
         // Bring the main app task back to the top
-        Intent bcTop = new Intent(this, StartupActivity.class);
-        bcTop.setAction(Intent.ACTION_MAIN);
-        bcTop.addCategory(Intent.CATEGORY_LAUNCHER);
-        startActivity(bcTop);
+        Intent intent = new Intent(this, StartupActivity.class)
+                .setAction(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_LAUNCHER);
+        startActivity(intent);
         finish();
     }
 }

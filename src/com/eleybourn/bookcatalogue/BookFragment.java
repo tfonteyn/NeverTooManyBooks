@@ -51,8 +51,8 @@ public class BookFragment
     /** Fragment manager tag. */
     public static final String TAG = BookFragment.class.getSimpleName();
 
-    static final String REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION = "FBLP";
-    static final String REQUEST_BKEY_FLATTENED_BOOKLIST = "FBL";
+    static final String REQUEST_BKEY_FLAT_BOOKLIST_POSITION = "FBLP";
+    static final String REQUEST_BKEY_FLAT_BOOKLIST = "FBL";
 
     private Book mBook;
     private CoverHandler mCoverHandler;
@@ -141,8 +141,8 @@ public class BookFragment
      * Set the current visible book id int the result code.
      */
     private void setDefaultActivityResult() {
-        Intent data = new Intent();
-        data.putExtra(UniqueId.KEY_ID, getBook().getId());
+        Intent data = new Intent()
+                .putExtra(UniqueId.KEY_ID, getBook().getId());
         mActivity.setResult(Activity.RESULT_OK, data);
     }
 
@@ -320,7 +320,7 @@ public class BookFragment
         if (getArguments() == null) {
             return;
         }
-        String list = requireArguments().getString(REQUEST_BKEY_FLATTENED_BOOKLIST);
+        String list = requireArguments().getString(REQUEST_BKEY_FLAT_BOOKLIST);
         if (list == null || list.isEmpty()) {
             return;
         }
@@ -338,7 +338,7 @@ public class BookFragment
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         // ok, we absolutely have a list, get the position we need to be on.
-        int pos = args.getInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION, 0);
+        int pos = args.getInt(REQUEST_BKEY_FLAT_BOOKLIST_POSITION, 0);
 
         mFlattenedBooklist.moveTo(pos);
         // the book might have moved around. So see if we can find it.
@@ -517,7 +517,7 @@ public class BookFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mFlattenedBooklist != null) {
-            outState.putInt(REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION,
+            outState.putInt(REQUEST_BKEY_FLAT_BOOKLIST_POSITION,
                             (int) mFlattenedBooklist.getPosition());
         }
     }
@@ -592,9 +592,9 @@ public class BookFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_EDIT:
-                Intent intent = new Intent(getContext(), EditBookActivity.class);
-                intent.putExtra(UniqueId.KEY_ID, getBook().getId());
-                intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
+                Intent intent = new Intent(getContext(), EditBookActivity.class)
+                        .putExtra(UniqueId.KEY_ID, getBook().getId())
+                        .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
 

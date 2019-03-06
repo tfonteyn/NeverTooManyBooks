@@ -20,6 +20,7 @@ public class RestoreTask
     public static final String TAG = RestoreTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_READ_FROM_ARCHIVE;
+    protected final ProgressDialogFragment<ImportSettings> mFragment;
     @NonNull
     private final ImportSettings mSettings;
     /**
@@ -28,8 +29,6 @@ public class RestoreTask
      */
     @Nullable
     protected Exception mException;
-
-    protected ProgressDialogFragment<ImportSettings> mFragment;
 
     /**
      * @param settings the import settings

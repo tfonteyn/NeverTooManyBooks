@@ -248,8 +248,8 @@ public class CoverBrowser
             public void onClick(@NonNull final View v) {
                 String newSpec = (String) mImageSwitcherView.getTag();
                 if (newSpec != null) {
-                    Intent data = new Intent();
-                    data.putExtra(UniqueId.BKEY_FILE_SPEC, newSpec);
+                    Intent data = new Intent()
+                            .putExtra(UniqueId.BKEY_FILE_SPEC, newSpec);
                     // Was a target fragment was set ?
                     Fragment targetFragment = getTargetFragment();
                     if (targetFragment != null) {

@@ -30,14 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.CoversDBA;
-import com.eleybourn.bookcatalogue.database.DBHelper;
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,6 +50,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.CoversDBA;
+import com.eleybourn.bookcatalogue.database.DBHelper;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Class to wrap common storage related functions.

@@ -9,13 +9,13 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 
 public final class NetworkUtils {
@@ -109,8 +109,8 @@ public final class NetworkUtils {
             sock.close();
             if (DEBUG_SWITCHES.NETWORK && BuildConfig.DEBUG) {
                 Logger.info(NetworkUtils.class, "isAlive",
-                            "Site: " + host + ':' + port +
-                                    ", took " + (System.currentTimeMillis() - t) + " ms");
+                            "Site: " + host + ':' + port
+                                    + ", took " + (System.currentTimeMillis() - t) + " ms");
             }
             return true;
         } catch (IOException e) {

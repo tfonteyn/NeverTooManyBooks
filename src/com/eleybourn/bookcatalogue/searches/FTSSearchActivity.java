@@ -41,6 +41,10 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -48,10 +52,6 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
-
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
@@ -181,8 +181,8 @@ public class FTSSearchActivity
         findViewById(R.id.btn_search).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                Intent data = new Intent();
-                data.putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
+                Intent data = new Intent()
+                        .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
                 setResult(Activity.RESULT_OK, data);
                 finish();
             }
@@ -196,7 +196,8 @@ public class FTSSearchActivity
         menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
-        return super.onCreateOptionsMenu(menu);    }
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -207,7 +208,8 @@ public class FTSSearchActivity
 
             default:
                 return super.onOptionsItemSelected(item);
-        }    }
+        }
+    }
 
     /**
      * start the idle timer.

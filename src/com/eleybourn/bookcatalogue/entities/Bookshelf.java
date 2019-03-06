@@ -312,7 +312,7 @@ public class Bookshelf
 
     /**
      * Support for encoding to a text file.
-     *TOMF: fix/finish uuid stuff: give builtin styles a uuid
+     *TOMF: fix/finish uuid stuff: give builtin styles a uuid?
      * @return the object encoded as a String.
      * <p>
      * "name * styleUUID"

@@ -15,12 +15,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Ideally should use {@link EditObjectListActivity} but that needs to be converted
@@ -56,8 +56,7 @@ public class AdminSearchOrderFragment
         mListView = requireView().findViewById(android.R.id.list);
         mListView.setAdapter(mListAdapter);
 
-        // Do not add handler for 'onDrop' from the TouchListView;
-        // we'll get what we need when we're ready to save.
+        // Add handler for 'onDrop' from the TouchListView
         ((TouchListView) mListView).setOnDropListener(this);
     }
 
@@ -97,6 +96,12 @@ public class AdminSearchOrderFragment
     private static class SearchSiteListAdapter
             extends ArrayAdapter<SearchSites.Site> {
 
+        /**
+         * Constructor.
+         *
+         * @param context the caller context
+         * @param list    of sites
+         */
         SearchSiteListAdapter(@NonNull final Context context,
                               @NonNull final List<SearchSites.Site> list) {
             super(context, 0, list);
@@ -108,39 +113,25 @@ public class AdminSearchOrderFragment
                             @Nullable View convertView,
                             @NonNull final ViewGroup parent) {
             Holder holder;
-            if (convertView == null) {
+            if (convertView != null) {
+                // Recycling: just get the holder
+                holder = (Holder) convertView.getTag();
+            } else {
                 // Not recycling, get a new View and make the holder for it.
                 convertView = LayoutInflater.from(getContext())
                                             .inflate(R.layout.row_edit_searchsite, parent, false);
 
-                holder = new Holder();
-                holder.name = convertView.findViewById(R.id.name);
-                holder.checkable = convertView.findViewById(R.id.row_check);
-
-                convertView.setTag(holder);
-                holder.checkable.setTag(holder);
-
-                // Set the click listener for the 'enable' site checkable
-                holder.checkable.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final View v) {
-                        Holder h = (Holder) v.getTag();
-                        h.site.setEnabled(!h.site.isEnabled());
-                        h.checkable.setChecked(h.site.isEnabled());
-                        // no need to update the list, item itself is updated
-                        //onListChanged();
-                    }
-                });
-            } else {
-                // Recycling: just get the holder
-                holder = (Holder) convertView.getTag();
+                holder = new Holder(convertView);
+                holder.checkableView.setTag(holder);
             }
+
+            holder.rowDetailsView.setFocusable(false);
 
             // Setup the variant fields in the holder
             holder.site = getItem(position);
             //noinspection ConstantConditions
-            holder.name.setText(holder.site.getName());
-            holder.checkable.setChecked(holder.site.isEnabled());
+            holder.nameView.setText(holder.site.getName());
+            holder.checkableView.setChecked(holder.site.isEnabled());
 
             return convertView;
         }
@@ -152,7 +143,31 @@ public class AdminSearchOrderFragment
     private static class Holder {
 
         SearchSites.Site site;
-        CheckedTextView checkable;
-        TextView name;
+
+        @NonNull
+        final CheckedTextView checkableView;
+        @NonNull
+        final View rowDetailsView;
+        @NonNull
+        final TextView nameView;
+
+        public Holder(@NonNull final View rowView) {
+            rowDetailsView = rowView.findViewById(R.id.TLV_ROW_DETAILS);
+            nameView = rowView.findViewById(R.id.name);
+            checkableView = rowView.findViewById(R.id.TLV_ROW_CHECKABLE);
+            // Set the click listener for the 'enable' site checkable
+            checkableView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(@NonNull final View v) {
+                    Holder h = (Holder) v.getTag();
+                    h.site.setEnabled(!h.site.isEnabled());
+                    h.checkableView.setChecked(h.site.isEnabled());
+                    // no need to update the list, item itself is updated
+                    //onListChanged();
+                }
+            });
+
+            rowView.setTag(this);
+        }
     }
 }

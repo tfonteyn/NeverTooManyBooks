@@ -94,7 +94,7 @@ import com.eleybourn.bookcatalogue.R;
  */
 public class FastScroller {
 
-    /** Minimum number of pages to justify showing a fast scroll thumb */
+    /** Minimum number of pages to justify showing a fast scroll thumb. */
     private static final int MIN_PAGES = 4;
     /** Scroll thumb not showing. */
     private static final int STATE_NONE = 0;
@@ -107,7 +107,7 @@ public class FastScroller {
     /** Scroll thumb fading out due to inactivity timeout. */
     private static final int STATE_EXIT = 4;
     /** This value is in SP taken from the Android sources. */
-    private static final int mLargeTextSizeInSp = 22;
+    private static final int LARGE_TEXT_SIZE_IN_SP = 22;
     private static int mLargeTextScaledSizeInSp = 22;
     private final int mOverlaySize;
     @NonNull
@@ -150,11 +150,11 @@ public class FastScroller {
         // we get an error, just use a hard-coded guess.
         try {
             final float scale = context.getResources().getDisplayMetrics().scaledDensity;
-            mLargeTextScaledSizeInSp = (int) (mLargeTextSizeInSp * scale);
+            mLargeTextScaledSizeInSp = (int) (LARGE_TEXT_SIZE_IN_SP * scale);
             overlaySize = 3 * mLargeTextScaledSizeInSp;
         } catch (RuntimeException e) {
             // Not a critical value; just try to get it close.
-            mLargeTextScaledSizeInSp = mLargeTextSizeInSp;
+            mLargeTextScaledSizeInSp = LARGE_TEXT_SIZE_IN_SP;
             overlaySize = 3 * mLargeTextScaledSizeInSp;
         }
         mOverlaySize = overlaySize;
@@ -348,7 +348,7 @@ public class FastScroller {
         mThumbDrawable.setBounds(w - mThumbW, 0, w, mThumbH);
         final RectF pos = mOverlayPos;
         // Now, Make it 75% of total available space
-        pos.left = (w / 8f);
+        pos.left = w / 8f;
         pos.right = pos.left + w * 0.75f;
         pos.top = h / 10f; // 10% from top
         pos.bottom = pos.top + mOverlaySize;
@@ -461,8 +461,9 @@ public class FastScroller {
 
     boolean onInterceptTouchEvent(@NonNull final MotionEvent ev) {
         if (mState > STATE_NONE && ev.getAction() == MotionEvent.ACTION_DOWN) {
-            if (ev.getX() > mList.getWidth() - mThumbW && ev.getY() >= mThumbY &&
-                    ev.getY() <= mThumbY + mThumbH) {
+            if (ev.getX() > mList.getWidth() - mThumbW
+                    && ev.getY() >= mThumbY
+                    && ev.getY() <= mThumbY + mThumbH) {
                 setState(STATE_DRAGGING);
                 return true;
             }

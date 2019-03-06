@@ -156,8 +156,8 @@ public class EditBookFragment
                     @Override
                     public void onPositiveButton() {
                         saveBook();
-                        Intent data = new Intent();
-                        data.putExtra(UniqueId.KEY_ID, getBook().getId());
+                        Intent data = new Intent()
+                                .putExtra(UniqueId.KEY_ID, getBook().getId());
                         mActivity.setResult(Activity.RESULT_OK, data);
                         mActivity.finish();
                     }
@@ -380,8 +380,8 @@ public class EditBookFragment
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
 
-        Intent data = new Intent();
-        data.putExtra(UniqueId.KEY_ID, getBook().getId());
+        Intent data = new Intent()
+                .putExtra(UniqueId.KEY_ID, getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.
         mActivity.setResult(Activity.RESULT_OK, data);
         mActivity.finishIfClean();

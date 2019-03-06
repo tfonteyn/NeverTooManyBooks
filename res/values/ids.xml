@@ -123,10 +123,23 @@
     <!-- END predefined menu items -->
 
     <!-- BEGIN used by {@link TouchListView} and classes interacting with the TLV -->
+    <!-- the 'root' view of the row -->
     <item name="TLV_ROW" type="id" />
+    <!-- the part of the row that is not a button
+    // TLV row details need this!
+    android:focusable="false"
+    // if we want long clicks, then set:
+    android:longClickable="true"
+    -->
     <item name="TLV_ROW_DETAILS" type="id" />
+    <!-- the optional delete button -->
     <item name="TLV_ROW_DELETE" type="id"/>
+    <!-- the optional checkable button -->
+    <item name="TLV_ROW_CHECKABLE" type="id"/>
+    <!-- used by {@link SimpleListAdapter} for storing its private tag; stored on the 'root'
+     of the row -->
     <item name="TLV_ROW_TAG" type="id"/>
+    <!-- the grabber handle -->
     <item name="TLV_ROW_GRABBER" type="id"/>
     <!-- END used by {@link SimpleListAdapter} and {@link EditObjectListActivity} -->
 

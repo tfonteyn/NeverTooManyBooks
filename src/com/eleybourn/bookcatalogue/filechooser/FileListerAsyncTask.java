@@ -37,6 +37,7 @@ public abstract class FileListerAsyncTask
                              .compareTo(o2.getFile().getName().toLowerCase());
                 }
             };
+    protected final ProgressDialogFragment<ArrayList<FileDetails>> mFragment;
     private final int mTaskId;
     @NonNull
     private final File mRoot;
@@ -46,8 +47,6 @@ public abstract class FileListerAsyncTask
      */
     @Nullable
     protected Exception mException;
-
-    protected ProgressDialogFragment<ArrayList<FileDetails>> mFragment;
 
     /**
      * Constructor.

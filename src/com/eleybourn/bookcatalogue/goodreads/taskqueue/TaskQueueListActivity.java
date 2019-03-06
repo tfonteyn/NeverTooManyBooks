@@ -32,11 +32,11 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.dialogs.HintManager;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.dialogs.HintManager;
 
 /**
  * Activity to display the available QueueManager Task object subclasses to the user.
@@ -89,8 +89,8 @@ public class TaskQueueListActivity
                     @Override
                     public void run() {
                         Intent intent = new Intent(TaskQueueListActivity.this,
-                                                   EventQueueListActivity.class);
-                        intent.putExtra(EventQueueListActivity.REQUEST_BKEY_TASK_ID, id);
+                                                   EventQueueListActivity.class)
+                                .putExtra(EventQueueListActivity.REQUEST_BKEY_TASK_ID, id);
                         startActivity(intent);
                     }
                 }));

@@ -31,7 +31,32 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -54,37 +79,12 @@ import com.eleybourn.bookcatalogue.goodreads.api.ShowBookApiHandler.ShowBookFiel
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIdApiHandler;
 import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIsbnApiHandler;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.RTE;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -1056,8 +1056,7 @@ public class GoodreadsManager
              .apply();
 
         // Open the web page
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl));
-        context.startActivity(browserIntent);
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
     }
 
     /**

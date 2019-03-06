@@ -22,14 +22,14 @@ package com.eleybourn.bookcatalogue.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 public final class IsbnUtils {
 

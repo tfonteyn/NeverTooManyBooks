@@ -17,6 +17,7 @@
  */
 package com.eleybourn.bookcatalogue.widgets;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -50,21 +51,39 @@ import com.eleybourn.bookcatalogue.R;
  * <p>
  * https://github.com/timsu/cwac-touchlist
  * <p>
- * You have five customizable attributes:
+ * Customizable attributes:
+ * <pre>
+ *     {@code
+ *         <declare-styleable name="TouchListView">
+ *         <attr name="normal_height" format="dimension" />
+ *         <attr name="expanded_height" format="dimension" />
+ *         <attr name="grabber" format="reference" />
+ *         <attr name="dnd_background" format="color" />
+ *         <attr name="remove_mode">
+ *             <enum name="none" value="-1" />
+ *             <enum name="fling" value="0" />
+ *             <enum name="slideRight" value="1" />
+ *             <enum name="slideLeft" value="2" />
+ *         </attr>
+ *     </declare-styleable>
+ *     }
+ * </pre>
  * <p>
  * normal_height:
- * the height of one of your regular rows (required)
+ * The height of one of your regular rows.
+ * Default: calculated assuming all rows are equal height.
  * <p>
  * expanded_height:
- * the largest possible height of one of your rows (defaults to the value of normal_height)
+ * The largest possible height of one of your rows.
+ * Default: the value of normal_height.
  * <p>
  * grabber:
- * the android:id value of an icon in your rows that should be used as the "grab handle"
+ * The android:id value of an icon in your rows that should be used as the "grab handle"
  * for the drag-and-drop operation (required)
  * <p>
- * dragndrop_background:
- * a color to use as the background of your row when it is being dragged
- * (defaults to being fully transparent)
+ * dnd_background:
+ * A colour to use as the background of your row when it is being dragged
+ * Default: fully transparent.
  * <p>
  * remove_mode:
  * ="none"         (default) user cannot remove entries
@@ -72,11 +91,11 @@ import com.eleybourn.bookcatalogue.R;
  * ="slideLeft"    user can remove entries by dragging to the left quarter of the list)
  * ="fling"        ...not quite sure what this does
  * <p>
- * NOTE: remove_mode of slide is equivalent to slideRight, but slideRight is recommended.
  */
 public class TouchListView
         extends ListView {
 
+    /** {@link #mRemoveMode}. */
     private static final int MODE_NOT_SET = -1;
     private static final int FLING = 0;
     private static final int SLIDE_RIGHT = 1;
@@ -84,70 +103,102 @@ public class TouchListView
 
     private final Rect mTempRect = new Rect();
     private final int mTouchSlop;
-    //private int mItemHeightExpanded=-1;
+
     @IdRes
-    private final int grabberId;
+    private final int mGrabberId;
+
     /** Color.TRANSPARENT by default. */
     @ColorInt
-    private final int dragndropBackgroundColor;
-    private ImageView mDragView;
-    /** use {@link #getWindowManager()} to access. */
+    private final int mDndBackgroundColor;
+
+    private final int mRemoveMode;
+
+    /** Height of a row in pixels. */
+    private int mItemHeight;
+    //private int mItemHeightExpanded=-1;
+
+    /** Don't use directly; always use {@link #getWindowManager()} to access. */
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mWindowParams;
-    /** which item is being dragged. */
+
+    /** The view that is being dragged. */
+    @Nullable
+    private ImageView mDragView;
+    /** The dragged view, as a bitmap for visual feedback. */
+    @Nullable
+    private Bitmap mDragBitmap;
+
+    /** Which item is being dragged. */
     private int mDragPos;
-    /** where was the dragged item originally. */
+    /** Where was the dragged item originally. */
     private int mFirstDragPos;
-    /** at what offset inside the item did the user grab it. */
+    /** At what offset inside the item did the user grab it. */
     private int mDragPoint;
-    /** the difference between screen coordinates and coordinates in this view. */
+    /** The difference between screen coordinates and coordinates in this view. */
     private int mCoordinatesOffset;
+
+    /** Optional listener to get notified when a drag starts. */
+    @Nullable
     private OnDragListener mOnDragListener;
+    /** Optional listener to get notified when a drop happens. */
+    @Nullable
     private OnDropListener mOnDropListener;
+    /** Optional listener to get notified if a removal is done. */
+    @Nullable
     private OnRemoveListener mOnRemoveListener;
+
     private int mUpperBound;
     private int mLowerBound;
+
+    /** The height of the ListView. */
     private int mHeight;
     @Nullable
     private GestureDetector mGestureDetector;
 
-    private final int mRemoveMode;
-    @Nullable
-    private Bitmap mDragBitmap;
-    private final int mItemHeightNormal;
     /** Set to <tt>true</tt> at start of a new drag operation. */
     private boolean mWasFirstExpansion;
-
     @Nullable
     private Integer mSavedHeight;
 
+    /**
+     * Constructor.
+     *
+     * @param context The Context the view is running in, through which it can
+     *                access the current theme, resources, etc.
+     * @param attrs   The attributes of the XML tag that is inflating the view.
+     */
     public TouchListView(@NonNull final Context context,
                          @NonNull final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param context      The Context the view is running in, through which it can
+     *                     access the current theme, resources, etc.
+     * @param attrs        The attributes of the XML tag that is inflating the view.
+     * @param defStyleAttr An attribute in the current theme that contains a
+     *                     reference to a style resource that supplies default values for
+     *                     the view. Can be 0 to not look for defaults.
+     */
     public TouchListView(@NonNull final Context context,
                          @NonNull final AttributeSet attrs,
-                         final int defStyle) {
-        super(context, attrs, defStyle);
+                         final int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
 
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
         TypedArray typedArray = getContext()
                 .obtainStyledAttributes(attrs, R.styleable.TouchListView, 0, 0);
 
-        mItemHeightNormal =
-                typedArray.getDimensionPixelSize(R.styleable.TouchListView_normal_height, 0);
-
-        //mItemHeightExpanded=a.getDimensionPixelSize(
-        //      R.styleable.TouchListView_expanded_height, mItemHeightNormal);
-
-        grabberId = typedArray.getResourceId(R.styleable.TouchListView_grabber, -1);
-
-        dragndropBackgroundColor = typedArray.getColor(
-                R.styleable.TouchListView_dragndrop_background, Color.TRANSPARENT);
-
+        mGrabberId = typedArray.getResourceId(R.styleable.TouchListView_grabber, -1);
         mRemoveMode = typedArray.getInt(R.styleable.TouchListView_remove_mode, MODE_NOT_SET);
+        mItemHeight = typedArray.getDimensionPixelSize(R.styleable.TouchListView_normal_height, 0);
+        //mItemHeightExpanded = typedArray
+        //     .getDimensionPixelSize(R.styleable.TouchListView_expanded_height, mItemHeight);
+        mDndBackgroundColor = typedArray.getColor(R.styleable.TouchListView_dnd_background,
+                                                  Color.TRANSPARENT);
 
         typedArray.recycle();
     }
@@ -227,26 +278,26 @@ public class TouchListView
                         break;
                     }
 
-                    View item = getChildAt(itemNumber - getFirstVisiblePosition());
+                    View rowView = getChildAt(itemNumber - getFirstVisiblePosition());
 
-                    if (isDraggableRow(item)) {
-                        mDragPoint = y - item.getTop();
+                    if (isDraggableRow(rowView)) {
+                        mDragPoint = y - rowView.getTop();
                         mCoordinatesOffset = ((int) ev.getRawY()) - y;
-                        View dragger = item.findViewById(grabberId);
+                        View dragHandle = rowView.findViewById(mGrabberId);
                         Rect r = mTempRect;
-                        // dragger.getDrawingRect(r);
+                        //dragHandle.getDrawingRect(r);
 
-                        r.left = dragger.getLeft();
-                        r.right = dragger.getRight();
-                        r.top = dragger.getTop();
-                        r.bottom = dragger.getBottom();
+                        r.left = dragHandle.getLeft();
+                        r.right = dragHandle.getRight();
+                        r.top = dragHandle.getTop();
+                        r.bottom = dragHandle.getBottom();
 
                         if ((r.left < x) && (x < r.right)) {
-                            item.setDrawingCacheEnabled(true);
+                            rowView.setDrawingCacheEnabled(true);
                             // Create a copy of the drawing cache so that it does not get recycled
                             // by the framework when the list tries to clean up memory
-                            Bitmap bitmap = Bitmap.createBitmap(item.getDrawingCache());
-                            item.setDrawingCacheEnabled(false);
+                            Bitmap bitmap = Bitmap.createBitmap(rowView.getDrawingCache());
+                            rowView.setDrawingCacheEnabled(false);
 
                             Rect listBounds = new Rect();
 
@@ -271,181 +322,7 @@ public class TouchListView
         return super.onInterceptTouchEvent(ev);
     }
 
-    /**
-     * A row is draggable if it has a drag icon.
-     */
-    private boolean isDraggableRow(@NonNull final View view) {
-        return view.findViewById(grabberId) != null;
-    }
-
-    /**
-     * pointToPosition() doesn't consider invisible views, but we
-     * need to, so implement a slightly different version.
-     */
-    private int myPointToPosition(@SuppressWarnings("SameParameterValue") final int x,
-                                  final int y) {
-        Rect frame = mTempRect;
-        final int count = getChildCount();
-        for (int i = count - 1; i >= 0; i--) {
-            final View child = getChildAt(i);
-            child.getHitRect(frame);
-            if (frame.contains(x, y)) {
-                return getFirstVisiblePosition() + i;
-            }
-        }
-        return INVALID_POSITION;
-    }
-
-    private int getItemForPosition(final int y) {
-        int adjustedy = y - mDragPoint - (mItemHeightNormal / 2);
-        int pos = myPointToPosition(0, adjustedy);
-        if (pos >= 0) {
-            if (pos <= mFirstDragPos) {
-                pos += 1;
-            }
-        } else if (adjustedy < 0) {
-            pos = 0;
-        }
-        return pos;
-    }
-
-    private void adjustScrollBounds(final int y) {
-        if (y >= mHeight / 3) {
-            mUpperBound = mHeight / 3;
-        }
-        if (y <= mHeight * 2 / 3) {
-            mLowerBound = mHeight * 2 / 3;
-        }
-    }
-
-    /**
-     * Restore size and visibility for all list items.
-     */
-    private void unExpandViews(final boolean deletion) {
-        //if(true) return;
-        for (int i = 0; ; i++) {
-            View v = getChildAt(i);
-            if (v == null) {
-                if (deletion) {
-                    // HACK force update of mItemCount
-                    int position = getFirstVisiblePosition();
-                    int y = getChildAt(0).getTop();
-                    setAdapter(getAdapter());
-                    setSelectionFromTop(position, y);
-                    // end hack
-                }
-                // force children to be recreated where needed
-                layoutChildren();
-                v = getChildAt(i);
-                if (v == null) {
-                    break;
-                }
-            }
-
-            if (isDraggableRow(v)) {
-                ViewGroup.LayoutParams params = v.getLayoutParams();
-                if (mSavedHeight != null) {
-                    params.height = mSavedHeight;
-                } else {
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                }
-                //params.height = mItemHeightNormal;
-                v.setLayoutParams(params);
-                v.setVisibility(View.VISIBLE);
-                //v.setBackgroundColor(Color.TRANSPARENT);
-                v.setPadding(v.getPaddingLeft(), 0, v.getPaddingRight(), 0);
-            }
-        }
-    }
-
-    /**
-     * Adjust visibility and size to make it appear as though an item is being dragged around
-     * and other items are making room for it.
-     * <p>
-     * If dropping the item would result in it still being in the same place, then make the
-     * dragged list item's size small, but make the item invisible.
-     * <p>
-     * Otherwise, if the dragged list item is still on screen, make it as small as possible
-     * and expand the item below the insert point.
-     * <p>
-     * If the dragged item is not on screen, only expand the item below the current insert point.
-     */
-    private void doExpansion(final boolean firstTime) {
-
-        // Find the effective child number that we are hovering over
-        int child = mDragPos - getFirstVisiblePosition() - 1;
-        if (mDragPos > mFirstDragPos) {
-            // If the current drag position is past the 'invisible' dragged position, add 1
-            child++;
-        }
-
-        // Get the view that corresponds to the row being dragged, if present in current set of rows
-        View first = getChildAt(mFirstDragPos - getFirstVisiblePosition());
-
-        // Loop through all visible views, adjusting them
-        for (int i = 0; ; i++) {
-            // Get next child, break if finished
-            View vv = getChildAt(i);
-            if (vv == null) {
-                break;
-            }
-
-            // If this is a 'draggable' row, process it
-            if (isDraggableRow(vv)) {
-                // Set the default padding at top/bot (we may have previously changed it)
-                vv.setPadding(vv.getPaddingLeft(), 0, vv.getPaddingRight(), 0);
-
-                // Get the height of the current view, and save it if not saved already
-                ViewGroup.LayoutParams params = vv.getLayoutParams();
-                if (mSavedHeight == null) {
-                    // Save the height the first time we get it. We make the assumption that
-                    // all rows will be the same height, whether that is a fixed value
-                    // or 'wrap-contents'/'fill-parent'.
-                    mSavedHeight = params.height;
-                }
-                // Set the height to the previously saved height.
-                params.height = mSavedHeight;
-
-                int visibility = View.VISIBLE;
-
-                // If this view is the actual row we are dragging...then shrink it...except
-                if (vv.equals(first)) {
-                    // ...if we are here the first time. The first time in, the user is
-                    // hovering on the row, so we just make it invisible.
-                    if (!firstTime) {
-                        // processing the item that is being dragged
-                        params.height = 1;
-                        //visibility = View.INVISIBLE;
-                    } else {
-                        visibility = View.INVISIBLE;
-                    }
-                }
-
-                // If the drag position is above the top of the list then pad the top item
-                if (child < 0) {
-                    // If the current view is the first item OR second item and we are
-                    // dragging first then pad its top.
-                    if (i == 0 || (i == 1 && mFirstDragPos == 0)) {
-                        // Position prior to first item; so pad top
-                        vv.setPadding(vv.getPaddingLeft(), mDragView.getHeight(),
-                                      vv.getPaddingRight(), 0);
-                    } // else  no other rows need special handling
-                } else if (i == child) {
-                    // The user is hovering over the current row, so pad the bottom
-                    vv.setPadding(vv.getPaddingLeft(), 0, vv.getPaddingRight(),
-                                  mDragView.getHeight());
-                }
-                // Now apply the height and visibility to the current view, invalidate it, and loop.
-                vv.setLayoutParams(params);
-                vv.setVisibility(visibility);
-                vv.invalidate();
-            }
-        }
-        // Request re-layout since we changed the items layout and not doing this
-        // would cause bogus hitbox calculation in myPointToPosition
-        layoutChildren();
-    }
-
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     @CallSuper
     public boolean onTouchEvent(@NonNull final MotionEvent ev) {
@@ -484,7 +361,7 @@ public class TouchListView
                     int x = (int) ev.getX();
                     int y = (int) ev.getY();
                     dragView(x, y);
-                    int item = getItemForPosition(y);
+                    int item = getItemForPosition(x, y);
                     if (item >= 0) {
                         if (action == MotionEvent.ACTION_DOWN || item != mDragPos) {
                             if (mOnDragListener != null) {
@@ -511,9 +388,9 @@ public class TouchListView
                                 //we hit a divider or an invisible view, check somewhere else
                                 ref = pointToPosition(0, mHeight / 2 + getDividerHeight() + 64);
                             }
-                            View v = getChildAt(ref - getFirstVisiblePosition());
-                            if (v != null) {
-                                int pos = v.getTop();
+                            View rowView = getChildAt(ref - getFirstVisiblePosition());
+                            if (rowView != null) {
+                                int pos = rowView.getTop();
                                 setSelectionFromTop(ref, pos - speed);
                             }
                         }
@@ -525,12 +402,216 @@ public class TouchListView
         return super.onTouchEvent(ev);
     }
 
+    /**
+     * {@link #pointToPosition} doesn't consider invisible views, but we
+     * need to, so implement a slightly different version.
+     * We still need access to the original method, so we don't override it.
+     * <p>
+     * Maps a point to a position in the list.
+     *
+     * @param x X in local coordinate
+     * @param y Y in local coordinate
+     *
+     * @return The position of the item which contains the specified point, or
+     * {@link #INVALID_POSITION} if the point does not intersect an item.
+     */
+    private int myPointToPosition(final int x,
+                                  final int y) {
+        Rect frame = mTempRect;
+        final int count = getChildCount();
+        for (int i = count - 1; i >= 0; i--) {
+            final View child = getChildAt(i);
+            child.getHitRect(frame);
+            if (frame.contains(x, y)) {
+                return getFirstVisiblePosition() + i;
+            }
+        }
+        return INVALID_POSITION;
+    }
+
+    /**
+     * Convert a vertical offset to an item index.
+     * <p>
+     * 2019-03-05: need to pass the x as well so we can have padding/margins.
+     * Original code always used x=0 which meant ANY padding made the pos==INVALID_POSITION
+     *
+     * @param x X in local coordinate
+     * @param y Y in local coordinate
+     *
+     * @return the index
+     */
+    private int getItemForPosition(final int x,
+                                   final int y) {
+        //TODO: do we need mItemHeight at all ? how about mSavedHeight ?
+        if (mItemHeight == 0) {
+            mItemHeight = getChildAt(0).getHeight();
+        }
+        int adjusted_y = y - mDragPoint - (mItemHeight / 2);
+        int pos = myPointToPosition(x, adjusted_y);
+        if (pos >= 0) {
+            if (pos <= mFirstDragPos) {
+                pos += 1;
+            }
+        } else if (adjusted_y < 0) {
+            pos = 0;
+        }
+
+        return pos;
+    }
+
+    private void adjustScrollBounds(final int y) {
+        if (y >= mHeight / 3) {
+            mUpperBound = mHeight / 3;
+        }
+        if (y <= mHeight * 2 / 3) {
+            mLowerBound = mHeight * 2 / 3;
+        }
+    }
+
+    /**
+     * Restore size and visibility for all list items.
+     */
+    private void unExpandViews(final boolean deletion) {
+        //if(true) return;
+        for (int i = 0; ; i++) {
+            View rowView = getChildAt(i);
+            if (rowView == null) {
+                if (deletion) {
+                    // HACK force update of mItemCount
+                    int position = getFirstVisiblePosition();
+                    int y = getChildAt(0).getTop();
+                    setAdapter(getAdapter());
+                    setSelectionFromTop(position, y);
+                    // end hack
+                }
+                // force children to be recreated where needed
+                layoutChildren();
+                rowView = getChildAt(i);
+                if (rowView == null) {
+                    break;
+                }
+            }
+
+            if (isDraggableRow(rowView)) {
+                ViewGroup.LayoutParams params = rowView.getLayoutParams();
+                if (mSavedHeight != null) {
+                    params.height = mSavedHeight;
+                } else {
+                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                }
+                //params.height = mItemHeight;
+                rowView.setLayoutParams(params);
+                rowView.setVisibility(View.VISIBLE);
+                //v.setBackgroundColor(Color.TRANSPARENT);
+                rowView.setPadding(rowView.getPaddingLeft(), 0, rowView.getPaddingRight(), 0);
+            }
+        }
+    }
+
+    /**
+     * Adjust visibility and size to make it appear as though an item is being dragged around
+     * and other items are making room for it.
+     * <p>
+     * If dropping the item would result in it still being in the same place, then make the
+     * dragged list item's size small, but make the item invisible.
+     * <p>
+     * Otherwise, if the dragged list item is still on screen, make it as small as possible
+     * and expand the item below the insert point.
+     * <p>
+     * If the dragged item is not on screen, only expand the item below the current insert point.
+     */
+    private void doExpansion(final boolean firstTime) {
+
+        // Find the effective child number that we are hovering over
+        int child = mDragPos - getFirstVisiblePosition() - 1;
+        if (mDragPos > mFirstDragPos) {
+            // If the current drag position is past the 'invisible' dragged position, add 1
+            child++;
+        }
+
+        // Get the view that corresponds to the row being dragged, if present in current set of rows
+        View first = getChildAt(mFirstDragPos - getFirstVisiblePosition());
+
+        // Loop through all visible views, adjusting them
+        for (int i = 0; ; i++) {
+            // Get next child, break if finished
+            View rowView = getChildAt(i);
+            if (rowView == null) {
+                break;
+            }
+
+            // If this is a 'draggable' row, process it
+            if (isDraggableRow(rowView)) {
+                // Set the default padding at top/bot (we may have previously changed it)
+                rowView.setPadding(rowView.getPaddingLeft(), 0, rowView.getPaddingRight(), 0);
+
+                // Get the height of the current view, and save it if not saved already
+                ViewGroup.LayoutParams params = rowView.getLayoutParams();
+                if (mSavedHeight == null) {
+                    // Save the height the first time we get it. We make the assumption that
+                    // all rows will be the same height, whether that is a fixed value
+                    // or 'wrap-contents'/'fill-parent'.
+                    mSavedHeight = params.height;
+                }
+                // Set the height to the previously saved height.
+                params.height = mSavedHeight;
+
+                int visibility = View.VISIBLE;
+
+                // processing the item that is being dragged
+                // If this view is the actual row we are dragging...then shrink it...except
+                if (rowView.equals(first)) {
+                    // ...if we are here the first time. The first time in, the user is
+                    if (firstTime) {
+                        // hovering over the original location, so we just make it invisible.
+                        visibility = View.INVISIBLE;
+                    } else {
+                        // hovering over the original location
+                        params.height = 1;
+                    }
+                }
+
+                // If the drag position is above the top of the list then pad the top item
+                if (child < 0) {
+                    // If the current view is the first item OR second item and we are
+                    // dragging first then pad its top.
+                    if (i == 0 || (i == 1 && mFirstDragPos == 0)) {
+                        // Position prior to first item; add padding on the top
+                        //noinspection ConstantConditions
+                        rowView.setPadding(rowView.getPaddingLeft(), mDragView.getHeight(),
+                                           rowView.getPaddingRight(), 0);
+                    }
+                } else if (i == child) {
+                    // The user is hovering over the current row, so pad the bottom
+                    //noinspection ConstantConditions
+                    rowView.setPadding(rowView.getPaddingLeft(), 0,
+                                       rowView.getPaddingRight(), mDragView.getHeight());
+                }
+
+                // Now apply the height and visibility to the current view, invalidate it, and loop.
+                rowView.setLayoutParams(params);
+                rowView.setVisibility(visibility);
+                rowView.invalidate();
+            }
+        }
+        // Request re-layout since we changed the items layout and not doing this
+        // would cause bogus hit-box calculation in myPointToPosition
+        layoutChildren();
+    }
+
     @NonNull
     private WindowManager getWindowManager() {
         if (mWindowManager == null) {
             mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         }
         return mWindowManager;
+    }
+
+    /**
+     * A row is draggable if it has a drag icon.
+     */
+    private boolean isDraggableRow(@NonNull final View view) {
+        return view.findViewById(mGrabberId) != null;
     }
 
     private void startDragging(@NonNull final Bitmap bm,
@@ -553,7 +634,7 @@ public class TouchListView
         mWindowParams.windowAnimations = 0;
 
         ImageView v = new ImageView(getContext());
-        v.setBackgroundColor(dragndropBackgroundColor);
+        v.setBackgroundColor(mDndBackgroundColor);
         v.setImageBitmap(bm);
         mDragBitmap = bm;
 
@@ -564,6 +645,7 @@ public class TouchListView
     private void dragView(final int x,
                           final int y) {
         float alpha = 1.0f;
+        //noinspection ConstantConditions
         int width = mDragView.getWidth();
 
         if (mRemoveMode == SLIDE_RIGHT) {

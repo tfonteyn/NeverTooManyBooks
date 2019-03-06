@@ -341,18 +341,17 @@ public class BooksOnBookshelf
                                                   .getName();
 
                     Intent intent = new Intent(BooksOnBookshelf.this,
-                                               BookDetailsActivity.class);
-                    intent.putExtra(UniqueId.KEY_ID, bookId);
-                    intent.putExtra(BookFragment.REQUEST_BKEY_FLATTENED_BOOKLIST, listTable);
-                    intent.putExtra(BookFragment.REQUEST_BKEY_FLATTENED_BOOKLIST_POSITION,
-                                    position);
+                                               BookDetailsActivity.class)
+                            .putExtra(UniqueId.KEY_ID, bookId)
+                            .putExtra(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST, listTable)
+                            .putExtra(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST_POSITION, position);
                     startActivityForResult(intent, REQ_BOOK_VIEW);
 
                 } else {
                     Intent intent = new Intent(BooksOnBookshelf.this,
-                                               EditBookActivity.class);
-                    intent.putExtra(UniqueId.KEY_ID, bookId);
-                    intent.putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
+                                               EditBookActivity.class)
+                            .putExtra(UniqueId.KEY_ID, bookId)
+                            .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                     startActivityForResult(intent, REQ_BOOK_EDIT);
                 }
                 break;
@@ -1391,7 +1390,7 @@ public class BooksOnBookshelf
         private static final String TAG = GetBookListTask.class.getSimpleName();
         /** Generic identifier. */
         private static final int M_TASK_ID = R.id.TASK_ID_GET_BOOKLIST;
-
+        protected final ProgressDialogFragment<BuilderHolder> mFragment;
         /**
          * Indicates whole table structure needs rebuild,
          * versus just do a reselect of underlying data.
@@ -1409,9 +1408,6 @@ public class BooksOnBookshelf
          */
         @Nullable
         protected Exception mException;
-
-        protected ProgressDialogFragment<BuilderHolder> mFragment;
-
         /** Resulting Cursor. */
         private BooklistPseudoCursor tempList;
         /** used to determine new cursor position. */
@@ -1421,6 +1417,7 @@ public class BooksOnBookshelf
         /**
          * Constructor.
          *
+         * @param frag            the fragment to use for progress updates
          * @param builderHolder   holder class with input fields / results.
          * @param isFullRebuild   Indicates whole table structure needs rebuild,
          *                        versus just do a reselect of underlying data
@@ -1750,12 +1747,12 @@ public class BooksOnBookshelf
          * @param intent which will be used for a {@link #startActivityForResult}
          */
         void to(@NonNull final Intent intent) {
-            intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, text);
-            intent.putExtra(UniqueId.BKEY_SEARCH_AUTHOR, author);
-            intent.putExtra(UniqueId.KEY_TITLE, title);
-            intent.putExtra(UniqueId.KEY_SERIES, series);
-            intent.putExtra(UniqueId.KEY_BOOK_LOANEE, loanee);
-            intent.putExtra(UniqueId.BKEY_ID_LIST, bookList);
+            intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, text)
+                  .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, author)
+                  .putExtra(UniqueId.KEY_TITLE, title)
+                  .putExtra(UniqueId.KEY_SERIES, series)
+                  .putExtra(UniqueId.KEY_BOOK_LOANEE, loanee)
+                  .putExtra(UniqueId.BKEY_ID_LIST, bookList);
         }
 
         /**

@@ -27,7 +27,6 @@ import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -283,9 +282,8 @@ public class PartialDatePickerDialogFragment
             mDay = day;
 
             // Get the layout
-            LayoutInflater inf = getLayoutInflater();
             @SuppressLint("InflateParams")
-            View root = inf.inflate(R.layout.dialog_partial_date_picker, null);
+            View root = getLayoutInflater().inflate(R.layout.dialog_partial_date_picker, null);
 
             // Ensure components match current locale order
             reorderPickers(root);

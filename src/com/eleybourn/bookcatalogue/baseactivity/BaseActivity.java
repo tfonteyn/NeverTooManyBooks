@@ -135,36 +135,32 @@ public abstract class BaseActivity
     @CallSuper
     public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         closeNavigationDrawer();
-
-        Intent intent;
         switch (item.getItemId()) {
             case R.id.nav_search:
                 onSearchRequested();
                 return true;
 
             case R.id.nav_manage_bookshelves:
-                intent = new Intent(this, EditBookshelfListActivity.class);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
+                startActivityForResult(new Intent(this, EditBookshelfListActivity.class),
+                                       UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
                 return true;
 
             case R.id.nav_edit_list_styles:
-                intent = new Intent(this, PreferredStylesActivity.class);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES);
+                startActivityForResult(new Intent(this, PreferredStylesActivity.class),
+                                       UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES);
                 return true;
 
             case R.id.nav_admin:
-                intent = new Intent(this, AdminActivity.class);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_ADMIN);
+                startActivityForResult(new Intent(this, AdminActivity.class),
+                                       UniqueId.REQ_NAV_PANEL_ADMIN);
                 return true;
 
             case R.id.nav_about:
-                intent = new Intent(this, About.class);
-                startActivity(intent);
+                startActivity( new Intent(this, About.class));
                 return true;
 
             case R.id.nav_help:
-                intent = new Intent(this, Help.class);
-                startActivity(intent);
+                startActivity(new Intent(this, Help.class));
                 return true;
 
             default:

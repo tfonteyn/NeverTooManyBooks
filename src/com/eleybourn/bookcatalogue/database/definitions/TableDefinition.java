@@ -2,14 +2,6 @@ package com.eleybourn.bookcatalogue.database.definitions;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.Csv;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,6 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.Csv;
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -673,7 +673,7 @@ public class TableDefinition
      * <p>
      * format: [alias].[domain-1] AS [domain-1], ..., [alias].[domain-n] AS [domain-n]
      *
-     * @param withAS set to <tt>true</tt> if you need 'AS domain-x' added.
+     * @param withAS  set to <tt>true</tt> if you need 'AS domain-x' added.
      * @param domains List of domains to use
      *
      * @return SQL fragment
@@ -682,7 +682,7 @@ public class TableDefinition
      */
     @NonNull
     public String csvColumns(final boolean withAS,
-                               @NonNull final DomainDefinition... domains) {
+                             @NonNull final DomainDefinition... domains) {
         return Csv.join(",", Arrays.asList(domains), new Csv.Formatter<DomainDefinition>() {
             @Override
             public String format(@NonNull final DomainDefinition element) {
@@ -760,7 +760,7 @@ public class TableDefinition
     private String getSqlCreateStatement(@NonNull final String name,
                                          final boolean withConstraints,
                                          final boolean withTableReferences,
-                                         final boolean ifNotExists) {
+                                         @SuppressWarnings("SameParameterValue") final boolean ifNotExists) {
         StringBuilder sql = new StringBuilder("CREATE")
                 .append(mType.getCreateModifier())
                 .append(" TABLE");

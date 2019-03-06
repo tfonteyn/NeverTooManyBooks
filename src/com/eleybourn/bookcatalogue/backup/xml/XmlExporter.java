@@ -666,7 +666,7 @@ public class XmlExporter
          * @return the object for the specified key of the current element.
          */
         @NonNull
-        Object get(@NonNull final K key);
+        Object get(@NonNull K key);
     }
 
     /**

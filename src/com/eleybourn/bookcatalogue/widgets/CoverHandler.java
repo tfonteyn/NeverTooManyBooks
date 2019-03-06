@@ -431,8 +431,8 @@ public class CoverHandler
      * Call out the Intent.ACTION_GET_CONTENT to get an image from (usually) the Gallery app.
      */
     private void getCoverFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
+                .setType("image/*");
         mFragment.startActivityForResult(
                 Intent.createChooser(intent, mActivity.getString(R.string.title_select_image)),
                 REQ_ACTION_GET_CONTENT);
@@ -542,13 +542,13 @@ public class CoverHandler
         File cropped = getCroppedTempCoverFile();
         StorageUtils.deleteFile(cropped);
 
-        Intent intent = new Intent(mActivity, CropImageActivity.class);
-        intent.putExtra(CropImageActivity.REQUEST_KEY_IMAGE_ABSOLUTE_PATH,
-                        imageFile.getAbsolutePath());
-        intent.putExtra(CropImageActivity.REQUEST_KEY_SCALE, true);
-        intent.putExtra(CropImageActivity.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
-        intent.putExtra(CropImageActivity.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH,
-                        cropped.getAbsolutePath());
+        Intent intent = new Intent(mActivity, CropImageActivity.class)
+                .putExtra(CropImageActivity.REQUEST_KEY_IMAGE_ABSOLUTE_PATH,
+                          imageFile.getAbsolutePath())
+                .putExtra(CropImageActivity.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH,
+                          cropped.getAbsolutePath())
+                .putExtra(CropImageActivity.REQUEST_KEY_SCALE, true)
+                .putExtra(CropImageActivity.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
 
         mFragment.startActivityForResult(intent, REQ_CROP_IMAGE_INTERNAL);
     }
@@ -561,47 +561,40 @@ public class CoverHandler
      * @param imageFile to crop
      */
     private void cropCoverImageExternal(@NonNull final File imageFile) {
-        Tracker.handleEvent(this, Tracker.States.Enter, "cropCoverImageExternal");
-        try {
-            File inputFile = new File(imageFile.getAbsolutePath());
+        //call the standard crop action intent (the device may not support it)
+        Intent intent = new Intent("com.android.camera.action.CROP")
+                // image Uri and type
+                .setDataAndType(Uri.fromFile(new File(imageFile.getAbsolutePath())), "image/*")
+                // not interested in faces
+                .putExtra("noFaceDetection", true)
+                // <tt>true</tt> to return a Bitmap,
+                // <tt>false</tt> to directly save the cropped image
+                .putExtra("return-data", false)
+                //indicate we want to crop
+                .putExtra("crop", true)
+                // and allow scaling
+                .putExtra("scale", true);
 
-            //call the standard crop action intent (the device may not support it)
-            Intent intent = new Intent("com.android.camera.action.CROP");
-            // image Uri and type
-            intent.setDataAndType(Uri.fromFile(inputFile), "image/*");
-            // not interested in faces
-            intent.putExtra("noFaceDetection", true);
-            // <tt>true</tt> to return a Bitmap, <tt>false</tt> to directly save the cropped image
-            intent.putExtra("return-data", false);
-            //indicate we want to crop
-            intent.putExtra("crop", true);
-            // and allow scaling
-            intent.putExtra("scale", true);
-
-            // other options not needed for now.
+        // other options not needed for now.
 //            //indicate aspect of desired crop
-//            cropIntent.putExtra("aspectX", 1);
-//            cropIntent.putExtra("aspectY", 1);
+//            intent.putExtra("aspectX", 1);
+//            intent.putExtra("aspectY", 1);
 //            //indicate output X and Y
-//            cropIntent.putExtra("outputX", 256);
-//            cropIntent.putExtra("outputY", 256);
+//            intent.putExtra("outputX", 256);
+//            intent.putExtra("outputY", 256);
 
-            // Save output image in uri
-            File cropped = getCroppedTempCoverFile();
-            StorageUtils.deleteFile(cropped);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                            Uri.fromFile(new File(cropped.getAbsolutePath())));
+        // Save output image in uri
+        File cropped = getCroppedTempCoverFile();
+        StorageUtils.deleteFile(cropped);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
 
-            List<ResolveInfo> list = mActivity.getPackageManager()
-                                              .queryIntentActivities(intent, 0);
-            if (list.isEmpty()) {
-                UserMessage.showUserMessage(mActivity, R.string.error_no_external_crop_app);
-            } else {
-                mFragment.startActivityForResult(intent, REQ_CROP_IMAGE_EXTERNAL);
-            }
-        } finally {
-            Tracker.handleEvent(this, Tracker.States.Exit, "cropCoverImageExternal");
+        List<ResolveInfo> list = mActivity.getPackageManager().queryIntentActivities(intent, 0);
+        if (list.isEmpty()) {
+            UserMessage.showUserMessage(mActivity, R.string.error_no_external_crop_app);
+        } else {
+            mFragment.startActivityForResult(intent, REQ_CROP_IMAGE_EXTERNAL);
         }
+
     }
 
     /**

@@ -30,9 +30,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.eleybourn.bookcatalogue.R;
-
 import java.util.List;
+
+import com.eleybourn.bookcatalogue.R;
 
 /**
  * TODO: RecyclerView.
@@ -43,6 +43,9 @@ import java.util.List;
  * See the
  * <a href="https://developer.android.com/guide/topics/ui/layout/recyclerview.html">
  * Recycler View</a> guide.
+ * <p>
+ * <p>
+ * <p>
  * <p>
  * {@link ArrayAdapter} to manage rows of an arbitrary type with row movement via clicking
  * on predefined sub-views, if present.
@@ -68,7 +71,7 @@ import java.util.List;
  *     <item name="SLA_ROW_DELETE" type="id"/>
  *     <item name="SLA_ROW_TAG" type="id"/>
  *  </pre>
- *
+ * <p>
  * SLA_ROW_TAG is used to store our tag.
  *
  * @author Philip Warner
@@ -92,32 +95,23 @@ public abstract class SimpleListAdapter<T>
                         @Nullable View convertView,
                         @NonNull final ViewGroup parent) {
         final T item = getItem(position);
+
         SimpleHolder holder;
 
-        // Get the view; if not defined, load it.
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(mRowLayoutId, null);
+        if (convertView != null) {
+            // Recycling: just get the holder
+            holder = (SimpleHolder) convertView.getTag(R.id.TLV_ROW_TAG);
+        } else {
+            // Not recycling, get a new View and make the holder for it.
+            convertView = LayoutInflater.from(getContext()).inflate(mRowLayoutId, parent, false);
+            holder = new SimpleHolder(convertView);
+
             // make it flash
             convertView.setBackgroundResource(android.R.drawable.list_selector_background);
-            // build holder
-            holder = new SimpleHolder();
-            // If we use a TouchListView, then don't enable the whole row, so buttons keep working
-            holder.row = convertView.findViewById(R.id.TLV_ROW_DETAILS);
-            if (holder.row == null) {
-                // but if we did not define a details row subview, try row anyhow
-                holder.row = convertView.findViewById(R.id.TLV_ROW);
-            }
-
-            holder.deleteRowButton = convertView.findViewById(R.id.TLV_ROW_DELETE);
-
-            convertView.setTag(R.id.TLV_ROW_TAG, holder);
-
-        } else {
-            holder = (SimpleHolder) convertView.getTag(R.id.TLV_ROW_TAG);
         }
 
-        if (holder.row != null) {
-            holder.row.setOnClickListener(new View.OnClickListener() {
+        if (holder.rowDetailsView != null) {
+            holder.rowDetailsView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(@NonNull final View v) {
                     if (item != null) {
@@ -127,14 +121,14 @@ public abstract class SimpleListAdapter<T>
             });
             //FIXME: this is forced onto the layout; caused (me) confusion as a click worked
             // without realising why it worked.
-            holder.row.setFocusable(false);
+            holder.rowDetailsView.setFocusable(false);
         }
 
         // If the object is not null, do some processing
         if (item != null) {
             // Try to set the DELETE handler
-            if (holder.deleteRowButton != null) {
-                holder.deleteRowButton.setOnClickListener(new View.OnClickListener() {
+            if (holder.deleteButton != null) {
+                holder.deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
                         remove(item);
@@ -179,9 +173,23 @@ public abstract class SimpleListAdapter<T>
      * Basic info for each row, stored with tag id: R.id.SLA_ROW_TAG
      */
     static class SimpleHolder {
+
         @Nullable
-        View row;
+        final View deleteButton;
         @Nullable
-        View deleteRowButton;
+        View rowDetailsView;
+
+        SimpleHolder(@NonNull final View rowView) {
+            // If we use a TouchListView, then don't enable the whole row, so buttons keep working
+            rowDetailsView = rowView.findViewById(R.id.TLV_ROW_DETAILS);
+            if (rowDetailsView == null) {
+                // but if we did not define a details row subview, try row anyhow
+                rowDetailsView = rowView.findViewById(R.id.TLV_ROW);
+            }
+            // optional
+            deleteButton = rowView.findViewById(R.id.TLV_ROW_DELETE);
+
+            rowView.setTag(R.id.TLV_ROW_TAG, this);
+        }
     }
 }

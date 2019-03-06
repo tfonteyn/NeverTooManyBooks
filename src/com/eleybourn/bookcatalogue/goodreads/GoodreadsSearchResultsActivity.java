@@ -145,16 +145,21 @@ public class GoodreadsSearchResultsActivity
      */
     private static class Holder {
 
-        /** must be final as we'll use it as a LOCK. */
+        GoodreadsWork work;
+
         @NonNull
         final ImageView coverView;
+        @NonNull
+        final TextView titleView;
+        @NonNull
+        final TextView authorView;
 
-        GoodreadsWork work;
-        TextView titleView;
-        TextView authorView;
+        Holder(@NonNull final View rowView) {
+            coverView = rowView.findViewById(R.id.coverImage);
+            authorView = rowView.findViewById(R.id.author);
+            titleView = rowView.findViewById(R.id.title);
 
-        Holder(@NonNull final ImageView coverView) {
-            this.coverView = coverView;
+            rowView.setTag(this);
         }
     }
 
@@ -183,17 +188,15 @@ public class GoodreadsSearchResultsActivity
                             @Nullable View convertView,
                             @NonNull final ViewGroup parent) {
             Holder holder;
-            if (convertView == null) {
+            if (convertView != null) {
+                // Recycling: just get the holder
+                holder = (Holder) convertView.getTag();
+            } else {
                 // Not recycling, get a new View and make the holder for it.
                 convertView = LayoutInflater.from(getContext())
                                             .inflate(R.layout.goodreads_work_item, parent, false);
 
-                holder = new Holder((ImageView) convertView.findViewById(R.id.coverImage));
-                holder.authorView = convertView.findViewById(R.id.author);
-                holder.titleView = convertView.findViewById(R.id.title);
-
-                convertView.setTag(holder);
-
+                holder = new Holder(convertView);
                 convertView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
@@ -201,10 +204,6 @@ public class GoodreadsSearchResultsActivity
                         doItemClick(holder);
                     }
                 });
-
-            } else {
-                // Recycling: just get the holder
-                holder = (Holder) convertView.getTag();
             }
 
             synchronized (holder.coverView) {

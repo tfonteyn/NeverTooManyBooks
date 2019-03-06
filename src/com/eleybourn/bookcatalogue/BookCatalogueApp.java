@@ -132,9 +132,9 @@ public class BookCatalogueApp
                                         @StringRes final int titleId,
                                         @NonNull final String message) {
 
-        Intent intent = new Intent(context, StartupActivity.class);
-        intent.setAction(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        Intent intent = new Intent(context, StartupActivity.class)
+                .setAction(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_LAUNCHER);
         // The PendingIntent to launch our activity if the user selects this notification
         PendingIntent pendingIntent = PendingIntent.getActivity(mInstance.getApplicationContext(),
                                                                 0, intent, 0);

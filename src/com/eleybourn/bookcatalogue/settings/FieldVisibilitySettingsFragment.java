@@ -8,15 +8,15 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreferenceCompat;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.eleybourn.bookcatalogue.BookBaseFragment;
 import com.eleybourn.bookcatalogue.BookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.entities.Book;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * This is the Field Visibility page. It contains a list of all fields and a

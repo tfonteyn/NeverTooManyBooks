@@ -170,7 +170,7 @@ public class Book
 
     /**
      * static helper to set the read-status for a given book id.
-     *
+     * <p>
      * ENHANCE: create a dedicated SQL entry instead of loading the full book first.
      */
     @SuppressWarnings("UnusedReturnValue")
@@ -225,14 +225,12 @@ public class Book
 
         // TEST: There's a problem with the facebook app in android,
         // so despite it being shown on the list it will not post any text unless the user types it.
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
         String text = activity.getString(R.string.info_share_book_im_reading,
                                          title, author, series, ratingString);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, text);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, coverURI);
-        shareIntent.setType("text/plain");
-
-        return shareIntent;
+        return new Intent(Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_TEXT, text)
+                .putExtra(Intent.EXTRA_STREAM, coverURI);
     }
 
     /**

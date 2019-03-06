@@ -152,14 +152,13 @@ public class LibraryThingAdminActivity
 
         /** Generic identifier. */
         private static final int M_TASK_ID = R.id.TASK_ID_LT_VALIDATE_KEY;
+        protected final ProgressDialogFragment<Integer> mFragment;
         /**
          * {@link #doInBackground} should catch exceptions, and set this field.
          * {@link #onPostExecute} can then check it.
          */
         @Nullable
         protected Exception mException;
-
-        protected ProgressDialogFragment<Integer> mFragment;
 
         /**
          * Constructor.

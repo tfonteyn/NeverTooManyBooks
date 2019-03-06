@@ -450,11 +450,6 @@ public class BooklistGroup
             //long version = (Long)object;
             mAllSeries.set((Boolean) in.readObject());
         }
-
-        @Override
-        public void setUuid(@NonNull final String uuid) {
-            super.setUuid(uuid);
-        }
     }
 
     /**
@@ -621,11 +616,6 @@ public class BooklistGroup
             long version = (Long) object;
             mAllAuthors.set((Boolean) in.readObject());
             mGivenNameFirst.set((Boolean) in.readObject());
-        }
-
-        @Override
-        public void setUuid(@NonNull final String uuid) {
-            super.setUuid(uuid);
         }
     }
 

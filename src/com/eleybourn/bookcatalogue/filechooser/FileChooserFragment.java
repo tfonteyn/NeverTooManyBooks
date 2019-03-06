@@ -86,7 +86,14 @@ public class FileChooserFragment
     @Nullable
     private ArrayList<FileDetails> mList = new ArrayList<>();
 
-    /** Create a new chooser fragment. */
+    /**
+     * Constructor.
+     *
+     * @param root      directory root to display
+     * @param fileName  default filename
+     *
+     * @return the instance
+     */
     @NonNull
     public static FileChooserFragment newInstance(@NonNull final File root,
                                                   @NonNull final String fileName) {

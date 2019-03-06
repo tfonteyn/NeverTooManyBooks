@@ -132,14 +132,13 @@ public class GoodreadsRegisterActivity
         private static final String TAG = RequestAuthTask.class.getSimpleName();
         /** Generic identifier. */
         private static final int M_TASK_ID = R.id.TASK_ID_GR_REQUEST_AUTH;
+        protected final ProgressDialogFragment<Integer> mFragment;
         /**
          * {@link #doInBackground} should catch exceptions, and set this field.
          * {@link #onPostExecute} can then check it.
          */
         @Nullable
         protected Exception mException;
-
-        protected ProgressDialogFragment<Integer> mFragment;
 
         /**
          * Constructor.

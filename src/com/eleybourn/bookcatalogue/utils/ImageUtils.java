@@ -449,6 +449,13 @@ public final class ImageUtils {
         public static final String TAG = ZoomedImageDialogFragment.class.getSimpleName();
         private File mImageFile;
 
+        /**
+         * Constructor.
+         *
+         * @param image to display
+         *
+         * @return the instance
+         */
         public static ZoomedImageDialogFragment newInstance(@NonNull final File image) {
             ZoomedImageDialogFragment frag = new ZoomedImageDialogFragment();
             Bundle args = new Bundle();

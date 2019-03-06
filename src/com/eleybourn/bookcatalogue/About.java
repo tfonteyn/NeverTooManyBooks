@@ -136,12 +136,12 @@ public class About
 
     private void sendContactEmail(@StringRes final int stringId) {
         try {
-            Intent emailIntent = new Intent(Intent.ACTION_SEND);
-            emailIntent.setType("text/plain");
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(stringId)});
             String subject = '[' + getString(R.string.app_name) + "] ";
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-            startActivity(Intent.createChooser(emailIntent, getString(R.string.send_mail)));
+            Intent intent = new Intent(Intent.ACTION_SEND)
+                    .setType("text/plain")
+                    .putExtra(Intent.EXTRA_EMAIL, new String[]{getString(stringId)})
+                    .putExtra(Intent.EXTRA_SUBJECT, subject);
+            startActivity(Intent.createChooser(intent, getString(R.string.send_mail)));
         } catch (ActivityNotFoundException e) {
             Logger.error(e);
         }

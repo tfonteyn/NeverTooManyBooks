@@ -28,16 +28,16 @@ import android.text.util.Linkify;
 
 import androidx.annotation.NonNull;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Left over utilities.

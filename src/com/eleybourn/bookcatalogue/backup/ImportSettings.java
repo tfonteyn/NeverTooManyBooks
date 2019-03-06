@@ -38,7 +38,7 @@ public class ImportSettings
     /**
      * all defined flags.
      */
-    public static final int MASK = ALL | IMPORT_ONLY_NEW_OR_UPDATED;
+    static final int MASK = ALL | IMPORT_ONLY_NEW_OR_UPDATED;
     public static final Creator<ImportSettings> CREATOR = new Creator<ImportSettings>() {
         @Override
         public ImportSettings createFromParcel(@NonNull final Parcel source) {

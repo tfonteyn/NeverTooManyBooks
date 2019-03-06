@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -20,8 +22,6 @@ import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
-
-import java.util.Objects;
 
 /**
  * Settings editor for a Style.
@@ -95,9 +95,9 @@ public class BooklistStyleSettingsFragment
         setupBooklistGroups();
 
         // set the default response
-        Intent data = new Intent();
-        data.putExtra(UniqueId.KEY_ID, mStyle.getId());
-        data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
+        Intent data = new Intent()
+                .putExtra(UniqueId.KEY_ID, mStyle.getId())
+                .putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
         requireActivity().setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties, data);
     }
 

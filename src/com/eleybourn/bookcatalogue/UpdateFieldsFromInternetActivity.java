@@ -88,11 +88,10 @@ public class UpdateFieldsFromInternetActivity
                 @Override
                 public void onTaskFinished(@NonNull final ManagedTask task) {
                     mUpdateSenderId = 0;
-                    Intent data = new Intent();
-                    data.putExtra(UniqueId.BKEY_CANCELED, task.isCancelled());
-
-                    // 0 if we did 'all books' or the id of the (hopefully) updated book.
-                    data.putExtra(UniqueId.KEY_ID, mBookId);
+                    Intent data = new Intent()
+                            .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
+                            // 0 if we did 'all books' or the id of the (hopefully) updated book.
+                            .putExtra(UniqueId.KEY_ID, mBookId);
                     if (mBookId == 0) {
                         // task cancelled does not mean that nothing was done.
                         // Books *will* be updated until the cancelling happened
@@ -376,9 +375,9 @@ public class UpdateFieldsFromInternetActivity
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
-                Intent intent = new Intent(this, SearchAdminActivity.class);
-                intent.putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
-                                SearchAdminActivity.TAB_ORDER);
+                Intent intent = new Intent(this, SearchAdminActivity.class)
+                        .putExtra(SearchAdminActivity.REQUEST_BKEY_TAB,
+                                  SearchAdminActivity.TAB_ORDER);
                 startActivityForResult(intent, REQ_PREFERRED_SEARCH_SITES);
                 return true;
 

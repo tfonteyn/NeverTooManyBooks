@@ -8,7 +8,7 @@
     android:padding="@dimen/border_double">
 
     <CheckedTextView
-        android:id="@+id/row_check"
+        android:id="@id/TLV_ROW_CHECKABLE"
         style="@style/tlv_checkable_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,9 +24,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:focusable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
-        app:layout_constraintStart_toEndOf="@id/row_check"
+        app:layout_constraintStart_toEndOf="@id/TLV_ROW_CHECKABLE"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -34,7 +35,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
-            android:singleLine="false"
             android:textIsSelectable="false"
             android:textSize="16sp"
             tools:text="style name" />
@@ -47,7 +47,6 @@
             android:gravity="start"
             android:paddingStart="@dimen/border_double"
             android:paddingEnd="@dimen/border_double"
-            android:singleLine="false"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textIsSelectable="false"
             tools:text="info" />

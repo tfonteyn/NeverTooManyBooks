@@ -33,7 +33,6 @@ import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -64,8 +63,6 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
  *        android:id="@android:id/list"
  *     attributes:
  *        tlv:grabber="@+id/<SOME ID FOR AN IMAGE>" (eg. "@id/TLV_ROW_GRABBER")
- *        tlv:remove_mode="none"
- *        tlv:normal_height="64dip" ---- or some similar value
  *  </pre>
  * <p>
  * Main View buttons:
@@ -89,15 +86,12 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         extends BaseListActivity
         implements TouchListView.OnDropListener {
 
+    /** if there was no key passed in, use this one for the savedInstance and return value */
+    private static final String BKEY_LIST = "tmpList";
+
     /** The key to use in the Bundle to get the array. */
     @Nullable
     private final String mBKey;
-    /** The resource ID for the base view. */
-    @LayoutRes
-    private final int mBaseLayoutId;
-    /** The resource ID for the row view. */
-    @LayoutRes
-    private final int mRowLayoutId;
 
     /**
      * Handle 'Cancel'.
@@ -120,8 +114,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     private final OnClickListener mSaveListener = new OnClickListener() {
         @Override
         public void onClick(@NonNull final View v) {
-            Intent data = new Intent();
-            data.putExtra(mBKey, mList);
+            Intent data = new Intent()
+                    .putExtra(mBKey != null ? mBKey : BKEY_LIST, mList);
             if (onSave(data)) {
                 finish();
             }
@@ -147,21 +141,10 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * Constructor.
      *
-     * @param rootLayoutId Resource id of base view
-     * @param rowLayoutId  Resource id of row view
-     * @param bkey         The key to use in the Bundle to get the list
+     * @param bkey The key to use in the Bundle to get the list
      */
-    protected EditObjectListActivity(@LayoutRes final int rootLayoutId,
-                                     @LayoutRes final int rowLayoutId,
-                                     @Nullable final String bkey) {
-        mBaseLayoutId = rootLayoutId;
-        mRowLayoutId = rowLayoutId;
+    protected EditObjectListActivity(@Nullable final String bkey) {
         mBKey = bkey;
-    }
-
-    @Override
-    protected int getLayoutId() {
-        return mBaseLayoutId;
     }
 
     @Override
@@ -171,22 +154,17 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
         mDb = new DBA(this);
 
-        if (savedInstanceState == null) {
-            // Look for id and title
-            Bundle extras = getIntent().getExtras();
-            if (extras != null) {
-                mRowId = extras.getLong(UniqueId.KEY_ID);
-                mBookTitle = extras.getString(UniqueId.KEY_TITLE);
-            }
-        } else {
-            mRowId = savedInstanceState.getLong(UniqueId.KEY_ID);
-            mBookTitle = savedInstanceState.getString(UniqueId.KEY_TITLE);
+        // Look for id and title
+        Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
+        if (args != null) {
+            mRowId = args.getLong(UniqueId.KEY_ID);
+            mBookTitle = args.getString(UniqueId.KEY_TITLE);
         }
 
         // see getList for full details as to where we "get" the list from
-        mList = getList(mBKey, savedInstanceState);
+        mList = getList(savedInstanceState);
         // setup the adapter
-        mListAdapter = createListAdapter(mRowLayoutId, mList);
+        mListAdapter = createListAdapter(mList);
         setListAdapter(mListAdapter);
 
         setTextOrHideView(R.id.title, mBookTitle);
@@ -205,27 +183,21 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * 1. savedInstanceState ?
      * 2. intent extras ?
      * 3. getList() from child ?
-     * 4. throw FATAL error
+     * 4. throw FATAL error in the default {@link #getList()} method
      */
     @NonNull
-    private ArrayList<T> getList(@Nullable final String key,
-                                 @Nullable final Bundle savedInstanceState) {
+    private ArrayList<T> getList(@Nullable final Bundle savedInstanceState) {
         ArrayList<T> list = null;
 
-        if (key != null) {
-            if (savedInstanceState == null) {
-                list = getIntent().getParcelableArrayListExtra(key);
-            } else {
-                list = savedInstanceState.getParcelableArrayList(key);
-            }
+        String key = mBKey != null ? mBKey : BKEY_LIST;
+        if (savedInstanceState != null) {
+            list = savedInstanceState.getParcelableArrayList(key);
         }
-
-        if (list != null) {
-            return list;
+        if (list == null) {
+            list = getIntent().getParcelableArrayListExtra(key);
         }
-
         // no list yet ? Then ask the subclass to setup the list
-        return getList();
+        return list != null ? list : getList();
     }
 
     /**
@@ -246,7 +218,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         final int savedRow = getListView().getFirstVisiblePosition();
 
         mList = newList;
-        mListAdapter = createListAdapter(mRowLayoutId, mList);
+        mListAdapter = createListAdapter(mList);
         setListAdapter(mListAdapter);
 
         getListView().post(new Runnable() {
@@ -260,8 +232,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     /**
      * get the specific list adapter from the child class.
      */
-    protected abstract ArrayAdapter<T> createListAdapter(@LayoutRes int rowLayoutId,
-                                                         @NonNull ArrayList<T> list);
+    protected abstract ArrayAdapter<T> createListAdapter(@NonNull ArrayList<T> list);
 
     /**
      * Called when user clicks the 'Add' button (if present).
@@ -416,28 +387,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelableArrayList(mBKey, mList);
+        outState.putParcelableArrayList(mBKey != null ? mBKey : BKEY_LIST, mList);
         outState.putLong(UniqueId.KEY_ID, mRowId);
         outState.putString(UniqueId.KEY_TITLE, mBookTitle);
     }
-
-//    /**
-//     * This is totally bizarre. Without this piece of code, under Android 1.6, the
-//     * native onRestoreInstanceState() fails to restore custom classes, throwing
-//     * a ClassNotFoundException, when the activity is resumed.
-//     * <p>
-//     * To test this, remove this line, edit a custom style, and save it. App will
-//     * crash in AVD under Android 1.6.
-//     * <p>
-//     * It is not entirely clear how this happens but since the Bundle has a classLoader
-//     * it is fair to surmise that the code that creates the bundle determines the class
-//     * loader to use based (somehow) on the class being called, and if we don't implement
-//     * this method, then in Android 1.6, the class is a basic android class NOT and app
-//     * class.
-//     */
-//    @Override
-//    @CallSuper
-//    public void onRestoreInstanceState(@Nullable final Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//    }
 }
