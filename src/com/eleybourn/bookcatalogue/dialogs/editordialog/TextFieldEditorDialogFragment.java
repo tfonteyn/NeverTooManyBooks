@@ -217,7 +217,8 @@ public class TextFieldEditorDialogFragment
 
             // Make sure the buttons moves if the keyboard appears
             //noinspection ConstantConditions
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
+                                                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
 
         public String getText() {

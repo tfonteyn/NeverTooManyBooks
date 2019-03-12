@@ -66,26 +66,26 @@ public class Book
         extends DataManager {
 
     /**
-     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_READ}.
+     * Key for accessor to the underlying {@link UniqueId#KEY_READ}.
      * Type: Boolean
      */
     public static final String IS_READ = "+IsRead";
 
     /**
-     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_SIGNED}.
+     * Key for accessor to the underlying {@link UniqueId#KEY_SIGNED}.
      * Type: Boolean
      */
     public static final String IS_SIGNED = "+IsSigned";
 
     /**
-     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_TOC_BITMASK}.
+     * Key for accessor to the underlying {@link UniqueId#KEY_TOC_BITMASK}.
      * Type: Boolean
      * true: anthology by one or more authors
      */
     public static final String HAS_MULTIPLE_WORKS = "+HasMultiWorks";
 
     /**
-     * Key for accessor to the underlying {@link UniqueId#KEY_BOOK_TOC_BITMASK}.
+     * Key for accessor to the underlying {@link UniqueId#KEY_TOC_BITMASK}.
      * Type: Boolean
      * true: anthology by multiple authors
      */
@@ -180,7 +180,7 @@ public class Book
         // load from database
         Book book = new Book(bookId, db);
         book.putBoolean(Book.IS_READ, isRead);
-        book.putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
+        book.putString(UniqueId.KEY_READ_END, DateUtils.localSqlDateForToday());
         return db.updateBook(bookId, book, 0) == 1;
     }
 
@@ -190,7 +190,7 @@ public class Book
      */
     public Intent getShareBookIntent(@NonNull final Activity activity) {
         String title = getString(UniqueId.KEY_TITLE);
-        double rating = getDouble(UniqueId.KEY_BOOK_RATING);
+        double rating = getDouble(UniqueId.KEY_RATING);
         String author = getString(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
         String series = getString(DatabaseDefinitions.DOM_SERIES_FORMATTED.name);
         String uuid = getString(UniqueId.KEY_BOOK_UUID);
@@ -258,8 +258,8 @@ public class Book
 
         bookData.putString(UniqueId.KEY_TITLE,
                            getString(UniqueId.KEY_TITLE));
-        bookData.putString(UniqueId.KEY_BOOK_ISBN,
-                           getString(UniqueId.KEY_BOOK_ISBN));
+        bookData.putString(UniqueId.KEY_ISBN,
+                           getString(UniqueId.KEY_ISBN));
 
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
                                         getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY));
@@ -269,61 +269,61 @@ public class Book
                                         getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY));
 
         // publication data
-        bookData.putString(UniqueId.KEY_BOOK_PUBLISHER,
-                           getString(UniqueId.KEY_BOOK_PUBLISHER));
-        bookData.putLong(UniqueId.KEY_BOOK_TOC_BITMASK,
-                         getLong(UniqueId.KEY_BOOK_TOC_BITMASK));
-        bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED,
-                           getString(UniqueId.KEY_BOOK_DATE_PUBLISHED));
-        bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED,
-                           getString(UniqueId.KEY_BOOK_PRICE_LISTED));
-        bookData.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
-                           getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY));
-        bookData.putString(UniqueId.KEY_FIRST_PUBLICATION,
-                           getString(UniqueId.KEY_FIRST_PUBLICATION));
-        bookData.putString(UniqueId.KEY_BOOK_FORMAT,
-                           getString(UniqueId.KEY_BOOK_FORMAT));
-        bookData.putString(UniqueId.KEY_BOOK_GENRE,
-                           getString(UniqueId.KEY_BOOK_GENRE));
-        bookData.putString(UniqueId.KEY_BOOK_LANGUAGE,
-                           getString(UniqueId.KEY_BOOK_LANGUAGE));
-        bookData.putString(UniqueId.KEY_BOOK_PAGES,
-                           getString(UniqueId.KEY_BOOK_PAGES));
+        bookData.putString(UniqueId.KEY_PUBLISHER,
+                           getString(UniqueId.KEY_PUBLISHER));
+        bookData.putLong(UniqueId.KEY_TOC_BITMASK,
+                         getLong(UniqueId.KEY_TOC_BITMASK));
+        bookData.putString(UniqueId.KEY_DATE_PUBLISHED,
+                           getString(UniqueId.KEY_DATE_PUBLISHED));
+        bookData.putString(UniqueId.KEY_PRICE_LISTED,
+                           getString(UniqueId.KEY_PRICE_LISTED));
+        bookData.putString(UniqueId.KEY_PRICE_LISTED_CURRENCY,
+                           getString(UniqueId.KEY_PRICE_LISTED_CURRENCY));
+        bookData.putString(UniqueId.KEY_DATE_FIRST_PUBLISHED,
+                           getString(UniqueId.KEY_DATE_FIRST_PUBLISHED));
+        bookData.putString(UniqueId.KEY_FORMAT,
+                           getString(UniqueId.KEY_FORMAT));
+        bookData.putString(UniqueId.KEY_GENRE,
+                           getString(UniqueId.KEY_GENRE));
+        bookData.putString(UniqueId.KEY_LANGUAGE,
+                           getString(UniqueId.KEY_LANGUAGE));
+        bookData.putString(UniqueId.KEY_PAGES,
+                           getString(UniqueId.KEY_PAGES));
         // common blurb
-        bookData.putString(UniqueId.KEY_BOOK_DESCRIPTION,
-                           getString(UniqueId.KEY_BOOK_DESCRIPTION));
+        bookData.putString(UniqueId.KEY_DESCRIPTION,
+                           getString(UniqueId.KEY_DESCRIPTION));
 
         // partially edition info, partially use-owned info.
-        bookData.putLong(UniqueId.KEY_BOOK_EDITION_BITMASK,
-                         getLong(UniqueId.KEY_BOOK_EDITION_BITMASK));
+        bookData.putLong(UniqueId.KEY_EDITION_BITMASK,
+                         getLong(UniqueId.KEY_EDITION_BITMASK));
 
         // user data
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(UniqueId.KEY_BOOK_SIGNED,
-                         getLong(UniqueId.KEY_BOOK_SIGNED));
+        bookData.putLong(UniqueId.KEY_SIGNED,
+                         getLong(UniqueId.KEY_SIGNED));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(UniqueId.KEY_BOOK_READ,
-                         getLong(UniqueId.KEY_BOOK_READ));
+        bookData.putLong(UniqueId.KEY_READ,
+                         getLong(UniqueId.KEY_READ));
 
-        bookData.putDouble(UniqueId.KEY_BOOK_RATING,
-                           getDouble(UniqueId.KEY_BOOK_RATING));
+        bookData.putDouble(UniqueId.KEY_RATING,
+                           getDouble(UniqueId.KEY_RATING));
 
-        bookData.putString(UniqueId.KEY_BOOK_NOTES,
-                           getString(UniqueId.KEY_BOOK_NOTES));
-        bookData.putString(UniqueId.KEY_BOOK_LOCATION,
-                           getString(UniqueId.KEY_BOOK_LOCATION));
-        bookData.putString(UniqueId.KEY_BOOK_READ_START,
-                           getString(UniqueId.KEY_BOOK_READ_START));
-        bookData.putString(UniqueId.KEY_BOOK_READ_END,
-                           getString(UniqueId.KEY_BOOK_READ_END));
-        bookData.putString(UniqueId.KEY_BOOK_DATE_ACQUIRED,
-                           getString(UniqueId.KEY_BOOK_DATE_ACQUIRED));
-        bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID,
-                           getString(UniqueId.KEY_BOOK_PRICE_PAID));
-        bookData.putString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY,
-                           getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY));
+        bookData.putString(UniqueId.KEY_NOTES,
+                           getString(UniqueId.KEY_NOTES));
+        bookData.putString(UniqueId.KEY_LOCATION,
+                           getString(UniqueId.KEY_LOCATION));
+        bookData.putString(UniqueId.KEY_READ_START,
+                           getString(UniqueId.KEY_READ_START));
+        bookData.putString(UniqueId.KEY_READ_END,
+                           getString(UniqueId.KEY_READ_END));
+        bookData.putString(UniqueId.KEY_DATE_ACQUIRED,
+                           getString(UniqueId.KEY_DATE_ACQUIRED));
+        bookData.putString(UniqueId.KEY_PRICE_PAID,
+                           getString(UniqueId.KEY_PRICE_PAID));
+        bookData.putString(UniqueId.KEY_PRICE_PAID_CURRENCY,
+                           getString(UniqueId.KEY_PRICE_PAID_CURRENCY));
 
         return bookData;
     }
@@ -341,15 +341,15 @@ public class Book
                            final boolean isRead) {
         // allow for rollback.
         boolean prevRead = getBoolean(Book.IS_READ);
-        String prevReadEnd = getString(UniqueId.KEY_BOOK_READ_END);
+        String prevReadEnd = getString(UniqueId.KEY_READ_END);
 
         putBoolean(Book.IS_READ, isRead);
-        putString(UniqueId.KEY_BOOK_READ_END, DateUtils.localSqlDateForToday());
+        putString(UniqueId.KEY_READ_END, DateUtils.localSqlDateForToday());
 
         if (db.updateBook(getId(), this, 0) != 1) {
             //rollback
             putBoolean(Book.IS_READ, prevRead);
-            putString(UniqueId.KEY_BOOK_READ_END, prevReadEnd);
+            putString(UniqueId.KEY_READ_END, prevReadEnd);
             return false;
         }
         return true;
@@ -429,14 +429,14 @@ public class Book
      */
     public ArrayList<CheckListItem<Integer>> getEditableEditionList() {
         //Logger.info(this,"edition: " +
-        // Integer.toBinaryString(getInt(UniqueId.KEY_BOOK_EDITION_BITMASK)));
+        // Integer.toBinaryString(getInt(UniqueId.KEY_EDITION_BITMASK)));
 
         ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
         for (Integer edition : EDITIONS.keySet()) {
             //noinspection ConstantConditions
             list.add(new EditionCheckListItem(
                     edition, EDITIONS.get(edition),
-                    (edition & getLong(UniqueId.KEY_BOOK_EDITION_BITMASK)) != 0));
+                    (edition & getLong(UniqueId.KEY_EDITION_BITMASK)) != 0));
         }
         return list;
     }
@@ -449,7 +449,7 @@ public class Book
         for (Integer bit : result) {
             bitmask += bit;
         }
-        putLong(UniqueId.KEY_BOOK_EDITION_BITMASK, bitmask);
+        putLong(UniqueId.KEY_EDITION_BITMASK, bitmask);
     }
 
     /**
@@ -559,28 +559,28 @@ public class Book
      */
     private void initValidatorsAndAccessors() {
         addValidator(UniqueId.KEY_TITLE, NON_BLANK_VALIDATOR);
-        addValidator(UniqueId.KEY_BOOK_PAGES, BLANK_OR_INTEGER_VALIDATOR);
+        addValidator(UniqueId.KEY_PAGES, BLANK_OR_INTEGER_VALIDATOR);
 
-        addValidator(UniqueId.KEY_BOOK_TOC_BITMASK, INTEGER_VALIDATOR);
-        addValidator(UniqueId.KEY_BOOK_EDITION_BITMASK, INTEGER_VALIDATOR);
+        addValidator(UniqueId.KEY_TOC_BITMASK, INTEGER_VALIDATOR);
+        addValidator(UniqueId.KEY_EDITION_BITMASK, INTEGER_VALIDATOR);
 
-        addValidator(UniqueId.KEY_BOOK_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR);
-        addValidator(UniqueId.KEY_BOOK_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR);
+        addValidator(UniqueId.KEY_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR);
+        addValidator(UniqueId.KEY_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR);
 
-
-        /* Booleans are stored as Long (0,1) */
-        addAccessor(IS_READ, new BooleanDataAccessor(UniqueId.KEY_BOOK_READ));
 
         /* Booleans are stored as Long (0,1) */
-        addAccessor(IS_SIGNED, new BooleanDataAccessor(UniqueId.KEY_BOOK_SIGNED));
+        addAccessor(IS_READ, new BooleanDataAccessor(UniqueId.KEY_READ));
+
+        /* Booleans are stored as Long (0,1) */
+        addAccessor(IS_SIGNED, new BooleanDataAccessor(UniqueId.KEY_SIGNED));
 
         /* set/reset the single bit TocEntry.Type.MULTIPLE_WORKS in the bitmask. */
         addAccessor(HAS_MULTIPLE_WORKS,
-                    new BitmaskDataAccessor(UniqueId.KEY_BOOK_TOC_BITMASK,
+                    new BitmaskDataAccessor(UniqueId.KEY_TOC_BITMASK,
                                             TocEntry.Type.MULTIPLE_WORKS));
         /* set/reset the single bit TocEntry.Type.MULTIPLE_AUTHORS in the bitmask. */
         addAccessor(HAS_MULTIPLE_AUTHORS,
-                    new BitmaskDataAccessor(UniqueId.KEY_BOOK_TOC_BITMASK,
+                    new BitmaskDataAccessor(UniqueId.KEY_TOC_BITMASK,
                                             TocEntry.Type.MULTIPLE_AUTHORS));
     }
 

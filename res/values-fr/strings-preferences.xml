@@ -139,8 +139,8 @@
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_series">Livres appartenant à des séries multiples</string>
 
-    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Sous %1$s principal(e) seulement</string>
-    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Sous chaque %1$s</string>
+    <string name="pv_bob_books_under_multiple_primary_1s_only">Sous %1$s principal(e) seulement</string>
+    <string name="pv_bob_books_under_multiple_each_1s">Sous chaque %1$s</string>
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Format des noms d\'auteur</string>

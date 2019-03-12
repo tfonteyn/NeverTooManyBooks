@@ -24,19 +24,19 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
+
+import org.apache.http.client.methods.HttpGet;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
-
-import org.apache.http.client.methods.HttpGet;
-
-import java.io.IOException;
 
 /**
  * Class to implement the reviews.list api call. It queries based on the passed parameters
@@ -144,7 +144,7 @@ public class BookshelfListApiHandler
         Bundle results = mFilters.getData();
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this, "Found "
+            Logger.info(this, "run","Found "
                     + results.getLong(GrBookshelfFields.TOTAL)
                     + " shelves in " + (System.currentTimeMillis() - t0) + "ms");
         }

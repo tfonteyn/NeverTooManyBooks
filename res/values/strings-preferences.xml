@@ -247,8 +247,8 @@
     <string name="pt_bob_books_under_multiple_series">Books in multiple series</string>
     <string name="pk_bob_books_under_multiple_series" translatable="false">BookList.Style.Group.Series.ShowAll</string>
 
-    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Under primary %1$s only</string>
-    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Under each %1$s</string>
+    <string name="pv_bob_books_under_multiple_primary_1s_only">Under primary %1$s only</string>
+    <string name="pv_bob_books_under_multiple_each_1s">Under each %1$s</string>
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Format of author names</string>

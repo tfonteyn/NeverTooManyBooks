@@ -4,32 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:focusableInTouchMode="true"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/border_double">
+        android:layout_margin="@dimen/border">
 
         <CheckBox
             android:id="@+id/read"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/lbl_is_read"
-            app:layout_constraintBottom_toTopOf="@id/lbl_rating"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/lbl_rating"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            style="@style/lbl_editField"
             android:labelFor="@+id/rating"
             android:text="@string/lbl_rating"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@id/rating"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/read" />
 
@@ -38,7 +32,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="5"
-            app:layout_constraintBottom_toTopOf="@id/lbl_notes"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_rating" />
 
@@ -47,7 +40,6 @@
             style="@style/lbl_editField"
             android:labelFor="@+id/notes"
             android:text="@string/menu_edit_book_notes"
-            app:layout_constraintBottom_toTopOf="@id/notes"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating" />
 
@@ -56,17 +48,16 @@
             style="@style/multiLineTextEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_date_acquired"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
             tools:ignore="Autofill" />
 
         <TextView
             android:id="@+id/lbl_date_acquired"
             style="@style/lbl_editField"
             android:text="@string/lbl_date_acquired"
-            app:layout_constraintBottom_toTopOf="@id/date_acquired"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/notes" />
 
@@ -75,7 +66,6 @@
             style="@style/buttonDataEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_price_paid"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired" />
@@ -105,13 +95,10 @@
         <AutoCompleteTextView
             android:id="@+id/price_paid_currency"
             style="@style/currencyTextEntry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="..."
             app:layout_constraintBaseline_toBaselineOf="@id/price_paid"
             app:layout_constraintEnd_toStartOf="@id/btn_price_paid_currency"
             app:layout_constraintStart_toEndOf="@id/price_paid"
-            tools:ignore="Autofill,HardcodedText" />
+            tools:ignore="Autofill,LabelFor" />
 
         <ImageButton
             android:id="@+id/btn_price_paid_currency"
@@ -130,7 +117,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/lbl_is_signed"
-            app:layout_constraintBottom_toTopOf="@id/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/price_paid" />
 
@@ -138,7 +124,6 @@
             android:id="@+id/lbl_edition"
             style="@style/lbl_editField"
             android:text="@string/lbl_edition"
-            app:layout_constraintBottom_toTopOf="@id/edition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/signed" />
 
@@ -147,7 +132,6 @@
             style="@style/buttonDataEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_read_start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_edition" />
@@ -156,7 +140,6 @@
             android:id="@+id/lbl_read_start"
             style="@style/lbl_editField"
             android:text="@string/lbl_read_start"
-            app:layout_constraintBottom_toTopOf="@id/read_start"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edition" />
 
@@ -165,7 +148,6 @@
             style="@style/buttonDataEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_read_end"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_start" />
@@ -174,7 +156,6 @@
             android:id="@+id/lbl_read_end"
             style="@style/lbl_editField"
             android:text="@string/lbl_read_end"
-            app:layout_constraintBottom_toTopOf="@id/read_end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/read_start" />
 
@@ -183,7 +164,6 @@
             style="@style/buttonDataEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_end" />
@@ -193,7 +173,6 @@
             style="@style/lbl_editField"
             android:labelFor="@id/location"
             android:text="@string/lbl_location_long"
-            app:layout_constraintBottom_toTopOf="@id/location"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/read_end" />
 

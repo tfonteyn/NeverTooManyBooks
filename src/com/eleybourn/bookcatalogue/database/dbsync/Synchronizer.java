@@ -168,12 +168,12 @@ public class Synchronizer {
         } finally {
             if (DEBUG_SWITCHES.TIMERS && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
                 if (mLock.isHeldByCurrentThread()) {
-                    Logger.info(this,
+                    Logger.info(this, "getExclusiveLock",
                                 ourThread.getName() + " waited "
                                         + (System.currentTimeMillis() - t0)
                                         + "ms for EXCLUSIVE access");
                 } else {
-                    Logger.info(this,
+                    Logger.info(this,"getExclusiveLock",
                                 ourThread.getName() + " waited "
                                         + (System.currentTimeMillis() - t0)
                                         + "ms AND FAILED TO GET EXCLUSIVE access");

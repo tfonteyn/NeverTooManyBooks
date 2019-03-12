@@ -471,7 +471,7 @@ class SearchLibraryThingHandler
             if ("work".equalsIgnoreCase(type)) {
                 try {
                     long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
-                    mBookData.putLong(UniqueId.KEY_BOOK_LIBRARY_THING_ID, id);
+                    mBookData.putLong(UniqueId.KEY_LIBRARY_THING_ID, id);
                 } catch (NumberFormatException ignore) {
                 }
             }

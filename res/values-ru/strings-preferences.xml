@@ -140,8 +140,8 @@
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
 
-    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Только под первым %1$s</string>
-    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Под каждым %1$s</string>
+    <string name="pv_bob_books_under_multiple_primary_1s_only">Только под первым %1$s</string>
+    <string name="pv_bob_books_under_multiple_each_1s">Под каждым %1$s</string>
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Форматирование по авторским именам</string>

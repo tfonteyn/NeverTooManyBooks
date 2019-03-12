@@ -5,6 +5,5 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:checked="false"
-    android:padding="@dimen/border_double"
-    android:singleLine="false"
+    android:layout_margin="@dimen/border_double"
     tools:text="some radio option" />

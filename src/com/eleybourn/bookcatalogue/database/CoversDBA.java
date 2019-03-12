@@ -35,6 +35,11 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
@@ -48,11 +53,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.GetImageTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * DB Helper for Covers DB. It uses the Application Context.
@@ -184,7 +184,7 @@ public final class CoversDBA
 
         int noi = INSTANCE_COUNTER.incrementAndGet();
         if (/* always show debug */ BuildConfig.DEBUG) {
-            Logger.info(mInstance, "instances created: " + noi);
+            Logger.info(mInstance, "getInstance", "instances created: " + noi);
         }
         return mInstance;
     }
@@ -247,7 +247,7 @@ public final class CoversDBA
         synchronized (INSTANCE_COUNTER) {
             int noi = INSTANCE_COUNTER.decrementAndGet();
             if (/* always show debug */BuildConfig.DEBUG) {
-                Logger.info(this, "instances left: " + INSTANCE_COUNTER);
+                Logger.info(this, "close", "instances left: " + INSTANCE_COUNTER);
             }
 
             if (noi == 0) {
@@ -423,7 +423,7 @@ public final class CoversDBA
         @Override
         @CallSuper
         public void onCreate(@NonNull final SQLiteDatabase db) {
-            Logger.info(this, "Creating database: " + db.getPath());
+            Logger.info(this, "onCreate", "database: " + db.getPath());
             TableDefinition.createTables(new SynchronizedDb(db, SYNCHRONIZER), TBL_IMAGE);
         }
 
@@ -435,8 +435,10 @@ public final class CoversDBA
         public void onUpgrade(@NonNull final SQLiteDatabase db,
                               final int oldVersion,
                               final int newVersion) {
-            Logger.info(this, "Upgrading database: " + db.getPath());
-
+            Logger.info(this, "onUpgrade",
+                        "Old database version: " + oldVersion);
+            Logger.info(this, "onUpgrade",
+                        "Upgrading database: " + db.getPath());
             // This is a cache, so no data needs preserving. Drop & recreate.
             db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE);
             onCreate(db);

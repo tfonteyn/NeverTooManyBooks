@@ -153,7 +153,7 @@ public class EditBookTOCFragment
         mBookAuthor = getBookManager().getBook().getString(UniqueId.KEY_AUTHOR_FORMATTED);
 
         // used to call Search sites to populate the TOC
-        mIsbn = getBookManager().getBook().getString(UniqueId.KEY_BOOK_ISBN);
+        mIsbn = getBookManager().getBook().getString(UniqueId.KEY_ISBN);
 
         mAddButton = view.findViewById(R.id.btn_add);
         mAddButton.setOnClickListener(new View.OnClickListener() {
@@ -221,7 +221,7 @@ public class EditBookTOCFragment
      * Show or hide the author field.
      */
     private void populateSingleAuthorStatus(@NonNull final Book book) {
-        boolean singleAuthor = !book.isBitSet(UniqueId.KEY_BOOK_TOC_BITMASK,
+        boolean singleAuthor = !book.isBitSet(UniqueId.KEY_TOC_BITMASK,
                                               TocEntry.Type.MULTIPLE_AUTHORS);
         mSingleAuthor.setChecked(singleAuthor);
         mAuthorTextView.setVisibility(singleAuthor ? View.GONE : View.VISIBLE);
@@ -262,7 +262,7 @@ public class EditBookTOCFragment
         if (!mSingleAuthor.isChecked()) {
             type |= TocEntry.Type.MULTIPLE_AUTHORS;
         }
-        book.putLong(UniqueId.KEY_BOOK_TOC_BITMASK, type);
+        book.putLong(UniqueId.KEY_TOC_BITMASK, type);
 
         Tracker.exitOnSaveFieldsToBook(this, book.getId());
     }
@@ -382,10 +382,10 @@ public class EditBookTOCFragment
         }
 
         // update the book with the first publication date that was gathered from the TOC
-        final String bookFirstPublication = bookData.getString(UniqueId.KEY_FIRST_PUBLICATION);
+        final String bookFirstPublication = bookData.getString(UniqueId.KEY_DATE_FIRST_PUBLISHED);
         if (bookFirstPublication != null) {
-            if (getBookManager().getBook().getString(UniqueId.KEY_FIRST_PUBLICATION).isEmpty()) {
-                getBookManager().getBook().putString(UniqueId.KEY_FIRST_PUBLICATION,
+            if (getBookManager().getBook().getString(UniqueId.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
+                getBookManager().getBook().putString(UniqueId.KEY_DATE_FIRST_PUBLISHED,
                                                      bookFirstPublication);
             }
         }
@@ -402,7 +402,7 @@ public class EditBookTOCFragment
     private void commitISFDBData(final long tocBitMask,
                                  @NonNull final List<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
-            getBookManager().getBook().putLong(UniqueId.KEY_BOOK_TOC_BITMASK, tocBitMask);
+            getBookManager().getBook().putLong(UniqueId.KEY_TOC_BITMASK, tocBitMask);
             populateSingleAuthorStatus(getBookManager().getBook());
         }
 
@@ -513,7 +513,7 @@ public class EditBookTOCFragment
             final EditBookTOCFragment targetFragment = (EditBookTOCFragment) getTargetFragment();
             Bundle args = requireArguments();
             boolean hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
-            final long tocBitMask = args.getLong(UniqueId.KEY_BOOK_TOC_BITMASK);
+            final long tocBitMask = args.getLong(UniqueId.KEY_TOC_BITMASK);
             ArrayList<TocEntry> tocEntries =
                     args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
             boolean hasTOC = tocEntries != null && !tocEntries.isEmpty();
@@ -530,7 +530,7 @@ public class EditBookTOCFragment
 
             TextView content = new TextView(getContext());
             content.setText(msg);
-            // Not ideal but works
+            // Not ideal but works; 14 == TextAppearance_Small
             content.setTextSize(14);
             //API: 23 ?
             //content.setTextAppearance(android.R.style.TextAppearance_Small);

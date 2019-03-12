@@ -136,7 +136,7 @@ public class SqlStatementManager
     protected void finalize()
             throws Throwable {
         if (!mStatements.isEmpty()) {
-            Logger.info(this,"Finalizer closing statements.");
+            Logger.info(this,"finalize","closing statements.");
             close();
         }
         super.finalize();

@@ -102,11 +102,10 @@
         <activity android:name=".Help" />
         <activity android:name=".About" />
         <activity android:name=".AdminActivity" />
+        <activity android:name=".settings.SettingsActivity" />
 
         <!-- AdminActivity: Manage Bookshelves -->
         <activity android:name=".EditBookshelfListActivity" />
-
-        <!-- AdminActivity: Field Visibility -->
 
         <!-- AdminActivity: Edit book list styles -->
         <activity android:name=".settings.PreferredStylesActivity" />
@@ -129,7 +128,8 @@
         <activity android:name=".goodreads.GoodreadsRegisterActivity" />
 
         <!-- AdminActivity: Credentials LibraryThing -->
-        <activity android:name=".searches.librarything.LibraryThingAdminActivity" />
+        <activity android:name=".searches.librarything.LibraryThingAdminActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- AdminActivity: Background tasks / Events -->
         <activity android:name=".goodreads.taskqueue.TaskQueueListActivity" />
@@ -138,29 +138,28 @@
         <!-- AdminActivity: Search Sites configuration -->
         <activity
             android:name=".searches.SearchAdminActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- Local Search -->
         <activity
             android:name=".searches.FTSSearchActivity"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- Booklist Preferences -->
-
-        <!-- Other preferences (e.g. non-booklist -->
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- view a book -->
         <activity android:name=".BookDetailsActivity" />
 
-        <!-- Add Book; this activity then sub divides Add by scan,isbn,internet, or add manually -->
+        <!-- Add a Book -->
         <activity
             android:name=".BookSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- Edit a book + the related author/series -->
-        <activity android:name=".EditBookActivity" />
-        <activity android:name=".EditAuthorListActivity" />
-        <activity android:name=".EditSeriesListActivity" />
+        <activity android:name=".EditBookActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:name=".EditAuthorListActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+        <activity android:name=".EditSeriesListActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
 
         <!-- view an Author and all of his details -->
         <activity android:name=".AuthorActivity" />
@@ -249,9 +248,6 @@
             <!--<category android:name="android.intent.category.BROWSABLE" />-->
             <!--</intent-filter>-->
         </activity>
-        <activity android:name=".settings.SettingsActivity" />
-        <activity android:name=".LegacyAbout" />
-        <activity android:name=".LegacyHelp" />
     </application>
 
 </manifest>

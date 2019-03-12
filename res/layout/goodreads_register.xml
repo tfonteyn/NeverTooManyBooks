@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -12,42 +11,30 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingEnd="@dimen/border"
-            android:paddingStart="@dimen/border">
-
-            <!-- BLURB 1 -->
+            android:layout_margin="@dimen/border"
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/gr_auth_blurb_part1"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <!-- URL -->
+                style="@style/txt_blurb_medium"
+                android:text="@string/gr_auth_blurb_part1" />
 
             <TextView
                 android:id="@+id/goodreads_url"
                 style="@style/link_url"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/border_double"
-                android:textIsSelectable="false"
+                tools:ignore="SelectableText"
                 tools:text="Goodreads url here" />
 
-            <!-- BLURB 2 -->
-
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/gr_auth_blurb_part2"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <!-- BUTTON -->
+                style="@style/txt_blurb_medium"
+                android:text="@string/gr_auth_blurb_part2" />
 
             <Button
                 android:id="@+id/authorize"
@@ -57,21 +44,14 @@
                 android:layout_margin="@dimen/border_double"
                 android:text="@string/gr_title_auth_access" />
 
-            <!-- BLURB 3 -->
-
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/gr_auth_blurb_part3"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-            <!-- BUTTON -->
+                style="@style/txt_blurb_medium"
+                android:text="@string/gr_auth_blurb_part3" />
 
             <TextView
                 android:id="@+id/forget_blurb"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/gr_auth_blurb_part4"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                style="@style/txt_blurb_medium"
+                android:text="@string/gr_auth_blurb_part4" />
 
             <Button
                 android:id="@+id/btn_forget_credentials"
@@ -80,8 +60,6 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/border_double"
                 android:text="@string/gr_btn_forget_credentials" />
-
-            <!-- BLURB 3 -->
 
         </LinearLayout>
 

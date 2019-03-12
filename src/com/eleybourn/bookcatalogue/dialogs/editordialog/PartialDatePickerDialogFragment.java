@@ -549,7 +549,8 @@ public class PartialDatePickerDialogFragment
             if (yearVal.isEmpty()) {
                 mYearView.requestFocus();
                 //noinspection ConstantConditions
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
+                                                     | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             }
 
             if (month == null || month == 0) {

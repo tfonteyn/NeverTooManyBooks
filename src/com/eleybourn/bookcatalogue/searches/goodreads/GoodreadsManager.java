@@ -29,6 +29,7 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
@@ -582,6 +583,8 @@ public class GoodreadsManager
 
     /**
      * Wrapper to call API to add book to shelf.
+     *
+     * @return reviewId
      */
     private long addBookToShelf(@NonNull final String shelfName,
                                 final long grBookId)
@@ -939,11 +942,27 @@ public class GoodreadsManager
         return !noKey() && NetworkUtils.isAlive(getBaseURL());
     }
 
+    @Override
+    public boolean isIsbnOnly() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
+        return false;
+    }
+
+    @StringRes
+    @Override
+    public int getSearchingResId() {
+        return R.string.searching_goodreads;
+    }
+
     @AnyThread
     private boolean noKey() {
         boolean noKey = DEV_KEY.isEmpty() || DEV_SECRET.isEmpty();
         if (noKey) {
-            Logger.info(this, "No dev keys");
+            Logger.info(this, "noKey","Goodreads dev key not available");
         }
         return noKey;
     }

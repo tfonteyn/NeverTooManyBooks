@@ -142,10 +142,8 @@ public class MultiTypeListCursorAdapter
         listCursor.moveToPosition(savedPos);
 
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
-            Logger.info(this,
-                        " MultiTypeListCursorAdapter.getSectionTextForPosition");
             for (String s : section) {
-                Logger.info(this, " Section: " + s);
+                Logger.info(this, "getSectionTextForPosition","Section: " + s);
             }
         }
         Tracker.exitFunction(this, "getSectionTextForPosition");

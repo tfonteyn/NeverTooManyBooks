@@ -59,7 +59,8 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
  * <p>
  * The basic URLs are:
  * <p>
- * Covers via ISBN: http://covers.librarything.com/devkey/<DEVKEY>/large/isbn/<ISBN>
+ * Covers via ISBN: http://covers.librarything.com/devkey/<DEVKEY>/<SIZE>/isbn/<ISBN>
+ * with size: large,medium,small
  * <p>
  * <p>
  * REST api: http://www.librarything.com/services/rest/documentation/1.1/
@@ -96,7 +97,6 @@ public class LibraryThingManager
 
     /** base urls. */
     private static final String BASE_URL = "https://www.librarything.com";
-    private static final String BASE_URL_COVERS = "https://covers.librarything.com";
     /** book details urls. */
     private static final String DETAIL_URL =
             BASE_URL + "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&isbn=%2$s";
@@ -104,13 +104,9 @@ public class LibraryThingManager
     /** fetches all isbn's from editions related to the requested isbn. */
     private static final String EDITIONS_URL = BASE_URL + "/api/thingISBN/%s";
 
-    /** cover size specific urls. */
-    private static final String COVER_URL_LARGE =
-            BASE_URL_COVERS + "/devkey/%1$s/large/isbn/%2$s";
-    private static final String COVER_URL_MEDIUM =
-            BASE_URL_COVERS + "/devkey/%1$s/medium/isbn/%2$s";
-    private static final String COVER_URL_SMALL =
-            BASE_URL_COVERS + "/devkey/%1$s/small/isbn/%2$s";
+    /** param 1: devkey, param 2: size; param 3: isbn. */
+    private static final String BASE_URL_COVERS
+            = "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
 
     /** to control access to mLastRequestTime, we synchronize on this final Object. */
     @NonNull
@@ -316,7 +312,7 @@ public class LibraryThingManager
     public static boolean noKey() {
         boolean noKey = getDevKey().isEmpty();
         if (noKey) {
-            Logger.info(LibraryThingManager.class, "LT dev key not available");
+            Logger.info(LibraryThingManager.class, "LibraryThing dev key not available");
         }
         return noKey;
     }
@@ -356,30 +352,31 @@ public class LibraryThingManager
             return null;
         }
 
-        String path;
+        String sizeParam;
         //noinspection ConstantConditions
         switch (size) {
             case SMALL:
-                path = COVER_URL_SMALL;
+                sizeParam = "small";
                 break;
             case MEDIUM:
-                path = COVER_URL_MEDIUM;
+                sizeParam = "medium";
                 break;
             case LARGE:
-                path = COVER_URL_LARGE;
+                sizeParam = "large";
                 break;
 
             default:
-                path = COVER_URL_SMALL;
+                sizeParam = "large";
                 break;
         }
-        String url = String.format(path, getDevKey(), isbn);
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         waitUntilRequestAllowed();
 
         // Fetch, then save it with a suffix
-        String fileSpec = ImageUtils.saveImage(url, FILENAME_SUFFIX + '_' + isbn + '_' + size);
+        String fileSpec = ImageUtils.saveImage(
+                String.format(BASE_URL_COVERS, getDevKey(), sizeParam, isbn),
+                FILENAME_SUFFIX + '_' + isbn + '_' + size);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -434,6 +431,12 @@ public class LibraryThingManager
 
         if (fetchThumbnail) {
             File file = getCoverImage(isbn, SearchSites.ImageSizes.LARGE);
+            if (file == null) {
+                file = getCoverImage(isbn, SearchSites.ImageSizes.MEDIUM);
+                if (file == null) {
+                    file = getCoverImage(isbn, SearchSites.ImageSizes.SMALL);
+                }
+            }
             if (file != null) {
                 ArrayList<String> imageList =
                         bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
@@ -454,4 +457,19 @@ public class LibraryThingManager
         return !noKey() && NetworkUtils.isAlive(getBaseURL());
     }
 
+    @Override
+    public boolean isIsbnOnly() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
+        return true;
+    }
+
+    @StringRes
+    @Override
+    public int getSearchingResId() {
+        return R.string.searching_library_thing;
+    }
 }

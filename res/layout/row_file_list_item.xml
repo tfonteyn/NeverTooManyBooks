@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/TLV_ROW"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/border">
+
+    <TextView
+        android:id="@+id/name"
+        style="@style/txt_row_fileInfo"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SelectableText"
+        tools:text="export.csv" />
+
+    <TextView
+        android:id="@+id/size"
+        style="@style/txt_row_fileInfo"
+        android:layout_marginStart="@dimen/border_double"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintBaseline_toBaselineOf="@id/date"
+        app:layout_constraintStart_toStartOf="@id/name"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        tools:ignore="SelectableText"
+        tools:text="10 Mb" />
+
+    <TextView
+        android:id="@+id/date"
+        style="@style/txt_row_fileInfo"
+        android:layout_marginStart="@dimen/border_double"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintStart_toEndOf="@id/size"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        tools:ignore="SelectableText"
+        tools:text="Fri, 23 July, 17:54:01 2011" />
+
+    <TextView
+        android:id="@+id/path"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/border_double"
+        android:ellipsize="start"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textIsSelectable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/name"
+        app:layout_constraintTop_toBottomOf="@id/size"
+        tools:text="/storage/emulated/0/MyDirectory/sub-dir/" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

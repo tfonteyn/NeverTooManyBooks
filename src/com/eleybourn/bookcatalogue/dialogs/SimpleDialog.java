@@ -355,7 +355,7 @@ public final class SimpleDialog {
         @NonNull
         public View getView(@NonNull final LayoutInflater inflater) {
             @SuppressLint("InflateParams")
-            View root = inflater.inflate(R.layout.dialog_file_list_item, null);
+            View root = inflater.inflate(R.layout.row_file_list_item, null);
             TextView name = root.findViewById(R.id.name);
             name.setText(mFile.getName());
 
@@ -364,9 +364,9 @@ public final class SimpleDialog {
             location.setText(mFile.getParent());
             // Set the size
             TextView size = root.findViewById(R.id.size);
-            size.setText(Utils.formatFileSize(mFile.length()));
+            size.setText(Utils.formatFileSize(inflater.getContext(), mFile.length()));
             // Set the last modified date
-            TextView update = root.findViewById(R.id.updated);
+            TextView update = root.findViewById(R.id.date);
             update.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
             // Return it
             return root;

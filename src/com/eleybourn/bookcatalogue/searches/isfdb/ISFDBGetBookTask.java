@@ -47,7 +47,7 @@ public class ISFDBGetBookTask
         try {
             return isfdbBook.fetch(new Bundle(), mFetchThumbnail);
         } catch (SocketTimeoutException e) {
-            Logger.info(this, e.getLocalizedMessage());
+            Logger.info(this, "doInBackground", e.getLocalizedMessage());
             return null;
         }
     }

@@ -75,12 +75,8 @@ public abstract class SendBooksTask
                        @NonNull final Context context) {
         boolean result = false;
 
-        // ENHANCE: Work out a way of checking if GR site is up
-        //if (!Utils.hostIsAvailable(context, "www.goodreads.com")) {
-        //  throw new IOException();
-        //}
-
-        if (NetworkUtils.isNetworkAvailable(context)) {
+        if (NetworkUtils.isNetworkAvailable(context)
+                && NetworkUtils.isAlive(GoodreadsManager.BASE_URL)) {
             GoodreadsManager grManager = new GoodreadsManager();
             // Ensure we are allowed
             if (grManager.hasValidCredentials()) {
@@ -93,7 +89,7 @@ public abstract class SendBooksTask
             if (getRetryDelay() > FIVE_MINUTES) {
                 setRetryDelay(FIVE_MINUTES);
             }
-            Logger.error("network not available");
+            Logger.error("network or site not available");
         }
 
         return result;
@@ -223,24 +219,17 @@ public abstract class SendBooksTask
          * This method also prepares the BookEventHolder object for the View.
          */
         @Override
-        public View newListItemView(@NonNull final Context context,
-                                    @NonNull final BindableItemCursor cursor,
-                                    @NonNull final ViewGroup parent) {
+        @NonNull
+        public View getView(@NonNull final Context context,
+                            @NonNull final BindableItemCursor cursor,
+                            @NonNull final ViewGroup parent) {
             View view = LayoutInflater.from(context)
                                       .inflate(R.layout.row_event_info, parent, false);
             view.setTag(R.id.TAG_EVENT, this);
-            BookEventHolder holder = new BookEventHolder();
+            BookEventHolder holder = new BookEventHolder(view);
             holder.event = this;
             holder.rowId = cursor.getId();
 
-            holder.authorView = view.findViewById(R.id.author);
-            holder.buttonView = view.findViewById(R.id.checked);
-            holder.dateView = view.findViewById(R.id.date);
-            holder.errorView = view.findViewById(R.id.error);
-            holder.retryView = view.findViewById(R.id.retry);
-            holder.titleView = view.findViewById(R.id.title);
-
-            view.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
             holder.buttonView.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
             holder.retryView.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
 
@@ -280,13 +269,11 @@ public abstract class SendBooksTask
             }
 
             holder.titleView.setText(title);
-            holder.authorView.setText(
-                    String.format(context.getString(R.string.lbl_by_author_s), author));
+            holder.authorView.setText(context.getString(R.string.lbl_by_author_s, author));
             holder.errorView.setText(getDescription());
 
-            String date = String.format(context.getString(R.string.gr_tq_occurred_at),
-                                        DateUtils.toPrettyDateTime(eventsCursor.getEventDate()));
-            holder.dateView.setText(date);
+            String date = DateUtils.toPrettyDateTime(eventsCursor.getEventDate());
+            holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at,date));
 
             holder.retryView.setVisibility(View.GONE);
 
@@ -402,14 +389,26 @@ public abstract class SendBooksTask
          */
         static class BookEventHolder {
 
+            final TextView titleView;
+            final TextView authorView;
+            final CompoundButton buttonView;
+            final TextView errorView;
+            final TextView dateView;
+            final Button retryView;
+
             long rowId;
             GrSendBookEvent event;
-            TextView titleView;
-            TextView authorView;
-            TextView errorView;
-            TextView dateView;
-            Button retryView;
-            CompoundButton buttonView;
+
+            BookEventHolder(@NonNull final View view) {
+                titleView = view.findViewById(R.id.title);
+                authorView = view.findViewById(R.id.author);
+                buttonView = view.findViewById(R.id.checked);
+                dateView = view.findViewById(R.id.date);
+                errorView = view.findViewById(R.id.error);
+                retryView = view.findViewById(R.id.retry);
+
+                view.setTag(R.id.TAG_BOOK_EVENT_HOLDER, this);
+            }
         }
 
     }

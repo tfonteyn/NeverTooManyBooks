@@ -20,10 +20,8 @@
 
             <TextView
                 android:id="@+id/lbl_year"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lbl_year"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                style="@style/lbl_textField"
+                android:text="@string/lbl_year" />
 
             <Button
                 android:id="@+id/plus"
@@ -39,9 +37,7 @@
                 android:ems="4"
                 android:hint="@string/lbl_year"
                 android:inputType="number"
-                android:text="2000"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:ignore="HardcodedText,Autofill" />
+                tools:ignore="Autofill,LabelFor" />
 
             <Button
                 android:id="@+id/minus"
@@ -60,10 +56,8 @@
 
             <TextView
                 android:id="@+id/lbl_month"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lbl_month"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                style="@style/lbl_textField"
+                android:text="@string/lbl_month" />
 
             <Button
                 android:id="@+id/plusMonth"
@@ -94,10 +88,8 @@
 
             <TextView
                 android:id="@+id/lbl_day"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/lbl_day"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                style="@style/lbl_textField"
+                android:text="@string/lbl_day" />
 
             <Button
                 android:id="@+id/plusDay"

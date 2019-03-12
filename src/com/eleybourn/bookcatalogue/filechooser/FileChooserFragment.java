@@ -38,14 +38,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Objects;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Fragment to display a simple directory/file browser.
@@ -79,8 +79,8 @@ public class FileChooserFragment
             tellActivityPathChanged();
         }
     };
-    private EditText mFilenameField;
-    private TextView mPathField;
+    private EditText mFilenameView;
+    private TextView mCurrentFolderView;
 
     /** Create an empty one in case we are rotated before generated. */
     @Nullable
@@ -89,8 +89,8 @@ public class FileChooserFragment
     /**
      * Constructor.
      *
-     * @param root      directory root to display
-     * @param fileName  default filename
+     * @param root     directory root to display
+     * @param fileName default filename
      *
      * @return the instance
      */
@@ -140,25 +140,29 @@ public class FileChooserFragment
         super.onActivityCreated(savedInstanceState);
 
         View view = requireView();
-        mFilenameField = view.findViewById(R.id.file_name);
-        mPathField = view.findViewById(R.id.path);
+        mCurrentFolderView = view.findViewById(R.id.current_folder);
+        mFilenameView = view.findViewById(R.id.file_name);
 
         if (savedInstanceState == null) {
             Bundle args = requireArguments();
-            mRootPath = new File(Objects.requireNonNull(args.getString(BKEY_ROOT_PATH)));
-            mFilenameField.setText(args.getString(UniqueId.BKEY_FILE_SPEC));
-            mPathField.setText(mRootPath.getAbsolutePath());
+            String path = args.getString(BKEY_ROOT_PATH);
+            mRootPath = new File(Objects.requireNonNull(path));
+
+            mCurrentFolderView.setText(mRootPath.getAbsolutePath());
+            mFilenameView.setText(args.getString(UniqueId.BKEY_FILE_SPEC));
             tellActivityPathChanged();
         } else {
-            mRootPath =
-                    new File(Objects.requireNonNull(savedInstanceState.getString(BKEY_ROOT_PATH)));
+            String path = savedInstanceState.getString(BKEY_ROOT_PATH);
+            mRootPath = new File(Objects.requireNonNull(path));
+
             ArrayList<FileDetails> list = savedInstanceState.getParcelableArrayList(BKEY_LIST);
-            Objects.requireNonNull(list);
+            //noinspection ConstantConditions
             onGotFileList(mRootPath, list);
         }
 
         // 'up' directory
         view.findViewById(R.id.btn_path_up).setOnClickListener(onPathUpClickListener);
+        mCurrentFolderView.setOnClickListener(onPathUpClickListener);
 
         requireActivity().getWindow()
                          .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -188,7 +192,7 @@ public class FileChooserFragment
     @NonNull
     File getSelectedFile() {
         return new File(mRootPath.getAbsolutePath() +
-                                File.separator + mFilenameField.getText().toString().trim());
+                                File.separator + mFilenameView.getText().toString().trim());
     }
 
     /**
@@ -202,8 +206,7 @@ public class FileChooserFragment
                               @NonNull final ArrayList<FileDetails> list) {
         mRootPath = root;
         mList = list;
-
-        mPathField.setText(mRootPath.getAbsolutePath());
+        mCurrentFolderView.setText(mRootPath.getAbsolutePath());
 
         // Setup and display the list
         ListAdapter adapter = new FileDetailsAdapter(requireContext(), mList);
@@ -253,22 +256,23 @@ public class FileChooserFragment
 
             final FileDetails item = getItem(position);
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.row_file_info,
-                                                                        parent, false);
+                convertView = LayoutInflater.from(getContext())
+                                            .inflate(R.layout.row_file_info, parent, false);
             }
 
             //noinspection ConstantConditions
             item.onGetView(convertView, getContext());
 
-            // Put the name of the file into the filename field when clicked.
             convertView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(@NonNull final View v) {
                     if (item.getFile().isDirectory()) {
+                        // go into the directory selected
                         mRootPath = item.getFile();
                         tellActivityPathChanged();
                     } else {
-                        mFilenameField.setText(item.getFile().getName());
+                        // Put the name of the file into the filename field when clicked.
+                        mFilenameView.setText(item.getFile().getName());
                     }
                 }
             });

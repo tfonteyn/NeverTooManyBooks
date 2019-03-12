@@ -78,24 +78,24 @@ public class GetImageTask
      * Constructor. Clean the view and save the details of what we want.
      */
     @UiThread
-    private GetImageTask(@NonNull final String hash,
-                         @NonNull final ImageView v,
+    private GetImageTask(@NonNull final String uuid,
+                         @NonNull final ImageView imageView,
                          final int maxWidth,
                          final int maxHeight,
                          final boolean cacheWasChecked) {
-        clearOldTaskFromView(v);
-        mView = new WeakReference<>(v);
+        clearOldTaskFromView(imageView);
+        mView = new WeakReference<>(imageView);
         mCacheWasChecked = cacheWasChecked;
 
-        mUuid = hash;
+        mUuid = uuid;
         mWidth = maxWidth;
         mHeight = maxHeight;
 
         // Clear current image
-        v.setImageBitmap(null);
+        imageView.setImageBitmap(null);
 
         // Associate the view with this task
-        v.setTag(R.id.TAG_GET_THUMBNAIL_TASK, this);
+        imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, this);
     }
 
     /**
@@ -108,11 +108,11 @@ public class GetImageTask
      */
     @UiThread
     public static void newInstanceAndStart(@NonNull final String uuid,
-                                           @NonNull final ImageView view,
+                                           @NonNull final ImageView imageView,
                                            final int maxWidth,
                                            final int maxHeight,
                                            final boolean cacheWasChecked) {
-        new GetImageTask(uuid, view, maxWidth, maxHeight, cacheWasChecked)
+        new GetImageTask(uuid, imageView, maxWidth, maxHeight, cacheWasChecked)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -161,11 +161,7 @@ public class GetImageTask
 
             // Make sure the view is still associated with this task.
             // We don't want to overwrite the wrong image in a recycled view.
-            if (!this.equals(view.getTag(R.id.TAG_GET_THUMBNAIL_TASK))) {
-                return null;
-            }
-
-            if (isCancelled()) {
+            if (isCancelled() || !this.equals(view.getTag(R.id.TAG_GET_THUMBNAIL_TASK))) {
                 return null;
             }
 
@@ -178,15 +174,14 @@ public class GetImageTask
                 mWasInCache = (mBitmap != null);
             }
 
-            if (isCancelled()) {
+            if (isCancelled() || !this.equals(view.getTag(R.id.TAG_GET_THUMBNAIL_TASK))) {
                 return null;
             }
 
-            // wasn't in cache, try file system. Note we do not write to the view obv.
+            // wasn't in cache, try file system.
             if (mBitmap == null) {
-                mBitmap = ImageUtils.getImageAndPutIntoView(null, mUuid,
-                                                            mWidth, mHeight, true,
-                                                            false, false);
+                mBitmap = ImageUtils.getImage(mUuid, mWidth, mHeight, true,
+                                              false, false);
             }
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
@@ -213,15 +208,15 @@ public class GetImageTask
         }
 
         // Get the view we are targeting and make sure it is valid
-        ImageView view = mView.get();
+        ImageView imageView = mView.get();
         // Make sure the view is still associated with this task.
         // We don't want to overwrite the wrong image in a recycled view.
-        final boolean viewIsValid = (view != null
-                && this.equals(view.getTag(R.id.TAG_GET_THUMBNAIL_TASK)));
+        final boolean viewIsValid = (imageView != null
+                && this.equals(imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK)));
 
         // Clear the view tag
         if (viewIsValid) {
-            view.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
+            imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
         }
 
         if (mBitmap != null) {
@@ -235,14 +230,14 @@ public class GetImageTask
             if (viewIsValid) {
                 //LayoutParams lp = new LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());
                 //view.setLayoutParams(lp);
-                view.setImageBitmap(mBitmap);
+                imageView.setImageBitmap(mBitmap);
             } else {
                 mBitmap.recycle();
                 mBitmap = null;
             }
         } else {
-            if (view != null) {
-                view.setImageResource(R.drawable.ic_broken_image);
+            if (imageView != null) {
+                imageView.setImageResource(R.drawable.ic_image);
             }
         }
 

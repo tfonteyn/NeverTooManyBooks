@@ -4,8 +4,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
+import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
@@ -54,6 +56,22 @@ public final class AmazonManager
     @WorkerThread
     public boolean isAvailable() {
         return NetworkUtils.isAlive(getBaseURL());
+    }
+
+    @Override
+    public boolean isIsbnOnly() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
+        return false;
+    }
+
+    @StringRes
+    @Override
+    public int getSearchingResId() {
+        return R.string.searching_amazon_books;
     }
 
     /**

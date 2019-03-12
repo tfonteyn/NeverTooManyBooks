@@ -194,7 +194,22 @@ public class EditBookFragment
     private void initTabs(@Nullable final Bundle savedInstanceState) {
 
         mTabLayout = requireView().findViewById(R.id.tab_panel);
-        mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        mTabLayout.setTabMode(TabLayout.MODE_FIXED);
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(@NonNull final TabLayout.Tab tab) {
+                //noinspection ConstantConditions
+                showTab((FragmentHolder) tab.getTag());
+            }
+
+            @Override
+            public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(@NonNull final TabLayout.Tab tab) {
+            }
+        });
 
         FragmentHolder holder;
         TabLayout.Tab tab;
@@ -207,8 +222,7 @@ public class EditBookFragment
         tab = mTabLayout.newTab().setText(R.string.tab_lbl_notes).setTag(holder);
         mTabLayout.addTab(tab);
 
-        addTOCTab(getBook().isBitSet(UniqueId.KEY_BOOK_TOC_BITMASK,
-                                     TocEntry.Type.MULTIPLE_WORKS));
+        addTOCTab(getBook().isBitSet(UniqueId.KEY_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS));
 
         // any specific tab desired as 'selected' ?
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
@@ -222,7 +236,7 @@ public class EditBookFragment
                 break;
 
             case TAB_EDIT_ANTHOLOGY:
-                if (Fields.isVisible(UniqueId.KEY_BOOK_TOC_BITMASK)) {
+                if (Fields.isVisible(UniqueId.KEY_TOC_BITMASK)) {
                     showTab = tabWanted;
                 }
                 break;
@@ -234,38 +248,20 @@ public class EditBookFragment
         TabLayout.Tab ourTab = mTabLayout.getTabAt(showTab);
         //noinspection ConstantConditions
         ourTab.select();
+    }
 
-        holder = (FragmentHolder) ourTab.getTag();
-        //noinspection ConstantConditions
+    /**
+     * Show the passed tab.
+     *
+     * @param holder of the tab to show.
+     */
+    private void showTab(@NonNull final FragmentHolder holder) {
         getChildFragmentManager()
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 // replace as this is a tab bar
                 .replace(R.id.tab_fragment, holder.fragment, holder.tag)
                 .commit();
-
-        // finally hook up our listener.
-        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(@NonNull final TabLayout.Tab tab) {
-                FragmentHolder fragmentHolder = (FragmentHolder) tab.getTag();
-                //noinspection ConstantConditions
-                getChildFragmentManager()
-                        .beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        // replace as this is a tab bar
-                        .replace(R.id.tab_fragment, fragmentHolder.fragment, fragmentHolder.tag)
-                        .commit();
-            }
-
-            @Override
-            public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(@NonNull final TabLayout.Tab tab) {
-            }
-        });
     }
 
     /**
@@ -364,7 +360,7 @@ public class EditBookFragment
         }
 
         if (book.getId() == 0) {
-            String isbn = book.getString(UniqueId.KEY_BOOK_ISBN);
+            String isbn = book.getString(UniqueId.KEY_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty() && ((mDb.getBookIdFromIsbn(isbn, true) > 0))) {
                 StandardDialogs.confirmSaveDuplicateBook(requireContext(), nextStep);
@@ -396,7 +392,7 @@ public class EditBookFragment
             long id = mDb.insertBook(book);
             if (id > 0) {
                 // if we got a cover while searching the internet, make it permanent
-                if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
+                if (book.getBoolean(UniqueId.BKEY_COVER_IMAGE)) {
                     String uuid = mDb.getBookUuid(id);
                     // get the temporary downloaded file
                     File source = StorageUtils.getTempCoverFile();

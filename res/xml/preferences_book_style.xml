@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
     <PreferenceCategory
         android:key="@string/pg_general"
         android:title="@string/pg_general">
@@ -9,7 +8,6 @@
             android:hint="@string/info_tap_to_edit"
             android:key="@string/pk_bob_style_name"
             android:selectAllOnFocus="true"
-            android:singleLine="true"
             android:title="@string/name" />
 
         <PreferenceScreen

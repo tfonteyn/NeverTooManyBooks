@@ -28,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -279,17 +280,17 @@ public abstract class BookBaseFragment
             .setIcon(R.drawable.ic_delete);
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate_book)
             .setIcon(R.drawable.ic_content_copy);
-        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0,
-                 R.string.menu_internet_update_fields)
+        menu.add(R.id.MENU_GROUP_BOOK,
+                 R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.menu_internet_update_fields)
             .setIcon(R.drawable.ic_search);
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
             .setIcon(R.drawable.ic_share);
 
-        if (Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
-            menu.add(R.id.MENU_BOOK_EDIT_LOAN, R.id.MENU_BOOK_EDIT_LOAN, 0,
-                     R.string.menu_loan_lend_book);
-            menu.add(R.id.MENU_BOOK_LOAN_RETURNED, R.id.MENU_BOOK_LOAN_RETURNED, 0,
-                     R.string.menu_loan_return_book);
+        if (Fields.isVisible(UniqueId.KEY_LOANEE)) {
+            menu.add(R.id.MENU_BOOK_EDIT_LOAN,
+                     R.id.MENU_BOOK_EDIT_LOAN, 0, R.string.menu_loan_lend_book);
+            menu.add(R.id.MENU_BOOK_LOAN_RETURNED,
+                     R.id.MENU_BOOK_LOAN_RETURNED, 0, R.string.menu_loan_return_book);
         }
         MenuHandler.addAmazonSearchSubMenu(menu);
 
@@ -309,6 +310,12 @@ public abstract class BookBaseFragment
 
         boolean bookExists = book.getId() != 0;
         menu.setGroupVisible(R.id.MENU_GROUP_BOOK, bookExists);
+
+        if (Fields.isVisible(UniqueId.KEY_LOANEE)) {
+            boolean isAvailable = mDb.getLoaneeByBookId(book.getId()) == null;
+            menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
+            menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
+        }
 
         MenuHandler.prepareAmazonSearchSubMenu(menu, book);
     }
@@ -522,15 +529,15 @@ public abstract class BookBaseFragment
                     } else {
                         boolean wasCancelled =
                                 data.getBooleanExtra(UniqueId.BKEY_CANCELED, false);
-                        Logger.info(this, "wasCancelled= " + wasCancelled);
+                        Logger.info(this, "onActivityResult", "wasCancelled= " + wasCancelled);
                     }
                 }
                 break;
 
             default:
                 // lowest level of our Fragment, see if we missed anything
-                Logger.info(this,
-                            "BookBaseFragment|onActivityResult|NOT HANDLED:"
+                Logger.info(this, "BookBaseFragment.onActivityResult",
+                            "NOT HANDLED:"
                                     + " requestCode=" + requestCode + ", resultCode=" + resultCode);
                 super.onActivityResult(requestCode, resultCode, data);
                 break;

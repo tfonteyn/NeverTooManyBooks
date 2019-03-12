@@ -23,22 +23,22 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
-import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
-import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
+import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 /**
  * Class to add a book to a shelf. In this case, we do not care about the data returned.
@@ -93,6 +93,8 @@ public class ShelfAddBookHandler
 
     /**
      * Add the passed book to the passed shelf.
+     *
+     * @return reviewId
      */
     public long add(@NonNull final String shelfName,
                     final long grBookId)
@@ -106,18 +108,19 @@ public class ShelfAddBookHandler
     /**
      * Remove the passed book from the passed shelf.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public long remove(@NonNull final String shelfName,
+    public void remove(@NonNull final String shelfName,
                        final long grBookId)
             throws IOException,
                    AuthorizationException,
                    BookNotFoundException {
 
-        return doCall(shelfName, grBookId, true);
+        doCall(shelfName, grBookId, true);
     }
 
     /**
      * Do the main work; same API call for add & remove.
+     *
+     * @return reviewId
      */
     private long doCall(@NonNull final String shelfName,
                         final long grBookId,

@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:focusable="false"
-    android:padding="@dimen/border_double">
+    android:layout_margin="@dimen/border">
 
     <TextView
         android:id="@+id/title"
+        style="@style/txt_detail_small"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="9"
-        android:textIsSelectable="false"
-        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/year"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SelectableText"
         tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The" />
 
     <TextView
         android:id="@+id/year"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:minEms="6"
-        android:textIsSelectable="false"
-        android:textSize="12sp"
+        style="@style/txt_detail_small"
+        android:layout_marginStart="@dimen/border_double"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SelectableText"
         tools:text="(1971)" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

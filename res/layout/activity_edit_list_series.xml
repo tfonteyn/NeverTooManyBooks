@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tlv="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,22 +12,17 @@
         android:id="@+id/toolbar"
         style="@style/toolbar"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/title"
-        style="@style/txt_row_bookDetail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textIsSelectable="true"
-        app:layout_constraintBottom_toTopOf="@id/author"
-        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/txt_detail_medium"
+        android:layout_marginStart="@dimen/border_double"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:ignore="SelectableText"
         tools:text="Book Title goes here" />
 
     <AutoCompleteTextView
@@ -34,11 +30,9 @@
         style="@style/titleTextEntry"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/border"
         android:completionThreshold="2"
         android:hint="@string/lbl_series"
-        android:paddingStart="@dimen/border"
-        android:paddingEnd="@dimen/border"
-        app:layout_constraintBottom_toTopOf="@android:id/list"
         app:layout_constraintEnd_toStartOf="@id/series_num"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title" />
@@ -49,7 +43,6 @@
         android:layout_width="80sp"
         android:layout_height="wrap_content"
         android:hint="@string/lbl_series_num"
-        app:layout_constraintBottom_toTopOf="@android:id/list"
         app:layout_constraintEnd_toStartOf="@id/add"
         app:layout_constraintStart_toEndOf="@id/series"
         app:layout_constraintTop_toBottomOf="@id/title"
@@ -60,7 +53,6 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="@string/btn_confirm_add"
-        app:layout_constraintBottom_toTopOf="@android:id/list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/series_num"
         app:layout_constraintTop_toBottomOf="@id/title" />
@@ -68,8 +60,6 @@
     <com.eleybourn.bookcatalogue.widgets.TouchListView
         android:id="@android:id/list"
         style="@style/tlv_TouchListView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,10 +68,8 @@
 
     <TextView
         android:id="@android:id/empty"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        style="@style/txt_blurb_medium"
         android:text="@string/info_no_series_yet"
-        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -94,8 +82,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@android:id/list" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

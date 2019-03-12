@@ -297,7 +297,7 @@ public class BooklistBuilder
     public BooklistBuilder(@NonNull final Context context,
                            @NonNull final BooklistStyle style) {
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
-            Logger.info(this,
+            Logger.info(this, "BooklistBuilder",
                         "instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet());
         }
         // Allocate ID
@@ -422,7 +422,7 @@ public class BooklistBuilder
         mNavTable.create(mSyncedDb, true, false);
 
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-            Logger.info(this, "rebuild|mBaseBuildStmt|" + mBaseBuildStmt.toString() + '\n');
+            Logger.info(this, "rebuild", "mBaseBuildStmt|" + mBaseBuildStmt.toString() + '\n');
         }
 
         // Build base data
@@ -431,7 +431,7 @@ public class BooklistBuilder
         // Rebuild all the rest
         for (SynchronizedStatement stmt : mLevelBuildStmts) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-                Logger.info(this, "rebuild|mLevelBuildStmts|" + stmt.toString() + '\n');
+                Logger.info(this, "rebuild", "mLevelBuildStmts|" + stmt.toString() + '\n');
             }
             stmt.execute();
         }
@@ -996,7 +996,7 @@ public class BooklistBuilder
                                                 + ',' + DOM_BL_ROOT_KEY + ')');
 
                 if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-                    Logger.info(this, "rebuild|add|" + STMT_NAV_IX_1
+                    Logger.info(this, "build", "add|" + STMT_NAV_IX_1
                             + '|' + ixStmt1.toString());
                 }
                 mLevelBuildStmts.add(ixStmt1);
@@ -1014,7 +1014,7 @@ public class BooklistBuilder
                                                 + '(' + DOM_BL_REAL_ROW_ID + ')');
 
                 if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-                    Logger.info(this, "rebuild|add|" + STMT_NAV_IX_2
+                    Logger.info(this, "build", "add|" + STMT_NAV_IX_2
                             + '|' + ixStmt2.toString());
                 }
                 mLevelBuildStmts.add(ixStmt2);
@@ -1026,30 +1026,42 @@ public class BooklistBuilder
                 mSyncedDb.analyze(mNavTable);
 
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    Logger.info(this, "T1: " + (t1_basic_setup_done - t0));
-                    Logger.info(this, "T2: " + (t2_groups_processed - t1_basic_setup_done));
-                    Logger.info(this, "T3: " + (t3 - t2_groups_processed));
-
-                    Logger.info(this, "T4: " + (t4_buildSqlComponents - t3));
-                    Logger.info(this, "T5: " + (t5_build_join - t4_buildSqlComponents));
-                    Logger.info(this, "T6: " + (t6_build_where - t5_build_join));
-
-                    Logger.info(this, "T7: " + (t7_sortColumns_processed - t6_build_where));
-                    Logger.info(this, "T8: " + (t8_index_build - t7_sortColumns_processed));
-                    Logger.info(this, "T9: " + (t9 - t8_index_build));
-                    Logger.info(this, "T10: " + (t10_BaseBuild_executed - t9));
-                    Logger.info(this, "T11: " + (t11_table_optimized - t10_BaseBuild_executed));
-                    Logger.info(this, "T12: " + (t12_nav_table_build - t11_table_optimized));
-                    Logger.info(this,
+                    Logger.info(this, "build",
+                                "T1: " + (t1_basic_setup_done - t0));
+                    Logger.info(this, "build",
+                                "T2: " + (t2_groups_processed - t1_basic_setup_done));
+                    Logger.info(this, "build",
+                                "T3: " + (t3 - t2_groups_processed));
+                    Logger.info(this, "build",
+                                "T4: " + (t4_buildSqlComponents - t3));
+                    Logger.info(this, "build",
+                                "T5: " + (t5_build_join - t4_buildSqlComponents));
+                    Logger.info(this, "build",
+                                "T6: " + (t6_build_where - t5_build_join));
+                    Logger.info(this, "build",
+                                "T7: " + (t7_sortColumns_processed - t6_build_where));
+                    Logger.info(this, "build",
+                                "T8: " + (t8_index_build - t7_sortColumns_processed));
+                    Logger.info(this, "build",
+                                "T9: " + (t9 - t8_index_build));
+                    Logger.info(this, "build",
+                                "T10: " + (t10_BaseBuild_executed - t9));
+                    Logger.info(this, "build",
+                                "T11: " + (t11_table_optimized - t10_BaseBuild_executed));
+                    Logger.info(this, "build",
+                                "T12: " + (t12_nav_table_build - t11_table_optimized));
+                    Logger.info(this, "build",
                                 "T13: " + (t13_nav_table_index_IX1_created - t12_nav_table_build));
-                    Logger.info(this, "T14: " + (t14_nav_table_index_IX2_created
-                            - t13_nav_table_index_IX1_created));
-                    Logger.info(this, "T15: " + (System.currentTimeMillis()
-                            - t14_nav_table_index_IX2_created));
-                    Logger.info(this, "============================");
-                    Logger.info(this, "Total time: "
-                            + (System.currentTimeMillis() - t0));
-
+                    Logger.info(this, "build",
+                                "T14: " + (t14_nav_table_index_IX2_created
+                                        - t13_nav_table_index_IX1_created));
+                    Logger.info(this, "build",
+                                "T15: " + (System.currentTimeMillis()
+                                        - t14_nav_table_index_IX2_created));
+                    Logger.info(this, "build",
+                                "============================");
+                    Logger.info(this, "build",
+                                "Total time: " + (System.currentTimeMillis() - t0));
                 }
                 mSyncedDb.setTransactionSuccessful();
 
@@ -1120,7 +1132,7 @@ public class BooklistBuilder
         SynchronizedStatement navStmt = mStatements.add(STMT_NAV_TABLE_INSERT, insSql);
 
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-            Logger.info(this, "rebuild|add|" + STMT_NAV_TABLE_INSERT
+            Logger.info(this, "populateNavigationTable", "add|" + STMT_NAV_TABLE_INSERT
                     + '|' + navStmt.toString());
         }
         mLevelBuildStmts.add(navStmt);
@@ -1264,8 +1276,8 @@ public class BooklistBuilder
             // Save, compile and run this statement
             SynchronizedStatement stmt = mStatements.add("Level" + i, summarySql);
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-                Logger.info(this, "rebuild|add|" + "Level" + i
-                        + '|' + stmt.toString());
+                Logger.info(this, "baseBuildWithoutTriggers",
+                            "add|" + "Level" + i + '|' + stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.executeInsert();
@@ -1279,8 +1291,8 @@ public class BooklistBuilder
         if (!collationIsCs) {
             SynchronizedStatement stmt = mStatements.add(STMT_IX_1, ix1Sql);
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-                Logger.info(this, "rebuild|add|" + STMT_IX_1
-                        + '|' + stmt.toString());
+                Logger.info(this, "baseBuildWithoutTriggers",
+                            "add|" + STMT_IX_1 + '|' + stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.execute();
@@ -1292,7 +1304,7 @@ public class BooklistBuilder
                     int i = 0; i < mStyle.groupCount();
                 //noinspection UnusedAssignment
                     i++) {
-                Logger.info(this,
+                Logger.info(this, "baseBuildWithoutTriggers",
                             "t_style[" + i + "]: " + (t_style[i] - t_style[i - 1]));
             }
         }
@@ -1814,8 +1826,8 @@ public class BooklistBuilder
             SynchronizedStatement stmt = mStatements.add(tgName, tgSql);
 
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-                Logger.info(this, "rebuild|add|" + tgName
-                        + '|' + stmt.toString());
+                Logger.info(this, "makeNestedTriggers",
+                            "add|" + tgName + '|' + stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.execute();
@@ -1836,8 +1848,8 @@ public class BooklistBuilder
 
         SynchronizedStatement stmt = mStatements.add(currentValueTriggerName, tgSql);
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-            Logger.info(this,
-                        "rebuild|add|" + currentValueTriggerName
+            Logger.info(this, "makeNestedTriggers",
+                        "add|" + currentValueTriggerName
                                 + '|' + stmt.toString());
         }
         mLevelBuildStmts.add(stmt);
@@ -1989,8 +2001,8 @@ public class BooklistBuilder
                 mStatements.add(tgForwardName, oneBigTrigger.toString());
 
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
-            Logger.info(this, "rebuild|add|" + tgForwardName
-                    + '|' + stmt.toString());
+            Logger.info(this, "makeSingleTrigger",
+                        "add|" + tgForwardName + '|' + stmt.toString());
         }
         mLevelBuildStmts.add(stmt);
         stmt.execute();
@@ -2244,9 +2256,9 @@ public class BooklistBuilder
         }
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this,
-                        "Pseudo-count (" + name + ") = " + count
-                                + " completed in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info(this, "pseudoCount",
+                        name + '=' + count + " completed in "
+                                + (System.currentTimeMillis() - t0) + "ms");
         }
         return count;
     }
@@ -2371,7 +2383,7 @@ public class BooklistBuilder
             }
 
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                Logger.info(this, "Expand All: " + (System.currentTimeMillis() - t0));
+                Logger.info(this, "expandAll", (System.currentTimeMillis() - t0) + "ms");
             }
 
             if (txLock != null) {
@@ -2507,10 +2519,10 @@ public class BooklistBuilder
     private void cleanup(final boolean isFinalize) {
         if (!mStatements.isEmpty()) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
-                Logger.info(this,
+                Logger.info(this, "cleanup",
                             "Finalizing with active mStatements (this is not an error): ");
                 for (String name : mStatements.getNames()) {
-                    Logger.info(this, name);
+                    Logger.info(this, "cleanup", name);
                 }
             }
 
@@ -2519,7 +2531,7 @@ public class BooklistBuilder
 
         if (mNavTable != null) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
-                Logger.info(this,
+                Logger.info(this, "cleanup",
                             "Finalizing with mNavTable (this is not an error)");
             }
 
@@ -2532,7 +2544,7 @@ public class BooklistBuilder
         }
         if (mListTable != null) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
-                Logger.info(this,
+                Logger.info(this, "cleanup",
                             "Finalizing with mListTable (this is not an error)");
             }
 
@@ -2549,7 +2561,7 @@ public class BooklistBuilder
         if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
             if (!mDebugReferenceDecremented) {
                 // Only de-reference once!
-                Logger.info(this,
+                Logger.info(this, "cleanup",
                             "instances left: " + DEBUG_INSTANCE_COUNTER.decrementAndGet());
             }
             mDebugReferenceDecremented = true;
@@ -2602,9 +2614,12 @@ public class BooklistBuilder
                             || (mode == PREF_MODE_NESTED_TRIGGERS);
 
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
-                Logger.info(this, "listMode          : " + mode);
-                Logger.info(this, "useTriggers       : " + useTriggers);
-                Logger.info(this, "nestedTriggers    : " + nestedTriggers);
+                Logger.info(this, "CompatibilityMode",
+                            "listMode          : " + mode);
+                Logger.info(this, "CompatibilityMode",
+                            "useTriggers       : " + useTriggers);
+                Logger.info(this, "CompatibilityMode",
+                            "nestedTriggers    : " + nestedTriggers);
             }
         }
 
@@ -2831,8 +2846,10 @@ public class BooklistBuilder
             mListTable.create(mSyncedDb, false);
 
             if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                Logger.info(this, "Drop   = " + (t1 - t0));
-                Logger.info(this, "Create = " + (System.currentTimeMillis() - t1));
+                Logger.info(this, "recreateTable",
+                            "Drop   = " + (t1 - t0));
+                Logger.info(this, "recreateTable",
+                            "Create = " + (System.currentTimeMillis() - t1));
             }
         }
 
@@ -3085,7 +3102,7 @@ public class BooklistBuilder
 //			/*
 //			if (!bookshelf.isEmpty()) {
 //				sql += "	" + DB_TB_BOOKSHELF_AND_ALIAS + " join " + DB_TB_BOOK_BOOKSHELF_AND_ALIAS + 
-//						" On " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOKSHELF_NAME + " = " + ALIAS_BOOKSHELF + "." + KEY_ID ;
+//						" On " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOKSHELF + " = " + ALIAS_BOOKSHELF + "." + KEY_ID ;
 //				sql +=	"    join " + DB_TB_BOOKS_AND_ALIAS + " on " + ALIAS_BOOKS + "." + KEY_ID + " = " + ALIAS_BOOK_BOOKSHELF + "." + KEY_BOOK_ID + "\n";
 //			} else {
 //				sql +=	"    " + DB_TB_BOOKS_AND_ALIAS + "\n";

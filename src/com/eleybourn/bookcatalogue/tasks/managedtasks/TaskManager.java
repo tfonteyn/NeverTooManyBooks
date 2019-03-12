@@ -114,8 +114,8 @@ public class TaskManager {
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                     for (TaskInfo i : mManagedTasks) {
                         Logger.info(
-                                TaskManager.this,
-                                "|Task `" + i.task.getName() + "` still running");
+                                TaskManager.this, "onTaskFinished",
+                                "Task `" + i.task.getName() + "` still running");
                     }
                 }
             }

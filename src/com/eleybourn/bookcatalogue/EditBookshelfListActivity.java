@@ -45,14 +45,13 @@ import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 
 /**
  * Admin Activity where we list all bookshelves and can add/delete/edit them.
  * <p>
  * refit with extends {@link EditObjectListActivity} ? => no point,
- * we don't want/need a {@link TouchListView}
+ * we don't want/need a TouchListView
  */
 public class EditBookshelfListActivity
         extends BaseListActivity

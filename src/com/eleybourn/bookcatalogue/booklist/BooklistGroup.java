@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -394,21 +395,22 @@ public class BooklistGroup
          */
         @Override
         public void addPreferences(@NonNull final PreferenceScreen screen) {
-            PreferenceCategory category = screen.findPreference(
-                    BookCatalogueApp.getResString(R.string.lbl_series));
+            Context context = screen.getContext();
+            PreferenceCategory category =
+                    screen.findPreference(context.getString(R.string.lbl_series));
             if (category != null) {
                 category.setVisible(true);
 
-                SwitchPreference pShowAll = new SwitchPreference(screen.getContext());
+                SwitchPreference pShowAll = new SwitchPreference(context);
                 pShowAll.setTitle(R.string.pt_bob_books_under_multiple_series);
                 pShowAll.setIcon(R.drawable.ic_functions);
-                pShowAll.setKey(BookCatalogueApp.getResString(
-                        R.string.pk_bob_books_under_multiple_series));
+                pShowAll.setKey(context.getString(R.string.pk_bob_books_under_multiple_series));
                 pShowAll.setDefaultValue(false);
-                pShowAll.setSummaryOn(BookCatalogueApp.getResString(
-                        R.string.pv_bob_books_under_multiple_show_book_under_each_1s, DESCRIPTION));
-                pShowAll.setSummaryOff(BookCatalogueApp.getResString(
-                        R.string.pv_bob_books_under_multiple_show_under_primary_1s_only,
+
+                pShowAll.setSummaryOn(context.getString(
+                        R.string.pv_bob_books_under_multiple_each_1s, DESCRIPTION));
+                pShowAll.setSummaryOff(context.getString(
+                        R.string.pv_bob_books_under_multiple_primary_1s_only,
                         DESCRIPTION));
                 //pAllSeries.setHint(R.string.hint_series_book_may_appear_more_than_once);
                 category.addPreference(pShowAll);
@@ -548,30 +550,30 @@ public class BooklistGroup
          */
         @Override
         public void addPreferences(@NonNull final PreferenceScreen screen) {
-            PreferenceCategory category = screen.findPreference(
-                    BookCatalogueApp.getResString(R.string.lbl_author));
+            Context context = screen.getContext();
+            PreferenceCategory category =
+                    screen.findPreference(context.getString(R.string.lbl_author));
             if (category != null) {
                 category.setVisible(true);
 
-                SwitchPreference pShowAll = new SwitchPreference(screen.getContext());
+                SwitchPreference pShowAll = new SwitchPreference(context);
                 pShowAll.setTitle(R.string.pt_bob_books_under_multiple_authors);
                 pShowAll.setIcon(R.drawable.ic_functions);
-                pShowAll.setKey(BookCatalogueApp.getResString(
-                        R.string.pk_bob_books_under_multiple_authors));
+                pShowAll.setKey(context.getString(R.string.pk_bob_books_under_multiple_authors));
                 pShowAll.setDefaultValue(false);
-                pShowAll.setSummaryOn(BookCatalogueApp.getResString(
-                        R.string.pv_bob_books_under_multiple_show_book_under_each_1s, DESCRIPTION));
-                pShowAll.setSummaryOff(BookCatalogueApp.getResString(
-                        R.string.pv_bob_books_under_multiple_show_under_primary_1s_only,
-                        DESCRIPTION));
+                pShowAll.setSummaryOn(
+                        context.getString(R.string.pv_bob_books_under_multiple_each_1s,
+                                          DESCRIPTION));
+                pShowAll.setSummaryOff(
+                        context.getString(R.string.pv_bob_books_under_multiple_primary_1s_only,
+                                          DESCRIPTION));
                 //pAllAuthors.setHint(R.string.hint_authors_book_may_appear_more_than_once)
                 category.addPreference(pShowAll);
 
-                SwitchPreference pGivenNameFirst = new SwitchPreference(screen.getContext());
+                SwitchPreference pGivenNameFirst = new SwitchPreference(context);
                 pGivenNameFirst.setTitle(R.string.pt_bob_format_author_name);
                 pGivenNameFirst.setIcon(R.drawable.ic_title);
-                pGivenNameFirst.setKey(
-                        BookCatalogueApp.getResString(R.string.pk_bob_format_author_name));
+                pGivenNameFirst.setKey(context.getString(R.string.pk_bob_format_author_name));
                 pGivenNameFirst.setDefaultValue(false);
                 pGivenNameFirst.setSummaryOn(R.string.pv_bob_format_author_name_given_first);
                 pGivenNameFirst.setSummaryOff(R.string.pv_bob_format_author_name_family_first);

@@ -87,7 +87,7 @@ public class TrackedCursor
         super(driver, editTable, query, sync);
 
         if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
-            Logger.info(this, "instances created: "
+            Logger.info(this, "TrackedCursor","instances created: "
                     + DEBUG_INSTANCE_COUNTER.incrementAndGet());
             // Record who called us. It's only from about the 7th element that matters.
             mStackTrace = Thread.currentThread().getStackTrace();
@@ -207,7 +207,7 @@ public class TrackedCursor
                 removeCursor();
                 mIsClosedFlg = true;
             }
-            Logger.info(this, "instances left: "
+            Logger.info(this, "close","instances left: "
                     + DEBUG_INSTANCE_COUNTER.decrementAndGet());
         }
     }

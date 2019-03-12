@@ -58,6 +58,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
@@ -147,6 +148,7 @@ public class CsvExporter
                     + '"' + DOM_BOOK_LANGUAGE + "\","
                     + '"' + DOM_BOOK_DATE_ADDED + "\","
                     + '"' + DOM_BOOK_LIBRARY_THING_ID + "\","
+                    + '"' + DOM_BOOK_OPEN_LIBRARY_ID + "\","
                     + '"' + DOM_BOOK_ISFDB_ID + "\","
                     + '"' + DOM_BOOK_GOODREADS_BOOK_ID + "\","
                     + '"' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "\","
@@ -275,6 +277,7 @@ public class CsvExporter
                    .append(formatCell(bookCursorRow.getDateAdded()))
 
                    .append(formatCell(bookCursorRow.getLibraryThingBookId()))
+                   .append(formatCell(bookCursorRow.getOpenLibraryBookId()))
                    .append(formatCell(bookCursorRow.getISFDBBookId()))
                    .append(formatCell(bookCursorRow.getGoodreadsBookId()))
                    .append(formatCell(bookCursorRow.getDateLastSyncedWithGoodreads()))
@@ -298,7 +301,8 @@ public class CsvExporter
                 }
             }
         } finally {
-            Logger.info(this, "Books Exported: " + numberOfBooksExported);
+            Logger.info(this, "doBooks",
+                        "Books Exported: " + numberOfBooksExported);
             if (displayingStartupMessage) {
                 try {
                     listener.onProgress("", 0);

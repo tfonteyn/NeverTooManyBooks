@@ -2,30 +2,30 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fadeScrollbars="false"
-    android:scrollbars="vertical">
+    android:fillViewport="true">
 
     <LinearLayout
         android:id="@+id/menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_margin="@dimen/border">
 
         <TextView
             android:id="@+id/lbl_sync_with_goodreads"
-            style="@style/row_option_label"
+            style="@style/row_option_menu"
             android:drawableStart="@drawable/ic_refresh"
             android:text="@string/gr_sync_with_goodreads" />
 
         <TextView
             android:id="@+id/lbl_import_all_from_goodreads"
-            style="@style/row_option_label"
+            style="@style/row_option_menu"
             android:drawableStart="@drawable/ic_file_upload"
             android:text="@string/gr_import_all_from_goodreads" />
 
         <TextView
             android:id="@+id/lbl_send_books_to_goodreads"
-            style="@style/row_option_label"
+            style="@style/row_option_menu"
             android:drawableStart="@drawable/ic_send"
             android:text="@string/gr_title_send_book" />
     </LinearLayout>

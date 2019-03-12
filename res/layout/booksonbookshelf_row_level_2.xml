@@ -1,53 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/TLV_ROW"
+    android:id="@id/BLB_ROW_DETAILS"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingTop="@dimen/border_double">
+    android:layout_height="wrap_content">
 
-    <!-- the "BLB_ROW_DETAILS" level is used by {@link BooksMultiTypeListHandler} to hide/show rows -->
-    <LinearLayout
-        android:id="@id/BLB_ROW_DETAILS"
-        android:layout_width="match_parent"
+    <!-- this is really annoying: setting visibility of the ConstraintLayout to GONE
+         does NOT shrink it to size zero. You're forced to set all widgets inside also.
+         Potentially this could be solved by fiddling with the constraints themselves.
+    -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="bullet, name, div_bottom" />
 
-        android:orientation="horizontal"
-        tools:ignore="UselessParent">
+    <ImageView
+        android:id="@+id/bullet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_lens"
+        android:backgroundTint="?android:attr/colorForeground"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        app:layout_constraintEnd_toStartOf="@id/name"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/c_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleX="0.5"
-            android:scaleY="0.5"
-            android:background="@drawable/ic_lens"
-            android:backgroundTint="?android:attr/colorForeground"
-            tools:ignore="ContentDescription" />
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textIsSelectable="false"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@id/bullet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/bullet"
+        app:layout_constraintTop_toTopOf="@id/bullet"
+        tools:drawableEnd="@drawable/ic_lock"
+        tools:text="e.g. Series name" />
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textIsSelectable="false"
-            android:textStyle="bold"
-            android:layout_gravity="center_vertical"
-            tools:drawableEnd="@drawable/ic_lock"
-            tools:text="e.g. Series name" />
+    <View
+        android:id="@+id/div_bottom"
+        style="@style/div_horizontal"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bullet" />
 
-        <ImageView
-            android:id="@+id/c_end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleX="0.5"
-            android:scaleY="0.5"
-            android:background="@drawable/ic_lens"
-            android:backgroundTint="?android:attr/colorForeground"
-            tools:ignore="ContentDescription" />
-
-        <View style="@style/divider_horizontalList" />
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

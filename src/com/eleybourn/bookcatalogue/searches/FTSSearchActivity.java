@@ -257,11 +257,12 @@ public class FTSSearchActivity
 
         // Get the cursor
         String tmpMsg = null;
-        try (Cursor cursor = mDb.searchFts(mAuthorSearchText, mTitleSearchText,
+        try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
+                                           mTitleSearchText,
                                            mGenericSearchText)) {
             if (cursor != null) {
-                int count = cursor.getCount();
-                tmpMsg = getString(R.string.books_found, String.valueOf(count));
+                tmpMsg = getString(R.string.books_found, cursor.getCount());
+
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                     t0 = System.currentTimeMillis() - t0;
                     tmpMsg += "  in " + t0 + "ms)";

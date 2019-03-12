@@ -53,7 +53,8 @@ public class TOCAdapter
             holder = (Holder) convertView.getTag();
         } else {
             // Not recycling, get a new View and make the holder for it.
-            convertView = LayoutInflater.from(getContext()).inflate(mRowLayoutId, null);
+            convertView = LayoutInflater.from(getContext())
+                                        .inflate(mRowLayoutId, parent,false);
             holder = new Holder(convertView);
 
             // make it flash

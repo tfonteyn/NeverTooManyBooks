@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/dialogFrame">
 
     <AutoCompleteTextView
         android:id="@+id/name"
         style="@style/languageTextEntry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:completionThreshold="2"
         android:hint="@string/lbl_language"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="Autofill" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border"
-        android:layout_marginBottom="@dimen/border"
+        android:id="@+id/blurb"
+        style="@style/txt_blurb_medium"
+        android:layout_width="0dp"
         android:text="@string/warning_immediate_global_changes"
-        android:textSize="16sp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name" />
 
     <include
         android:id="@+id/buttonbar_cancel_save"
         layout="@layout/inc_buttonbar_cancel_save"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-</LinearLayout>
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/blurb" />
+</androidx.constraintlayout.widget.ConstraintLayout>

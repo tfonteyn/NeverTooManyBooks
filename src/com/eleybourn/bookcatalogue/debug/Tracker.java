@@ -211,23 +211,23 @@ public final class Tracker {
     public static void enterFunction(@NonNull final Object a,
                                      @NonNull final String name,
                                      @NonNull final Object... params) {
-        StringBuilder fullName = new StringBuilder(name + '(');
+        StringBuilder fullName = new StringBuilder("(");
         for (Object parameter : params) {
             fullName.append(parameter).append(',');
         }
         fullName.append(')');
         String s = fullName.toString();
         if (BuildConfig.DEBUG) {
-            Logger.info(a, s);
+            Logger.info(a, name, s);
         }
         handleEvent(a, States.Enter, s);
     }
 
     public static void exitFunction(@NonNull final Object a,
-                                    @NonNull final String s) {
-        handleEvent(a, States.Exit, s);
+                                    @NonNull final String name) {
+        handleEvent(a, States.Exit, name);
         if (BuildConfig.DEBUG) {
-            Logger.info(a, s);
+            Logger.info(a, name,"");
         }
     }
 

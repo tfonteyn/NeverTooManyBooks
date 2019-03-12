@@ -139,7 +139,7 @@ public class CoverBrowser
         CoverBrowser frag = new CoverBrowser();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_SEARCH_SITES, searchFlags);
-        args.putString(UniqueId.KEY_BOOK_ISBN, isbn);
+        args.putString(UniqueId.KEY_ISBN, isbn);
         frag.setArguments(args);
         return frag;
     }
@@ -150,7 +150,7 @@ public class CoverBrowser
         mActivity = (BaseActivity) requireActivity();
 
         Bundle args = requireArguments();
-        mIsbn = args.getString(UniqueId.KEY_BOOK_ISBN);
+        mIsbn = args.getString(UniqueId.KEY_ISBN);
         int searchFlags = args.getInt(UniqueId.BKEY_SEARCH_SITES);
 
         // Create an object to manage the downloaded files
@@ -390,7 +390,7 @@ public class CoverBrowser
          * ENHANCE: allow the user to prioritize the order on the fly.
          *
          * @param isbn       ISBN of file
-         * @param imageSizes Size of image required in order of preference
+         * @param imageSizes a list of images sizes in order of preference
          *
          * @return the fileSpec, or null when not found
          */
@@ -399,9 +399,7 @@ public class CoverBrowser
         String download(@NonNull final String isbn,
                         @NonNull final ImageSizes... imageSizes) {
 
-            for (int sizeIndex = 0; sizeIndex < imageSizes.length; sizeIndex++) {
-                ImageSizes size = imageSizes[sizeIndex];
-
+            for (ImageSizes size : imageSizes) {
                 String fileSpec;
                 String key = isbn + '_' + size;
                 synchronized (files) {
@@ -420,15 +418,16 @@ public class CoverBrowser
                     if (site.isEnabled()
                             // should we search this site ?
                             && ((mSearchFlags & site.id) != 0)
-                            // does the site support a secondary size ?
-                            && (sizeIndex > 0 && site.supportsImageSize(size))
                     ) {
-                        File file = site.getSearchSiteManager().getCoverImage(isbn, size);
-                        if (file != null && isGood(file)) {
-                            fileSpec = file.getAbsolutePath();
-                            synchronized (files) {
-                                files.put(key, fileSpec);
-                                return fileSpec;
+                        SearchSites.SearchSiteManager sm = site.getSearchSiteManager();
+                        if (sm.supportsImageSize(size)) {
+                            File file = sm.getCoverImage(isbn, size);
+                            if (file != null && isGood(file)) {
+                                fileSpec = file.getAbsolutePath();
+                                synchronized (files) {
+                                    files.put(key, fileSpec);
+                                    return fileSpec;
+                                }
                             }
                         }
                     }
@@ -587,9 +586,11 @@ public class CoverBrowser
         @WorkerThread
         protected Void doInBackground(final Void... params) {
             if (isThumbnail) {
-                mFileSpec = mFileManager.download(mIsbn, ImageSizes.SMALL, ImageSizes.LARGE);
+                mFileSpec = mFileManager.download(mIsbn, ImageSizes.SMALL, ImageSizes.MEDIUM,
+                                                  ImageSizes.LARGE);
             } else {
-                mFileSpec = mFileManager.download(mIsbn, ImageSizes.LARGE, ImageSizes.SMALL);
+                mFileSpec = mFileManager.download(mIsbn, ImageSizes.LARGE, ImageSizes.MEDIUM,
+                                                  ImageSizes.SMALL);
             }
             return null;
         }

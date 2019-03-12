@@ -72,21 +72,47 @@ public class BindableItemCursorAdapter
     /**
      * NOT USED. Should never be called.
      */
-    @Override
-    public void bindView(@NonNull final View view,
-                         @NonNull final Context context,
-                         @NonNull final Cursor cursor) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * NOT USED. Should never be called.
-     */
     @NonNull
     @Override
     public View newView(@NonNull final Context context,
                         @NonNull final Cursor cursor,
                         @NonNull final ViewGroup parent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @NonNull
+    @Override
+    public View getView(final int position,
+                        @Nullable View convertView,
+                        @NonNull final ViewGroup parent) {
+        BindableItemCursor cursor = (BindableItemCursor) getCursor();
+        cursor.moveToPosition(position);
+
+        BindableItem item;
+        // Optimization to avoid unnecessary de-serializations.
+        if (mLastItemViewTypePos == position) {
+            item = mLastItemViewTypeEvent;
+        } else {
+            item = cursor.getBindableItem();
+        }
+
+        if (convertView == null) {
+            convertView = item.getView(mContext, cursor, parent);
+        }
+
+        // Bind it, and we are done!
+        mBinder.bindView(mContext, cursor, convertView, item);
+
+        return convertView;
+    }
+
+    /**
+     * NOT USED. Should never be called.
+     */
+    @Override
+    public void bindView(@NonNull final View view,
+                         @NonNull final Context context,
+                         @NonNull final Cursor cursor) {
         throw new UnsupportedOperationException();
     }
 
@@ -157,32 +183,6 @@ public class BindableItemCursorAdapter
         return mBinder.getBindableItemTypeCount() + 1;
     }
 
-    @Nullable
-    @Override
-    public View getView(final int position,
-                        @Nullable View convertView,
-                        @NonNull final ViewGroup parent) {
-        BindableItemCursor cursor = (BindableItemCursor) getCursor();
-        cursor.moveToPosition(position);
-
-        BindableItem item;
-        // Optimization to avoid unnecessary de-serializations.
-        if (mLastItemViewTypePos == position) {
-            item = mLastItemViewTypeEvent;
-        } else {
-            item = cursor.getBindableItem();
-        }
-
-        if (convertView == null) {
-            convertView = item.newListItemView(mContext, cursor, parent);
-        }
-
-        // Bind it, and we are done!
-        mBinder.bindViewToItem(mContext, convertView, cursor, item);
-
-        return convertView;
-    }
-
     public interface BindableItemBinder {
 
         /**
@@ -199,15 +199,14 @@ public class BindableItemCursorAdapter
          * Called to bind a specific event to a View in the list. It is passed to the subclass
          * so that any application-specific context can be added, or it can just be passed off
          * to the Event object itself.
-         *
-         * @param context     the caller context
-         * @param convertView View to populate
+         *  @param context     the caller context
          * @param cursor      Cursor, positions at the relevant row
+         * @param convertView View to populate
          */
-        void bindViewToItem(@NonNull Context context,
-                            @NonNull View convertView,
-                            @NonNull BindableItemCursor cursor,
-                            @NonNull BindableItem item);
+        void bindView(@NonNull Context context,
+                      @NonNull BindableItemCursor cursor,
+                      @NonNull View convertView,
+                      @NonNull BindableItem item);
     }
 
     public interface BindableItem {
@@ -224,13 +223,14 @@ public class BindableItemCursorAdapter
          *
          * @return a new view
          */
-        View newListItemView(@NonNull Context context,
-                             @NonNull BindableItemCursor cursor,
-                             @NonNull ViewGroup parent);
+        @NonNull
+        View getView(@NonNull Context context,
+                     @NonNull BindableItemCursor cursor,
+                     @NonNull ViewGroup parent);
 
         /**
          * Bind this Event to the passed view. The view will be one created by a call
-         * to newListItemView(...).
+         * to getView(...).
          *
          * @param view    View to populate
          * @param context Context using view

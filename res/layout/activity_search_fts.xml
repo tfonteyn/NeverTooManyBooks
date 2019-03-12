@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
@@ -10,8 +11,6 @@
         android:id="@+id/toolbar"
         style="@style/toolbar"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/books_found"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,14 +19,13 @@
         android:id="@+id/books_found"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:textIsSelectable="true"
-        android:textSize="20sp"
+        app:layout_constraintBaseline_toBaselineOf="@id/btn_search"
         app:layout_constraintEnd_toStartOf="@id/btn_search"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintBottom_toTopOf="@id/lbl_criteria"
-        tools:text="# books found"
-        />
+        tools:text="# books found" />
 
     <Button
         android:id="@+id/btn_search"
@@ -37,22 +35,15 @@
         android:text="@string/show_results"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/books_found"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-
-        app:layout_constraintBottom_toTopOf="@id/lbl_criteria"
-        />
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <TextView
         android:id="@+id/lbl_criteria"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/lbl_textField"
         android:labelFor="@id/criteria"
         android:text="@string/search_criteria"
-        app:layout_constraintBottom_toTopOf="@id/criteria"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_search"
-        />
+        app:layout_constraintTop_toBottomOf="@id/btn_search" />
 
     <!-- no style used on purpose -->
     <EditText
@@ -60,25 +51,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
-        android:singleLine="false"
-        app:layout_constraintBottom_toTopOf="@id/lbl_author"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_criteria"
-        tools:ignore="Autofill"
-        />
+        tools:ignore="Autofill" />
 
     <TextView
         android:id="@+id/lbl_author"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/lbl_textField"
         android:labelFor="@id/author"
         android:text="@string/lbl_author"
-        app:layout_constraintBottom_toTopOf="@id/author"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/criteria"
-        />
+        app:layout_constraintTop_toBottomOf="@id/criteria" />
 
     <!-- no style used on purpose -->
     <EditText
@@ -86,25 +70,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
-        android:singleLine="false"
-        app:layout_constraintBottom_toTopOf="@id/lbl_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_author"
-        tools:ignore="Autofill"
-        />
+        tools:ignore="Autofill" />
 
     <TextView
         android:id="@+id/lbl_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/lbl_textField"
         android:labelFor="@id/title"
         android:text="@string/lbl_title"
-        app:layout_constraintBottom_toTopOf="@id/title"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author"
-        />
+        app:layout_constraintTop_toBottomOf="@id/author" />
 
     <!-- no style used on purpose -->
     <EditText
@@ -112,11 +89,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
-        android:singleLine="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_title"
-        tools:ignore="Autofill"
-        />
+        tools:ignore="Autofill" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

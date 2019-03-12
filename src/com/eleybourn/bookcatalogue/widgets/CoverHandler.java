@@ -82,10 +82,12 @@ public class CoverHandler
     private static final int REQ_ACTION_GET_CONTENT = 4;
     /** Counter used to prevent images being reused accidentally. */
     private static int mTempImageCounter;
+
     @NonNull
     private final FragmentActivity mActivity;
     @NonNull
     private final Fragment mFragment;
+
 
     @NonNull
     private final DBA mDb;
@@ -98,7 +100,9 @@ public class CoverHandler
      * (instead of using getBook())
      */
     private final Fields.Field mIsbnField;
-    private final ImageUtils.ImageSize mImageSize;
+
+    private final int mMaxWidth;
+    private final int mMaxHeight;
     @Nullable
     private CoverBrowser mCoverBrowser;
 
@@ -111,17 +115,19 @@ public class CoverHandler
     public CoverHandler(@NonNull final Fragment fragment,
                         @NonNull final DBA db,
                         @NonNull final BookManager bookManager,
+                        @NonNull final Fields.Field isbnField,
                         @NonNull final Fields.Field coverField,
-                        @NonNull final Fields.Field isbnField) {
+                        final int maxWidth,
+                        final int maxHeight) {
         mFragment = fragment;
+        mMaxWidth = maxWidth;
+        mMaxHeight = maxHeight;
         // cache it to avoid multiple calls.
         mActivity = mFragment.requireActivity();
         mDb = db;
         mBookManager = bookManager;
         mCoverField = coverField;
         mIsbnField = isbnField;
-
-        mImageSize = ImageUtils.getImageSizes(mActivity);
 
         if (mCoverField.isVisible()) {
             // add context menu to the cover image
@@ -151,7 +157,7 @@ public class CoverHandler
             // copy new file on top of old.
             StorageUtils.renameFile(newFile, bookFile);
             // Update the ImageView with the new image
-            populateCoverView();
+            updateCoverView();
             mCoverBrowser.dismiss();
             mCoverBrowser = null;
         }
@@ -264,7 +270,6 @@ public class CoverHandler
         switch (menuItem.getItemId()) {
             case R.id.MENU_THUMB_DELETE:
                 deleteCoverFile();
-                populateCoverView();
                 return true;
 
             case R.id.SUBMENU_THUMB_ROTATE:
@@ -280,17 +285,14 @@ public class CoverHandler
 
             case R.id.MENU_THUMB_ROTATE_CW:
                 rotateImage(90);
-                populateCoverView();
                 return true;
 
             case R.id.MENU_THUMB_ROTATE_CCW:
                 rotateImage(-90);
-                populateCoverView();
                 return true;
 
             case R.id.MENU_THUMB_ROTATE_180:
                 rotateImage(180);
-                populateCoverView();
                 return true;
 
             case R.id.MENU_THUMB_CROP:
@@ -315,20 +317,11 @@ public class CoverHandler
     }
 
     /**
-     * Load the image into the view, using preset {@link ImageUtils.ImageSize#small} dimensions.
+     * (re)load the image into the view.
      */
-    public void populateCoverView() {
-        ImageUtils.getImageAndPutIntoView((ImageView) (mCoverField.getView()), getCoverFile(),
-                                          mImageSize.small, mImageSize.small, true);
-    }
-
-    /**
-     * Load the image into the view, using custom dimensions.
-     */
-    public void populateCoverView(final int maxWidth,
-                                  final int maxHeight) {
-        ImageUtils.getImageAndPutIntoView((ImageView) (mCoverField.getView()), getCoverFile(),
-                                          maxWidth, maxHeight, true);
+    public void updateCoverView() {
+        ImageUtils.getImageAndPutIntoView((ImageView) (mCoverField.getView()),
+                                          getCoverFile(), mMaxWidth, mMaxHeight, true);
     }
 
     /**
@@ -341,10 +334,24 @@ public class CoverHandler
     private File getCoverFile() {
         if (mBookManager.getBook().getId() == 0) {
             return StorageUtils.getTempCoverFile();
-        } else {
-            String uuid = mDb.getBookUuid(mBookManager.getBook().getId());
-            return StorageUtils.getCoverFile(uuid);
         }
+        return StorageUtils.getCoverFile(getUuid());
+    }
+
+    /**
+     * We *should* have the uuid on a tag on the over field view,
+     * but if not, we'll get it from the database.
+     *
+     * @return the uuid
+     */
+    private String getUuid() {
+        String uuid = (String) mCoverField.getView().getTag(R.id.TAG_UUID);
+        // if we forgot to set it in some bad code... log the fact, and make a trip to the db.
+        if (uuid == null) {
+            Logger.error("UUID was not available on the view tag");
+            uuid = mDb.getBookUuid(mBookManager.getBook().getId());
+        }
+        return uuid;
     }
 
     /**
@@ -455,7 +462,7 @@ public class CoverHandler
             }
             if (imageOk) {
                 // Update the ImageView with the new image
-                populateCoverView();
+                updateCoverView();
             } else {
                 String s = mActivity.getString(
                         R.string.warning_cover_copy_failed) + ". "
@@ -476,23 +483,24 @@ public class CoverHandler
      * @param angle rotate by the specified amount
      */
     private void rotateImage(final long angle) {
+        // before rotation, make the image bigger, so we don't loose details.
+        int imageSize = ImageUtils.getImageSizes(mActivity).large * 2;
+
         // we'll try it twice with a gc in between
         int attempts = 2;
         while (true) {
             try {
                 File file = getCoverFile();
-                Bitmap bitmap = ImageUtils.getImage(file,
-                                                    mImageSize.large * 2,
-                                                    mImageSize.large * 2, true);
+                Bitmap bitmap = ImageUtils.getImage(file, imageSize, imageSize, true);
                 if (bitmap == null) {
                     return;
                 }
 
                 Matrix matrix = new Matrix();
                 matrix.postRotate(angle);
-                Bitmap rotatedBitmap = Bitmap
-                        .createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                                      bitmap.getHeight(), matrix, true);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0,
+                                                           bitmap.getWidth(), bitmap.getHeight(),
+                                                           matrix, true);
                 if (rotatedBitmap != bitmap) {
                     bitmap.recycle();
                 }
@@ -507,6 +515,8 @@ public class CoverHandler
                 }
                 rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outFos);
                 rotatedBitmap.recycle();
+                // put the new image on screen.
+                updateCoverView();
                 return;
             } catch (OutOfMemoryError e) {
                 attempts--;
@@ -616,16 +626,17 @@ public class CoverHandler
             Logger.error(e);
         }
         invalidateCachedImages();
+        // replace the old image with a placeholder.
+        updateCoverView();
     }
 
     /**
      * Ensure that the cached images for this book are deleted (if present).
      */
     private void invalidateCachedImages() {
-        final long bookId = mBookManager.getBook().getId();
-        if (bookId != 0) {
+        if (mBookManager.getBook().getId() != 0) {
             try (CoversDBA db = CoversDBA.getInstance()) {
-                db.delete(mDb.getBookUuid(bookId));
+                db.delete(getUuid());
             } catch (SQLiteDoneException e) {
                 Logger.error(e, "SQLiteDoneException cleaning up cached cover images");
             } catch (RuntimeException e) {
@@ -697,7 +708,7 @@ public class CoverHandler
                         File destination = getCoverFile();
                         StorageUtils.renameFile(cropped, destination);
                         // Update the ImageView with the new image
-                        populateCoverView();
+                        updateCoverView();
                     } else {
                         Tracker.handleEvent(this, Tracker.States.Running,
                                             "onActivityResult(" + requestCode + ','

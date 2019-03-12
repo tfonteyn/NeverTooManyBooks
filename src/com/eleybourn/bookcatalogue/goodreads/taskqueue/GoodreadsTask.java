@@ -31,13 +31,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import java.io.Serializable;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * Base class for tasks. This builds and populates simple View objects to display the task.
@@ -73,22 +72,14 @@ public abstract class GoodreadsTask
      * Create a new View.
      */
     @Override
-    public View newListItemView(@NonNull final Context context,
-                                @NonNull final BindableItemCursor cursor,
-                                @NonNull final ViewGroup parent) {
+    @NonNull
+    public View getView(@NonNull final Context context,
+                        @NonNull final BindableItemCursor cursor,
+                        @NonNull final ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.row_task_info, parent, false);
         view.setTag(R.id.TAG_TASK, this);
 
-        TaskHolder holder = new TaskHolder();
-        holder.description = view.findViewById(R.id.description);
-        holder.state = view.findViewById(R.id.state);
-        holder.retry_info = view.findViewById(R.id.retry_info);
-        holder.error = view.findViewById(R.id.error);
-        holder.job_info = view.findViewById(R.id.job_info);
-        holder.checkButton = view.findViewById(R.id.checked);
-        holder.retryButton = view.findViewById(R.id.retry);
-
-        view.setTag(R.id.TAG_TASK_HOLDER, holder);
+        TaskHolder holder = new TaskHolder(view);
         holder.checkButton.setTag(R.id.TAG_BOOK_EVENT_HOLDER, holder);
 
         return view;
@@ -122,12 +113,9 @@ public abstract class GoodreadsTask
                 break;
             case STATUS_QUEUED:
                 statusText = context.getString(R.string.gr_tq_queued);
-                holder.retry_info
-                        .setText(context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
-                                                   getRetries(),
-                                                   getRetryLimit(),
-                                                   DateUtils.toPrettyDateTime(
-                                                           tasksCursor.getRetryDate())));
+                String date = DateUtils.toPrettyDateTime(tasksCursor.getRetryDate());
+                holder.retry_info.setText(context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
+                                                            getRetries(), getRetryLimit(), date));
                 holder.retry_info.setVisibility(View.VISIBLE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
@@ -144,17 +132,14 @@ public abstract class GoodreadsTask
         Exception e = getException();
         if (e != null) {
             holder.error.setVisibility(View.VISIBLE);
-            holder.error.setText(BookCatalogueApp.getResString(R.string.gr_tq_last_error_e,
-                                                               e.getLocalizedMessage()));
+            holder.error.setText(context.getString(R.string.gr_tq_last_error_e,
+                                                   e.getLocalizedMessage()));
         } else {
             holder.error.setVisibility(View.GONE);
         }
         //"Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
-        holder.job_info.setText(BookCatalogueApp
-                                        .getResString(R.string.gr_tq_generic_task_info,
-                                                      getId(),
-                                                      DateUtils.toPrettyDateTime(
-                                                              tasksCursor.getQueuedDate())));
+        String date = DateUtils.toPrettyDateTime(tasksCursor.getQueuedDate());
+        holder.job_info.setText(context.getString(R.string.gr_tq_generic_task_info, getId(), date));
     }
 
     /**
@@ -186,12 +171,24 @@ public abstract class GoodreadsTask
      */
     static class TaskHolder {
 
-        TextView description;
-        TextView state;
-        TextView retry_info;
-        TextView error;
-        TextView job_info;
-        CompoundButton checkButton;
-        Button retryButton;
+        final TextView description;
+        final TextView state;
+        final TextView retry_info;
+        final TextView error;
+        final TextView job_info;
+        final CompoundButton checkButton;
+        final Button retryButton;
+
+        TaskHolder(@NonNull final View view) {
+            description = view.findViewById(R.id.description);
+            state = view.findViewById(R.id.state);
+            retry_info = view.findViewById(R.id.retry_info);
+            error = view.findViewById(R.id.error);
+            job_info = view.findViewById(R.id.job_info);
+            checkButton = view.findViewById(R.id.checked);
+            retryButton = view.findViewById(R.id.retry);
+
+            view.setTag(R.id.TAG_TASK_HOLDER, this);
+        }
     }
 }

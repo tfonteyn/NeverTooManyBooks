@@ -94,7 +94,7 @@
                     />
         -->
 
-        <View style="@style/divider_horizontalList" />
+        <View style="@style/div_horizontal" />
     </LinearLayout>
 
     <LinearLayout
@@ -104,7 +104,7 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
-        <View style="@style/divider_horizontalList" />
+        <View style="@style/div_horizontal" />
 
         <TextView
             android:id="@+id/works_found"

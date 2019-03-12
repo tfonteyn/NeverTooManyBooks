@@ -21,9 +21,12 @@
 package com.eleybourn.bookcatalogue.booklist;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -622,6 +625,26 @@ public class BooklistStyle
     @SuppressWarnings("SameParameterValue")
     void setScaleSize(@IntRange(from = SCALE_SIZE_NORMAL, to = SCALE_SIZE_LARGER) final int size) {
         mScaleSize.set(size);
+    }
+
+    /**
+     * @return the maximum size to be used for images, or zero if none should be shown.
+     */
+    public int getImageMaxSize(@NonNull final Context context) {
+        if (mExtraShowThumbnails.isFalse()) {
+            return 0;
+        }
+
+        int maxSize;
+        if (mExtraLargeThumbnails.isTrue()) {
+            maxSize = 90;
+        } else {
+            maxSize = 60;
+        }
+
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));
+        return maxSize;
     }
 
     /**

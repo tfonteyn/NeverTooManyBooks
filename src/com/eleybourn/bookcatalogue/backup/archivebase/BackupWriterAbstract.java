@@ -153,7 +153,7 @@ public abstract class BackupWriterAbstract
         } finally {
             mSettings.what = entitiesWritten;
             if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                Logger.info(this, "exported covers#=" + infoValues.coverCount);
+                Logger.info(this, "backup","exported covers#=" + infoValues.coverCount);
             }
             try {
                 close();
@@ -277,7 +277,7 @@ public abstract class BackupWriterAbstract
             }
         }
         if (!dryRun) {
-            Logger.info(this, " Wrote " + ok + " Images, " + missing + " missing,"
+            Logger.info(this, "doCovers"," Wrote " + ok + " Images, " + missing + " missing,"
                     + " and " + skipped + " skipped");
         }
 

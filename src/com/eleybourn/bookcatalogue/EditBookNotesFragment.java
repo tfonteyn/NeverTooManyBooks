@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Checkable;
 
 import androidx.annotation.CallSuper;
@@ -112,7 +113,7 @@ public class EditBookNotesFragment
         Field field;
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.read, UniqueId.KEY_BOOK_READ)
+        mFields.add(R.id.read, UniqueId.KEY_READ)
                .getView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -128,22 +129,22 @@ public class EditBookNotesFragment
         });
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED);
+        mFields.add(R.id.signed, UniqueId.KEY_SIGNED);
 
-        mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
+        mFields.add(R.id.rating, UniqueId.KEY_RATING);
 
-        mFields.add(R.id.notes, UniqueId.KEY_BOOK_NOTES);
+        mFields.add(R.id.notes, UniqueId.KEY_NOTES);
         //ENHANCE: initTextFieldEditor(R.id.notes, R.string.lbl_notes, R.id.btn_notes, true);
 
-        mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID);
-        field = mFields.add(R.id.price_paid_currency, UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY);
+        mFields.add(R.id.price_paid, UniqueId.KEY_PRICE_PAID);
+        field = mFields.add(R.id.price_paid_currency, UniqueId.KEY_PRICE_PAID_CURRENCY);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency,
                         getPricePaidCurrencyCodes());
 
-        field = mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
+        field = mFields.add(R.id.location, UniqueId.KEY_LOCATION);
         initValuePicker(field, R.string.lbl_location, R.id.btn_location, getLocations());
 
-        field = mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
+        field = mFields.add(R.id.edition, UniqueId.KEY_EDITION_BITMASK)
                        .setFormatter(new Fields.BookEditionsFormatter());
         initCheckListEditor(TAG, field, R.string.lbl_edition,
                             new CheckListEditorListGetter<Integer>() {
@@ -153,15 +154,15 @@ public class EditBookNotesFragment
                                 }
                             });
 
-        field = mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
+        field = mFields.add(R.id.date_acquired, UniqueId.KEY_DATE_ACQUIRED)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(TAG, field, R.string.lbl_date_acquired, true);
 
-        field = mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
+        field = mFields.add(R.id.read_start, UniqueId.KEY_READ_START)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(TAG, field, R.string.lbl_read_start, true);
 
-        field = mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END)
+        field = mFields.add(R.id.read_end, UniqueId.KEY_READ_END)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(TAG, field, R.string.lbl_read_end, true);
 
@@ -171,11 +172,11 @@ public class EditBookNotesFragment
             public void validate(@NonNull final Fields fields,
                                  @NonNull final Bundle values)
                     throws ValidatorException {
-                String start = values.getString(UniqueId.KEY_BOOK_READ_START);
+                String start = values.getString(UniqueId.KEY_READ_START);
                 if (start == null || start.isEmpty()) {
                     return;
                 }
-                String end = values.getString(UniqueId.KEY_BOOK_READ_END);
+                String end = values.getString(UniqueId.KEY_READ_END);
                 if (end == null || end.isEmpty()) {
                     return;
                 }
@@ -236,7 +237,7 @@ public class EditBookNotesFragment
             ArrayList<Integer> result = new Book.EditionCheckListItem().extractList(list);
             getBookManager().getBook().putEditions(result);
             mFields.getField(destinationFieldId).setValue(
-                    getBookManager().getBook().getString(UniqueId.KEY_BOOK_EDITION_BITMASK));
+                    getBookManager().getBook().getString(UniqueId.KEY_EDITION_BITMASK));
         }
     }
 
@@ -275,7 +276,7 @@ public class EditBookNotesFragment
     @NonNull
     private List<String> getPricePaidCurrencyCodes() {
         if (mPricePaidCurrencies == null) {
-            mPricePaidCurrencies = mDb.getCurrencyCodes(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY);
+            mPricePaidCurrencies = mDb.getCurrencyCodes(UniqueId.KEY_PRICE_PAID_CURRENCY);
         }
         return mPricePaidCurrencies;
     }

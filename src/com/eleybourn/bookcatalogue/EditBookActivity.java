@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
+import android.view.WindowManager;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;

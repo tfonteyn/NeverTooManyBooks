@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/border_double">
+    android:layout_margin="@dimen/border_double">
 
     <ImageButton
         android:id="@+id/btn_path_up"
@@ -21,10 +22,12 @@
         app:srcCompat="@drawable/ic_folder_open" />
 
     <TextView
-        android:id="@+id/path"
+        android:id="@+id/current_folder"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:ellipsize="start"
         android:padding="@dimen/border_double"
+        android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textIsSelectable="false"
         android:textStyle="bold"
@@ -32,17 +35,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn_path_up"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="/foo/bar/gum" />
+        tools:text="/storage/emulated/0/MyDirectory/subdir" />
 
     <View
         android:id="@+id/header_divider"
-        style="@style/divider_horizontalList"
-        app:layout_constraintBottom_toTopOf="@android:id/list"
+        style="@style/div_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_path_up" />
 
-    <com.eleybourn.bookcatalogue.widgets.FastScrollListView
+    <!-- a ListView is probably good enough. I guess it needed to be 'fast' when all covers
+    were residing in the root directory. -->
+    <!--<com.eleybourn.bookcatalogue.widgets.FastScrollListView-->
+    <ListView
         android:id="@android:id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -53,11 +58,11 @@
         app:layout_constraintTop_toBottomOf="@id/header_divider">
 
         <requestFocus />
-    </com.eleybourn.bookcatalogue.widgets.FastScrollListView>
+    </ListView>
 
     <View
         android:id="@+id/footer_divider"
-        style="@style/divider_horizontalList"
+        style="@style/div_horizontal"
         app:layout_constraintBottom_toTopOf="@id/file_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,6 +81,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/footer_divider"
         tools:ignore="LabelFor,UnusedAttribute"
-        tools:text="fred.bcbk" />
+        tools:text="my_library-2019-03-08.bcbk" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

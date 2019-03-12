@@ -104,10 +104,10 @@ public class TaskQueueListActivity
      * Pass binding off to the task object.
      */
     @Override
-    public void bindViewToItem(@NonNull final Context context,
-                               @NonNull final View convertView,
-                               @NonNull final BindableItemCursor cursor,
-                               @NonNull final BindableItemCursorAdapter.BindableItem item) {
+    public void bindView(@NonNull final Context context,
+                         @NonNull final BindableItemCursor cursor,
+                         @NonNull final View convertView,
+                         @NonNull final BindableItemCursorAdapter.BindableItem item) {
         convertView.setTag(R.id.TAG_TASK, item);
         item.bindView(convertView, context, cursor, mDb);
     }

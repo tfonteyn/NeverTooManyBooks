@@ -4,22 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/border" >
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
+        android:layout_margin="@dimen/border">
 
         <EditText
             android:id="@+id/isbn"
-            style="@style/isbnEntryField"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            style="@style/isbnEntry"
             android:hint="@string/lbl_isbn"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="Autofill" />
 
         <Button
@@ -28,158 +26,123 @@
             android:layout_height="wrap_content"
             android:text="@string/menu_search"
             app:layout_constraintBaseline_toBaselineOf="@id/isbn"
-            app:layout_constraintStart_toEndOf="@id/isbn"
             app:layout_constraintEnd_toEndOf="parent"
-            />
+            app:layout_constraintStart_toEndOf="@id/isbn" />
 
         <Button
             android:id="@+id/isbn_1"
             style="@style/isbnSearchKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="1"
-            app:layout_constraintTop_toBottomOf="@id/btn_search"
             app:layout_constraintEnd_toStartOf="@id/isbn_2"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_search"
             tools:ignore="HardcodedText" />
 
         <Button
             android:id="@+id/isbn_2"
             style="@style/isbnSearchKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="2"
-            app:layout_constraintTop_toBottomOf="@id/btn_search"
+            app:layout_constraintBottom_toBottomOf="@id/isbn_1"
             app:layout_constraintEnd_toStartOf="@id/isbn_3"
             app:layout_constraintStart_toEndOf="@id/isbn_1"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_1"
+            app:layout_constraintTop_toBottomOf="@id/btn_search"
             tools:ignore="HardcodedText" />
 
         <Button
             android:id="@+id/isbn_3"
             style="@style/isbnSearchKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="3"
-            app:layout_constraintTop_toBottomOf="@id/btn_search"
+            app:layout_constraintBottom_toBottomOf="@id/isbn_1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/isbn_2"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_1"
-
+            app:layout_constraintTop_toBottomOf="@id/btn_search"
             tools:ignore="HardcodedText" />
-
 
         <Button
             android:id="@+id/isbn_4"
             style="@style/isbnSearchKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="4"
-            app:layout_constraintTop_toBottomOf="@id/isbn_1"
             app:layout_constraintEnd_toEndOf="@id/isbn_1"
             app:layout_constraintStart_toStartOf="@id/isbn_1"
+            app:layout_constraintTop_toBottomOf="@id/isbn_1"
             tools:ignore="HardcodedText" />
 
         <Button
             android:id="@+id/isbn_5"
             style="@style/isbnSearchKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="5"
-            app:layout_constraintTop_toBottomOf="@id/isbn_2"
+            app:layout_constraintBottom_toBottomOf="@id/isbn_4"
             app:layout_constraintEnd_toEndOf="@id/isbn_2"
             app:layout_constraintStart_toStartOf="@id/isbn_2"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_4"
-
+            app:layout_constraintTop_toBottomOf="@id/isbn_2"
             tools:ignore="HardcodedText" />
 
         <Button
             android:id="@+id/isbn_6"
             style="@style/isbnSearchKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="6"
-            app:layout_constraintTop_toBottomOf="@id/isbn_3"
+            app:layout_constraintBottom_toBottomOf="@id/isbn_4"
             app:layout_constraintEnd_toEndOf="@id/isbn_3"
             app:layout_constraintStart_toStartOf="@id/isbn_3"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_4"
-
+            app:layout_constraintTop_toBottomOf="@id/isbn_3"
             tools:ignore="HardcodedText" />
-
 
         <Button
             android:id="@+id/isbn_7"
             style="@style/isbnSearchKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="7"
-            app:layout_constraintTop_toBottomOf="@id/isbn_4"
             app:layout_constraintEnd_toEndOf="@id/isbn_4"
             app:layout_constraintStart_toStartOf="@id/isbn_4"
+            app:layout_constraintTop_toBottomOf="@id/isbn_4"
             tools:ignore="HardcodedText" />
 
         <Button
             android:id="@+id/isbn_8"
             style="@style/isbnSearchKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="8"
-            app:layout_constraintTop_toBottomOf="@id/isbn_5"
+            app:layout_constraintBottom_toBottomOf="@id/isbn_7"
             app:layout_constraintEnd_toEndOf="@id/isbn_5"
             app:layout_constraintStart_toStartOf="@id/isbn_5"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_7"
-
+            app:layout_constraintTop_toBottomOf="@id/isbn_5"
             tools:ignore="HardcodedText" />
 
         <Button
             android:id="@+id/isbn_9"
             style="@style/isbnSearchKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="9"
-            app:layout_constraintTop_toBottomOf="@id/isbn_6"
+            app:layout_constraintBottom_toBottomOf="@id/isbn_7"
             app:layout_constraintEnd_toEndOf="@id/isbn_6"
             app:layout_constraintStart_toStartOf="@id/isbn_6"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_7"
-
+            app:layout_constraintTop_toBottomOf="@id/isbn_6"
             tools:ignore="HardcodedText" />
-
 
         <Button
             android:id="@+id/isbn_X"
             style="@style/isbnSearchKey"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:text="X"
-            app:layout_constraintTop_toBottomOf="@id/isbn_7"
             app:layout_constraintEnd_toEndOf="@id/isbn_7"
             app:layout_constraintStart_toStartOf="@id/isbn_7"
+            app:layout_constraintTop_toBottomOf="@id/isbn_7"
             tools:ignore="HardcodedText" />
 
         <Button
             android:id="@+id/isbn_0"
             style="@style/isbnSearchKey"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:text="0"
-            app:layout_constraintTop_toBottomOf="@id/isbn_8"
+            app:layout_constraintBottom_toBottomOf="@id/isbn_X"
             app:layout_constraintEnd_toEndOf="@id/isbn_8"
             app:layout_constraintStart_toStartOf="@id/isbn_8"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_X"
-
+            app:layout_constraintTop_toBottomOf="@id/isbn_8"
             tools:ignore="HardcodedText" />
 
         <ImageButton
             android:id="@+id/isbn_del"
             style="@style/isbnSearchKey"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:srcCompat="@drawable/ic_backspace"
-            app:layout_constraintTop_toBottomOf="@id/isbn_9"
+            app:layout_constraintBottom_toBottomOf="@id/isbn_X"
             app:layout_constraintEnd_toEndOf="@id/isbn_9"
             app:layout_constraintStart_toStartOf="@id/isbn_9"
-            app:layout_constraintBottom_toBottomOf="@id/isbn_X"
-
+            app:layout_constraintTop_toBottomOf="@id/isbn_9"
+            app:srcCompat="@drawable/ic_backspace"
             tools:ignore="ContentDescription" />
 
         <CheckBox
@@ -187,11 +150,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/border_double"
-            app:layout_constraintTop_toBottomOf="@id/isbn_0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:text="@string/lbl_allow_asin"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/isbn_0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -66,7 +66,7 @@ public class EditAuthorListActivity
     private boolean mGlobalChangeMade;
 
     /**
-     * Constructor; pass the superclass the main and row based layouts to use.
+     * Constructor.
      */
     public EditAuthorListActivity() {
         super(UniqueId.BKEY_AUTHOR_ARRAY);
@@ -89,8 +89,6 @@ public class EditAuthorListActivity
 
         mAuthorNameView = findViewById(R.id.author);
         mAuthorNameView.setAdapter(mAuthorAdapter);
-
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     /**

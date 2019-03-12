@@ -52,7 +52,7 @@ public final class TerminatorConnection
     private TerminatorConnection(@NonNull final URL url)
             throws IOException {
         if (DEBUG_SWITCHES.NETWORK && BuildConfig.DEBUG) {
-            Logger.info(this, "Getting connection: " + url);
+            Logger.info(this, "TerminatorConnection", "url=" + url);
         }
 
         con = (HttpURLConnection) url.openConnection();
@@ -109,7 +109,8 @@ public final class TerminatorConnection
                     return new TerminatorConnection(url);
 
                 } catch (UnknownHostException e) {
-                    Logger.info(TerminatorConnection.class, e.getLocalizedMessage());
+                    Logger.info(TerminatorConnection.class, "getConnection",
+                                e.getLocalizedMessage());
                     retries--;
                     if (retries-- == 0) {
                         throw e;
@@ -154,9 +155,9 @@ public final class TerminatorConnection
                 Thread.sleep(KILL_CONNECT_DELAY);
             } catch (InterruptedException ignore) {
             }
-            if (DEBUG_SWITCHES.NETWORK && BuildConfig.DEBUG) {
-                Logger.info(this, "Closing WrappedConnection.");
-            }
+//            if (DEBUG_SWITCHES.NETWORK && BuildConfig.DEBUG) {
+                Logger.info(this, "run","Closing WrappedConnection.");
+//            }
             con.close();
         }
     }

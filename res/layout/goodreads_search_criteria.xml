@@ -1,87 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.Group
         android:id="@+id/original_details"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:visibility="visible"
+        app:constraint_referenced_ids="lbl_author,author,lbl_title,title,lbl_isbn,isbn,div1" />
+
+    <TextView
+        android:id="@+id/lbl_author"
+        style="@style/lbl_textField"
+        android:labelFor="@id/author"
+        android:text="@string/lbl_author"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/lbl_author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lbl_author"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            />
+    <!-- no style used on purpose -->
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/border_double"
+        android:hint="@string/lbl_author"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_author" />
 
-        <TextView
-            android:id="@+id/author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/lbl_author"
-            android:singleLine="false"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="true"
-            />
+    <TextView
+        android:id="@+id/lbl_title"
+        style="@style/lbl_textField"
+        android:labelFor="@id/title"
+        android:text="@string/lbl_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/author" />
 
-        <TextView
-            android:id="@+id/lbl_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lbl_title"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            />
+    <!-- no style used on purpose -->
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/border_double"
+        android:hint="@string/lbl_title"
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/lbl_title"
-            android:singleLine="false"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="true"
-            />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_title" />
 
-        <TextView
-            android:id="@+id/lbl_isbn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lbl_isbn"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            />
+    <TextView
+        android:id="@+id/lbl_isbn"
+        style="@style/lbl_textField"
+        android:labelFor="@id/isbn"
+        android:text="@string/lbl_isbn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
 
-        <TextView
-            android:id="@+id/isbn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/lbl_isbn"
-            android:singleLine="false"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="true"
-            />
+    <!-- no style used on purpose -->
+    <TextView
+        android:id="@+id/isbn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/border_double"
+        android:hint="@string/lbl_isbn"
 
-        <View
-            android:id="@+id/div1"
-            style="@style/divider_horizontalList"
-            />
-    </LinearLayout>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_isbn" />
+
+    <View
+        android:id="@+id/div1"
+        style="@style/div_horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/isbn" />
 
     <TextView
         android:id="@+id/lbl_search_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/lbl_textField"
         android:text="@string/search_criteria"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/original_details"
-        />
+        app:layout_constraintTop_toBottomOf="@id/div1" />
 
     <!-- no style used on purpose -->
     <EditText
@@ -90,13 +95,11 @@
         android:layout_height="wrap_content"
         android:hint="@string/text_and_or_isbn"
         android:inputType="textMultiLine"
-        android:singleLine="false"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_search_text"
-        tools:ignore="Autofill"
-        />
+        tools:ignore="Autofill" />
 
     <Button
         android:id="@+id/btn_search"
@@ -106,16 +109,14 @@
         android:text="@string/menu_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_text"
-        />
+        app:layout_constraintTop_toBottomOf="@id/search_text" />
 
     <View
         android:id="@+id/div2"
-        style="@style/divider_horizontalList"
+        style="@style/div_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_search"
-        />
+        app:layout_constraintTop_toBottomOf="@id/btn_search" />
 
     <TextView
         android:id="@+id/works_found"
@@ -126,7 +127,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_search"
-        />
+        app:layout_constraintTop_toBottomOf="@id/btn_search" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

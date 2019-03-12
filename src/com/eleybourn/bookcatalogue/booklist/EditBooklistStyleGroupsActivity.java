@@ -60,7 +60,7 @@ public class EditBooklistStyleGroupsActivity
         extends EditObjectListActivity<GroupWrapper> {
 
     /** Preferences setup. */
-    public static final String REQUEST_BKEY_STYLE = "Style";
+    private static final String REQUEST_BKEY_STYLE = "Style";
 
     /** Copy of the style we are editing. */
     private BooklistStyle mStyle;

@@ -26,9 +26,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -36,11 +40,7 @@ import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
 /**
  * Base class for Web site searches.
@@ -79,19 +79,18 @@ public class ManagedSearchTask
      * Constructor. Will search according to passed parameters. If an ISBN
      * is provided that will be used to the exclusion of all others.
      *
-     * @param taskId a task identifier, will be returned in the task finished listener.
-     * @param threadName name for the thread
-     * @param manager    TaskHandler implementation
+     * @param manager           TaskHandler implementation
+     * @param site              the search site definition
+     * @param searchSiteManager the search site manager
      */
-    ManagedSearchTask(final int taskId,
-                      @NonNull final String threadName,
-                      @NonNull final TaskManager manager,
-                      @StringRes final int progressTitleResId,
+    ManagedSearchTask(@NonNull final TaskManager manager,
+                      @NonNull final SearchSites.Site site,
                       @NonNull final SearchSites.SearchSiteManager searchSiteManager) {
-        super(threadName, manager);
-        mTaskId = taskId;
-        mProgressTitleResId = progressTitleResId;
+        super(manager, site.getName());
+        mTaskId = site.id;
         mSearchSiteManager = searchSiteManager;
+        // cache the resId for convenience
+        mProgressTitleResId = mSearchSiteManager.getSearchingResId();
     }
 
     /**
@@ -148,7 +147,7 @@ public class ManagedSearchTask
     protected void runTask() {
 
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-            Logger.info(this, "runTask", getString(mProgressTitleResId));
+            Logger.info(this, "runTask", getContext().getString(mProgressTitleResId));
         }
         // keys? site up? etc...
         if (!mSearchSiteManager.isAvailable()) {
@@ -167,18 +166,18 @@ public class ManagedSearchTask
             }
 
         } catch (AuthorizationException e) {
-            Logger.info(this, e.getLocalizedMessage());
+            Logger.info(this, "runTask", e.getLocalizedMessage());
             // authorization exception has a user suitable message
             setFinalError(mProgressTitleResId, e.getLocalizedMessage());
 
         } catch (java.net.SocketTimeoutException e) {
-            Logger.info(this, e.getLocalizedMessage());
+            Logger.info(this, "runTask", e.getLocalizedMessage());
             setFinalError(mProgressTitleResId, R.string.error_network_timeout);
         } catch (MalformedURLException | UnknownHostException e) {
-            Logger.info(this,e.getLocalizedMessage());
+            Logger.info(this, "runTask", e.getLocalizedMessage());
             setFinalError(mProgressTitleResId, R.string.error_search_configuration);
         } catch (IOException e) {
-            Logger.info(this,e.getLocalizedMessage());
+            Logger.info(this, "runTask", e.getLocalizedMessage());
             setFinalError(mProgressTitleResId, R.string.error_search_failed);
         } catch (RuntimeException e) {
             // unknown e
@@ -223,9 +222,8 @@ public class ManagedSearchTask
      */
     private void setFinalError(@StringRes final int id,
                                @NonNull final String error) {
-        mFinalMessage = String.format(getString(R.string.error_search_exception),
-                                      getString(id),
-                                      error);
+        mFinalMessage = getContext().getString(R.string.error_search_exception,
+                                               getContext().getString(id), error);
     }
 
     /**
@@ -233,9 +231,9 @@ public class ManagedSearchTask
      */
     private void setFinalError(@StringRes final int id,
                                @StringRes final int error) {
-        mFinalMessage = String.format(getString(R.string.error_search_exception),
-                                      getString(id),
-                                      getString(error));
+        mFinalMessage = getContext().getString(R.string.error_search_exception,
+                                               getContext().getString(id),
+                                               getContext().getString(error));
     }
 
     /**
@@ -249,6 +247,7 @@ public class ManagedSearchTask
         } catch (RuntimeException e2) {
             s = e2.getClass().getCanonicalName();
         }
-        mFinalMessage = String.format(getString(R.string.error_search_exception), getString(id), s);
+        mFinalMessage = getContext().getString(R.string.error_search_exception,
+                                               getContext().getString(id), s);
     }
 }

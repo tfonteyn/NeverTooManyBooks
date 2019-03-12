@@ -191,7 +191,8 @@ public class XmlImporter
                          String id = attrs.getValue(XmlUtils.ATTR_ID);
                          String name = attrs.getValue(XmlUtils.ATTR_NAME);
                          if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
-                             Logger.info(this, "StartAction|NEW-ELEMENT" +
+                             Logger.info(this, "fromXml",
+                                         "StartAction|NEW-ELEMENT" +
                                      "|localName=`" + context.getLocalName() + '`' +
                                      "|tag.name=`" + name + '`');
                          }
@@ -215,7 +216,7 @@ public class XmlImporter
                 tag.name = context.getAttributes().getValue(XmlUtils.ATTR_NAME);
                 tag.value = context.getAttributes().getValue(XmlUtils.ATTR_VALUE);
                 if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
-                    Logger.info(this, "StartAction" +
+                    Logger.info(this, "fromXml","StartAction" +
                             "|localName=`" + context.getLocalName() + '`' +
                             "|tag.name=`" + tag.name + '`' +
                             "|tag.value=`" + tag.value + '`');
@@ -251,7 +252,7 @@ public class XmlImporter
             @Override
             public void process(@NonNull final ElementContext context) {
                 if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
-                    Logger.info(this, "EndAction" +
+                    Logger.info(this, "fromXml","EndAction" +
                             "|localName=`" + context.getLocalName() + '`' +
                             "|tag.name=`" + tag.name + '`');
                 }
@@ -382,7 +383,8 @@ public class XmlImporter
                          tag.name = context.getAttributes().getValue("name");
                          tag.type = context.getAttributes().getValue("type");
                          if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
-                             Logger.info(this, "StartAction" +
+                             Logger.info(this, "createPreV200Filter",
+                                         "StartAction" +
                                      "|localName=`" + context.getLocalName() + '`' +
                                      "|tag.name=`" + tag.name + '`');
                          }
@@ -392,7 +394,8 @@ public class XmlImporter
                      @Override
                      public void process(@NonNull final ElementContext context) {
                          if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
-                             Logger.info(this, "EndAction" +
+                             Logger.info(this, "createPreV200Filter",
+                                         "EndAction" +
                                      "|localName=`" + context.getLocalName() + '`' +
                                      "|tag.name=`" + tag.name + '`');
                          }

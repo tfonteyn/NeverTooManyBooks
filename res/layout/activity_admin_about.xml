@@ -12,23 +12,19 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:padding="0dp">
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="@dimen/border"
-            android:paddingEnd="@dimen/border">
+            android:layout_margin="@dimen/border"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal"
-                android:paddingStart="@dimen/border"
-                android:paddingEnd="@dimen/border">
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -42,8 +38,7 @@
                     android:id="@+id/version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingStart="@dimen/border"
-                    android:paddingEnd="@dimen/border"
+                    android:layout_marginStart="@dimen/border"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textIsSelectable="true"
                     android:textStyle="bold"
@@ -65,75 +60,75 @@
                 tools:text="sourcecode url" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/border"
-                android:paddingEnd="@dimen/border"
+                android:layout_marginStart="@dimen/border"
                 android:text="@string/about_lbl_contacts"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/contact1"
                 style="@style/link_url"
+                android:layout_marginStart="@dimen/border_triple"
                 android:text="@string/email_contact1" />
 
             <TextView
                 android:id="@+id/contact2"
                 style="@style/link_url"
+                android:layout_marginStart="@dimen/border_triple"
                 android:text="@string/email_contact2" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/border"
-                android:paddingEnd="@dimen/border"
+                android:layout_marginStart="@dimen/border"
                 android:text="@string/about_lbl_special_thanks"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
-                style="@style/txt_blurb"
+                style="@style/txt_blurb_small"
                 android:text="@string/about_translators" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/border"
-                android:paddingEnd="@dimen/border"
+                android:layout_marginStart="@dimen/border"
                 android:text="@string/about_lbl_donate"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
-                style="@style/txt_blurb"
+                style="@style/txt_blurb_small"
                 android:text="@string/about_donate" />
 
             <TextView
                 android:id="@+id/amazon_url"
-                style="@style/link_donate"
+                style="@style/link_url"
+                android:layout_gravity="center_horizontal"
                 android:text="@string/about_donate_amazon" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@string/about_dash_or_dash"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/donate_url"
-                style="@style/link_donate"
+                style="@style/link_url"
+                android:layout_gravity="center_horizontal"
                 android:text="@string/about_donate_paypal" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/border"
-                android:paddingEnd="@dimen/border"
+                android:layout_marginStart="@dimen/border"
                 android:text="@string/amazon"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/amazon_links_info"
-                style="@style/txt_blurb"
+                style="@style/txt_blurb_small"
                 tools:ignore="SelectableText"
                 tools:text="@string/hint_amazon_links_blurb" />
         </LinearLayout>

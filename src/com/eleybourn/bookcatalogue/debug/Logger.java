@@ -63,61 +63,29 @@ public final class Logger {
     }
 
     /**
-     * Should really only be used from within a debug code block.
-     * And even then only in problematic places, as the stack trace can get large
-     * <p>
-     * Generates stacktrace!
-     * <p>
-     * if (BuildConfig.DEBUG) {
-     * Logger.debug("blah");
-     * }
-     */
-    public static void debug(@Nullable final String message) {
-        error("DEBUG|" + message);
-    }
-
-    /**
-     * Pure info, no stacktrace.
-     * <p>
      * For static callers
      */
     public static void info(@NonNull final Class clazz,
                             @Nullable final String message) {
-        String msg = "INFO|" + clazz.getCanonicalName() + '|' + message;
-        Log.d(TAG, msg);
-        writeToErrorLog(msg);
-    }
-
-
-    /**
-     * Pure info, no stacktrace.
-     * <p>
-     * For instance callers
-     */
-    public static void info(@NonNull final Object object,
-                            @Nullable final String message) {
-        info(object, "", message);
+        String result = "INFO|" + clazz.getCanonicalName() + '|' + message;
+        writeToLog(result);
+        if (/* always log */ BuildConfig.DEBUG) {
+            Log.d(TAG, result);
+        }
     }
 
     /**
-     * Pure info, no stacktrace.
-     * <p>
      * For instance callers
      */
     public static void info(@NonNull final Object object,
                             @NonNull final String methodName,
                             @Nullable final String message) {
-        Class clazz = object.getClass();
-        StringBuilder msg = new StringBuilder("INFO|");
-        msg.append(clazz.isAnonymousClass() ? "AnonymousClass" : clazz.getCanonicalName());
-        msg.append('|');
-        if (!methodName.isEmpty()) {
-            msg.append(methodName).append('|');
+
+        String result = buildInfoMessage(object, methodName, message);
+        writeToLog(result);
+        if (/* always log */ BuildConfig.DEBUG) {
+            Log.d(TAG, result);
         }
-        msg.append(message);
-        String m = msg.toString();
-        Log.d(TAG, m);
-        writeToErrorLog(m);
     }
 
     /**
@@ -143,40 +111,83 @@ public final class Logger {
     /**
      * Write the exception stacktrace to the error log file.
      * Will use e.getLocalizedMessage()
+     * <p>
+     * When in debug mode, also to the console.
      *
      * @param e       The exception to log
      * @param message extra message
      */
     public static void error(@Nullable final Exception e,
                              @NonNull final String message) {
-        String now = DATE_FORMAT.format(new Date());
-        String exMsg = null;
-        StringWriter stacktrace = new StringWriter();
-        PrintWriter pw = new PrintWriter(stacktrace);
-        if (e != null) {
-            e.printStackTrace(pw);
-            exMsg = e.getLocalizedMessage();
-        }
-
-        String error;
-        if (e instanceof DebugStackTrace) {
-            error = message;
-        } else {
-            error = "ERROR|An Exception/Error Occurred @ " + now + '\n'
-                    + (exMsg != null ? exMsg + '\n' : "")
-                    + "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ") \n"
-                    + message + '\n';
-        }
-
+        String result = buildErrorMessage(e, message);
+        writeToLog(result);
         if (/* always log */ BuildConfig.DEBUG) {
-            Log.d(TAG, error + '\n' + stacktrace);
+            Log.e(TAG, result);
         }
-
-        writeToErrorLog(error + stacktrace);
-        pw.close();
     }
 
-    private static void writeToErrorLog(@NonNull final String message) {
+    /**
+     * Should really only be used from within a debug code block.
+     * And even then only in problematic places, as the stack trace can get large
+     * <p>
+     * Generates stacktrace!
+     * <p>
+     * if (BuildConfig.DEBUG) {
+     * Logger.debug("blah");
+     * }
+     */
+    public static void debug(@NonNull final String message) {
+        String result = buildErrorMessage(new DebugStackTrace(), message)
+                .replaceFirst("ERROR","DEBUG");
+        writeToLog(result);
+        if (/* always log */ BuildConfig.DEBUG) {
+            Log.e(TAG, result);
+        }
+    }
+
+    private static String buildInfoMessage(@NonNull final Object object,
+                                           @NonNull final String methodName,
+                                           @Nullable final String message) {
+        Class clazz = object.getClass();
+        StringBuilder msg = new StringBuilder("INFO|");
+        msg.append(clazz.isAnonymousClass() ? "AnonymousClass" : clazz.getCanonicalName());
+        msg.append('|');
+        if (!methodName.isEmpty()) {
+            msg.append(methodName).append('|');
+        }
+        msg.append(message);
+        return msg.toString();
+    }
+
+    private static String buildErrorMessage(@Nullable final Exception e,
+                                            @NonNull final String message) {
+
+        StringBuilder msg = new StringBuilder("ERROR|");
+        String now = DATE_FORMAT.format(new Date());
+        String exMsg;
+        StringWriter stacktrace = new StringWriter();
+        try (PrintWriter pw = new PrintWriter(stacktrace)) {
+            if (e != null) {
+                e.printStackTrace(pw);
+                exMsg = e.getLocalizedMessage() + '\n';
+            } else {
+                exMsg = "";
+            }
+        }
+
+        if (!(e instanceof DebugStackTrace)) {
+            msg.append("An Exception/Error Occurred @ ").append(now).append('\n')
+               .append(exMsg)
+               .append("In Phone ").append(Build.MODEL)
+               .append(" (").append(Build.VERSION.SDK_INT).append(")\n");
+        }
+
+        msg.append(message).append('\n').append(stacktrace);
+        return msg.toString();
+
+    }
+
+    private static void writeToLog(@NonNull final String message) {
         try {
             BufferedWriter out = new BufferedWriter(
                     new OutputStreamWriter(
@@ -203,7 +214,7 @@ public final class Logger {
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
             // Ignore backup failure...
         } finally {
-            writeToErrorLog("");
+            writeToLog("");
         }
     }
 

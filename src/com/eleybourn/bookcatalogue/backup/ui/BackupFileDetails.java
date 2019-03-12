@@ -117,15 +117,13 @@ public class BackupFileDetails
         } else {
             // Display details
             imageView.setImageDrawable(context.getDrawable(R.drawable.ic_business_center));
-            imageView.setScaleX(2);
-            imageView.setScaleY(2);
             fileDetails.setVisibility(View.VISIBLE);
 
             TextView fileContentView = convertView.findViewById(R.id.file_content);
             TextView dateView = convertView.findViewById(R.id.date);
 
             TextView sizeView = convertView.findViewById(R.id.size);
-            sizeView.setText(Utils.formatFileSize(mFile.length()));
+            sizeView.setText(Utils.formatFileSize(context, mFile.length()));
 
             Resources res = context.getResources();
             if (mInfo != null) {

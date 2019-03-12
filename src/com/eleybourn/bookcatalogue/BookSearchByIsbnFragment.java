@@ -72,6 +72,7 @@ public class BookSearchByIsbnFragment
 
     private static final String BKEY_SCANNER_STARTED = "ScannerStarted";
 
+    //super: static final int REQ_BOOK_EDIT = 1_000;
     private static final int REQ_IMAGE_FROM_SCANNER = 0;
 
     /** all digits allowed in ASIN strings. */
@@ -122,7 +123,7 @@ public class BookSearchByIsbnFragment
         super.onActivityCreated(savedInstanceState);
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mIsbnSearchText = args.getString(UniqueId.KEY_BOOK_ISBN, "");
+        mIsbnSearchText = args.getString(UniqueId.KEY_ISBN, "");
 
         if (savedInstanceState != null) {
             mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED, false);
@@ -173,6 +174,7 @@ public class BookSearchByIsbnFragment
         if (mAllowAsinCb != null) {
             initAsin();
         }
+
         initKeypadButton(R.id.isbn_0, "0");
         initKeypadButton(R.id.isbn_1, "1");
         initKeypadButton(R.id.isbn_2, "2");
@@ -184,6 +186,7 @@ public class BookSearchByIsbnFragment
         initKeypadButton(R.id.isbn_8, "8");
         initKeypadButton(R.id.isbn_9, "9");
         initKeypadButton(R.id.isbn_X, "X");
+
 
         root.findViewById(R.id.isbn_del).setOnClickListener(new View.OnClickListener() {
             public void onClick(@NonNull final View v) {
@@ -234,16 +237,12 @@ public class BookSearchByIsbnFragment
             public void onCheckedChanged(@NonNull final CompoundButton buttonView,
                                          final boolean isChecked) {
                 if (isChecked) {
-                    mActivity.getWindow()
-                             .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-                    // over-optimisation... asin is used less then ISBN
+                                        // over-optimisation... asin is used less then ISBN
                     DigitsKeyListener asinListener = DigitsKeyListener.getInstance(ASIN_DIGITS);
                     //noinspection ConstantConditions
                     mIsbnView.setKeyListener(asinListener);
                 } else {
-                    mActivity.getWindow()
-                             .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-                    //noinspection ConstantConditions
+                                        //noinspection ConstantConditions
                     mIsbnView.setKeyListener(ISBN_LISTENER);
                     // remove invalid digits
                     String txt = mIsbnView.getText().toString();
@@ -470,7 +469,7 @@ public class BookSearchByIsbnFragment
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.KEY_BOOK_ISBN, mIsbnSearchText);
+        outState.putString(UniqueId.KEY_ISBN, mIsbnSearchText);
         outState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
     }
 

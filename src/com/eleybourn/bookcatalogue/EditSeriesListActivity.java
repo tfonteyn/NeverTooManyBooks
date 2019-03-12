@@ -70,7 +70,7 @@ public class EditSeriesListActivity
     private boolean mGlobalChangeMade;
 
     /**
-     * Constructor; pass the superclass the main and row based layouts to use.
+     * Constructor.
      */
     public EditSeriesListActivity() {
         super(UniqueId.BKEY_SERIES_ARRAY);
@@ -94,8 +94,6 @@ public class EditSeriesListActivity
         mSeriesNameView = findViewById(R.id.series);
         mSeriesNameView.setAdapter(mSeriesAdapter);
         mSeriesNumberView = findViewById(R.id.series_num);
-
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     /**
@@ -303,7 +301,8 @@ public class EditSeriesListActivity
                 mNumber = savedInstanceState.getString(UniqueId.KEY_SERIES_NUM);
             }
 
-            final View root = getLayoutInflater().inflate(R.layout.dialog_edit_book_series, null);
+            final View root = mActivity.getLayoutInflater()
+                                       .inflate(R.layout.dialog_edit_book_series, null);
 
             // the dialog fields != screen fields.
             mNameView = root.findViewById(R.id.series);
@@ -311,7 +310,9 @@ public class EditSeriesListActivity
             mNameView.setAdapter(mActivity.mSeriesAdapter);
 
             mIsCompleteView = root.findViewById(R.id.is_complete);
-            mIsCompleteView.setChecked(mIsComplete);
+            if (mIsCompleteView != null) {
+                mIsCompleteView.setChecked(mIsComplete);
+            }
 
             mNumberView = root.findViewById(R.id.series_num);
             mNumberView.setText(mNumber);
@@ -325,7 +326,9 @@ public class EditSeriesListActivity
                                                     R.string.warning_required_name);
                         return;
                     }
-                    mIsComplete = mIsCompleteView.isChecked();
+                    if (mIsCompleteView != null) {
+                        mIsComplete = mIsCompleteView.isChecked();
+                    }
                     mNumber = mNumberView.getText().toString().trim();
                     dismiss();
 
@@ -351,7 +354,9 @@ public class EditSeriesListActivity
         @Override
         public void onPause() {
             mName = mNameView.getText().toString().trim();
-            mIsComplete = mIsCompleteView.isChecked();
+            if (mIsCompleteView != null) {
+                mIsComplete = mIsCompleteView.isChecked();
+            }
             mNumber = mNumberView.getText().toString().trim();
 
             super.onPause();

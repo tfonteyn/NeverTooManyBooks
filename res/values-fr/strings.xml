@@ -141,19 +141,19 @@
         à l\'intérieur de la couverture.\n\n
     </string>
     <string name="about_help_click_here">Veuillez cliquer ici pour accéder à l\'aide en ligne.</string>
-    <string name="vldt_unable_to_get_value">Impossible d\'obtenir la valeur de ‘%s’</string>
-    <string name="vldt_integer_expected">Valeur entière attendue pour ‘%s’</string>
-    <string name="vldt_real_expected">Valeur décimale attendue pour ‘%s’</string>
-    <string name="vldt_date_expected">Date attendue pour ‘%s’</string>
-    <string name="vldt_boolean_expected">Valeur booléenne (0,1,t,f,true,false) attendue pour ‘%s’</string>
-    <string name="vldt_non_blank_required">Valeur non vide attendue pour ‘%s’</string>
-    <string name="vldt_blank_required">Le champ ‘%s’ doit être vide</string>
-    <string name="vldt_failed">La validation a échoué pour ‘%s’</string>
+    <string name="vldt_unable_to_get_value">Impossible d\'obtenir la valeur de ‘%1$s’</string>
+    <string name="vldt_integer_expected">Valeur entière attendue pour ‘%1$s’</string>
+    <string name="vldt_real_expected">Valeur décimale attendue pour ‘%1$s’</string>
+    <string name="vldt_date_expected">Date attendue pour ‘%1$s’</string>
+    <string name="vldt_boolean_expected">Valeur booléenne (0,1,t,f,true,false) attendue pour ‘%1$s’</string>
+    <string name="vldt_non_blank_required">Valeur non vide attendue pour ‘%1$s’</string>
+    <string name="vldt_blank_required">Le champ ‘%1$s’ doit être vide</string>
+    <string name="vldt_failed">La validation a échoué pour ‘%1$s’</string>
     <string name="vldt_read_start_after_end">La date de début de lecture est après la date de fin</string>
     <string name="progress_end_backup_success">Sauvegarde réussie</string>
     <string name="error_backup_failed">Sauvegarde échouée</string>
-    <string name="error_file_must_contain_column">Le fichier doit contenir une colonne nommée %s</string>
-    <string name="import_error_csv_file_must_contain_any_column">Le fichier doit contenir au moins une des colonnes suivantes : %s</string>
+    <string name="error_file_must_contain_column">Le fichier doit contenir une colonne nommée %1$s</string>
+    <string name="import_error_csv_file_must_contain_any_column">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
     <string name="error_column_is_blank">La colonne %1$s est vide à la ligne %2$s</string>
     <string name="error_columns_are_blank">Les colonnes %1$s sont toutes vides à la ligne %2$d</string>
     <string name="btn_confirm_save">Sauvegarder</string>
@@ -173,9 +173,9 @@
     <string name="warning_required_series">Le champ « série » est vide</string>
     <string name="export_error_csv_failed">Export en échec : impossible d\'écrire sur la carte SD</string>
     <string name="error_download_thumbnail_failed">Téléchargement de miniature en échec : impossible d\'écrire sur la carte SD</string>
-    <string name="progress_msg_skip_title">Passer - %s</string>
-    <string name="progress_end_num_books_searched">%s livres recherchés</string>
-    <string name="progress_end_cancelled_info">Annulé - %s</string>
+    <string name="progress_msg_skip_title">Passer - %1$s</string>
+    <string name="progress_end_num_books_searched">%1$d livres recherchés</string>
+    <string name="progress_end_cancelled_info">Annulé - %1$s</string>
     <string name="title_edit_book_series">Modifier les séries</string>
     <string name="lbl_family_name">Nom de famille</string>
     <string name="lbl_given_names">Prénoms</string>
@@ -190,7 +190,7 @@
     <string name="menu_edit_series">Modifier les séries…</string>
     <string name="title_delete_series">Supprimer la série</string>
     <string name="confirm_really_delete_series">
-        Supprimer la série ‘%s’ ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n
+        Supprimer la série ‘%1$s’ ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n
         Envisagez de modifier la série et d\'en changer le nom pour conserver cette information.
     </string>
     <string name="title_edit_series">Modifier les détails de la série</string>
@@ -268,7 +268,7 @@
     </string>
     <string name="about_send_info">Envoyer les informations</string>
     <string name="info_cleanup_files_text">
-        Les fichiers supprimables occupent actuellement %s sur la carte SD. Les fichiers journaux
+        Les fichiers supprimables occupent actuellement %1$s sur la carte SD. Les fichiers journaux
         et d\'autres données sont sauvegardées sur la carte SD à chaque mise à jour, lorsque vous
         sauvegardez la base de données ou lorsque l\'application plante. Cliquez sur le bouton
         ci-dessous pour purger ces fichiers de votre carte SD. Si vous avez fait l\'expérience
@@ -767,14 +767,14 @@
     <string name="pt_ui_system_locale">Paramètres de langue du système</string>
 
     <!-- Credits in the 'about' dialog -->
-    <string name="about_translators">&APP_NAME; est le résultat de l\'effort de beaucoup de
+    <string name="about_translators">
+        &APP_NAME; est le résultat de l\'effort de beaucoup de
         personnes, et n\'aurait pas une diffusion et une utilisation aussi large sans l\'aide
         de nos généreux traducteurs: Eugenio Davolio, José M. Galdo, Imkal, Dimitris Klisiari,
         Gideon van Melle, Emir Sarı, Nick Silin, and Robert Wetzlmayr (if we have forgotten
-        someone, please tell us).</string>
+        someone, please tell us).
+    </string>
     <string name="lbl_loaned_to_short">→</string>
-
-
     <string name="title_reorder">le|Le|la|La|les|Les</string>
     <string name="menu_set_read">Marqué comme lu</string>
     <string name="menu_set_unread">Maqué comme non lu</string>
@@ -790,7 +790,7 @@
     <string name="btn_use">Utiliser</string>
     <string name="lbl_edition_first_edition">Première édition</string>
     <string name="lbl_edition_limited">Édition limitée</string>
-    <string name="lbl_x_pages">%1$s pages</string>
+    <string name="lbl_x_pages">%1$d pages</string>
     <string name="lbl_signed">Signé</string>
     <string name="tab_lbl_notes">Les notes</string>
     <string name="lbl_cover">Couverture</string>

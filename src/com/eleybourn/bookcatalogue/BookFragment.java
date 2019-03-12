@@ -157,20 +157,26 @@ public class BookFragment
 
         // book fields
         mFields.add(R.id.title, UniqueId.KEY_TITLE);
-        mFields.add(R.id.isbn, UniqueId.KEY_BOOK_ISBN);
-        mFields.add(R.id.description, UniqueId.KEY_BOOK_DESCRIPTION)
+        mFields.add(R.id.isbn, UniqueId.KEY_ISBN);
+        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
                .setShowHtml(true);
-        mFields.add(R.id.genre, UniqueId.KEY_BOOK_GENRE);
-        mFields.add(R.id.language, UniqueId.KEY_BOOK_LANGUAGE)
+        mFields.add(R.id.genre, UniqueId.KEY_GENRE);
+        mFields.add(R.id.language, UniqueId.KEY_LANGUAGE)
                .setFormatter(new Fields.LanguageFormatter());
-        mFields.add(R.id.pages, UniqueId.KEY_BOOK_PAGES)
+        mFields.add(R.id.pages, UniqueId.KEY_PAGES)
                .setFormatter(new Fields.FieldFormatter() {
                    @NonNull
                    @Override
                    public String format(@NonNull final Field field,
                                         @Nullable final String source) {
                        if (source != null && !source.isEmpty() && !"0".equals(source)) {
-                           return getString(R.string.lbl_x_pages, source);
+                           try {
+                               int pages = Integer.parseInt(source);
+                               return getString(R.string.lbl_x_pages, pages);
+                           } catch (NumberFormatException ignore) {
+                           }
+                           // stored pages was alphanumeric.
+                           return source;
                        }
                        return "";
                    }
@@ -182,11 +188,11 @@ public class BookFragment
                        throw new UnsupportedOperationException();
                    }
                });
-        mFields.add(R.id.format, UniqueId.KEY_BOOK_FORMAT);
-        mFields.add(R.id.price_listed, UniqueId.KEY_BOOK_PRICE_LISTED)
+        mFields.add(R.id.format, UniqueId.KEY_FORMAT);
+        mFields.add(R.id.price_listed, UniqueId.KEY_PRICE_LISTED)
                .setFormatter(new Fields.PriceFormatter(
-                       getBook().getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)));
-        mFields.add(R.id.first_publication, UniqueId.KEY_FIRST_PUBLICATION)
+                       getBook().getString(UniqueId.KEY_PRICE_LISTED_CURRENCY)));
+        mFields.add(R.id.first_publication, UniqueId.KEY_DATE_FIRST_PUBLISHED)
                .setFormatter(dateFormatter);
 
         // defined, but handled manually
@@ -195,46 +201,50 @@ public class BookFragment
         mFields.add(R.id.series, "", UniqueId.KEY_SERIES);
 
         // populated, but manually re-populated.
-        mFields.add(R.id.publisher, UniqueId.KEY_BOOK_PUBLISHER);
+        mFields.add(R.id.publisher, UniqueId.KEY_PUBLISHER);
         // not a field on the screen, but used in re-population of publisher.
-        mFields.add(R.id.date_published, UniqueId.KEY_BOOK_DATE_PUBLISHED)
+        mFields.add(R.id.date_published, UniqueId.KEY_DATE_PUBLISHED)
                .setFormatter(dateFormatter);
 
-        // defined, but handled manually
-        Field coverField = mFields.add(R.id.coverImage, "", UniqueId.BKEY_THUMBNAIL);
+        // ENHANCE: {@link Fields.ImageViewAccessor}
+//        Field field = mFields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
+        Field field = mFields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
+        ImageUtils.ImageSize imageSize = ImageUtils.getImageSizes(mActivity);
+//        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
+//        iva.setMaxSize(imageSize.small, imageSize.standard);
         mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
-                                         coverField, mFields.getField(R.id.isbn));
-
+                                         mFields.getField(R.id.isbn), field,
+                                         imageSize.small, imageSize.standard);
 
         // Personal fields
-        mFields.add(R.id.date_acquired, UniqueId.KEY_BOOK_DATE_ACQUIRED)
+        mFields.add(R.id.date_acquired, UniqueId.KEY_DATE_ACQUIRED)
                .setFormatter(dateFormatter);
-        mFields.add(R.id.price_paid, UniqueId.KEY_BOOK_PRICE_PAID)
+        mFields.add(R.id.price_paid, UniqueId.KEY_PRICE_PAID)
                .setFormatter(new Fields.PriceFormatter(
-                       getBook().getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY)));
-        mFields.add(R.id.edition, UniqueId.KEY_BOOK_EDITION_BITMASK)
+                       getBook().getString(UniqueId.KEY_PRICE_PAID_CURRENCY)));
+        mFields.add(R.id.edition, UniqueId.KEY_EDITION_BITMASK)
                .setFormatter(new Fields.BookEditionsFormatter());
 
-        mFields.add(R.id.location, UniqueId.KEY_BOOK_LOCATION);
-        mFields.add(R.id.rating, UniqueId.KEY_BOOK_RATING);
-        mFields.add(R.id.notes, UniqueId.KEY_BOOK_NOTES)
+        mFields.add(R.id.location, UniqueId.KEY_LOCATION);
+        mFields.add(R.id.rating, UniqueId.KEY_RATING);
+        mFields.add(R.id.notes, UniqueId.KEY_NOTES)
                .setShowHtml(true);
-        mFields.add(R.id.read_start, UniqueId.KEY_BOOK_READ_START)
+        mFields.add(R.id.read_start, UniqueId.KEY_READ_START)
                .setFormatter(dateFormatter);
-        mFields.add(R.id.read_end, UniqueId.KEY_BOOK_READ_END)
+        mFields.add(R.id.read_end, UniqueId.KEY_READ_END)
                .setFormatter(dateFormatter);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.read, UniqueId.KEY_BOOK_READ);
+        mFields.add(R.id.read, UniqueId.KEY_READ);
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.signed, UniqueId.KEY_BOOK_SIGNED)
+        mFields.add(R.id.signed, UniqueId.KEY_SIGNED)
                .setFormatter(new Fields.BinaryYesNoEmptyFormatter(requireContext()));
 
         // defined, but handled manually
-        mFields.add(R.id.bookshelves, "", UniqueId.KEY_BOOKSHELF_NAME);
+        mFields.add(R.id.bookshelves, "", UniqueId.KEY_BOOKSHELF);
 
         // defined, but handled manually
-        mFields.add(R.id.loaned_to, "", UniqueId.KEY_BOOK_LOANEE);
+        mFields.add(R.id.loaned_to, "", UniqueId.KEY_LOANEE);
     }
 
     @CallSuper
@@ -268,9 +278,8 @@ public class BookFragment
         populateAuthorListField(book);
         populateSeriesListField(book);
 
-        // override setting the cover as we want a bigger size.
-        ImageUtils.ImageSize ts = ImageUtils.getImageSizes(mActivity);
-        mCoverHandler.populateCoverView(ts.small, ts.standard);
+        // ENHANCE: {@link Fields.ImageViewAccessor}
+        mCoverHandler.updateCoverView();
 
         // handle 'text' DoNotFetch fields
         ArrayList<Bookshelf> bsList = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
@@ -452,8 +461,8 @@ public class BookFragment
         ArrayList<TocEntry> list = book.getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         // only show if: field in use + it's flagged as having a toc + the toc actually has titles
-        boolean visible = Fields.isVisible(UniqueId.KEY_BOOK_TOC_BITMASK)
-                && book.isBitSet(UniqueId.KEY_BOOK_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS)
+        boolean visible = Fields.isVisible(UniqueId.KEY_TOC_BITMASK)
+                && book.isBitSet(UniqueId.KEY_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS)
                 && !list.isEmpty();
 
         View tocLabel = requireView().findViewById(R.id.lbl_toc);
@@ -571,7 +580,7 @@ public class BookFragment
         menu.setGroupVisible(R.id.MENU_BOOK_READ, bookExists && !isRead);
         menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
 
-        if (Fields.isVisible(UniqueId.KEY_BOOK_LOANEE)) {
+        if (Fields.isVisible(UniqueId.KEY_LOANEE)) {
             boolean isAvailable = null == mDb.getLoaneeByBookId(getBook().getId());
             menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
             menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
@@ -660,7 +669,7 @@ public class BookFragment
                               @Nullable final Bundle data) {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-                populateLoanedToField(data.getString(UniqueId.KEY_BOOK_LOANEE));
+                populateLoanedToField(data.getString(UniqueId.KEY_LOANEE));
             } else {
                 Logger.error("bookId=" + bookId + ", fieldsChanged=" + fieldsChanged);
             }

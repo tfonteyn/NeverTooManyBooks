@@ -23,23 +23,23 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
-import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
-import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
+import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 /**
  * Class to query and response to search.books api call.

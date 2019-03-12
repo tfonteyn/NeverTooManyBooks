@@ -23,6 +23,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
@@ -72,6 +73,15 @@ public class BookCursorRowBase {
     /**
      * @param columnName to get
      *
+     * @return the column index.
+     */
+    public int getColumnIndex(@NonNull final String columnName) {
+        return mCursor.getColumnIndex(columnName);
+    }
+
+    /**
+     * @param columnName to get
+     *
      * @return a string from underlying cursor
      */
     @Nullable
@@ -96,10 +106,14 @@ public class BookCursorRowBase {
     /**
      * @param columnName to get
      *
-     * @return the column index.
+     * @return a boolean from underlying cursor.
      */
-    public int getColumnIndex(@NonNull final String columnName) {
-        return mCursor.getColumnIndex(columnName);
+    public boolean getBoolean(final String columnName) {
+        final int position = mCursor.getColumnIndex(columnName);
+        if (position < 0) {
+            throw new ColumnNotPresentException(columnName);
+        }
+        return mCursor.getInt(position) == 1;
     }
 
     /**
@@ -236,6 +250,10 @@ public class BookCursorRowBase {
 
     public final long getLibraryThingBookId() {
         return mMapper.getLong(DOM_BOOK_LIBRARY_THING_ID);
+    }
+
+    public final String getOpenLibraryBookId() {
+        return mMapper.getString(DOM_BOOK_OPEN_LIBRARY_ID);
     }
 
     public final long getISFDBBookId() {

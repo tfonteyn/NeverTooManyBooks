@@ -25,25 +25,25 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.apache.http.client.methods.HttpGet;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
-
-import org.apache.http.client.methods.HttpGet;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Class to query and response to search.books api call. This is an abstract class
@@ -322,15 +322,15 @@ public abstract class ShowBookApiHandler
             }
         }
     };
-    /** Local storage for series book appears in */
+    /** Local storage for series book appears in. */
     @Nullable
-    private ArrayList<Series> mSeries = null;
-    /** Local storage for author names */
+    private ArrayList<Series> mSeries;
+    /** Local storage for author names. */
     @Nullable
-    private ArrayList<Author> mAuthors = null;
-    /** Local storage for shelf names */
+    private ArrayList<Author> mAuthors;
+    /** Local storage for shelf names. */
     @Nullable
-    private ArrayList<String> mShelves = null;
+    private ArrayList<String> mShelves;
     /**
      * Create a new shelves collection when the "shelves" tag is encountered.
      */
@@ -342,7 +342,7 @@ public abstract class ShowBookApiHandler
         }
     };
     /**
-     * Add a shelf to the array
+     * Add a shelf to the array.
      */
     private final XmlHandler mHandleShelf = new XmlHandler() {
         @Override
@@ -354,9 +354,9 @@ public abstract class ShowBookApiHandler
             }
         }
     };
-    /** Current author being processed */
+    /** Current author being processed. */
     @Nullable
-    private String mCurrAuthorName = null;
+    private String mCurrAuthorName;
     private final XmlHandler mHandleAuthorEnd = new XmlHandler() {
         @Override
         public void process(@NonNull final ElementContext context) {
@@ -377,9 +377,9 @@ public abstract class ShowBookApiHandler
             mCurrAuthorName = context.getBody();
         }
     };
-    /** Current series being processed */
+    /** Current series being processed. */
     @Nullable
-    private String mCurrSeriesName = null;
+    private String mCurrSeriesName;
     private final XmlHandler mHandleSeriesName = new XmlHandler() {
         @Override
         public void process(@NonNull final ElementContext context) {
@@ -387,9 +387,9 @@ public abstract class ShowBookApiHandler
             mCurrSeriesName = context.getBody();
         }
     };
-    /** Current series being processed */
+    /** Current series being processed. */
     @Nullable
-    private Integer mCurrSeriesPosition = null;
+    private Integer mCurrSeriesPosition;
     private final XmlHandler mHandleSeriesEnd = new XmlHandler() {
         @Override
         public void process(@NonNull final ElementContext context) {
@@ -423,7 +423,7 @@ public abstract class ShowBookApiHandler
     };
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param manager     Goodreads manager
      * @param signRequest set <tt>true</tt> if a request should be signed.
@@ -460,13 +460,13 @@ public abstract class ShowBookApiHandler
         // We sign the GET request so we get shelves
         mManager.execute(request, handler, mSignRequest);
 
-        // When we get here, the data has been collected but needs to be processed into standard form.
+        // When we get here, the data has been collected but needs processing into standard form.
 
         // Use ISBN13 by preference
         if (mBookData.containsKey(ShowBookFieldNames.ISBN13)) {
             String s = mBookData.getString(ShowBookFieldNames.ISBN13);
             if (s != null && s.length() == 13) {
-                mBookData.putString(UniqueId.KEY_BOOK_ISBN, s);
+                mBookData.putString(UniqueId.KEY_ISBN, s);
             }
         }
 
@@ -474,7 +474,8 @@ public abstract class ShowBookApiHandler
         // Pros: easier sync
         // Cons: Overwrite GR id when it should not
         //if (mBookData.containsKey(BOOK_ID)) {
-        //	mBookData.putLong(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name, mBookData.getLong(BOOK_ID));
+        //	mBookData.putLong(DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name,
+        //                    mBookData.getLong(BOOK_ID));
         //}
 
         // ENHANCE: Store WORK_ID = "__work_id" into GR_WORK_ID;
@@ -507,37 +508,36 @@ public abstract class ShowBookApiHandler
             }
         }
 
-        /* TEST: Build the original publication date based on the components */
-        String origPublicationDate = GoodreadsManager.buildDate(mBookData,
-                                                                ShowBookFieldNames.ORIG_PUBLICATION_YEAR,
-                                                                ShowBookFieldNames.ORIG_PUBLICATION_MONTH,
-                                                                ShowBookFieldNames.ORIG_PUBLICATION_DAY,
-                                                                UniqueId.KEY_FIRST_PUBLICATION);
+        // TEST: Build the original publication date based on the components
+        String origPublicationDate =
+                GoodreadsManager.buildDate(mBookData,
+                                           ShowBookFieldNames.ORIG_PUBLICATION_YEAR,
+                                           ShowBookFieldNames.ORIG_PUBLICATION_MONTH,
+                                           ShowBookFieldNames.ORIG_PUBLICATION_DAY,
+                                           UniqueId.KEY_DATE_FIRST_PUBLISHED);
 
-        /* Build the publication date based on the components */
+        // Build the publication date based on the components
         GoodreadsManager.buildDate(mBookData,
                                    ShowBookFieldNames.PUBLICATION_YEAR,
                                    ShowBookFieldNames.PUBLICATION_MONTH,
                                    ShowBookFieldNames.PUBLICATION_DAY,
-                                   UniqueId.KEY_BOOK_DATE_PUBLISHED);
+                                   UniqueId.KEY_DATE_PUBLISHED);
 
-        /* If no published date, try original date */
-        if (!mBookData.containsKey(UniqueId.KEY_BOOK_DATE_PUBLISHED)) {
+        // If no published date, try original date
+        if (!mBookData.containsKey(UniqueId.KEY_DATE_PUBLISHED)) {
             if (origPublicationDate != null && !origPublicationDate.isEmpty()) {
-                mBookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, origPublicationDate);
+                mBookData.putString(UniqueId.KEY_DATE_PUBLISHED, origPublicationDate);
             }
         }
 
-        /* is it an eBook ? Overwrite the format key */
+        // is it an eBook ? Overwrite the format key
         if (mBookData.containsKey(ShowBookFieldNames.IS_EBOOK) && mBookData.getBoolean(
                 ShowBookFieldNames.IS_EBOOK)) {
-            mBookData.putString(UniqueId.KEY_BOOK_FORMAT,
+            mBookData.putString(UniqueId.KEY_FORMAT,
                                 BookCatalogueApp.getResString(R.string.book_format_ebook));
         }
 
-        /*
-         * Cleanup the title by removing series name, if present
-         */
+        // Cleanup the title by removing series name, if present
         if (mBookData.containsKey(UniqueId.KEY_TITLE)) {
             String thisTitle = mBookData.getString(UniqueId.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(thisTitle);
@@ -553,9 +553,11 @@ public abstract class ShowBookApiHandler
                 mBookData.putString(UniqueId.KEY_TITLE,
                                     thisTitle.substring(0, details.startChar - 1));
                 //if (mBookData.containsKey(ORIG_TITLE)) {
-                //	mBookData.putString(UniqueId.KEY_TITLE, mBookData.getString(ORIG_TITLE));
+                //	mBookData.putString(UniqueId.KEY_TITLE,
+                //                      mBookData.getString(ORIG_TITLE));
                 //} else {
-                //	mBookData.putString(UniqueId.KEY_TITLE, thisTitle.substring(0, details.startChar-1));
+                //	mBookData.putString(UniqueId.KEY_TITLE,
+                //                      thisTitle.substring(0, details.startChar-1));
                 //}
             }
         } else if (mBookData.containsKey(ShowBookFieldNames.ORIG_TITLE)) {
@@ -569,7 +571,6 @@ public abstract class ShowBookApiHandler
         }
 
         if (mSeries != null && !mSeries.isEmpty()) {
-            //mBookData.putString(UniqueId.BKEY_SERIES_STRING_LIST, StringList.getSeriesCoder().encode(mSeries));
             mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
         }
 
@@ -685,7 +686,7 @@ public abstract class ShowBookApiHandler
                  .setEndAction(mHandleSeriesEnd);
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ISBN)
-                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_ISBN);
+                 .setEndAction(mHandleText, UniqueId.KEY_ISBN);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_ISBN_13)
                  .setEndAction(mHandleText, ShowBookFieldNames.ISBN13);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_IMAGE_URL)
@@ -699,15 +700,15 @@ public abstract class ShowBookApiHandler
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLICATION_DAY)
                  .setEndAction(mHandleLong, ShowBookFieldNames.PUBLICATION_DAY);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_PUBLISHER)
-                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_PUBLISHER);
+                 .setEndAction(mHandleText, UniqueId.KEY_PUBLISHER);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_COUNTRY_CODE)
                  .setEndAction(mHandleText, ShowBookFieldNames.COUNTRY_CODE);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_LANGUAGE)
-                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_LANGUAGE);
+                 .setEndAction(mHandleText, UniqueId.KEY_LANGUAGE);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_IS_EBOOK)
                  .setEndAction(mHandleBoolean, ShowBookFieldNames.IS_EBOOK);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_DESCRIPTION)
-                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_DESCRIPTION);
+                 .setEndAction(mHandleText, UniqueId.KEY_DESCRIPTION);
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_WORK, XML_ID)
                  .setEndAction(mHandleLong, ShowBookFieldNames.WORK_ID);
@@ -727,9 +728,9 @@ public abstract class ShowBookApiHandler
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_AVERAGE_RATING)
                  .setEndAction(mHandleFloat, ShowBookFieldNames.RATING);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_NUM_PAGES)
-                 .setEndAction(mHandleLong, UniqueId.KEY_BOOK_PAGES);
+                 .setEndAction(mHandleLong, UniqueId.KEY_PAGES);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_FORMAT)
-                 .setEndAction(mHandleText, UniqueId.KEY_BOOK_FORMAT);
+                 .setEndAction(mHandleText, UniqueId.KEY_FORMAT);
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_BOOK, XML_URL)
                  .setEndAction(mHandleText, ShowBookFieldNames.BOOK_URL);
 
@@ -762,7 +763,7 @@ public abstract class ShowBookApiHandler
     }
 
     /**
-     * Field names we add to the bundle based on parsed XML data
+     * Field names we add to the bundle based on parsed XML data.
      *
      * @author Philip Warner
      */

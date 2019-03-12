@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
 
     <!-- what the user sees, with a drawable (icon) added from code -->
     <TextView
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawablePadding="@dimen/border"
-        android:gravity="center_vertical"
-        android:padding="@dimen/border"
-        android:singleLine="false"
+        android:drawablePadding="@dimen/border_double"
+        android:layout_margin="@dimen/border_double"
         android:text=""
         android:textAppearance="?android:attr/textAppearanceMedium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/selector"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:drawableStart="@drawable/ic_image"
         tools:text="menu item" />
 
@@ -30,10 +25,6 @@
         android:layout_height="wrap_content"
         android:focusable="false"
         android:text=""
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:visibility="gone" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

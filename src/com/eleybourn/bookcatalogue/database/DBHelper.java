@@ -48,6 +48,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
@@ -251,7 +252,7 @@ public class DBHelper
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
         UpgradeMessageManager.setUpgradeAcknowledged();
 
-        Logger.info(this, "Creating database: " + db.getPath());
+        Logger.info(this, "onCreate","database: " + db.getPath());
 
         SynchronizedDb syncedDb = new SynchronizedDb(db, mSynchronizer);
 
@@ -506,6 +507,7 @@ public class DBHelper
                 + /* */ DOM_BOOK_GOODREADS_BOOK_ID + "=0"
                 + ',' + DOM_BOOK_ISFDB_ID + "=0"
                 + ',' + DOM_BOOK_LIBRARY_THING_ID + "=0"
+                + ',' + DOM_BOOK_OPEN_LIBRARY_ID + "=0"
 
                 + ',' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
                 + /* */ " WHERE " + DOM_PK_ID + "=New." + DOM_PK_ID + ";\n"
@@ -572,8 +574,8 @@ public class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
-        Logger.info(this, "Old database version: " + oldVersion);
-        Logger.info(this, "Upgrading database: " + db.getPath());
+        Logger.info(this, "onUpgrade","Old database version: " + oldVersion);
+        Logger.info(this, "onUpgrade","Upgrading database: " + db.getPath());
 
         StartupActivity startup = StartupActivity.getActiveActivity();
 

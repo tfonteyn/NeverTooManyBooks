@@ -20,11 +20,8 @@
 
 package com.eleybourn.bookcatalogue.database.cursors;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -35,8 +32,10 @@ import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_ABSOLUTE_POSITION;
@@ -92,34 +91,12 @@ public class BooklistCursorRow
                            DOM_BL_NODE_ROW_KIND,
                            DOM_BL_NODE_LEVEL);
 
-        final int extraFieldsInUse = mBuilder.getStyle().getExtraFieldsStatus();
 
         // Get thumbnail size
-        int maxSize = computeThumbnailSize(builder.getContext(), extraFieldsInUse);
+        int maxSize = mBuilder.getStyle().getImageMaxSize(builder.getContext());
 
         mMaxThumbnailWidth = maxSize;
         mMaxThumbnailHeight = maxSize;
-    }
-
-    /**
-     * Return the thumbnail size in dp units.
-     *
-     * @param extraFieldsInUse Flags for style
-     *
-     * @return Requested thumbnail size in dp units.
-     */
-    private int computeThumbnailSize(@NonNull final Context context,
-                                     final int extraFieldsInUse) {
-        int maxSize;
-
-        if ((extraFieldsInUse & BooklistStyle.EXTRAS_THUMBNAIL_LARGE) != 0) {
-            maxSize = 90;
-        } else {
-            maxSize = 60;
-        }
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));
-        return maxSize;
     }
 
     @NonNull
@@ -135,58 +112,21 @@ public class BooklistCursorRow
         return mMaxThumbnailWidth;
     }
 
-    /**
-     * Perform any special formatting for a row group.
-     *
-     * @param level Level of the row group
-     * @param s     Source value
-     *
-     * @return Formatted string, or original string on any failure
-     */
-    @Nullable
-    private String formatRowGroup(@IntRange(from = 1, to = 2) final int level,
-                                  @Nullable final String s) {
-        if (s == null) {
-            return null;
-        }
-
-        int index = level - 1;
-
-        switch (mBuilder.getStyle().getGroupKindAt(index)) {
-            case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
-            case BooklistGroup.RowKind.DATE_ADDED_MONTH:
-            case BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH:
-            case BooklistGroup.RowKind.DATE_PUBLISHED_MONTH:
-            case BooklistGroup.RowKind.DATE_READ_MONTH:
-                try {
-                    int i = Integer.parseInt(s);
-                    // If valid, get the name
-                    if (i > 0 && i <= 12) {
-                        // Create static formatter if necessary
-                        return DateUtils.getMonthName(i);
-                    }
-                } catch (NumberFormatException ignored) {
-                }
-                break;
-
-            case BooklistGroup.RowKind.RATING:
-                try {
-                    int i = Integer.parseInt(s);
-                    // If valid, get the name
-                    if (i >= 0 && i <= Book.RATING_STARS) {
-                        Resources r = mBuilder.getContext().getResources();
-                        return r.getQuantityString(R.plurals.n_stars, i, i);
-                    }
-                } catch (NumberFormatException ignored) {
-                }
-                break;
-
-        }
-        return s;
-    }
 
     public long getBookId() {
         return mMapper.getLong(DOM_FK_BOOK_ID);
+    }
+
+    public long getAuthorId() {
+        return mMapper.getLong(DOM_FK_AUTHOR_ID);
+    }
+
+    public boolean hasAuthorId() {
+        return mCursor.getColumnIndex(DOM_FK_AUTHOR_ID.name) >= 0;
+    }
+
+    public boolean isAuthorComplete() {
+        return mMapper.getBoolean(DOM_AUTHOR_IS_COMPLETE);
     }
 
     public long getSeriesId() {
@@ -206,32 +146,13 @@ public class BooklistCursorRow
         return mMapper.getBoolean(DOM_SERIES_IS_COMPLETE);
     }
 
-    /**
-     * @return <tt>true</tt> if the list can display a series number.
-     */
-    public boolean hasSeriesNumber() {
-        return mCursor.getColumnIndex(DOM_BOOK_SERIES_NUM.name) >= 0;
-    }
-
     @Nullable
     public String getSeriesNumber() {
         return mMapper.getString(DOM_BOOK_SERIES_NUM);
     }
 
-    public long getAuthorId() {
-        return mMapper.getLong(DOM_FK_AUTHOR_ID);
-    }
-
-    public boolean hasAuthorId() {
-        return mCursor.getColumnIndex(DOM_FK_AUTHOR_ID.name) >= 0;
-    }
-
-    public boolean isAuthorComplete() {
-        return mMapper.getBoolean(DOM_AUTHOR_IS_COMPLETE);
-    }
 
     /**
-     *
      * @return the absolute position (index) of this row in the total list of rows.
      */
     public int getAbsolutePosition() {
@@ -277,5 +198,73 @@ public class BooklistCursorRow
             }
         }
         return formatRowGroup(level, mCursor.getString(mLevelCol[index]));
+    }
+
+    /**
+     * Perform any special formatting for a row group.
+     *
+     * @param level Level of the row group
+     * @param s     Source value
+     *
+     * @return Formatted string, or original string when no special format
+     * was needed or on any failure
+     */
+    @Nullable
+    private String formatRowGroup(@IntRange(from = 1, to = 2) final int level,
+                                  @Nullable final String s) {
+        if (s == null) {
+            return null;
+        }
+
+        int index = level - 1;
+
+        switch (mBuilder.getStyle().getGroupKindAt(index)) {
+            case BooklistGroup.RowKind.READ_STATUS:
+                switch (s) {
+                    case "0":
+                        return mBuilder.getContext().getString(R.string.lbl_unread);
+                    case "1":
+                        return mBuilder.getContext().getString(R.string.lbl_read);
+                    default:
+                        Logger.info(this, "formatRowGroup",
+                                    "Unknown read status=" + s);
+                        break;
+                }
+                return s;
+
+            case BooklistGroup.RowKind.LANGUAGE:
+                LocaleUtils.getDisplayName(s);
+                break;
+
+            case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
+            case BooklistGroup.RowKind.DATE_ADDED_MONTH:
+            case BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH:
+            case BooklistGroup.RowKind.DATE_PUBLISHED_MONTH:
+            case BooklistGroup.RowKind.DATE_READ_MONTH:
+                try {
+                    int i = Integer.parseInt(s);
+                    // If valid, get the name
+                    if (i > 0 && i <= 12) {
+                        // Create static formatter if necessary
+                        return DateUtils.getMonthName(i);
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+                break;
+
+            case BooklistGroup.RowKind.RATING:
+                try {
+                    int i = Integer.parseInt(s);
+                    // If valid, get the name
+                    if (i >= 0 && i <= Book.RATING_STARS) {
+                        Resources r = mBuilder.getContext().getResources();
+                        return r.getQuantityString(R.plurals.n_stars, i, i);
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+                break;
+
+        }
+        return s;
     }
 }

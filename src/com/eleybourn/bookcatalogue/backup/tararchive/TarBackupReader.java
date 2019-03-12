@@ -161,7 +161,8 @@ public class TarBackupReader
             return BackupEntityType.XML;
 
         } else {
-            Logger.info(this, "Unknown file in archive: " + entry.getName());
+            Logger.info(this, "getBackupEntityType",
+                        "Unknown file in archive: " + entry.getName());
             return BackupEntityType.Unknown;
         }
     }

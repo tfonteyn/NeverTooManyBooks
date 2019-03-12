@@ -309,6 +309,9 @@ public final class DatabaseDefinitions {
     public static final DomainDefinition DOM_BOOK_ISFDB_ID =
             new DomainDefinition("isfdb_book_id", ColumnInfo.TYPE_INTEGER);
     /** {@link #TBL_BOOKS}. */
+    public static final DomainDefinition DOM_BOOK_OPEN_LIBRARY_ID =
+            new DomainDefinition("ol_book_id", ColumnInfo.TYPE_TEXT);
+    /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_LIBRARY_THING_ID =
             new DomainDefinition("lt_book_id", ColumnInfo.TYPE_INTEGER);
     /** {@link #TBL_BOOKS}. */
@@ -553,6 +556,7 @@ public final class DatabaseDefinitions {
                              // external id/data
                              DOM_BOOK_ISFDB_ID,
                              DOM_BOOK_LIBRARY_THING_ID,
+                             DOM_BOOK_OPEN_LIBRARY_ID,
                              DOM_BOOK_GOODREADS_BOOK_ID,
                              DOM_BOOK_GOODREADS_LAST_SYNC_DATE,
 
@@ -567,6 +571,7 @@ public final class DatabaseDefinitions {
                  .addIndex(DOM_BOOK_PUBLISHER.name, false, DOM_BOOK_PUBLISHER)
                  .addIndex(DOM_BOOK_UUID.name, true, DOM_BOOK_UUID)
                  .addIndex(DOM_BOOK_GOODREADS_BOOK_ID.name, false, DOM_BOOK_GOODREADS_BOOK_ID)
+                 .addIndex(DOM_BOOK_OPEN_LIBRARY_ID.name, false, DOM_BOOK_OPEN_LIBRARY_ID)
                  .addIndex(DOM_BOOK_ISFDB_ID.name, false, DOM_BOOK_ISFDB_ID);
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 

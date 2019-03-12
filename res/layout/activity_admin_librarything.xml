@@ -17,33 +17,28 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingEnd="@dimen/border"
-            android:paddingStart="@dimen/border">
+            android:layout_margin="@dimen/border"
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/lt_info"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                style="@style/txt_blurb_medium"
+                android:text="@string/lt_info" />
 
             <TextView
                 android:id="@+id/register_url"
                 style="@style/link_url"
-                android:gravity="center"
+                android:layout_gravity="center_horizontal"
                 android:text="@string/lt_register_text" />
 
             <TextView
                 android:id="@+id/dev_key_url"
                 style="@style/link_url"
-                android:gravity="center"
+                android:layout_gravity="center_horizontal"
                 android:text="@string/lt_dev_key_text" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/lt_got_key"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                style="@style/txt_blurb_medium"
+                android:text="@string/lt_got_key" />
 
             <!-- no style used on purpose -->
             <EditText
@@ -52,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/lt_developer_key"
                 android:inputType="text"
-                android:singleLine="true"
+                android:maxLines="1"
                 tools:ignore="Autofill" />
 
             <Button
@@ -63,10 +58,8 @@
                 android:text="@string/btn_confirm_save" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/lt_reset_messages_info"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                style="@style/txt_blurb_medium"
+                android:text="@string/lt_reset_messages_info" />
 
             <Button
                 android:id="@+id/reset_messages"

@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fadeScrollbars="false"
-    android:scrollbars="vertical">
+    style="@style/dialogFrame"
+    android:fillViewport="true">
 
     <LinearLayout
         android:id="@+id/menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/border"
         android:orientation="vertical">
 
+        <!-- radio buttons are added from code -->
         <RadioGroup
             android:id="@+id/radio_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <View style="@style/divider_horizontalList" />
+        <View style="@style/div_horizontal" />
+        <!-- other options are added here below -->
     </LinearLayout>
 
 </ScrollView>

@@ -31,6 +31,8 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.text.util.Linkify;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -49,6 +51,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
+import java.io.File;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.text.NumberFormat;
@@ -70,9 +73,11 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
  * This is the class that manages data and views for an Activity; access to the data that
@@ -700,6 +705,9 @@ public class Fields {
         @Nullable
         Object dbgGetOwnerContext();
 
+        @NonNull
+        Context getContext();
+
         @Nullable
         View findViewById(@IdRes int id);
     }
@@ -919,6 +927,100 @@ public class Fields {
             } else {
                 return cb.isChecked() ? 1 : 0;
             }
+        }
+    }
+
+    /**
+     * ImageView accessor. Uses the UUID to load the image into the view.
+     * Sets a tag {@link R.id#TAG_UUID} on the view with the UUID.
+     * <p>
+     * ENHANCE: currently limited to handling the cover image ONLY. Make this generic handling filenames instead of uuid's
+     */
+    public static class ImageViewAccessor
+            extends BaseDataAccessor {
+
+        private int mMaxWidth;
+        private int mMaxHeight;
+
+        /**
+         * Constructor.
+         * <p>
+         * A default maximum size gets calculated. Override by calling {@link #setMaxSize}
+         * BEFORE the displaying is done.
+         *
+         * @param context needed for getDisplayMetrics
+         */
+        ImageViewAccessor(@NonNull final Context context) {
+            //FIXME: arbitrary default; it was the hardcoded value for Booklist cover images.
+            float max = 60;
+            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+            int maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, max,
+                                                           metrics));
+            mMaxHeight = maxSize;
+            mMaxWidth = maxSize;
+        }
+
+        /**
+         * Override the defaults with custom sizes.
+         *
+         * @param maxWidth  maximum width
+         * @param maxHeight maximum height
+         */
+        public void setMaxSize(final int maxWidth,
+                               final int maxHeight) {
+            mMaxWidth = maxWidth;
+            mMaxHeight = maxHeight;
+        }
+
+        /**
+         * Populates the view and sets the UUID (incoming value) as a tag on the view.
+         *
+         * @param field which defines the View details
+         * @param value to set: the book uuid !
+         */
+        public void set(@NonNull final Field field,
+                        @Nullable final String value) {
+            ImageView view = field.getView();
+
+            StorageUtils.getTempCoverFile();
+
+            if (value != null) {
+                File image;
+                if (value.isEmpty()) {
+                  image = StorageUtils.getTempCoverFile();
+                } else {
+                    // We store the uuid as a tag on the view.
+                    view.setTag(R.id.TAG_UUID, value);
+                    image = StorageUtils.getCoverFile(value);
+                }
+                ImageUtils.getImageAndPutIntoView(view, image, mMaxWidth, mMaxHeight, true);
+            } else {
+                view.setImageResource(R.drawable.ic_image);
+            }
+        }
+
+        @Override
+        public void putFieldValueInto(@NonNull final Field field,
+                                      @NonNull final Bundle values) {
+            // not applicable
+        }
+
+        @Override
+        public void putFieldValueInto(@NonNull final Field field,
+                                      @NonNull final DataManager values) {
+            // not applicable
+        }
+
+        /**
+         * Not really used, but returning the uuid makes sense.
+         *
+         * @param field associated with the View object
+         *
+         * @return the uuid
+         */
+        @NonNull
+        public Object get(@NonNull final Field field) {
+            return field.getView().getTag(R.id.TAG_UUID);
         }
     }
 
@@ -1365,6 +1467,12 @@ public class Fields {
             return mActivity.get();
         }
 
+        @NonNull
+        @Override
+        public Context getContext() {
+            return mActivity.get();
+        }
+
         @Override
         @Nullable
         public View findViewById(@IdRes final int id) {
@@ -1393,6 +1501,13 @@ public class Fields {
         @Nullable
         public Object dbgGetOwnerContext() {
             return mFragment.get();
+        }
+
+        @NonNull
+        @Override
+        public Context getContext() {
+            //noinspection ConstantConditions
+            return (mFragment.get()).getActivity();
         }
 
         @Override
@@ -1542,8 +1657,13 @@ public class Fields {
                     mFieldDataAccessor = new TextViewAccessor();
                 } else if (view instanceof TextView) {
                     mFieldDataAccessor = new TextViewAccessor();
+
                 } else if (view instanceof ImageView) {
-                    mFieldDataAccessor = new TextViewAccessor();
+                    //ENHANCE: ImageViewAccessor needs more work
+                    Logger.info(this,"Field", "ImageViewAccessor needs more work, disabled.");
+//                    mFieldDataAccessor = new ImageViewAccessor(fields.getFieldContext().getContext());
+                    // temp dummy, does not actually work for images of course
+                    mFieldDataAccessor = new StringDataAccessor();
 
                 } else if (view instanceof RatingBar) {
                     mFieldDataAccessor = new RatingBarAccessor();
@@ -1570,6 +1690,16 @@ public class Fields {
         public Field setAccessor(@NonNull final FieldDataAccessor accessor) {
             mFieldDataAccessor = accessor;
             return this;
+        }
+
+        /**
+         * For specialized access.
+         *
+         * @return the field data accessor.
+         */
+        public <IVA extends FieldDataAccessor> IVA getFieldDataAccessor() {
+            //noinspection unchecked
+            return (IVA) mFieldDataAccessor;
         }
 
         /**

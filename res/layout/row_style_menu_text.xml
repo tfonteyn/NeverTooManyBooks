@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="@dimen/border_double"
-    android:singleLine="false"
+    android:layout_margin="@dimen/border_double"
     android:textAppearance="?android:attr/textAppearanceMedium"
     tools:text="some text option" />

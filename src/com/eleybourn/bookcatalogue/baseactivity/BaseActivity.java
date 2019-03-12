@@ -16,7 +16,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.eleybourn.bookcatalogue.About;
 import com.eleybourn.bookcatalogue.AdminActivity;
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
@@ -156,7 +155,7 @@ public abstract class BaseActivity
                 return true;
 
             case R.id.nav_about:
-                startActivity( new Intent(this, About.class));
+                startActivity(new Intent(this, About.class));
                 return true;
 
             case R.id.nav_help:
@@ -286,12 +285,12 @@ public abstract class BaseActivity
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
 
-        if (key.equals(BookCatalogueApp.getResString(R.string.pk_ui_theme))) {
+        if (key.equals(getString(R.string.pk_ui_theme))) {
             if (ThemeUtils.loadPreferred()) {
                 setTheme(ThemeUtils.getThemeResId());
             }
 
-        } else if (key.equals(BookCatalogueApp.getResString(R.string.pk_ui_language))) {
+        } else if (key.equals(getString(R.string.pk_ui_language))) {
             // Trigger a restart of this activity in onResume, if the locale has changed.
             LocaleUtils.loadPreferred();
             if (LocaleUtils.loadPreferred()) {

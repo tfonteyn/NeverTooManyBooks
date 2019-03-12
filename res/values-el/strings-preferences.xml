@@ -140,8 +140,8 @@
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_series">Βιβλία σε πολλές σειρές</string>
 
-    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Κάτω από κύρια %1$s μόνο</string>
-    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Κάτω από κάθε %1$s</string>
+    <string name="pv_bob_books_under_multiple_primary_1s_only">Κάτω από κύρια %1$s μόνο</string>
+    <string name="pv_bob_books_under_multiple_each_1s">Κάτω από κάθε %1$s</string>
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Μορφή του ονόματος συγγραφέα</string>

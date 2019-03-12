@@ -1,39 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:focusableInTouchMode="true">
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusableInTouchMode="true"
-        android:padding="@dimen/border_double">
+        android:layout_margin="@dimen/border">
 
         <ImageView
             android:id="@+id/coverImage"
             style="@style/coverImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:focusable="true"
-            app:layout_constraintBottom_toTopOf="@id/lbl_author"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_image" />
+            tools:src="@drawable/ic_image"
+            tools:padding="40dp"/>
 
         <TextView
             android:id="@+id/lbl_author"
             style="@style/lbl_editField"
             android:labelFor="@id/author"
             android:text="@string/lbl_author"
-            app:layout_constraintBottom_toTopOf="@id/author"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/coverImage" />
 
@@ -42,14 +36,11 @@
             style="@style/buttonDataEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_author">
 
-            <requestFocus
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            <requestFocus />
         </Button>
 
         <TextView
@@ -57,7 +48,6 @@
             style="@style/lbl_editField"
             android:labelFor="@id/title"
             android:text="@string/lbl_title"
-            app:layout_constraintBottom_toTopOf="@id/title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/author" />
 
@@ -66,7 +56,6 @@
             style="@style/titleTextEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_isbn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
@@ -77,18 +66,16 @@
             style="@style/lbl_editField"
             android:labelFor="@id/isbn"
             android:text="@string/lbl_isbn"
-            app:layout_constraintBottom_toTopOf="@id/isbn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title" />
 
-        <!-- not using style isbnEntryField -->
+        <!-- not using style isbnEntryField TODO: why not ? I forgot....-->
         <EditText
             android:id="@+id/isbn"
             style="@style/simpleTextEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:inputType="textCapCharacters|textNoSuggestions"
-            app:layout_constraintBottom_toTopOf="@id/is_anthology"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
@@ -99,7 +86,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/lbl_is_anthology"
-            app:layout_constraintBottom_toTopOf="@id/lbl_series"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/isbn" />
@@ -109,7 +95,6 @@
             style="@style/lbl_editField"
             android:labelFor="@id/series"
             android:text="@string/lbl_series"
-            app:layout_constraintBottom_toTopOf="@id/series"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/is_anthology" />
 
@@ -118,7 +103,6 @@
             style="@style/buttonDataEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_publishing"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_series" />
@@ -128,7 +112,6 @@
             style="@style/lbl_editField"
             android:labelFor="@id/publisher"
             android:text="@string/lbl_publisher"
-            app:layout_constraintBottom_toTopOf="@id/publisher"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/series" />
 
@@ -138,7 +121,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:completionThreshold="2"
-            app:layout_constraintBottom_toTopOf="@id/lbl_date_published"
             app:layout_constraintEnd_toStartOf="@id/btn_publisher"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publishing" />
@@ -146,8 +128,6 @@
         <ImageButton
             android:id="@+id/btn_publisher"
             style="@style/itemEditButton"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="@id/publisher"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/publisher"
@@ -159,7 +139,6 @@
             android:id="@+id/lbl_date_published"
             style="@style/lbl_editField"
             android:text="@string/lbl_date_published"
-            app:layout_constraintBottom_toTopOf="@id/date_published"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/publisher" />
 
@@ -168,7 +147,6 @@
             style="@style/buttonDataEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_first_publication"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_published" />
@@ -177,7 +155,6 @@
             android:id="@+id/lbl_first_publication"
             style="@style/lbl_editField"
             android:text="@string/lbl_first_publication"
-            app:layout_constraintBottom_toTopOf="@id/first_publication"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/date_published" />
 
@@ -186,7 +163,6 @@
             style="@style/buttonDataEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_bookshelves"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_first_publication" />
@@ -195,7 +171,6 @@
             android:id="@+id/lbl_bookshelves"
             style="@style/lbl_editField"
             android:text="@string/lbl_bookshelves_long"
-            app:layout_constraintBottom_toTopOf="@id/bookshelves"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/first_publication" />
 
@@ -204,7 +179,6 @@
             style="@style/buttonDataEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/lbl_pages"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves" />
@@ -214,7 +188,6 @@
             style="@style/lbl_editField"
             android:labelFor="@id/pages"
             android:text="@string/lbl_pages"
-            app:layout_constraintBottom_toTopOf="@id/pages"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bookshelves" />
 
@@ -225,7 +198,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:inputType="text"
-            app:layout_constraintBottom_toTopOf="@id/lbl_price_listed"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_pages"
@@ -237,7 +209,6 @@
             style="@style/lbl_editField"
             android:labelFor="@id/price_listed"
             android:text="@string/lbl_price_listed"
-            app:layout_constraintBottom_toTopOf="@id/price_listed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/pages" />
 
@@ -246,24 +217,19 @@
             style="@style/priceTextEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBaseline_toBaselineOf="@id/price_listed_currency"
-            app:layout_constraintBottom_toTopOf="@id/lbl_format"
-            app:layout_constraintEnd_toStartOf="@id/price_listed_currency"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
+            app:layout_constraintEnd_toStartOf="@id/price_listed_currency"
             tools:ignore="Autofill"
             tools:text="14.99" />
 
         <AutoCompleteTextView
             android:id="@+id/price_listed_currency"
             style="@style/currencyTextEntry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="..."
             app:layout_constraintBaseline_toBaselineOf="@id/price_listed"
             app:layout_constraintEnd_toStartOf="@id/btn_price_listed_currency"
             app:layout_constraintStart_toEndOf="@id/price_listed"
-            tools:ignore="Autofill,HardcodedText" />
+            tools:ignore="Autofill,LabelFor" />
 
         <ImageButton
             android:id="@+id/btn_price_listed_currency"
@@ -282,7 +248,6 @@
             style="@style/lbl_editField"
             android:labelFor="@id/format"
             android:text="@string/lbl_format"
-            app:layout_constraintBottom_toTopOf="@id/format"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/price_listed" />
 
@@ -292,7 +257,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:completionThreshold="2"
-            app:layout_constraintBottom_toTopOf="@id/lbl_genre"
             app:layout_constraintEnd_toStartOf="@id/btn_format"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_format" />
@@ -314,7 +278,6 @@
             style="@style/lbl_editField"
             android:labelFor="@id/genre"
             android:text="@string/lbl_genre"
-            app:layout_constraintBottom_toTopOf="@id/genre"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/format" />
 
@@ -324,8 +287,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:completionThreshold="2"
-            android:inputType="textCapWords"
-            app:layout_constraintBottom_toTopOf="@id/lbl_language"
             app:layout_constraintEnd_toStartOf="@id/btn_genre"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_genre" />
@@ -347,7 +308,6 @@
             style="@style/lbl_editField"
             android:labelFor="@id/language"
             android:text="@string/lbl_language"
-            app:layout_constraintBottom_toTopOf="@id/language"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/genre" />
 
@@ -357,7 +317,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:completionThreshold="2"
-            app:layout_constraintBottom_toTopOf="@id/lbl_description"
             app:layout_constraintEnd_toStartOf="@id/btn_language"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_language" />
@@ -377,32 +336,24 @@
 
         <TextView
             android:id="@+id/lbl_description"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/border_double"
+            style="@style/majorSectionHeader"
+            android:layout_width="wrap_content"
             android:text="@string/lbl_description"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            app:layout_constraintBottom_toTopOf="@id/description_divider"
-            app:layout_constraintEnd_toStartOf="@id/btn_description"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/language" />
 
         <ImageButton
             android:id="@+id/btn_description"
             style="@style/itemEditButton"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="@id/lbl_description"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lbl_description"
             app:layout_constraintTop_toTopOf="@id/lbl_description"
             app:srcCompat="@drawable/ic_edit"
             tools:ignore="ContentDescription" />
 
         <View
             android:id="@+id/description_divider"
-            style="@style/divider_horizontalList"
-            app:layout_constraintBottom_toTopOf="@id/description"
+            style="@style/div_horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_description" />

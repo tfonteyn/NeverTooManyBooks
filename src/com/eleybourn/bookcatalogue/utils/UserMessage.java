@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.app.Activity;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,15 @@ public final class UserMessage {
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message,
                           Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    public static void showUserMessage(@NonNull final View view,
+                                       @StringRes final int message) {
+        if (0 == Prefs.getListPreference(R.string.pk_ui_messages_use, 0)) {
+            Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
+        } else {
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
     }
 

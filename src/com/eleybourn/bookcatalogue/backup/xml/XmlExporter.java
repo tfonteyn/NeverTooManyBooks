@@ -64,6 +64,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
@@ -399,6 +400,8 @@ public class XmlExporter
                    // external id's
                    .append(XmlUtils.attr(DOM_BOOK_LIBRARY_THING_ID.name,
                                          bookCursorRow.getLibraryThingBookId()))
+                   .append(XmlUtils.attr(DOM_BOOK_OPEN_LIBRARY_ID.name,
+                                         bookCursorRow.getOpenLibraryBookId()))
                    .append(XmlUtils.attr(DOM_BOOK_ISFDB_ID.name,
                                          bookCursorRow.getISFDBBookId()))
                    .append(XmlUtils.attr(DOM_BOOK_GOODREADS_BOOK_ID.name,

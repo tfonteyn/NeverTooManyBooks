@@ -25,27 +25,27 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.apache.http.client.methods.HttpGet;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter.BuilderContext;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter.XmlListener;
-import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
-
-import org.apache.http.client.methods.HttpGet;
-
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Class to implement the reviews.list api call. It queries based on the passed parameters
@@ -55,7 +55,7 @@ import java.util.Date;
  * <p>
  * Processing this data is up to the caller, but it is guaranteed to be type-safe if present,
  * with the exception of dates, which are collected as text strings.
- *
+ * <p>
  * Typical result:
  * <pre>
  * {@code
@@ -332,7 +332,7 @@ public class ListReviewsApiHandler
         Bundle results = mFilters.getData();
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this, "Found "
+            Logger.info(this, "run","Found "
                     + results.getLong(ReviewFields.TOTAL)
                     + " books in " + (System.currentTimeMillis() - t0) + "ms");
         }

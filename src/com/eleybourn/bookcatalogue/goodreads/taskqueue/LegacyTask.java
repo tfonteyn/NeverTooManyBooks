@@ -30,11 +30,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-
-import java.util.List;
 
 public class LegacyTask
         extends Task {
@@ -54,12 +54,12 @@ public class LegacyTask
 
     @NonNull
     @Override
-    public View newListItemView(@NonNull final Context context,
-                                @NonNull final BindableItemCursor cursor,
-                                @NonNull final ViewGroup parent) {
+    public View getView(@NonNull final Context context,
+                        @NonNull final BindableItemCursor cursor,
+                        @NonNull final ViewGroup parent) {
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams margins = new LinearLayout.LayoutParams(
+        ViewGroup.MarginLayoutParams margins = new ViewGroup.MarginLayoutParams(
                 ViewGroup.MarginLayoutParams.MATCH_PARENT,
                 ViewGroup.MarginLayoutParams.WRAP_CONTENT);
 

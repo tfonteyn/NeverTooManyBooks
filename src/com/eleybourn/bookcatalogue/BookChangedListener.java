@@ -18,8 +18,16 @@ public interface BookChangedListener {
     int LOCATION = 1 << 5;
     int PUBLISHER = 1 << 6;
 
+    /** The book was set to read/unread. */
     int BOOK_READ = 1 << 7;
+
+    /** the book was either lend out, or returned. */
     int BOOK_LOANEE = 1 << 8;
+
+    /** not really a field, but we want to be able to return the deleted bookId AND indicate
+     * it was deleted.
+     */
+    int BOOK_WAS_DELETED = 1 << 9;
 
     /**
      * Called if changes were made.

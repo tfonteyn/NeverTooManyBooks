@@ -95,14 +95,13 @@ public interface MultiTypeListHandler {
          * kind. We avoid having to call findViewById() by doing it once at creation time.
          */
         public abstract void map(@NonNull T row,
-                                 @NonNull View view);
+                                 @NonNull View convertView);
 
         /**
          * Use the passed rowContext to fill in the actual details for the current row.
          */
         public abstract void set(@NonNull T row,
-                                 @NonNull View view,
-                                 int level);
+                                 @NonNull View view);
 
         /**
          * Use the passed rowContext to determine the kind of View that is required.
@@ -111,7 +110,6 @@ public interface MultiTypeListHandler {
          */
         public abstract View createView(@NonNull T row,
                                         @NonNull LayoutInflater inflater,
-                                        @NonNull ViewGroup parent,
-                                        int level);
+                                        @NonNull ViewGroup parent);
     }
 }

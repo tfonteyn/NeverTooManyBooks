@@ -139,8 +139,8 @@
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>
 
-    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Yalnızca birincil %1$s altında</string>
-    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Her %1$s altında</string>
+    <string name="pv_bob_books_under_multiple_primary_1s_only">Yalnızca birincil %1$s altında</string>
+    <string name="pv_bob_books_under_multiple_each_1s">Her %1$s altında</string>
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Yazar adları biçimi</string>

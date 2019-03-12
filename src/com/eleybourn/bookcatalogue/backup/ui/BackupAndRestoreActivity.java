@@ -400,7 +400,7 @@ public class BackupAndRestoreActivity
         String msg = getString(R.string.export_info_success_archive_details,
                                resultSettings.file.getParent(),
                                resultSettings.file.getName(),
-                               Utils.formatFileSize(resultSettings.file.length()));
+                               Utils.formatFileSize(this, resultSettings.file.length()));
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_backup)
                 .setMessage(msg)

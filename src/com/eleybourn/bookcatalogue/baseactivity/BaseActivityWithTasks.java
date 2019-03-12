@@ -112,7 +112,7 @@ public abstract class BaseActivityWithTasks
                 @SuppressWarnings("UnusedAssignment")
                 String dbgMsg = "onProgress: " + count + '/' + max + ", '"
                         + message.replace("\n", "\\n") + '\'';
-                Logger.info(BaseActivityWithTasks.this, "onProgress", "msg=" + dbgMsg);
+                Logger.info(this, "onProgress", "msg=" + dbgMsg);
             }
 
             // Save the details
@@ -230,7 +230,7 @@ public abstract class BaseActivityWithTasks
     protected void onTaskFinished(@NonNull final ManagedTask task) {
         String message = task.getFinalMessage();
         if (message != null && !message.isEmpty()) {
-            UserMessage.showUserMessage(BaseActivityWithTasks.this, message);
+            UserMessage.showUserMessage(this, message);
         }
     }
 
@@ -239,7 +239,7 @@ public abstract class BaseActivityWithTasks
      */
     private void initProgressDialog() {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-            Logger.info(BaseActivityWithTasks.this, "initProgressDialog");
+            Logger.info(this, "initProgressDialog","");
         }
 
         boolean wantInDeterminate = (mProgressMax == 0);
@@ -284,7 +284,7 @@ public abstract class BaseActivityWithTasks
      */
     private void closeProgressDialog() {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-            Logger.info(BaseActivityWithTasks.this, "closeProgressDialog");
+            Logger.info(this, "closeProgressDialog","");
         }
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
@@ -310,7 +310,7 @@ public abstract class BaseActivityWithTasks
      */
     private void cancelAndUpdateProgress(final boolean showProgress) {
         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-            Logger.info(BaseActivityWithTasks.this, "cancelAndUpdateProgress");
+            Logger.info(this, "cancelAndUpdateProgress","");
         }
         if (mTaskManager != null) {
             mTaskManager.cancelAllTasks();

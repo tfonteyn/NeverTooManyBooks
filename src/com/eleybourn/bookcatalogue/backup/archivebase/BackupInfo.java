@@ -305,7 +305,7 @@ public class BackupInfo
      */
     public boolean isValid() {
         if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-            Logger.info(this, mBundle.toString());
+            Logger.info(this, "isValid", mBundle.toString());
         }
         // extremely simple check: we assume that if one field is present, the rest will be there.
         return mBundle.containsKey(INFO_ARCHIVER_VERSION);

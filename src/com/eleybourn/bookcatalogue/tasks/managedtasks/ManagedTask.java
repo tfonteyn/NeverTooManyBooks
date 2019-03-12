@@ -20,9 +20,10 @@
 
 package com.eleybourn.bookcatalogue.tasks.managedtasks;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
@@ -85,11 +86,11 @@ public abstract class ManagedTask
     /**
      * Constructor.
      *
-     * @param name        of this task(thread)
      * @param taskManager Associated task manager
+     * @param taskName    of this task(thread)
      */
-    protected ManagedTask(@NonNull final String name,
-                          @NonNull final TaskManager taskManager) {
+    protected ManagedTask(@NonNull final TaskManager taskManager,
+                          @NonNull final String taskName) {
 
         /* Controller instance for this specific ManagedTask. */
         ManagedTaskController controller = new ManagedTaskController() {
@@ -106,7 +107,7 @@ public abstract class ManagedTask
         };
 
         // Set the thread name to something helpful.
-        setName(name);
+        setName(taskName);
 
         mMessageSenderId = MESSAGE_SWITCH.createSender(controller);
         // Save the taskManager for later
@@ -132,16 +133,9 @@ public abstract class ManagedTask
     protected abstract void runTask()
             throws Exception;
 
-    /**
-     * Convenience routine to ask the TaskManager to get a String from a resource ID.
-     *
-     * @param id Resource ID
-     *
-     * @return Result
-     */
     @NonNull
-    protected String getString(@StringRes final int id) {
-        return mTaskManager.getContext().getString(id);
+    protected Context getContext() {
+        return mTaskManager.getContext();
     }
 
     /**
@@ -152,8 +146,8 @@ public abstract class ManagedTask
         try {
             runTask();
         } catch (InterruptedException e) {
-            Logger.info(ManagedTask.this,
-                        "|ManagedTask=" + getName() + " was interrupted");
+            Logger.info(ManagedTask.this, "run",
+                        "ManagedTask=" + getName() + " was interrupted");
             mCancelFlg = true;
         } catch (Exception e) {
             Logger.error(e);
@@ -170,8 +164,8 @@ public abstract class ManagedTask
                     @Override
                     public boolean deliver(@NonNull final ManagedTaskListener listener) {
                         if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                            Logger.info(ManagedTask.this,
-                                        "|ManagedTask=" + getName() +
+                            Logger.info(ManagedTask.this, "run",
+                                        "ManagedTask=" + getName() +
                                                 "|Delivering 'onTaskFinished'" +
                                                 " to listener: " + listener);
                         }
@@ -187,7 +181,7 @@ public abstract class ManagedTask
      */
     protected void cancelTask() {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, " cancelTask");
+            Logger.info(this, "cancelTask", "");
         }
         mCancelFlg = true;
         interrupt();
@@ -219,7 +213,7 @@ public abstract class ManagedTask
     /**
      * Controller interface for this object.
      */
-    public interface ManagedTaskController {
+    interface ManagedTaskController {
 
         void requestAbort();
 

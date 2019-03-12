@@ -108,13 +108,17 @@ public class SynchronizedDb {
                 f.setAccessible(true);
                 int refs = (Integer) f.get(db);
                 if (msg != null) {
-                    Logger.info(SynchronizedDb.class, "DBRefs (" + msg + "): " + refs);
+                    Logger.info(SynchronizedDb.class, "printRefCount",
+                                "DBRefs (" + msg + "): " + refs);
                     //if (refs < 100) {
-                    //  Logger.info("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
+                    //  Logger.info(SynchronizedDb.class, "printRefCount",
+                    //                                "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
                     //} else if (refs < 1001) {
-                    //  Logger.info("DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
+                    //  Logger.info(SynchronizedDb.class, "printRefCount",
+                    //                                "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
                     //} else {
-                    //  Logger.info("DBRefs (" + msg + "): " + refs);
+                    //  Logger.info(SynchronizedDb.class, "printRefCount",
+                    //                                "DBRefs (" + msg + "): " + refs);
                     //}
 
                 }
@@ -157,7 +161,7 @@ public class SynchronizedDb {
             Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {
                 SQLiteDatabase db = opener.getWritableDatabase();
-                Logger.info(this, db.getPath() + "|retriesLeft=" + retriesLeft);
+                Logger.info(this, "openWithRetries",db.getPath() + "|retriesLeft=" + retriesLeft);
                 //getInfo(db);
                 return db;
             } catch (RuntimeException e) {
@@ -193,7 +197,7 @@ public class SynchronizedDb {
         for (String s : sql) {
             try (Cursor cursor = db.rawQuery(s, null)) {
                 if (cursor.moveToNext()) {
-                    Logger.info(this, s + " => " + cursor.getString(0));
+                    Logger.info(this, "getInfo",s + " => " + cursor.getString(0));
                 }
             }
         }
@@ -399,7 +403,7 @@ public class SynchronizedDb {
      */
     public void execSQL(@NonNull final String sql) {
         if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
-            Logger.info(this, sql);
+            Logger.info(this, "execSQL",sql);
         }
 
         try {
@@ -578,7 +582,7 @@ public class SynchronizedDb {
         if (mIsCollationCaseSensitive == null) {
             mIsCollationCaseSensitive = checkIfCollationIsCaseSensitive();
             if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                Logger.info(this, "isCollationCaseSensitive=" + mIsCollationCaseSensitive);
+                Logger.info(this, "isCollationCaseSensitive","" + mIsCollationCaseSensitive);
             }
         }
         return mIsCollationCaseSensitive;

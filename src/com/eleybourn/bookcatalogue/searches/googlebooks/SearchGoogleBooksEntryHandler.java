@@ -246,10 +246,10 @@ class SearchGoogleBooksEntryHandler
                 String tmpIsbn = mBuilder.toString();
                 if (tmpIsbn.indexOf("ISBN:") == 0) {
                     tmpIsbn = tmpIsbn.substring(5);
-                    String isbn = mBookData.getString(UniqueId.KEY_BOOK_ISBN);
+                    String isbn = mBookData.getString(UniqueId.KEY_ISBN);
                     // store the 'longest' isbn
                     if (isbn == null || tmpIsbn.length() > isbn.length()) {
-                        mBookData.putString(UniqueId.KEY_BOOK_ISBN, tmpIsbn);
+                        mBookData.putString(UniqueId.KEY_ISBN, tmpIsbn);
                     }
                 }
                 break;
@@ -258,7 +258,7 @@ class SearchGoogleBooksEntryHandler
                 // the language field can be empty, so check before.
                 String iso3code = mBuilder.toString();
                 if (!iso3code.isEmpty()) {
-                    addIfNotPresent(UniqueId.KEY_BOOK_LANGUAGE, iso3code);
+                    addIfNotPresent(UniqueId.KEY_LANGUAGE, iso3code);
                 }
                 break;
 
@@ -267,11 +267,11 @@ class SearchGoogleBooksEntryHandler
                 break;
 
             case XML_PUBLISHER:
-                addIfNotPresent(UniqueId.KEY_BOOK_PUBLISHER, mBuilder.toString());
+                addIfNotPresent(UniqueId.KEY_PUBLISHER, mBuilder.toString());
                 break;
 
             case XML_DATE_PUBLISHED:
-                addIfNotPresent(UniqueId.KEY_BOOK_DATE_PUBLISHED, mBuilder.toString());
+                addIfNotPresent(UniqueId.KEY_DATE_PUBLISHED, mBuilder.toString());
                 break;
 
             case XML_FORMAT:
@@ -283,18 +283,18 @@ class SearchGoogleBooksEntryHandler
                 String tmpFormat = mBuilder.toString();
                 int index = tmpFormat.indexOf(" pages");
                 if (index > -1) {
-                    mBookData.putString(UniqueId.KEY_BOOK_PAGES,
+                    mBookData.putString(UniqueId.KEY_PAGES,
                                         tmpFormat.substring(0, index).trim());
                 }
                 break;
 
             case XML_GENRE:
                 //ENHANCE: only the 'last' genre is used, add a 'genre' table and link up?
-                mBookData.putString(UniqueId.KEY_BOOK_GENRE, mBuilder.toString());
+                mBookData.putString(UniqueId.KEY_GENRE, mBuilder.toString());
                 break;
 
             case XML_DESCRIPTION:
-                addIfNotPresent(UniqueId.KEY_BOOK_DESCRIPTION, mBuilder.toString());
+                addIfNotPresent(UniqueId.KEY_DESCRIPTION, mBuilder.toString());
                 break;
 
             default:

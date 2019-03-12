@@ -1,23 +1,21 @@
 package com.eleybourn.bookcatalogue.searches;
 
-import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
@@ -25,7 +23,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
 import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
-import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
+import com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -37,13 +35,12 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * <p>
  * NEWKIND: adding a new search engine:
  * A search engine for a particular site should implement {@link SearchSiteManager}.
- * Configure in this class:
+ * Configure in this class here below:
  * 1. Add an identifier (bit) + add it to {@link Site#SEARCH_ALL}.
- * 2. Add a 'Searching yoursite' string resource to {@link Site#ID_2_RES_ID}.
- * 3. Add your new engine to {@link Site#getSearchSiteManager};
- * 4. create+add a new {@link Site} instance to {@link #SEARCH_ORDER_DEFAULTS}
+ * 2. Add your new engine to {@link Site#getSearchSiteManager};
+ * 3. create+add a new {@link Site} instance to {@link #SEARCH_ORDER_DEFAULTS}
  * and {@link #COVER_SEARCH_ORDER_DEFAULTS}
- * 5. Optional: add to {@link AdminHostsFragment} if the url should be editable.
+ * 4. Optional: add to {@link AdminHostsFragment} if the url should be editable.
  */
 public final class SearchSites {
 
@@ -69,46 +66,37 @@ public final class SearchSites {
      *  {SEARCH_GOODREADS, SEARCH_AMAZON, SEARCH_GOOGLE, SEARCH_LIBRARY_THING}
      */
     static {
-
-        Site site;
-
         /*
          * standard searches for full details.
          */
         SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_AMAZON, "Amazon", 0, 1));
         SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOODREADS, "Goodreads", 1, 0));
         SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOOGLE, "Google", 2, 2));
-
-        site = new Site(Site.SEARCH_LIBRARY_THING, "LibraryThing", 3, 3);
-        site.setIsbnOnly();
-        SEARCH_ORDER_DEFAULTS.add(site);
+        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_LIBRARY_THING, "LibraryThing", 3, 3));
 
         // pretty reliable site, but only serving one group of readers.
         // Those readers can up the priority in the preferences.
         SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, "ISFDB", 4, 4));
 
-        //SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_TITELBANK, "TitelBank", 5, 5));
+        // bottom of the list, and disabled by default
+        Site op_site = new Site(Site.SEARCH_OPEN_LIBRARY, "OpenLibrary", 5, 5);
+        op_site.setEnabled(false);
+        SEARCH_ORDER_DEFAULTS.add(op_site);
 
-
-        // not user configurable yet
+        //ENHANCE: reliability order not user configurable yet
         PREFERRED_RELIABILITY_ORDER = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
 
+        /* ************************************************************************************** */
         /*
          * dedicated cover lookup; does not use a reliability index.
          */
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOOGLE, "Google-cover", 0));
-
-        site = new Site(Site.SEARCH_LIBRARY_THING, "LibraryThing-cover", 1);
-        // LT only supports ISBN searches.
-        site.setIsbnOnly();
-        // LT supports more then 1 cover image.
-        site.setSupportsImageSizes();
-
-        COVER_SEARCH_ORDER_DEFAULTS.add(site);
+        COVER_SEARCH_ORDER_DEFAULTS.add(
+                new Site(Site.SEARCH_LIBRARY_THING, "LibraryThing-cover", 1));
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, "ISFDB-cover", 2));
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOODREADS, "Goodreads-cover", 3));
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_AMAZON, "Amazon-cover", 4));
-
+        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_OPEN_LIBRARY, "OpenLibrary-cover", 5));
 
         /*
          * Create the user configurable lists.
@@ -236,7 +224,7 @@ public final class SearchSites {
          *
          * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
          *
-         * @return bundle with book data
+         * @return bundle with book data. Can be empty, but never null.
          *
          * @throws IOException            on failure
          * @throws AuthorizationException if the site rejects our credentials (if any)
@@ -273,6 +261,28 @@ public final class SearchSites {
          */
         @WorkerThread
         boolean isAvailable();
+
+
+        /**
+         * @return <tt>true</tt> if the site can only be searched with a valid ISBN
+         */
+        @AnyThread
+        boolean isIsbnOnly();
+
+        /**
+         * @param size the image size we want to check support on.
+         *
+         * @return <tt>true</tt> if the site supports the passed image size
+         */
+        @AnyThread
+        boolean supportsImageSize(@NonNull final ImageSizes size);
+
+        /**
+         * @return the resource id for the text "Searching {site}"
+         */
+        @AnyThread
+        @StringRes
+        int getSearchingResId();
     }
 
     /**
@@ -309,27 +319,12 @@ public final class SearchSites {
         static final int SEARCH_ISFDB = 1 << 4;
         /*
          *  search source to use.
-         *  Dutch ISBN lookup. Intention is looking up dutch comics.
          */
-        //static final int SEARCH_TITELBANK = 1 << 5;
+        static final int SEARCH_OPEN_LIBRARY = 1 << 5;
 
         /** Mask including all search sources. */
         public static final int SEARCH_ALL = SEARCH_GOOGLE | SEARCH_AMAZON
-                | SEARCH_LIBRARY_THING | SEARCH_GOODREADS | SEARCH_ISFDB;
-
-
-        /** Lookup map for id -> progress title resource id. */
-        @SuppressLint("UseSparseArrays")
-        private static final Map<Integer, Integer> ID_2_RES_ID = new HashMap<>();
-
-        static {
-            ID_2_RES_ID.put(SEARCH_GOOGLE, R.string.searching_google_books);
-            ID_2_RES_ID.put(SEARCH_AMAZON, R.string.searching_amazon_books);
-            ID_2_RES_ID.put(SEARCH_GOODREADS, R.string.searching_goodreads);
-            ID_2_RES_ID.put(SEARCH_ISFDB, R.string.searching_isfdb);
-            ID_2_RES_ID.put(SEARCH_LIBRARY_THING, R.string.searching_library_thing);
-            //ID_2_RES_ID.put(SEARCH_TITELBANK, R.string.searching_titelbank);
-        }
+                | SEARCH_LIBRARY_THING | SEARCH_GOODREADS | SEARCH_ISFDB | SEARCH_OPEN_LIBRARY;
 
         /** Internal id, bitmask based, not stored in prefs. */
         public final int id;
@@ -345,17 +340,6 @@ public final class SearchSites {
         /** for now hard-coded, but plumbing to have this as a user preference is done. */
         private int mReliability;
 
-        /**
-         * some sites support multiple sizes of images, e.g. LibraryThing.
-         * This is not a user setting!
-         * TODO: this is not a good solution to prevent multiple attempts of downloading... redo!
-         */
-        private boolean mSupportsMultipleImageSizes;
-        /**
-         * some sites support searches ONLY by ISBN.
-         * This is not a user setting!
-         */
-        private boolean mIsbnOnly;
         /** the class which implements the search engine for a specific site. */
         private SearchSiteManager mSearchSiteManager;
 
@@ -412,10 +396,12 @@ public final class SearchSites {
             mEnabled = in.readByte() != 0;
             mPriority = in.readInt();
             mReliability = in.readInt();
-            mIsbnOnly = in.readByte() != 0;
-            mSupportsMultipleImageSizes = in.readByte() != 0;
         }
 
+        /**
+         * @return the manager class instance. Note that these are cached, so there is only one
+         * instance for each site at all times.
+         */
         public SearchSiteManager getSearchSiteManager() {
             if (mSearchSiteManager != null) {
                 return mSearchSiteManager;
@@ -442,9 +428,9 @@ public final class SearchSites {
                     mSearchSiteManager = new LibraryThingManager();
                     break;
 
-//                case SEARCH_TITELBANK:
-//                    mSearchSiteManager = new TitelBankManager();
-//                    break;
+                case SEARCH_OPEN_LIBRARY:
+                    mSearchSiteManager = new OpenLibraryManager();
+                    break;
 
                 default:
                     throw new RTE.IllegalTypeException("Unexpected search source: " + mName);
@@ -464,8 +450,6 @@ public final class SearchSites {
             dest.writeByte((byte) (mEnabled ? 1 : 0));
             dest.writeInt(mPriority);
             dest.writeInt(mReliability);
-            dest.writeByte((byte) (mIsbnOnly ? 1 : 0));
-            dest.writeByte((byte) (mSupportsMultipleImageSizes ? 1 : 0));
         }
 
         private void loadFromPrefs() {
@@ -493,20 +477,8 @@ public final class SearchSites {
             return mName;
         }
 
-        boolean isIsbnOnly() {
-            return mIsbnOnly;
-        }
-
-        void setIsbnOnly() {
-            mIsbnOnly = true;
-        }
-
-        public boolean supportsImageSize(@NonNull final ImageSizes size) {
-            return mSupportsMultipleImageSizes;
-        }
-
-        public void setSupportsImageSizes() {
-            mSupportsMultipleImageSizes = true;
+        public int getId() {
+            return id;
         }
 
         public boolean isEnabled() {
@@ -531,20 +503,6 @@ public final class SearchSites {
 
         public void setReliability(final int reliability) {
             mReliability = reliability;
-        }
-
-        /**
-         * @param manager the task manager needed to create the task.
-         *
-         * @return a {@link ManagedSearchTask} for this specific Site.
-         */
-        ManagedSearchTask getTask(@NonNull final TaskManager manager) {
-            Integer resId = ID_2_RES_ID.get(id);
-            if (resId == null) {
-                throw new IllegalArgumentException("unknown id=" + id);
-            }
-            return new ManagedSearchTask(id, mName, manager, resId,
-                                         getSearchSiteManager());
         }
 
         //        @Override

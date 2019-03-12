@@ -99,8 +99,8 @@ public class Help
         } else {
             cleanupBtn.setVisibility(View.VISIBLE);
             cleanupTxt.setVisibility(View.VISIBLE);
-            cleanupTxt.setText(
-                    getString(R.string.info_cleanup_files_text, Utils.formatFileSize(space)));
+            cleanupTxt.setText(getString(R.string.info_cleanup_files_text,
+                                         Utils.formatFileSize(this, space)));
         }
     }
 }

@@ -75,7 +75,7 @@ public class StartupActivity
         extends AppCompatActivity
         implements ProgressDialogFragment.OnProgressCancelledListener {
 
-    /** the 'LastVersion' e.g. the version which was installed before the current one. */
+    /** the 'LastVersion' i.e. the version which was installed before the current one. */
     public static final String PREF_STARTUP_LAST_VERSION = "Startup.LastVersion";
     /** Number of times the app has been started. */
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
@@ -91,14 +91,9 @@ public class StartupActivity
     private static boolean mUpgradeMessageShown;
     /** Flag indicating Amazon hint should be shown. */
     private static boolean mShowAmazonHint;
-
-    /**
-     * Flag to ensure tasks are only ever started once (at real startup).
-     */
+    /** Flag to ensure tasks are only ever started once (at real startup). */
     private static boolean mStartupTasksShouldBeStarted = true;
-    /**
-     * Self reference for use during upgrades.
-     */
+    /** Self reference for use during upgrades. */
     private static WeakReference<StartupActivity> mStartupActivity;
     /** TaskId holder. Added when started. Removed when stopped. */
     private final Set<Integer> mAllTasks = new HashSet<>();
@@ -152,7 +147,7 @@ public class StartupActivity
     private void startNextStage() {
         // onCreate being stage 0
         mStartupStage++;
-        Logger.info(this, "Starting stage " + mStartupStage);
+        Logger.info(this, "startNextStage","stage=" + mStartupStage);
 
         switch (mStartupStage) {
             case 1:
@@ -403,7 +398,6 @@ public class StartupActivity
         return opened == 0;
     }
 
-
     private void initStorage() {
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -425,7 +419,7 @@ public class StartupActivity
         try {
             mDb = new DBA(this);
         } catch (DBHelper.UpgradeException e) {
-            Logger.info(this, e.getLocalizedMessage());
+            Logger.info(this, "openDBA", e.getLocalizedMessage());
             BookCatalogueApp.showNotification(this, R.string.error_unknown,
                                               e.getLocalizedMessage());
             finish();
@@ -472,7 +466,7 @@ public class StartupActivity
                 break;
 
             default:
-                Logger.debug("unknown requestCode=" + requestCode);
+                Logger.error("unknown requestCode=" + requestCode);
                 break;
         }
     }
@@ -641,7 +635,8 @@ public class StartupActivity
             for (String name : names) {
                 if (name != null && name.length() > 3) {
                     String iso = LocaleUtils.getISO3Language(name);
-                    Logger.info(this, "Global language update of `" + name + "` to `" + iso + '`');
+                    Logger.info(this, "doInBackground",
+                                "Global language update of `" + name + "` to `" + iso + '`');
                     if (!iso.equals(name)) {
                         mDb.updateLanguage(name, iso);
                     }

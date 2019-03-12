@@ -60,12 +60,10 @@
             <TextView
                 android:id="@+id/retry_info"
                 style="@style/error_message"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
                 android:layout_weight="2"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textIsSelectable="true"
-                tools:text="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT" />
+                tools:text="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT"
+                tools:ignore="SelectableText" />
 
             <Button
                 android:id="@+id/retry"
@@ -80,11 +78,8 @@
             android:id="@+id/error"
             style="@style/error_message"
             android:layout_width="match_parent"
-
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textIsSelectable="true"
-            tools:text="Last error: foo bar, not sure what really happened" />
+            tools:text="Last error: foo bar, not sure what really happened"
+            tools:ignore="SelectableText" />
 
         <LinearLayout
             android:id="@+id/boring_stuff"

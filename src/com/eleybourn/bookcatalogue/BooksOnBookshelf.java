@@ -507,10 +507,10 @@ public class BooksOnBookshelf
                             Prefs.dumpPreferences(null);
                             return true;
                         case R.id.MENU_DEBUG_DUMP_STYLE:
-                            Logger.info(this, mCurrentBookshelf.getStyle(mDb).toString());
+                            Logger.info(this, "onOptionsItemSelected", mCurrentBookshelf.getStyle(mDb).toString());
                             return true;
                         case R.id.MENU_DEBUG_DUMP_TRACKER:
-                            Logger.info(this, Tracker.getEventsInfo());
+                            Logger.info(this, "onOptionsItemSelected",Tracker.getEventsInfo());
                             return true;
                         case R.id.MENU_DEBUG_EXPORT_DATABASE:
                             StorageUtils.exportDatabaseFiles(this);
@@ -584,7 +584,7 @@ public class BooksOnBookshelf
 
                     default:
                         if (resultCode != Activity.RESULT_CANCELED) {
-                            Logger.debug("unknown resultCode=" + resultCode);
+                            Logger.error("unknown resultCode=" + resultCode);
                         }
                         break;
                 }
@@ -689,7 +689,7 @@ public class BooksOnBookshelf
 
                     default:
                         if (resultCode != Activity.RESULT_CANCELED) {
-                            Logger.debug("unknown resultCode=" + resultCode);
+                            Logger.error("unknown resultCode=" + resultCode);
                         }
                         break;
                 }
@@ -759,18 +759,20 @@ public class BooksOnBookshelf
         }
 
         // setup the row holder
-        final ListHeader listHeader = new ListHeader();
+        final ScrollingInfo scrollingInfo = new ScrollingInfo();
         for (int level = 1; level <= 2; level++) {
-            listHeader.setVisible(level,
-                                  mListCursor.numLevels() > level
+            scrollingInfo.setVisible(level,
+                                     mListCursor.numLevels() > level
                                           && style.showLevel(level));
         }
-        listView.setTag(listHeader);
+        listView.setTag(scrollingInfo);
 
-        // Update the header 'level' details
-        if (count > 0 && (headersToShow
-                & (BooklistStyle.SUMMARY_SHOW_LEVEL_1 ^ BooklistStyle.SUMMARY_SHOW_LEVEL_2)) != 0) {
-            listHeader.updateListHeader(mTopRow);
+        final boolean showScrollingInfo = (headersToShow
+                & (BooklistStyle.SUMMARY_SHOW_LEVEL_1 ^ BooklistStyle.SUMMARY_SHOW_LEVEL_2)) != 0;
+
+        // Set the initial 'level' details
+        if (count > 0 && showScrollingInfo) {
+            scrollingInfo.update(mTopRow);
         }
 
         // Define a scroller to update header detail when the top row changes
@@ -781,14 +783,13 @@ public class BooksOnBookshelf
                                          final int firstVisibleItem,
                                          final int visibleItemCount,
                                          final int totalItemCount) {
-                        // TODO: why is BooklistPseudoCursor causing a scroll even when it's closed!
                         // Need to check isDead because BooklistPseudoCursor misbehaves when
                         // activity terminates and closes cursor
                         if (mLastTopRow != firstVisibleItem
                                 && !mIsDead
-                                && (headersToShow != 0)) {
-                            ListHeader listHeader = (ListHeader) view.getTag();
-                            listHeader.updateListHeader(firstVisibleItem);
+                                && showScrollingInfo) {
+                            ScrollingInfo scrollingInfo = (ScrollingInfo) view.getTag();
+                            scrollingInfo.update(firstVisibleItem);
                         }
                     }
 
@@ -813,7 +814,8 @@ public class BooksOnBookshelf
             oldList.close();
         }
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this, " displayList: " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info(this, "displayList",
+                        + (System.currentTimeMillis() - t0) + "ms");
         }
     }
 
@@ -857,7 +859,7 @@ public class BooksOnBookshelf
                 int last = listView.getLastVisiblePosition();
                 int centre = (last + first) / 2;
                 if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    Logger.info(BooksOnBookshelf.class,
+                    Logger.info(BooksOnBookshelf.class, "fixPositionWhenDrawn",
                                 " New List: (" + first + ", " + last + ")<-" + centre);
                 }
                 // Get the first 'target' and make it 'best candidate'
@@ -874,12 +876,14 @@ public class BooksOnBookshelf
                 }
 
                 if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    Logger.info(BooksOnBookshelf.class, " Best listPosition @" + best.listPosition);
+                    Logger.info(BooksOnBookshelf.class, "fixPositionWhenDrawn",
+                                " Best listPosition @" + best.listPosition);
                 }
                 // Try to put at top if not already visible, or only partially visible
                 if (first >= best.listPosition || last <= best.listPosition) {
                     if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                        Logger.info(BooksOnBookshelf.class, " Adjusting position");
+                        Logger.info(BooksOnBookshelf.class, "fixPositionWhenDrawn",
+                                    " Adjusting position");
                     }
                     // setSelectionFromTop does not seem to always do what is expected.
                     // But adding smoothScrollToPosition seems to get the job done reasonably well.
@@ -908,7 +912,7 @@ public class BooksOnBookshelf
 
                     //int newTop = best.listPosition - (last-first)/2;
                     // if (BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
-                    //Logger.info(this, " New Top @" + newTop );
+                    //Logger.info(this, "fixPositionWhenDrawn", "New Top @" + newTop );
                     //}
                     //lv.setSelection(newTop);
                 }
@@ -1082,9 +1086,14 @@ public class BooksOnBookshelf
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
                 // we don't display the lend-status in the list for now.
 //                if (data != null) {
-//                    data.getString(UniqueId.KEY_BOOK_LOANEE);
+//                    data.getString(UniqueId.KEY_LOANEE);
 //                }
-
+                return;
+            }
+            if ((fieldsChanged & BookChangedListener.BOOK_WAS_DELETED) != 0) {
+                //ENHANCE: remove the defunct book from the dataset
+                savePosition();
+                initBookList(true);
                 return;
             }
         } else {
@@ -1144,8 +1153,8 @@ public class BooksOnBookshelf
     @NonNull
     private BooklistBuilder getBooklistBuilder() {
         if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
-            Logger.info(this, "getBooklistBuilder|"
-                    + mCurrentBookshelf.getStyle(mDb).toString());
+            Logger.info(this, "getBooklistBuilder",
+                        mCurrentBookshelf.getStyle(mDb).toString());
         }
 
         // get a new builder and add the required extra domains
@@ -1581,13 +1590,19 @@ public class BooksOnBookshelf
                 }
 
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    Logger.info(this, " Build: " + (t1 - t0));
-                    Logger.info(this, " Position: " + (t2 - t1));
-                    Logger.info(this, " Select: " + (t3 - t2));
-                    Logger.info(this, " Count(" + count + "): " + (t4 - t3)
+                    Logger.info(this, "doInBackground",
+                                " Build: " + (t1 - t0));
+                    Logger.info(this, "doInBackground",
+                                " Position: " + (t2 - t1));
+                    Logger.info(this, "doInBackground",
+                                " Select: " + (t3 - t2));
+                    Logger.info(this, "doInBackground",
+                                " Count(" + count + "): " + (t4 - t3)
                             + '/' + (t5 - t4) + '/' + (t6 - t5));
-                    Logger.info(this, " ====== ");
-                    Logger.info(this, " Total: " + (t6 - t0));
+                    Logger.info(this, "doInBackground",
+                                " ====== ");
+                    Logger.info(this, "doInBackground",
+                                " Total: " + (t6 - t0));
                 }
 
                 if (isCancelled()) {
@@ -1735,8 +1750,8 @@ public class BooksOnBookshelf
             if (bundle.containsKey(UniqueId.KEY_SERIES)) {
                 series = bundle.getString(UniqueId.KEY_SERIES);
             }
-            if (bundle.containsKey(UniqueId.KEY_BOOK_LOANEE)) {
-                loanee = bundle.getString(UniqueId.KEY_BOOK_LOANEE);
+            if (bundle.containsKey(UniqueId.KEY_LOANEE)) {
+                loanee = bundle.getString(UniqueId.KEY_LOANEE);
             }
             if (bundle.containsKey(UniqueId.BKEY_ID_LIST)) {
                 bookList = bundle.getIntegerArrayList(UniqueId.BKEY_ID_LIST);
@@ -1751,7 +1766,7 @@ public class BooksOnBookshelf
                   .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, author)
                   .putExtra(UniqueId.KEY_TITLE, title)
                   .putExtra(UniqueId.KEY_SERIES, series)
-                  .putExtra(UniqueId.KEY_BOOK_LOANEE, loanee)
+                  .putExtra(UniqueId.KEY_LOANEE, loanee)
                   .putExtra(UniqueId.BKEY_ID_LIST, bookList);
         }
 
@@ -1763,7 +1778,7 @@ public class BooksOnBookshelf
             outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, author);
             outState.putString(UniqueId.KEY_TITLE, title);
             outState.putString(UniqueId.KEY_SERIES, series);
-            outState.putString(UniqueId.KEY_BOOK_LOANEE, loanee);
+            outState.putString(UniqueId.KEY_LOANEE, loanee);
             outState.putIntegerArrayList(UniqueId.BKEY_ID_LIST, bookList);
         }
 
@@ -1778,11 +1793,11 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Hold the current ListView header details.
+     * Hold the current row details to be shown when scrolling.
      * <p>
      * the API of this class accepts level in the range of 1..2
      */
-    private class ListHeader {
+    private class ScrollingInfo {
 
         /** Support for two levels. */
         private static final int MAX = 2;
@@ -1795,7 +1810,7 @@ public class BooksOnBookshelf
         /**
          * Constructor.
          */
-        ListHeader() {
+        ScrollingInfo() {
             levelTextView[0] = findViewById(R.id.level_1_text);
             levelTextView[1] = findViewById(R.id.level_2_text);
         }
@@ -1825,7 +1840,7 @@ public class BooksOnBookshelf
          *
          * @param firstVisibleItem Top row which is visible
          */
-        void updateListHeader(@IntRange(from = 0) final int firstVisibleItem) {
+        void update(@IntRange(from = 0) final int firstVisibleItem) {
 
             mLastTopRow = firstVisibleItem >= 0 ? firstVisibleItem : 0;
 

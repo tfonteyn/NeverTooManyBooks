@@ -25,6 +25,13 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.Currency;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -32,13 +39,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import java.util.ArrayList;
-import java.util.Currency;
 
 /**
  * An XML handler for the Amazon return.
@@ -180,7 +180,7 @@ import java.util.Currency;
  * </ItemSearchResponse>
  *
  * </pre>
- *
+ * <p>
  * "ItemAttributes" section:
  * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_response_elements.html
  *
@@ -192,8 +192,10 @@ public class SearchAmazonHandler
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_AM";
 
-    /** XML tags we look for.
-     *  They are mixed-case, hence we use .equalsIgnoreCase and not a switch */
+    /**
+     * XML tags we look for.
+     * They are mixed-case, hence we use .equalsIgnoreCase and not a switch
+     */
 //    private static final String XML_ID = "id";
 //    private static final String XML_TOTAL_RESULTS = "TotalResults";
     private static final String XML_ENTRY = "Item";
@@ -292,8 +294,8 @@ public class SearchAmazonHandler
      * @param value  to use
      */
     private void addIfNotPresent(@NonNull final Bundle bundle,
-                                        @NonNull final String key,
-                                        @NonNull final String value) {
+                                 @NonNull final String key,
+                                 @NonNull final String value) {
         String test = bundle.getString(key);
         if (test == null || test.isEmpty()) {
             bundle.putString(key, value.trim());
@@ -312,9 +314,9 @@ public class SearchAmazonHandler
             // move the decimal point 'digits' up
             double price = ((double) Integer.parseInt(mCurrencyAmount)) / Math.pow(10, decDigits);
             // and format with 'digits' decimal places
-            addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED,
-                                        String.format("%." + decDigits + 'f', price));
-            addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY, mCurrencyCode);
+            addIfNotPresent(mBookData, UniqueId.KEY_PRICE_LISTED,
+                            String.format("%." + decDigits + 'f', price));
+            addIfNotPresent(mBookData, UniqueId.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
         } catch (NumberFormatException ignore) {
             if (BuildConfig.DEBUG) {
                 Logger.info(this, "handleListPrice",
@@ -380,6 +382,7 @@ public class SearchAmazonHandler
      * Populate the results Bundle for each appropriate element.
      * <p>
      * Also download the thumbnail and store in a tmp location
+     *
      * @see #endDocument() where we handle the thumbnail.
      */
     @Override
@@ -406,35 +409,35 @@ public class SearchAmazonHandler
 
         } else if (mInEntry) {
             if (localName.equalsIgnoreCase(XML_AUTHOR)) {
-                mAuthors.add( Author.fromString(mBuilder.toString()));
+                mAuthors.add(Author.fromString(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_TITLE)) {
                 addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PUBLISHER)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PUBLISHER,
-                                            mBuilder.toString());
+                addIfNotPresent(mBookData, UniqueId.KEY_PUBLISHER,
+                                mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DATE_PUBLISHED,
-                                            mBuilder.toString());
+                addIfNotPresent(mBookData, UniqueId.KEY_DATE_PUBLISHED,
+                                mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PAGES)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_PAGES,
-                                            mBuilder.toString());
+                addIfNotPresent(mBookData, UniqueId.KEY_PAGES,
+                                mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DESCRIPTION)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_DESCRIPTION,
-                                            mBuilder.toString());
+                addIfNotPresent(mBookData, UniqueId.KEY_DESCRIPTION,
+                                mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_BINDING)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_FORMAT,
-                                            mBuilder.toString());
+                addIfNotPresent(mBookData, UniqueId.KEY_FORMAT,
+                                mBuilder.toString());
 
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 // the language is a 'DisplayName'
-                addIfNotPresent(mBookData, UniqueId.KEY_BOOK_LANGUAGE,
-                                            LocaleUtils.getISO3Language(mBuilder.toString()));
+                addIfNotPresent(mBookData, UniqueId.KEY_LANGUAGE,
+                                LocaleUtils.getISO3Language(mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
                 mCurrencyAmount = mBuilder.toString();
@@ -447,15 +450,15 @@ public class SearchAmazonHandler
                     || localName.equalsIgnoreCase(XML_ISBN_OLD)) {
                 // we prefer the "longest" isbn, which theoretically should be an ISBN-13
                 String tmp = mBuilder.toString();
-                String test = mBookData.getString(UniqueId.KEY_BOOK_ISBN);
+                String test = mBookData.getString(UniqueId.KEY_ISBN);
                 if (test == null || test.length() < tmp.length()) {
-                    mBookData.putString(UniqueId.KEY_BOOK_ISBN, tmp);
+                    mBookData.putString(UniqueId.KEY_ISBN, tmp);
                 }
 
             } else {
                 if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
                     // see what we are missing.
-                    Logger.info(this, "Skipping: "
+                    Logger.info(this, "endElement","Skipping: "
                             + localName + "->'" + mBuilder + '\'');
                 }
             }

@@ -27,7 +27,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
@@ -130,9 +129,6 @@ public class LibraryThingAdminActivity
                 ed.apply();
             }
         });
-
-        // hide soft keyboard at first
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     @Override
@@ -152,13 +148,13 @@ public class LibraryThingAdminActivity
 
         /** Generic identifier. */
         private static final int M_TASK_ID = R.id.TASK_ID_LT_VALIDATE_KEY;
-        protected final ProgressDialogFragment<Integer> mFragment;
+        private final ProgressDialogFragment<Integer> mFragment;
         /**
          * {@link #doInBackground} should catch exceptions, and set this field.
          * {@link #onPostExecute} can then check it.
          */
         @Nullable
-        protected Exception mException;
+        private Exception mException;
 
         /**
          * Constructor.

@@ -3,152 +3,132 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:padding="@dimen/border">
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/border">
 
         <TextView
             android:id="@+id/loaned_to"
-            style="@style/txt_row_bookDetail"
+            style="@style/txt_detail_medium"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/border_double"
+            android:paddingEnd="@dimen/border_double"
             android:background="?android:attr/colorForeground"
             android:textAppearance="?android:attr/textAppearanceLargeInverse"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="On Loan to Alvin"
             tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/title"
-            style="@style/txt_row_bookMajorDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
-            app:layout_constraintBottom_toTopOf="@id/author"
-            app:layout_constraintEnd_toStartOf="@id/read"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/loaned_to"
-            tools:text="Anna Karenina" />
-
-        <TextView
-            android:id="@+id/author"
-            style="@style/txt_row_bookMinorDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
-            android:textIsSelectable="true"
-            app:layout_constraintBottom_toTopOf="@id/rating"
-            app:layout_constraintEnd_toStartOf="@id/coverImage"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            tools:text="by Lev Tolstoy" />
-
         <CheckedTextView
             android:id="@+id/read"
-            style="@style/ctv_read"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/title"
+            style="@style/read_ctv"
             app:layout_constraintEnd_toStartOf="@id/coverImage"
             app:layout_constraintStart_toEndOf="@id/title"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:checked="true"
-            />
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/coverImage"
+            style="@style/coverImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/read"
+            app:layout_constraintTop_toBottomOf="@id/loaned_to"
+            tools:ignore="ContentDescription"
+            tools:padding="40dp"
+            tools:src="@drawable/ic_image" />
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/txt_detail_large"
+            android:layout_width="0dp"
+            app:layout_constraintEnd_toStartOf="@id/read"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loaned_to"
+            tools:ignore="SelectableText"
+            tools:text="Anna Karenina" />
+
+        <TextView
+            android:id="@+id/author"
+            style="@style/txt_detail_small"
+            android:layout_width="0dp"
+            android:layout_marginStart="@dimen/border_double"
+            android:layout_marginBottom="@dimen/border"
+            app:layout_constraintEnd_toStartOf="@id/coverImage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:ignore="SelectableText"
+            tools:text="by Lev Tolstoy" />
 
         <RatingBar
             android:id="@+id/rating"
             style="?attr/ratingBarStyleIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/border"
             android:numStars="5"
-            android:paddingBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@id/lbl_isbn"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/author"
-            />
+            app:layout_constraintTop_toBottomOf="@id/author" />
 
         <TextView
             android:id="@+id/lbl_isbn"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_isbn"
-            app:layout_constraintBottom_toTopOf="@id/pages"
-            app:layout_constraintEnd_toStartOf="@id/isbn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating" />
 
         <TextView
             android:id="@+id/isbn"
-            style="@style/txt_row_bookMinorDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_small"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_isbn"
             app:layout_constraintStart_toEndOf="@id/lbl_isbn"
+            tools:ignore="SelectableText"
             tools:text="97834579862" />
 
         <TextView
             android:id="@+id/pages"
-            style="@style/txt_row_bookMinorDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/border_double"
-            android:paddingEnd="@dimen/border"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_small"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBottom_toTopOf="@id/lbl_series"
-            app:layout_constraintEnd_toStartOf="@id/format"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+            tools:ignore="SelectableText"
             tools:text="573 pages" />
 
         <TextView
             android:id="@+id/format"
-            style="@style/txt_row_bookMinorDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
-            app:layout_constraintBaseline_toBaselineOf="@id/pages"
-            app:layout_constraintStart_toEndOf="@id/pages"
-            tools:text="(Hardcover)" />
-
-        <ImageView
-            android:id="@+id/coverImage"
-            style="@style/coverImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/txt_detail_small"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBottom_toTopOf="@id/lbl_series"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/read"
-            app:layout_constraintTop_toBottomOf="@id/loaned_to"
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_image" />
+            app:layout_constraintStart_toEndOf="@id/pages"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+            tools:ignore="SelectableText"
+            tools:text="(Hardcover)" />
 
         <!-- Series -->
         <TextView
             android:id="@+id/lbl_series"
             style="@style/lbl_textField"
             android:text="@string/lbl_series"
-            app:layout_constraintBottom_toTopOf="@id/series"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/pages"
             />
 
         <TextView
             android:id="@+id/series"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
-            app:layout_constraintBottom_toTopOf="@id/lbl_toc"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
+            tools:ignore="SelectableText"
             tools:text="Series name (1)\nSeries name (2)" />
 
         <!-- Table Of Content -->
@@ -156,24 +136,19 @@
         <TextView
             android:id="@+id/lbl_toc"
             style="@style/lbl_textField"
-            android:paddingTop="@dimen/border"
-            android:paddingBottom="@dimen/border"
+            android:layout_marginTop="@dimen/border"
             android:text="@string/lbl_table_of_content"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/toc"
-            app:layout_constraintEnd_toStartOf="@id/toc_button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/series"
-            tools:visibility="visible"
-            />
+            tools:visibility="visible" />
 
         <Switch
             android:id="@+id/toc_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/border_double"
             android:buttonTint="@android:color/transparent"
-            android:paddingStart="@dimen/border_double"
-            android:paddingEnd="@dimen/border_double"
             android:visibility="gone"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_toc"
             app:layout_constraintStart_toEndOf="@id/lbl_toc"
@@ -190,22 +165,20 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="@dimen/border"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/lbl_publishing"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_toc"
-            tools:visibility="visible"
-            tools:ignore="NestedScrolling" />
+            tools:ignore="NestedScrolling"
+            tools:visibility="visible" />
 
         <!-- Publishing -->
 
         <TextView
             android:id="@+id/lbl_publishing"
             style="@style/lbl_textField"
+            android:layout_marginTop="@dimen/border"
             android:text="@string/lbl_publishing"
-            app:layout_constraintBottom_toTopOf="@id/publisher"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toc"
             />
@@ -214,28 +187,22 @@
 
         <TextView
             android:id="@+id/publisher"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBottom_toTopOf="@id/lbl_price_listed"
-            app:layout_constraintEnd_toStartOf="@id/date_published"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
+            tools:ignore="SelectableText"
             tools:text="Publisher name" />
 
         <TextView
             android:id="@+id/date_published"
-            style="@style/txt_row_bookMinorDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/border"
-            android:paddingEnd="@dimen/border"
-            android:textIsSelectable="true"
-            app:layout_constraintBaseline_toBaselineOf="@id/publisher"
+            style="@style/txt_detail_small"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBottom_toTopOf="@id/lbl_price_listed"
             app:layout_constraintStart_toEndOf="@id/publisher"
             app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
+            tools:ignore="SelectableText"
             tools:text="(Jan 25, 2012)" />
 
         <!-- Publishing - List price -->
@@ -244,22 +211,19 @@
             android:id="@+id/lbl_price_listed"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_price_listed"
-            app:layout_constraintBottom_toTopOf="@id/lbl_first_publication"
-            app:layout_constraintEnd_toStartOf="@id/price_listed"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="@id/publisher"
-            app:layout_constraintTop_toBottomOf="@id/publisher" />
+            app:layout_constraintTop_toBottomOf="@id/publisher"
+            />
 
         <TextView
             android:id="@+id/price_listed"
-            style="@style/txt_row_bookMinorDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_small"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_listed"
-            app:layout_constraintBottom_toTopOf="@id/lbl_first_publication"
             app:layout_constraintStart_toEndOf="@id/lbl_price_listed"
             app:layout_constraintTop_toBottomOf="@id/publisher"
+            tools:ignore="SelectableText"
+
             tools:text="$45" />
 
         <!-- Publishing - first_publication -->
@@ -268,22 +232,18 @@
             android:id="@+id/lbl_first_publication"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_first_publication"
-            app:layout_constraintBottom_toTopOf="@id/lbl_bookshelves"
-            app:layout_constraintEnd_toStartOf="@id/first_publication"
             app:layout_constraintStart_toStartOf="@id/publisher"
             app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
             />
 
         <TextView
             android:id="@+id/first_publication"
-            style="@style/txt_row_bookMinorDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_small"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_first_publication"
-            app:layout_constraintBottom_toTopOf="@id/lbl_bookshelves"
             app:layout_constraintStart_toEndOf="@id/lbl_first_publication"
             app:layout_constraintTop_toBottomOf="@id/price_listed"
+            tools:ignore="SelectableText"
             tools:text="1938" />
 
         <!-- Book Shelves -->
@@ -291,22 +251,18 @@
         <TextView
             android:id="@+id/lbl_bookshelves"
             style="@style/lbl_textField"
-            android:paddingTop="@dimen/border"
             android:text="@string/lbl_bookshelves_long"
-            app:layout_constraintBottom_toTopOf="@id/bookshelves"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
             />
 
         <TextView
             android:id="@+id/bookshelves"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
-            app:layout_constraintBottom_toTopOf="@id/lbl_genre"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
+            tools:ignore="SelectableText"
             tools:text="The best books, Wanted" />
 
         <!-- Genre -->
@@ -315,19 +271,16 @@
             android:id="@+id/lbl_genre"
             style="@style/lbl_textField"
             android:text="@string/lbl_genre"
-            app:layout_constraintBottom_toTopOf="@id/genre"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bookshelves" />
 
         <TextView
             android:id="@+id/genre"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
-            app:layout_constraintBottom_toTopOf="@id/lbl_language"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_genre"
+            tools:ignore="SelectableText"
             tools:text="Science Fiction" />
 
         <!-- Language -->
@@ -336,20 +289,17 @@
             android:id="@+id/lbl_language"
             style="@style/lbl_textField"
             android:text="@string/lbl_language"
-            app:layout_constraintBottom_toTopOf="@id/language"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/genre"
             />
 
         <TextView
             android:id="@+id/language"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
-            app:layout_constraintBottom_toTopOf="@id/lbl_notes"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_language"
+            tools:ignore="SelectableText"
             tools:text="Quenya" />
 
         <!-- Notes section starts here -->
@@ -358,7 +308,6 @@
             android:id="@+id/lbl_notes"
             style="@style/majorSectionHeader"
             android:text="@string/lbl_notes"
-            app:layout_constraintBottom_toTopOf="@id/notes"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/language"
             />
@@ -367,39 +316,32 @@
 
         <TextView
             android:id="@+id/notes"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/border"
-            android:textIsSelectable="true"
-            app:layout_constraintBottom_toTopOf="@id/lbl_edition"
-            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
-            tools:text="The best book of all times" />
+            tools:ignore="SelectableText"
+            tools:text="The best book of all times." />
 
         <!-- Editions -->
 
         <TextView
             android:id="@+id/lbl_edition"
             style="@style/lbl_textField_inline"
+            android:layout_marginTop="@dimen/border"
             android:text="@string/lbl_edition"
-            app:layout_constraintBottom_toTopOf="@id/lbl_signed"
-            app:layout_constraintEnd_toStartOf="@id/edition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/notes"
             />
 
         <TextView
             android:id="@+id/edition"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="0dp"
-            android:layout_height="26dp"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_edition"
-            app:layout_constraintBottom_toTopOf="@id/lbl_signed"
             app:layout_constraintStart_toEndOf="@id/lbl_edition"
             app:layout_constraintTop_toBottomOf="@id/notes"
+            tools:ignore="SelectableText"
             tools:text="bound in real unicorn skin" />
 
         <!-- Has this book been signed -->
@@ -408,22 +350,18 @@
             android:id="@+id/lbl_signed"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_is_signed"
-            app:layout_constraintBottom_toTopOf="@id/lbl_date_acquired"
-            app:layout_constraintEnd_toStartOf="@id/signed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_edition"
             />
 
         <TextView
             android:id="@+id/signed"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_signed"
-            app:layout_constraintBottom_toTopOf="@id/lbl_date_acquired"
             app:layout_constraintStart_toEndOf="@id/lbl_signed"
             app:layout_constraintTop_toBottomOf="@id/lbl_edition"
+            tools:ignore="SelectableText"
             tools:text="Yes" />
 
         <!-- Date acquired -->
@@ -432,22 +370,18 @@
             android:id="@+id/lbl_date_acquired"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_date_acquired"
-            app:layout_constraintBottom_toTopOf="@id/lbl_price_paid"
-            app:layout_constraintEnd_toStartOf="@id/date_acquired"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_signed"
             />
 
         <TextView
             android:id="@+id/date_acquired"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_date_acquired"
-            app:layout_constraintBottom_toTopOf="@id/lbl_price_paid"
             app:layout_constraintStart_toEndOf="@id/lbl_date_acquired"
             app:layout_constraintTop_toBottomOf="@id/lbl_signed"
+            tools:ignore="SelectableText"
             tools:text="Nov 10, 2011" />
 
         <!-- Paid price -->
@@ -456,22 +390,18 @@
             android:id="@+id/lbl_price_paid"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_price_paid"
-            app:layout_constraintBottom_toTopOf="@id/lbl_read_start"
-            app:layout_constraintEnd_toStartOf="@id/price_paid"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
             />
 
         <TextView
             android:id="@+id/price_paid"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid"
-            app:layout_constraintBottom_toTopOf="@id/lbl_read_start"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
+            tools:ignore="SelectableText"
             tools:text="$45" />
 
         <!-- Start and end of reading -->
@@ -480,44 +410,36 @@
             android:id="@+id/lbl_read_start"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_read_start"
-            app:layout_constraintBottom_toTopOf="@id/lbl_read_end"
-            app:layout_constraintEnd_toStartOf="@id/read_start"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
             />
 
         <TextView
             android:id="@+id/read_start"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_start"
-            app:layout_constraintBottom_toTopOf="@id/lbl_read_end"
             app:layout_constraintStart_toEndOf="@id/lbl_read_start"
             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
+            tools:ignore="SelectableText"
             tools:text="Nov 10, 2011" />
 
         <TextView
             android:id="@+id/lbl_read_end"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_read_end"
-            app:layout_constraintBottom_toTopOf="@id/lbl_location_long"
-            app:layout_constraintEnd_toStartOf="@id/read_end"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_start"
             />
 
         <TextView
             android:id="@+id/read_end"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_read_end"
-            app:layout_constraintBottom_toTopOf="@id/lbl_location_long"
             app:layout_constraintStart_toEndOf="@id/lbl_read_end"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_start"
+            tools:ignore="SelectableText"
             tools:text="Dec 15, 2011" />
 
         <!-- Location of the book -->
@@ -526,21 +448,17 @@
             android:id="@+id/lbl_location_long"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_location_long"
-            app:layout_constraintBottom_toTopOf="@id/lbl_description"
-            app:layout_constraintEnd_toStartOf="@id/location"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_end" />
 
         <TextView
             android:id="@+id/location"
-            style="@style/txt_row_bookDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textIsSelectable="true"
+            style="@style/txt_detail_medium"
+            android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_location_long"
-            app:layout_constraintBottom_toTopOf="@id/lbl_description"
             app:layout_constraintStart_toEndOf="@id/lbl_location_long"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_end"
+            tools:ignore="SelectableText"
             tools:text="Library" />
 
         <!-- Description -->
@@ -549,9 +467,8 @@
             android:id="@+id/lbl_description"
             style="@style/majorSectionHeader"
             android:text="@string/lbl_description"
-            app:layout_constraintBottom_toTopOf="@id/description"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/location" />
+            app:layout_constraintTop_toBottomOf="@id/lbl_location_long" />
 
         <!-- reminder: textIsSelectable etc won't work here, as its done in code -->
         <TextView
@@ -559,6 +476,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_description"

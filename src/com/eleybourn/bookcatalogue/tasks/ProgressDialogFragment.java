@@ -20,7 +20,6 @@ import androidx.fragment.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * // At this point the fragment may have been recreated due to a rotation,
@@ -129,13 +128,11 @@ public class ProgressDialogFragment<Results>
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        Logger.info(this, "onCreateDialog");
         @SuppressLint("InflateParams")
         View root = requireActivity().getLayoutInflater()
                                      .inflate(R.layout.fragment_task_progress, null);
         mProgressBar = root.findViewById(R.id.progressBar);
         mMessageView = root.findViewById(R.id.message);
-        Logger.info(this, "onCreateDialog", mMessageView.toString());
 
         // these are fixed
         int titleId = requireArguments().getInt(UniqueId.BKEY_DIALOG_TITLE);

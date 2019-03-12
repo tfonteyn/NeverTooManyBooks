@@ -76,7 +76,7 @@ public class Editions
         }
 
         if (DEBUG_SWITCHES.ISFDB_SEARCH && BuildConfig.DEBUG) {
-            Logger.info(this, mEditions.toString());
+            Logger.info(this, "fetch",mEditions.toString());
         }
         return mEditions;
     }

@@ -168,26 +168,26 @@
         Barcode manchmal auf der Rückseite des Covers zu finden ist.
     </string>
     <string name="about_help_click_here">Klicken Sie hier, um die Online-Hilfe aufzurufen</string>
-    <string name="vldt_unable_to_get_value">Der Wert für ‘%s’ konnte nicht ermittelt werden</string>
-    <string name="vldt_integer_expected">Es wird ein Integer-Wert für ‘%s’ erwartet</string>
-    <string name="vldt_real_expected">Es wird ein Gleitkomma-Wert für ‘%s’ erwartet</string>
-    <string name="vldt_date_expected">Es wird ein Datum für ‘%s’ erwartet</string>
+    <string name="vldt_unable_to_get_value">Der Wert für ‘%1$s’ konnte nicht ermittelt werden</string>
+    <string name="vldt_integer_expected">Es wird ein Integer-Wert für ‘%1$s’ erwartet</string>
+    <string name="vldt_real_expected">Es wird ein Gleitkomma-Wert für ‘%1$s’ erwartet</string>
+    <string name="vldt_date_expected">Es wird ein Datum für ‘%1$s’ erwartet</string>
     <string name="vldt_boolean_expected">
-        Es wird ein boolescher Wert (0,1,t,f,true,false) für ‘%s’ erwartet
+        Es wird ein boolescher Wert (0,1,t,f,true,false) für ‘%1$s’ erwartet
     </string>
-    <string name="vldt_non_blank_required">Es ist ein Wert für ‘%s’ erforderlich</string>
-    <string name="vldt_blank_required">‘%s’ muss leer sein</string>
-    <string name="vldt_failed">Die Überprüfung für ‘%s’ ist fehlgeschlagen</string>
+    <string name="vldt_non_blank_required">Es ist ein Wert für ‘%1$s’ erforderlich</string>
+    <string name="vldt_blank_required">‘%1$s’ muss leer sein</string>
+    <string name="vldt_failed">Die Überprüfung für ‘%1$s’ ist fehlgeschlagen</string>
     <string name="vldt_read_start_after_end">
         Das Datum Lesen beendet ist vor dem Datum mit Lesen begonnen
     </string>
     <string name="progress_end_backup_success">Sicherungskopie erfolgreich erstellt</string>
     <string name="error_backup_failed">Sicherungskopie erstellen fehlgeschlagen</string>
     <string name="error_file_must_contain_column">
-        Die Datei muss eine Spalte mit dem Namen %s enthalten
+        Die Datei muss eine Spalte mit dem Namen %1$s enthalten
     </string>
     <string name="import_error_csv_file_must_contain_any_column">
-        Die Datei muss eine Spalte mit den folgenden Namen enthalten: %s
+        Die Datei muss eine Spalte mit den folgenden Namen enthalten: %1$s
     </string>
     <string name="error_column_is_blank">Die Spalte %1$s ist in Zeile %2$s leer</string>
     <string name="error_columns_are_blank">Die Spalten %1$s sind in der Zeile %2$d leer</string>
@@ -223,9 +223,9 @@
         Der Download des Cover-Bilds ist fehlgeschlagen - Auf die SD-Karte konnte nicht
         geschrieben werden
     </string>
-    <string name="progress_msg_skip_title">Überspringe - %s</string>
-    <string name="progress_end_num_books_searched">%s Bücher gesucht</string>
-    <string name="progress_end_cancelled_info">Abgebrochen - %s</string>
+    <string name="progress_msg_skip_title">Überspringe - %1$s</string>
+    <string name="progress_end_num_books_searched">%1$d Bücher gesucht</string>
+    <string name="progress_end_cancelled_info">Abgebrochen - %1$s</string>
     <string name="title_edit_book_series">Buchserie bearbeiten</string>
     <string name="lbl_family_name">Familienname</string>
     <string name="lbl_given_names">Vornamen</string>
@@ -244,7 +244,7 @@
     <string name="menu_edit_series">Serie bearbeiten…</string>
     <string name="title_delete_series">Serie löschen</string>
     <string name="confirm_really_delete_series">
-        Soll die Serie ‘%s’ gelöscht werden?\n\nDie Bücher werden nicht gelöscht.\n\n
+        Soll die Serie ‘%1$s’ gelöscht werden?\n\nDie Bücher werden nicht gelöscht.\n\n
         Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können,
         um die Daten der Serie zu behalten.
     </string>
@@ -329,7 +329,7 @@
     </string>
     <string name="about_send_info">Sende Informationen</string>
     <string name="info_cleanup_files_text">
-        Die Dateien belegen %s Speicherplatz auf der SD-Karte.
+        Die Dateien belegen %1$s Speicherplatz auf der SD-Karte.
         Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder
         wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese
         Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten,
@@ -939,7 +939,7 @@
     <string name="btn_use">Benutzen</string>
     <string name="lbl_edition_first_edition">Erste Ausgabe</string>
     <string name="lbl_edition_limited">Limitierte Auflage</string>
-    <string name="lbl_x_pages">%1$s seiten</string>
+    <string name="lbl_x_pages">%1$d seiten</string>
     <string name="lbl_location_long">Ort des Buches</string>
     <string name="lbl_loaned_to_name">Leihgabe an %1$s</string>
     <string name="lbl_signed">Signiert</string>

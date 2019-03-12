@@ -168,6 +168,8 @@ public class Series
     /**
      * Constructor that will attempt to parse a single string into a Series name and number.
      *
+     * BUG: Tschai, Planet of Adventure (4.1\\|Omnibus 1-4)|Planet of Adventure (66)
+     *
      * @param fromString string to decode
      *
      * @return the series

@@ -252,7 +252,7 @@ public class BooklistPseudoCursor
         // Purge them
         for (Integer i : toPurge) {
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
-                Logger.info(this, "Removing cursor at " + i);
+                Logger.info(this, "purgeOldCursors","Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
             if (c!= null) {

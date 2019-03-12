@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
+import android.content.Context;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -33,7 +34,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -156,19 +156,17 @@ public final class Utils {
      * Format a number of bytes in a human readable form.
      */
     @NonNull
-    public static String formatFileSize(final float space) {
+    public static String formatFileSize(@NonNull final Context context,
+                                        final float space) {
         if (space < 3072) {
             // Show 'bytes' if < 3k
-            return String.format(BookCatalogueApp.getResString(R.string.bytes),
-                                 space);
+            return String.format(context.getString(R.string.bytes), space);
         } else if (space < 250 * 1024) {
             // Show Kb if less than 250kB
-            return String.format(BookCatalogueApp.getResString(R.string.kilobytes),
-                                 space / 1024);
+            return String.format(context.getString(R.string.kilobytes), space / 1024);
         } else {
             // Show MB otherwise...
-            return String.format(BookCatalogueApp.getResString(R.string.megabytes),
-                                 space / (1024 * 1024));
+            return String.format(context.getString(R.string.megabytes), space / (1024 * 1024));
         }
     }
 

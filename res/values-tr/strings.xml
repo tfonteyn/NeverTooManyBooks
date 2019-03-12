@@ -118,19 +118,19 @@
     <string name="menu_search_books">Kiatp ara</string>
     <string name="hint_book_search_by_text">Kitapları ISBN ile eklemek kitap adı veya yazar adı ile eklemekten çok daha doğru sonuç verir ve genelde yeğlenir. Unutmayın ki doğru barkodu ön kapağın iç kısmında da bulabilirsiniz\n\n</string>
     <string name="about_help_click_here">Çevrimiçi yardım sayfalarına erişmek için lütfen dokunun</string>
-    <string name="vldt_unable_to_get_value">\‘%s\’ için değer alınamıyor</string>
-    <string name="vldt_integer_expected">\‘%s\’ için bir tamsayı değeri gerekli</string>
-    <string name="vldt_real_expected">\‘%s\’ için bir gerçek sayı gerekli</string>
-    <string name="vldt_date_expected">\‘%s\’ için bir tarih gerekli</string>
-    <string name="vldt_boolean_expected">\‘%s\’ için bir ikili (bool) değer gerekli (0,1,t,f,true,false)</string>
-    <string name="vldt_non_blank_required">\‘%s\’ için boş olmayan bir değer gerekli</string>
-    <string name="vldt_blank_required">\‘%s\’ için boş değer gerekli</string>
-    <string name="vldt_failed">\‘%s\’ için doğrulama başarısız</string>
+    <string name="vldt_unable_to_get_value">\‘%1$s\’ için değer alınamıyor</string>
+    <string name="vldt_integer_expected">\‘%1$s\’ için bir tamsayı değeri gerekli</string>
+    <string name="vldt_real_expected">\‘%1$s\’ için bir gerçek sayı gerekli</string>
+    <string name="vldt_date_expected">\‘%1$s\’ için bir tarih gerekli</string>
+    <string name="vldt_boolean_expected">\‘%1$s\’ için bir ikili (bool) değer gerekli (0,1,t,f,true,false)</string>
+    <string name="vldt_non_blank_required">\‘%1$s\’ için boş olmayan bir değer gerekli</string>
+    <string name="vldt_blank_required">\‘%1$s\’ için boş değer gerekli</string>
+    <string name="vldt_failed">\‘%1$s\’ için doğrulama başarısız</string>
     <string name="vldt_read_start_after_end">Okunmaya başlama süresi bitiş süresinden sonra</string>
     <string name="progress_end_backup_success">Yedekleme başarılı!</string>
     <string name="error_backup_failed">Yedekleme başarısız!</string>
-    <string name="error_file_must_contain_column">Dosya adı %s adında bir sütun içermeli</string>
-    <string name="import_error_csv_file_must_contain_any_column">Dosya, %s adlarından birini kullanan bir sütun içermeli</string>
+    <string name="error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
+    <string name="import_error_csv_file_must_contain_any_column">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="error_column_is_blank">Sütun %1$s %2$s numaralı satırda boş</string>
     <string name="error_columns_are_blank">%1$s sütunlarının hepsi %2$d satırında boş</string>
     <string name="btn_confirm_save">Kaydet</string>
@@ -150,9 +150,9 @@
     <string name="warning_required_series">Seri alanı boş</string>
     <string name="export_error_csv_failed">Dışa aktarma başarısız - SD karta yazılamadı</string>
     <string name="error_download_thumbnail_failed">Ufak resim indirmesi başarısız - SD karta yazılamadı</string>
-    <string name="progress_msg_skip_title">Atla - %s</string>
-    <string name="progress_end_num_books_searched">%s kitap arandı</string>
-    <string name="progress_end_cancelled_info">İptal edildi - %s</string>
+    <string name="progress_msg_skip_title">Atla - %1$s</string>
+    <string name="progress_end_num_books_searched">%1$d kitap arandı</string>
+    <string name="progress_end_cancelled_info">İptal edildi - %1$s</string>
     <string name="title_edit_book_series">Kitap serisi düzenle</string>
     <string name="lbl_family_name">Soyadı</string>
     <string name="lbl_given_names">Adı</string>
@@ -166,7 +166,7 @@
     <string name="menu_edit_author">Yazarı düzenle…</string>
     <string name="menu_edit_series">Serileri düzenle…</string>
     <string name="title_delete_series">Serileri sil</string>
-    <string name="confirm_really_delete_series">\‘%s\’ serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
+    <string name="confirm_really_delete_series">\‘%1$s\’ serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="title_edit_series">Seri ayrıntılarını düzenle</string>
     <string name="title_select_cover">Kapak seç</string>
     <string name="warning_no_isbn_no_editions">ISBN\'si olmayan bir kitabın diğer sürümlerine ulaşılamaz</string>
@@ -205,7 +205,7 @@
     <string name="btn_reset">Sıfırla</string>
     <string name="debug_send_info_text">Son zamanda oluşan çökmelerle ilgili bilgi toplamak ve bunu geliştiricilerimizden birine göndermek için aşağıdaki butonu dokunun. Bu veritabanınızın ve oluşturulan günlük dosyalarının bir yedeğini oluşturacaktır. Eğer bu dosyaları bize göndermek istemezseniz göndermeden önce lütfen e-posta eklerinden kaldırın.</string>
     <string name="about_send_info">Bilgi gönder</string>
-    <string name="info_cleanup_files_text">Temizlenebilir dosyalar şu anda SD kartta %s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle \‘Bilgi gönder\’ düğmesini kullanmayı deneyin.</string>
+    <string name="info_cleanup_files_text">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle \‘Bilgi gönder\’ düğmesini kullanmayı deneyin.</string>
     <string name="cleanup_files">Dosyaları temizle</string>
     <string name="megabytes">%.2f MS</string>
     <string name="kilobytes">%.2f kilobit</string>
@@ -488,7 +488,7 @@
     <string name="lbl_publishing">Yayımlanıyor</string>
     <string name="lbl_by_author">ile</string>
     <string name="lbl_loaned_to_name">%1$s kişisine ödünç verilmiş</string>
-    <string name="lbl_x_pages">%1$s bet</string>
+    <string name="lbl_x_pages">%1$d bet</string>
 
     <string name="warning_bad_scanner">
         Görünüşe göre var olan barkod tarayıcı uygulamanız &APP_NAME; ile uyumlu değil.

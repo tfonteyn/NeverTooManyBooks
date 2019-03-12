@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,44 +10,32 @@
         android:id="@+id/toolbar"
         style="@style/toolbar"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/title"
-        style="@style/txt_row_bookMajorDetail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textIsSelectable="true"
-        app:layout_constraintBottom_toTopOf="@id/author"
-        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/txt_detail_large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:ignore="SelectableText"
         tools:text="Anna Karenina" />
 
     <TextView
         android:id="@+id/author"
-        style="@style/txt_row_bookDetail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/border"
-        android:textIsSelectable="true"
-        app:layout_constraintBottom_toTopOf="@id/select_fields_blurb"
-        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/txt_detail_medium"
+        android:layout_marginStart="@dimen/border_double"
+        android:layout_marginBottom="@dimen/border"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
+        tools:ignore="SelectableText"
         tools:text="by Lev Tolstoy" />
 
     <TextView
         android:id="@+id/select_fields_blurb"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/border"
+        style="@style/txt_blurb_small"
         android:text="@string/info_select_fields_to_update"
-        app:layout_constraintBottom_toTopOf="@id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author" />
@@ -56,7 +45,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_update"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,9 +54,8 @@
             android:id="@+id/manage_fields_scrollview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="@dimen/border"
-            android:paddingEnd="@dimen/border">
+            android:layout_margin="@dimen/border"
+            android:orientation="vertical">
             <!-- fields are added here dynamically -->
         </LinearLayout>
     </ScrollView>
@@ -80,6 +67,5 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scrollView" />
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

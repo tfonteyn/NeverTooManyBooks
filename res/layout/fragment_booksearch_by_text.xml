@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,7 +11,7 @@
         style="@style/personalNameTextEntry"
         android:completionThreshold="2"
         android:hint="@string/lbl_author"
-        android:padding="@dimen/border_double"
+        android:layout_margin="@dimen/border_double"
         android:textAppearance="?android:attr/textAppearanceLarge"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,11 +24,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/lbl_title"
-        android:padding="@dimen/border_double"
+        android:layout_margin="@dimen/border_double"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        app:layout_constraintTop_toBottomOf="@id/author"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/author"
         tools:ignore="Autofill"
         tools:text="title here" />
 
@@ -36,8 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/menu_search"
-        app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

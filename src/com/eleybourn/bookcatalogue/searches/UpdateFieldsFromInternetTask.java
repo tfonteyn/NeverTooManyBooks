@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -123,7 +122,7 @@ public class UpdateFieldsFromInternetTask
                                         final int searchSites,
                                         @NonNull final Map<String, Fields.FieldUsage> fields,
                                         @NonNull final ManagedTaskListener listener) {
-        super("UpdateFieldsFromInternetTask", taskManager);
+        super(taskManager, "UpdateFieldsFromInternetTask");
 
         mDb = new DBA(taskManager.getContext());
         mFields = fields;
@@ -241,7 +240,7 @@ public class UpdateFieldsFromInternetTask
 
                 // Make sure the searchable fields are not NULL
                 // (legacy data, and possibly set to null when adding new book)
-                String isbn = mOriginalBookData.getString(UniqueId.KEY_BOOK_ISBN, "");
+                String isbn = mOriginalBookData.getString(UniqueId.KEY_ISBN, "");
                 String author = mOriginalBookData.getString(UniqueId.KEY_AUTHOR_FORMATTED, "");
                 String title = mOriginalBookData.getString(UniqueId.KEY_TITLE, "");
 
@@ -252,7 +251,7 @@ public class UpdateFieldsFromInternetTask
                         && (author.isEmpty() || title.isEmpty())) {
                     // Update progress appropriately
                     mTaskManager.sendHeaderUpdate(
-                            String.format(getString(R.string.progress_msg_skip_title), title));
+                            getContext().getString(R.string.progress_msg_skip_title, title));
                     continue;
                 }
 
@@ -270,17 +269,17 @@ public class UpdateFieldsFromInternetTask
                 // Start searching, then wait...
                 mSearchCoordinator.search(mSearchSites, author, title, isbn,
                                           mCurrentBookFieldUsages.containsKey(
-                                                  UniqueId.BKEY_THUMBNAIL));
+                                                  UniqueId.BKEY_COVER_IMAGE));
 
                 mSearchLock.lock();
                 try {
-                    Logger.info(this, "awaiting end of search");
+//                    Logger.info(this, "runTask","awaiting end of search");
                     /*
                      * Wait for the search to complete.
                      * After processing the results, it wil call mSearchDone.signal()
                      */
                     mSearchDone.await();
-                    Logger.info(this, "search done, next!");
+//                    Logger.info(this, "runTask","search done, next!");
                 } finally {
                     mSearchLock.unlock();
                 }
@@ -291,13 +290,12 @@ public class UpdateFieldsFromInternetTask
             // Tell our listener they can clear the progress message.
             mTaskManager.sendHeaderUpdate(null);
             // Create the final message for them (user message, not a Progress message)
-            mFinalMessage = String.format(getString(R.string.progress_end_num_books_searched),
-                                          "" + progressCounter);
+            mFinalMessage = getContext().getString(R.string.progress_end_num_books_searched,
+                                                   progressCounter);
             if (isCancelled()) {
-                mFinalMessage = String.format(
-                        BookCatalogueApp.getResString(R.string.progress_end_cancelled_info),
-                        mFinalMessage);
-                Logger.info(this, " was cancelled");
+                mFinalMessage = getContext().getString(R.string.progress_end_cancelled_info,
+                                                       mFinalMessage);
+//                Logger.info(this, " was cancelled");
             }
         }
     }
@@ -333,7 +331,7 @@ public class UpdateFieldsFromInternetTask
         // Handle special cases first, 'default:' for the rest
         switch (usage.fieldId) {
             // - If it's a thumbnail, then see if it's missing or empty.
-            case UniqueId.BKEY_THUMBNAIL:
+            case UniqueId.BKEY_COVER_IMAGE:
                 File file = StorageUtils.getCoverFile(mCurrentUuid);
                 if (!file.exists() || file.length() == 0) {
                     fieldUsages.put(usage.fieldId, usage);
@@ -456,7 +454,7 @@ public class UpdateFieldsFromInternetTask
         for (Fields.FieldUsage usage : requestedFields.values()) {
             if (newBookData.containsKey(usage.fieldId)) {
                 // Handle thumbnail specially
-                if (usage.fieldId.equals(UniqueId.BKEY_THUMBNAIL)) {
+                if (usage.fieldId.equals(UniqueId.BKEY_COVER_IMAGE)) {
                     File downloadedFile = StorageUtils.getTempCoverFile();
                     boolean copyThumb = false;
                     if (usage.usage == Fields.FieldUsage.Usage.CopyIfBlank) {

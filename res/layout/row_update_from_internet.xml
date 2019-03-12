@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="@dimen/border">
+    android:layout_margin="@dimen/margin_div">
 
+    <!-- tools:text fields are set to the longest string used (hum, at least in english)
+         which gave the 4/6 weight ratio -->
     <TextView
         android:id="@+id/field"
+        style="@style/lbl_textField"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        tools:text="field name"
-        android:textIsSelectable="true" />
+        app:layout_constraintHorizontal_weight="4"
+        app:layout_constraintEnd_toStartOf="@id/usage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SelectableText"
+        tools:text="@string/lbl_first_publication" />
 
     <CheckBox
         android:id="@+id/usage"
+        style="@style/lbl_textField"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textAppearance="@android:style/TextAppearance.Small"
         android:textStyle="italic"
-        tools:text="cbLabel" />
+        app:layout_constraintHorizontal_weight="6"
+        app:layout_constraintBaseline_toBaselineOf="@id/field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/field"
+        tools:text="@string/lbl_field_usage_overwrite" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -195,31 +195,31 @@ public class UpdateFieldsFromInternetActivity
                      R.string.lbl_author, Fields.FieldUsage.Usage.AddExtra, true);
         addIfVisible(UniqueId.KEY_TITLE,
                      R.string.lbl_title, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_BOOK_ISBN,
+        addIfVisible(UniqueId.KEY_ISBN,
                      R.string.lbl_isbn, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.BKEY_THUMBNAIL,
+        addIfVisible(UniqueId.BKEY_COVER_IMAGE,
                      R.string.lbl_cover, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES,
                      R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
-        addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, UniqueId.KEY_BOOK_TOC_BITMASK,
+        addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, UniqueId.KEY_TOC_BITMASK,
                      R.string.lbl_table_of_content, Fields.FieldUsage.Usage.AddExtra, true);
-        addIfVisible(UniqueId.KEY_BOOK_PUBLISHER,
+        addIfVisible(UniqueId.KEY_PUBLISHER,
                      R.string.lbl_publisher, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_BOOK_DATE_PUBLISHED,
+        addIfVisible(UniqueId.KEY_DATE_PUBLISHED,
                      R.string.lbl_date_published, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_FIRST_PUBLICATION,
+        addIfVisible(UniqueId.KEY_DATE_FIRST_PUBLISHED,
                      R.string.lbl_first_publication, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_BOOK_DESCRIPTION,
+        addIfVisible(UniqueId.KEY_DESCRIPTION,
                      R.string.lbl_description, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_BOOK_PAGES,
+        addIfVisible(UniqueId.KEY_PAGES,
                      R.string.lbl_pages, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_BOOK_PRICE_LISTED,
+        addIfVisible(UniqueId.KEY_PRICE_LISTED,
                      R.string.lbl_price_listed, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_BOOK_FORMAT,
+        addIfVisible(UniqueId.KEY_FORMAT,
                      R.string.lbl_format, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_BOOK_GENRE,
+        addIfVisible(UniqueId.KEY_GENRE,
                      R.string.lbl_genre, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_BOOK_LANGUAGE,
+        addIfVisible(UniqueId.KEY_LANGUAGE,
                      R.string.lbl_language, Fields.FieldUsage.Usage.CopyIfBlank, false);
     }
 
@@ -307,7 +307,7 @@ public class UpdateFieldsFromInternetActivity
         }
 
         // If they have selected thumbnails, check if they want to download ALL
-        final Fields.FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_THUMBNAIL);
+        final Fields.FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_COVER_IMAGE);
         // but don't ask if its a single book only; just download it.
         //noinspection ConstantConditions
         if (mBookId == 0 && coversWanted.isSelected()) {

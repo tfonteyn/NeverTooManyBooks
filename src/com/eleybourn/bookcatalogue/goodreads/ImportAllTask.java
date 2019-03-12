@@ -326,7 +326,7 @@ public class ImportAllTask
 
         List<String> list = new ArrayList<>();
         addIfHasValue(list, review.getString(ListReviewsApiHandler.ReviewFields.ISBN13));
-        addIfHasValue(list, review.getString(UniqueId.KEY_BOOK_ISBN));
+        addIfHasValue(list, review.getString(UniqueId.KEY_ISBN));
         return list;
     }
 
@@ -363,7 +363,7 @@ public class ImportAllTask
         Book book = new Book(buildBundle(db, null, review));
         long id = db.insertBook(book);
         if (id > 0) {
-            if (book.getBoolean(UniqueId.BKEY_THUMBNAIL)) {
+            if (book.getBoolean(UniqueId.BKEY_COVER_IMAGE)) {
                 String uuid = db.getBookUuid(id);
                 // get the temporary downloaded file
                 File source = StorageUtils.getTempCoverFile();
@@ -433,7 +433,7 @@ public class ImportAllTask
             }
 
             if (bestLen > 0) {
-                bookData.putString(UniqueId.KEY_BOOK_ISBN, best);
+                bookData.putString(UniqueId.KEY_ISBN, best);
             }
         }
 
@@ -446,7 +446,7 @@ public class ImportAllTask
                                                     ReviewFields.PUB_DAY,
                                                     null);
         if (pubDate != null && !pubDate.isEmpty()) {
-            bookData.putString(UniqueId.KEY_BOOK_DATE_PUBLISHED, pubDate);
+            bookData.putString(UniqueId.KEY_DATE_PUBLISHED, pubDate);
         }
 
         /*
@@ -570,7 +570,7 @@ public class ImportAllTask
         // last_update_date for us, and that would be ahead of the GR update date.
         String now = DateUtils.utcSqlDateTimeForToday();
         bookData.putString(UniqueId.KEY_BOOK_GR_LAST_SYNC_DATE, now);
-        bookData.putString(UniqueId.KEY_LAST_UPDATE_DATE, now);
+        bookData.putString(UniqueId.KEY_DATE_LAST_UPDATED, now);
 
         return bookData;
     }

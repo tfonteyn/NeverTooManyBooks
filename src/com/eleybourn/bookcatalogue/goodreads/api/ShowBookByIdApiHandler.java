@@ -24,13 +24,13 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import java.io.IOException;
 
 import org.apache.http.client.methods.HttpGet;
 
-import java.io.IOException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
 /**
  * Class to call the search.books api (using a Goodreads 'work' ID).

@@ -25,6 +25,16 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -42,16 +52,6 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Implementation of Importer that reads a CSV file.
@@ -175,9 +175,9 @@ public class CsvImporter
 
         final boolean updateOnlyIfNewer;
         if ((mSettings.what & ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
-            if (!book.containsKey(UniqueId.KEY_LAST_UPDATE_DATE)) {
+            if (!book.containsKey(UniqueId.KEY_DATE_LAST_UPDATED)) {
                 throw new IllegalArgumentException(
-                        "Imported data does not contain " + UniqueId.KEY_LAST_UPDATE_DATE);
+                        "Imported data does not contain " + UniqueId.KEY_DATE_LAST_UPDATED);
             }
             updateOnlyIfNewer = true;
         } else {
@@ -230,9 +230,9 @@ public class CsvImporter
                 // v5 has columns
                 // "bookshelf_id" == UniqueId.DOM_FK_BOOKSHELF_ID
                 // => ignore, we don't / can't use it anyhow.
-                // "bookshelf" == UniqueId.KEY_BOOKSHELF_NAME
+                // "bookshelf" == UniqueId.KEY_BOOKSHELF
                 // I suspect "bookshelf_text" is from older versions and obsolete now (Classic ?)
-                if (book.containsKey(UniqueId.KEY_BOOKSHELF_NAME)
+                if (book.containsKey(UniqueId.KEY_BOOKSHELF)
                         && !book.containsKey(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
                     handleBookshelves(mDb, book);
                 }
@@ -262,12 +262,10 @@ public class CsvImporter
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
-                    listener.onProgress(title + "\n(" +
-                                                BookCatalogueApp.getResString(
-                                                        R.string.progress_msg_n_created_m_updated,
-                                                        mCreated,
-                                                        mUpdated) +
-                                                ')', row);
+                    String msg =
+                            BookCatalogueApp.getResString(R.string.progress_msg_n_created_m_updated,
+                                                          mCreated, mUpdated);
+                    listener.onProgress(title + "\n(" + msg + ')', row);
                     lastUpdate = now;
                 }
 
@@ -286,54 +284,10 @@ public class CsvImporter
         }
 
         // minus 1 for the headers.
-        Logger.info(this,
+        Logger.info(this,"doImport",
                     "Csv Import successful: rows processed: " + (row - 1) +
                             ", created:" + mCreated + ", updated: " + mUpdated);
         return row;
-    }
-
-    /**
-     * Holder class for identifiers of a book during import.
-     * (created to let lint work)
-     */
-    private static class BookIds {
-        final String uuid;
-        long bookId;
-        boolean hasNumericId;
-
-        /**
-         * Constructor. All work is done here to populate the member variables.
-         *
-         * @param book the book, will be modified.
-         */
-        BookIds(@NonNull final Book /* in/out */ book) {
-            // why String ? See book init, we store all keys we find in the import
-            // file as text simple to see if they are present.
-            final String idStr = book.getString(STRINGED_ID);
-            hasNumericId = !idStr.isEmpty();
-
-            if (hasNumericId) {
-                try {
-                    bookId = Long.parseLong(idStr);
-                } catch (NumberFormatException e) {
-                    hasNumericId = false;
-                }
-            }
-
-            if (!hasNumericId) {
-                // yes, string, see above
-                book.putString(STRINGED_ID, "0");
-            }
-
-            // Get the UUID, and remove from collection if null/blank
-            uuid = book.getString(UniqueId.KEY_BOOK_UUID);
-            if (uuid.isEmpty()) {
-                // Remove any blank UUID column, just in case
-                if (book.containsKey(UniqueId.KEY_BOOK_UUID)) {
-                    book.remove(UniqueId.KEY_BOOK_UUID);
-                }
-            }
-        }
     }
 
     @Override
@@ -397,13 +351,12 @@ public class CsvImporter
         return bids.bookId;
     }
 
-
     private boolean updateOnlyIfNewer(@NonNull final DBA db,
                                       @NonNull final Book book,
                                       final long bookId) {
 
         Date bookDate = DateUtils.parseDate(db.getBookLastUpdateDate(bookId));
-        Date importDate = DateUtils.parseDate(book.getString(UniqueId.KEY_LAST_UPDATE_DATE));
+        Date importDate = DateUtils.parseDate(book.getString(UniqueId.KEY_DATE_LAST_UPDATED));
 
         return importDate != null && (bookDate == null || importDate.compareTo(bookDate) > 0);
     }
@@ -415,13 +368,13 @@ public class CsvImporter
      */
     private void handleBookshelves(@NonNull final DBA db,
                                    @NonNull final Book book) {
-        String encodedList = book.getString(UniqueId.KEY_BOOKSHELF_NAME);
+        String encodedList = book.getString(UniqueId.KEY_BOOKSHELF);
         ArrayList<Bookshelf> list = StringList.getBookshelfCoder()
                                               .decode(Bookshelf.MULTI_SHELF_SEPARATOR, encodedList,
                                                       false);
         book.putList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
 
-        book.remove(UniqueId.KEY_BOOKSHELF_NAME);
+        book.remove(UniqueId.KEY_BOOKSHELF);
         book.remove(LEGACY_BOOKSHELF_TEXT_COLUMN);
         book.remove("bookshelf_id");
     }
@@ -429,7 +382,7 @@ public class CsvImporter
     /**
      * Database access is strictly limited to fetching id's.
      * <p>
-     * Ignore the actual value of the UniqueId.KEY_BOOK_TOC_BITMASK! it will be
+     * Ignore the actual value of the UniqueId.KEY_TOC_BITMASK! it will be
      * 'reset' to mirror what we actually have when storing the book data
      */
     private void handleAnthology(@NonNull final DBA db,
@@ -692,5 +645,50 @@ public class CsvImporter
         throw new ImportException(
                 BookCatalogueApp.getResString(R.string.error_columns_are_blank,
                                               TextUtils.join(",", names), row));
+    }
+
+    /**
+     * Holder class for identifiers of a book during import.
+     * (created to let lint work)
+     */
+    private static class BookIds {
+
+        final String uuid;
+        long bookId;
+        boolean hasNumericId;
+
+        /**
+         * Constructor. All work is done here to populate the member variables.
+         *
+         * @param book the book, will be modified.
+         */
+        BookIds(@NonNull final Book /* in/out */ book) {
+            // why String ? See book init, we store all keys we find in the import
+            // file as text simple to see if they are present.
+            final String idStr = book.getString(STRINGED_ID);
+            hasNumericId = !idStr.isEmpty();
+
+            if (hasNumericId) {
+                try {
+                    bookId = Long.parseLong(idStr);
+                } catch (NumberFormatException e) {
+                    hasNumericId = false;
+                }
+            }
+
+            if (!hasNumericId) {
+                // yes, string, see above
+                book.putString(STRINGED_ID, "0");
+            }
+
+            // Get the UUID, and remove from collection if null/blank
+            uuid = book.getString(UniqueId.KEY_BOOK_UUID);
+            if (uuid.isEmpty()) {
+                // Remove any blank UUID column, just in case
+                if (book.containsKey(UniqueId.KEY_BOOK_UUID)) {
+                    book.remove(UniqueId.KEY_BOOK_UUID);
+                }
+            }
+        }
     }
 }

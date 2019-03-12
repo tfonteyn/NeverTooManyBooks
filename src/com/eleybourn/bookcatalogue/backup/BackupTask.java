@@ -42,9 +42,9 @@ public class BackupTask
      * {@link #onPostExecute} can then check it.
      */
     @Nullable
-    protected Exception mException;
+    private Exception mException;
 
-    protected final ProgressDialogFragment<ExportSettings> mFragment;
+    private final ProgressDialogFragment<ExportSettings> mFragment;
 
     /**
      * Constructor.

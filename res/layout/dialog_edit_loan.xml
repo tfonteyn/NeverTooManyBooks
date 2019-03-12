@@ -1,65 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    style="@style/dialogFrame">
 
     <TextView
         android:id="@+id/title"
-        style="@style/lbl_textField"
-        android:layout_marginTop="@dimen/border"
-        android:textIsSelectable="true"
-        tools:text="@string/lbl_title"/>
+        style="@style/txt_detail_small"
+        android:layout_marginStart="@dimen/border_double"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SelectableText"
+        tools:text="@string/lbl_title" />
 
     <TextView
         android:id="@+id/author"
-        style="@style/lbl_textField"
-        android:layout_marginTop="@dimen/border"
-        android:textIsSelectable="true"
-        tools:text="@string/lbl_author"/>
+        style="@style/txt_detail_small"
+        android:layout_marginStart="@dimen/border_double"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:ignore="SelectableText"
+        tools:text="@string/lbl_author" />
 
-    <View style="@style/divider_horizontalList" />
+    <View
+        android:id="@+id/div1"
+        style="@style/div_horizontal"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/author" />
 
     <AutoCompleteTextView
         android:id="@+id/loaned_to"
         style="@style/personalNameTextEntry"
-        android:layout_width="match_parent"
-        android:completionThreshold="2"
-        android:hint="@string/name"
-        tools:text="@string/name" />
-
-    <LinearLayout
-        style="?attr/buttonBarStyle"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:completionThreshold="2"
+        android:hint="@string/menu_loan_lend_book"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/div1"
+        tools:text="Alvin" />
 
-        <Button
-            android:id="@+id/cancel"
-            style="?attr/buttonBarNegativeButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|start"
-            android:layout_weight="1"
-            android:text="@android:string/cancel" />
+    <Button
+        android:id="@+id/cancel"
+        style="?attr/buttonBarNegativeButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@android:string/cancel"
+        app:layout_constraintBaseline_toBaselineOf="@id/confirm"
+        app:layout_constraintEnd_toStartOf="@+id/return_book"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/loaned_to" />
 
-        <Button
-            android:id="@+id/return_book"
-            style="?attr/buttonBarNeutralButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:text="@string/btn_loan_returned" />
+    <Button
+        android:id="@+id/return_book"
+        style="?attr/buttonBarNeutralButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_loan_returned"
+        app:layout_constraintBaseline_toBaselineOf="@id/confirm"
+        app:layout_constraintEnd_toStartOf="@id/confirm"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/cancel" />
 
-        <Button
-            android:id="@+id/confirm"
-            style="?attr/buttonBarPositiveButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:layout_weight="1"
-            android:text="@string/tab_lbl_loan" />
-    </LinearLayout>
-</LinearLayout>
+    <Button
+        android:id="@+id/confirm"
+        style="?attr/buttonBarPositiveButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/tab_lbl_loan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/return_book"
+        app:layout_constraintTop_toBottomOf="@id/loaned_to" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

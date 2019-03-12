@@ -24,15 +24,17 @@ public class SearchAdminActivity
 
     /**
      * Optional: set to one of the {@link AdminSearchOrderFragment} tabs,
-     * if we should *only* show that tab, and NOT save the new setting.
+     * if we should *only* show that tab, and NOT save the new setting (i.e. the "use" scenario).
      */
     public static final String REQUEST_BKEY_TAB = "tab";
-
+    /** Bundle key with the resulting site usage for the "use" scenario. */
     public static final String RESULT_SEARCH_SITES = "resultSearchSites";
-    public static final int TAB_ORDER = 1;
-    public static final int TAB_COVER_ORDER = 2;
-    private static final int TAB_ALL = -1;
-    private static final int TAB_HOSTS = 0;
+
+    public static final int TAB_ORDER = 0;
+    public static final int TAB_COVER_ORDER = 1;
+    private static final int TAB_HOSTS = 2;
+    private static final int SHOW_ALL_TABS = -1;
+
     private TabLayout mTabLayout;
 
     @Override
@@ -44,9 +46,11 @@ public class SearchAdminActivity
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
 
-        int requestedTab = args == null ? TAB_ALL : args.getInt(REQUEST_BKEY_TAB, TAB_ALL);
+        int requestedTab = args == null ? SHOW_ALL_TABS
+                                        : args.getInt(REQUEST_BKEY_TAB, SHOW_ALL_TABS);
 
         mTabLayout = findViewById(R.id.tab_panel);
 
@@ -89,12 +93,12 @@ public class SearchAdminActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(R.id.main_fragment, frag, AdminSearchOrderFragment.TAG)
+                    .add(R.id.tab_fragment, frag, AdminSearchOrderFragment.TAG)
                     .commit();
         }
 
         Button confirmBtn = findViewById(R.id.confirm);
-        // indicate to user this is not a 'save'
+        // indicate to the user this is the 'use' scenario (instead of 'save')
         confirmBtn.setText(R.string.btn_use);
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,7 +110,7 @@ public class SearchAdminActivity
                 }
                 Intent data = new Intent()
                         .putExtra(RESULT_SEARCH_SITES, sites);
-                // no changes committed, we got data to use temporarily
+                // don't commit any changes, we got data to use temporarily
                 setResult(Activity.RESULT_OK, data);
                 finish();
             }
@@ -123,8 +127,24 @@ public class SearchAdminActivity
         Bundle args;
         TabLayout.Tab tab;
 
+        mTabLayout.setTabMode(TabLayout.MODE_FIXED);
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(@NonNull final TabLayout.Tab tab) {
+                //noinspection ConstantConditions
+                showTab((FragmentHolder) tab.getTag());
+            }
+
+            @Override
+            public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(@NonNull final TabLayout.Tab tab) {
+            }
+        });
+
         //TAB_HOSTS
-        mTabLayout.addOnTabSelectedListener(new TabListener());
         holder = new FragmentHolder(AdminHostsFragment.TAG);
         tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_sites).setTag(holder);
         mTabLayout.addTab(tab);
@@ -137,6 +157,7 @@ public class SearchAdminActivity
         holder.fragment.setArguments(args);
         tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_site_order).setTag(holder);
         mTabLayout.addTab(tab);
+        // selecting it will display it thanks to the active listener.
         tab.select();
 
         //TAB_COVER_ORDER
@@ -187,6 +208,20 @@ public class SearchAdminActivity
         });
     }
 
+    /**
+     * Show the passed tab.
+     *
+     * @param holder of the tab to show.
+     */
+    private void showTab(@NonNull final FragmentHolder holder) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                // replace as this is a tab bar
+                .replace(R.id.tab_fragment, holder.fragment, holder.tag)
+                .commit();
+    }
+
     private class FragmentHolder {
 
         @NonNull
@@ -205,30 +240,6 @@ public class SearchAdminActivity
                     fragment = new AdminSearchOrderFragment();
                 }
             }
-        }
-    }
-
-    private class TabListener
-            implements TabLayout.OnTabSelectedListener {
-
-        @Override
-        public void onTabSelected(@NonNull final TabLayout.Tab tab) {
-            FragmentHolder fragmentHolder = (FragmentHolder) tab.getTag();
-            //noinspection ConstantConditions
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    // use replace, as this is a tab bar
-                    .replace(R.id.main_fragment, fragmentHolder.fragment, fragmentHolder.tag)
-                    .commit();
-        }
-
-        @Override
-        public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
-        }
-
-        @Override
-        public void onTabReselected(@NonNull final TabLayout.Tab tab) {
         }
     }
 }

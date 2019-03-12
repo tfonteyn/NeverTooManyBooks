@@ -213,7 +213,7 @@ public class DBCleaner {
                 String field = cursor.getColumnName(0);
                 String value = cursor.getString(0);
 
-                Logger.info(this, state + "|" + field + '=' + value);
+                Logger.info(this, state.toString(),field + '=' + value);
             }
         }
     }

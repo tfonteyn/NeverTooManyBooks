@@ -13,7 +13,6 @@ import androidx.preference.PreferenceScreen;
 
 import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -118,8 +117,8 @@ public class BooklistStyleSettingsFragment
      * The groups are a PreferenceScreen of their own, here 'faked' with a new activity.
      */
     private void setupBooklistGroups() {
-        Preference preference =
-                findPreference(BookCatalogueApp.getResString(R.string.pg_groupings));
+        //noinspection ConstantConditions
+        Preference preference = findPreference(getContext().getString(R.string.pg_groupings));
         if (preference != null) {
             preference.setSummary(mStyle.getGroupListDisplayNames());
 

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tlv="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/border_double">
+    android:layout_margin="@dimen/border_double">
 
     <CheckBox
         android:id="@+id/same_author"
@@ -41,9 +42,9 @@
         android:id="@+id/first_publication"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:ems="4"
         android:hint="@string/lbl_first_publication"
         android:inputType="number"
-        android:maxLength="4"
         app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
@@ -61,8 +62,6 @@
     <com.eleybourn.bookcatalogue.widgets.TouchListView
         android:id="@android:id/list"
         style="@style/tlv_TouchListView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

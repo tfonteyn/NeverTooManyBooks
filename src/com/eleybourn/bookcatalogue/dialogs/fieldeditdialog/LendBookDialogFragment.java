@@ -114,7 +114,7 @@ public class LendBookDialogFragment
             mLoanee = mDb.getLoaneeByBookId(bookId);
         } else {
             mAuthorName = savedInstanceState.getString(UniqueId.KEY_AUTHOR);
-            mLoanee = savedInstanceState.getString(UniqueId.KEY_BOOK_LOANEE);
+            mLoanee = savedInstanceState.getString(UniqueId.KEY_LOANEE);
         }
 
         @SuppressLint("InflateParams")
@@ -153,7 +153,7 @@ public class LendBookDialogFragment
                 mDb.updateOrInsertLoan(bookId, mLoanee);
 
                 Bundle data = new Bundle();
-                data.putString(UniqueId.KEY_BOOK_LOANEE, mLoanee);
+                data.putString(UniqueId.KEY_LOANEE, mLoanee);
                 tellCaller(bookId, data);
             }
         });
@@ -262,7 +262,7 @@ public class LendBookDialogFragment
                 break;
 
             default:
-                Logger.debug("unknown requestCode=" + requestCode);
+                Logger.error("unknown requestCode=" + requestCode);
                 break;
         }
     }
@@ -275,7 +275,7 @@ public class LendBookDialogFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(UniqueId.KEY_AUTHOR, mAuthorName);
-        outState.putString(UniqueId.KEY_BOOK_LOANEE, mLoanee);
+        outState.putString(UniqueId.KEY_LOANEE, mLoanee);
     }
 
     @Override

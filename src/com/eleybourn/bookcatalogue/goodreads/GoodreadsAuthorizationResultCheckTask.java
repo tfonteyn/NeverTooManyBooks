@@ -24,16 +24,16 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
+
 import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
-
-import java.io.IOException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
 /**
  * Simple class to run in background and verify Goodreads credentials then
@@ -45,7 +45,7 @@ import java.io.IOException;
  * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
- *
+ * <p>
  * TOMF: convert to AsyncTask
  *
  * @author Philip Warner
@@ -74,12 +74,10 @@ public class GoodreadsAuthorizationResultCheckTask
             grMgr.handleAuthentication();
 
             if (grMgr.hasValidCredentials()) {
-                Logger.info(this, "hasValidCredentials==true");
                 BookCatalogueApp.showNotification(
                         context, R.string.info_authorized,
                         context.getString(R.string.gr_auth_successful));
             } else {
-                Logger.info(this, "hasValidCredentials==false");
                 BookCatalogueApp.showNotification(
                         context, R.string.info_not_authorized,
                         context.getString(R.string.error_authorization_failed,

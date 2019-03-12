@@ -12,30 +12,24 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:padding="0dp">
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingEnd="@dimen/border"
-            android:paddingStart="@dimen/border">
+            android:layout_margin="@dimen/border"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/help_page"
                 style="@style/link_url"
-                android:layout_width="match_parent"
-                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
                 tools:ignore="SelectableText"
                 tools:text="help page url" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:text="@string/debug_send_info_text"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                style="@style/txt_blurb_medium"
+                android:text="@string/debug_send_info_text" />
 
             <Button
                 android:id="@+id/send_info"
@@ -47,10 +41,8 @@
 
             <TextView
                 android:id="@+id/cleanup_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/info_cleanup_files_text"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                style="@style/txt_blurb_medium"
+                android:text="@string/info_cleanup_files_text" />
 
             <Button
                 android:id="@+id/cleanup_button"

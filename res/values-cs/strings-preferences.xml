@@ -146,8 +146,8 @@
     <!-- Preference -->
     <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>
 
-    <string name="pv_bob_books_under_multiple_show_under_primary_1s_only">Pouze pod primárním %1$s</string>
-    <string name="pv_bob_books_under_multiple_show_book_under_each_1s">Pod každým %1$s</string>
+    <string name="pv_bob_books_under_multiple_primary_1s_only">Pouze pod primárním %1$s</string>
+    <string name="pv_bob_books_under_multiple_each_1s">Pod každým %1$s</string>
 
     <!-- Preference -->
     <string name="pt_bob_format_author_name">Formát zobrazení jména autora</string>

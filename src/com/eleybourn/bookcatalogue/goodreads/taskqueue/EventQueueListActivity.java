@@ -132,10 +132,10 @@ public class EventQueueListActivity
      * Let the Event bind itself.
      */
     @Override
-    public void bindViewToItem(@NonNull final Context context,
-                               @NonNull final View convertView,
-                               @NonNull final BindableItemCursor cursor,
-                               @NonNull final BindableItemCursorAdapter.BindableItem item) {
+    public void bindView(@NonNull final Context context,
+                         @NonNull final BindableItemCursor cursor,
+                         @NonNull final View convertView,
+                         @NonNull final BindableItemCursorAdapter.BindableItem item) {
         convertView.setTag(R.id.TAG_EVENT, item);
         item.bindView(convertView, context, cursor, mDb);
     }

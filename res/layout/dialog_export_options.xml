@@ -1,72 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/dialogFrame">
 
     <TextView
         android:id="@+id/lbl_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/border"
+        style="@style/sectionHeader"
         android:text="@string/export_options_dialog_title"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        app:layout_constraintBottom_toTopOf="@id/include"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
-        android:id="@+id/include"
+        android:id="@+id/import_export_options"
         layout="@layout/inc_import_export_options"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/export_advanced_date_blurb"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_info" />
 
     <TextView
         android:id="@+id/export_advanced_date_blurb"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/border_double"
-        android:paddingBottom="@dimen/border"
+        style="@style/sectionHeader"
         android:text="@string/export_option_info_books_since_date"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        app:layout_constraintBottom_toTopOf="@+id/radio_buttons"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include" />
+        app:layout_constraintTop_toBottomOf="@id/import_export_options" />
 
     <RadioGroup
         android:id="@+id/radio_buttons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/txtDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/export_advanced_date_blurb"
-        >
+        app:layout_constraintTop_toBottomOf="@id/export_advanced_date_blurb">
 
         <RadioButton
             android:id="@+id/radioAllBooks"
             style="@style/row_option_checkable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:checked="true"
-            android:text="@string/all_books"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            />
+            android:text="@string/all_books"/>
 
         <RadioButton
             android:id="@+id/radioSinceLastBackup"
             style="@style/row_option_checkable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/export_option_books_since_last_full_backup"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            />
+            android:text="@string/export_option_books_since_last_full_backup" />
 
         <!-- This option and the related date/button below are disabled to reduce complexity
          of the UI and app; may enable one day. Deemed to be too rarely of use. -->
@@ -102,7 +81,6 @@
         android:layout_height="wrap_content"
         android:text="&#8230;"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_ok"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/txtDate"
         app:layout_constraintTop_toBottomOf="@id/radio_buttons"

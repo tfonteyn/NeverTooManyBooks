@@ -121,19 +121,19 @@
     <string name="menu_search_books">Buscar libro</string>
     <string name="hint_book_search_by_text">Añadir libros con ISBN es mucho más preciso que hacerlo por autor y título. Recuerde que en ocasiones el código de barras o el ISBN se encuentran en la parte interior de la portada.\n\n</string>
     <string name="about_help_click_here">Pulse aquí para acceder a la ayuda online</string>
-    <string name="vldt_unable_to_get_value">Falta \‘%s\’</string>
-    <string name="vldt_integer_expected">\‘%s\’ debe ser un entero</string>
-    <string name="vldt_real_expected">\‘%s\’ debe ser un número real</string>
-    <string name="vldt_date_expected">\‘%s\’ debe ser una fecha</string>
-    <string name="vldt_boolean_expected">\‘%s\’ debe ser 0, 1, V, F, Verdadero o Falso</string>
-    <string name="vldt_non_blank_required">\‘%s\’ no puede estar en blanco</string>
-    <string name="vldt_blank_required">\‘%s\’ debe estar en blanco</string>
-    <string name="vldt_failed">Falló la validación para \‘%s\’</string>
+    <string name="vldt_unable_to_get_value">Falta \‘%1$s\’</string>
+    <string name="vldt_integer_expected">\‘%1$s\’ debe ser un entero</string>
+    <string name="vldt_real_expected">\‘%1$s\’ debe ser un número real</string>
+    <string name="vldt_date_expected">\‘%1$s\’ debe ser una fecha</string>
+    <string name="vldt_boolean_expected">\‘%1$s\’ debe ser (0,1,t,f,true,false)</string>
+    <string name="vldt_non_blank_required">\‘%1$s\’ no puede estar en blanco</string>
+    <string name="vldt_blank_required">\‘%1$s\’ debe estar en blanco</string>
+    <string name="vldt_failed">Falló la validación para \‘%1$s\’</string>
     <string name="vldt_read_start_after_end">La fecha de inicio de lectura es posterior a la de finalización</string>
     <string name="progress_end_backup_success">Copia de seguridad correcta</string>
     <string name="error_backup_failed">Copia de seguridad errónea</string>
-    <string name="error_file_must_contain_column">El fichero debe tener una columna con el nombre %s</string>
-    <string name="import_error_csv_file_must_contain_any_column">El fichero debe tener una columna con uno de los nombres siguientes: %s</string>
+    <string name="error_file_must_contain_column">El fichero debe tener una columna con el nombre %1$s</string>
+    <string name="import_error_csv_file_must_contain_any_column">El fichero debe tener una columna con uno de los nombres siguientes: %1$s</string>
     <string name="error_column_is_blank">La columna %1$s tiene en blanco la fila %2$s</string>
     <string name="error_columns_are_blank">Las columnas %1$s tienen en blanco la fila %2$d</string>
     <string name="btn_confirm_save">Guardar</string>
@@ -154,9 +154,9 @@
     <string name="warning_required_series">El campo Serie está en blanco</string>
     <string name="export_error_csv_failed">La exportación falló: no se pudo escribir en la tarjeta SD</string>
     <string name="error_download_thumbnail_failed">La descarga de portadas falló: no se pudo escribir en la tarjeta SD</string>
-    <string name="progress_msg_skip_title">Excluir - %s</string>
-    <string name="progress_end_num_books_searched">%s libros encontrados</string>
-    <string name="progress_end_cancelled_info">Cancelado - %s</string>
+    <string name="progress_msg_skip_title">Excluir - %1$s</string>
+    <string name="progress_end_num_books_searched">%1$d libros encontrados</string>
+    <string name="progress_end_cancelled_info">Cancelado - %1$s</string>
     <string name="title_edit_book_series">Modificar serie</string>
     <string name="lbl_family_name">Apellidos</string>
     <string name="lbl_given_names">Nombre</string>
@@ -170,7 +170,7 @@
     <string name="menu_edit_author">Modificar autor…</string>
     <string name="menu_edit_series">Modificar serie…</string>
     <string name="title_delete_series">Eliminar serie</string>
-    <string name="confirm_really_delete_series">Confirme la eliminación de la serie \‘%s\’\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
+    <string name="confirm_really_delete_series">Confirme la eliminación de la serie \‘%1$s\’\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
     <string name="title_edit_series">Modificar serie</string>
     <string name="title_select_cover">Seleccionar portada</string>
     <string name="warning_no_isbn_no_editions">No se pueden obtener ediciones para un libro sin ISBN</string>
@@ -210,7 +210,7 @@
     <string name="btn_reset">Reiniciar</string>
     <string name="debug_send_info_text">Pulse el botón siguiente para recopilar información sobre cualquier fallo reciente y enviarlo al equipo de desarrollo. Se creará una copia de seguridad de su base de datos y de los archivos de registro. Si no desea enviar alguno de estos ficheros, elimine los correspondientes adjuntos antes de enviar el correo que se generará.</string>
     <string name="about_send_info">Enviar información</string>
-    <string name="info_cleanup_files_text">Los ficheros que se pueden eliminar ocupan %s en la tarjeta SD. Cada vez que se actualiza la versión de &APP_NAME;, al hacer una copia de seguridad o cuando falla la aplicación se crean ficheros de registro en la tarjeta SD. Pulse el botón siguiente para eliminarlos. Si ha detectado algún error, le agradeceremos que utilice primero la opción de \‘Enviar información\’.</string>
+    <string name="info_cleanup_files_text">Los ficheros que se pueden eliminar ocupan %1$s en la tarjeta SD. Cada vez que se actualiza la versión de &APP_NAME;, al hacer una copia de seguridad o cuando falla la aplicación se crean ficheros de registro en la tarjeta SD. Pulse el botón siguiente para eliminarlos. Si ha detectado algún error, le agradeceremos que utilice primero la opción de \‘Enviar información\’.</string>
     <string name="cleanup_files">Borrar ficheros</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
@@ -505,7 +505,7 @@
     <string name="lbl_publishing">Editor</string>
     <string name="lbl_by_author">por</string>
     <string name="lbl_loaned_to_name">Prestado a %1$s</string>
-    <string name="lbl_x_pages">%1$s páginas</string>
+    <string name="lbl_x_pages">%1$d páginas</string>
 
     <string name="warning_bad_scanner">Su aplicación de escaneado de código de barras no es compatible con &APP_NAME;. Recomendamos la instalción de Zxing barcode scanner, y si ya está instalada, pruebe a desinstalarla y volver a instalarla.</string>
 

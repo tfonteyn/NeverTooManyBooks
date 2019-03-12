@@ -56,6 +56,7 @@ public final class DateUtils {
      */
     private static final DateFormat PRETTY_DATETIME_FORMATTER =
             DateFormat.getDateTimeInstance();
+
     /**
      * SQL Date formatter, Locale timezone. Used for *user* dates (read-end etc).
      */
@@ -120,11 +121,21 @@ public final class DateUtils {
         addParseDateFormat("dd-MM-yyyy HH:mm", false);
         addParseDateFormat("dd-MM-yyyy", false);
 
+        // "March 2009"
+        addParseDateFormat("MMM yyyy", !userSpeaksEnglish);
+        // "13 March 2009"
+        addParseDateFormat("dd MMM yyyy", !userSpeaksEnglish);
+        // just the year
+        addParseDateFormat("yyyy", false);
+        // "January 12, 1987"
+        addParseDateFormat("MMM d, yyyy", !userSpeaksEnglish);
+
         // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
         addParseDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", !userSpeaksEnglish);
         addParseDateFormat("EEE MMM dd HH:mm ZZZZ yyyy", !userSpeaksEnglish);
         addParseDateFormat("EEE MMM dd ZZZZ yyyy", !userSpeaksEnglish);
 
+        // SQL date formats (UTC bases, not dependent on locale)
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_HH_MM_SS);
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_HH_MM);
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE);

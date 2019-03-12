@@ -5,6 +5,5 @@
     <dimen name="border_triple">15dp</dimen>
     <dimen name="border_quad">20dp</dimen>
 
-    <dimen name="padding_book_details_text">10dp</dimen>
-
+    <dimen name="margin_div">2dp</dimen>
 </resources>

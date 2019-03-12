@@ -329,7 +329,7 @@ public class SynchronizedStatement
     protected void finalize()
             throws Throwable {
         if (!mIsClosed && BuildConfig.DEBUG) {
-            Logger.info(this, "Finalizing non-closed statement (potential error/small)\n"
+            Logger.info(this, "finalize","Finalizing non-closed statement (potential error/small)\n"
                     + mStatement.toString());
         }
         mStatement.close();

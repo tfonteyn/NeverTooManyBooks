@@ -54,12 +54,12 @@ public class LegacyEvent
 
     @NonNull
     @Override
-    public View newListItemView(@NonNull final Context context,
-                                @NonNull final BindableItemCursor cursor,
-                                @NonNull final ViewGroup parent) {
+    public View getView(@NonNull final Context context,
+                        @NonNull final BindableItemCursor cursor,
+                        @NonNull final ViewGroup parent) {
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams margins = new LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams margins = new LinearLayout.LayoutParams(
                 ViewGroup.MarginLayoutParams.MATCH_PARENT,
                 ViewGroup.MarginLayoutParams.WRAP_CONTENT);
 

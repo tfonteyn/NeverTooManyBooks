@@ -23,17 +23,17 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
-import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
-import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
+import java.io.IOException;
 
 import org.apache.http.client.methods.HttpPost;
 
-import java.io.IOException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
+import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
+import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 /**
  * API handler for the authUser call. Just gets the current user details.

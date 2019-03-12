@@ -78,6 +78,12 @@ public class PBoolean
     public boolean isTrue() {
         return get();
     }
+    /**
+     * syntax sugar...
+     */
+    public boolean isFalse() {
+        return !get();
+    }
 
     @Override
     @NonNull

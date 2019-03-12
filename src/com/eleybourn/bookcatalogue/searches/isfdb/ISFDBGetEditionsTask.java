@@ -41,7 +41,7 @@ public class ISFDBGetEditionsTask
         try {
             return bookEditions.fetch();
         } catch (SocketTimeoutException e) {
-            Logger.info(this, e.getLocalizedMessage());
+            Logger.info(this, "doInBackground",e.getLocalizedMessage());
             return null;
         }
     }

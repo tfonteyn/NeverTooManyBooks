@@ -22,13 +22,13 @@ package com.eleybourn.bookcatalogue.goodreads.api;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
-import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import java.io.IOException;
 
 import org.apache.http.client.methods.HttpGet;
 
-import java.io.IOException;
+import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
+import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 
 /**
  * API call to get a Goodreads ID from an ISBN.
@@ -51,11 +51,11 @@ public class IsbnToId
 
     /**
      * Get the Goodreads book ID given an ISBN. Response contains the ID as is.
-     *  URL: http://www.goodreads.com/book/isbn_to_id   (sample url)
-     *  HTTP method: GET
-     *  Parameters:
-     *      isbn: The ISBN of the book to lookup.
-     *      key: Developer key (required).
+     * URL: https://www.goodreads.com/book/isbn_to_id/   (sample url)
+     * HTTP method: GET
+     * Parameters:
+     * isbn: The ISBN of the book to lookup.
+     * key: Developer key (required).
      */
     public long isbnToId(@NonNull final String isbn)
             throws IOException,

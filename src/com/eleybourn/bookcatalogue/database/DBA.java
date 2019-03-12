@@ -104,6 +104,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
@@ -346,7 +347,7 @@ public class DBA
         mStatements = new SqlStatementManager(mSyncedDb);
 
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            Logger.info(this,
+            Logger.info(this, "DBA",
                         "instances created: " + DEBUG_INSTANCE_COUNT.incrementAndGet());
             //debugAddInstance(this);
         }
@@ -456,9 +457,11 @@ public class DBA
             InstanceRefDebug ref = it.next();
             DBA refDb = ref.get();
             if (refDb == null) {
-                Logger.info(DBA.class, "<-- **** Missing ref (not closed?) **** vvvvvvv");
+                Logger.info(DBA.class, "debugRemoveInstance",
+                            "<-- **** Missing ref (not closed?) **** vvvvvvv");
                 Logger.error(ref.getCreationException());
-                Logger.info(DBA.class, "--> **** Missing ref (not closed?) **** ^^^^^^^");
+                Logger.info(DBA.class, "debugRemoveInstance",
+                            "--> **** Missing ref (not closed?) **** ^^^^^^^");
             } else {
                 if (refDb == db) {
                     it.remove();
@@ -485,10 +488,10 @@ public class DBA
     public static void debugDumpInstances() {
         for (InstanceRefDebug ref : INSTANCES) {
             if (ref.get() == null) {
-                Logger.info(DBA.class,
+                Logger.info(DBA.class, "debugDumpInstances",
                             "<-- **** Missing ref (not closed?) **** vvvvvvv");
                 Logger.error(ref.getCreationException());
-                Logger.info(DBA.class,
+                Logger.info(DBA.class, "debugDumpInstances",
                             "--> **** Missing ref (not closed?) **** ^^^^^^^");
             } else {
                 Logger.error(ref.getCreationException());
@@ -561,7 +564,7 @@ public class DBA
         }
 
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
-            Logger.info(this,
+            Logger.info(this, "close",
                         "instances left: " + DEBUG_INSTANCE_COUNT.decrementAndGet());
             //debugRemoveInstance(this);
         }
@@ -573,7 +576,7 @@ public class DBA
     protected void finalize()
             throws Throwable {
         if (!mCloseCalled) {
-            Logger.info(this,
+            Logger.info(this, "finalize",
                         "Leaking instances: " + DEBUG_INSTANCE_COUNT.get());
             close();
         }
@@ -1061,33 +1064,33 @@ public class DBA
         // Handle ANTHOLOGY_BITMASK only, no handling of actual titles here
         ArrayList<TocEntry> tocEntries = book.getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
         if (!tocEntries.isEmpty()) {
-            // definitively an anthology, overrule whatever the KEY_BOOK_TOC_BITMASK was.
+            // definitively an anthology, overrule whatever the KEY_TOC_BITMASK was.
             int type = TocEntry.Type.MULTIPLE_WORKS;
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
                 type |= TocEntry.Type.MULTIPLE_AUTHORS;
             }
-            book.putLong(UniqueId.KEY_BOOK_TOC_BITMASK, type);
+            book.putLong(UniqueId.KEY_TOC_BITMASK, type);
         }
 
         //ENHANCE: handle price fields for legacy embedded currencies.
         // Perhaps moving those to currency fields ?
 
         // Handle currencies making sure they are uppercase
-        if (book.containsKey(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY)) {
-            book.putString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
-                           book.getString(UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY).toUpperCase());
+        if (book.containsKey(UniqueId.KEY_PRICE_LISTED_CURRENCY)) {
+            book.putString(UniqueId.KEY_PRICE_LISTED_CURRENCY,
+                           book.getString(UniqueId.KEY_PRICE_LISTED_CURRENCY).toUpperCase());
         }
-        if (book.containsKey(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY)) {
-            book.putString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY,
-                           book.getString(UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY).toUpperCase());
+        if (book.containsKey(UniqueId.KEY_PRICE_PAID_CURRENCY)) {
+            book.putString(UniqueId.KEY_PRICE_PAID_CURRENCY,
+                           book.getString(UniqueId.KEY_PRICE_PAID_CURRENCY).toUpperCase());
         }
 
         // Handle Language field. Try to only store ISO3 code.
-        if (book.containsKey(UniqueId.KEY_BOOK_LANGUAGE)) {
-            String lang = book.getString(UniqueId.KEY_BOOK_LANGUAGE);
+        if (book.containsKey(UniqueId.KEY_LANGUAGE)) {
+            String lang = book.getString(UniqueId.KEY_LANGUAGE);
             if (lang.length() > 3) {
                 // translate to iso3 code, or if that fails, stores the original
-                book.putString(UniqueId.KEY_BOOK_LANGUAGE, LocaleUtils.getISO3Language(lang));
+                book.putString(UniqueId.KEY_LANGUAGE, LocaleUtils.getISO3Language(lang));
             }
         }
 
@@ -1096,38 +1099,38 @@ public class DBA
         for (String name : new String[]{
                 UniqueId.KEY_BOOK_UUID,
 
-                UniqueId.KEY_BOOK_ISBN,
-                UniqueId.KEY_BOOK_PUBLISHER,
-                UniqueId.KEY_BOOK_DATE_PUBLISHED,
-                UniqueId.KEY_FIRST_PUBLICATION,
-                UniqueId.KEY_BOOK_EDITION_BITMASK,
-                UniqueId.KEY_BOOK_TOC_BITMASK,
+                UniqueId.KEY_ISBN,
+                UniqueId.KEY_PUBLISHER,
+                UniqueId.KEY_DATE_PUBLISHED,
+                UniqueId.KEY_DATE_FIRST_PUBLISHED,
+                UniqueId.KEY_EDITION_BITMASK,
+                UniqueId.KEY_TOC_BITMASK,
 
-                UniqueId.KEY_BOOK_PRICE_LISTED,
-                UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY,
-                UniqueId.KEY_BOOK_PRICE_PAID,
-                UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY,
-                UniqueId.KEY_BOOK_DATE_ACQUIRED,
+                UniqueId.KEY_PRICE_LISTED,
+                UniqueId.KEY_PRICE_LISTED_CURRENCY,
+                UniqueId.KEY_PRICE_PAID,
+                UniqueId.KEY_PRICE_PAID_CURRENCY,
+                UniqueId.KEY_DATE_ACQUIRED,
 
-                UniqueId.KEY_BOOK_FORMAT,
-                UniqueId.KEY_BOOK_GENRE,
-                UniqueId.KEY_BOOK_LANGUAGE,
-                UniqueId.KEY_BOOK_LOCATION,
+                UniqueId.KEY_FORMAT,
+                UniqueId.KEY_GENRE,
+                UniqueId.KEY_LANGUAGE,
+                UniqueId.KEY_LOCATION,
 
-                UniqueId.KEY_BOOK_READ,
-                UniqueId.KEY_BOOK_READ_START,
-                UniqueId.KEY_BOOK_READ_END,
+                UniqueId.KEY_READ,
+                UniqueId.KEY_READ_START,
+                UniqueId.KEY_READ_END,
 
-                UniqueId.KEY_BOOK_SIGNED,
-                UniqueId.KEY_BOOK_RATING,
+                UniqueId.KEY_SIGNED,
+                UniqueId.KEY_RATING,
 
-                UniqueId.KEY_BOOK_DESCRIPTION,
-                UniqueId.KEY_BOOK_NOTES,
+                UniqueId.KEY_DESCRIPTION,
+                UniqueId.KEY_NOTES,
 
                 UniqueId.KEY_BOOK_GR_LAST_SYNC_DATE,
 
-                UniqueId.KEY_BOOK_DATE_ADDED,
-                UniqueId.KEY_LAST_UPDATE_DATE,
+                UniqueId.KEY_DATE_ADDED,
+                UniqueId.KEY_DATE_LAST_UPDATED,
                 }) {
             if (book.containsKey(name)) {
                 Object o = book.get(name);
@@ -1400,7 +1403,7 @@ public class DBA
 
         try {
             if (DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT && BuildConfig.DEBUG) {
-                Logger.info(this, book.getRawData().toString());
+                Logger.info(this, "insertBookWithId", book.getRawData().toString());
             }
             // Cleanup fields (author, series, title and remove blank fields for which
             // we have defaults)
@@ -1409,11 +1412,11 @@ public class DBA
             /* Set defaults if not present in book
              *
              * TODO: We may want to provide default values for these fields:
-             * KEY_BOOK_RATING, KEY_BOOK_LOCATION
-             * KEY_BOOK_READ, KEY_BOOK_READ_START, KEY_BOOK_READ_END
+             * KEY_RATING, KEY_LOCATION
+             * KEY_READ, KEY_READ_START, KEY_READ_END
              */
-            if (!book.containsKey(UniqueId.KEY_BOOK_DATE_ADDED)) {
-                book.putString(UniqueId.KEY_BOOK_DATE_ADDED, DateUtils.utcSqlDateTimeForToday());
+            if (!book.containsKey(UniqueId.KEY_DATE_ADDED)) {
+                book.putString(UniqueId.KEY_DATE_ADDED, DateUtils.utcSqlDateTimeForToday());
             }
 
             // Make sure we have an author
@@ -1483,7 +1486,7 @@ public class DBA
 
         try {
             if (DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE && BuildConfig.DEBUG) {
-                Logger.info(this, book.getRawData().toString());
+                Logger.info(this, "updateBook", book.getRawData().toString());
             }
 
             // Cleanup fields (author, series, title, 'sameAuthor' if anthology,
@@ -1562,8 +1565,8 @@ public class DBA
             updateOrInsertTOC(bookId, list);
         }
 
-        if (book.containsKey(UniqueId.KEY_BOOK_LOANEE)
-                && !book.getString(UniqueId.KEY_BOOK_LOANEE).isEmpty()) {
+        if (book.containsKey(UniqueId.KEY_LOANEE)
+                && !book.getString(UniqueId.KEY_LOANEE).isEmpty()) {
             updateOrInsertLoan(bookId, book.getString(DOM_BOOK_LOANEE.name));
         }
     }
@@ -1664,7 +1667,7 @@ public class DBA
                 insertSeries(series);
             }
 
-            String uniqueId = series.getId() + '(' + series.getNumber().toUpperCase() + ')';
+            String uniqueId = series.getId() + '_' + series.getNumber().toUpperCase();
             if (!idHash.containsKey(uniqueId)) {
                 idHash.put(uniqueId, true);
                 position++;
@@ -1719,7 +1722,8 @@ public class DBA
         long position = 0;
         for (TocEntry tocEntry : list) {
             if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
-                Logger.info(this, "Adding TocEntryByBookId: " + tocEntry);
+                Logger.info(this, "updateOrInsertTOC",
+                            "Adding TocEntryByBookId: " + tocEntry);
             }
 
             // handle the author.
@@ -1756,10 +1760,10 @@ public class DBA
             stmt.executeInsert();
 
             if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
-                Logger.info(this, "     bookId   : " + bookId);
-                Logger.info(this, "     authorId : " + author.getId());
-                Logger.info(this, "     tocId    : " + tocEntry.getId());
-                Logger.info(this, "     position : " + position);
+                Logger.info(this, "updateOrInsertTOC", "     bookId   : " + bookId);
+                Logger.info(this, "updateOrInsertTOC", "     authorId : " + author.getId());
+                Logger.info(this, "updateOrInsertTOC", "     tocId    : " + tocEntry.getId());
+                Logger.info(this, "updateOrInsertTOC", "     position : " + position);
             }
         }
     }
@@ -2696,9 +2700,9 @@ public class DBA
     @NonNull
     public ArrayList<String> getCurrencyCodes(@NonNull final String type) {
         String column;
-        if (UniqueId.KEY_BOOK_PRICE_LISTED_CURRENCY.equals(type)) {
+        if (UniqueId.KEY_PRICE_LISTED_CURRENCY.equals(type)) {
             column = DOM_BOOK_PRICE_LISTED_CURRENCY.name;
-//        } else if (UniqueId.KEY_BOOK_PRICE_PAID_CURRENCY.equals(type)) {
+//        } else if (UniqueId.KEY_PRICE_PAID_CURRENCY.equals(type)) {
         } else {
             column = DOM_BOOK_PRICE_PAID_CURRENCY.name;
         }
@@ -2819,7 +2823,7 @@ public class DBA
      *
      * @param bookId book to search for
      *
-     * @return Who the book is loaned to, null when not loaned to someone
+     * @return Who the book is lend to, null when not lend to someone
      */
     @Nullable
     public String getLoaneeByBookId(final long bookId) {
@@ -3635,8 +3639,8 @@ public class DBA
         }
 
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this,
-                        "rebuildFts in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.info(this, "rebuildFts",
+                        (System.currentTimeMillis() - t0) + "ms");
         }
     }
 
@@ -3752,6 +3756,7 @@ public class DBA
                         + ',' + TBL_BOOKS.dotAs(DOM_LAST_UPDATE_DATE)
                         // external links
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_LIBRARY_THING_ID)
+                        + ',' + TBL_BOOKS.dotAs(DOM_BOOK_OPEN_LIBRARY_ID)
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISFDB_ID)
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_BOOK_ID)
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_GOODREADS_LAST_SYNC_DATE)

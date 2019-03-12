@@ -5,39 +5,36 @@
     <!-- Page section headers and dividers -->
     <!-- *************************************************************************************** -->
 
-    <!-- base style for a header of grouped fields; not to be used directly in layouts -->
-    <style name="base_groupHeader">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/border</item>
-        <item name="android:paddingTop">@dimen/border_double</item>
-        <item name="android:paddingBottom">@dimen/border</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- section header for grouped preferences settings -->
-    <style name="hdr_preferencesSection" parent="base_groupHeader" />
-
-    <!-- maybe split this up into a base and a concrete style... -->
     <style name="majorSectionHeader">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginTop">@dimen/border_double</item>
+        <item name="android:layout_marginBottom">@dimen/margin_div</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:paddingBottom">2dp</item>
+    </style>
+
+    <style name="sectionHeader">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/border</item>
+        <item name="android:layout_marginBottom">@dimen/margin_div</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <!-- section header for grouped menu settings -->
+    <style name="menuSectionHeader" parent="@style/sectionHeader">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <!-- basic horizontal divider line -->
-    <style name="divider_horizontalList">
+    <style name="div_horizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginTop">@dimen/margin_div</item>
+        <item name="android:layout_marginBottom">@dimen/margin_div</item>
         <item name="android:background">?attr/dividerHorizontal</item>
-        <item name="android:paddingBottom">2dp</item>
-        <item name="android:paddingTop">2dp</item>
     </style>
-
 
     <!-- *************************************************************************************** -->
     <!-- Field labels -->
@@ -48,101 +45,134 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:layout_alignParentStart">true</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <!-- generic field labels where the data is on the side of the label -->
-    <style name="lbl_textField_inline" parent="lbl_textField">
-        <item name="android:paddingStart">@dimen/border_double</item>
-        <item name="android:paddingEnd">@dimen/border</item>
+    <style name="lbl_textField_inline" parent="@style/lbl_textField">
+        <item name="android:layout_marginStart">@dimen/border_double</item>
+        <item name="android:layout_marginEnd">@dimen/border</item>
     </style>
 
-    <!-- field labels for editable fields; almost identical to lbl_textField for now, but allows future customization -->
-    <style name="lbl_editField">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_alignParentStart">true</item>
-        <item name="android:textStyle">bold</item>
+    <!-- field labels for editable fields; identical to lbl_textField for now,
+     but allows future customization -->
+    <style name="lbl_editField" parent="@style/lbl_textField">
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- TextView fields -->
+    <!-- Generic TextView fields in 3 sizes -->
     <!-- *************************************************************************************** -->
 
     <!-- 'major' detail text field; for example the book title -->
-    <style name="txt_row_bookMajorDetail">
-        <item name="android:layout_width">match_parent</item>
+    <style name="txt_detail_large">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:textStyle">italic</item>
     </style>
 
-    <!-- 'small' detail text field; for example series title, ... -->
-    <style name="txt_row_bookDetail">
-        <item name="android:layout_width">match_parent</item>
+    <!-- 'medium' detail text field; for example series title, ... -->
+    <style name="txt_detail_medium">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/padding_book_details_text</item>
-        <item name="android:textIsSelectable">true</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textIsSelectable">true</item>
     </style>
 
     <!-- 'minor' detail text field; for example format, isbn,... -->
-    <style name="txt_row_bookMinorDetail">
-        <item name="android:layout_width">match_parent</item>
+    <style name="txt_detail_small">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textIsSelectable">true</item>
     </style>
 
-    <!-- filename in selection list-->
-    <style name="txt_row_fileName">
+    <!-- informational piece of text -->
+    <style name="txt_blurb_medium">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <!--  selectable makes clicking not work well -->
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:layout_marginStart">@dimen/border_triple</item>
+        <item name="android:layout_marginEnd">@dimen/border_triple</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <!-- informational piece of text -->
+    <style name="txt_blurb_small">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/border_triple</item>
+        <item name="android:layout_marginEnd">@dimen/border_triple</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- Specialized TextView fields -->
+    <!-- *************************************************************************************** -->
+
+    <!-- level 1/2 text in the bookshelf spinner on the booklist activity -->
+    <style name="bobSpinnerLevelText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/border_double</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <!-- Booklist book row fields; level 1,2,3 are kept in their layout files -->
+    <style name="row_booklist_book_fields">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/border</item>
+        <item name="android:layout_marginEnd">@dimen/border</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textIsSelectable">false</item>
     </style>
 
     <!-- file info for "txt_fileName" -->
     <style name="txt_row_fileInfo">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textIsSelectable">false</item>
         <item name="android:focusable">false</item>
         <item name="android:focusableInTouchMode">false</item>
-        <!--  selectable makes clicking not work well -->
-        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <style name="link_url">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
+    </style>
+
+    <style name="error_message">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/colorError</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- EditText fields -->
+    <!-- EditText fields - not to be localized! -->
     <!-- *************************************************************************************** -->
 
-    <!-- *not to be localised* base style for all EditFields; not to be used directly in layouts -->
+    <!-- base style for all EditFields; not to be used directly in layouts -->
     <style name="base_editorField">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:layout_alignParentStart">true</item>
         <item name="android:hint">@string/field_not_set</item>
     </style>
 
-    <style name="isbnEntryField">
+    <style name="isbnEntry">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/border_double</item>
-        <item name="android:layout_marginEnd">@dimen/border_double</item>
-        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">@dimen/border_double</item>
         <item name="android:digits">1234567890xX</item>
-        <item name="android:gravity">start</item>
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
-        <item name="android:padding">@dimen/border_double</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
     </style>
@@ -153,26 +183,193 @@
     </style>
 
     <!-- International three character currency code (uppercase) -->
-    <style name="currencyTextEntry" parent="base_editorField">
+    <style name="currencyTextEntry" parent="@style/base_editorField">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_alignParentStart">false</item>
-        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/border_double</item>
+        <item name="android:layout_marginEnd">@dimen/border_double</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:inputType">text|textCapCharacters</item>
+        <item name="android:hint">...</item>
         <item name="android:ems">3</item>
         <item name="android:maxLength">3</item>
-        <item name="android:paddingStart">@dimen/border_double</item>
-        <item name="android:paddingEnd">@dimen/border_double</item>
         <item name="android:completionThreshold">1</item>
         <item name="android:singleLine">true</item>
     </style>
 
-    <!-- *not to be localised* button with 'data' displayed on it, a click leads to a screen/dialog to edit that data -->
+    <!-- *not to be localised* button with 'data' displayed on it,
+            a click leads to a screen/dialog to edit that data -->
     <style name="buttonDataEntry" parent="@style/base_editorField" />
 
-    <!-- not in use yet -->
-    <style name="searchTextEntry" parent="@style/base_editorField" />
+    <!-- *************************************************************************************** -->
+    <!-- TouchListView rows -->
+    <!-- *************************************************************************************** -->
 
+    <style name="base_image_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/border_double</item>
+    </style>
+
+    <style name="tlv_checkable_button" parent="@style/base_image_button">
+        <item name="android:checkMark">?android:attr/textCheckMark</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <style name="tlv_delete_button" parent="@style/base_image_button">
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <style name="tlv_dragHandle" parent="@style/base_image_button">
+    </style>
+
+    <!-- the actual list view -->
+    <style name="tlv_TouchListView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:fadingEdge">none</item>
+    </style>
+
+    <!-- the first/top row inside a TLV row -->
+    <style name="tlv_details_first_row">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+    <!-- the second/.. rows inside a TLV row -->
+    <style name="tlv_details_row">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textIsSelectable">false</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:layout_marginStart">@dimen/border_double</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- 'edit' buttons; for example drop down menu button, edit icon button, ...  -->
+    <!-- *************************************************************************************** -->
+
+    <style name="itemEditButton" parent="@style/base_image_button">
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- row, button and blurb for 'options' in a an option list (e.g. on a dialog) -->
+    <!-- *************************************************************************************** -->
+
+    <!-- Menu label for options in a list -->
+    <style name="row_option_menu">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/border_double</item>
+        <item name="android:drawablePadding">@dimen/border_quad</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...) -->
+    <style name="row_option_checkable">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/border</item>
+        <item name="android:layout_marginBottom">@dimen/border</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <!-- Used for a dedicated 'help' TextView associated with an option -->
+    <style name="row_option_info">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/border_quad</item>
+        <item name="android:layout_marginEnd">@dimen/border_quad</item>
+        <item name="android:layout_marginBottom">@dimen/margin_div</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- Cover image  -->
+    <!-- *************************************************************************************** -->
+
+    <!-- the layout_height and all margins will be set from code.-->
+    <style name="coverImage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/border</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:background">@drawable/border</item>
+        <item name="android:contentDescription">@string/lbl_cover</item>
+    </style>
+
+    <style name="zoomedCoverImage">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/border</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- remove these and the image will be fullscreen -->
+        <item name="listPreferredItemPaddingLeft">24dp</item>
+        <item name="listPreferredItemPaddingRight">24dp</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- Single use / specialised styles -->
+    <!-- *************************************************************************************** -->
+
+    <style name="nav_panel_main">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">?attr/color_background_nav_panel</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
+    </style>
+
+    <style name="tab_bar">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/colorPrimary</item>
+    </style>
+
+    <!-- the outer frame (e.g. 'root') for a Dialog -->
+    <style name="dialogFrame">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/border_double</item>
+    </style>
+
+    <!-- Style for keys on the isbn search keyboard -->
+    <style name="isbnSearchKey">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">75dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <!-- CheckedTextView for 'read' status of a book -->
+    <style name="read_ctv">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:checkMark">@drawable/ic_checked_selector</item>
+    </style>
 
     <!-- *************************************************************************************** -->
     <!-- translators: create a language specific styles.xml file and copy these styles -->
@@ -185,10 +382,7 @@
 
     <style name="simpleTextEntry" parent="@style/base_localeTextEntry" />
 
-    <!-- inherits from localised style! -->
-    <style name="multiLineTextEntry" parent="simpleTextEntry">
-        <item name="android:layout_alignParentEnd">true</item>
-        <item name="android:singleLine">false</item>
+    <style name="multiLineTextEntry" parent="@style/simpleTextEntry">
         <item name="android:inputType">textCapSentences|textMultiLine</item>
     </style>
 
@@ -210,239 +404,7 @@
     <style name="bookFormatTextEntry" parent="@style/base_localeTextEntry" />
 
     <!-- *************************************************************************************** -->
-    <!-- Single use / specialised styles -->
-    <!-- *************************************************************************************** -->
-    <style name="link_url">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingBottom">@dimen/border</item>
-        <item name="android:paddingStart">@dimen/border_triple</item>
-        <item name="android:paddingEnd">@dimen/border_triple</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
-    </style>
-
-    <style name="link_donate">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
-    </style>
-
-    <style name="toolbar">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">?attr/actionBarSize</item>
-        <item name="android:background">?attr/colorPrimary</item>
-    </style>
-
-    <style name="error_message">
-        <item name="android:textColor">?attr/colorError</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="txt_blurb">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/border_triple</item>
-        <item name="android:paddingEnd">@dimen/border_triple</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- the outer frame (e.g. 'root') for a Dialog -->
-    <style name="dialogFrame">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:padding">@dimen/border_double</item>
-    </style>
-
-    <!-- Style for keys on the isbn search keyboard -->
-    <style name="isbnSearchKey">
-        <item name="android:layout_width">75dp</item>
-        <item name="android:layout_height">75dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-    </style>
-
-    <!-- CheckedTextView for 'read' status of a book -->
-    <style name="ctv_read">
-        <item name="android:layout_weight">0</item>
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:checkMark">@drawable/ic_checked_selector</item>
-        <item name="android:padding">0dp</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- TouchListView icons -->
-    <!-- *************************************************************************************** -->
-
-    <style name="tlv_checkable_button">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentStart">true</item>
-        <item name="android:layout_centerVertical">true</item>
-        <item name="android:checkMark">?android:attr/textCheckMark</item>
-        <item name="android:focusable">false</item>
-        <item name="android:focusableInTouchMode">false</item>
-        <item name="android:paddingStart">@dimen/border_double</item>
-        <item name="android:paddingEnd">@dimen/border_double</item>
-    </style>
-
-    <style name="tlv_delete_button">
-        <item name="android:layout_width">25dp</item>
-        <item name="android:layout_height">25dp</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:layout_alignParentStart">true</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:focusableInTouchMode">false</item>
-        <item name="android:gravity">start</item>
-        <item name="android:background">?android:selectableItemBackground</item>
-        <item name="android:paddingEnd">@dimen/border_double</item>
-        <item name="android:paddingStart">@dimen/border_double</item>
-    </style>
-
-    <style name="tlv_dragHandle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_centerVertical">true</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:layout_alignParentEnd">true</item>
-        <item name="android:paddingEnd">@dimen/border_double</item>
-        <item name="android:paddingStart">@dimen/border_double</item>
-    </style>
-
-    <!-- the actual list view -->
-    <style name="tlv_TouchListView">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:fadingEdge">none</item>
-        <item name="android:textSize">16sp</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- Cover image  -->
-    <!-- *************************************************************************************** -->
-
-    <style name="coverImage">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">top|center_horizontal</item>
-        <item name="android:layout_weight">0</item>
-        <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:layout_centerVertical">true</item>
-        <item name="android:padding">@dimen/border</item>
-        <item name="android:adjustViewBounds">true</item>
-        <item name="android:scaleType">centerInside</item>
-        <item name="android:background">@drawable/border</item>
-        <item name="android:contentDescription">@string/lbl_cover</item>
-    </style>
-
-    <!-- the style for the -->
-    <style name="zoomedCoverImage">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowCloseOnTouchOutside">true</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:backgroundDimEnabled">true</item>
-        <!-- remove these and the image will be fullscreen, but not all images look good blown up -->
-        <item name="listPreferredItemPaddingLeft">24dip</item>
-        <item name="listPreferredItemPaddingRight">24dip</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- 'edit' buttons; for example drop down menu button, edit icon button, ...  -->
-    <!-- *************************************************************************************** -->
-    <style name="itemEditButton">
-        <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:layout_alignParentEnd">true</item>
-        <item name="android:layout_centerVertical">true</item>
-        <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:paddingEnd">@dimen/border</item>
-        <item name="android:paddingStart">@dimen/border</item>
-        <item name="android:background">?android:selectableItemBackground</item>
-        <item name="android:focusable">true</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- row, button and blurb for 'options' in a an option list (e.g. on a dialog) -->
-    <!-- *************************************************************************************** -->
-
-    <!-- Field or Menu label for options in a list -->
-    <style name="row_option_label">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingStart">@dimen/border_quad</item>
-        <item name="android:paddingTop">@dimen/border</item>
-        <item name="android:paddingBottom">@dimen/border</item>
-        <item name="android:drawablePadding">@dimen/border_quad</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...) -->
-    <style name="row_option_checkable">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/border</item>
-        <item name="android:paddingBottom">@dimen/border</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <!-- Used for a dedicated 'help' TextView associated with an option -->
-    <style name="row_option_info">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/border_quad</item>
-        <item name="android:paddingEnd">@dimen/border_quad</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- Booklist main row fields; level 1,2,3 are kept in their layout files -->
-    <!-- *************************************************************************************** -->
-
-    <style name="row_booklist_fields_book_title">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/border</item>
-        <item name="android:paddingEnd">@dimen/border</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:singleLine">false</item>
-    </style>
-
-    <style name="row_booklist_fields_extras">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/border</item>
-        <item name="android:paddingEnd">@dimen/border</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textIsSelectable">false</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- Navigation Panel specifics -->
-    <!-- *************************************************************************************** -->
-
-    <style name="nav_panel_header">
-        <item name="android:padding">@dimen/border_triple</item>
-        <item name="android:background">?attr/color_background_nav_header</item>
-    </style>
-
-    <style name="nav_panel_main">
-        <item name="android:background">?attr/color_background_nav_panel</item>
-    </style>
-
-
-
-
-    <!-- *************************************************************************************** -->
     <!-- -->
     <!-- *************************************************************************************** -->
-
 
 </resources>

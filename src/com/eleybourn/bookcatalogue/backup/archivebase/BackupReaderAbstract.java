@@ -206,7 +206,7 @@ public abstract class BackupReaderAbstract
             mSettings.what = entitiesRead;
 
             if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                Logger.info(this, "imported covers#=" + coverCount);
+                Logger.info(this, "restore","imported covers#=" + coverCount);
             }
             try {
                 close();
@@ -299,7 +299,7 @@ public abstract class BackupReaderAbstract
             // deserialization will take care of writing the v200+ SharedPreference file
             style = entity.getSerializable();
             if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
-                Logger.info(this, style.toString());
+                Logger.info(this, "restorePreV200Style", style.toString());
             }
         } catch (DeserializationException e) {
             Logger.error(e, "Unable to restore style");

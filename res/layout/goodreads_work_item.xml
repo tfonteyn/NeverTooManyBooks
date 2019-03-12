@@ -1,49 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/coverImage"
         style="@style/coverImage"
-        android:layout_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_image"
         tools:ignore="ContentDescription" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="100"
-        android:orientation="vertical">
+    <TextView
+        android:id="@+id/lbl_title"
+        style="@style/lbl_textField"
+        android:labelFor="@id/title"
+        android:text="@string/lbl_title"
+        app:layout_constraintStart_toEndOf="@id/coverImage"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lbl_title"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+    <TextView
+        android:id="@+id/title"
+        style="@style/txt_detail_medium"
+        android:layout_marginStart="@dimen/border_double"
+        app:layout_constraintStart_toStartOf="@id/lbl_title"
+        app:layout_constraintTop_toBottomOf="@id/lbl_title"
+        tools:text="@string/lbl_title"
+        tools:ignore="SelectableText" />
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/lbl_title"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="true" />
+    <TextView
+        android:id="@+id/lbl_author"
+        style="@style/lbl_textField"
+        android:labelFor="@id/author"
+        android:text="@string/lbl_author"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintStart_toStartOf="@id/lbl_title" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lbl_author"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+    <TextView
+        android:id="@+id/author"
+        style="@style/txt_detail_medium"
+        android:layout_marginStart="@dimen/border_double"
+        app:layout_constraintStart_toStartOf="@id/lbl_title"
+        app:layout_constraintTop_toBottomOf="@id/lbl_author"
+        tools:text="@string/lbl_author"
+        tools:ignore="SelectableText" />
 
-        <TextView
-            android:id="@+id/author"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="true" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

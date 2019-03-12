@@ -32,7 +32,7 @@ public abstract class BookSearchBaseFragment
         extends Fragment
         implements SearchCoordinator.SearchCoordinatorListener {
 
-    static final int REQ_BOOK_EDIT = 0;
+    static final int REQ_BOOK_EDIT = 1_000;
 
     /** stores an active search id, or 0 when none active. */
     private static final String BKEY_SEARCH_MANAGER_ID = "SearchManagerId";
@@ -159,8 +159,8 @@ public abstract class BookSearchBaseFragment
                         @NonNull final String isbnSearchText) {
 
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "startSearch"
-                    + "|isbn=" + isbnSearchText
+            Logger.info(this, "startSearch",
+                    "isbn=" + isbnSearchText
                     + "|author=" + authorSearchText
                     + "|title=" + titleSearchText);
         }
@@ -170,9 +170,6 @@ public abstract class BookSearchBaseFragment
             final SearchCoordinator searchCoordinator =
                     new SearchCoordinator(mActivity.getTaskManager(), this);
             mSearchManagerId = searchCoordinator.getId();
-
-            Tracker.handleEvent(this, Tracker.States.Running,
-                                "Created SearchManager=" + mSearchManagerId);
 
             mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_searching);
             // kick of the searches
@@ -241,8 +238,8 @@ public abstract class BookSearchBaseFragment
 
             default:
                 // lowest level of our Fragment, see if we missed anything
-                Logger.info(this,
-                            "BookSearchBaseFragment|onActivityResult|NOT HANDLED:"
+                Logger.info(this,"BookSearchBaseFragment.onActivityResult",
+                            "NOT HANDLED:"
                                     + " requestCode=" + requestCode + ", resultCode=" + resultCode);
                 super.onActivityResult(requestCode, resultCode, data);
                 break;

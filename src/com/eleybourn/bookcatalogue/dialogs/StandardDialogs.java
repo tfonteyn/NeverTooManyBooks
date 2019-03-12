@@ -29,7 +29,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -92,8 +91,8 @@ public final class StandardDialogs {
                                          @NonNull final Runnable onDeleted) {
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setMessage(String.format(context.getString(R.string.confirm_really_delete_series),
-                                          series.getName()))
+                .setMessage(context.getString(R.string.confirm_really_delete_series,
+                                              series.getName()))
                 .setTitle(R.string.title_delete_series)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setCancelable(false)
@@ -127,7 +126,7 @@ public final class StandardDialogs {
                                        final long bookId,
                                        @NonNull final Runnable onDeleted) {
 
-        String UNKNOWN = '<' + BookCatalogueApp.getResString(R.string.unknown_uc) + '>';
+        String UNKNOWN = '<' + context.getString(R.string.unknown_uc) + '>';
         List<Author> authorList = db.getAuthorsByBookId(bookId);
 
         String title = db.getBookTitle(bookId);

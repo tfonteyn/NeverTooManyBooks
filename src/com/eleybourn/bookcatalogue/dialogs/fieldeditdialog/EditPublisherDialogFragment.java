@@ -61,7 +61,7 @@ public class EditPublisherDialogFragment
 
         EditPublisherDialogFragment frag = new EditPublisherDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(UniqueId.KEY_BOOK_PUBLISHER, publisher);
+        args.putParcelable(UniqueId.KEY_PUBLISHER, publisher);
         frag.setArguments(args);
         return frag;
     }
@@ -72,12 +72,12 @@ public class EditPublisherDialogFragment
         final Activity mActivity = requireActivity();
         mDb = new DBA(mActivity);
 
-        final Publisher publisher = requireArguments().getParcelable(UniqueId.KEY_BOOK_PUBLISHER);
+        final Publisher publisher = requireArguments().getParcelable(UniqueId.KEY_PUBLISHER);
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             mName = publisher.getName();
         } else {
-            mName = savedInstanceState.getString(UniqueId.KEY_BOOK_PUBLISHER);
+            mName = savedInstanceState.getString(UniqueId.KEY_PUBLISHER);
         }
 
         View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
@@ -135,7 +135,7 @@ public class EditPublisherDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.KEY_BOOK_PUBLISHER, mName);
+        outState.putString(UniqueId.KEY_PUBLISHER, mName);
     }
 
     @Override
