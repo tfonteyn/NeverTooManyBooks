@@ -37,8 +37,10 @@ import java.util.Objects;
 /**
  * Manages the construction and closure of persisted SQLiteStatement objects.
  * <p>
- * (tf: As I understand it, the purpose is not the actual caching (Android does that anyhow) but
- * the handling of properly closing statements).
+ * tf: As I understand it, the purpose is not the actual caching
+ * of the statement for re-use in loops (Android does that anyhow),
+ * but the handling of properly closing statements.
+ * You do get extra caching across individual calls, but not sure if that makes any impact.
  *
  * @author Philip Warner
  */

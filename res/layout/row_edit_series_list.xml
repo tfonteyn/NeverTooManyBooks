@@ -4,9 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/TLV_ROW"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/border">
+    style="@style/row_in_ListView">
 
     <ImageButton
         android:id="@id/TLV_ROW_DELETE"
@@ -19,23 +17,20 @@
 
     <LinearLayout
         android:id="@id/TLV_ROW_DETAILS"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:focusable="false"
-        android:orientation="vertical"
+        style="@style/tlv_details_row"
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
         app:layout_constraintStart_toEndOf="@id/TLV_ROW_DELETE"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/row_series"
-            style="@style/tlv_details_first_row"
+            style="@style/tlv_details_row_major"
             tools:text="row_series"
             tools:ignore="SelectableText" />
 
         <TextView
             android:id="@+id/row_series_sort"
-            style="@style/tlv_details_row"
+            style="@style/tlv_details_row_minor"
             tools:ignore="SelectableText"
             tools:text="row_series_sort"
             />

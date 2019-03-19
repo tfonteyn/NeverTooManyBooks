@@ -79,8 +79,6 @@ public final class GoodreadsUtils {
         View view;
         /* Goodreads SYNC Link */
         view = root.findViewById(R.id.lbl_sync_with_goodreads);
-        // Make line flash when clicked.
-        view.setBackgroundResource(android.R.drawable.list_selector_background);
         view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -92,8 +90,6 @@ public final class GoodreadsUtils {
 
         /* Goodreads IMPORT Link */
         view = root.findViewById(R.id.lbl_import_all_from_goodreads);
-        // Make line flash when clicked.
-        view.setBackgroundResource(android.R.drawable.list_selector_background);
         view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -105,8 +101,6 @@ public final class GoodreadsUtils {
 
         /* Goodreads EXPORT Link */
         view = root.findViewById(R.id.lbl_send_books_to_goodreads);
-        // Make line flash when clicked.
-        view.setBackgroundResource(android.R.drawable.list_selector_background);
         view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -124,7 +118,7 @@ public final class GoodreadsUtils {
      * Optionally, display a dialog warning the user that goodreads authentication is required;
      * gives them the options: 'request now', 'more info' or 'cancel'.
      */
-    public static void sendBooks(@NonNull final FragmentActivity context) {
+    public static void sendBooks(@NonNull final FragmentActivity activity) {
 
         new AsyncTask<Void, Object, Integer>() {
             ProgressDialogFragment<Integer> mFragment;
@@ -139,12 +133,12 @@ public final class GoodreadsUtils {
             protected void onPreExecute() {
                 //noinspection unchecked
                 mFragment = (ProgressDialogFragment)
-                        context.getSupportFragmentManager()
+                        activity.getSupportFragmentManager()
                                .findFragmentByTag(TAG_GOODREADS_SEND_BOOKS);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
-                    mFragment.show(context.getSupportFragmentManager(), TAG_GOODREADS_SEND_BOOKS);
+                    mFragment.show(activity.getSupportFragmentManager(), TAG_GOODREADS_SEND_BOOKS);
                 }
             }
 
@@ -165,21 +159,21 @@ public final class GoodreadsUtils {
             @UiThread
             protected void onPostExecute(@NonNull final Integer result) {
                 // cleanup the progress first
-                mFragment.taskFinished(R.id.TASK_ID_GR_SEND_BOOKS, mException == null, result);
+                mFragment.onTaskFinished(mException == null, result);
                 switch (result) {
                     case 0:
                         // let the user choose which books to send
-                        showConfirmationDialog(mFragment.requireActivity());
+                        showConfirmationDialog(activity);
                         break;
 
                     case -1:
                         // ask to register
-                        goodreadsAuthAlert(mFragment.requireActivity());
+                        goodreadsAuthAlert(activity);
                         break;
 
                     default:
                         // specific response.
-                        UserMessage.showUserMessage(mFragment.requireActivity(), result);
+                        UserMessage.showUserMessage(activity, result);
                         break;
                 }
             }
@@ -189,40 +183,40 @@ public final class GoodreadsUtils {
     /**
      * Called from {@link #sendBooks} to let the user confirm which books to send.
      *
-     * @param context the caller context
+     * @param activity the caller context
      */
     @UiThread
-    private static void showConfirmationDialog(@NonNull final FragmentActivity context) {
+    private static void showConfirmationDialog(@NonNull final FragmentActivity activity) {
         // Get the title
-        final AlertDialog dialog = new AlertDialog.Builder(context)
+        final AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.gr_title_send_book)
                 .setMessage(R.string.gr_send_books_to_goodreads_blurb)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                         context.getString(
+                         activity.getString(
                                  R.string.gr_btn_send_updated),
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  dialog.dismiss();
-                                 sendAllBooks(context, true);
+                                 sendAllBooks(activity, true);
                              }
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                         context.getString(R.string.gr_btn_send_all),
+                         activity.getString(R.string.gr_btn_send_all),
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  dialog.dismiss();
-                                 sendAllBooks(context, false);
+                                 sendAllBooks(activity, false);
                              }
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         context.getString(android.R.string.cancel),
+                         activity.getString(android.R.string.cancel),
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
@@ -236,11 +230,11 @@ public final class GoodreadsUtils {
     /**
      * Start a background task that exports all books to goodreads.
      *
-     * @param context     the caller context
+     * @param activity     the caller context
      * @param updatesOnly <tt>true</tt> if you only want to send updated book,
      *                    <tt>false</tt> to send ALL books.
      */
-    private static void sendAllBooks(@NonNull final FragmentActivity context,
+    private static void sendAllBooks(@NonNull final FragmentActivity activity,
                                      final boolean updatesOnly) {
 
         new AsyncTask<Void, Object, Integer>() {
@@ -256,12 +250,12 @@ public final class GoodreadsUtils {
             protected void onPreExecute() {
                 //noinspection unchecked
                 mFragment = (ProgressDialogFragment)
-                        context.getSupportFragmentManager()
+                        activity.getSupportFragmentManager()
                                .findFragmentByTag(TAG_GOODREADS_SEND_ALL_BOOKS);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
-                    mFragment.show(context.getSupportFragmentManager(),
+                    mFragment.show(activity.getSupportFragmentManager(),
                                    TAG_GOODREADS_SEND_ALL_BOOKS);
                 }
             }
@@ -292,11 +286,11 @@ public final class GoodreadsUtils {
             @Override
             @UiThread
             protected void onPostExecute(@NonNull final Integer result) {
-                mFragment.taskFinished(R.id.TASK_ID_GR_SEND_ALL_BOOKS, mException == null, result);
+                mFragment.onTaskFinished(mException == null, result);
                 if (result == -1) {
-                    goodreadsAuthAlert(mFragment.requireActivity());
+                    goodreadsAuthAlert(activity);
                 } else {
-                    UserMessage.showUserMessage(mFragment.requireActivity(), result);
+                    UserMessage.showUserMessage(activity, result);
                 }
             }
         }.execute();
@@ -305,10 +299,10 @@ public final class GoodreadsUtils {
     /**
      * Start a background task that exports a single books to goodreads.
      *
-     * @param context the caller context
+     * @param activity the caller context
      * @param bookId  the book to send
      */
-    public static void sendOneBook(@NonNull final FragmentActivity context,
+    public static void sendOneBook(@NonNull final FragmentActivity activity,
                                    final long bookId) {
 
         new AsyncTask<Void, Object, Integer>() {
@@ -324,12 +318,12 @@ public final class GoodreadsUtils {
             protected void onPreExecute() {
                 //noinspection unchecked
                 mFragment = (ProgressDialogFragment)
-                        context.getSupportFragmentManager()
+                        activity.getSupportFragmentManager()
                                .findFragmentByTag(TAG_GOODREADS_SEND_ONE_BOOK);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
-                    mFragment.show(context.getSupportFragmentManager(),
+                    mFragment.show(activity.getSupportFragmentManager(),
                                    TAG_GOODREADS_SEND_ONE_BOOK);
                 }
             }
@@ -359,11 +353,11 @@ public final class GoodreadsUtils {
             @Override
             @UiThread
             protected void onPostExecute(@NonNull final Integer result) {
-                mFragment.taskFinished(R.id.TASK_ID_GR_SEND_ONE_BOOK, mException == null, result);
+                mFragment.onTaskFinished(mException == null, result);
                 if (result == -1) {
-                    goodreadsAuthAlert(mFragment.requireActivity());
+                    goodreadsAuthAlert(activity);
                 } else {
-                    UserMessage.showUserMessage(mFragment.requireActivity(), result);
+                    UserMessage.showUserMessage(activity, result);
                 }
             }
         }.execute();
@@ -372,7 +366,7 @@ public final class GoodreadsUtils {
     /**
      * Start a background task that imports books from goodreads.
      */
-    public static void importAll(@NonNull final BaseActivity context,
+    public static void importAll(@NonNull final BaseActivity activity,
                                  final boolean isSync) {
 
         new AsyncTask<Void, Object, Integer>() {
@@ -388,12 +382,12 @@ public final class GoodreadsUtils {
             protected void onPreExecute() {
                 //noinspection unchecked
                 mFragment = (ProgressDialogFragment)
-                        context.getSupportFragmentManager()
+                        activity.getSupportFragmentManager()
                                .findFragmentByTag(TAG_GOODREADS_IMPORT_ALL);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
-                    mFragment.show(context.getSupportFragmentManager(), TAG_GOODREADS_IMPORT_ALL);
+                    mFragment.show(activity.getSupportFragmentManager(), TAG_GOODREADS_IMPORT_ALL);
                 }
             }
 
@@ -424,16 +418,16 @@ public final class GoodreadsUtils {
             @UiThread
             protected void onPostExecute(@NonNull final Integer result) {
                 // cleanup the progress first
-                mFragment.taskFinished(R.id.TASK_ID_GR_IMPORT_ALL, mException == null, result);
+                mFragment.onTaskFinished(mException == null, result);
                 switch (result) {
                     case -1:
                         // ask to register
-                        goodreadsAuthAlert(mFragment.requireActivity());
+                        goodreadsAuthAlert(activity);
                         break;
 
                     default:
                         // specific response.
-                        UserMessage.showUserMessage(mFragment.requireActivity(), result);
+                        UserMessage.showUserMessage(activity, result);
                         break;
                 }
             }
@@ -509,36 +503,36 @@ public final class GoodreadsUtils {
      * Gives the options: 'request now', 'more info' or 'cancel'.
      */
     @UiThread
-    private static void goodreadsAuthAlert(@NonNull final FragmentActivity context) {
-        final AlertDialog dialog = new AlertDialog.Builder(context)
+    private static void goodreadsAuthAlert(@NonNull final FragmentActivity activity) {
+        final AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.gr_title_auth_access)
                 .setMessage(R.string.gr_action_cannot_be_completed)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .create();
 
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(android.R.string.ok),
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  dialog.dismiss();
-                                 GoodreadsRegisterActivity.requestAuthorization(context);
+                                 RequestAuthTask.start(activity.getSupportFragmentManager());
                              }
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-                         context.getString(R.string.btn_tell_me_more),
+                         activity.getString(R.string.btn_tell_me_more),
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {
                                  dialog.dismiss();
-                                 Intent intent = new Intent(context,
+                                 Intent intent = new Intent(activity,
                                                             GoodreadsRegisterActivity.class);
-                                 context.startActivity(intent);
+                                 activity.startActivity(intent);
                              }
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                         context.getString(android.R.string.cancel),
+                         activity.getString(android.R.string.cancel),
                          new DialogInterface.OnClickListener() {
                              public void onClick(@NonNull final DialogInterface dialog,
                                                  final int which) {

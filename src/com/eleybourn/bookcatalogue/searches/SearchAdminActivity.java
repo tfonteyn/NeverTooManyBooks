@@ -11,9 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -35,7 +38,7 @@ public class SearchAdminActivity
     private static final int TAB_HOSTS = 2;
     private static final int SHOW_ALL_TABS = -1;
 
-    private TabLayout mTabLayout;
+    private ViewPagerAdapter mAdapter;
 
     @Override
     protected int getLayoutId() {
@@ -48,22 +51,25 @@ public class SearchAdminActivity
         super.onCreate(savedInstanceState);
 
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
-
         int requestedTab = args == null ? SHOW_ALL_TABS
                                         : args.getInt(REQUEST_BKEY_TAB, SHOW_ALL_TABS);
 
-        mTabLayout = findViewById(R.id.tab_panel);
+        ViewPager viewPager = findViewById(R.id.tab_fragment);
+        TabLayout tabLayout = findViewById(R.id.tab_panel);
+        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         switch (requestedTab) {
             case TAB_ORDER:
-                mTabLayout.setVisibility(View.GONE);
-                initSingleTab(R.string.tab_lbl_search_site_order,
+                tabLayout.setVisibility(View.GONE);
+                initSingleTab(AdminSearchOrderFragment.TAG + TAB_ORDER,
+                              R.string.tab_lbl_search_site_order,
                               SearchSites.getSites());
                 break;
 
             case TAB_COVER_ORDER:
-                mTabLayout.setVisibility(View.GONE);
-                initSingleTab(R.string.tab_lbl_search_site_cover_order,
+                tabLayout.setVisibility(View.GONE);
+                initSingleTab(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER,
+                              R.string.tab_lbl_search_site_cover_order,
                               SearchSites.getSitesForCoverSearches());
                 break;
 
@@ -72,30 +78,17 @@ public class SearchAdminActivity
                 break;
         }
 
-        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-            }
-        });
+        // fire up the adapter.
+        viewPager.setAdapter(mAdapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
-    private void initSingleTab(@StringRes final int titleId,
+    private void initSingleTab(@NonNull final String tag,
+                               @StringRes final int titleId,
                                @NonNull final ArrayList<SearchSites.Site> list) {
         setTitle(titleId);
-
-        if (getSupportFragmentManager().findFragmentByTag(AdminSearchOrderFragment.TAG) == null) {
-            Fragment frag = new AdminSearchOrderFragment();
-            Bundle args = new Bundle();
-            args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, list);
-            frag.setArguments(args);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .add(R.id.tab_fragment, frag, AdminSearchOrderFragment.TAG)
-                    .commit();
-        }
+        mAdapter.add(new FragmentHolder(getSupportFragmentManager(),
+                                        tag, getString(titleId)));
 
         Button confirmBtn = findViewById(R.id.confirm);
         // indicate to the user this is the 'use' scenario (instead of 'save')
@@ -115,6 +108,14 @@ public class SearchAdminActivity
                 finish();
             }
         });
+
+        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                // cancel without checking 'dirty'... this is 'use' only.
+                finish();
+            }
+        });
     }
 
     /**
@@ -123,121 +124,136 @@ public class SearchAdminActivity
     private void initAllTabs() {
         setTitle(R.string.search_internet);
 
-        FragmentHolder holder;
-        Bundle args;
-        TabLayout.Tab tab;
+        FragmentManager fm = getSupportFragmentManager();
+        // add them in order! i.e. in the order the TAB_* constants are defined.
+        mAdapter.add(new FragmentHolder(
+                fm, AdminSearchOrderFragment.TAG + TAB_ORDER,
+                getString(R.string.tab_lbl_search_site_order)));
 
-        mTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(@NonNull final TabLayout.Tab tab) {
-                //noinspection ConstantConditions
-                showTab((FragmentHolder) tab.getTag());
-            }
+        mAdapter.add(new FragmentHolder(
+                fm, AdminSearchOrderFragment.TAG + TAB_COVER_ORDER,
+                getString(R.string.tab_lbl_search_site_cover_order)));
 
-            @Override
-            public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
-            }
+        mAdapter.add(new FragmentHolder(
+                fm, AdminHostsFragment.TAG, getString(R.string.tab_lbl_search_sites)));
 
-            @Override
-            public void onTabReselected(@NonNull final TabLayout.Tab tab) {
-            }
-        });
-
-        //TAB_HOSTS
-        holder = new FragmentHolder(AdminHostsFragment.TAG);
-        tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_sites).setTag(holder);
-        mTabLayout.addTab(tab);
-
-        //TAB_ORDER
-        holder = new FragmentHolder(AdminSearchOrderFragment.TAG + TAB_ORDER);
-        args = new Bundle();
-        args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES,
-                                    SearchSites.getSites());
-        holder.fragment.setArguments(args);
-        tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_site_order).setTag(holder);
-        mTabLayout.addTab(tab);
-        // selecting it will display it thanks to the active listener.
-        tab.select();
-
-        //TAB_COVER_ORDER
-        holder = new FragmentHolder(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER);
-        args = new Bundle();
-        args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES,
-                                    SearchSites.getSitesForCoverSearches());
-        holder.fragment.setArguments(args);
-        tab = mTabLayout.newTab().setText(R.string.tab_lbl_search_site_cover_order).setTag(holder);
-        mTabLayout.addTab(tab);
 
         findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
+                if (isDirty()) {
+                    //ENHANCE: compare this approach to what is used in EditBookFragment & children.
+                    // Decide later...
 
-                //ENHANCE: compare this approach to what is used in EditBookFragment & children.
-                // Decide later...
+                    ((AdminHostsFragment) mAdapter.getItem(TAB_HOSTS)).saveSettings();
 
-                FragmentHolder fragmentHolder;
+                    ArrayList<SearchSites.Site> list;
+                    list = ((AdminSearchOrderFragment)
+                            mAdapter.getItem(TAB_ORDER)).getList();
+                    if (list != null) {
+                        SearchSites.setSearchOrder(list);
+                    }
 
-                //noinspection ConstantConditions
-                fragmentHolder = (FragmentHolder) mTabLayout.getTabAt(TAB_HOSTS).getTag();
-                //noinspection ConstantConditions
-                ((AdminHostsFragment) fragmentHolder.fragment).saveSettings();
-
-                ArrayList<SearchSites.Site> list;
-
-                //noinspection ConstantConditions
-                fragmentHolder = (FragmentHolder) mTabLayout.getTabAt(TAB_ORDER).getTag();
-                //noinspection ConstantConditions
-                list = ((AdminSearchOrderFragment) fragmentHolder.fragment).getList();
-                if (list != null) {
-                    SearchSites.setSearchOrder(list);
+                    list = ((AdminSearchOrderFragment)
+                            mAdapter.getItem(TAB_COVER_ORDER)).getList();
+                    if (list != null) {
+                        SearchSites.setCoverSearchOrder(list);
+                    }
                 }
-
-                //noinspection ConstantConditions
-                fragmentHolder = (FragmentHolder) mTabLayout.getTabAt(TAB_COVER_ORDER).getTag();
-                //noinspection ConstantConditions
-                list = ((AdminSearchOrderFragment) fragmentHolder.fragment).getList();
-                if (list != null) {
-                    SearchSites.setCoverSearchOrder(list);
-                }
-
                 // no data to return
                 setResult(Activity.RESULT_OK);
                 finish();
             }
         });
+
+        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                finishIfClean(isDirty());
+            }
+        });
     }
 
-    /**
-     * Show the passed tab.
-     *
-     * @param holder of the tab to show.
-     */
-    private void showTab(@NonNull final FragmentHolder holder) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                // replace as this is a tab bar
-                .replace(R.id.tab_fragment, holder.fragment, holder.tag)
-                .commit();
+    protected boolean isDirty() {
+        return ((AdminSearchOrderFragment) mAdapter.getItem(TAB_ORDER)).isDirty()
+                || ((AdminSearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).isDirty()
+                || ((AdminHostsFragment) mAdapter.getItem(TAB_HOSTS)).isDirty();
     }
 
-    private class FragmentHolder {
+    private static class ViewPagerAdapter
+            extends FragmentPagerAdapter {
+
+        private final List<FragmentHolder> mFragmentList = new ArrayList<>();
+
+        /**
+         * Constructor.
+         *
+         * @param fm FragmentManager
+         */
+        ViewPagerAdapter(@NonNull final FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        @NonNull
+        public Fragment getItem(final int position) {
+            return mFragmentList.get(position).fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void add(@NonNull final FragmentHolder fragmentHolder) {
+            mFragmentList.add(fragmentHolder);
+        }
+
+        @Override
+        @NonNull
+        public CharSequence getPageTitle(final int position) {
+            return mFragmentList.get(position).title;
+        }
+    }
+
+    private static class FragmentHolder {
 
         @NonNull
         final String tag;
+        @NonNull
+        String title;
+        @NonNull
         Fragment fragment;
 
-        FragmentHolder(@NonNull final String tag) {
+        /**
+         * Constructor.
+         *
+         * @param fm FragmentManager
+         */
+        FragmentHolder(@NonNull final FragmentManager fm,
+                       @NonNull final String tag,
+                       @NonNull final String title) {
             this.tag = tag;
-            fragment = getSupportFragmentManager().findFragmentByTag(tag);
+            this.title = title;
+            //noinspection ConstantConditions
+            fragment = fm.findFragmentByTag(tag);
             if (fragment == null) {
                 if (AdminHostsFragment.TAG.equals(tag)) {
                     fragment = new AdminHostsFragment();
 
-                } else if (tag.equals(AdminSearchOrderFragment.TAG + TAB_ORDER)
-                        || tag.equals(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER)) {
+                } else if (tag.equals(AdminSearchOrderFragment.TAG + TAB_ORDER)) {
                     fragment = new AdminSearchOrderFragment();
+                    Bundle args = new Bundle();
+                    args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES,
+                                                SearchSites.getSites());
+                    fragment.setArguments(args);
+
+                } else if (tag.equals(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER)) {
+                    fragment = new AdminSearchOrderFragment();
+                    Bundle args = new Bundle();
+                    args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES,
+                                                SearchSites.getSitesForCoverSearches());
+                    fragment.setArguments(args);
                 }
             }
         }

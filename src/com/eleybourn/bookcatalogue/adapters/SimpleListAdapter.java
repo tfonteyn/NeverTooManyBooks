@@ -105,9 +105,6 @@ public abstract class SimpleListAdapter<T>
             // Not recycling, get a new View and make the holder for it.
             convertView = LayoutInflater.from(getContext()).inflate(mRowLayoutId, parent, false);
             holder = new SimpleHolder(convertView);
-
-            // make it flash
-            convertView.setBackgroundResource(android.R.drawable.list_selector_background);
         }
 
         if (holder.rowDetailsView != null) {
@@ -174,11 +171,18 @@ public abstract class SimpleListAdapter<T>
      */
     static class SimpleHolder {
 
+        /** optional row delete button. */
         @Nullable
         final View deleteButton;
+        /** the details part of the row (or the row itself). */
         @Nullable
         View rowDetailsView;
 
+        /**
+         * Constructor.
+         *
+         * @param rowView to set the holder on.
+         */
         SimpleHolder(@NonNull final View rowView) {
             // If we use a TouchListView, then don't enable the whole row, so buttons keep working
             rowDetailsView = rowView.findViewById(R.id.TLV_ROW_DETAILS);

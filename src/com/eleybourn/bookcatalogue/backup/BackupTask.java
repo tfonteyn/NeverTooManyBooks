@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +27,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public class BackupTask
         extends AsyncTask<Void, Object, ExportSettings> {
 
-    public static final String TAG = BackupTask.class.getSimpleName();
+    private static final String TAG = BackupTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_SAVE_TO_ARCHIVE;
 
@@ -44,19 +45,20 @@ public class BackupTask
     @Nullable
     private Exception mException;
 
+    @NonNull
     private final ProgressDialogFragment<ExportSettings> mFragment;
 
     /**
      * Constructor.
      *
+     * @param fragment ProgressDialogFragment
      * @param settings the export settings
      */
     @UiThread
-    public BackupTask(@NonNull final ProgressDialogFragment<ExportSettings> frag,
-                      @NonNull final ExportSettings settings) {
+    private BackupTask(@NonNull final ProgressDialogFragment<ExportSettings> fragment,
+                       @NonNull final ExportSettings settings) {
 
-        mFragment = frag;
-        mFragment.setTask(M_TASK_ID, this);
+        mFragment = fragment;
         mSettings = settings;
         // sanity checks
         if ((mSettings.file == null) || ((mSettings.what & ExportSettings.MASK) == 0)) {
@@ -71,6 +73,24 @@ public class BackupTask
 
         // we write to a temp file, and will rename it upon success (or delete on failure).
         mTmpFile = new File(mSettings.file.getAbsolutePath() + ".tmp");
+    }
+
+    /**
+     * @param fm       FragmentManager
+     * @param settings the export settings
+     */
+    @UiThread
+    public static void start(@NonNull final FragmentManager fm,
+                             @NonNull final ExportSettings settings) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            ProgressDialogFragment<ExportSettings> frag =
+                    ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up,
+                                                       false, 0);
+            BackupTask task = new BackupTask(frag, settings);
+            frag.setTask(M_TASK_ID, task);
+            frag.show(fm, TAG);
+            task.execute();
+        }
     }
 
     @UiThread
@@ -157,6 +177,6 @@ public class BackupTask
     @Override
     @UiThread
     protected void onPostExecute(@NonNull final ExportSettings result) {
-        mFragment.taskFinished(M_TASK_ID, mException == null, result);
+        mFragment.onTaskFinished(mException == null, result);
     }
 }

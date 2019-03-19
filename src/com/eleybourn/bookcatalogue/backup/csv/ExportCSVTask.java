@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,32 +22,52 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public class ExportCSVTask
         extends AsyncTask<Void, Object, Void> {
 
-    public static final String TAG = ExportCSVTask.class.getSimpleName();
+    private static final String TAG = ExportCSVTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_CSV_EXPORT;
-    protected final ProgressDialogFragment<Void> mFragment;
+    @NonNull
+    private final ProgressDialogFragment<Void> mFragment;
     @NonNull
     private final CsvExporter mExporter;
+    @NonNull
     private final File tmpFile;
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
      */
     @Nullable
-    protected Exception mException;
+    private Exception mException;
 
     /**
      * Constructor.
      *
+     * @param fragment ProgressDialogFragment
      * @param settings the export settings
      */
     @UiThread
-    public ExportCSVTask(@NonNull final ProgressDialogFragment<Void> frag,
-                         @NonNull final ExportSettings settings) {
-        mFragment = frag;
-        mFragment.setTask(M_TASK_ID, this);
+    private ExportCSVTask(@NonNull final ProgressDialogFragment<Void> fragment,
+                          @NonNull final ExportSettings settings) {
+        mFragment = fragment;
         mExporter = new CsvExporter(settings);
         tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
+    }
+
+    /**
+     * @param fm       FragmentManager
+     * @param settings the export settings
+     */
+    @UiThread
+    public static void start(@NonNull final FragmentManager fm,
+                             @NonNull final ExportSettings settings) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            ProgressDialogFragment<Void> frag =
+                    ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up,
+                                                       false, 0);
+            ExportCSVTask task = new ExportCSVTask(frag, settings);
+            frag.setTask(M_TASK_ID, task);
+            frag.show(fm, TAG);
+            task.execute();
+        }
     }
 
     @Override
@@ -116,6 +137,6 @@ public class ExportCSVTask
     @Override
     @UiThread
     protected void onPostExecute(@Nullable final Void result) {
-        mFragment.taskFinished(M_TASK_ID, mException == null, result);
+        mFragment.onTaskFinished(mException == null, result);
     }
 }

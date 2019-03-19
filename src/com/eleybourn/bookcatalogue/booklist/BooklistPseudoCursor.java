@@ -117,7 +117,7 @@ public class BooklistPseudoCursor
             mMruList[i] = -1;
         }
 
-        Tracker.handleEvent(this, Tracker.States.Exit, "Created " + this);
+        Logger.info(this, Tracker.State.Exit, "BooklistPseudoCursor " + this);
     }
 
     /**
@@ -379,11 +379,11 @@ public class BooklistPseudoCursor
     @Override
     @CallSuper
     public void close() {
-        Tracker.handleEvent(this, Tracker.States.Enter, "Close " + this);
+        Logger.info(this, Tracker.State.Enter, "Close " , this);
         super.close();
 
         clearCursors();
-        Tracker.handleEvent(this, Tracker.States.Exit, "Close " + this);
+        Logger.info(this, Tracker.State.Exit, "Close " , this);
     }
 
     @Override

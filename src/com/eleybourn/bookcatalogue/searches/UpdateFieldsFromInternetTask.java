@@ -247,8 +247,8 @@ public class UpdateFieldsFromInternetTask
                 // Check which fields this book needs.
                 mCurrentBookFieldUsages = getCurrentBookFieldUsages(mFields);
                 // if no data required, skip to next book
-                if (mCurrentBookFieldUsages.isEmpty() || isbn.isEmpty()
-                        && (author.isEmpty() || title.isEmpty())) {
+                if (mCurrentBookFieldUsages.isEmpty()
+                        || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
                     // Update progress appropriately
                     mTaskManager.sendHeaderUpdate(
                             getContext().getString(R.string.progress_msg_skip_title, title));
@@ -286,7 +286,6 @@ public class UpdateFieldsFromInternetTask
 
             }
         } finally {
-            // TOMF: do we need this here or can this be done when we send the final message ??
             // Tell our listener they can clear the progress message.
             mTaskManager.sendHeaderUpdate(null);
             // Create the final message for them (user message, not a Progress message)

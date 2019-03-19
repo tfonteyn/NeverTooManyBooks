@@ -19,6 +19,7 @@ import android.widget.ListView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 
@@ -54,6 +55,11 @@ public class BookFragment
     static final String REQUEST_BKEY_FLAT_BOOKLIST_POSITION = "FBLP";
     static final String REQUEST_BKEY_FLAT_BOOKLIST = "FBL";
 
+    /**
+     * The one and only book we're viewing.
+     * Always use {@link #getBook()} and {@link #setBook(Book)} to access.
+     * We've had to move the book object before... this makes it easier if we do again.
+     */
     private Book mBook;
     private CoverHandler mCoverHandler;
 
@@ -190,8 +196,7 @@ public class BookFragment
                });
         mFields.add(R.id.format, UniqueId.KEY_FORMAT);
         mFields.add(R.id.price_listed, UniqueId.KEY_PRICE_LISTED)
-               .setFormatter(new Fields.PriceFormatter(
-                       getBook().getString(UniqueId.KEY_PRICE_LISTED_CURRENCY)));
+               .setFormatter(new Fields.PriceFormatter());
         mFields.add(R.id.first_publication, UniqueId.KEY_DATE_FIRST_PUBLISHED)
                .setFormatter(dateFormatter);
 
@@ -220,11 +225,9 @@ public class BookFragment
         mFields.add(R.id.date_acquired, UniqueId.KEY_DATE_ACQUIRED)
                .setFormatter(dateFormatter);
         mFields.add(R.id.price_paid, UniqueId.KEY_PRICE_PAID)
-               .setFormatter(new Fields.PriceFormatter(
-                       getBook().getString(UniqueId.KEY_PRICE_PAID_CURRENCY)));
+               .setFormatter(new Fields.PriceFormatter());
         mFields.add(R.id.edition, UniqueId.KEY_EDITION_BITMASK)
                .setFormatter(new Fields.BookEditionsFormatter());
-
         mFields.add(R.id.location, UniqueId.KEY_LOCATION);
         mFields.add(R.id.rating, UniqueId.KEY_RATING);
         mFields.add(R.id.notes, UniqueId.KEY_NOTES)
@@ -273,12 +276,24 @@ public class BookFragment
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
         Tracker.enterOnLoadFieldsFromBook(this, book.getId());
+
+        // pass the CURRENT currency code to the price formatters
+        //TODO: this defeats the ease of use of the formatter... populate manually or something...
+        ((Fields.PriceFormatter) mFields.getField(R.id.price_listed).getFormatter())
+                .setCurrencyCode(book.getString(UniqueId.KEY_PRICE_LISTED_CURRENCY));
+        ((Fields.PriceFormatter) mFields.getField(R.id.price_paid).getFormatter())
+                .setCurrencyCode(book.getString(UniqueId.KEY_PRICE_PAID_CURRENCY));
+
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         populateAuthorListField(book);
         populateSeriesListField(book);
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
+        // allow the field to known the uuid of the book, so it can load 'itself'
+        mFields.getField(R.id.coverImage)
+               .getView()
+               .setTag(R.id.TAG_UUID, book.get(UniqueId.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
         // handle 'text' DoNotFetch fields
@@ -303,6 +318,15 @@ public class BookFragment
             requireView().findViewById(R.id.lbl_publishing).setVisibility(View.VISIBLE);
         } else {
             requireView().findViewById(R.id.lbl_publishing).setVisibility(View.GONE);
+        }
+
+        // hide baseline view for publisher/date_published if neither visible
+        if (mFields.getField(R.id.publisher).isVisible()
+                || mFields.getField(R.id.date_published).isVisible()) {
+            // use 'invisible' as we need it as a baseline only.
+            requireView().findViewById(R.id.lbl_publisher_baseline).setVisibility(View.INVISIBLE);
+        } else {
+            requireView().findViewById(R.id.lbl_publisher_baseline).setVisibility(View.GONE);
         }
 
         // can't use showHideFields as the field could contain "0"
@@ -364,6 +388,7 @@ public class BookFragment
             return;
         }
 
+        //ENHANCE: could probably be replaced by a ViewPager
         // finally, enable the listener for flings
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
         requireView().setOnTouchListener(new View.OnTouchListener() {
@@ -379,6 +404,9 @@ public class BookFragment
 
     //<editor-fold desc="Populate">
 
+    /**
+     * The author field is a single csv String.
+     */
     private void populateAuthorListField(@NonNull final Book book) {
         ArrayList<Author> authors = book.getList(UniqueId.BKEY_AUTHOR_ARRAY);
         int authorsCount = authors.size();
@@ -398,10 +426,13 @@ public class BookFragment
         requireView().findViewById(R.id.author).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * The series field is a single String with line-breaks between multiple series.
+     */
     void populateSeriesListField(@NonNull final Book book) {
         ArrayList<Series> list = book.getList(UniqueId.BKEY_SERIES_ARRAY);
         int seriesCount = list.size();
-        boolean visible = seriesCount != 0 && mFields.getField(R.id.series).isVisible();
+        boolean visible = seriesCount != 0 && Fields.isVisible(UniqueId.KEY_SERIES);
         if (visible) {
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < seriesCount; i++) {
@@ -617,8 +648,11 @@ public class BookFragment
                 return true;
 
             case R.id.MENU_BOOK_EDIT_LOAN:
-                LendBookDialogFragment lendFrag = LendBookDialogFragment.newInstance(getBook());
-                lendFrag.show(requireFragmentManager(), LendBookDialogFragment.TAG);
+                FragmentManager fm = requireFragmentManager();
+                if (fm.findFragmentByTag(LendBookDialogFragment.TAG) == null) {
+                    LendBookDialogFragment.newInstance(getBook())
+                                          .show(fm, LendBookDialogFragment.TAG);
+                }
                 return true;
 
             case R.id.MENU_BOOK_LOAN_RETURNED:
@@ -656,13 +690,6 @@ public class BookFragment
         }
     }
 
-    /**
-     * Called when a book was changed externally.
-     *
-     * @param bookId        the book that was changed, or 0 if the change was global
-     * @param fieldsChanged a bitmask build from the flags of {@link BookChangedListener}
-     * @param data          bundle with custom data, can be null
-     */
     @Override
     public void onBookChanged(final long bookId,
                               final int fieldsChanged,

@@ -1,18 +1,11 @@
-BUGS:
-
-* edit book, enter a 'paid price' (or list) with currency, save ==> currency not shown.
-close screen, re-open ==> currency shown.
-
-search site admin:
-- cancel should warn about changes
 
 
-TOMF ENHANCE: New anthology stuff:
+TODO: New anthology stuff:
  * to think about:
- * - when to delete entries in ANTHOLOGY ? when last book is gone or keep them, for adding to new books / wish list
+ * - when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding to new books / wish list?
  * - consider a purge based on book for orphan TocEntry (a purge based on Author is already done)
 
-Review database stuff
+TODO: Review database stuff
  * - Very few database methods throw an SQLiteDoneException.
  * The caller is either already catching them, or believes they will never happen.
  *
@@ -41,7 +34,7 @@ https://github.com/mttkay/signpost
 Issues checked: 812 down to 677 (inc)
 
 New fields:
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition, Print, and condition (book / dustcover)
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition[done], Print[done], and condition[TODO] (book / dustcover)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/799 - original title (for translations, so also original language)
 
 Make some behavior optional:
@@ -74,9 +67,9 @@ TEST:
 
 
 Implemented:
-https://github.com/eleybourn/Book-Catalogue/issues/800 - Bulk edit (lang,pub)
+https://github.com/eleybourn/Book-Catalogue/issues/800 - Bulk edit (language,publisher)
 https://github.com/eleybourn/Book-Catalogue/issues/779 - Unneeded comma at end of line in CSV export
-https://github.com/eleybourn/Book-Catalogue/issues/770 - Make as read from long press
+https://github.com/eleybourn/Book-Catalogue/issues/770 - Set as read from long press
 https://github.com/eleybourn/Book-Catalogue/issues/763 - Feature request: Series/Author complete/done checkbox
 https://github.com/eleybourn/Book-Catalogue/issues/761 - Surround ISBN with quotes on CSV export?
 https://github.com/eleybourn/Book-Catalogue/issues/751 - Different decimal separator for price (German)

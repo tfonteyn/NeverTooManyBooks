@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_margin="@dimen/border_double">
+    android:padding="@dimen/border_double">
 
     <TextView
         android:id="@+id/message"
@@ -19,7 +19,6 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border"
         android:max="100"
         android:progress="0" />
 

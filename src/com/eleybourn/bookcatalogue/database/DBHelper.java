@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import java.io.File;
 
@@ -83,11 +84,9 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_E
 
 
 /**
- * This is a specific version of {@link SQLiteOpenHelper}.
- * It handles {@link #onCreate} and {@link #onUpgrade}
- * <p>
- * This used to be an inner class of {@link DBA}
- * Externalised because of the size of the class. ONLY used by {@link DBA}
+ * Our version of {@link SQLiteOpenHelper} handling {@link #onCreate} and {@link #onUpgrade}.
+ * Uses the application context.
+ * Singleton.
  */
 public class DBHelper
         extends SQLiteOpenHelper {
@@ -122,29 +121,43 @@ public class DBHelper
     /** Readers/Writer lock for this database. */
     private static Synchronizer mSynchronizer;
 
+    /** Singleton. */
+    private static DBHelper mInstance;
+
     /**
      * Constructor.
      *
-     * @param context      the caller context
      * @param factory      the cursor factor
      * @param synchronizer needed in onCreate/onUpgrade
      */
-    DBHelper(@NonNull final Context context,
-             @SuppressWarnings("SameParameterValue")
+    private DBHelper(@SuppressWarnings("SameParameterValue")
              @NonNull final SQLiteDatabase.CursorFactory factory,
              @SuppressWarnings("SameParameterValue")
              @NonNull final Synchronizer synchronizer) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+        super(BookCatalogueApp.getAppContext(), DATABASE_NAME, factory, DATABASE_VERSION);
         mSynchronizer = synchronizer;
     }
 
     /**
-     * @param context the caller context
+     * Get the singleton instance.
      *
+     * @param factory      the cursor factor
+     * @param synchronizer needed in onCreate/onUpgrade
+     */
+    public static DBHelper getInstance(@SuppressWarnings("SameParameterValue")
+                                       @NonNull final SQLiteDatabase.CursorFactory factory,
+                                       @SuppressWarnings("SameParameterValue")
+                                       @NonNull final Synchronizer synchronizer) {
+        if (mInstance == null) {
+            mInstance = new DBHelper(factory, synchronizer);
+        }
+        return mInstance;
+    }
+    /**
      * @return the physical path of the database file.
      */
-    public static String getDatabasePath(@NonNull final Context context) {
-        return context.getDatabasePath(DATABASE_NAME).getAbsolutePath();
+    public static String getDatabasePath() {
+        return BookCatalogueApp.getAppContext().getDatabasePath(DATABASE_NAME).getAbsolutePath();
     }
 
     /**
@@ -188,7 +201,9 @@ public class DBHelper
         }
         String colList = cols.toString();
         String sql = "INSERT INTO " + to + '(' + colList + ") SELECT " + colList + " FROM " + from;
-        sdb.execSQL(sql);
+        try (SynchronizedStatement stmt = sdb.compileStatement(sql)) {
+            stmt.executeInsert();
+        }
     }
 
     /**
@@ -225,20 +240,20 @@ public class DBHelper
                         + DOM_PK_ID
                         + ',' + DOM_UUID
                         + ") VALUES(?,?)";
-        SynchronizedStatement stmt = new SynchronizedStatement(syncedDb, sqlInsertStyles);
-        for (long id = BooklistStyles.BUILTIN_MAX_ID; id < 0; id++) {
-            stmt.bindLong(1, id);
-            stmt.bindString(2, String.valueOf(id));
-            // stupid/funny... after inserting '-1' our debug logging will claim that insert failed.
-            if (BuildConfig.DEBUG) {
-                if (id == -1) {
-                    Logger.info(BooklistStyles.class,
-                                "Ignore the debug message about inserting -1 here...");
+        try (SynchronizedStatement stmt = syncedDb.compileStatement(sqlInsertStyles)) {
+            for (long id = BooklistStyles.BUILTIN_MAX_ID; id < 0; id++) {
+                stmt.bindLong(1, id);
+                stmt.bindString(2, String.valueOf(id));
+                // oops... after inserting '-1' our debug logging will claim that insert failed.
+                if (BuildConfig.DEBUG) {
+                    if (id == -1) {
+                        Logger.info(BooklistStyles.class,
+                                    "Ignore the debug message about inserting -1 here...");
+                    }
                 }
+                stmt.executeInsert();
             }
-            stmt.executeInsert();
         }
-        stmt.close();
     }
 
     /**
@@ -252,7 +267,7 @@ public class DBHelper
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
         UpgradeMessageManager.setUpgradeAcknowledged();
 
-        Logger.info(this, "onCreate","database: " + db.getPath());
+        Logger.info(this, "onCreate", "database: " + db.getPath());
 
         SynchronizedDb syncedDb = new SynchronizedDb(db, mSynchronizer);
 
@@ -540,15 +555,15 @@ public class DBHelper
 
         // create/recreate the indexes with collation / which we have not added to
         // the TableDefinition's yet
-        for (String index : DATABASE_CREATE_INDICES) {
+        for (String create_index : DATABASE_CREATE_INDICES) {
             try {
-                syncedDb.execSQL(index);
+                syncedDb.execSQL(create_index);
             } catch (SQLException e) {
                 // bad sql is a developer issue... die!
                 Logger.error(e);
                 throw e;
             } catch (RuntimeException e) {
-                Logger.error(e, "Index creation failed: " + index);
+                Logger.error(e, "Index creation failed: " + create_index);
             }
         }
         syncedDb.analyze();
@@ -574,19 +589,14 @@ public class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
-        Logger.info(this, "onUpgrade","Old database version: " + oldVersion);
-        Logger.info(this, "onUpgrade","Upgrading database: " + db.getPath());
-
-        StartupActivity startup = StartupActivity.getActiveActivity();
+        Logger.info(this, "onUpgrade", "Old database version: " + oldVersion);
+        Logger.info(this, "onUpgrade", "Upgrading database: " + db.getPath());
 
         if (oldVersion < 71) {
-            String fatal = "Cannot upgrade from a version older than 4.0.0";
-            if (startup != null) {
-                startup.updateProgress(fatal);
-            }
-            throw new UpgradeException(fatal);
+            throw new UpgradeException(R.string.error_database_upgrade_failed);
         }
 
+        StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {
             startup.updateProgress(R.string.progress_msg_upgrading);
         }
@@ -618,16 +628,18 @@ public class DBHelper
             Prefs.migratePreV200preferences(
                     BookCatalogueApp
                             .getAppContext()
-                            .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE)
+                            .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE,
+                                                  Context.MODE_PRIVATE)
                             .getAll());
 
-            // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences("bookCatalogue");
+            // API: 24 -> BookCatalogueApp.getAppContext()
+            //                  .deleteSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
             BookCatalogueApp
                     .getAppContext()
                     .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE)
                     .edit().clear().apply();
 
-            // this trigger was modified/renamed.
+            // this trigger was replaced.
             syncedDb.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");
 
             //TEST a proper upgrade from 82 to 100 with non-clean data
@@ -780,8 +792,11 @@ public class DBHelper
 
         private static final long serialVersionUID = -6910121313418068318L;
 
-        UpgradeException(final String message) {
-            super(message);
+        @StringRes
+        public final int messageId;
+
+        UpgradeException(final int messageId) {
+            this.messageId = messageId;
         }
     }
 }

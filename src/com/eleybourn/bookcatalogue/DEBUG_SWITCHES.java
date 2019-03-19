@@ -59,7 +59,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean STORAGE_UTILS = false;
 
     /** {@link SearchCoordinator} and related. */
-    public static final boolean SEARCH_INTERNET = true;
+    public static final boolean SEARCH_INTERNET = false;
 
     /** Network access. */
     public static final boolean NETWORK = false;

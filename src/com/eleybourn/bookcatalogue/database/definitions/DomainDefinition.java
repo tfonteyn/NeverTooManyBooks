@@ -188,7 +188,6 @@ public class DomainDefinition
         return this;
     }
 
-
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -197,7 +196,6 @@ public class DomainDefinition
         dest.writeList(mConstraints);
     }
 
-    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {

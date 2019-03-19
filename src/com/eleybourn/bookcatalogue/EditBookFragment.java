@@ -34,9 +34,13 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
@@ -44,13 +48,12 @@ import com.eleybourn.bookcatalogue.dialogs.AlertDialogListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
-import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 import com.google.android.material.tabs.TabLayout;
 
 /**
- * A tab host activity which holds the edit book tabs.
+ * Fragment that hosts child fragments to edit a book.
  * 1. Details
  * 2. Notes
  * 3. Anthology titles
@@ -72,17 +75,21 @@ public class EditBookFragment
     @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_ANTHOLOGY = 2;
 
-    /** the one and only book we're editing. */
+    /**
+     * The one and only book we're editing.
+     * Always use {@link #getBook()} and {@link #setBook(Book)} to access.
+     * We've had to move the book object before... this makes it easier if we do again.
+     */
     private Book mBook;
+
+    /** flag used to indicate something was changed and not saved (yet). */
+    private boolean mIsDirty;
 
     /** cache our activity to avoid multiple requireActivity and casting. */
     private EditBookActivity mActivity;
 
     /** The tabs. */
     private TabLayout mTabLayout;
-    /** The TOC tab; is hidden/visible depending on the book. */
-    @Nullable
-    private TabLayout.Tab mAnthologyTab;
 
     /* ------------------------------------------------------------------------------------------ */
 
@@ -106,21 +113,19 @@ public class EditBookFragment
     }
 
     /**
-     * Delegate to the Activity which handles the 'back' button.
      *
      * @return <tt>true</tt> if our data was changed.
      */
     public boolean isDirty() {
-        return mActivity.isDirty();
+        return mIsDirty;
     }
 
     /**
-     * Delegate to the Activity which handles the 'back' button.
      *
      * @param isDirty set to <tt>true</tt> if our data was changed.
      */
     public void setDirty(final boolean isDirty) {
-        mActivity.setDirty(isDirty);
+        mIsDirty = isDirty;
     }
 
     //</editor-fold>
@@ -143,9 +148,48 @@ public class EditBookFragment
         mActivity = (EditBookActivity) requireActivity();
         super.onActivityCreated(savedInstanceState);
 
-        boolean isExistingBook = getBook().getId() > 0;
-        initTabs(savedInstanceState);
+        // any specific tab desired as 'selected' ?
+        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
+        int tabWanted = args.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
 
+        int showTab = TAB_EDIT;
+        switch (tabWanted) {
+            case TAB_EDIT:
+            case TAB_EDIT_NOTES:
+                showTab = tabWanted;
+                break;
+
+            case TAB_EDIT_ANTHOLOGY:
+                if (Fields.isVisible(UniqueId.KEY_TOC_BITMASK)) {
+                    showTab = tabWanted;
+                }
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unknown tab=" + tabWanted);
+        }
+
+        FragmentManager fm = getChildFragmentManager();
+        ViewPagerAdapter adapter = new ViewPagerAdapter(fm);
+        // add them in order! i.e. in the order the TAB_* constants are defined.
+        adapter.add(new FragmentHolder(fm, EditBookFieldsFragment.TAG,
+                                       getString(R.string.tab_lbl_details)));
+        adapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
+                                       getString(R.string.tab_lbl_notes)));
+        if (Fields.isVisible(UniqueId.KEY_TOC_BITMASK)) {
+            adapter.add(new FragmentHolder(fm, EditBookTOCFragment.TAG,
+                                           getString(R.string.tab_lbl_content)));
+        }
+
+        ViewPager viewPager = requireView().findViewById(R.id.tab_fragment);
+        viewPager.setAdapter(adapter);
+
+        mTabLayout = requireView().findViewById(R.id.tab_panel);
+        mTabLayout.setupWithViewPager(viewPager);
+
+        viewPager.setCurrentItem(showTab);
+
+        boolean isExistingBook = getBook().getId() > 0;
         Button confirmButton = requireView().findViewById(R.id.confirm);
         confirmButton.setText(isExistingBook ? R.string.btn_confirm_save_book
                                              : R.string.btn_confirm_add_book);
@@ -182,108 +226,6 @@ public class EditBookFragment
         });
     }
 
-    //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    //<editor-fold desc="Populate">
-
-    /**
-     * initial setup for editing.
-     */
-    private void initTabs(@Nullable final Bundle savedInstanceState) {
-
-        mTabLayout = requireView().findViewById(R.id.tab_panel);
-        mTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(@NonNull final TabLayout.Tab tab) {
-                //noinspection ConstantConditions
-                showTab((FragmentHolder) tab.getTag());
-            }
-
-            @Override
-            public void onTabUnselected(@NonNull final TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(@NonNull final TabLayout.Tab tab) {
-            }
-        });
-
-        FragmentHolder holder;
-        TabLayout.Tab tab;
-
-        holder = new FragmentHolder(EditBookFieldsFragment.TAG);
-        tab = mTabLayout.newTab().setText(R.string.tab_lbl_details).setTag(holder);
-        mTabLayout.addTab(tab);
-
-        holder = new FragmentHolder(EditBookNotesFragment.TAG);
-        tab = mTabLayout.newTab().setText(R.string.tab_lbl_notes).setTag(holder);
-        mTabLayout.addTab(tab);
-
-        addTOCTab(getBook().isBitSet(UniqueId.KEY_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS));
-
-        // any specific tab desired as 'selected' ?
-        Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        int tabWanted = args.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
-
-        int showTab = TAB_EDIT;
-        switch (tabWanted) {
-            case TAB_EDIT:
-            case TAB_EDIT_NOTES:
-                showTab = tabWanted;
-                break;
-
-            case TAB_EDIT_ANTHOLOGY:
-                if (Fields.isVisible(UniqueId.KEY_TOC_BITMASK)) {
-                    showTab = tabWanted;
-                }
-                break;
-
-            default:
-                throw new IllegalArgumentException("Unknown tab=" + tabWanted);
-        }
-
-        TabLayout.Tab ourTab = mTabLayout.getTabAt(showTab);
-        //noinspection ConstantConditions
-        ourTab.select();
-    }
-
-    /**
-     * Show the passed tab.
-     *
-     * @param holder of the tab to show.
-     */
-    private void showTab(@NonNull final FragmentHolder holder) {
-        getChildFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                // replace as this is a tab bar
-                .replace(R.id.tab_fragment, holder.fragment, holder.tag)
-                .commit();
-    }
-
-    /**
-     * add or remove the anthology tab.
-     *
-     * @param show <tt>true</tt> to enable the TOC tab.
-     */
-    void addTOCTab(final boolean show) {
-        if (show) {
-            if (mAnthologyTab == null) {
-                FragmentHolder fragmentHolder = new FragmentHolder(EditBookTOCFragment.TAG);
-                mAnthologyTab = mTabLayout.newTab().setText(R.string.tab_lbl_content)
-                                          .setTag(fragmentHolder);
-            }
-            mTabLayout.addTab(mAnthologyTab);
-        } else {
-            if (mAnthologyTab != null) {
-                mTabLayout.removeTab(mAnthologyTab);
-            }
-            mAnthologyTab = null;
-        }
-    }
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -380,7 +322,7 @@ public class EditBookFragment
                 .putExtra(UniqueId.KEY_ID, getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.
         mActivity.setResult(Activity.RESULT_OK, data);
-        mActivity.finishIfClean();
+        mActivity.finishIfClean(isDirty());
     }
 
     /**
@@ -406,15 +348,64 @@ public class EditBookFragment
         }
     }
 
-    private class FragmentHolder {
+    private static class ViewPagerAdapter
+            extends FragmentPagerAdapter {
+
+        private final List<FragmentHolder> mFragmentList = new ArrayList<>();
+
+        /**
+         * Constructor.
+         *
+         * @param fm FragmentManager
+         */
+        ViewPagerAdapter(@NonNull final FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        @NonNull
+        public Fragment getItem(final int position) {
+            return mFragmentList.get(position).fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void add(@NonNull final FragmentHolder fragmentHolder) {
+            mFragmentList.add(fragmentHolder);
+        }
+
+        @Override
+        @NonNull
+        public CharSequence getPageTitle(final int position) {
+            return mFragmentList.get(position).title;
+        }
+    }
+
+    private static class FragmentHolder {
 
         @NonNull
         final String tag;
+        @NonNull
+        String title;
+        @NonNull
         Fragment fragment;
 
-        FragmentHolder(@NonNull final String tag) {
+        /**
+         * Constructor.
+         *
+         * @param fm FragmentManager
+         */
+        FragmentHolder(@NonNull final FragmentManager fm,
+                       @NonNull final String tag,
+                       @NonNull final String title) {
             this.tag = tag;
-            fragment = getChildFragmentManager().findFragmentByTag(tag);
+            this.title = title;
+
+            //noinspection ConstantConditions
+            fragment = fm.findFragmentByTag(tag);
             if (fragment == null) {
                 if (EditBookFieldsFragment.TAG.equals(tag)) {
                     fragment = new EditBookFieldsFragment();

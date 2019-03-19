@@ -90,7 +90,6 @@ public final class SimpleDialog {
         for (SimpleDialogItem item : items) {
             View view = item.getView(inflater);
             view.setOnClickListener(listener);
-            view.setBackgroundResource(android.R.drawable.list_selector_background);
 
             view.setTag(R.id.TAG_DIALOG_ITEM, item);
 
@@ -129,15 +128,15 @@ public final class SimpleDialog {
      *
      * @see #selectItemDialog
      */
-    public static <T> void selectObjectDialog(@NonNull final LayoutInflater inflater,
-                                              @Nullable final String title,
-                                              @NonNull final Fields.Field field,
-                                              @NonNull final List<T> list,
-                                              @NonNull final OnClickListener handler) {
+    public static <T> void selectFieldDialog(@NonNull final LayoutInflater inflater,
+                                             @Nullable final String title,
+                                             @NonNull final Fields.Field field,
+                                             @NonNull final List<T> list,
+                                             @NonNull final OnClickListener handler) {
         List<SimpleDialogItem> items = new ArrayList<>();
         SimpleDialogItem selectedItem = null;
         for (T listEntry : list) {
-            SimpleDialogItem item = new SimpleDialogObjectItem(field, listEntry);
+            SimpleDialogItem item = new SimpleDialogFieldFormattedItem(field, listEntry);
             if (listEntry.equals(field.getValue())) {
                 selectedItem = item;
             }
@@ -288,7 +287,7 @@ public final class SimpleDialog {
     }
 
     /**
-     * Item to manage a "String+Icon" / Menu item in a list of items.
+     * Present a "String+Icon" / Menu item in a list of items.
      */
     public static class SimpleDialogMenuItem
             implements SimpleDialogItem {
@@ -331,7 +330,7 @@ public final class SimpleDialog {
     }
 
     /**
-     * Simple item to manage a File object in a list of items.
+     * Present a File object in a list of items.
      */
     public static class SimpleDialogFileItem
             implements SimpleDialogItem {
@@ -380,11 +379,11 @@ public final class SimpleDialog {
     }
 
     /**
-     * Item to manage a Field value in a list of items.
+     * Present a Field value in a list of items.
      * <p>
      * Uses the {@link Fields.FieldFormatter}, if the Field has one.
      */
-    private static class SimpleDialogObjectItem
+    private static class SimpleDialogFieldFormattedItem
             implements SimpleDialogItem {
 
         @NonNull
@@ -393,8 +392,8 @@ public final class SimpleDialog {
         @NonNull
         private final Object mRawValue;
 
-        SimpleDialogObjectItem(@NonNull final Fields.Field field,
-                               @NonNull final Object value) {
+        SimpleDialogFieldFormattedItem(@NonNull final Fields.Field field,
+                                       @NonNull final Object value) {
             mField = field;
             mRawValue = value;
         }

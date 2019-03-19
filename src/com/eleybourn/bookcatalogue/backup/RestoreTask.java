@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.IOException;
 
@@ -17,10 +18,11 @@ import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 public class RestoreTask
         extends AsyncTask<Void, Object, ImportSettings> {
 
-    public static final String TAG = RestoreTask.class.getSimpleName();
+    private static final String TAG = RestoreTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_READ_FROM_ARCHIVE;
-    protected final ProgressDialogFragment<ImportSettings> mFragment;
+    @NonNull
+    private final ProgressDialogFragment<ImportSettings> mFragment;
     @NonNull
     private final ImportSettings mSettings;
     /**
@@ -28,19 +30,38 @@ public class RestoreTask
      * {@link #onPostExecute} can then check it.
      */
     @Nullable
-    protected Exception mException;
+    private Exception mException;
 
     /**
+     * @param fragment ProgressDialogFragment
      * @param settings the import settings
      */
     @UiThread
-    public RestoreTask(@NonNull final ProgressDialogFragment<ImportSettings> frag,
-                       @NonNull final ImportSettings /* in/out */settings) {
-        mFragment = frag;
-        mFragment.setTask(M_TASK_ID, this);
+    private RestoreTask(@NonNull final ProgressDialogFragment<ImportSettings> fragment,
+                        @NonNull final ImportSettings /* in/out */settings) {
+
+        mFragment = fragment;
         mSettings = settings;
         if ((mSettings.what & ImportSettings.MASK) == 0) {
             throw new IllegalArgumentException("Options must be specified");
+        }
+    }
+
+    /**
+     * @param fm       FragmentManager
+     * @param settings the import settings
+     */
+    @UiThread
+    public static void start(@NonNull final FragmentManager fm,
+                             @NonNull final ImportSettings settings) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            ProgressDialogFragment<ImportSettings> frag =
+                    ProgressDialogFragment.newInstance(R.string.progress_msg_importing,
+                                                       false, 0);
+            RestoreTask task = new RestoreTask(frag, settings);
+            frag.setTask(M_TASK_ID, task);
+            frag.show(fm, TAG);
+            task.execute();
         }
     }
 
@@ -97,6 +118,6 @@ public class RestoreTask
     @Override
     @UiThread
     protected void onPostExecute(@NonNull final ImportSettings result) {
-        mFragment.taskFinished(M_TASK_ID, mException == null, result);
+        mFragment.onTaskFinished(mException == null, result);
     }
 }

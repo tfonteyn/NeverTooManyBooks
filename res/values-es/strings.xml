@@ -19,7 +19,6 @@
     <string name="lbl_date_published">Fecha de publicación</string>
     <string name="lbl_rating">Calificación</string>
     <string name="lbl_is_read">¿Has leído este libro?</string>
-    <string name="lbl_series">Serie</string>
     <string name="lbl_pages">Páginas</string>
     <string name="btn_confirm_add_book">Añadir libro</string>
     <string name="btn_confirm_update">Actualizar</string>
@@ -45,7 +44,9 @@
     <string name="lbl_search_for_books">Buscar libro</string>
     <string name="title_search_for">Buscar autor o título</string>
     <string name="warning_book_not_found">El libro escaneado no ha sido encontrado. El código de barras correcto se encuentra a veces en el interior de la portada. También puede introducir los datos de forma manual.</string>
+    <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_series_num_long">Serie #</string>
     <string name="title_import_book_data">Importar libros</string>
     <string name="warning_import_be_cautious">¡Atención! La importación de datos puede actualizar los datos de libros existentes con nueva información si el ID del fichero de importación existe ya en la base de datos. Esto puede ser aceptable si se modifica un campo de un fichero exportado. Si crea un registro para un nuevo libro, compruebe que el campo ID está en blanco.</string>
     <string name="import_error_failed_is_csv_file_location_correct">ERROR: La importación (desde la tarjeta SD) ha fallado. ¿Está el fichero en el lugar correcto?</string>

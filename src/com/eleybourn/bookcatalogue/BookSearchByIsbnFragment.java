@@ -9,7 +9,6 @@ import android.text.method.DigitsKeyListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
@@ -22,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.Objects;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
@@ -416,8 +416,8 @@ public class BookSearchByIsbnFragment
      */
     public void onSearchFinished(final boolean wasCancelled,
                                  @NonNull final Bundle bookData) {
-        Tracker.handleEvent(this, Tracker.States.Enter,
-                            "onSearchFinished|SearchManagerId=" + mSearchManagerId);
+        Logger.info(this, Tracker.State.Enter,
+                    "onSearchFinished", "SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {
                 mActivity.getTaskManager()

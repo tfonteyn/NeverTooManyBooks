@@ -206,7 +206,6 @@ public class EditBooklistStyleGroupsActivity
             group = BooklistGroup.newInstance(in.readInt(), uuid);
         }
 
-        /** {@link Parcelable}. */
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
@@ -215,7 +214,6 @@ public class EditBooklistStyleGroupsActivity
             dest.writeInt(group.getKind());
         }
 
-        /** {@link Parcelable}. */
         @SuppressWarnings("SameReturnValue")
         @Override
         public int describeContents() {

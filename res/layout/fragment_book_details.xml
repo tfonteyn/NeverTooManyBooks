@@ -4,27 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border">
+        android:layout_margin="@dimen/border"
+        >
 
         <TextView
             android:id="@+id/loaned_to"
             style="@style/txt_detail_medium"
             android:layout_width="0dp"
+            android:background="?android:attr/colorForeground"
             android:paddingStart="@dimen/border_double"
             android:paddingEnd="@dimen/border_double"
-            android:background="?android:attr/colorForeground"
             android:textAppearance="?android:attr/textAppearanceLargeInverse"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="On Loan to Alvin"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            />
 
         <CheckedTextView
             android:id="@+id/read"
@@ -33,7 +36,8 @@
             app:layout_constraintStart_toEndOf="@id/title"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:checked="true"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            />
 
         <ImageView
             android:id="@+id/coverImage"
@@ -43,7 +47,8 @@
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:ignore="ContentDescription"
             tools:padding="40dp"
-            tools:src="@drawable/ic_image" />
+            tools:src="@drawable/ic_image"
+            />
 
         <TextView
             android:id="@+id/title"
@@ -53,7 +58,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:ignore="SelectableText"
-            tools:text="Anna Karenina" />
+            tools:text="Anna Karenina"
+            />
 
         <TextView
             android:id="@+id/author"
@@ -65,7 +71,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:ignore="SelectableText"
-            tools:text="by Lev Tolstoy" />
+            tools:text="by Lev Tolstoy"
+            />
 
         <RatingBar
             android:id="@+id/rating"
@@ -75,14 +82,16 @@
             android:layout_marginBottom="@dimen/border"
             android:numStars="5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/author" />
+            app:layout_constraintTop_toBottomOf="@id/author"
+            />
 
         <TextView
             android:id="@+id/lbl_isbn"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_isbn"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rating" />
+            app:layout_constraintTop_toBottomOf="@id/rating"
+            />
 
         <TextView
             android:id="@+id/isbn"
@@ -91,8 +100,10 @@
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_isbn"
             app:layout_constraintStart_toEndOf="@id/lbl_isbn"
             tools:ignore="SelectableText"
-            tools:text="97834579862" />
+            tools:text="97834579862"
+            />
 
+        <!-- not using a baseline constraint, so no invisible baseline TextView -->
         <TextView
             android:id="@+id/pages"
             style="@style/txt_detail_small"
@@ -101,7 +112,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             tools:ignore="SelectableText"
-            tools:text="573 pages" />
+            tools:text="573 pages"
+            />
 
         <TextView
             android:id="@+id/format"
@@ -111,7 +123,8 @@
             app:layout_constraintStart_toEndOf="@id/pages"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             tools:ignore="SelectableText"
-            tools:text="(Hardcover)" />
+            tools:text="(Hardcover)"
+            />
 
         <!-- Series -->
         <TextView
@@ -125,11 +138,14 @@
         <TextView
             android:id="@+id/series"
             style="@style/txt_detail_medium"
+            android:layout_width="0dp"
             android:layout_marginStart="@dimen/border_double"
+            app:layout_constraintEnd_toStartOf="@+id/coverImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             tools:ignore="SelectableText"
-            tools:text="Series name (1)\nSeries name (2)" />
+            tools:text="Series name (1)\nSeries name (2)"
+            />
 
         <!-- Table Of Content -->
 
@@ -141,7 +157,8 @@
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/series"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            />
 
         <Switch
             android:id="@+id/toc_button"
@@ -170,7 +187,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_toc"
             tools:ignore="NestedScrolling"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            />
 
         <!-- Publishing -->
 
@@ -185,25 +203,36 @@
 
         <!-- Publishing - Publisher + date published -->
 
+        <!-- this invisible TextView is needed to allow show/hide of publisher/date_published
+        while maintaining their baseline -->
+        <TextView
+            android:id="@+id/lbl_publisher_baseline"
+            style="@style/lbl_textField"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
+            tools:ignore="SelectableText"
+            />
+
         <TextView
             android:id="@+id/publisher"
             style="@style/txt_detail_medium"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBottom_toTopOf="@id/lbl_price_listed"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_publisher_baseline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
             tools:ignore="SelectableText"
-            tools:text="Publisher name" />
+            tools:text="Publisher name"
+            />
 
         <TextView
             android:id="@+id/date_published"
             style="@style/txt_detail_small"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBottom_toTopOf="@id/lbl_price_listed"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_publisher_baseline"
             app:layout_constraintStart_toEndOf="@id/publisher"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
             tools:ignore="SelectableText"
-            tools:text="(Jan 25, 2012)" />
+            tools:text="25 Jan 2012"
+            />
 
         <!-- Publishing - List price -->
 
@@ -211,8 +240,8 @@
             android:id="@+id/lbl_price_listed"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_price_listed"
-            app:layout_constraintStart_toStartOf="@id/publisher"
-            app:layout_constraintTop_toBottomOf="@id/publisher"
+            app:layout_constraintStart_toStartOf="@id/lbl_publishing"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publisher_baseline"
             />
 
         <TextView
@@ -221,10 +250,10 @@
             android:layout_marginStart="@dimen/border_double"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_listed"
             app:layout_constraintStart_toEndOf="@id/lbl_price_listed"
-            app:layout_constraintTop_toBottomOf="@id/publisher"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publisher_baseline"
             tools:ignore="SelectableText"
-
-            tools:text="$45" />
+            tools:text="$45"
+            />
 
         <!-- Publishing - first_publication -->
 
@@ -232,7 +261,7 @@
             android:id="@+id/lbl_first_publication"
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_first_publication"
-            app:layout_constraintStart_toStartOf="@id/publisher"
+            app:layout_constraintStart_toStartOf="@id/lbl_publishing"
             app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
             />
 
@@ -244,7 +273,8 @@
             app:layout_constraintStart_toEndOf="@id/lbl_first_publication"
             app:layout_constraintTop_toBottomOf="@id/price_listed"
             tools:ignore="SelectableText"
-            tools:text="1938" />
+            tools:text="1938"
+            />
 
         <!-- Book Shelves -->
 
@@ -263,7 +293,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
             tools:ignore="SelectableText"
-            tools:text="The best books, Wanted" />
+            tools:text="The best books, Wanted"
+            />
 
         <!-- Genre -->
 
@@ -272,7 +303,8 @@
             style="@style/lbl_textField"
             android:text="@string/lbl_genre"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bookshelves" />
+            app:layout_constraintTop_toBottomOf="@id/bookshelves"
+            />
 
         <TextView
             android:id="@+id/genre"
@@ -281,7 +313,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_genre"
             tools:ignore="SelectableText"
-            tools:text="Science Fiction" />
+            tools:text="Science Fiction"
+            />
 
         <!-- Language -->
 
@@ -300,7 +333,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_language"
             tools:ignore="SelectableText"
-            tools:text="Quenya" />
+            tools:text="Quenya"
+            />
 
         <!-- Notes section starts here -->
 
@@ -321,7 +355,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
             tools:ignore="SelectableText"
-            tools:text="The best book of all times." />
+            tools:text="The best book of all times."
+            />
 
         <!-- Editions -->
 
@@ -342,7 +377,8 @@
             app:layout_constraintStart_toEndOf="@id/lbl_edition"
             app:layout_constraintTop_toBottomOf="@id/notes"
             tools:ignore="SelectableText"
-            tools:text="bound in real unicorn skin" />
+            tools:text="bound in real unicorn skin"
+            />
 
         <!-- Has this book been signed -->
 
@@ -362,7 +398,8 @@
             app:layout_constraintStart_toEndOf="@id/lbl_signed"
             app:layout_constraintTop_toBottomOf="@id/lbl_edition"
             tools:ignore="SelectableText"
-            tools:text="Yes" />
+            tools:text="Yes"
+            />
 
         <!-- Date acquired -->
 
@@ -382,7 +419,8 @@
             app:layout_constraintStart_toEndOf="@id/lbl_date_acquired"
             app:layout_constraintTop_toBottomOf="@id/lbl_signed"
             tools:ignore="SelectableText"
-            tools:text="Nov 10, 2011" />
+            tools:text="Nov 10, 2011"
+            />
 
         <!-- Paid price -->
 
@@ -402,7 +440,8 @@
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
             tools:ignore="SelectableText"
-            tools:text="$45" />
+            tools:text="$45"
+            />
 
         <!-- Start and end of reading -->
 
@@ -422,7 +461,8 @@
             app:layout_constraintStart_toEndOf="@id/lbl_read_start"
             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
             tools:ignore="SelectableText"
-            tools:text="Nov 10, 2011" />
+            tools:text="Nov 10, 2011"
+            />
 
         <TextView
             android:id="@+id/lbl_read_end"
@@ -440,7 +480,8 @@
             app:layout_constraintStart_toEndOf="@id/lbl_read_end"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_start"
             tools:ignore="SelectableText"
-            tools:text="Dec 15, 2011" />
+            tools:text="Dec 15, 2011"
+            />
 
         <!-- Location of the book -->
 
@@ -449,7 +490,8 @@
             style="@style/lbl_textField_inline"
             android:text="@string/lbl_location_long"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_read_end" />
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_end"
+            />
 
         <TextView
             android:id="@+id/location"
@@ -459,7 +501,8 @@
             app:layout_constraintStart_toEndOf="@id/lbl_location_long"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_end"
             tools:ignore="SelectableText"
-            tools:text="Library" />
+            tools:text="Library"
+            />
 
         <!-- Description -->
 
@@ -468,7 +511,8 @@
             style="@style/majorSectionHeader"
             android:text="@string/lbl_description"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_location_long" />
+            app:layout_constraintTop_toBottomOf="@id/lbl_location_long"
+            />
 
         <!-- reminder: textIsSelectable etc won't work here, as its done in code -->
         <TextView
@@ -481,7 +525,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_description"
             tools:ignore="SelectableText"
-            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." />
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

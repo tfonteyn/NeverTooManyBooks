@@ -50,6 +50,9 @@ public class CheckListEditorDialogFragment<T>
         extends
         EditorDialogFragment<CheckListEditorDialogFragment.OnCheckListEditorResultsListener<T>> {
 
+    /** Fragment manager tag. */
+    public static final String TAG = CheckListEditorDialogFragment.class.getSimpleName();
+
     /** Argument. */
     private static final String BKEY_CHECK_LIST = "list";
     /** The list of items to display. Object + checkbox. */

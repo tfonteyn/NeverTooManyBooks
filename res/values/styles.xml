@@ -234,8 +234,17 @@
         <item name="android:fadingEdge">none</item>
     </style>
 
-    <!-- the first/top row inside a TLV row -->
-    <style name="tlv_details_first_row">
+    <!-- the details part of the row in a TLV row. -->
+    <style name="tlv_details_row">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:focusable">false</item>
+        <!-- by default, we assume it's a LinearLayout with vertical orientation. -->
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <!-- the first/top row inside a TLV details row. -->
+    <style name="tlv_details_row_major">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">marquee</item>
@@ -243,8 +252,8 @@
         <item name="android:textIsSelectable">false</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
-    <!-- the second/.. rows inside a TLV row -->
-    <style name="tlv_details_row">
+    <!-- the second/.. rows inside a TLV details row. -->
+    <style name="tlv_details_row_minor">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">marquee</item>
@@ -267,10 +276,17 @@
     <!-- row, button and blurb for 'options' in a an option list (e.g. on a dialog) -->
     <!-- *************************************************************************************** -->
 
-    <!-- Menu label for options in a list -->
-    <style name="row_option_menu">
+    <!-- clickable row in a ListView.
+        Flashes when tapped. -->
+    <style name="row_in_ListView">
+        <item name="android:background">@android:drawable/list_selector_background</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/border</item>
+    </style>
+
+    <!-- Menu label for options in a list -->
+    <style name="row_option_menu" parent="@style/row_in_ListView">
         <item name="android:layout_margin">@dimen/border_double</item>
         <item name="android:drawablePadding">@dimen/border_quad</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
@@ -294,6 +310,7 @@
         <item name="android:layout_marginBottom">@dimen/margin_div</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
+
 
     <!-- *************************************************************************************** -->
     <!-- Cover image  -->

@@ -57,6 +57,9 @@ public class TextFieldEditorDialogFragment
         extends
         EditorDialogFragment<TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener> {
 
+    /** Fragment manager tag. */
+    public static final String TAG = TextFieldEditorDialogFragment.class.getSimpleName();
+
     /** Argument: Dialog text/message. */
     private static final String BKEY_TEXT = "text";
     /** Argument: allow multiline text. */

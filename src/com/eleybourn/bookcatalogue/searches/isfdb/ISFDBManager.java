@@ -63,6 +63,11 @@ public class ISFDBManager
         return NetworkUtils.isAlive(getBaseURL());
     }
 
+    /**
+     * {@link #search(String, String, String, boolean)} only implements isbn searches for now.
+     *
+     * @return <tt>true</tt>
+     */
     @Override
     public boolean isIsbnOnly() {
         return true;

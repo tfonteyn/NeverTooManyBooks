@@ -68,14 +68,12 @@ public class Publisher
         mName = in.readString();
     }
 
-    /** {@link Parcelable}. */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeString(mName);
     }
 
-    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {

@@ -48,6 +48,8 @@ public abstract class CheckListItemBase<T>
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
      * Subclass must handle the {@link #item}.
      */
     @Override
@@ -56,7 +58,6 @@ public abstract class CheckListItemBase<T>
         dest.writeByte((byte) (mSelected ? 1 : 0));
     }
 
-    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
@@ -69,7 +70,6 @@ public abstract class CheckListItemBase<T>
         return item;
     }
 
-    /** label to use in a {@link CheckListEditorDialogFragment.CheckListEditorDialog}. */
     @Override
     public String getLabel() {
         throw new java.lang.UnsupportedOperationException("must be overridden");

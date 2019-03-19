@@ -18,7 +18,7 @@ import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 
 /**
- * Partially implements a FragmentTask to build a list of files in the background.
+ * Partially implements an AsyncTask to build a list of files in the background.
  *
  * @author pjw
  */
@@ -37,7 +37,9 @@ public abstract class FileListerAsyncTask
                              .compareTo(o2.getFile().getName().toLowerCase());
                 }
             };
-    private final int mTaskId;
+
+    @NonNull
+    private final ProgressDialogFragment<ArrayList<FileDetails>> mFragment;
     @NonNull
     private final File mRoot;
     /**
@@ -45,23 +47,19 @@ public abstract class FileListerAsyncTask
      * {@link #onPostExecute} can then check it.
      */
     @Nullable
-    protected Exception mException;
-    protected final ProgressDialogFragment<ArrayList<FileDetails>> mFragment;
+    private Exception mException;
 
     /**
      * Constructor.
      *
-     * @param taskId a task identifier, will be returned in the task finished listener.
-     * @param root   folder to list
+     * @param fragment ProgressDialogFragment
+     * @param root     folder to list
      */
     @UiThread
-    protected FileListerAsyncTask(@NonNull final ProgressDialogFragment<ArrayList<FileDetails>> frag,
-                                  final int taskId,
+    protected FileListerAsyncTask(@NonNull final ProgressDialogFragment<ArrayList<FileDetails>> fragment,
                                   @NonNull final File root) {
-        mTaskId = taskId;
+        mFragment = fragment;
         mRoot = root;
-        mFragment = frag;
-        mFragment.setTask(mTaskId, this);
     }
 
     /** @return a FileFilter appropriate to the types of files being listed. */
@@ -100,7 +98,7 @@ public abstract class FileListerAsyncTask
                 ((FileListerListener) activity).onGotFileList(mRoot, result);
             }
         }
-        mFragment.taskFinished(mTaskId, mException == null, result);
+        mFragment.onTaskFinished(mException == null, result);
     }
 
     /**

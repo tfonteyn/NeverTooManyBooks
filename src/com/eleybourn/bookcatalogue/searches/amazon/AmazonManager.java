@@ -25,9 +25,20 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 /**
+ * Early 2019, I got this error:
  * <br />
- * <b>Warning</b>:  file_get_contents(http://webservices.amazon.com/onca/xml?AssociateTag=theagidir-20&amp;Keywords=0586216871&amp;Operation=ItemSearch&amp;ResponseGroup=Medium,Images&amp;SearchIndex=Books&amp;Service=AWSECommerceService&amp;SubscriptionId=AKIAIHF2BM6OTOA23JEQ&amp;Timestamp=2019-02-17T21:53:11.000Z&amp;Signature=dEqLlFLyj4x%2BNJaticEpqKGSQm%2F75tmnnZ7dkegK8K0%3D): failed to open stream: HTTP request failed! HTTP/1.1 503 Service Unavailable
- *  in <b>/app/getRest_v3.php</b> on line <b>70</b><br />
+ * <b>Warning</b>:  file_get_contents(http://webservices.amazon.com/onca/xml?
+ * AssociateTag=theagidir-20
+ * &amp;Keywords=0586216871
+ * &amp;Operation=ItemSearch
+ * &amp;ResponseGroup=Medium,Images
+ * &amp;SearchIndex=Books
+ * &amp;Service=AWSECommerceService
+ * &amp;SubscriptionId=AKIAIHF2BM6OTOA23JEQ
+ * &amp;Timestamp=2019-02-17T21:53:11.000Z
+ * &amp;Signature=dEqLlFLyj4x%2BNJaticEpqKGSQm%2F75tmnnZ7dkegK8K0%3D)
+ * : failed to open stream: HTTP request failed! HTTP/1.1 503 Service Unavailable
+ * in <b>/app/getRest_v3.php</b> on line <b>70</b><br />
  */
 public final class AmazonManager
         implements SearchSites.SearchSiteManager {
@@ -76,7 +87,7 @@ public final class AmazonManager
 
     /**
      * This searches the amazon REST site based on a specific isbn.
-     * FIXME: Search proxies through theagiledirector.com - amazon not supporting mobile devices
+     * FIXME: Search proxies through theagiledirector.com - amazon not supporting mobile devices?
      *
      * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
      *

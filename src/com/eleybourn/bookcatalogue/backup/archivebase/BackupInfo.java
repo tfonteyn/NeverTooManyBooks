@@ -153,7 +153,6 @@ public class BackupInfo
         dest.writeBundle(mBundle);
     }
 
-    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {

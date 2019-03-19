@@ -26,7 +26,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
@@ -38,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 
@@ -424,8 +424,11 @@ public class EditSeriesListActivity
         public void onRowClick(@NonNull final View target,
                                @NonNull final Series item,
                                final int position) {
-            EditBookSeriesDialogFragment frag = EditBookSeriesDialogFragment.newInstance(item);
-            frag.show(getSupportFragmentManager(), EditBookSeriesDialogFragment.TAG);
+            FragmentManager fm = getSupportFragmentManager();
+            if (fm.findFragmentByTag(EditBookSeriesDialogFragment.TAG) == null) {
+                EditBookSeriesDialogFragment.newInstance(item)
+                                            .show(fm, EditBookSeriesDialogFragment.TAG);
+            }
         }
 
         /**

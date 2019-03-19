@@ -20,27 +20,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
- * // At this point the fragment may have been recreated due to a rotation,
- * // and there may be a TaskFragment lying around. So see if we can find it.
- * // Check to see if we have retained the worker fragment.
- * ProgressDialogFragment taskFragment = (ProgressDialogFragment)
- * getFragmentManager().findFragmentByTag(TASK_FRAGMENT_TAG);
- * if (taskFragment != null)
- * {
- * // Update the target fragment so it goes to this fragment instead of the old one.
- * // This will also allow the GC to reclaim the old MainFragment, which the TaskFragment
- * // keeps a reference to. Note that I looked in the code and setTargetFragment() doesn't
- * // use weak references. To be sure you aren't leaking, you may wish to make your own
- * // setTargetFragment() which does.
- * taskFragment.setTargetFragment(this, TASK_FRAGMENT);
- * }
- * }
- * <p>
- * <p>
- * <p>
- * <p>
  * Progress support for {@link AsyncTask}.
  * <p>
  * We're using setRetainInstance(true); so the task survives together with this fragment.
@@ -67,14 +49,15 @@ public class ProgressDialogFragment<Results>
 
     /** intermediate storage, as we'll only update this when progress is updated. */
     private int mMax;
-    /** flag indicating the max value was updated. No need to add to onSaveInstanceState */
+    /** flag indicating the max value was updated. No need to add to onSaveInstanceState. */
     private boolean mUpdateMax;
     /** intermediate storage, needed for onSaveInstanceState. */
     @Nullable
     private String mMessage;
-    /** the task. */
+    /** the current task. */
     @Nullable
     private AsyncTask<Void, Object, Results> mTask;
+    /** the current task. */
     @Nullable
     private Integer mTaskId;
 
@@ -83,6 +66,7 @@ public class ProgressDialogFragment<Results>
      * @param isIndeterminate type of progress
      * @param max             maximum value for progress if isIndeterminate==false
      *                        Pass in 0 to keep the max as set in the layout file.
+     * @param <Results>       the type of the result object from the task.
      *
      * @return the fragment.
      */
@@ -114,6 +98,15 @@ public class ProgressDialogFragment<Results>
         mTask = task;
     }
 
+    /**
+     * @return the task, or null if not task.
+     */
+    @Nullable
+    public AsyncTask<Void, Object, Results> getTask() {
+        return mTask;
+    }
+
+
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -144,6 +137,7 @@ public class ProgressDialogFragment<Results>
         // initial/current message.
         mMessage = args.getString(BKEY_CURRENT_MESSAGE);
         if (mMessage != null) {
+            //noinspection ConstantConditions
             mMessageView.setText(mMessage);
         }
         // current and max values for a 'determinate' progress bar.
@@ -164,22 +158,25 @@ public class ProgressDialogFragment<Results>
         }
         //ENHANCE: this is really needed, as it would be to easy to cancel. But we SHOULD add a specific cancel-button!
         dialog.setCanceledOnTouchOutside(false);
+
         return dialog;
     }
 
     public void setTitle(@StringRes final int titleId) {
-        requireDialog().setTitle(titleId);
+        if (getDialog() != null) {
+            getDialog().setTitle(titleId);
+        }
     }
 
     /**
      * Direct update of message and progress value.
      *
-     * @param message       to display
-     * @param progressCount absolute position
+     * @param message     to display
+     * @param absPosition absolute position
      */
     @UiThread
     public void onProgress(@Nullable final String message,
-                           @Nullable final Integer progressCount) {
+                           @Nullable final Integer absPosition) {
         synchronized (this) {
             if (mUpdateMax) {
                 //noinspection ConstantConditions
@@ -192,10 +189,22 @@ public class ProgressDialogFragment<Results>
                 //noinspection ConstantConditions
                 mMessageView.setText(mMessage);
             }
-            if (progressCount != null) {
-                mProgressBar.setProgress(progressCount);
+
+            if (absPosition != null) {
+                mProgressBar.setProgress(absPosition);
             }
         }
+    }
+
+    /**
+     * Update the counter (bar) on the progress dialog.
+     *
+     * @param absPosition absolute position
+     */
+    @UiThread
+    public void onProgress(final int absPosition) {
+        //noinspection ConstantConditions
+        mProgressBar.setProgress(absPosition);
     }
 
     /**
@@ -209,22 +218,13 @@ public class ProgressDialogFragment<Results>
             // only update when changed
             if (message != null && !message.equals(mMessage)) {
                 mMessage = message;
-                //noinspection ConstantConditions
-                mMessageView.setText(mMessage);
+                if (getDialog() != null) {
+                    //noinspection ConstantConditions
+                    mMessageView.setText(mMessage);
+                } else {
+                    Logger.error("Dialog was NULL");
+                }
             }
-        }
-    }
-
-    /**
-     * Update the counter (bar) on the progress dialog.
-     *
-     * @param progressCount absolute position
-     */
-    @UiThread
-    public void onProgress(final int progressCount) {
-        synchronized (this) {
-            //noinspection ConstantConditions
-            mProgressBar.setProgress(progressCount);
         }
     }
 
@@ -235,11 +235,9 @@ public class ProgressDialogFragment<Results>
      */
     @AnyThread
     public void setMax(final int max) {
-        synchronized (this) {
-            mMax = max;
-            // trigger the next onProgress to update the max value.
-            mUpdateMax = true;
-        }
+        mMax = max;
+        // trigger the next onProgress to update the max value.
+        mUpdateMax = true;
     }
 
     @Override
@@ -250,16 +248,6 @@ public class ProgressDialogFragment<Results>
         //noinspection ConstantConditions
         outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
         outState.putInt(BKEY_MAX, mMax);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // This is a little hacky, but we will see if the task has finished while we weren't
-        // in this activity, and then we can dismiss ourselves.
-        if (mTask == null) {
-            dismiss();
-        }
     }
 
     @Override
@@ -295,32 +283,29 @@ public class ProgressDialogFragment<Results>
     /**
      * Called when the task finishes.
      *
-     * @param taskId  a task identifier, will be returned in the task finished listener.
      * @param success <tt>true</tt> if the task finished successfully
      * @param result  task result object
      */
     @UiThread
-    public void taskFinished(final int taskId,
-                             final boolean success,
-                             @Nullable final Results result) {
+    public void onTaskFinished(final boolean success,
+                               @Nullable final Results result) {
         // Make sure we check if it is resumed because we will crash if trying to dismiss
         // the dialog after the user has switched to another app.
         if (isResumed()) {
             dismiss();
         }
 
-        // If we aren't resumed, setting the task to null will allow us to dismiss ourselves in
-        // onResume().
-        mTaskId = null;
-        mTask = null;
-
         // Tell the caller we're done.
         //noinspection InstanceofIncompatibleInterface
         if (getTargetFragment() instanceof OnTaskFinishedListener) {
-            ((OnTaskFinishedListener) getTargetFragment()).onTaskFinished(taskId, success, result);
+            ((OnTaskFinishedListener) getTargetFragment()).onTaskFinished(mTaskId, success, result);
         } else if (getActivity() instanceof OnTaskFinishedListener) {
-            ((OnTaskFinishedListener) getActivity()).onTaskFinished(taskId, success, result);
+            ((OnTaskFinishedListener) getActivity()).onTaskFinished(mTaskId, success, result);
         }
+
+        // invalidate the current task as its finished. The dialog can be reused.
+        mTaskId = null;
+        mTask = null;
     }
 
     /**
@@ -350,11 +335,12 @@ public class ProgressDialogFragment<Results>
     public interface OnTaskFinishedListener {
 
         /**
+         * @param taskId  id for the task which was provided at construction time.
          * @param success <tt>true</tt> if the task finished successfully
          * @param result  the return object from the {@link AsyncTask#doInBackground} call
          *                Nullable/NonNull is up to the implementation.
          */
-        void onTaskFinished(int taskId,
+        void onTaskFinished(Integer taskId,
                             boolean success,
                             Object result);
     }

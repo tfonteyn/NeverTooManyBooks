@@ -64,9 +64,6 @@ public class ZxingScanner
         return context.getPackageManager().resolveActivity(intent, 0) != null;
     }
 
-    /**
-     * Start the activity with the passed request code.
-     */
     @Override
     public void startActivityForResult(@NonNull final Activity activity,
                                        final int requestCode) {
@@ -78,9 +75,6 @@ public class ZxingScanner
         activity.startActivityForResult(intent, requestCode);
     }
 
-    /**
-     * Extract the barcode from the result.
-     */
     @NonNull
     @Override
     public String getBarcode(@NonNull final Intent data) {

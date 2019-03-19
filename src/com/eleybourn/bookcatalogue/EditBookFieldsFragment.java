@@ -30,8 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Checkable;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -52,7 +50,6 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -219,17 +216,6 @@ public class EditBookFieldsFragment
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency,
                         getListPriceCurrencyCodes());
 
-        /* Anthology is provided as a boolean, see {@link Book#initValidators()}*/
-        mFields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS)
-               .getView().setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(@NonNull final View v) {
-                        Checkable cb = (Checkable) v;
-                        EditBookFragment frag = (EditBookFragment) requireParentFragment();
-                        frag.addTOCTab(cb.isChecked());
-                    }
-                });
-
         // Personal fields
 
         // defined, but handled manually (reminder: storing the list back into the book
@@ -263,11 +249,11 @@ public class EditBookFieldsFragment
         ArrayList<Bookshelf> bsList = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
 
-        boolean isAnt = book.isBitSet(UniqueId.KEY_TOC_BITMASK,
-                                      TocEntry.Type.MULTIPLE_WORKS);
-        mFields.getField(R.id.is_anthology).setValue(isAnt ? "1" : "0");
-
         // ENHANCE: {@link Fields.ImageViewAccessor}
+        // allow the field to known the uuid of the book, so it can load 'itself'
+        mFields.getField(R.id.coverImage)
+               .getView()
+               .setTag(R.id.TAG_UUID, book.get(UniqueId.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
         // Restore default visibility

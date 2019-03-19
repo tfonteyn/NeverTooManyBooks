@@ -33,13 +33,16 @@ public class SynchronizedStatement
     private final SQLiteStatement mStatement;
     /** Indicates this is a 'read-only' statement. */
     private final boolean mIsReadOnly;
-    /** Indicates this is a 'count' statement. */
-    private final boolean mIsCount;
+    /** DEBUG: Indicates this is a 'count' statement. */
+    private boolean mIsCount;
     /** Indicates close() has been called. */
     private boolean mIsClosed;
 
     /**
      * Constructor.
+     * Do not use directly!
+     *
+     * Always use {@link SynchronizedDb#compileStatement(String)} to get a new instance.
      *
      * @param db the database
      * @param sql the sql for this statement
@@ -47,9 +50,13 @@ public class SynchronizedStatement
     public SynchronizedStatement(@NonNull final SynchronizedDb db,
                                  @NonNull final String sql) {
         mSync = db.getSynchronizer();
-        mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
-        mIsCount = sql.trim().toUpperCase().startsWith("SELECT COUNT(");
         mStatement = db.getUnderlyingDatabase().compileStatement(sql);
+        // this is not a debug flag, but used to get a shared versus exclusive lock
+        mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
+
+        if (BuildConfig.DEBUG) {
+            mIsCount = sql.trim().toUpperCase().startsWith("SELECT COUNT(");
+        }
     }
 
     /**

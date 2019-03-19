@@ -30,6 +30,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,7 +49,6 @@ import com.eleybourn.bookcatalogue.backup.RestoreTask;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserBaseActivity;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment;
-import com.eleybourn.bookcatalogue.filechooser.FileListerAsyncTask;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -106,21 +106,23 @@ public class BackupAndRestoreActivity
     }
 
     /**
-     * Get a task suited to building a list of backup files.
+     * Start a task suited to building a list of backup files.
      */
-    @NonNull
     @Override
-    public FileListerAsyncTask getFileLister(@NonNull final FragmentActivity context,
-                                             @NonNull final File root) {
-        //noinspection unchecked
-        ProgressDialogFragment<ArrayList<FileChooserFragment.FileDetails>> frag = (ProgressDialogFragment)
-                getSupportFragmentManager().findFragmentByTag(BackupListerTask.TAG);
-        if (frag == null) {
-            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_searching_directory,
-                                                      true, 0);
-            frag.show(getSupportFragmentManager(), BackupListerTask.TAG);
+    public void startFileLister(@NonNull final FragmentActivity context,
+                                @NonNull final File root) {
+
+        FragmentManager fm = context.getSupportFragmentManager();
+        if (fm.findFragmentByTag(BackupListerTask.TAG) == null) {
+            ProgressDialogFragment<ArrayList<FileChooserFragment.FileDetails>> frag =
+                    ProgressDialogFragment.newInstance(R.string.progress_msg_searching_directory,
+                                                       true, 0);
+            BackupListerTask task =
+                    new BackupListerTask(frag, root);
+            frag.setTask(R.id.TASK_ID_FILE_LISTER, task);
+            frag.show(fm, BackupListerTask.TAG);
+            task.execute();
         }
-        return new BackupListerTask(frag, root);
     }
 
     /**
@@ -143,15 +145,8 @@ public class BackupAndRestoreActivity
                                         final int which) {
                         // User wants to import all.
                         settings.what = ImportSettings.ALL;
-                        //noinspection unchecked
-                        ProgressDialogFragment<ImportSettings> frag = (ProgressDialogFragment)
-                                getSupportFragmentManager().findFragmentByTag(RestoreTask.TAG);
-                        if (frag == null) {
-                            frag = ProgressDialogFragment.newInstance(
-                                    R.string.progress_msg_importing, false, 0);
-                            frag.show(getSupportFragmentManager(), RestoreTask.TAG);
-                        }
-                        new RestoreTask(frag, settings).execute();
+
+                        RestoreTask.start(getSupportFragmentManager(), settings);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -166,9 +161,11 @@ public class BackupAndRestoreActivity
                     public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         // User wants to tune settings first.
-                        ImportDialogFragment.newInstance(settings)
-                                            .show(getSupportFragmentManager(),
-                                                  ImportDialogFragment.TAG);
+                        FragmentManager fm = getSupportFragmentManager();
+                        if (fm.findFragmentByTag(ImportDialogFragment.TAG) == null) {
+                            ImportDialogFragment.newInstance(settings)
+                                                .show(fm, ImportDialogFragment.TAG);
+                        }
                     }
                 })
                 .create();
@@ -184,14 +181,7 @@ public class BackupAndRestoreActivity
         if (settings.what == ImportSettings.NOTHING) {
             return;
         }
-        //noinspection unchecked
-        ProgressDialogFragment<ImportSettings> frag = (ProgressDialogFragment)
-                getSupportFragmentManager().findFragmentByTag(RestoreTask.TAG);
-        if (frag == null) {
-            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_importing, false, 0);
-            frag.show(getSupportFragmentManager(), RestoreTask.TAG);
-        }
-        new RestoreTask(frag, settings).execute();
+        RestoreTask.start(getSupportFragmentManager(), settings);
     }
 
     /**
@@ -211,15 +201,7 @@ public class BackupAndRestoreActivity
                                         final int which) {
                         // User wants to backup all.
                         settings.what = ExportSettings.ALL;
-                        //noinspection unchecked
-                        ProgressDialogFragment<ExportSettings> frag = (ProgressDialogFragment)
-                                getSupportFragmentManager().findFragmentByTag(BackupTask.TAG);
-                        if (frag == null) {
-                            frag = ProgressDialogFragment.newInstance(
-                                    R.string.progress_msg_backing_up, false, 0);
-                            frag.show(getSupportFragmentManager(), BackupTask.TAG);
-                        }
-                        new BackupTask(frag, settings).execute();
+                        BackupTask.start(getSupportFragmentManager(), settings);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -234,9 +216,11 @@ public class BackupAndRestoreActivity
                     public void onClick(@NonNull final DialogInterface dialog,
                                         final int which) {
                         // User wants to tune settings first.
-                        ExportDialogFragment.newInstance(settings)
-                                            .show(getSupportFragmentManager(),
-                                                  ExportDialogFragment.TAG);
+                        FragmentManager fm = getSupportFragmentManager();
+                        if (fm.findFragmentByTag(ExportDialogFragment.TAG) == null) {
+                            ExportDialogFragment.newInstance(settings)
+                                                .show(fm, ExportDialogFragment.TAG);
+                        }
                     }
                 })
                 .create();
@@ -268,14 +252,8 @@ public class BackupAndRestoreActivity
             // make sure; cannot have a dateFrom when not asking for a time limited export
             settings.dateFrom = null;
         }
-        //noinspection unchecked
-        ProgressDialogFragment<ExportSettings> frag = (ProgressDialogFragment)
-                getSupportFragmentManager().findFragmentByTag(BackupTask.TAG);
-        if (frag == null) {
-            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up, false, 0);
-            frag.show(getSupportFragmentManager(), BackupTask.TAG);
-        }
-        new BackupTask(frag, settings).execute();
+
+        BackupTask.start(getSupportFragmentManager(), settings);
     }
 
     /**
@@ -288,7 +266,7 @@ public class BackupAndRestoreActivity
      *                - file lister: not used
      */
     @Override
-    public void onTaskFinished(final int taskId,
+    public void onTaskFinished(final Integer taskId,
                                final boolean success,
                                @Nullable final Object result) {
 

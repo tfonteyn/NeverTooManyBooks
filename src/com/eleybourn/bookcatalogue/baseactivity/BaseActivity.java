@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.baseactivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -253,12 +255,11 @@ public abstract class BaseActivity
     @Override
     @CallSuper
     protected void onResume() {
-        Tracker.enterOnResume(this);
         super.onResume();
 
         if (mRestartActivityOnResume) {
             if (/* always show debug */ BuildConfig.DEBUG) {
-                Logger.info(this, "onResume", "Restarting");
+                Logger.info(this, "onResume", "Restarting activity");
             }
             finish();
             startActivity(getIntent());
@@ -266,8 +267,6 @@ public abstract class BaseActivity
             // listen for changes
             Prefs.getPrefs().registerOnSharedPreferenceChangeListener(this);
         }
-
-        Tracker.exitOnResume(this);
     }
 
     @Override
@@ -275,6 +274,31 @@ public abstract class BaseActivity
         // stop listening for changes
         Prefs.getPrefs().unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
+    }
+
+    /**
+     * Check if edits need saving.
+     * If they don't, simply finish the activity, otherwise ask the user.
+     *
+     * @param isDirty if <tt>true</tt> ask the user if it's ok to exit this activity.
+     *                Otherwise, just finish.
+     */
+    public void finishIfClean(final boolean isDirty) {
+        if (isDirty) {
+            StandardDialogs.showConfirmUnsavedEditsDialog(
+                    this,
+                    /* only runs if user clicks 'exit' */
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            setResult(Activity.RESULT_CANCELED);
+                            finish();
+                        }
+                    });
+        } else {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+        }
     }
 
     /**

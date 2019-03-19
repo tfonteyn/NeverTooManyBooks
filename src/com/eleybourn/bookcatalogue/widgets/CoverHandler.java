@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -104,7 +105,7 @@ public class CoverHandler
     private final int mMaxWidth;
     private final int mMaxHeight;
     @Nullable
-    private CoverBrowser mCoverBrowser;
+    private CoverBrowser mCoverBrowserFragment;
 
     /** Used to display a hint if user rotates a camera image. */
     private boolean mGotCameraImage;
@@ -149,7 +150,7 @@ public class CoverHandler
      * @param fileSpec the file
      */
     private void onImageSelected(@NonNull final String fileSpec) {
-        if (mCoverBrowser != null) {
+        if (mCoverBrowserFragment != null) {
             // the new file we got
             File newFile = new File(fileSpec);
             // Get the current file we want to loose
@@ -158,8 +159,8 @@ public class CoverHandler
             StorageUtils.renameFile(newFile, bookFile);
             // Update the ImageView with the new image
             updateCoverView();
-            mCoverBrowser.dismiss();
-            mCoverBrowser = null;
+            mCoverBrowserFragment.dismiss();
+            mCoverBrowserFragment = null;
         }
     }
 
@@ -342,21 +343,22 @@ public class CoverHandler
      * We *should* have the uuid on a tag on the over field view,
      * but if not, we'll get it from the database.
      *
-     * @return the uuid
+     * @return the uuid, or null when the book has no uuid.
      */
+    @NonNull
     private String getUuid() {
         String uuid = (String) mCoverField.getView().getTag(R.id.TAG_UUID);
         // if we forgot to set it in some bad code... log the fact, and make a trip to the db.
         if (uuid == null) {
-            Logger.error("UUID was not available on the view tag");
+            Logger.debug("UUID was not available on the view tag");
             uuid = mDb.getBookUuid(mBookManager.getBook().getId());
         }
         return uuid;
     }
 
     /**
-     * Use the isbn to fetch other possible images from the internet and present to
-     * the user to choose one.
+     * Use the isbn to fetch other possible images from the internet
+     * and present to the user to choose one.
      */
     private void addCoverFromAlternativeEditions() {
         if (LibraryThingManager.noKey()) {
@@ -365,12 +367,18 @@ public class CoverHandler
         }
 
         String isbn = mIsbnField.getValue().toString();
+
         if (IsbnUtils.isValid(isbn)) {
-            mCoverBrowser = CoverBrowser.newInstance(isbn, SearchSites.Site.SEARCH_ALL);
+            // we must use the same fragment manager as the hosting fragment.
+            FragmentManager fm = mFragment.requireFragmentManager();
+            mCoverBrowserFragment = (CoverBrowser) fm.findFragmentByTag(CoverBrowser.TAG);
+            if (mCoverBrowserFragment == null) {
+                mCoverBrowserFragment = CoverBrowser.newInstance(isbn, SearchSites.Site.SEARCH_ALL);
+                mCoverBrowserFragment.show(fm, CoverBrowser.TAG);
+            }
             // allow a callback when the user clicks on the image they want to use.
             // at least we don't need to travel round to the Activity this way.
-            mCoverBrowser.setTargetFragment(mFragment, REQ_ALT_EDITION);
-            mCoverBrowser.show(mActivity.getSupportFragmentManager(), CoverBrowser.TAG);
+            mCoverBrowserFragment.setTargetFragment(mFragment, REQ_ALT_EDITION);
         } else {
             //Snackbar.make(mIsbnField.getView(), R.string.editions_require_isbn,
             //              Snackbar.LENGTH_LONG).show();
@@ -428,9 +436,9 @@ public class CoverHandler
             cropCoverImage(cameraFile);
             mGotCameraImage = true;
         } else {
-            Tracker.handleEvent(this, Tracker.States.Running,
-                                "onActivityResult(" + requestCode + ','
-                                        + resultCode + ") - camera image empty");
+            Logger.info(this, Tracker.State.Running, "addCoverFromCamera",
+                        "onActivityResult(" + requestCode + ','
+                                + resultCode + ") - camera image empty");
         }
     }
 
@@ -649,9 +657,9 @@ public class CoverHandler
      * Dismiss the cover browser.
      */
     public void dismissCoverBrowser() {
-        if (mCoverBrowser != null) {
-            mCoverBrowser.dismiss();
-            mCoverBrowser = null;
+        if (mCoverBrowserFragment != null) {
+            mCoverBrowserFragment.dismiss();
+            mCoverBrowserFragment = null;
         }
     }
 
@@ -710,15 +718,13 @@ public class CoverHandler
                         // Update the ImageView with the new image
                         updateCoverView();
                     } else {
-                        Tracker.handleEvent(this, Tracker.States.Running,
-                                            "onActivityResult(" + requestCode + ','
-                                                    + resultCode + ')'
-                                                    + " - result OK, but no image file");
+                        Logger.info(this, Tracker.State.Running,
+                                    "onActivityResult", requestCode,
+                                    resultCode, "result OK, but no image file");
                     }
                 } else {
-                    Tracker.handleEvent(this, Tracker.States.Running,
-                                        "onActivityResult(" + requestCode + ','
-                                                + resultCode + ") - bad result");
+                    Logger.info(this, Tracker.State.Running,
+                                "onActivityResult", requestCode, resultCode, "bad result");
                     StorageUtils.deleteFile(getCroppedTempCoverFile());
                 }
                 return true;

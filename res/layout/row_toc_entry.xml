@@ -3,27 +3,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/border">
+    style="@style/row_in_ListView">
 
     <TextView
         android:id="@+id/title"
         style="@style/txt_detail_small"
         android:layout_width="0dp"
+        android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/year"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText"
         tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The" />
 
     <TextView
         android:id="@+id/year"
         style="@style/txt_detail_small"
+        android:textIsSelectable="false"
         android:layout_marginStart="@dimen/border_double"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText"
         tools:text="(1971)" />
 </androidx.constraintlayout.widget.ConstraintLayout>

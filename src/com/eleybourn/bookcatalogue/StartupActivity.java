@@ -29,6 +29,8 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.StrictMode;
 import android.text.Html;
 import android.util.Log;
 
@@ -46,7 +48,6 @@ import androidx.core.content.PermissionChecker;
 
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -58,6 +59,8 @@ import com.eleybourn.bookcatalogue.database.DBCleaner;
 import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -93,13 +96,13 @@ public class StartupActivity
     private static boolean mShowAmazonHint;
     /** Flag to ensure tasks are only ever started once (at real startup). */
     private static boolean mStartupTasksShouldBeStarted = true;
-    /** Self reference for use during upgrades. */
+    /** Self reference for use by tasks and during upgrades. */
     private static WeakReference<StartupActivity> mStartupActivity;
     /** TaskId holder. Added when started. Removed when stopped. */
     private final Set<Integer> mAllTasks = new HashSet<>();
     /** Progress Dialog for startup tasks. */
     @Nullable
-    private ProgressDialogFragment mProgressDialog;
+    private ProgressDialogFragment<Void> mProgressDialog;
     /** Flag indicating a backup is required after startup. */
     private boolean mBackupRequired;
     /** stage the startup is at. */
@@ -126,19 +129,42 @@ public class StartupActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // request Permissions (Android 6+)
+        // https://developer.android.com/reference/android/os/StrictMode
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                                               .detectAll()
+                                               .penaltyLog()
+                                               .build());
+        }
+
+        // running on Android 6+ -> request Permissions
         if (Build.VERSION.SDK_INT >= 23) {
-            initStorage();
+            if (!initStorage()) {
+                // we asked for permissions. TBC in onRequestPermissionsResult
+                return;
+            }
         } else {
             // older Android, simply move forward as the permissions will have
             // been requested at install time. The SecurityException will never be thrown
             // but the API requires catching it.
             try {
                 int msgId = StorageUtils.initSharedDirectories();
+                if (msgId != 0) {
+                    UserMessage.showUserMessage(this, msgId);
+                }
             } catch (SecurityException ignore) {
             }
-            startNextStage();
         }
+
+        // hack? without this, the progress dialog is not available when we pass it out first message.
+        // This basically hands control to the OS as an in-between.
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                startNextStage();
+            }
+        });
     }
 
     /**
@@ -147,12 +173,14 @@ public class StartupActivity
     private void startNextStage() {
         // onCreate being stage 0
         mStartupStage++;
-        Logger.info(this, "startNextStage","stage=" + mStartupStage);
+        Logger.info(this, "startNextStage", "stage=" + mStartupStage);
 
         switch (mStartupStage) {
             case 1:
-                // Create a progress dialog; we may not use it...
-                // but we need it to be created in the UI thread.
+                // create the singleton QueueManager
+                QueueManager.init();
+
+                // Create a progress dialog for (potential) use by the tasks
                 openProgressDialog();
 
                 openDBA();
@@ -160,14 +188,12 @@ public class StartupActivity
                 break;
 
             case 2:
+                // tasks are done.
+                closeDBA();
                 // Get rid of the progress dialog
                 closeProgressDialog();
-                // tasks are done.
-                if (mDb != null) {
-                    mDb.close();
-                    mDb = null;
-                }
 
+                // actual next step:
                 checkForUpgrades();
                 break;
 
@@ -184,43 +210,6 @@ public class StartupActivity
         }
     }
 
-    private void startTasks() {
-        if (!isTaskRoot()) {
-            Logger.debug("Startup isTaskRoot() = FALSE");
-        }
-
-        if (mStartupTasksShouldBeStarted) {
-            mStartupActivity = new WeakReference<>(this);
-
-            updateProgress(getString(R.string.progress_msg_starting_up));
-
-            int taskId = 0;
-            new BuildLanguageMappingsTask(++taskId).execute();
-            mAllTasks.add(taskId);
-            new DBCleanerTask(++taskId, mDb).execute();
-            mAllTasks.add(taskId);
-            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
-                                            false)) {
-                new RebuildFtsTask(++taskId, mDb).execute();
-                mAllTasks.add(taskId);
-            }
-            new AnalyzeDbTask(++taskId, mDb).execute();
-            mAllTasks.add(taskId);
-
-            // Remove old logs
-            Logger.clearLog();
-            // Clear the flag
-            mStartupTasksShouldBeStarted = false;
-
-            // ENHANCE: add checks for new Events/crashes
-        }
-
-        // If no tasks were queued, then move on to next stage. Otherwise, the completed
-        // tasks will cause the next stage to start.
-        if (mAllTasks.isEmpty()) {
-            startNextStage();
-        }
-    }
 
     /**
      * Called in UI thread after last startup task completes, or if there are no tasks to queue.
@@ -321,15 +310,14 @@ public class StartupActivity
         finish();
     }
 
-
     private void openProgressDialog() {
-        mProgressDialog = (ProgressDialogFragment)
+        //noinspection unchecked
+        mProgressDialog = (ProgressDialogFragment<Void>)
                 getSupportFragmentManager().findFragmentByTag(TAG);
         if (mProgressDialog == null) {
             mProgressDialog = ProgressDialogFragment
-                    .newInstance(R.string.progress_msg_starting_up, true, 0);
-            mProgressDialog.show(getSupportFragmentManager(), TAG);
-            // can't do setMessage right here.. the dialog will not be created yet.
+                    .newInstance(R.string.lbl_application_startup, true, 0);
+            mProgressDialog.showNow(getSupportFragmentManager(), TAG);
         }
     }
 
@@ -337,23 +325,13 @@ public class StartupActivity
      * Update the progress dialog, if it has not been dismissed.
      */
     public void updateProgress(@StringRes final int stringId) {
-        updateProgress(getString(stringId));
-    }
-
-    /**
-     * Update the progress dialog, if it has not been dismissed.
-     */
-    public void updateProgress(@NonNull final String message) {
-        // If mProgressDialog is null, it has been dismissed. Don't update.
-        if (mProgressDialog == null) {
-            return;
-        }
+        String message = getString(stringId);
 
         // There is a small chance that this message could be set to display
         // *after* the activity is finished,
         // so we check and we also trap, log and ignore errors.
         // See http://code.google.com/p/android/issues/detail?id=3953
-        if (!isFinishing()) {
+        if (!isFinishing() && !isDestroyed() && (mProgressDialog != null)) {
             try {
                 mProgressDialog.setMessage(message);
             } catch (RuntimeException e) {
@@ -398,21 +376,32 @@ public class StartupActivity
         return opened == 0;
     }
 
-    private void initStorage() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+    /**
+     * Checks if we have the needed permissions.
+     * If we do, initialises storage.
+     *
+     * @return <tt>true</tt> if we had permission and storage is initialized.
+     */
+    private boolean initStorage() {
+        int p = ContextCompat.checkSelfPermission(this,
+                                                  Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (p != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                     this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     UniqueId.REQ_ANDROID_PERMISSIONS);
-            return;
+            Logger.info(this, Tracker.State.Exit, "initStorage", "false");
+            return false;
         }
+
         int msgId = StorageUtils.initSharedDirectories();
         if (msgId != 0) {
             UserMessage.showUserMessage(this, msgId);
         }
-        startNextStage();
+
+        Logger.info(this, Tracker.State.Exit, "initStorage", "true");
+
+        return true;
     }
 
     private void openDBA() {
@@ -421,8 +410,15 @@ public class StartupActivity
         } catch (DBHelper.UpgradeException e) {
             Logger.info(this, "openDBA", e.getLocalizedMessage());
             BookCatalogueApp.showNotification(this, R.string.error_unknown,
-                                              e.getLocalizedMessage());
+                                              getString(e.messageId));
             finish();
+        }
+    }
+
+    private void closeDBA() {
+        if (mDb != null) {
+            mDb.close();
+            mDb = null;
         }
     }
 
@@ -455,12 +451,13 @@ public class StartupActivity
             case UniqueId.REQ_ANDROID_PERMISSIONS:
                 if (grantResults.length > 0
                         && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    initStorage();
+                    if (initStorage()) {
+                        startNextStage();
+                    }
                 } else {
-                    // we can't work without Shared Storage, so die; can't use Logger
-                    // as we don't have a log file!
-                    Log.e("StartupActivity",
-                          "No Shared Storage permissions granted, quiting");
+                    // we can't work without Shared Storage, so die;
+                    // and can't use Logger as we don't have a log file!
+                    Log.e("StartupActivity", "No Shared Storage permissions granted, quiting");
                     finishAndRemoveTask();
                 }
                 break;
@@ -468,6 +465,48 @@ public class StartupActivity
             default:
                 Logger.error("unknown requestCode=" + requestCode);
                 break;
+        }
+    }
+
+    /**
+     * We use the standard AsyncTask execute, so tasks are run serially.
+     */
+    private void startTasks() {
+        if (mStartupTasksShouldBeStarted) {
+            mStartupActivity = new WeakReference<>(this);
+            //noinspection ConstantConditions
+            mProgressDialog.setMessage(getString(R.string.progress_msg_starting_up));
+
+            int taskId = 0;
+            new BuildLanguageMappingsTask(++taskId).execute();
+            mAllTasks.add(taskId);
+
+            // cleaner must be started after the language mapper task.
+            new DBCleanerTask(++taskId, mDb).execute();
+            mAllTasks.add(taskId);
+
+            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
+                                            false)) {
+                new RebuildFtsTask(++taskId, mDb).execute();
+                mAllTasks.add(taskId);
+            }
+
+            // analyse the db should always be started as the last task.
+            new AnalyzeDbTask(++taskId, mDb).execute();
+            mAllTasks.add(taskId);
+
+            // Remove old logs
+            Logger.clearLog();
+            // Clear the flag
+            mStartupTasksShouldBeStarted = false;
+
+            // ENHANCE: add checks for new Events/crashes
+        }
+
+        // If no tasks were queued, then move on to next stage. Otherwise, the completed
+        // tasks will cause the next stage to start.
+        if (mAllTasks.isEmpty()) {
+            startNextStage();
         }
     }
 
@@ -480,9 +519,11 @@ public class StartupActivity
      * @param taskId a task identifier.
      */
     private void onStartupTaskFinished(final int taskId) {
-        mAllTasks.remove(taskId);
-        if (mAllTasks.isEmpty()) {
-            startNextStage();
+        synchronized (mAllTasks) {
+            mAllTasks.remove(taskId);
+            if (mAllTasks.isEmpty()) {
+                startNextStage();
+            }
         }
     }
 
@@ -518,6 +559,117 @@ public class StartupActivity
                 a.onStartupTaskFinished(mTaskId);
             }
         }
+    }
+
+    /**
+     * Build the dedicated SharedPreferences file with the language mappings.
+     * Only build once per Locale.
+     */
+    static class BuildLanguageMappingsTask
+            extends StartupTask {
+
+        /**
+         * Constructor.
+         *
+         * @param taskId a task identifier, will be returned in the task finished listener.
+         */
+        @UiThread
+        BuildLanguageMappingsTask(final int taskId) {
+            super(taskId);
+        }
+
+        @Override
+        protected Void doInBackground(final Void... params) {
+            publishProgress(R.string.progress_msg_updating_languages);
+
+            // generate initial language2iso mappings.
+            LocaleUtils.createLanguageMappingCache(LocaleUtils.getSystemLocal());
+            // the one the user has configured our app into using (set at earliest app startup code)
+            LocaleUtils.createLanguageMappingCache(Locale.getDefault());
+            // and English
+            LocaleUtils.createLanguageMappingCache(Locale.ENGLISH);
+
+            return null;
+        }
+    }
+
+    /**
+     * Data cleaning. This is done each startup.
+     */
+    static class DBCleanerTask
+            extends StartupTask {
+
+        @NonNull
+        private final DBA mDb;
+
+        /**
+         * Constructor.
+         *
+         * @param taskId a task identifier, will be returned in the task finished listener.
+         * @param db     the database
+         */
+        @UiThread
+        DBCleanerTask(final int taskId,
+                      @NonNull final DBA db) {
+            super(taskId);
+            mDb = db;
+        }
+
+        @WorkerThread
+        @Override
+        protected Void doInBackground(final Void... params) {
+            publishProgress(R.string.progress_msg_cleaning_database);
+            DBCleaner cleaner = new DBCleaner(mDb);
+
+            // do a mass update of any languages not yet converted to ISO3 codes
+            cleaner.updateLanguages();
+
+            // check & log, but don't update yet... need more testing
+            cleaner.maybeUpdate(true);
+
+            return null;
+        }
+    }
+
+    /**
+     * Task to rebuild FTS in background. Can take several seconds, so not done in onUpgrade().
+     *
+     * @author Philip Warner
+     */
+    static class RebuildFtsTask
+            extends StartupTask {
+
+        @NonNull
+        private final DBA mDb;
+
+        /**
+         * Constructor.
+         *
+         * @param taskId a task identifier, will be returned in the task finished listener.
+         * @param db     the database
+         */
+        @UiThread
+        RebuildFtsTask(final int taskId,
+                       @NonNull final DBA db) {
+            super(taskId);
+            mDb = db;
+        }
+
+        @Override
+        @WorkerThread
+        protected Void doInBackground(final Void... params) {
+            publishProgress(R.string.progress_msg_rebuilding_search_index);
+
+            mDb.rebuildFts();
+
+            Prefs.getPrefs()
+                 .edit()
+                 .putBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)
+                 .apply();
+
+            return null;
+        }
+
     }
 
     /**
@@ -568,126 +720,5 @@ public class StartupActivity
 
             return null;
         }
-    }
-
-    /**
-     * Build the dedicated SharedPreferences file with the language mappings.
-     * Only build once per Locale.
-     */
-    static class BuildLanguageMappingsTask
-            extends StartupTask {
-
-        /**
-         * Constructor.
-         *
-         * @param taskId a task identifier, will be returned in the task finished listener.
-         */
-        @UiThread
-        BuildLanguageMappingsTask(final int taskId) {
-            super(taskId);
-        }
-
-        @Override
-        protected Void doInBackground(final Void... params) {
-            publishProgress(R.string.progress_msg_updating_languages);
-
-            // generate initial language2iso mappings.
-            LocaleUtils.createLanguageMappingCache(LocaleUtils.getSystemLocal());
-            // the one the user has configured our app into using (set at earliest app startup code)
-            LocaleUtils.createLanguageMappingCache(Locale.getDefault());
-            // and English
-            LocaleUtils.createLanguageMappingCache(Locale.ENGLISH);
-
-            return null;
-        }
-    }
-
-    /**
-     * Data cleaning. This is done each startup. TODO: is that needed ?
-     */
-    static class DBCleanerTask
-            extends StartupTask {
-
-        @NonNull
-        private final DBA mDb;
-
-        /**
-         * Constructor.
-         *
-         * @param taskId a task identifier, will be returned in the task finished listener.
-         * @param db     the database
-         */
-        @UiThread
-        DBCleanerTask(final int taskId,
-                      @NonNull final DBA db) {
-            super(taskId);
-            mDb = db;
-        }
-
-        @WorkerThread
-        @Override
-        protected Void doInBackground(final Void... params) {
-            publishProgress(R.string.progress_msg_cleaning_database);
-            /*
-             * do a mass update of any languages not yet converted to ISO3 codes
-             */
-            List<String> names = mDb.getLanguageCodes();
-            for (String name : names) {
-                if (name != null && name.length() > 3) {
-                    String iso = LocaleUtils.getISO3Language(name);
-                    Logger.info(this, "doInBackground",
-                                "Global language update of `" + name + "` to `" + iso + '`');
-                    if (!iso.equals(name)) {
-                        mDb.updateLanguage(name, iso);
-                    }
-                }
-            }
-
-            DBCleaner cleaner = new DBCleaner(mDb);
-            cleaner.all(true);
-
-            return null;
-        }
-    }
-
-    /**
-     * Task to rebuild FTS in background. Can take several seconds, so not done in onUpgrade().
-     *
-     * @author Philip Warner
-     */
-    static class RebuildFtsTask
-            extends StartupTask {
-
-        @NonNull
-        private final DBA mDb;
-
-        /**
-         * Constructor.
-         *
-         * @param taskId a task identifier, will be returned in the task finished listener.
-         * @param db     the database
-         */
-        @UiThread
-        RebuildFtsTask(final int taskId,
-                       @NonNull final DBA db) {
-            super(taskId);
-            mDb = db;
-        }
-
-        @Override
-        @WorkerThread
-        protected Void doInBackground(final Void... params) {
-            publishProgress(R.string.progress_msg_rebuilding_search_index);
-
-            mDb.rebuildFts();
-
-            Prefs.getPrefs()
-                 .edit()
-                 .putBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)
-                 .apply();
-
-            return null;
-        }
-
     }
 }

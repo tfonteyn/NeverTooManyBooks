@@ -8,11 +8,13 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_panel"
         style="@style/tab_bar"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <FrameLayout
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/tab_fragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"

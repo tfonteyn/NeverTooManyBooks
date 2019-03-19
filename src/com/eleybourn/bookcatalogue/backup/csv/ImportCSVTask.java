@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,12 +21,12 @@ import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 public class ImportCSVTask
         extends AsyncTask<Void, Object, Void> {
 
-    public static final String TAG = ImportCSVTask.class.getSimpleName();
+    private static final String TAG = ImportCSVTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_CSV_IMPORT;
-    private final ProgressDialogFragment<Void> mFragment;
     private final ImportSettings mSettings;
     private final CsvImporter mImporter;
+    private final ProgressDialogFragment<Void> mFragment;
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
@@ -34,15 +35,34 @@ public class ImportCSVTask
     private Exception mException;
 
     /**
-     * Constructor.
-     *
+     * @param fm       FragmentManager
      * @param settings the import settings
      */
     @UiThread
-    public ImportCSVTask(@NonNull final ProgressDialogFragment<Void> frag,
-                         @NonNull final ImportSettings settings) {
-        mFragment = frag;
-        mFragment.setTask(M_TASK_ID, this);
+    public static void start(@NonNull final FragmentManager fm,
+                             @NonNull final ImportSettings settings) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            ProgressDialogFragment<Void> frag =
+                    ProgressDialogFragment.newInstance(R.string.progress_msg_importing,
+                                                       false, 0);
+            ImportCSVTask task = new ImportCSVTask(frag, settings);
+            frag.setTask(M_TASK_ID, task);
+            frag.show(fm, TAG);
+            task.execute();
+        }
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param fragment ProgressDialogFragment
+     * @param settings the import settings
+     */
+    @UiThread
+    private ImportCSVTask(@NonNull final ProgressDialogFragment<Void> fragment,
+                          @NonNull final ImportSettings settings) {
+
+        mFragment = fragment;
         mSettings = settings;
         mImporter = new CsvImporter(settings);
     }
@@ -100,6 +120,6 @@ public class ImportCSVTask
     @Override
     @UiThread
     protected void onPostExecute(@Nullable final Void result) {
-        mFragment.taskFinished(M_TASK_ID, mException == null, result);
+        mFragment.onTaskFinished(mException == null, result);
     }
 }

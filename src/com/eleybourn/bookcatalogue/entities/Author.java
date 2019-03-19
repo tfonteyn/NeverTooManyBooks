@@ -213,7 +213,6 @@ public class Author
         mGivenNames = givenNames;
     }
 
-    /** {@link Parcelable}. */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -223,7 +222,6 @@ public class Author
         dest.writeByte((byte) (mIsComplete ? 1 : 0));
     }
 
-    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {

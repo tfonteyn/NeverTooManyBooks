@@ -131,7 +131,7 @@
         <activity android:name=".searches.librarything.LibraryThingAdminActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
-        <!-- AdminActivity: Background tasks / Events -->
+        <!-- AdminActivity: Goodreads background tasks & events -->
         <activity android:name=".goodreads.taskqueue.TaskQueueListActivity" />
         <activity android:name=".goodreads.taskqueue.EventQueueListActivity" />
 

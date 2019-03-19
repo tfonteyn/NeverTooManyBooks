@@ -105,7 +105,6 @@ public class FileChooserFragment
             path = root.getParent();
         }
 
-        // Build the fragment and save the details
         FileChooserFragment frag = new FileChooserFragment();
         Bundle args = new Bundle();
         args.putString(BKEY_ROOT_PATH, path);
@@ -165,7 +164,8 @@ public class FileChooserFragment
         mCurrentFolderView.setOnClickListener(onPathUpClickListener);
 
         requireActivity().getWindow()
-                         .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+                         .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
+                         | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
     /**

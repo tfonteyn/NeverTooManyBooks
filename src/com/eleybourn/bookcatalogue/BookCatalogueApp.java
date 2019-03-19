@@ -40,8 +40,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import java.util.Objects;
-
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
@@ -156,7 +154,7 @@ public class BookCatalogueApp
      *
      * @param name string to read
      *
-     * @return value
+     * @return the key, or the empty string if no key found.
      */
     @NonNull
     public static String getManifestString(@Nullable final String name) {
@@ -171,7 +169,9 @@ public class BookCatalogueApp
             throw new IllegalStateException();
         }
         String result = ai.metaData.getString(name);
-        Objects.requireNonNull(result);
+        if (result == null) {
+            return "";
+        }
         return result.trim();
     }
 

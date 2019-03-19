@@ -10,7 +10,9 @@
     <!-- ========== in use ========== -->
 
     <string name="about_lbl_contacts">Contact:</string>
+    <string name="lbl_series">Série</string>
     <string name="lbl_series_num">No</string>
+    <string name="lbl_series_num_long">Série No</string>
     <string name="title_add_book">Ajouter un livre</string>
     <string name="menu_add_book">Ajouter un livre…</string>
     <string name="warning_bad_scanner">Votre scanner de code barre ne semble pas être compatible avec &APP_NAME;. Nous vous recommandons d\'installer le scanner de code barre de Zxing et, s\'il est déjà installé, de le désinstaller puis le réinstaller.</string>
@@ -22,7 +24,6 @@
     <string name="lbl_date_published">Date de publication</string>
     <string name="lbl_rating">Appreciation</string>
     <string name="lbl_is_read">Avez-vous lu ce livre ?</string>
-    <string name="lbl_series">Série</string>
     <string name="lbl_pages">Pages</string>
     <string name="btn_confirm_add_book">Ajouter le livre</string>
     <string name="btn_confirm_update">Mettre à jour</string>

@@ -14,15 +14,17 @@ import androidx.fragment.app.Fragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
 import com.eleybourn.bookcatalogue.searches.googlebooks.GoogleBooksManager;
+import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 
 /**
  * Allows editing the host url for some of the search sites.
- *
- * Note that Amazon is bypassed as it uses a proxy, but without dev keys installed,
- * the site *IS* used.
- *
- * ISFDB is currently only a single url, but the site people make the source/data freely
- * available, so someone could setup a new site/mirror.
+ * <p>
+ * Note: {@link AmazonManager} uses a proxy;
+ * but the "search amazon" menu links *do* use the url setup here.
+ * <p>
+ * {@link ISFDBManager} is currently only a single url, but the site people make the
+ * source/data freely available, so someone could setup a new site/mirror.
+ * Plumbing all present, but visibility set to 'gone' in the xml layout.
  */
 public class AdminHostsFragment
         extends Fragment {
@@ -57,16 +59,21 @@ public class AdminHostsFragment
         google_url = view.findViewById(R.id.google_url);
         google_url.setText(GoogleBooksManager.getBaseURL());
 
-        // needs visibility set in the xml layout if uncommenting these
-//        isfdb_url = view.findViewById(R.id.isfdb_url);
-//        isfdb_url.setText(ISFDBManager.getBaseURL());
+        isfdb_url = view.findViewById(R.id.isfdb_url);
+        isfdb_url.setText(ISFDBManager.getBaseURL());
 
         isCreated = true;
     }
 
+    public boolean isDirty() {
+        return !(AmazonManager.getBaseURL().equals(amazon_url.getText().toString().trim())
+                && GoogleBooksManager.getBaseURL().equals(google_url.getText().toString().trim())
+                && ISFDBManager.getBaseURL().equals(isfdb_url.getText().toString().trim()));
+    }
+
     //TODO: add sanity checks on the url's
     void saveSettings() {
-        if (isCreated) {
+        if (isCreated && isDirty()) {
             String newAmazon = amazon_url.getText().toString().trim();
             if (!newAmazon.isEmpty()) {
                 AmazonManager.setBaseURL(newAmazon);
@@ -75,10 +82,10 @@ public class AdminHostsFragment
             if (!newGoogle.isEmpty()) {
                 GoogleBooksManager.setBaseURL(newGoogle);
             }
-//            String newIsfdb = isfdb_url.getText().toString().trim();
-//            if (!newIsfdb.isEmpty()) {
-//                ISFDBManager.setBaseURL(newIsfdb);
-//            }
+            String newIsfdb = isfdb_url.getText().toString().trim();
+            if (!newIsfdb.isEmpty()) {
+                ISFDBManager.setBaseURL(newIsfdb);
+            }
         }
     }
 }

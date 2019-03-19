@@ -4,9 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/TLV_ROW"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/border">
+    style="@style/row_in_ListView">
 
     <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView

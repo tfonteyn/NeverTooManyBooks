@@ -33,6 +33,7 @@ import android.widget.PopupMenu;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 
@@ -194,8 +195,11 @@ public class EditBookshelfListActivity
      * @param bookshelf to edit
      */
     private void doEditDialog(@NonNull final Bookshelf bookshelf) {
-        EditBookshelfDialogFragment d = EditBookshelfDialogFragment.newInstance(bookshelf);
-        d.show(getSupportFragmentManager(), EditBookshelfDialogFragment.TAG);
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag(EditBookshelfDialogFragment.TAG) == null) {
+            EditBookshelfDialogFragment.newInstance(bookshelf)
+                                       .show(fm, EditBookshelfDialogFragment.TAG);
+        }
     }
 
     @Override

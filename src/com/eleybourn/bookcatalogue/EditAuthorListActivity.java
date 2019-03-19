@@ -25,7 +25,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -34,6 +33,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 
@@ -357,8 +357,11 @@ public class EditAuthorListActivity
         protected void onRowClick(@NonNull final View target,
                                   @NonNull final Author item,
                                   final int position) {
-            EditBookAuthorDialogFragment frag = EditBookAuthorDialogFragment.newInstance(item);
-            frag.show(getSupportFragmentManager(), EditBookAuthorDialogFragment.TAG);
+            FragmentManager fm = getSupportFragmentManager();
+            if (fm.findFragmentByTag(EditBookAuthorDialogFragment.TAG) == null) {
+                EditBookAuthorDialogFragment.newInstance(item)
+                                            .show(fm, EditBookAuthorDialogFragment.TAG);
+            }
         }
 
         /**

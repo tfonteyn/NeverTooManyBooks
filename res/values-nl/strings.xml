@@ -18,7 +18,6 @@
     <string name="lbl_date_published">Datum uitgave</string>
     <string name="lbl_rating">Waardering</string>
     <string name="lbl_is_read">Heeft u dit boek gelezen?</string>
-    <string name="lbl_series">Serie</string>
     <string name="lbl_pages">Pagina\'s</string>
     <string name="btn_confirm_add_book">Boek toevoegen</string>
     <string name="btn_confirm_update">Bijwerken</string>
@@ -54,7 +53,9 @@
         Het gescande boek is niet gevonden. U kunt de juiste streepjescode aan de achterkant
         van de omslag vinden. Vul anders de gegevens handmatig in.
     </string>
-    <string name="lbl_series_num">#</string>
+    <string name="lbl_series">Serie</string>
+    <string name="lbl_series_num">nr.</string>
+    <string name="lbl_series_num_long">Serie nr.</string>
     <string name="title_import_book_data">Boeken Importeren</string>
     <string name="warning_import_be_cautious">
         Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken

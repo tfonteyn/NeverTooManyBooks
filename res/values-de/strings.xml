@@ -19,7 +19,6 @@
     <string name="lbl_date_published">Datum der Veröffentlichung</string>
     <string name="lbl_rating">Bewertung</string>
     <string name="lbl_is_read">Haben Sie dieses Buch gelesen?</string>
-    <string name="lbl_series">Serie</string>
     <string name="lbl_pages">Seiten</string>
     <string name="btn_confirm_add_book">Buch hinzufügen</string>
     <string name="btn_confirm_update">Aktualisieren</string>
@@ -54,7 +53,9 @@
         Manchmal befindet sich der korrekte Barcode auf der Rückseite des Covers.
         Geben Sie ansonsten die Daten manuell ein.
     </string>
+    <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_series_num_long">Serie #</string>
     <string name="title_import_book_data">Bücher importieren</string>
     <string name="warning_import_be_cautious">
         Warnung. Der Import von Daten kann Informationen von bestehenden Büchern überschreiben,

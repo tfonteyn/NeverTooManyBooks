@@ -65,9 +65,8 @@ public class IndexDefinition {
         try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
             while (current.moveToNext()) {
                 String indexName = current.getString(0);
-                String deleteSql = "DROP INDEX " + indexName;
                 try {
-                    db.execSQL(deleteSql);
+                    db.execSQL("DROP INDEX " + indexName);
                 } catch (SQLException e) {
                     // bad sql is a developer issue... die!
                     Logger.error(e);

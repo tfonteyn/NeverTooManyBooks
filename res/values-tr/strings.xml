@@ -19,7 +19,6 @@
     <string name="lbl_date_published">Yayımlandığı Tarih</string>
     <string name="lbl_rating">Değerlendirme</string>
     <string name="lbl_is_read">Bu kitabı okudunuz mu?</string>
-    <string name="lbl_series">Dizi</string>
     <string name="lbl_pages">Sayfa</string>
     <string name="btn_confirm_add_book">Kitap ekle</string>
     <string name="btn_confirm_update">Güncelle</string>
@@ -44,7 +43,9 @@
     <string name="lbl_search_for_books">Kitap ara</string>
     <string name="title_search_for">Yazar veya kitap adı ara</string>
     <string name="warning_book_not_found">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
+    <string name="lbl_series">Dizi</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_series_num_long">Dizi #</string>
     <string name="title_import_book_data">Kitapları içe aktar</string>
     <string name="warning_import_be_cautious">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="import_error_failed_is_csv_file_location_correct">Hata: SD karttan içe aktarma başarısız oldu. Dosyalar yerli yerinde mi acaba?</string>

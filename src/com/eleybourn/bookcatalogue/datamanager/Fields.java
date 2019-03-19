@@ -1228,13 +1228,16 @@ public class Fields {
     public static class PriceFormatter
             implements FieldFormatter {
 
-        @NonNull
-        private final String mCurrencyCode;
+        @Nullable
+        private String mCurrencyCode;
 
         /**
+         * Can't/shouldn't pass the code into the constructor as it may change.
+         * So must call this before displaying.
+         *
+         * @param currencyCode to use (if any)
          */
-        @SuppressWarnings("WeakerAccess")
-        public PriceFormatter(@NonNull final String currencyCode) {
+        public void setCurrencyCode(@Nullable final String currencyCode) {
             mCurrencyCode = currencyCode;
         }
 
@@ -1247,12 +1250,12 @@ public class Fields {
             if (source == null || source.isEmpty()) {
                 return "";
             }
-            if (mCurrencyCode.isEmpty()) {
+            if (mCurrencyCode == null || mCurrencyCode.isEmpty()) {
                 return source;
             }
 
-            // quick return for the pre-decimal UK Shilling/Pence prices.
-            // ISFDB provides those types of prices.
+            // quick return for the pre-decimal UK "Shilling/Pence" prices.
+            // ISFDB provides those types of prices. Bit hackish...
             if (source.contains("/")) {
                 return source;
             }
@@ -1262,7 +1265,8 @@ public class Fields {
                 final NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
                 currencyInstance.setCurrency(Currency.getInstance(mCurrencyCode));
                 return currencyInstance.format(price);
-            } catch (IllegalArgumentException e) {
+
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") IllegalArgumentException e) {
                 Logger.error(e, "currencyCode=`" + mCurrencyCode + "`," +
                         " source=`" + source + '`');
                 return mCurrencyCode + ' ' + source;
@@ -1710,6 +1714,16 @@ public class Fields {
         public Field setFormatter(@NonNull final FieldFormatter formatter) {
             this.formatter = formatter;
             return this;
+        }
+
+        /**
+         * For specialized access.
+         *
+         * @return the field formatter.
+         */
+        @Nullable
+        public FieldFormatter getFormatter() {
+            return formatter;
         }
 
         /**

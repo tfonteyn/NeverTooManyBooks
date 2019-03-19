@@ -19,7 +19,6 @@
     <string name="lbl_date_published">Data wydania</string>
     <string name="lbl_rating">Ocena</string>
     <string name="lbl_is_read">Przeczytełeś tę książkę?</string>
-    <string name="lbl_series">Seria</string>
     <string name="lbl_pages">Stron</string>
     <string name="btn_confirm_add_book">Dodaj!</string>
     <string name="btn_confirm_update">Aktualizuj</string>
@@ -45,7 +44,9 @@
     <string name="lbl_search_for_books">Szukaj książek</string>
     <string name="title_search_for">Szukaj autora lub tytułu</string>
     <string name="warning_book_not_found">Zeskanowana książka nie została odnaleziona. Spóbuj ponownie z kodem, który może znajdować się w środku okładki lub wprowadź dane ręcznie.</string>
+    <string name="lbl_series">Seria</string>
     <string name="lbl_series_num">tom#</string>
+    <string name="lbl_series_num_long">Seria tom#</string>
     <string name="title_import_book_data">Importuj książki</string>
     <string name="warning_import_be_cautious">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
     <string name="import_error_failed_is_csv_file_location_correct">Błąd!: Import z karty SD nie powiódł się. Upewnij się, czy plik export.csv jest w prawidłowym miejscu.</string>

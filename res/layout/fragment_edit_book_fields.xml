@@ -81,22 +81,13 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             tools:ignore="Autofill" />
 
-        <CheckBox
-            android:id="@+id/is_anthology"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/lbl_is_anthology"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/isbn" />
-
         <TextView
             android:id="@+id/lbl_series"
             style="@style/lbl_editField"
             android:labelFor="@id/series"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/is_anthology" />
+            app:layout_constraintTop_toBottomOf="@id/isbn" />
 
         <Button
             android:id="@+id/series"
@@ -370,7 +361,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/description_divider"
-            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." />
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

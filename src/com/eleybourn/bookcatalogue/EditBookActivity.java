@@ -21,15 +21,15 @@
 package com.eleybourn.bookcatalogue;
 
 import android.os.Bundle;
-import android.view.WindowManager;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
+import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -37,9 +37,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  */
 public class EditBookActivity
         extends BaseActivity {
-
-    /** universal flag used to indicate something was changed and not saved (yet). */
-    private boolean mIsDirty;
 
     @Override
     protected int getLayoutId() {
@@ -63,41 +60,6 @@ public class EditBookActivity
     }
 
     /**
-     * @return <tt>true</tt> if the data in this activity was changed and should be saved.
-     */
-    public boolean isDirty() {
-        return mIsDirty;
-    }
-
-    /**
-     * @param isDirty set to <tt>true</tt> if the data in this activity was changed.
-     */
-    public void setDirty(final boolean isDirty) {
-        mIsDirty = isDirty;
-    }
-
-    /**
-     * Check if edits need saving.
-     * If they don't, simply finish the activity,
-     * otherwise ask the user.
-     */
-    public void finishIfClean() {
-        if (mIsDirty) {
-            StandardDialogs.showConfirmUnsavedEditsDialog(
-                    this,
-                    /* only runs if user clicks 'exit' */
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            finish();
-                        }
-                    });
-        } else {
-            finish();
-        }
-    }
-
-    /**
      * When the user clicks 'back/up', check if we're clean to leave.
      */
     @Override
@@ -106,6 +68,13 @@ public class EditBookActivity
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
 
-        finishIfClean();
+        finishIfClean(getBookManager().isDirty());
+    }
+
+    @NonNull
+    protected BookManager getBookManager() {
+        //noinspection ConstantConditions
+        return ((EditBookFragment) getSupportFragmentManager()
+                .findFragmentByTag(EditBookFragment.TAG)).getBookManager();
     }
 }

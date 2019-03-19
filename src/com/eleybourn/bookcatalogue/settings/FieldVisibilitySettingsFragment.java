@@ -44,7 +44,7 @@ public class FieldVisibilitySettingsFragment
         FIELD_LIST.put(R.string.lbl_isbn, UniqueId.KEY_ISBN);
         FIELD_LIST.put(R.string.lbl_cover, UniqueId.BKEY_COVER_IMAGE);
         FIELD_LIST.put(R.string.lbl_series, UniqueId.KEY_SERIES);
-        FIELD_LIST.put(R.string.lbl_series_num, UniqueId.KEY_SERIES_NUM);
+        FIELD_LIST.put(R.string.lbl_series_num_long, UniqueId.KEY_SERIES_NUM);
         FIELD_LIST.put(R.string.lbl_description, UniqueId.KEY_DESCRIPTION);
 
         FIELD_LIST.put(R.string.lbl_publisher, UniqueId.KEY_PUBLISHER);

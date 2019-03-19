@@ -14,7 +14,6 @@
     <string name="lbl_date_published">Datum vydání</string>
     <string name="lbl_rating">Hodnocení</string>
     <string name="lbl_is_read">Máte tuto knihu přečtenou?</string>
-    <string name="lbl_series">Série</string>
     <string name="lbl_pages">Počet stran</string>
     <string name="btn_confirm_add_book">Přidat knihu</string>
     <string name="btn_confirm_update">Upravit</string>
@@ -40,7 +39,9 @@
     <string name="lbl_search_for_books">Hledat knihy</string>
     <string name="title_search_for">Hledat autora nebo titul</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt hledanou knihu. Zkuste prosím zadat potřebné údaje manuálně.</string>
+    <string name="lbl_series">Série</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_series_num_long">Série #</string>
     <string name="title_import_book_data">Importovat knihy</string>
     <string name="warning_import_be_cautious">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
     <string name="import_error_failed_is_csv_file_location_correct">ERROR: Import dat (z SD karty) selhal. Je soubor na správném místě?</string>

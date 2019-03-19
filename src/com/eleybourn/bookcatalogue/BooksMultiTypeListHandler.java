@@ -46,6 +46,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
-import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
+import com.eleybourn.bookcatalogue.searches.amazon.AmazonSearchPage;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -487,9 +488,11 @@ public class BooksMultiTypeListHandler
             }
 
             case R.id.MENU_BOOK_EDIT_LOAN:
-                LendBookDialogFragment
-                        .newInstance(bookId, row.getAuthorId(), row.getTitle())
-                        .show(activity.getSupportFragmentManager(), LendBookDialogFragment.TAG);
+                FragmentManager fm1 = activity.getSupportFragmentManager();
+                if (fm1.findFragmentByTag(LendBookDialogFragment.TAG) == null) {
+                    LendBookDialogFragment.newInstance(bookId, row.getAuthorId(), row.getTitle())
+                                          .show(fm1, LendBookDialogFragment.TAG);
+                }
                 return true;
 
             case R.id.MENU_BOOK_LOAN_RETURNED:
@@ -514,11 +517,12 @@ public class BooksMultiTypeListHandler
             /* ********************************************************************************** */
 
             case R.id.MENU_SERIES_EDIT:
-                //noinspection ConstantConditions
-                EditSeriesDialogFragment
-                        .newInstance(db.getSeries(row.getSeriesId()))
-                        .show(activity.getSupportFragmentManager(),
-                              EditSeriesDialogFragment.TAG);
+                FragmentManager fm2 = activity.getSupportFragmentManager();
+                if (fm2.findFragmentByTag(EditSeriesDialogFragment.TAG) == null) {
+                    //noinspection ConstantConditions
+                    EditSeriesDialogFragment.newInstance(db.getSeries(row.getSeriesId()))
+                                            .show(fm2, EditSeriesDialogFragment.TAG);
+                }
                 return true;
 
             case R.id.MENU_SERIES_COMPLETE:
@@ -549,11 +553,12 @@ public class BooksMultiTypeListHandler
             }
 
             case R.id.MENU_AUTHOR_EDIT:
-                //noinspection ConstantConditions
-                EditAuthorDialogFragment
-                        .newInstance(db.getAuthor(row.getAuthorId()))
-                        .show(activity.getSupportFragmentManager(),
-                              EditAuthorDialogFragment.TAG);
+                FragmentManager fm3 = activity.getSupportFragmentManager();
+                if (fm3.findFragmentByTag(EditAuthorDialogFragment.TAG) == null) {
+                    //noinspection ConstantConditions
+                    EditAuthorDialogFragment.newInstance(db.getAuthor(row.getAuthorId()))
+                                            .show(fm3, EditAuthorDialogFragment.TAG);
+                }
                 return true;
 
             case R.id.MENU_AUTHOR_COMPLETE:
@@ -566,10 +571,11 @@ public class BooksMultiTypeListHandler
             /* ********************************************************************************** */
 
             case R.id.MENU_PUBLISHER_EDIT:
-                EditPublisherDialogFragment
-                        .newInstance(new Publisher(row.getPublisherName()))
-                        .show(activity.getSupportFragmentManager(),
-                              EditPublisherDialogFragment.TAG);
+                FragmentManager fm4 = activity.getSupportFragmentManager();
+                if (fm4.findFragmentByTag(EditPublisherDialogFragment.TAG) == null) {
+                    EditPublisherDialogFragment.newInstance(new Publisher(row.getPublisherName()))
+                                               .show(fm4, EditPublisherDialogFragment.TAG);
+                }
                 return true;
 
             /* ********************************************************************************** */
@@ -601,16 +607,16 @@ public class BooksMultiTypeListHandler
             /* ********************************************************************************** */
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
-                AmazonUtils.openSearchPage(activity, getAuthorFromRow(db, row), null);
+                AmazonSearchPage.open(activity, getAuthorFromRow(db, row), null);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
-                AmazonUtils.openSearchPage(activity, null, getSeriesFromRow(db, row));
+                AmazonSearchPage.open(activity, null, getSeriesFromRow(db, row));
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonUtils.openSearchPage(activity,
-                                           getAuthorFromRow(db, row), getSeriesFromRow(db, row));
+                AmazonSearchPage.open(activity,
+                                      getAuthorFromRow(db, row), getSeriesFromRow(db, row));
                 return true;
 
             default:
@@ -915,14 +921,14 @@ public class BooksMultiTypeListHandler
         TextView publisher;
         /** Pointer to the view that stores the related book field. */
         TextView format;
-        /** Pointer to the view that stores the related book field. */
-        private ImageView coverView;
         /** Pointer to the view that stores the series number when it is a small piece of text. */
         TextView seriesNum;
         /** Pointer to the view that stores the series number when it is a long piece of text. */
         TextView seriesNumLong;
         /** the "I've read it" checkbox. */
         CheckedTextView read;
+        /** Pointer to the view that stores the related book field. */
+        private ImageView coverView;
 
         /**
          * Constructor.
@@ -1021,7 +1027,7 @@ public class BooksMultiTypeListHandler
             if (Fields.isVisible(UniqueId.KEY_READ)) {
                 read.setChecked(row.isRead());
                 // for some not understood reason, setting the padding in xml did not work.
-                read.setPadding(0,0,0,0);
+                read.setPadding(0, 0, 0, 0);
             }
 
             // Series number
@@ -1060,8 +1066,8 @@ public class BooksMultiTypeListHandler
                 coverView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(@NonNull final View v) {
-                        FragmentActivity activity = (FragmentActivity)v.getContext();
-                        String uuid = (String)v.getTag(R.id.TAG_UUID);
+                        FragmentActivity activity = (FragmentActivity) v.getContext();
+                        String uuid = (String) v.getTag(R.id.TAG_UUID);
                         ImageUtils.showZoomedImage(activity, StorageUtils.getCoverFile(uuid));
                     }
                 });
@@ -1070,7 +1076,7 @@ public class BooksMultiTypeListHandler
             // Build the flags indicating which extras to get.
             int flags = extraFields & GetBookExtrasTask.HANDLED;
 
-            // If there are extras to get, run the background task.
+            // If there are extras to get, start a background task.
             if (flags != 0) {
                 // Fill in the extras field as blank initially.
                 shelves.setText("");

@@ -24,18 +24,21 @@ public abstract class EditBookBaseFragment
 
     /**
      * Trigger the Fragment to save it's Fields to the Book.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
     public void onPause() {
-        // This is now done in onPause() since the view may have been deleted when this is called
         saveFieldsTo(getBookManager().getBook());
         super.onPause();
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
      * This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}
-     * (just for consistency with the load process).
+     * (for consistency with the load process).
      */
     @Override
     public final <T extends DataManager> void saveFieldsTo(@NonNull final T dataManager) {

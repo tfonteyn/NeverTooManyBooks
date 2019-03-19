@@ -654,7 +654,6 @@ public class Book
             item = in.readInt();
         }
 
-        /** {@link Parcelable}. */
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {
@@ -715,7 +714,6 @@ public class Book
             item = in.readParcelable(getClass().getClassLoader());
         }
 
-        /** {@link Parcelable}. */
         @Override
         public void writeToParcel(@NonNull final Parcel dest,
                                   final int flags) {

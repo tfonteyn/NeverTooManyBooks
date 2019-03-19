@@ -9,7 +9,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.BackupManager;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -26,8 +25,9 @@ public class BackupListerTask
         extends FileListerAsyncTask {
 
     public static final String TAG = BackupListerTask.class.getSimpleName();
+
     /**
-     * Construct a file filter to select only directories and backup files.
+     * Construct a file filter to select only directories and archive files.
      */
     private final FileFilter mFilter = new FileFilter() {
         @Override
@@ -40,12 +40,13 @@ public class BackupListerTask
     /**
      * Constructor.
      *
-     * @param root    folder to list
+     * @param fragment ProgressDialogFragment
+     * @param root     folder to list
      */
     @UiThread
-    BackupListerTask(@NonNull final ProgressDialogFragment<ArrayList<FileDetails>> frag,
+    BackupListerTask(@NonNull final ProgressDialogFragment<ArrayList<FileDetails>> fragment,
                      @NonNull final File root) {
-        super(frag, R.id.TASK_ID_FILE_LISTER, root);
+        super(fragment, root);
     }
 
     /**

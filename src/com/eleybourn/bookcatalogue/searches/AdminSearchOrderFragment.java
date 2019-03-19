@@ -36,6 +36,7 @@ public class AdminSearchOrderFragment
     private ListView mListView;
     private ArrayList<SearchSites.Site> mList;
     private SearchSiteListAdapter mListAdapter;
+    private boolean mIsDirty;
 
     @Override
     @Nullable
@@ -79,6 +80,8 @@ public class AdminSearchOrderFragment
         mListAdapter.remove(item);
         mListAdapter.insert(item, toPosition);
         mListAdapter.notifyDataSetChanged();
+
+        mIsDirty = true;
     }
 
     @Nullable
@@ -93,7 +96,12 @@ public class AdminSearchOrderFragment
         return mList;
     }
 
-    private static class SearchSiteListAdapter
+    public boolean isDirty() {
+        // have we been brought to the front and are we dirty ?
+        return mListView != null && mIsDirty;
+    }
+
+    private class SearchSiteListAdapter
             extends ArrayAdapter<SearchSites.Site> {
 
         /**
@@ -125,8 +133,6 @@ public class AdminSearchOrderFragment
                 holder.checkableView.setTag(holder);
             }
 
-            holder.rowDetailsView.setFocusable(false);
-
             // Setup the variant fields in the holder
             holder.site = getItem(position);
             //noinspection ConstantConditions
@@ -140,7 +146,7 @@ public class AdminSearchOrderFragment
     /**
      * Holder pattern for each row.
      */
-    private static class Holder {
+    private class Holder {
 
         SearchSites.Site site;
 
@@ -164,6 +170,7 @@ public class AdminSearchOrderFragment
                     h.checkableView.setChecked(h.site.isEnabled());
                     // no need to update the list, item itself is updated
                     //onListChanged();
+                    mIsDirty = true;
                 }
             });
 

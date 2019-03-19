@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
@@ -138,8 +139,8 @@ public class BookSearchByTextFragment
      */
     public void onSearchFinished(final boolean wasCancelled,
                                  @NonNull final Bundle bookData) {
-        Tracker.handleEvent(this, Tracker.States.Enter,
-                            "onSearchFinished|SearchManagerId=" + mSearchManagerId);
+        Logger.info(this, Tracker.State.Enter,
+                    "onSearchFinished", "SearchManagerId=" + mSearchManagerId);
         try {
             if (!wasCancelled) {
                 mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_adding_book);

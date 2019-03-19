@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -49,6 +50,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +99,7 @@ public class EditBookTOCFragment
     /** position of row we're currently editing. */
     @Nullable
     private Integer mEditPosition;
+
     private ArrayList<TocEntry> mList;
     private ListView mListView;
 
@@ -172,10 +175,20 @@ public class EditBookTOCFragment
     @Override
     protected void initFields() {
         super.initFields();
+
+        /* Anthology is provided as a boolean, see {@link Book#initValidators()}*/
+        mFields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS);
+//               .getView().setOnClickListener(
+//                new View.OnClickListener() {
+//                    public void onClick(@NonNull final View v) {
+//                        Checkable cb = (Checkable) v;
+//
+//                    }
+//                });
+
         /*
          * No real Field's but might as well do these here.
          */
-
         View view = requireView();
         // mSingleAuthor checkbox
         mSingleAuthor = view.findViewById(R.id.same_author);
@@ -207,12 +220,13 @@ public class EditBookTOCFragment
         Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
+        boolean isAnt = book.isBitSet(UniqueId.KEY_TOC_BITMASK,
+                                      TocEntry.Type.MULTIPLE_WORKS);
+        mFields.getField(R.id.is_anthology).setValue(isAnt ? "1" : "0");
+
         // populateFields
         populateSingleAuthorStatus(book);
         populateContentList();
-
-        // Restore default visibility
-        //showHideFields(false);
 
         Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
@@ -251,6 +265,7 @@ public class EditBookTOCFragment
         Tracker.enterOnSaveFieldsToBook(this, book.getId());
         super.onSaveFieldsToBook(book);
 
+        // as a reminder....
         book.putList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
 
         // multiple authors is now automatically done during database access.
@@ -295,8 +310,7 @@ public class EditBookTOCFragment
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
                 UserMessage.showUserMessage(requireActivity(),
                                             R.string.progress_msg_connecting_to_web_site);
-                new ISFDBGetEditionsTask(mIsbn, this)
-                        .execute();
+                new ISFDBGetEditionsTask(mIsbn, this).execute();
                 return true;
 
             default:
@@ -351,8 +365,7 @@ public class EditBookTOCFragment
     public void onGotISFDBEditions(@Nullable final ArrayList<String> editions) {
         mISFDBEditionUrls = editions != null ? editions : new ArrayList<String>();
         if (!mISFDBEditionUrls.isEmpty()) {
-            new ISFDBGetBookTask(mISFDBEditionUrls, false, this)
-                    .execute();
+            new ISFDBGetBookTask(mISFDBEditionUrls, false, this).execute();
         }
     }
 
@@ -391,9 +404,11 @@ public class EditBookTOCFragment
         }
 
         // finally the TOC itself; not saved here but only put on display for the user to approve
-        ConfirmTOC frag = ConfirmTOC.newInstance(this, bookData,
-                                                 mISFDBEditionUrls.size() > 1);
-        frag.show(requireFragmentManager(), ConfirmTOC.TAG);
+        FragmentManager fm = requireFragmentManager();
+        if (fm.findFragmentByTag(ConfirmTOC.TAG) == null) {
+            ConfirmTOC.newInstance(this, bookData, mISFDBEditionUrls.size() > 1)
+                      .show(fm, ConfirmTOC.TAG);
+        }
     }
 
     /**
@@ -507,6 +522,24 @@ public class EditBookTOCFragment
             return frag;
         }
 
+        /**
+         * Get the textSize attribute of the standard "TextAppearance_Small" style.
+         * API 23 required to use it directly :(
+         *
+         * @param context of caller
+         *
+         * @return the size
+         */
+        private static int getTextAppearanceSmallTextSize(@NonNull final Context context) {
+            // The attributes you want retrieved
+            int[] attrs = {android.R.attr.textSize};
+            TypedArray ta = context.obtainStyledAttributes(android.R.style.TextAppearance_Small,
+                                                           attrs);
+            int size = ta.getIndex(0);
+            ta.recycle();
+            return size;
+        }
+
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
@@ -530,9 +563,9 @@ public class EditBookTOCFragment
 
             TextView content = new TextView(getContext());
             content.setText(msg);
-            // Not ideal but works; 14 == TextAppearance_Small
-            content.setTextSize(14);
-            //API: 23 ?
+            //noinspection ConstantConditions
+            content.setTextSize(getTextAppearanceSmallTextSize(getContext()));
+            //API: 23:
             //content.setTextAppearance(android.R.style.TextAppearance_Small);
             //API: 26 ?
             //content.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);

@@ -110,9 +110,15 @@ public final class QueueManager {
         initializeQueue(Q_SMALL_JOBS);
     }
 
-    public static QueueManager getQueueManager() {
+    public static void init() {
         if (mInstance == null) {
             mInstance = new QueueManager();
+        }
+    }
+
+    public static QueueManager getQueueManager() {
+        if (mInstance == null) {
+            throw new IllegalStateException("init was not called?");
         }
         return mInstance;
     }

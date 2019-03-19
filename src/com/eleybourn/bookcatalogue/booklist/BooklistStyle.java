@@ -449,7 +449,6 @@ public class BooklistStyle
         mFilterLoaned.writeToParcel(dest);
     }
 
-    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {

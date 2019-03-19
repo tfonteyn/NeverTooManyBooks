@@ -822,6 +822,7 @@ Check 's' versus 'd'
     <string name="lbl_title">Title</string>
     <string name="lbl_series">Series</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_series_num_long">Series #</string>
     <string name="lbl_first_publication">First Publication</string>
     <string name="lbl_date_acquired">Date Acquired</string>
     <string name="lbl_price_paid">Price paid</string>
@@ -1264,5 +1265,6 @@ Check 's' versus 'd'
 
     <string name="books_found">%1$d books found</string>
     <string name="searching_openlibrary">Searching OpenLibrary</string>
+    <string name="error_database_upgrade_failed">Cannot upgrade from a version older than 4.0.0</string>
 
 </resources>

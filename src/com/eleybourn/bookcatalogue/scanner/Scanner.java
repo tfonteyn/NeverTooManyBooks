@@ -12,11 +12,18 @@ import androidx.annotation.NonNull;
  */
 public interface Scanner {
 
-    /** Request a scan. */
+    /**
+     * Start the activity with the passed request code.
+     *
+     * @param activity    calling activity
+     * @param requestCode which will be passed back to onActivityResult
+     */
     void startActivityForResult(@NonNull Activity activity,
                                 int requestCode);
 
-    /** @return the barcode from the resulting intent. */
+    /**
+     * @return the barcode from the resulting intent of a scan action.
+     */
     @NonNull
     String getBarcode(@NonNull Intent data);
 }

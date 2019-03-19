@@ -302,8 +302,8 @@ public class IntListPreference
             extends BaseSavedState {
 
         /** {@link Parcelable}. */
-        public static final Parcelable.Creator<SavedState> CREATOR =
-                new Parcelable.Creator<SavedState>() {
+        public static final Creator<SavedState> CREATOR =
+                new Creator<SavedState>() {
                     @Override
                     public SavedState createFromParcel(@NonNull final Parcel source) {
                         return new SavedState(source);

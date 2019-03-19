@@ -45,7 +45,7 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 /**
  * Base class for Web site searches.
  */
-public class ManagedSearchTask
+public class SearchTask
         extends ManagedTask {
 
     /** progress title. e.g. "Searching Amazon". */
@@ -70,7 +70,7 @@ public class ManagedSearchTask
      * Accumulated book info.
      * <p>
      * NEWKIND: if you add a new Search task/site that adds non-string based data,
-     * {@link SearchCoordinator#accumulateData(int)} must be able to handle it.
+     * {@link SearchCoordinator#accumulateAllData(int)} must be able to handle it.
      */
     @NonNull
     private Bundle mBookData = new Bundle();
@@ -83,9 +83,9 @@ public class ManagedSearchTask
      * @param site              the search site definition
      * @param searchSiteManager the search site manager
      */
-    ManagedSearchTask(@NonNull final TaskManager manager,
-                      @NonNull final SearchSites.Site site,
-                      @NonNull final SearchSites.SearchSiteManager searchSiteManager) {
+    SearchTask(@NonNull final TaskManager manager,
+               @NonNull final SearchSites.Site site,
+               @NonNull final SearchSites.SearchSiteManager searchSiteManager) {
         super(manager, site.getName());
         mTaskId = site.id;
         mSearchSiteManager = searchSiteManager;

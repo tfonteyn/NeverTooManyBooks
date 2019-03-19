@@ -105,7 +105,7 @@ public final class DebugReport {
         // Create a temp file, set to auto-delete at app close
         File tmpDbFile = StorageUtils.getFile("DbExport-tmp.db");
         tmpDbFile.deleteOnExit();
-        StorageUtils.exportFile(DBHelper.getDatabasePath(activity), tmpDbFile.getName());
+        StorageUtils.exportFile(DBHelper.getDatabasePath(), tmpDbFile.getName());
 
         // setup the mail message
         String subject = '[' + activity.getString(R.string.app_name) + "] "

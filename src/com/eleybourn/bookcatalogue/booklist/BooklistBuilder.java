@@ -220,7 +220,10 @@ public class BooklistBuilder
     // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
     //private String mGroupColumnList;
 
-    /** Collection of statements created by this Builder. */
+    /**
+     * Collection of statements created by this Builder.
+     * Private to this instance, hence no need to synchronize the statements.
+     */
     @NonNull
     private final SqlStatementManager mStatements;
 
@@ -361,7 +364,9 @@ public class BooklistBuilder
                 + " FROM " + mListTable.ref() + mListTable.join(mNavTable)
                 + " WHERE " + mListTable.dot(DOM_FK_BOOK_ID) + " NOT NULL"
                 + " ORDER BY " + mNavTable.dot(DOM_PK_ID);
-        mSyncedDb.execSQL(sql);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+            stmt.executeInsert();
+        }
         return new FlattenedBooklist(mSyncedDb, flat);
     }
 
@@ -683,12 +688,13 @@ public class BooklistBuilder
      */
     public void build(final int preferredState,
                       final long previouslySelectedBookId) {
-        Tracker.handleEvent(this, Tracker.States.Enter, "build-" + mBooklistBuilderId);
+        Logger.info(this, Tracker.State.Enter, "build", mBooklistBuilderId);
 
         try {
             @SuppressWarnings("UnusedAssignment")
             final long t0 = System.currentTimeMillis();
 
+            // create the mListTable/mNavTable fresh.
             buildTableDefinitions();
 
             SummaryBuilder summary = new SummaryBuilder();
@@ -714,7 +720,7 @@ public class BooklistBuilder
             // SQLite 3.5.9 (2008-05-14) is broken.
             // Allow for the user preferences to override in case another build is broken.
             // 2019-01-20: v200 is targeting API 21, which would be SqLite 3.8 (2013-08-26)
-            //ENHANCE: time to remove sqlite pre-trigger use logic ?
+            //ENHANCE: time to remove sqlite pre-trigger use logic ? -> keep it till the bug of rebuild (using triggers) is resolved.
             final CompatibilityMode listMode = CompatibilityMode.get();
 
             // Build a sort mask based on if triggers are used;
@@ -838,112 +844,11 @@ public class BooklistBuilder
             @SuppressWarnings("UnusedAssignment")
             final long t7_sortColumns_processed = System.currentTimeMillis();
 
-            String ix1Sql = "CREATE INDEX " + mListTable + "_IX1 ON " + mListTable
-                    + '(' + sqlCmp.sortIndexColumnList + ')';
-
-            // Indexes that were tried. None had a substantial impact with 800 books.
-//            String ix1aSql = "CREATE INDEX " + mListTable + "_IX1a ON " + mListTable
-//                    + '(' + DOM_BL_NODE_LEVEL + ", " + buildInfoHolder.sortIndexColumnList + ')';
-//            String ix2Sql = "Create Unique Index " + mListTable + "_IX2 ON " + mListTable
-//                    + '(' + DOM_FK_BOOK_ID + ", " + DOM_PK_ID + ')';
-//            String ix3Sql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + buildInfoHolder.sortIndexColumnList + ')';
-//            String ix3aSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + DOM_BL_NODE_LEVEL + ',' + buildInfoHolder.sortIndexColumnList + ')';
-//            String ix3bSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + buildInfoHolder.sortIndexColumnList + ',' + DOM_BL_NODE_LEVEL + ')';
-//            String ix3cSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + buildInfoHolder.sortIndexColumnList
-//                    + ',' + DOM_BL_ROOT_KEY + DBA.COLLATION + ')';
-//            String ix3dSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + DOM_BL_NODE_LEVEL + ',' + buildInfoHolder.sortIndexColumnList
-//                    + ',' + DOM_BL_ROOT_KEY + ')';
-//            String ix3eSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
-//                    + '(' + buildInfoHolder.sortIndexColumnList + ',' + DOM_BL_ROOT_KEY
-//                    + ',' + DOM_BL_NODE_LEVEL + ')';
-//            String ix4Sql = "CREATE INDEX " + mListTable + "_IX4 ON " + mListTable
-//                    + '(' + DOM_BL_NODE_LEVEL + ',' + DOM_BL_NODE_EXPANDED
-//                    + ',' + DOM_BL_ROOT_KEY + ')';
-
-
-            @SuppressWarnings("UnusedAssignment")
-            final long t8_index_build = System.currentTimeMillis();
-
             // We are good to go.
 
             //mSyncedDb.execSQL("PRAGMA synchronous = OFF"); -- Has very little effect
             SyncLock txLock = mSyncedDb.beginTransaction(true);
             try {
-                //<editor-fold desc="Experimental commented out code">
-
-                // This is experimental code that replaced the INSERT...SELECT with a cursor
-                // and an INSERT statement. It was literally 10x slower, largely due to the
-                // Android implementation of SQLiteStatement and the way it handles parameter
-                // binding. Kept for future experiments
-                //
-                ////
-                //// Code to manually insert each row
-                ////
-                //@SuppressWarnings("UnusedAssignment")
-                //long TM0 = System.currentTimeMillis();
-                //String selStmt = sqlCmp.select + " FROM " + sqlCmp.join + ' ' +
-                //                  sqlCmp.where + " ORDER BY " + sortIndexColumnList;
-                //final Cursor selCsr = mSyncedDb.rawQuery(selStmt);
-                //final SynchronizedStatement insStmt =
-                //          mSyncedDb.compileStatement(sqlCmp.insertValues);
-                ////final String baseIns = sqlCmp.insert + " VALUES (";
-                ////SQLiteStatement insStmt = insSyncStmt.getUnderlyingStatement();
-                //
-                //final int cnt = selCsr.getColumnCount();
-                ////StringBuilder insBuilder = new StringBuilder();
-                //while(selCsr.moveToNext()) {
-                //	//insBuilder.append(baseIns);
-                //	for(int i = 0; i < cnt; i++) {
-                //		//if (i > 0) {
-                //		//	insBuilder.append(',');
-                //		//}
-                //		// THIS IS SLOWER than using Strings!!!!
-                //		//switch(selCsr.getType(i)) {
-                //		//case Cursor.FIELD_TYPE_NULL:
-                //		//	insStmt.bindNull(i+1);
-                //		//	break;
-                //		//case Cursor.FIELD_TYPE_FLOAT:
-                //		//	insStmt.bindDouble(i+1, selCsr.getDouble(i));
-                //		//	break;
-                //		//case Cursor.FIELD_TYPE_INTEGER:
-                //		//	insStmt.bindLong(i+1, selCsr.getLong(i));
-                //		//	break;
-                //		//case Cursor.FIELD_TYPE_STRING:
-                //		//	insStmt.bindString(i+1, selCsr.getString(i));
-                //		//	break;
-                //		//case Cursor.FIELD_TYPE_BLOB:
-                //		//	insStmt.bindNull(i+1);
-                //		//	break;
-                //		//}
-                //		final String v = selCsr.getString(i);
-                //		if (v == null) {
-                //			//insBuilder.append("NULL");
-                //			insStmt.bindNull(i+1);
-                //		} else {
-                //			//insBuilder.append("'");
-                //			//insBuilder.append(DBA.encodeString(v));
-                //			//insBuilder.append("'");
-                //			insStmt.bindString(i+1, v);
-                //		}
-                //	}
-                //	//insBuilder.append(')');
-                //	//mSyncedDb.execSQL(insBuilder.toString());
-                //	//insBuilder.setLength(0);
-                //	insStmt.execute();
-                //}
-                //selCsr.close();
-                //@SuppressWarnings("UnusedAssignment")
-                //long TM1 = System.currentTimeMillis();
-                //Logger.info("Time to MANUALLY INSERT: " + (TM1-TM0));
-                //</editor-fold>
-
-                final long t9 = System.currentTimeMillis();
-
                 mLevelBuildStmts = new ArrayList<>();
                 // Build the lowest level summary using our initial insert statement
                 if (listMode.useTriggers) {
@@ -969,22 +874,22 @@ public class BooklistBuilder
                     mBaseBuildStmt.executeInsert();
                 } else {
                     // just moved out of the way... eventually to be removed maybe?
-                    baseBuildWithoutTriggers(sqlCmp, collationIsCs, ix1Sql, t9);
+                    baseBuildWithoutTriggers(sqlCmp, collationIsCs);
                 }
 
                 @SuppressWarnings("UnusedAssignment")
-                final long t10_BaseBuild_executed = System.currentTimeMillis();
+                final long t8_BaseBuild_executed = System.currentTimeMillis();
 
                 mSyncedDb.analyze(mListTable);
 
                 @SuppressWarnings("UnusedAssignment")
-                final long t11_table_optimized = System.currentTimeMillis();
+                final long t9_table_optimized = System.currentTimeMillis();
 
                 // build the lookup aka navigation table
                 populateNavigationTable(sqlCmp, preferredState, listMode);
 
                 @SuppressWarnings("UnusedAssignment")
-                final long t12_nav_table_build = System.currentTimeMillis();
+                final long t10_nav_table_build = System.currentTimeMillis();
 
                 // Create index on nav table
                 SynchronizedStatement ixStmt1 =
@@ -1003,7 +908,7 @@ public class BooklistBuilder
                 ixStmt1.execute();
 
                 @SuppressWarnings("UnusedAssignment")
-                final long t13_nav_table_index_IX1_created = System.currentTimeMillis();
+                final long t11_nav_table_index_IX1_created = System.currentTimeMillis();
 
                 // Essential for main query! If not present, will make getCount() take
                 // ages because main query is a cross with no index.
@@ -1022,42 +927,38 @@ public class BooklistBuilder
 
 
                 @SuppressWarnings("UnusedAssignment")
-                final long t14_nav_table_index_IX2_created = System.currentTimeMillis();
+                final long t12_nav_table_index_IX2_created = System.currentTimeMillis();
                 mSyncedDb.analyze(mNavTable);
 
                 if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
                     Logger.info(this, "build",
-                                "T1: " + (t1_basic_setup_done - t0));
+                                "T01: " + (t1_basic_setup_done - t0));
                     Logger.info(this, "build",
-                                "T2: " + (t2_groups_processed - t1_basic_setup_done));
+                                "T02: " + (t2_groups_processed - t1_basic_setup_done));
                     Logger.info(this, "build",
-                                "T3: " + (t3 - t2_groups_processed));
+                                "T03: " + (t3 - t2_groups_processed));
                     Logger.info(this, "build",
-                                "T4: " + (t4_buildSqlComponents - t3));
+                                "T04: " + (t4_buildSqlComponents - t3));
                     Logger.info(this, "build",
-                                "T5: " + (t5_build_join - t4_buildSqlComponents));
+                                "T05: " + (t5_build_join - t4_buildSqlComponents));
                     Logger.info(this, "build",
-                                "T6: " + (t6_build_where - t5_build_join));
+                                "T06: " + (t6_build_where - t5_build_join));
                     Logger.info(this, "build",
-                                "T7: " + (t7_sortColumns_processed - t6_build_where));
+                                "T07: " + (t7_sortColumns_processed - t6_build_where));
                     Logger.info(this, "build",
-                                "T8: " + (t8_index_build - t7_sortColumns_processed));
+                                "T08: " + (t8_BaseBuild_executed - t7_sortColumns_processed));
                     Logger.info(this, "build",
-                                "T9: " + (t9 - t8_index_build));
+                                "T09: " + (t9_table_optimized - t8_BaseBuild_executed));
                     Logger.info(this, "build",
-                                "T10: " + (t10_BaseBuild_executed - t9));
+                                "T10: " + (t10_nav_table_build - t9_table_optimized));
                     Logger.info(this, "build",
-                                "T11: " + (t11_table_optimized - t10_BaseBuild_executed));
+                                "T11: " + (t11_nav_table_index_IX1_created - t10_nav_table_build));
                     Logger.info(this, "build",
-                                "T12: " + (t12_nav_table_build - t11_table_optimized));
+                                "T12: " + (t12_nav_table_index_IX2_created
+                                        - t11_nav_table_index_IX1_created));
                     Logger.info(this, "build",
-                                "T13: " + (t13_nav_table_index_IX1_created - t12_nav_table_build));
-                    Logger.info(this, "build",
-                                "T14: " + (t14_nav_table_index_IX2_created
-                                        - t13_nav_table_index_IX1_created));
-                    Logger.info(this, "build",
-                                "T15: " + (System.currentTimeMillis()
-                                        - t14_nav_table_index_IX2_created));
+                                "T13: " + (System.currentTimeMillis()
+                                        - t12_nav_table_index_IX2_created));
                     Logger.info(this, "build",
                                 "============================");
                     Logger.info(this, "build",
@@ -1073,8 +974,7 @@ public class BooklistBuilder
 
             }
         } finally {
-            Tracker.handleEvent(this, Tracker.States.Exit,
-                                "build-" + mBooklistBuilderId);
+            Logger.info(this, Tracker.State.Exit, "build", mBooklistBuilderId);
         }
     }
 
@@ -1140,40 +1040,44 @@ public class BooklistBuilder
         // On first-time builds, get the Preferences-based list
         switch (preferredState) {
             case PREF_LIST_REBUILD_ALWAYS_COLLAPSED:
-                mSyncedDb.execSQL(
-                        mNavTable.getInsert(false,
-                                            DOM_BL_REAL_ROW_ID,
-                                            DOM_BL_NODE_LEVEL,
-                                            DOM_BL_ROOT_KEY,
-                                            DOM_BL_NODE_VISIBLE,
-                                            DOM_BL_NODE_EXPANDED)
-                                + " SELECT " + mListTable.dot(DOM_PK_ID)
-                                + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
-                                + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
-                                + ',' + '\n'
-                                + " CASE WHEN " + DOM_BL_NODE_LEVEL + "=1"
-                                + " THEN 1 ELSE 0"
-                                + " END"
-                                + ",0"
-                                + " FROM " + mListTable.ref()
-                                + " ORDER BY " + sortExpression);
+                String sqlc = mNavTable.getInsert(false,
+                                                 DOM_BL_REAL_ROW_ID,
+                                                 DOM_BL_NODE_LEVEL,
+                                                 DOM_BL_ROOT_KEY,
+                                                 DOM_BL_NODE_VISIBLE,
+                                                 DOM_BL_NODE_EXPANDED)
+                        + " SELECT " + mListTable.dot(DOM_PK_ID)
+                        + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
+                        + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
+                        + ',' + '\n'
+                        + " CASE WHEN " + DOM_BL_NODE_LEVEL + "=1"
+                        + " THEN 1 ELSE 0"
+                        + " END"
+                        + ",0"
+                        + " FROM " + mListTable.ref()
+                        + " ORDER BY " + sortExpression;
+                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sqlc)) {
+                    stmt.executeInsert();
+                }
                 break;
 
             case PREF_LIST_REBUILD_ALWAYS_EXPANDED:
-                mSyncedDb.execSQL(
-                        mNavTable.getInsert(false,
-                                            DOM_BL_REAL_ROW_ID,
-                                            DOM_BL_NODE_LEVEL,
-                                            DOM_BL_ROOT_KEY,
-                                            DOM_BL_NODE_VISIBLE,
-                                            DOM_BL_NODE_EXPANDED)
-                                + " SELECT " + mListTable.dot(DOM_PK_ID)
-                                + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
-                                + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
-                                + ",1"
-                                + ",1"
-                                + " FROM " + mListTable.ref()
-                                + " ORDER BY " + sortExpression);
+                String sqle = mNavTable.getInsert(false,
+                                                 DOM_BL_REAL_ROW_ID,
+                                                 DOM_BL_NODE_LEVEL,
+                                                 DOM_BL_ROOT_KEY,
+                                                 DOM_BL_NODE_VISIBLE,
+                                                 DOM_BL_NODE_EXPANDED)
+                        + " SELECT " + mListTable.dot(DOM_PK_ID)
+                        + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
+                        + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
+                        + ",1"
+                        + ",1"
+                        + " FROM " + mListTable.ref()
+                        + " ORDER BY " + sortExpression;
+                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sqle)) {
+                    stmt.executeInsert();
+                }
                 break;
 
             default:
@@ -1227,9 +1131,8 @@ public class BooklistBuilder
     }
 
     private void baseBuildWithoutTriggers(@NonNull final SqlComponents /* in/out */ sqlCmp,
-                                          final boolean collationIsCs,
-                                          @NonNull final String ix1Sql,
-                                          final long t9) {
+                                          final boolean collationIsCs) {
+
         final long[] t_style = new long[mStyle.groupCount() + 1];
         t_style[0] = System.currentTimeMillis();
 
@@ -1289,6 +1192,32 @@ public class BooklistBuilder
         // ENHANCE: ICS UNICODE: Consider adding a duplicate _lc (lower case) column
         // to the SUMMARY table. Ugh.
         if (!collationIsCs) {
+            String ix1Sql = "CREATE INDEX " + mListTable + "_IX1 ON " + mListTable
+                    + '(' + sqlCmp.sortIndexColumnList + ')';
+
+            // Indexes that were tried. None had a substantial impact with 800 books.
+//            String ix1aSql = "CREATE INDEX " + mListTable + "_IX1a ON " + mListTable
+//                    + '(' + DOM_BL_NODE_LEVEL + ", " + sqlCmp.sortIndexColumnList + ')';
+//            String ix2Sql = "CREATE UNIQUE INDEX " + mListTable + "_IX2 ON " + mListTable
+//                    + '(' + DOM_FK_BOOK_ID + ", " + DOM_PK_ID + ')';
+//            String ix3Sql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + sqlCmp.sortIndexColumnList + ')';
+//            String ix3aSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + DOM_BL_NODE_LEVEL + ',' + sqlCmp.sortIndexColumnList + ')';
+//            String ix3bSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + sqlCmp.sortIndexColumnList + ',' + DOM_BL_NODE_LEVEL + ')';
+//            String ix3cSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + sqlCmp.sortIndexColumnList
+//                    + ',' + DOM_BL_ROOT_KEY + DBA.COLLATION + ')';
+//            String ix3dSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + DOM_BL_NODE_LEVEL + ',' + sqlCmp.sortIndexColumnList
+//                    + ',' + DOM_BL_ROOT_KEY + ')';
+//            String ix3eSql = "CREATE INDEX " + mListTable + "_IX3 ON " + mListTable
+//                    + '(' + sqlCmp.sortIndexColumnList + ',' + DOM_BL_ROOT_KEY
+//                    + ',' + DOM_BL_NODE_LEVEL + ')';
+//            String ix4Sql = "CREATE INDEX " + mListTable + "_IX4 ON " + mListTable
+//                    + '(' + DOM_BL_NODE_LEVEL + ',' + DOM_BL_NODE_EXPANDED
+//                    + ',' + DOM_BL_ROOT_KEY + ')';
             SynchronizedStatement stmt = mStatements.add(STMT_IX_1, ix1Sql);
             if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
                 Logger.info(this, "baseBuildWithoutTriggers",
@@ -2364,21 +2293,24 @@ public class BooklistBuilder
                 String sql = "UPDATE " + mNavTable + " SET "
                         + DOM_BL_NODE_EXPANDED + "=1,"
                         + DOM_BL_NODE_VISIBLE + "=1";
-                mSyncedDb.execSQL(sql);
-
+                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+                    stmt.executeUpdateDelete();
+                }
                 saveListNodeSettings();
             } else {
                 String sql = "UPDATE " + mNavTable + " SET "
                         + DOM_BL_NODE_EXPANDED + "=0,"
                         + DOM_BL_NODE_VISIBLE + "=0"
                         + " WHERE " + DOM_BL_NODE_LEVEL + ">1";
-                mSyncedDb.execSQL(sql);
-
+                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+                    stmt.executeUpdateDelete();
+                }
                 sql = "UPDATE " + mNavTable + " SET "
                         + DOM_BL_NODE_EXPANDED + "=0"
                         + " WHERE " + DOM_BL_NODE_LEVEL + "=1";
-                mSyncedDb.execSQL(sql);
-
+                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+                    stmt.executeUpdateDelete();
+                }
                 deleteListNodeSettings();
             }
 

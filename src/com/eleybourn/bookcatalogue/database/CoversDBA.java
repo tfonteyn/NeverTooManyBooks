@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.database;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
@@ -56,17 +55,15 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
  * DB Helper for Covers DB. It uses the Application Context.
+ * This class is used as singleton, as it's needed for multiple concurrent threads.
  * <p>
  * In the initial pass, the covers database has a single table whose members are accessed
  * via unique 'file names'.
  * <p>
- * This class is used as singleton, to avoid running out of memory very quickly.
- * To be investigated some day. Not sure how much multi-threaded access is hampered by this.
- * TODO: do some speed checks: cache enabled/disabled; do we actually need this db ?
- * <p>
  * 2018-11-26: database location back to internal storage.
  * The bulk of space is used by the actual image file, not by the database.
  * To be reviewed when the location of the images can be user-configured.
+ * TODO: performance tests: cache enabled/disabled; do we actually need this db ?
  *
  * @author Philip Warner
  */
@@ -165,6 +162,7 @@ public final class CoversDBA
     /** List of statements we create so we can clean them when the instance is closed. */
     private final SqlStatementManager mStatements = new SqlStatementManager();
 
+    /** singleton. */
     private CoversDBA() {
     }
 
@@ -179,7 +177,7 @@ public final class CoversDBA
         }
         // check each time, as it might have failed last time but might work now.
         if (mSyncedDb == null) {
-            mInstance.open(BookCatalogueApp.getAppContext());
+            mInstance.open();
         }
 
         int noi = INSTANCE_COUNTER.incrementAndGet();
@@ -207,9 +205,8 @@ public final class CoversDBA
         return uuid + '.' + maxWidth + 'x' + maxHeight;
     }
 
-    private void open(@NonNull final Context context) {
-        final SQLiteOpenHelper coversHelper = new CoversDbHelper(context, TRACKED_CURSOR_FACTORY);
-
+    private void open() {
+        final SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(TRACKED_CURSOR_FACTORY);
         // Try to connect.
         try {
             mSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
@@ -221,11 +218,11 @@ public final class CoversDBA
                 Logger.error("Failed to rename dead covers database: ");
             }
 
-            // try again?
+            // retry...
             try {
                 mSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
             } catch (RuntimeException e2) {
-                // If we fail a second time (creating a new DB), then just give up.
+                // If we fail after creating a new DB, just give up.
                 Logger.error(e2, "Covers database unavailable");
             }
         }
@@ -300,8 +297,7 @@ public final class CoversDBA
      * Called in the UI thread, will return a cached image OR NULL.
      * and (if found) put it in the view.
      *
-     * @param originalFile File representing original image file
-     * @param uuid         used to construct the cacheId
+     * @param uuid         for the image
      * @param maxWidth     used to construct the cacheId
      * @param maxHeight    used to construct the cacheId
      * @param destView     View to populate if non-null
@@ -309,13 +305,12 @@ public final class CoversDBA
      * @return Bitmap (if cached) or null (if not cached)
      */
     @Nullable
-    public Bitmap getImageAndPutIntoView(@NonNull final File originalFile,
-                                         @NonNull final String uuid,
+    public Bitmap getImageAndPutIntoView(@NonNull final String uuid,
                                          final int maxWidth,
                                          final int maxHeight,
                                          @NonNull final ImageView destView) {
 
-        Bitmap bitmap = getImage(originalFile, uuid, maxWidth, maxHeight);
+        Bitmap bitmap = getImage(StorageUtils.getCoverFile(uuid), uuid, maxWidth, maxHeight);
         if (bitmap != null) {
             //
             // Remove any tasks that may be getting the image because they may overwrite
@@ -344,17 +339,17 @@ public final class CoversDBA
         bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY_PERCENTAGE, out);
         byte[] image = out.toByteArray();
 
-        ContentValues cv = new ContentValues();
-        cv.put(DOM_CACHE_ID.name, filename);
-        cv.put(DOM_IMAGE.name, image);
-        cv.put(DOM_WIDTH.name, bitmap.getHeight());
-        cv.put(DOM_HEIGHT.name, bitmap.getWidth());
-
         SynchronizedStatement existsStmt = mStatements.get(STMT_EXISTS);
         if (existsStmt == null) {
             existsStmt = mStatements.add(mSyncedDb, STMT_EXISTS, SQL_COUNT_ID);
         }
         existsStmt.bindString(1, filename);
+
+        ContentValues cv = new ContentValues();
+        cv.put(DOM_CACHE_ID.name, filename);
+        cv.put(DOM_IMAGE.name, image);
+        cv.put(DOM_WIDTH.name, bitmap.getHeight());
+        cv.put(DOM_HEIGHT.name, bitmap.getWidth());
 
         if (existsStmt.count() == 0) {
             mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
@@ -391,7 +386,7 @@ public final class CoversDBA
         if (mSyncedDb == null) {
             return;
         }
-        mSyncedDb.delete(TBL_IMAGE.getName(), null, null);
+        mSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE);
     }
 
     /**
@@ -404,17 +399,42 @@ public final class CoversDBA
         mSyncedDb.analyze();
     }
 
+    /**
+     * Singleton SQLiteOpenHelper for the covers database.
+     */
     public static class CoversDbHelper
             extends SQLiteOpenHelper {
 
-        CoversDbHelper(@NonNull final Context context,
-                       @SuppressWarnings("SameParameterValue")
-                       @NonNull final SQLiteDatabase.CursorFactory factory) {
-            super(context, COVERS_DATABASE_NAME, factory, COVERS_DATABASE_VERSION);
+        private static CoversDbHelper mInstance;
+
+        /**
+         * Singleton.
+         *
+         * @param factory CursorFactory: to use for creating cursor objects
+         */
+        private CoversDbHelper(@SuppressWarnings("SameParameterValue")
+                               @NonNull final SQLiteDatabase.CursorFactory factory) {
+            super(BookCatalogueApp.getAppContext(),
+                  COVERS_DATABASE_NAME, factory, COVERS_DATABASE_VERSION);
         }
 
-        public static String getDatabasePath(@NonNull final Context context) {
-            return context.getDatabasePath(COVERS_DATABASE_NAME).getAbsolutePath();
+        /**
+         * @param factory CursorFactory: to use for creating cursor objects
+         *
+         * @return the instance
+         */
+        public static CoversDbHelper getInstance(@SuppressWarnings("SameParameterValue")
+                                                 @NonNull final SQLiteDatabase.CursorFactory factory) {
+            if (mInstance == null) {
+                mInstance = new CoversDbHelper(factory);
+            }
+            return mInstance;
+        }
+
+        public static String getDatabasePath() {
+            return BookCatalogueApp.getAppContext()
+                                   .getDatabasePath(COVERS_DATABASE_NAME)
+                                   .getAbsolutePath();
         }
 
         /**

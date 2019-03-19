@@ -69,35 +69,31 @@ public final class SearchSites {
         /*
          * standard searches for full details.
          */
-        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_AMAZON, "Amazon", 0, 1));
-        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOODREADS, "Goodreads", 1, 0));
-        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOOGLE, "Google", 2, 2));
-        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_LIBRARY_THING, "LibraryThing", 3, 3));
-
-        // pretty reliable site, but only serving one group of readers.
-        // Those readers can up the priority in the preferences.
-        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, "ISFDB", 4, 4));
+        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_AMAZON, 0, 1));
+        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOODREADS, 1, 0));
+        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOOGLE, 2, 2));
+        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_LIBRARY_THING, 3, 3));
+        SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, 4, 4));
 
         // bottom of the list, and disabled by default
-        Site op_site = new Site(Site.SEARCH_OPEN_LIBRARY, "OpenLibrary", 5, 5);
+        Site op_site = new Site(Site.SEARCH_OPEN_LIBRARY, 5, 5);
         op_site.setEnabled(false);
         SEARCH_ORDER_DEFAULTS.add(op_site);
-
-        //ENHANCE: reliability order not user configurable yet
-        PREFERRED_RELIABILITY_ORDER = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
 
         /* ************************************************************************************** */
         /*
          * dedicated cover lookup; does not use a reliability index.
          */
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOOGLE, "Google-cover", 0));
-        COVER_SEARCH_ORDER_DEFAULTS.add(
-                new Site(Site.SEARCH_LIBRARY_THING, "LibraryThing-cover", 1));
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, "ISFDB-cover", 2));
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOODREADS, "Goodreads-cover", 3));
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_AMAZON, "Amazon-cover", 4));
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_OPEN_LIBRARY, "OpenLibrary-cover", 5));
+        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOOGLE, "cover", 0));
+        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_LIBRARY_THING, "cover", 1));
+        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, "cover", 2));
+        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOODREADS, "cover", 3));
+        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_AMAZON, "cover", 4));
+        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_OPEN_LIBRARY, "cover", 5));
 
+        /* ************************************************************************************** */
+
+        PREFERRED_RELIABILITY_ORDER = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
         /*
          * Create the user configurable lists.
          */
@@ -347,16 +343,16 @@ public final class SearchSites {
          * Create the Site with whatever suitable default values.
          * If previously stored to SharedPreferences, the stored values will be used instead.
          *
-         * @param id       Internal id, bitmask based
-         * @param name     user-visible name.
-         * @param priority the search priority order
+         * @param id         Internal id, bitmask based
+         * @param nameSuffix suffix to the add to the name
+         * @param priority   the search priority order
          */
         Site(final int id,
-             @NonNull final String name,
+             @NonNull final String nameSuffix,
              final int priority) {
 
             this.id = id;
-            mName = name;
+            mName = getName(id) + '-' + nameSuffix;
             mPriority = priority;
             // by default, reliability == order.
             mReliability = priority;
@@ -369,17 +365,15 @@ public final class SearchSites {
          * If previously stored to SharedPreferences, the stored values will be used instead.
          *
          * @param id          Internal id, bitmask based
-         * @param name        user-visible name.
          * @param priority    the search priority order
          * @param reliability the search reliability order
          */
         Site(final int id,
-             @NonNull final String name,
              final int priority,
              final int reliability) {
 
             this.id = id;
-            mName = name;
+            mName = getName(id);
             mPriority = priority;
             mReliability = reliability;
 
@@ -396,6 +390,26 @@ public final class SearchSites {
             mEnabled = in.readByte() != 0;
             mPriority = in.readInt();
             mReliability = in.readInt();
+        }
+
+        private static String getName(final int id) {
+            switch (id) {
+                case SEARCH_GOOGLE:
+                    return "Google";
+                case SEARCH_AMAZON:
+                    return "Amazon";
+                case SEARCH_GOODREADS:
+                    return "Goodreads";
+                case SEARCH_ISFDB:
+                    return "ISFDB";
+                case SEARCH_LIBRARY_THING:
+                    return "LibraryThing";
+                case SEARCH_OPEN_LIBRARY:
+                    return "OpenLibrary";
+
+                default:
+                    throw new RTE.IllegalTypeException("Unexpected search source: " + id);
+            }
         }
 
         /**
@@ -465,7 +479,6 @@ public final class SearchSites {
             editor.putInt(TAG + '.' + mName + ".reliability", mReliability);
         }
 
-        /** {@link Parcelable}. */
         @SuppressWarnings("SameReturnValue")
         @Override
         public int describeContents() {

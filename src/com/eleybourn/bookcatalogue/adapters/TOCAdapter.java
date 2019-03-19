@@ -56,9 +56,6 @@ public class TOCAdapter
             convertView = LayoutInflater.from(getContext())
                                         .inflate(mRowLayoutId, parent,false);
             holder = new Holder(convertView);
-
-            // make it flash
-            convertView.setBackgroundResource(android.R.drawable.list_selector_background);
         }
 
         //noinspection ConstantConditions

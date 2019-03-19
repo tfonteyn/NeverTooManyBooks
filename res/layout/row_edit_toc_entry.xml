@@ -4,9 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/TLV_ROW"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/border">
+    style="@style/row_in_ListView">
 
     <ImageButton
         android:id="@id/TLV_ROW_DELETE"
@@ -19,17 +17,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@id/TLV_ROW_DETAILS"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:focusable="false"
-        android:orientation="vertical"
+        style="@style/tlv_details_row"
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
         app:layout_constraintStart_toEndOf="@id/TLV_ROW_DELETE"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/title"
-            style="@style/tlv_details_first_row"
+            style="@style/tlv_details_row_major"
             android:layout_width="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -38,7 +33,7 @@
 
         <TextView
             android:id="@+id/year"
-            style="@style/tlv_details_row"
+            style="@style/tlv_details_row_minor"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:ignore="SelectableText"
@@ -46,7 +41,7 @@
 
         <TextView
             android:id="@+id/author"
-            style="@style/tlv_details_row"
+            style="@style/tlv_details_row_minor"
             android:layout_width="0dp"
             app:layout_constraintStart_toEndOf="@id/year"
             app:layout_constraintTop_toBottomOf="@id/title"

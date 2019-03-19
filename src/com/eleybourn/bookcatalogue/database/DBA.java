@@ -28,6 +28,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteQuery;
+import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -166,6 +167,9 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_E
  * <p>
  * ENHANCE: Use date_acquired to add 'Recent Acquisitions' virtual shelf;
  * need to resolve how this may relate to date_added
+ * <p>
+ * TODO: caching of statements forces synchronisation (2019-03-15: finally updated all lines where needed)... is it worth it ?
+ * TODO: there is an explicit warning that {@link SQLiteStatement} is not thread safe!
  */
 public class DBA
         implements AutoCloseable {
@@ -198,9 +202,11 @@ public class DBA
     public static final String COLLATION = " Collate LOCALIZED ";
 
     private static final int PREPARED_CACHE_SIZE = 20;
+
     /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
-    /** Static Factory object to create the custom cursor. */
+
+    /** Static Factory object to create our custom cursor. */
     private static final CursorFactory CURSOR_FACTORY = new CursorFactory() {
         @Override
         @NonNull
@@ -212,7 +218,8 @@ public class DBA
             return new TrackedCursor(masterQuery, editTable, query, SYNCHRONIZER);
         }
     };
-    /** Static Factory object to create the custom cursor. */
+
+    /** Static Factory object to create our custom cursor. */
     @NonNull
     private static final CursorFactory BOOKS_CURSOR_FACTORY = new CursorFactory() {
         @Override
@@ -224,13 +231,18 @@ public class DBA
             return new BookCursor(masterQuery, editTable, query, SYNCHRONIZER);
         }
     };
+
     /** DEBUG only. */
     private static final ArrayList<InstanceRefDebug> INSTANCES = new ArrayList<>();
-    private static final String COLUMN_ALIAS_NR_OF_SERIES = "_num_series";
-    private static final String COLUMN_ALIAS_NR_OF_AUTHORS = "_num_authors";
+
     /** DEBUG instance counter. */
     @NonNull
     private static final AtomicInteger DEBUG_INSTANCE_COUNT = new AtomicInteger();
+
+    /** Column alias. */
+    private static final String COLUMN_ALIAS_NR_OF_SERIES = "_num_series";
+    /** Column alias. */
+    private static final String COLUMN_ALIAS_NR_OF_AUTHORS = "_num_authors";
 
     /** statement names; keys into the cache map. */
     private static final String STMT_CHECK_BOOK_EXISTS = "CheckBookExists";
@@ -248,48 +260,31 @@ public class DBA
     private static final String STMT_GET_BOOK_ID_FROM_ISBN_1 = "GetIdFromIsbn1";
     private static final String STMT_GET_BOOK_ID_FROM_UUID = "GetBookIdFromUuid";
 
-    private static final String STMT_GET_AUTHOR_BOOK_COUNT = "GetAuthorBookCount";
-    private static final String STMT_GET_SERIES_BOOK_COUNT = "GetSeriesBookCount";
-    private static final String STMT_GET_AUTHOR_ANTHOLOGY_COUNT = "GetAuthorAnthologyCount";
-
     private static final String STMT_GET_BOOKSHELF_ID_BY_NAME = "GetBookshelfIdByName";
     private static final String STMT_GET_LOANEE_BY_BOOK_ID = "GetLoaneeByBookId";
     private static final String STMT_GET_BOOKLIST_STYLE = "GetBooklistStyle";
 
-    private static final String STMT_ADD_BOOK_SERIES = "AddBookSeries";
-    private static final String STMT_ADD_BOOK_TOC_ENTRY = "AddBookTOCEntry";
-    private static final String STMT_ADD_BOOK_AUTHORS = "AddBookAuthors";
-    private static final String STMT_ADD_BOOK_BOOKSHELF = "AddBookBookshelf";
-    private static final String STMT_ADD_BOOKSHELF = "AddBookshelf";
-    private static final String STMT_ADD_AUTHOR = "AddAuthor";
-    private static final String STMT_ADD_TOC_ENTRY = "AddTOCEntry";
-    private static final String STMT_ADD_FTS = "AddFts";
-    private static final String STMT_ADD_BOOK_LOAN = "InsertBookLoan";
-    private static final String STMT_ADD_SERIES = "AddSeries";
-    private static final String STMT_ADD_BOOKLIST_STYLE = "AddBooklistStyle";
+    private static final String STMT_INSERT_BOOK_SERIES = "InsertBookSeries";
+    private static final String STMT_INSERT_BOOK_TOC_ENTRY = "InsertBookTOCEntry";
+    private static final String STMT_INSERT_BOOK_AUTHORS = "InsertBookAuthors";
+    private static final String STMT_INSERT_BOOK_BOOKSHELF = "InsertBookBookshelf";
+    private static final String STMT_INSERT_AUTHOR = "InsertAuthor";
+    private static final String STMT_INSERT_TOC_ENTRY = "InsertTOCEntry";
+    private static final String STMT_INSERT_FTS = "InsertFts";
+    private static final String STMT_INSERT_SERIES = "InsertSeries";
 
-    private static final String STMT_DELETE_BOOKSHELF = "DeleteBookshelf";
     private static final String STMT_DELETE_BOOK = "DeleteBook";
     private static final String STMT_DELETE_SERIES = "DeleteSeries";
     private static final String STMT_DELETE_BOOK_TOC_ENTRIES = "DeleteTocEntry";
     private static final String STMT_DELETE_BOOK_AUTHORS = "DeleteBookAuthors";
     private static final String STMT_DELETE_BOOK_BOOKSHELF = "DeleteBookBookshelf";
-    private static final String STMT_DELETE_BOOK_LOAN = "DeleteBookLoan";
     private static final String STMT_DELETE_BOOK_SERIES = "DeleteBookSeries";
-    private static final String STMT_DELETE_BOOKLIST_STYLE = "DeleteBooklistStyle";
 
-    private static final String STMT_UPDATE_GOODREADS_BOOK_ID = "SetGoodreadsBookId";
+    private static final String STMT_UPDATE_GOODREADS_BOOK_ID = "UpdateGoodreadsBookId";
+    private static final String STMT_UPDATE_TOC_ENTRY = "UpdateTocEntry";
     private static final String STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES = "UpdateAuthorOnTocEntry";
-    private static final String STMT_UPDATE_GOODREADS_SYNC_DATE = "SetGoodreadsSyncDate";
-    private static final String STMT_UPDATE_FORMAT = "GlobalReplaceFormat";
-    private static final String STMT_UPDATE_GENRE = "GlobalReplaceGenre";
-    private static final String STMT_UPDATE_LANGUAGE = "GlobalReplaceLanguage";
-    private static final String STMT_UPDATE_LOCATION = "GlobalReplaceLocation";
-    private static final String STMT_UPDATE_PUBLISHER = "GlobalReplacePublisher";
+    private static final String STMT_UPDATE_GOODREADS_SYNC_DATE = "UpdateGoodreadsSyncDate";
     private static final String STMT_UPDATE_FTS = "UpdateFts";
-
-    private static final String STMT_PURGE_SERIES = "PurgeSeries";
-    private static final String STMT_PURGE_AUTHORS = "PurgeAuthors";
 
     /** error message. */
     private static final String ERROR_NEEDS_TRANSACTION = "Needs transaction";
@@ -314,7 +309,7 @@ public class DBA
      * Constructor - takes the context to allow the database to be opened/created.
      * <p>
      * Note: don't be tempted to turn this into a singleton...
-     * multi-threading does not like that.
+     * this class is not fully thread safe (in contrast to the covers dba which is).
      *
      * @param context the caller context
      */
@@ -322,7 +317,8 @@ public class DBA
         mContext = context;
         // initialise static if not done yet
         if (mDbHelper == null) {
-            mDbHelper = new DBHelper(mContext, CURSOR_FACTORY, SYNCHRONIZER);
+            // don't pass local context, the helper uses the app context to avoid leaks.
+            mDbHelper = DBHelper.getInstance(CURSOR_FACTORY, SYNCHRONIZER);
         }
 
         // initialise static if not done yet
@@ -343,7 +339,7 @@ public class DBA
         // for debug
         //mSyncedDb.execSQL("PRAGMA temp_store = FILE");
 
-        // instance based
+        // statements are instance based/managed
         mStatements = new SqlStatementManager(mSyncedDb);
 
         if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
@@ -535,6 +531,8 @@ public class DBA
 
     /**
      * Set the Goodreads sync date to the current time.
+     *
+     * @param bookId the book
      */
     public void setGoodreadsSyncDate(final long bookId) {
         SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_GOODREADS_SYNC_DATE);
@@ -542,8 +540,11 @@ public class DBA
             stmt = mStatements.add(STMT_UPDATE_GOODREADS_SYNC_DATE,
                                    SqlUpdate.GOODREADS_LAST_SYNC_DATE);
         }
-        stmt.bindLong(1, bookId);
-        stmt.executeUpdateDelete();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, bookId);
+            stmt.executeUpdateDelete();
+        }
     }
 
     /**
@@ -613,44 +614,6 @@ public class DBA
         mSyncedDb.setTransactionSuccessful();
     }
 
-
-    /**
-     * @param tocEntry to insert
-     *
-     * @return insert: the row ID of the newly inserted TocEntry,
-     * or -1 if an error occurred during insert
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    private long insertTOCEntry(@NonNull final TocEntry tocEntry) {
-        SynchronizedStatement stmt = mStatements.get(STMT_ADD_TOC_ENTRY);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_ADD_TOC_ENTRY, SqlInsert.TOC_ENTRY);
-        }
-        stmt.bindLong(1, tocEntry.getAuthor().getId());
-        // standardize the title for new entries
-        stmt.bindString(2, preprocessTitle(tocEntry.getTitle()));
-        stmt.bindString(3, tocEntry.getFirstPublication());
-        long iId = stmt.executeInsert();
-        if (iId > 0) {
-            tocEntry.setId(iId);
-        }
-        return iId;
-    }
-
-    /**
-     * @param tocEntry to update
-     *
-     * @return rows affected, should be 1 for success
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    private int updateTOCEntry(@NonNull final TocEntry tocEntry) {
-        ContentValues cv = new ContentValues();
-        cv.put(DOM_FIRST_PUBLICATION.name, tocEntry.getFirstPublication());
-        return mSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
-                                DOM_PK_ID + "=?",
-                                new String[]{String.valueOf(tocEntry.getId())});
-    }
-
     /**
      * Delete the link between TocEntry's and the given Book.
      * Note that the actual TocEntry's are not deleted.
@@ -666,8 +629,11 @@ public class DBA
             stmt = mStatements.add(STMT_DELETE_BOOK_TOC_ENTRIES,
                                    SqlDelete.BOOK_TOC_ENTRIES_BY_BOOK_ID);
         }
-        stmt.bindLong(1, bookId);
-        return stmt.executeUpdateDelete();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, bookId);
+            return stmt.executeUpdateDelete();
+        }
     }
 
     /**
@@ -686,10 +652,13 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_TOC_ENTRY_ID, SqlGet.TOC_ENTRY_ID);
         }
-        stmt.bindLong(1, authorId);
-        stmt.bindString(2, title);
-        stmt.bindString(3, preprocessTitle(title));
-        return stmt.simpleQueryForLongOrZero();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, authorId);
+            stmt.bindString(2, title);
+            stmt.bindString(3, preprocessTitle(title));
+            return stmt.simpleQueryForLongOrZero();
+        }
     }
 
     /**
@@ -728,19 +697,21 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     private long insertAuthor(@NonNull final Author /* in/out */ author) {
-        SynchronizedStatement stmt = mStatements.get(STMT_ADD_AUTHOR);
+        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_AUTHOR);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_ADD_AUTHOR, SqlInsert.AUTHOR);
+            stmt = mStatements.add(STMT_INSERT_AUTHOR, SqlInsert.AUTHOR);
         }
-
-        stmt.bindString(1, author.getFamilyName());
-        stmt.bindString(2, author.getGivenNames());
-        stmt.bindLong(3, author.isComplete() ? 1 : 0);
-        long iId = stmt.executeInsert();
-        if (iId > 0) {
-            author.setId(iId);
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindString(1, author.getFamilyName());
+            stmt.bindString(2, author.getGivenNames());
+            stmt.bindLong(3, author.isComplete() ? 1 : 0);
+            long iId = stmt.executeInsert();
+            if (iId > 0) {
+                author.setId(iId);
+            }
+            return iId;
         }
-        return iId;
     }
 
     /**
@@ -823,9 +794,12 @@ public class DBA
             stmt = mStatements.add(STMT_GET_AUTHOR_ID, SqlGet.AUTHOR_ID_BY_NAME);
         }
 
-        stmt.bindString(1, familyName);
-        stmt.bindString(2, givenNames);
-        return stmt.simpleQueryForLongOrZero();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindString(1, familyName);
+            stmt.bindString(2, givenNames);
+            return stmt.simpleQueryForLongOrZero();
+        }
     }
 
     /**
@@ -918,9 +892,12 @@ public class DBA
             stmt = mStatements.add(STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES,
                                    SqlUpdate.AUTHOR_ON_TOC_ENTRIES);
         }
-        stmt.bindLong(1, to);
-        stmt.bindLong(2, from);
-        return stmt.executeUpdateDelete();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, to);
+            stmt.bindLong(2, from);
+            return stmt.executeUpdateDelete();
+        }
     }
 
     /**
@@ -957,7 +934,7 @@ public class DBA
      * Purge anything that is no longer in use.
      * <p>
      * Purging is no longer done at every occasion where it *might* be needed.
-     * It was noticed it was done to many times.
+     * It was noticed (in the logs) that it was done far to much.
      * It is now called only:
      * <p>
      * Before a backup (but not before a CSV export)
@@ -979,22 +956,18 @@ public class DBA
      * Delete all Authors without related books / TocEntry's.
      */
     private void purgeAuthors() {
-        SynchronizedStatement stmt = mStatements.get(STMT_PURGE_AUTHORS);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_PURGE_AUTHORS, SqlDelete.PURGE_AUTHORS);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlDelete.PURGE_AUTHORS)) {
+            stmt.executeUpdateDelete();
         }
-        stmt.executeUpdateDelete();
     }
 
     /**
      * Delete all Series without related books.
      */
     private void purgeSeries() {
-        SynchronizedStatement stmt = mStatements.get(STMT_PURGE_SERIES);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_PURGE_SERIES, SqlDelete.PURGE_SERIES);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlDelete.PURGE_SERIES)) {
+            stmt.executeUpdateDelete();
         }
-        stmt.executeUpdateDelete();
     }
 
     /**
@@ -1007,12 +980,7 @@ public class DBA
             return 0;
         }
 
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_AUTHOR_BOOK_COUNT);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_AUTHOR_BOOK_COUNT, SqlSelect.COUNT_BOOKS_BY_AUTHOR);
-        }
-        // Be cautious
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlSelect.COUNT_BOOKS_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
             return stmt.count();
         }
@@ -1028,13 +996,7 @@ public class DBA
             return 0;
         }
 
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_AUTHOR_ANTHOLOGY_COUNT);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_AUTHOR_ANTHOLOGY_COUNT,
-                                   SqlSelect.COUNT_TOC_ENTRIES_BY_AUTHOR);
-        }
-        // Be cautious
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlSelect.COUNT_TOC_ENTRIES_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
             return stmt.count();
         }
@@ -1228,8 +1190,11 @@ public class DBA
             stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_UUID, SqlGet.BOOK_ID_BY_UUID);
         }
 
-        stmt.bindString(1, uuid);
-        return stmt.simpleQueryForLongOrZero();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindString(1, uuid);
+            return stmt.simpleQueryForLongOrZero();
+        }
     }
 
     /***
@@ -1244,7 +1209,8 @@ public class DBA
             stmt = mStatements.add(STMT_GET_BOOK_UPDATE_DATE,
                                    SqlSelect.GET_LAST_UPDATE_DATE_BY_BOOK_ID);
         }
-        // Be cautious
+
+        // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
@@ -1258,16 +1224,21 @@ public class DBA
      *
      * @return the book UUID
      *
-     * @throws SQLiteDoneException if zero rows found
+     * @throws IllegalArgumentException if the bookId==0
+     * @throws SQLiteDoneException if zero rows found, which should never happen... flw.
      */
     @NonNull
     public String getBookUuid(final long bookId)
             throws SQLiteDoneException {
+        // sanity check
+        if (bookId == 0) {
+            throw new IllegalArgumentException("cannot get uuid for id==0");
+        }
         SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOK_UUID);
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_BOOK_UUID, SqlGet.BOOK_UUID_BY_ID);
         }
-        // Be cautious; other threads may call this and set parameters.
+        // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForString();
@@ -1286,7 +1257,7 @@ public class DBA
             stmt = mStatements.add(STMT_GET_BOOK_TITLE,
                                    SqlGet.GET_BOOK_TITLE_BY_BOOK_ID);
         }
-        // Be cautious
+        // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
@@ -1305,7 +1276,7 @@ public class DBA
             stmt = mStatements.add(STMT_GET_BOOK_ISBN,
                                    SqlGet.GET_BOOK_ISBN_BY_BOOK_ID);
         }
-        // Be cautious
+        // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
@@ -1334,9 +1305,11 @@ public class DBA
             if (stmt == null) {
                 stmt = mStatements.add(STMT_DELETE_BOOK, SqlDelete.BOOK_BY_ID);
             }
-            stmt.bindLong(1, bookId);
-            rowsAffected = stmt.executeUpdateDelete();
-
+            // Be cautious; other threads may use the cached stmt, and set parameters.
+            synchronized (stmt) {
+                stmt.bindLong(1, bookId);
+                rowsAffected = stmt.executeUpdateDelete();
+            }
             if (rowsAffected > 0) {
                 deleteThumbnail(uuid);
             }
@@ -1585,6 +1558,7 @@ public class DBA
     /**
      * @param isbn to search for (10 or 13)
      * @param both set to <tt>true</tt> to search for both isbn 10 and 13.
+     *             TOMF: stmt not protected
      *
      * @return book id, or 0 if not found
      */
@@ -1619,8 +1593,11 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_CHECK_BOOK_EXISTS, SqlSelect.BOOK_EXISTS);
         }
-        stmt.bindLong(1, bookId);
-        return stmt.count() == 1;
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, bookId);
+            return stmt.count() == 1;
+        }
     }
 
     /**
@@ -1649,33 +1626,35 @@ public class DBA
             return;
         }
 
-        SynchronizedStatement stmt = mStatements.get(STMT_ADD_BOOK_SERIES);
+        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_BOOK_SERIES);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_ADD_BOOK_SERIES, SqlInsert.BOOK_SERIES);
+            stmt = mStatements.add(STMT_INSERT_BOOK_SERIES, SqlInsert.BOOK_SERIES);
         }
-
-        // The list MAY contain duplicates (eg. from Internet lookups of multiple
-        // sources), so we track them in a hash map
-        final Map<String, Boolean> idHash = new HashMap<>();
-        int position = 0;
-        for (Series series : list) {
-            if (series.fixupId(this) == 0) {
-                if (BuildConfig.DEBUG) {
-                    Logger.info(this, "insertBookSeries",
-                                "inserting series: " + series.stringEncoded());
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            // The list MAY contain duplicates (eg. from Internet lookups of multiple
+            // sources), so we track them in a hash map
+            final Map<String, Boolean> idHash = new HashMap<>();
+            int position = 0;
+            for (Series series : list) {
+                if (series.fixupId(this) == 0) {
+                    if (BuildConfig.DEBUG) {
+                        Logger.info(this, "insertBookSeries",
+                                    "inserting series: " + series.stringEncoded());
+                    }
+                    insertSeries(series);
                 }
-                insertSeries(series);
-            }
 
-            String uniqueId = series.getId() + '_' + series.getNumber().toUpperCase();
-            if (!idHash.containsKey(uniqueId)) {
-                idHash.put(uniqueId, true);
-                position++;
-                stmt.bindLong(1, bookId);
-                stmt.bindLong(2, series.getId());
-                stmt.bindString(3, series.getNumber());
-                stmt.bindLong(4, position);
-                stmt.executeInsert();
+                String uniqueId = series.getId() + '_' + series.getNumber().toUpperCase();
+                if (!idHash.containsKey(uniqueId)) {
+                    idHash.put(uniqueId, true);
+                    position++;
+                    stmt.bindLong(1, bookId);
+                    stmt.bindLong(2, series.getId());
+                    stmt.bindString(3, series.getNumber());
+                    stmt.bindLong(4, position);
+                    stmt.executeInsert();
+                }
             }
         }
     }
@@ -1694,8 +1673,11 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_DELETE_BOOK_SERIES, SqlDelete.BOOK_SERIES_BY_BOOK_ID);
         }
-        stmt.bindLong(1, bookId);
-        return stmt.executeUpdateDelete();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, bookId);
+            return stmt.executeUpdateDelete();
+        }
     }
 
     /**
@@ -1720,6 +1702,22 @@ public class DBA
         }
 
         long position = 0;
+
+        SynchronizedStatement insertTocStmt = mStatements.get(STMT_INSERT_TOC_ENTRY);
+        if (insertTocStmt == null) {
+            insertTocStmt = mStatements.add(STMT_INSERT_TOC_ENTRY, SqlInsert.TOC_ENTRY);
+        }
+
+        SynchronizedStatement updateTOCStmt = mStatements.get(STMT_UPDATE_TOC_ENTRY);
+        if (updateTOCStmt == null) {
+            updateTOCStmt = mStatements.add(STMT_UPDATE_TOC_ENTRY, SqlUpdate.TOC_ENTRY);
+        }
+
+        SynchronizedStatement insertBookTocStmt = mStatements.get(STMT_INSERT_BOOK_TOC_ENTRY);
+        if (insertBookTocStmt == null) {
+            insertBookTocStmt = mStatements.add(STMT_INSERT_BOOK_TOC_ENTRY, SqlInsert.BOOK_TOC_ENTRY);
+        }
+
         for (TocEntry tocEntry : list) {
             if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
                 Logger.info(this, "updateOrInsertTOC",
@@ -1742,22 +1740,36 @@ public class DBA
                     Logger.info(this, "updateOrInsertTOC",
                                 "inserting tocEntry: " + tocEntry.stringEncoded());
                 }
-                insertTOCEntry(tocEntry);
+                // Be cautious; other threads may use the cached stmt, and set parameters.
+                synchronized (insertTocStmt) {
+                    insertTocStmt.bindLong(1, tocEntry.getAuthor().getId());
+                    // standardize the title for new entries
+                    insertTocStmt.bindString(2, preprocessTitle(tocEntry.getTitle()));
+                    insertTocStmt.bindString(3, tocEntry.getFirstPublication());
+                    long iId = insertTocStmt.executeInsert();
+                    if (iId > 0) {
+                        tocEntry.setId(iId);
+                    }
+                }
             } else {
-                // if found, FIXME: (do not) unconditionally update the publication year.
-                updateTOCEntry(tocEntry);
+                // Be cautious; other threads may use the cached stmt, and set parameters.
+                synchronized (updateTOCStmt) {
+                    // if found, FIXME: (do not) unconditionally update the publication year.
+                    updateTOCStmt.bindString(1, tocEntry.getFirstPublication());
+                    updateTOCStmt.bindLong(2, tocEntry.getId());
+                    updateTOCStmt.executeUpdateDelete();
+                }
             }
 
             // create the book<->TocEntry link
-            SynchronizedStatement stmt = mStatements.get(STMT_ADD_BOOK_TOC_ENTRY);
-            if (stmt == null) {
-                stmt = mStatements.add(STMT_ADD_BOOK_TOC_ENTRY, SqlInsert.BOOK_TOC_ENTRY);
-            }
             position++;
-            stmt.bindLong(1, tocEntry.getId());
-            stmt.bindLong(2, bookId);
-            stmt.bindLong(3, position);
-            stmt.executeInsert();
+            // Be cautious; other threads may use the cached stmt, and set parameters.
+            synchronized (insertBookTocStmt) {
+                insertBookTocStmt.bindLong(1, tocEntry.getId());
+                insertBookTocStmt.bindLong(2, bookId);
+                insertBookTocStmt.bindLong(3, position);
+                insertBookTocStmt.executeInsert();
+            }
 
             if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
                 Logger.info(this, "updateOrInsertTOC", "     bookId   : " + bookId);
@@ -1766,6 +1778,7 @@ public class DBA
                 Logger.info(this, "updateOrInsertTOC", "     position : " + position);
             }
         }
+
     }
 
     /**
@@ -1795,37 +1808,39 @@ public class DBA
             return;
         }
 
-        SynchronizedStatement stmt = mStatements.get(STMT_ADD_BOOK_AUTHORS);
+        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_BOOK_AUTHORS);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_ADD_BOOK_AUTHORS, SqlInsert.BOOK_AUTHOR);
+            stmt = mStatements.add(STMT_INSERT_BOOK_AUTHORS, SqlInsert.BOOK_AUTHOR);
         }
-
-        // The list MAY contain duplicates (eg. from Internet lookups of multiple
-        // sources), so we track them in a hash table
-        final Map<String, Boolean> idHash = new HashMap<>();
-        int position = 0;
-        for (Author author : list) {
-            // find/insert the author
-            if (author.fixupId(this) == 0) {
-                if (BuildConfig.DEBUG) {
-                    Logger.info(this, "insertBookAuthors",
-                                "inserting author: " + author.stringEncoded());
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            // The list MAY contain duplicates (eg. from Internet lookups of multiple
+            // sources), so we track them in a hash table
+            final Map<String, Boolean> idHash = new HashMap<>();
+            int position = 0;
+            for (Author author : list) {
+                // find/insert the author
+                if (author.fixupId(this) == 0) {
+                    if (BuildConfig.DEBUG) {
+                        Logger.info(this, "insertBookAuthors",
+                                    "inserting author: " + author.stringEncoded());
+                    }
+                    insertAuthor(author);
                 }
-                insertAuthor(author);
-            }
 
-            // we use the id as the KEY here, so yes, a String.
-            String authorIdStr = String.valueOf(author.getId());
-            if (!idHash.containsKey(authorIdStr)) {
-                // indicate this author(id) is already present...
-                // but override, so we get elimination of duplicates.
-                idHash.put(authorIdStr, true);
+                // we use the id as the KEY here, so yes, a String.
+                String authorIdStr = String.valueOf(author.getId());
+                if (!idHash.containsKey(authorIdStr)) {
+                    // indicate this author(id) is already present...
+                    // but override, so we get elimination of duplicates.
+                    idHash.put(authorIdStr, true);
 
-                position++;
-                stmt.bindLong(1, bookId);
-                stmt.bindLong(2, author.getId());
-                stmt.bindLong(3, position);
-                stmt.executeInsert();
+                    position++;
+                    stmt.bindLong(1, bookId);
+                    stmt.bindLong(2, author.getId());
+                    stmt.bindLong(3, position);
+                    stmt.executeInsert();
+                }
             }
         }
     }
@@ -1844,8 +1859,11 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_DELETE_BOOK_AUTHORS, SqlDelete.BOOK_AUTHOR_BY_BOOK_ID);
         }
-        stmt.bindLong(1, bookId);
-        return stmt.executeUpdateDelete();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, bookId);
+            return stmt.executeUpdateDelete();
+        }
     }
 
     /**
@@ -1874,9 +1892,9 @@ public class DBA
             return;
         }
 
-        SynchronizedStatement stmt = mStatements.get(STMT_ADD_BOOK_BOOKSHELF);
+        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_BOOK_BOOKSHELF);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_ADD_BOOK_BOOKSHELF, SqlInsert.BOOK_BOOKSHELF);
+            stmt = mStatements.add(STMT_INSERT_BOOK_BOOKSHELF, SqlInsert.BOOK_BOOKSHELF);
         }
 
         for (Bookshelf bookshelf : list) {
@@ -1891,10 +1909,12 @@ public class DBA
                 }
                 insertBookshelf(bookshelf);
             }
-
-            stmt.bindLong(1, bookId);
-            stmt.bindLong(2, bookshelf.getId());
-            stmt.executeInsert();
+            // Be cautious; other threads may use the cached stmt, and set parameters.
+            synchronized (stmt) {
+                stmt.bindLong(1, bookId);
+                stmt.bindLong(2, bookshelf.getId());
+                stmt.executeInsert();
+            }
         }
     }
 
@@ -1913,8 +1933,11 @@ public class DBA
             stmt = mStatements.add(STMT_DELETE_BOOK_BOOKSHELF,
                                    SqlDelete.BOOK_BOOKSHELF_BY_BOOK_ID);
         }
-        stmt.bindLong(1, bookId);
-        return stmt.executeUpdateDelete();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, bookId);
+            return stmt.executeUpdateDelete();
+        }
     }
 
     /**
@@ -2411,18 +2434,15 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     private long insertBookshelf(@NonNull final Bookshelf /* in/out */ bookshelf) {
-        SynchronizedStatement stmt = mStatements.get(STMT_ADD_BOOKSHELF);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_ADD_BOOKSHELF, SqlInsert.BOOKSHELF);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlInsert.BOOKSHELF)) {
+            stmt.bindString(1, bookshelf.getName());
+            stmt.bindLong(2, bookshelf.getStyle(this).getId());
+            long iId = stmt.executeInsert();
+            if (iId > 0) {
+                bookshelf.setId(iId);
+            }
+            return iId;
         }
-
-        stmt.bindString(1, bookshelf.getName());
-        stmt.bindLong(2, bookshelf.getStyle(this).getId());
-        long iId = stmt.executeInsert();
-        if (iId > 0) {
-            bookshelf.setId(iId);
-        }
-        return iId;
     }
 
     /**
@@ -2467,12 +2487,10 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteBookshelf(final long id) {
-        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOKSHELF);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_DELETE_BOOKSHELF, SqlDelete.BOOKSHELF_BY_ID);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlDelete.BOOKSHELF_BY_ID)) {
+            stmt.bindLong(1, id);
+            return stmt.executeUpdateDelete();
         }
-        stmt.bindLong(1, id);
-        return stmt.executeUpdateDelete();
     }
 
     /**
@@ -2487,8 +2505,11 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_BOOKSHELF_ID_BY_NAME, SqlGet.BOOKSHELF_ID_BY_NAME);
         }
-        stmt.bindString(1, name);
-        return stmt.simpleQueryForLongOrZero();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindString(1, name);
+            return stmt.simpleQueryForLongOrZero();
+        }
     }
 
     /**
@@ -2636,8 +2657,11 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_BOOKLIST_STYLE, SqlGet.BOOKLIST_STYLE_ID_BY_UUID);
         }
-        stmt.bindString(1, uuid);
-        return stmt.simpleQueryForLongOrZero();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindString(1, uuid);
+            return stmt.simpleQueryForLongOrZero();
+        }
     }
 
     /**
@@ -2648,17 +2672,14 @@ public class DBA
      * @return the row ID of the last row inserted, if this insert is successful. -1 otherwise.
      */
     public long insertBooklistStyle(@NonNull final BooklistStyle /* in/out */ style) {
-        SynchronizedStatement stmt = mStatements.get(STMT_ADD_BOOKLIST_STYLE);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_ADD_BOOKLIST_STYLE, SqlInsert.BOOKLIST_STYLE);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlInsert.BOOKLIST_STYLE)) {
+            stmt.bindString(1, style.getUuid());
+            long iId = stmt.executeInsert();
+            if (iId > 0) {
+                style.setId(iId);
+            }
+            return iId;
         }
-
-        stmt.bindString(1, style.getUuid());
-        long iId = stmt.executeInsert();
-        if (iId > 0) {
-            style.setId(iId);
-        }
-        return iId;
     }
 
 
@@ -2671,12 +2692,10 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteBooklistStyle(final long id) {
-        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOKLIST_STYLE);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_DELETE_BOOKLIST_STYLE, SqlDelete.STYLE_BY_ID);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlDelete.STYLE_BY_ID)) {
+            stmt.bindLong(1, id);
+            return stmt.executeUpdateDelete();
         }
-        stmt.bindLong(1, id);
-        return stmt.executeUpdateDelete();
     }
 
     /**
@@ -2740,13 +2759,11 @@ public class DBA
         if (Objects.equals(from, to)) {
             return;
         }
-        SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_FORMAT);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_UPDATE_FORMAT, SqlUpdate.FORMAT);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlUpdate.FORMAT)) {
+            stmt.bindString(1, to);
+            stmt.bindString(2, from);
+            stmt.executeUpdateDelete();
         }
-        stmt.bindString(1, to);
-        stmt.bindString(2, from);
-        stmt.executeUpdateDelete();
     }
 
     /**
@@ -2767,13 +2784,11 @@ public class DBA
         if (Objects.equals(from, to)) {
             return;
         }
-        SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_GENRE);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_UPDATE_GENRE, SqlUpdate.GENRE);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlUpdate.GENRE)) {
+            stmt.bindString(1, to);
+            stmt.bindString(2, from);
+            stmt.executeUpdateDelete();
         }
-        stmt.bindString(1, to);
-        stmt.bindString(2, from);
-        stmt.executeUpdateDelete();
     }
 
     /**
@@ -2809,13 +2824,11 @@ public class DBA
         if (Objects.equals(from, to)) {
             return;
         }
-        SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_LANGUAGE);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_UPDATE_LANGUAGE, SqlUpdate.LANGUAGE);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlUpdate.LANGUAGE)) {
+            stmt.bindString(1, to);
+            stmt.bindString(2, from);
+            stmt.executeUpdateDelete();
         }
-        stmt.bindString(1, to);
-        stmt.bindString(2, from);
-        stmt.executeUpdateDelete();
     }
 
     /**
@@ -2832,9 +2845,11 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_LOANEE_BY_BOOK_ID, SqlGet.LOANEE_BY_BOOK_ID);
         }
-
-        stmt.bindLong(1, bookId);
-        return stmt.simpleQueryForStringOrNull();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, bookId);
+            return stmt.simpleQueryForStringOrNull();
+        }
     }
 
     /**
@@ -2868,15 +2883,13 @@ public class DBA
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long insertLoan(final long bookId,
-                           @NonNull final String loanee) {
-        SynchronizedStatement stmt = mStatements.get(STMT_ADD_BOOK_LOAN);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_ADD_BOOK_LOAN, SqlInsert.BOOK_LOANEE);
+    private long insertLoan(final long bookId,
+                            @NonNull final String loanee) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlInsert.BOOK_LOANEE)) {
+            stmt.bindLong(1, bookId);
+            stmt.bindString(2, loanee);
+            return stmt.executeInsert();
         }
-        stmt.bindLong(1, bookId);
-        stmt.bindString(2, loanee);
-        return stmt.executeInsert();
     }
 
     /**
@@ -2888,12 +2901,11 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteLoan(final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOK_LOAN);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_DELETE_BOOK_LOAN, SqlDelete.BOOK_LOANEE_BY_BOOK_ID);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                SqlDelete.BOOK_LOANEE_BY_BOOK_ID)) {
+            stmt.bindLong(1, bookId);
+            return stmt.executeUpdateDelete();
         }
-        stmt.bindLong(1, bookId);
-        return stmt.executeUpdateDelete();
     }
 
     /**
@@ -2915,13 +2927,11 @@ public class DBA
         if (Objects.equals(from, to)) {
             return;
         }
-        SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_LOCATION);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_UPDATE_LOCATION, SqlUpdate.LOCATION);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlUpdate.LOCATION)) {
+            stmt.bindString(1, to);
+            stmt.bindString(2, from);
+            stmt.executeUpdateDelete();
         }
-        stmt.bindString(1, to);
-        stmt.bindString(2, from);
-        stmt.executeUpdateDelete();
     }
 
     /**
@@ -2945,13 +2955,11 @@ public class DBA
         if (Objects.equals(from, to)) {
             return;
         }
-        SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_PUBLISHER);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_UPDATE_PUBLISHER, SqlUpdate.PUBLISHER);
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlUpdate.PUBLISHER)) {
+            stmt.bindString(1, to);
+            stmt.bindString(2, from);
+            stmt.executeUpdateDelete();
         }
-        stmt.bindString(1, to);
-        stmt.bindString(2, from);
-        stmt.executeUpdateDelete();
     }
 
     /**
@@ -2963,18 +2971,20 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     private long insertSeries(@NonNull final Series series) {
-        SynchronizedStatement stmt = mStatements.get(STMT_ADD_SERIES);
+        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_SERIES);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_ADD_SERIES, SqlInsert.SERIES);
+            stmt = mStatements.add(STMT_INSERT_SERIES, SqlInsert.SERIES);
         }
-
-        stmt.bindString(1, series.getName());
-        stmt.bindLong(2, series.isComplete() ? 1 : 0);
-        long iId = stmt.executeInsert();
-        if (iId > 0) {
-            series.setId(iId);
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindString(1, series.getName());
+            stmt.bindLong(2, series.isComplete() ? 1 : 0);
+            long iId = stmt.executeInsert();
+            if (iId > 0) {
+                series.setId(iId);
+            }
+            return iId;
         }
-        return iId;
     }
 
     /**
@@ -3027,8 +3037,11 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_DELETE_SERIES, SqlDelete.SERIES_BY_ID);
         }
-        stmt.bindLong(1, id);
-        return stmt.executeUpdateDelete();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, id);
+            return stmt.executeUpdateDelete();
+        }
     }
 
     /**
@@ -3071,9 +3084,12 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_SERIES_ID, SqlGet.SERIES_ID_BY_NAME);
         }
-        // for now, we only need the name to find it.
-        stmt.bindString(1, series.getName());
-        return stmt.simpleQueryForLongOrZero();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            // for now, we only need the name to find it.
+            stmt.bindString(1, series.getName());
+            return stmt.simpleQueryForLongOrZero();
+        }
     }
 
     /**
@@ -3157,12 +3173,7 @@ public class DBA
             return 0;
         }
 
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_SERIES_BOOK_COUNT);
-        if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_SERIES_BOOK_COUNT, SqlSelect.COUNT_BOOKS_IN_SERIES);
-        }
-        // Be cautious
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlSelect.COUNT_BOOKS_IN_SERIES)) {
             stmt.bindLong(1, series.getId());
             return stmt.count();
         }
@@ -3189,9 +3200,12 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_UPDATE_GOODREADS_BOOK_ID, SqlUpdate.GOODREADS_BOOK_ID);
         }
-        stmt.bindLong(1, goodreadsBookId);
-        stmt.bindLong(2, bookId);
-        stmt.executeUpdateDelete();
+        // Be cautious; other threads may use the cached stmt, and set parameters.
+        synchronized (stmt) {
+            stmt.bindLong(1, goodreadsBookId);
+            stmt.bindLong(2, bookId);
+            stmt.executeUpdateDelete();
+        }
     }
 
     /**
@@ -3483,21 +3497,24 @@ public class DBA
                 }
             }
 
-            // Set the parameters and call
-            bindStringOrNull(stmt, 1, authorText.toString());
-            // Titles should only contain title, not SERIES
-            bindStringOrNull(stmt, 2, row.getTitle() + "; " + titleText);
-            // We could add a 'series' column, or just add it as part of the description
-            bindStringOrNull(stmt, 3, row.getDescription() + seriesText);
-            bindStringOrNull(stmt, 4, row.getNotes());
-            bindStringOrNull(stmt, 5, row.getPublisherName());
-            bindStringOrNull(stmt, 6, row.getGenre());
-            bindStringOrNull(stmt, 7, row.getLocation());
-            bindStringOrNull(stmt, 8, row.getIsbn());
-            // DOM_PK_DOCID
-            stmt.bindLong(9, row.getId());
+            // Be cautious; other threads may use the cached stmt, and set parameters.
+            synchronized (stmt) {
+                // Set the parameters and call
+                bindStringOrNull(stmt, 1, authorText.toString());
+                // Titles should only contain title, not SERIES
+                bindStringOrNull(stmt, 2, row.getTitle() + "; " + titleText);
+                // We could add a 'series' column, or just add it as part of the description
+                bindStringOrNull(stmt, 3, row.getDescription() + seriesText);
+                bindStringOrNull(stmt, 4, row.getNotes());
+                bindStringOrNull(stmt, 5, row.getPublisherName());
+                bindStringOrNull(stmt, 6, row.getGenre());
+                bindStringOrNull(stmt, 7, row.getLocation());
+                bindStringOrNull(stmt, 8, row.getIsbn());
+                // DOM_PK_DOCID
+                stmt.bindLong(9, row.getId());
 
-            stmt.execute();
+                stmt.execute();
+            }
         }
     }
 
@@ -3533,9 +3550,9 @@ public class DBA
         }
 
         try {
-            SynchronizedStatement stmt = mStatements.get(STMT_ADD_FTS);
+            SynchronizedStatement stmt = mStatements.get(STMT_INSERT_FTS);
             if (stmt == null) {
-                stmt = mStatements.add(STMT_ADD_FTS, SqlFTS.INSERT);
+                stmt = mStatements.add(STMT_INSERT_FTS, SqlFTS.INSERT);
             }
 
             try (BookCursor books = (BookCursor)
@@ -4333,6 +4350,12 @@ public class DBA
          */
         static final String GOODREADS_BOOK_ID =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GOODREADS_BOOK_ID + "=?"
+                        + " WHERE " + DOM_PK_ID + "=?";
+
+
+        static final String TOC_ENTRY =
+                "UPDATE " + TBL_TOC_ENTRIES + " SET "
+                        + DOM_FIRST_PUBLICATION + "=?"
                         + " WHERE " + DOM_PK_ID + "=?";
 
         static final String AUTHOR_ON_TOC_ENTRIES =

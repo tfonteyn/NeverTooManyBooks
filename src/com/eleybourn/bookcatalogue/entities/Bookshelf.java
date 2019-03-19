@@ -283,7 +283,6 @@ public class Bookshelf
         mStyleId = source.mStyleId;
     }
 
-    /** {@link Parcelable}. */
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -292,7 +291,6 @@ public class Bookshelf
         dest.writeLong(mStyleId);
     }
 
-    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {

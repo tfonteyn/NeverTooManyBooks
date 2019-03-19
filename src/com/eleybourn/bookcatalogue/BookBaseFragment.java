@@ -28,7 +28,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -42,6 +41,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,7 +105,7 @@ public abstract class BookBaseFragment
     /* ------------------------------------------------------------------------------------------ */
 
     /**
-     * @return the BookManager which is the only way to get/set Book properties.
+     * @return the BookManager which is (should be) the only way to get/set Book properties.
      */
     protected abstract BookManager getBookManager();
     /* ------------------------------------------------------------------------------------------ */
@@ -380,7 +380,7 @@ public abstract class BookBaseFragment
 
     /**
      * The 'drop-down' menu button next to an AutoCompleteTextView field.
-     * Allows us to show a {@link SimpleDialog#selectObjectDialog} with a list of strings
+     * Allows us to show a {@link SimpleDialog#selectFieldDialog} with a list of strings
      * to choose from.
      *
      * @param field         {@link Field} to edit
@@ -406,7 +406,7 @@ public abstract class BookBaseFragment
         requireView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                SimpleDialog.selectObjectDialog(
+                SimpleDialog.selectFieldDialog(
                         mActivity.getLayoutInflater(),
                         getString(dialogTitleId), field, list,
                         new SimpleDialog.OnClickListener() {
@@ -442,10 +442,12 @@ public abstract class BookBaseFragment
         requireView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                TextFieldEditorDialogFragment frag =
-                        TextFieldEditorDialogFragment.newInstance(callerTag, field, dialogTitleId,
-                                                                  multiLine);
-                frag.show(requireFragmentManager(), null);
+                FragmentManager fm = requireFragmentManager();
+                if (fm.findFragmentByTag(TextFieldEditorDialogFragment.TAG) == null) {
+                    TextFieldEditorDialogFragment
+                            .newInstance(callerTag, field, dialogTitleId, multiLine)
+                            .show(fm, TextFieldEditorDialogFragment.TAG);
+                }
             }
         });
     }
@@ -467,11 +469,12 @@ public abstract class BookBaseFragment
 
         field.getView().setOnClickListener(new View.OnClickListener() {
             public void onClick(@NonNull final View v) {
-                PartialDatePickerDialogFragment frag =
-                        PartialDatePickerDialogFragment.newInstance(callerTag, field,
-                                                                    dialogTitleId, todayIfNone);
-
-                frag.show(requireFragmentManager(), null);
+                FragmentManager fm = requireFragmentManager();
+                if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
+                    PartialDatePickerDialogFragment
+                            .newInstance(callerTag, field, dialogTitleId, todayIfNone)
+                            .show(fm, PartialDatePickerDialogFragment.TAG);
+                }
             }
         });
     }
@@ -495,12 +498,12 @@ public abstract class BookBaseFragment
         field.getView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                CheckListEditorDialogFragment<T> frag =
-                        CheckListEditorDialogFragment.newInstance(callerTag, field,
-                                                                  dialogTitleId,
-                                                                  listGetter);
-
-                frag.show(requireFragmentManager(), null);
+                FragmentManager fm = requireFragmentManager();
+                if (fm.findFragmentByTag(CheckListEditorDialogFragment.TAG) == null) {
+                    CheckListEditorDialogFragment
+                            .newInstance(callerTag, field, dialogTitleId, listGetter)
+                            .show(fm, CheckListEditorDialogFragment.TAG);
+                }
             }
         });
     }
@@ -578,11 +581,12 @@ public abstract class BookBaseFragment
         showHideField(hideIfEmpty, R.id.language, R.id.lbl_language);
 //        showHideField(hideIfEmpty, R.id.toc, R.id.row_toc);
 
-        // publishing related fields.
+        // publishing related fields. lbl_publisher_baseline requires special handling
+        // as it depends on BOTH publisher and date_published.
         showHideField(hideIfEmpty, R.id.publisher);
         showHideField(hideIfEmpty, R.id.date_published);
         showHideField(hideIfEmpty, R.id.first_publication, R.id.lbl_first_publication);
-        showHideField(hideIfEmpty, R.id.price_listed, R.id.lbl_price_listed);
+        showHideField(hideIfEmpty, R.id.price_listed, R.id.price_listed_currency, R.id.lbl_price_listed);
 
         // personal fields
         showHideField(hideIfEmpty, R.id.bookshelves, R.id.name, R.id.lbl_bookshelves);
@@ -592,7 +596,7 @@ public abstract class BookBaseFragment
         showHideField(hideIfEmpty, R.id.notes);
         showHideField(hideIfEmpty, R.id.location, R.id.lbl_location, R.id.lbl_location_long);
         showHideField(hideIfEmpty, R.id.date_acquired, R.id.lbl_date_acquired);
-        showHideField(hideIfEmpty, R.id.price_paid, R.id.lbl_price_paid);
+        showHideField(hideIfEmpty, R.id.price_paid, R.id.price_paid_currency, R.id.lbl_price_paid);
         showHideField(hideIfEmpty, R.id.read_start, R.id.lbl_read_start);
         showHideField(hideIfEmpty, R.id.read_end, R.id.lbl_read_end);
         showHideField(hideIfEmpty, R.id.signed, R.id.lbl_signed);

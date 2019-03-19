@@ -185,12 +185,10 @@ public abstract class FileChooserBaseActivity
     }
 
     /**
-     * @return an object for building an list of files in background.
+     * Start a task suited to building a list of files.
      */
-    @NonNull
-    //protected abstract FileListerFragmentTask getFileLister(@NonNull final File root);
-    protected abstract FileListerAsyncTask getFileLister(@NonNull final FragmentActivity context,
-                                                         @NonNull final File root);
+    protected abstract void startFileLister(@NonNull final FragmentActivity context,
+                                                           @NonNull final File root);
 
     /**
      * Rebuild the file list in background; gather whatever data is necessary to
@@ -202,6 +200,6 @@ public abstract class FileChooserBaseActivity
             return;
         }
         // get and start task.
-        getFileLister(this, root).execute();
+        startFileLister(this, root);
     }
 }

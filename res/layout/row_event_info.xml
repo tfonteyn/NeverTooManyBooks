@@ -28,7 +28,7 @@
         app:layout_constraintStart_toEndOf="@id/checked"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="title" />
+        tools:text="I, Robot" />
 
     <TextView
         android:id="@+id/author"
@@ -39,7 +39,7 @@
         app:layout_constraintEnd_toStartOf="@id/retry"
         app:layout_constraintStart_toEndOf="@id/checked"
         app:layout_constraintTop_toBottomOf="@id/title"
-        tools:text="author" />
+        tools:text="Asimov, Isaac" />
 
     <TextView
         android:id="@+id/error"
@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toStartOf="@id/retry"
         app:layout_constraintStart_toEndOf="@id/checked"
         app:layout_constraintTop_toBottomOf="@id/author"
-        tools:text="error"
+        tools:text="Last error: foo bar, not sure what really happened"
         tools:ignore="SelectableText" />
 
     <TextView
@@ -60,7 +60,7 @@
         app:layout_constraintEnd_toStartOf="@id/retry"
         app:layout_constraintStart_toEndOf="@id/checked"
         app:layout_constraintTop_toBottomOf="@id/error"
-        tools:text="date" />
+        tools:text="July 20, 2012 17:45:32 GMT" />
 
     <Button
         android:id="@+id/retry"

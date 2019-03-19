@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -65,7 +66,7 @@ public final class ImageUtils {
 
     /**
      * Syntax sugar for {@link #getImageAndPutIntoView(ImageView, String, int, int, boolean, boolean, boolean)}
-     *
+     * <p>
      * Called in the UI thread, will either use a cached cover OR start a background task
      * to create and load it.
      * <p>
@@ -88,7 +89,8 @@ public final class ImageUtils {
                                   final boolean exact,
                                   final boolean checkCache,
                                   final boolean allowBackground) {
-        return getImageAndPutIntoView(null,uuid,maxWidth,maxHeight,exact,checkCache,allowBackground);
+        return getImageAndPutIntoView(null, uuid, maxWidth, maxHeight, exact, checkCache,
+                                      allowBackground);
     }
 
     /**
@@ -214,20 +216,20 @@ public final class ImageUtils {
      * @param maxHeight Maximum desired height of the image
      * @param exact     if true, the image will be proportionally scaled to fit box.
      */
-    public static void getImageAndPutIntoView(@Nullable final ImageView destView,
-                                              @NonNull final File file,
-                                              final int maxWidth,
-                                              final int maxHeight,
-                                              final boolean exact) {
+    public static Bitmap getImageAndPutIntoView(@Nullable final ImageView destView,
+                                                @NonNull final File file,
+                                                final int maxWidth,
+                                                final int maxHeight,
+                                                final boolean exact) {
         // Get the file, if it exists. Otherwise set 'image' (not broken) icon and exit.
         if (!file.exists()) {
             if (destView != null) {
                 destView.setImageResource(R.drawable.ic_image);
             }
-            return;
+            return null;
         }
 
-        getImageAndPutIntoView(destView, file.getPath(), maxWidth, maxHeight, exact);
+        return getImageAndPutIntoView(destView, file.getPath(), maxWidth, maxHeight, exact);
     }
 
     /**
@@ -256,9 +258,6 @@ public final class ImageUtils {
                                                 final boolean checkCache,
                                                 final boolean allowBackground) {
 
-        //* Get the original file so we can use the modification date, path etc */
-        final File coverFile = StorageUtils.getCoverFile(uuid);
-
         boolean cacheWasChecked = false;
 
         // If we want to check the cache, AND we don't have cache building happening,
@@ -267,9 +266,8 @@ public final class ImageUtils {
                 && !GetImageTask.hasActiveTasks()
                 && !ImageCacheWriterTask.hasActiveTasks()) {
             try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
-                final Bitmap bm = coversDBAdapter.getImageAndPutIntoView(coverFile, uuid,
-                                                                         maxWidth, maxHeight,
-                                                                         destView);
+                final Bitmap bm =
+                        coversDBAdapter.getImageAndPutIntoView(uuid, maxWidth, maxHeight, destView);
                 if (bm != null) {
                     return bm;
                 }
@@ -287,7 +285,8 @@ public final class ImageUtils {
 
         // File is not in cache, original exists, we are in the background task
         // or we are in foreground but not allowed to use background
-        return getImageAndPutIntoView(destView, coverFile.getPath(), maxWidth, maxHeight, exact);
+        return getImageAndPutIntoView(destView, StorageUtils.getCoverFile(uuid),
+                                      maxWidth, maxHeight, exact);
     }
 
     /**
@@ -387,7 +386,6 @@ public final class ImageUtils {
      * If there are images, pick the largest one, rename it, and delete the others.
      *
      * @param imageList a list of images
-     *
      */
     private static void cleanupImages(@NonNull final ArrayList<String> imageList) {
 
@@ -444,8 +442,11 @@ public final class ImageUtils {
 
             // if we have a size, assume we can show the image.
             if (opt.outHeight > 0 && opt.outWidth > 0) {
-                ZoomedImageDialogFragment frag = ZoomedImageDialogFragment.newInstance(image);
-                frag.show(activity.getSupportFragmentManager(), ZoomedImageDialogFragment.TAG);
+                FragmentManager fm = activity.getSupportFragmentManager();
+                if (fm.findFragmentByTag(ZoomedImageDialogFragment.TAG) == null) {
+                    ZoomedImageDialogFragment.newInstance(image)
+                                             .show(fm, ZoomedImageDialogFragment.TAG);
+                }
             } else {
                 UserMessage.showUserMessage(activity, R.string.warning_cover_corrupt);
             }

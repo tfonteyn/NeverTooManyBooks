@@ -2,12 +2,16 @@ package com.eleybourn.bookcatalogue.database;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedCursor;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
@@ -75,6 +79,8 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_
  */
 public class DBCleaner {
 
+    private final DBA mDb;
+
     /** The database. */
     private final SynchronizedDb mSyncDb;
 
@@ -82,10 +88,11 @@ public class DBCleaner {
      * Constructor.
      */
     public DBCleaner(@NonNull final DBA db) {
+        mDb = db;
         mSyncDb = db.getUnderlyingDatabase();
     }
 
-    public void all(final boolean dryRun) {
+    public void maybeUpdate(final boolean dryRun) {
 
         // correct '2' entries
         bookAnthologyBitmask(dryRun);
@@ -105,19 +112,25 @@ public class DBCleaner {
     }
 
 
-    /** int. */
-    public void idNotZero(@NonNull final DomainDefinition column,
-                          final boolean dryRun) {
-        String sql = "SELECT DISTINCT " + column + " FROM " + TBL_BOOKS
-                + " WHERE " + column + " <> 0";
-        toLog(Tracker.States.Enter, sql);
+
+    /* ****************************************************************************************** */
+
+    /**
+     * Do a mass update of any languages not yet converted to ISO3 codes.
+     */
+    public void updateLanguages() {
+        List<String> names = mDb.getLanguageCodes();
+        for (String name : names) {
+            if (name != null && name.length() > 3) {
+                String iso = LocaleUtils.getISO3Language(name);
+                Logger.info(this, "updateLanguages",
+                            "Global language update of `" + name + "` to `" + iso + '`');
+                if (!iso.equals(name)) {
+                    mDb.updateLanguage(name, iso);
+                }
+            }
+        }
     }
-
-
-
-    /* ****************************************************************************************** */
-    /* The methods below are (for now) valid & tested / in-use. */
-    /* ****************************************************************************************** */
 
     /**
      * Make sure the TOC bitmask is valid.
@@ -129,13 +142,16 @@ public class DBCleaner {
      * @param dryRun <tt>true</tt> to run the update.
      */
     public void bookAnthologyBitmask(final boolean dryRun) {
-        String sql = "SELECT DISTINCT " + DOM_BOOK_ANTHOLOGY_BITMASK + " FROM " + TBL_BOOKS
+        String select = "SELECT DISTINCT " + DOM_BOOK_ANTHOLOGY_BITMASK + " FROM " + TBL_BOOKS
                 + " WHERE " + DOM_BOOK_ANTHOLOGY_BITMASK + " NOT IN (0,1,3)";
-        toLog(Tracker.States.Enter, sql);
+        toLog(Tracker.State.Enter, select);
         if (!dryRun) {
-            mSyncDb.execSQL("UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_ANTHOLOGY_BITMASK + "=2"
-                                    + " WHERE " + DOM_BOOK_ANTHOLOGY_BITMASK + " NOT IN (0,1,3)");
-            toLog(Tracker.States.Exit, sql);
+            String sql = "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_ANTHOLOGY_BITMASK + "=2"
+                    + " WHERE " + DOM_BOOK_ANTHOLOGY_BITMASK + " NOT IN (0,1,3)";
+            try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            }
+            toLog(Tracker.State.Exit, select);
         }
     }
 
@@ -145,13 +161,48 @@ public class DBCleaner {
      * @param dryRun <tt>true</tt> to run the update.
      */
     public void bookBookshelf(final boolean dryRun) {
-        String sql = "SELECT DISTINCT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_BOOKSHELF
+        String select = "SELECT DISTINCT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_BOOKSHELF
                 + " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL";
-        toLog(Tracker.States.Enter, sql);
+        toLog(Tracker.State.Enter, select);
         if (!dryRun) {
-            mSyncDb.execSQL("DELETE " + TBL_BOOK_BOOKSHELF
-                                    + " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL");
-            toLog(Tracker.States.Exit, sql);
+            String sql = "DELETE " + TBL_BOOK_BOOKSHELF
+                    + " WHERE " + DOM_FK_BOOKSHELF_ID + "=NULL";
+            try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            }
+            toLog(Tracker.State.Exit, select);
+        }
+    }
+
+
+    /* ****************************************************************************************** */
+
+    /**
+     * Set boolean columns to 0,1.
+     *
+     * @param table  to check
+     * @param column to check
+     * @param dryRun <tt>true</tt> to run the update.
+     */
+    public void booleanCleanup(@NonNull final TableDefinition table,
+                               @NonNull final DomainDefinition column,
+                               final boolean dryRun) {
+        String select = "SELECT DISTINCT " + column + " FROM " + table
+                + " WHERE " + column + " NOT IN ('0','1')";
+
+        toLog(Tracker.State.Enter, select);
+        if (!dryRun) {
+            String sql = "UPDATE " + table + " SET " + column + "=1"
+                    + " WHERE lower(" + column + ") IN ('true','t')";
+            try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            }
+            sql = "UPDATE " + table + " SET " + column + "=0"
+                    + " WHERE lower(" + column + ") IN ('false','f')";
+            try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            }
+            toLog(Tracker.State.Exit, select);
         }
     }
 
@@ -167,53 +218,33 @@ public class DBCleaner {
     public void nullString2empty(@NonNull final TableDefinition table,
                                  @NonNull final DomainDefinition column,
                                  final boolean dryRun) {
-        String sql = "SELECT DISTINCT " + column + " FROM " + table
+        String select = "SELECT DISTINCT " + column + " FROM " + table
                 + " WHERE " + column + "=NULL";
-        toLog(Tracker.States.Enter, sql);
+        toLog(Tracker.State.Enter, select);
         if (!dryRun) {
-            mSyncDb.execSQL("UPDATE " + table + " SET " + column + "=''"
-                                    + " WHERE " + column + "=NULL");
-            toLog(Tracker.States.Exit, sql);
+            String sql = "UPDATE " + table + " SET " + column + "=''"
+                    + " WHERE " + column + "=NULL";
+            try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            }
+            toLog(Tracker.State.Exit, select);
         }
     }
 
     /**
-     * Set boolean columns to 0,1.
-     *
-     * @param table  to check
-     * @param column to check
-     * @param dryRun <tt>true</tt> to run the update.
-     */
-    public void booleanCleanup(@NonNull final TableDefinition table,
-                               @NonNull final DomainDefinition column,
-                               final boolean dryRun) {
-        String sql = "SELECT DISTINCT " + column + " FROM " + table
-                + " WHERE " + column + " NOT IN ('0','1')";
-
-        toLog(Tracker.States.Enter, sql);
-        if (!dryRun) {
-            mSyncDb.execSQL("UPDATE " + table + " SET " + column + "=1"
-                                    + " WHERE lower(" + column + ") IN ('true','t')");
-            mSyncDb.execSQL("UPDATE " + table + " SET " + column + "=0"
-                                    + " WHERE lower(" + column + ") IN ('false','f')");
-            toLog(Tracker.States.Exit, sql);
-        }
-    }
-
-    /**
-     * Execute the SQL and log the results.
+     * Execute the query and log the results.
      *
      * @param state Enter/Exit
-     * @param sql   to execute
+     * @param query to execute
      */
-    private void toLog(@NonNull final Tracker.States state,
-                       @NonNull final String sql) {
-        try (SynchronizedCursor cursor = mSyncDb.rawQuery(sql, null)) {
+    private void toLog(@NonNull final Tracker.State state,
+                       @NonNull final String query) {
+        try (SynchronizedCursor cursor = mSyncDb.rawQuery(query, null)) {
             while (cursor.moveToNext()) {
                 String field = cursor.getColumnName(0);
                 String value = cursor.getString(0);
 
-                Logger.info(this, state.toString(),field + '=' + value);
+                Logger.info(this, state.toString(), field + '=' + value);
             }
         }
     }

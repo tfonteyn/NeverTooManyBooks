@@ -12,13 +12,13 @@ import android.database.sqlite.SQLiteQuery;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.reflect.Field;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
-
-import java.lang.reflect.Field;
 
 /**
  * Database wrapper class that performs thread synchronization on all operations.
@@ -112,13 +112,13 @@ public class SynchronizedDb {
                                 "DBRefs (" + msg + "): " + refs);
                     //if (refs < 100) {
                     //  Logger.info(SynchronizedDb.class, "printRefCount",
-                    //                                "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
+                    //              "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
                     //} else if (refs < 1001) {
                     //  Logger.info(SynchronizedDb.class, "printRefCount",
-                    //                                "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
+                    //             "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
                     //} else {
                     //  Logger.info(SynchronizedDb.class, "printRefCount",
-                    //                                "DBRefs (" + msg + "): " + refs);
+                    //             "DBRefs (" + msg + "): " + refs);
                     //}
 
                 }
@@ -161,7 +161,7 @@ public class SynchronizedDb {
             Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {
                 SQLiteDatabase db = opener.getWritableDatabase();
-                Logger.info(this, "openWithRetries",db.getPath() + "|retriesLeft=" + retriesLeft);
+                Logger.info(this, "openWithRetries", db.getPath() + "|retriesLeft=" + retriesLeft);
                 //getInfo(db);
                 return db;
             } catch (RuntimeException e) {
@@ -197,7 +197,7 @@ public class SynchronizedDb {
         for (String s : sql) {
             try (Cursor cursor = db.rawQuery(s, null)) {
                 if (cursor.moveToNext()) {
-                    Logger.info(this, "getInfo",s + " => " + cursor.getString(0));
+                    Logger.info(this, "getInfo", s + " => " + cursor.getString(0));
                 }
             }
         }
@@ -345,6 +345,8 @@ public class SynchronizedDb {
      * 2019-01-14: the only place it's not closed is in
      * {@link com.eleybourn.bookcatalogue.searches.SearchSuggestionProvider}
      * where it seems not possible to close it ourselves.
+     *
+     * @return the cursor
      */
     @NonNull
     public SynchronizedCursor rawQuery(@NonNull final String sql,
@@ -403,7 +405,7 @@ public class SynchronizedDb {
      */
     public void execSQL(@NonNull final String sql) {
         if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
-            Logger.info(this, "execSQL",sql);
+            Logger.info(this, "execSQL", sql);
         }
 
         try {
@@ -413,11 +415,11 @@ public class SynchronizedDb {
                 }
                 mSqlDb.execSQL(sql);
             } else {
-                Synchronizer.SyncLock l = mSync.getExclusiveLock();
+                Synchronizer.SyncLock txLock = mSync.getExclusiveLock();
                 try {
                     mSqlDb.execSQL(sql);
                 } finally {
-                    l.unlock();
+                    txLock.unlock();
                 }
             }
         } catch (SQLException e) {
@@ -493,7 +495,9 @@ public class SynchronizedDb {
     }
 
     /**
-     * Wrapper.
+     * Wrapper
+     *
+     * @return <tt>true</tt> if the current thread is in a transaction.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean inTransaction() {
@@ -580,9 +584,9 @@ public class SynchronizedDb {
      */
     public boolean isCollationCaseSensitive() {
         if (mIsCollationCaseSensitive == null) {
-            mIsCollationCaseSensitive = checkIfCollationIsCaseSensitive();
+            mIsCollationCaseSensitive = collationIsCaseSensitive();
             if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
-                Logger.info(this, "isCollationCaseSensitive","" + mIsCollationCaseSensitive);
+                Logger.info(this, "isCollationCaseSensitive", "" + mIsCollationCaseSensitive);
             }
         }
         return mIsCollationCaseSensitive;
@@ -607,9 +611,10 @@ public class SynchronizedDb {
      *
      * @author Philip Warner
      */
-    private boolean checkIfCollationIsCaseSensitive() {
+    private boolean collationIsCaseSensitive() {
+        String dropTable = "DROP TABLE IF EXISTS collation_cs_check";
         // Drop and create table
-        mSqlDb.execSQL("DROP TABLE IF EXISTS collation_cs_check");
+        mSqlDb.execSQL(dropTable);
         mSqlDb.execSQL("CREATE TABLE collation_cs_check (t text, i integer)");
         try {
             // Row that *should* be returned first assuming 'a' <=> 'A'
@@ -632,7 +637,7 @@ public class SynchronizedDb {
             throw e;
         } finally {
             try {
-                mSqlDb.execSQL("DROP TABLE IF EXISTS collation_cs_check");
+                mSqlDb.execSQL(dropTable);
             } catch (SQLException e) {
                 Logger.error(e);
             }

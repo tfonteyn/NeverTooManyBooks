@@ -12,16 +12,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Implementation of {@link FileDetails} that collects data about backup files
@@ -33,8 +33,8 @@ public class BackupFileDetails
         implements FileDetails, Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Parcelable.Creator<BackupFileDetails> CREATOR =
-            new Parcelable.Creator<BackupFileDetails>() {
+    public static final Creator<BackupFileDetails> CREATOR =
+            new Creator<BackupFileDetails>() {
                 public BackupFileDetails createFromParcel(@NonNull final Parcel source) {
                     return new BackupFileDetails(source);
                 }
@@ -163,7 +163,6 @@ public class BackupFileDetails
         }
     }
 
-    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {

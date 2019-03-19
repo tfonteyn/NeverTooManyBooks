@@ -19,7 +19,6 @@
     <string name="lbl_date_published">Data di pubblicazione</string>
     <string name="lbl_rating">Valutazione</string>
     <string name="lbl_is_read">Hai già letto questo libro?</string>
-    <string name="lbl_series">Serie</string>
     <string name="lbl_pages">Pagine</string>
     <string name="btn_confirm_add_book">Aggiungi libro</string>
     <string name="btn_confirm_update">Aggiorna</string>
@@ -45,7 +44,9 @@
     <string name="lbl_search_for_books">Cerca per libro</string>
     <string name="title_search_for">Cerca per autore o titolo</string>
     <string name="warning_book_not_found">Il libro scansionato non è stato trovato. A volte il codice a barre corretto si trova all\'interno della copertina. Altrimenti inserisci i dati manualmente.</string>
+    <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_series_num_long">Serie #</string>
     <string name="title_import_book_data">Importa libri</string>
     <string name="warning_import_be_cautious">Attenzione. L\'importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l\'id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
     <string name="import_error_failed_is_csv_file_location_correct">ERRORE: Importazione dei dati dalla SDCard non riuscita. Il file è nel posto corretto?</string>

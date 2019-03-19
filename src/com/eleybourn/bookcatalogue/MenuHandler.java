@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.searches.amazon.AmazonUtils;
+import com.eleybourn.bookcatalogue.searches.amazon.AmazonSearchPage;
 
 /**
  * Handles re-usable menu items; both to create and to handle.
@@ -178,16 +178,16 @@ final class MenuHandler {
                 return false;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
-                AmazonUtils.openSearchPage(activity, book.getPrimaryAuthor(), null);
+                AmazonSearchPage.open(activity, book.getPrimaryAuthor(), null);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
-                AmazonUtils.openSearchPage(activity, null, book.getPrimarySeries());
+                AmazonSearchPage.open(activity, null, book.getPrimarySeries());
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonUtils.openSearchPage(activity, book.getPrimaryAuthor(),
-                                           book.getPrimarySeries());
+                AmazonSearchPage.open(activity, book.getPrimaryAuthor(),
+                                      book.getPrimarySeries());
                 return true;
 
             default:

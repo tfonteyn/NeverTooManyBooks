@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
@@ -102,15 +103,7 @@ public class LibraryThingAdminActivity
                      .apply();
 
                 if (!devKey.isEmpty()) {
-                    //noinspection unchecked
-                    ProgressDialogFragment<Integer> frag = (ProgressDialogFragment)
-                            getSupportFragmentManager().findFragmentByTag(ValidateKey.TAG);
-                    if (frag == null) {
-                        frag = ProgressDialogFragment.newInstance(
-                                R.string.progress_msg_connecting_to_web_site, true, 0);
-                        frag.show(getSupportFragmentManager(), ValidateKey.TAG);
-                    }
-                    new ValidateKey(frag).execute();
+                    ValidateKey.start(getSupportFragmentManager());
                 }
             }
         });
@@ -132,7 +125,7 @@ public class LibraryThingAdminActivity
     }
 
     @Override
-    public void onTaskFinished(final int taskId,
+    public void onTaskFinished(final Integer taskId,
                                final boolean success,
                                final Object result) {
         UserMessage.showUserMessage(this, (Integer) result);
@@ -159,12 +152,28 @@ public class LibraryThingAdminActivity
         /**
          * Constructor.
          *
-         * @param frag fragment to use for progress updates.
+         * @param fragment ProgressDialogFragment
          */
         @UiThread
-        ValidateKey(@NonNull final ProgressDialogFragment<Integer> frag) {
-            mFragment = frag;
-            mFragment.setTask(M_TASK_ID, this);
+        private ValidateKey(@NonNull final ProgressDialogFragment<Integer> fragment) {
+            mFragment = fragment;
+        }
+
+        /**
+         * @param fm FragmentManager
+         */
+        @UiThread
+        public static void start(@NonNull final FragmentManager fm) {
+            if (fm.findFragmentByTag(TAG) == null) {
+                ProgressDialogFragment<Integer> frag =
+                        ProgressDialogFragment.newInstance(
+                                R.string.progress_msg_connecting_to_web_site,
+                                true, 0);
+                ValidateKey task = new ValidateKey(frag);
+                frag.setTask(M_TASK_ID, task);
+                frag.show(fm, TAG);
+                task.execute();
+            }
         }
 
         @Override
@@ -201,7 +210,7 @@ public class LibraryThingAdminActivity
         @Override
         @UiThread
         protected void onPostExecute(@NonNull final Integer result) {
-            mFragment.taskFinished(M_TASK_ID, mException == null, result);
+            mFragment.onTaskFinished(mException == null, result);
         }
     }
 }

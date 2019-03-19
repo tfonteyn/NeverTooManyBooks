@@ -130,7 +130,7 @@ public class MultiTypeListCursorAdapter
     @Override
     @Nullable
     public String[] getSectionTextForPosition(final int position) {
-        Tracker.enterFunction(this, "getSectionTextForPosition", position);
+        //Tracker.info(this, Tracker.State.Enter, "getSectionTextForPosition", position);
         final Cursor listCursor = getCursor();
         if (position < 0 || position >= listCursor.getCount()) {
             return null;
@@ -146,7 +146,7 @@ public class MultiTypeListCursorAdapter
                 Logger.info(this, "getSectionTextForPosition","Section: " + s);
             }
         }
-        Tracker.exitFunction(this, "getSectionTextForPosition");
+        //Tracker.info(this, Tracker.State.Exit, "getSectionTextForPosition");
         return section;
     }
 }

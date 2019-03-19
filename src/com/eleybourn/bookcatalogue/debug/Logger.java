@@ -29,11 +29,9 @@ import androidx.annotation.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,8 +51,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  */
 public final class Logger {
 
-    private static final int OUTPUT_BUFFER = 8192;
-
     private static final String TAG = "BC_Logger";
     @SuppressLint("SimpleDateFormat")
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -62,17 +58,7 @@ public final class Logger {
     private Logger() {
     }
 
-    /**
-     * For static callers
-     */
-    public static void info(@NonNull final Class clazz,
-                            @Nullable final String message) {
-        String result = "INFO|" + clazz.getCanonicalName() + '|' + message;
-        writeToLog(result);
-        if (/* always log */ BuildConfig.DEBUG) {
-            Log.d(TAG, result);
-        }
-    }
+    /* ****************************************************************************************** */
 
     /**
      * For instance callers
@@ -80,17 +66,68 @@ public final class Logger {
     public static void info(@NonNull final Object object,
                             @NonNull final String methodName,
                             @Nullable final String message) {
-
-        String result = buildInfoMessage(object, methodName, message);
-        writeToLog(result);
         if (/* always log */ BuildConfig.DEBUG) {
-            Log.d(TAG, result);
+            Log.d(TAG, buildInfoMessage(object, methodName, message));
         }
     }
 
     /**
-     * Generates stacktrace.
+     * For tracking enter/exit of methods, with parameter dump.
      */
+    public static void info(@NonNull final Object object,
+                            @NonNull final Tracker.State state,
+                            @NonNull final String methodName,
+                            @NonNull final Object... params) {
+        if (BuildConfig.DEBUG) {
+            StringBuilder message = new StringBuilder("(");
+            for (Object parameter : params) {
+                message.append(parameter).append(',');
+            }
+            message.append(')');
+
+            Log.d(TAG, buildInfoMessage(object, methodName, state + "|" + message.toString()));
+        }
+    }
+
+    /**
+     * For static callers
+     */
+    public static void info(@NonNull final Class clazz,
+                            @Nullable final String message) {
+        if (/* always log */ BuildConfig.DEBUG) {
+            Log.d(TAG, "INFO|" + clazz.getCanonicalName() + '|' + message);
+        }
+    }
+
+
+
+    private static String buildInfoMessage(@NonNull final Object object,
+                                           @NonNull final String methodName,
+                                           @Nullable final String message) {
+        Class clazz = object.getClass();
+        StringBuilder msg = new StringBuilder("INFO|");
+        msg.append(clazz.isAnonymousClass() ? "AnonymousClass" : clazz.getCanonicalName());
+        msg.append('|');
+        if (!methodName.isEmpty()) {
+            msg.append(methodName).append('|');
+        }
+        msg.append(message);
+        return msg.toString();
+    }
+
+
+
+    /* ****************************************************************************************** */
+
+    public static void debug(@NonNull final String message) {
+        if (/* always log */ BuildConfig.DEBUG) {
+            Log.e(TAG, buildErrorMessage(new DebugStackTrace(), message)
+                    .replaceFirst("ERROR", "DEBUG"));
+        }
+    }
+
+    /* ****************************************************************************************** */
+
     public static void error(@NonNull final String message) {
         error(new DebugStackTrace(), message);
     }
@@ -120,43 +157,11 @@ public final class Logger {
     public static void error(@Nullable final Exception e,
                              @NonNull final String message) {
         String result = buildErrorMessage(e, message);
+        // only place where we should write to the logfile.
         writeToLog(result);
         if (/* always log */ BuildConfig.DEBUG) {
             Log.e(TAG, result);
         }
-    }
-
-    /**
-     * Should really only be used from within a debug code block.
-     * And even then only in problematic places, as the stack trace can get large
-     * <p>
-     * Generates stacktrace!
-     * <p>
-     * if (BuildConfig.DEBUG) {
-     * Logger.debug("blah");
-     * }
-     */
-    public static void debug(@NonNull final String message) {
-        String result = buildErrorMessage(new DebugStackTrace(), message)
-                .replaceFirst("ERROR","DEBUG");
-        writeToLog(result);
-        if (/* always log */ BuildConfig.DEBUG) {
-            Log.e(TAG, result);
-        }
-    }
-
-    private static String buildInfoMessage(@NonNull final Object object,
-                                           @NonNull final String methodName,
-                                           @Nullable final String message) {
-        Class clazz = object.getClass();
-        StringBuilder msg = new StringBuilder("INFO|");
-        msg.append(clazz.isAnonymousClass() ? "AnonymousClass" : clazz.getCanonicalName());
-        msg.append('|');
-        if (!methodName.isEmpty()) {
-            msg.append(methodName).append('|');
-        }
-        msg.append(message);
-        return msg.toString();
     }
 
     private static String buildErrorMessage(@Nullable final Exception e,
@@ -184,17 +189,20 @@ public final class Logger {
 
         msg.append(message).append('\n').append(stacktrace);
         return msg.toString();
-
     }
 
+    /* ****************************************************************************************** */
+
+
+    /**
+     * This is an expensive call... file open+close... booooo
+     *
+     * @param message to write
+     */
     private static void writeToLog(@NonNull final String message) {
-        try {
-            BufferedWriter out = new BufferedWriter(
-                    new OutputStreamWriter(
-                            new FileOutputStream(StorageUtils.getErrorLog()),
-                            StandardCharsets.UTF_8), OUTPUT_BUFFER);
+        try (FileWriter fw = new FileWriter(StorageUtils.getErrorLog(), true);
+             BufferedWriter out = new BufferedWriter(fw)) {
             out.write(message);
-            out.close();
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignored) {
             // do nothing - we can't log an error in the error logger.
             // (and we don't want to CF the app)
@@ -214,9 +222,11 @@ public final class Logger {
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
             // Ignore backup failure...
         } finally {
+            // 'touch' to get a new logfile.
             writeToLog("");
         }
     }
+
 
     private static class DebugStackTrace
             extends RuntimeException {

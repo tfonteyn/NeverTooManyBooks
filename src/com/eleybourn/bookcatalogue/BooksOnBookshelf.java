@@ -57,6 +57,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -114,13 +115,9 @@ public class BooksOnBookshelf
     /** Activity Request Code. */
     private static final int REQ_ADVANCED_LOCAL_SEARCH = 10;
 
-    /** Holder for all (semi)supported search criteria. See class for mre info. */
+    /** Holder for all (semi)supported search criteria. See class for more info. */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
-    /**
-     * Flag indicating activity has been destroyed.
-     * TOMF: can this be replaced by isFinishing / isDestroyed()
-     */
-    private boolean mIsDead;
+
     @Nullable
     private Boolean mDoFullRebuild;
     /**
@@ -260,7 +257,7 @@ public class BooksOnBookshelf
         // is in response to errors reporting NullPointerException when, most likely,
         // a null is returned by getResources(). The most likely explanation for that
         // is the call occurs after Activity is destroyed.
-        if (mIsDead) {
+        if (isFinishing() || isDestroyed()) {
             return;
         }
 
@@ -299,8 +296,6 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     protected void onDestroy() {
-        mIsDead = true;
-
         if (mListCursor != null) {
             mListCursor.getBuilder().close();
             mListCursor.close();
@@ -507,10 +502,11 @@ public class BooksOnBookshelf
                             Prefs.dumpPreferences(null);
                             return true;
                         case R.id.MENU_DEBUG_DUMP_STYLE:
-                            Logger.info(this, "onOptionsItemSelected", mCurrentBookshelf.getStyle(mDb).toString());
+                            Logger.info(this, "onOptionsItemSelected",
+                                        mCurrentBookshelf.getStyle(mDb).toString());
                             return true;
                         case R.id.MENU_DEBUG_DUMP_TRACKER:
-                            Logger.info(this, "onOptionsItemSelected",Tracker.getEventsInfo());
+                            Logger.info(this, "onOptionsItemSelected", Tracker.getEventsInfo());
                             return true;
                         case R.id.MENU_DEBUG_EXPORT_DATABASE:
                             StorageUtils.exportDatabaseFiles(this);
@@ -763,7 +759,7 @@ public class BooksOnBookshelf
         for (int level = 1; level <= 2; level++) {
             scrollingInfo.setVisible(level,
                                      mListCursor.numLevels() > level
-                                          && style.showLevel(level));
+                                             && style.showLevel(level));
         }
         listView.setTag(scrollingInfo);
 
@@ -783,10 +779,10 @@ public class BooksOnBookshelf
                                          final int firstVisibleItem,
                                          final int visibleItemCount,
                                          final int totalItemCount) {
-                        // Need to check isDead because BooklistPseudoCursor misbehaves when
+                        // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
                         // activity terminates and closes cursor
                         if (mLastTopRow != firstVisibleItem
-                                && !mIsDead
+                                && !isDestroyed()
                                 && showScrollingInfo) {
                             ScrollingInfo scrollingInfo = (ScrollingInfo) view.getTag();
                             scrollingInfo.update(firstVisibleItem);
@@ -815,7 +811,7 @@ public class BooksOnBookshelf
         }
         if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
             Logger.info(this, "displayList",
-                        + (System.currentTimeMillis() - t0) + "ms");
+                        +(System.currentTimeMillis() - t0) + "ms");
         }
     }
 
@@ -932,7 +928,7 @@ public class BooksOnBookshelf
      * in the list after such an operation...which will be too far down.
      */
     private void savePosition() {
-        if (mIsDead) {
+        if (isDestroyed()) {
             return;
         }
 
@@ -1064,13 +1060,6 @@ public class BooksOnBookshelf
         mBookshelfSpinner.setSelection(currentPos);
     }
 
-    /**
-     * Called if changes were made to a single book, or a set/list of books.
-     *
-     * @param bookId        the book that was changed, or 0 if the change was global
-     * @param fieldsChanged a bitmask build from the flags of {@link BookChangedListener}
-     * @param data          bundle with custom data, can be null
-     */
     @Override
     public void onBookChanged(final long bookId,
                               final int fieldsChanged,
@@ -1111,9 +1100,11 @@ public class BooksOnBookshelf
      * @param showAll if <tt>true</tt> show all styles, otherwise only the preferred ones.
      */
     private void doSortMenu(final boolean showAll) {
-        SortMenuFragment frag = SortMenuFragment
-                .newInstance(showAll);
-        frag.show(getSupportFragmentManager(), SortMenuFragment.TAG);
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag(SortMenuFragment.TAG) == null) {
+            SortMenuFragment.newInstance(showAll)
+                            .show(fm, SortMenuFragment.TAG);
+        }
     }
 
     /**
@@ -1151,9 +1142,9 @@ public class BooksOnBookshelf
      * @return the builder.
      */
     @NonNull
-    private BooklistBuilder getBooklistBuilder() {
+    private BooklistBuilder createBooklistBuilder() {
         if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
-            Logger.info(this, "getBooklistBuilder",
+            Logger.info(this, "createBooklistBuilder",
                         mCurrentBookshelf.getStyle(mDb).toString());
         }
 
@@ -1196,28 +1187,12 @@ public class BooksOnBookshelf
         if (mListCursor != null && !fullRebuild) {
             bookListBuilder = mListCursor.getBuilder();
         } else {
-            bookListBuilder = getBooklistBuilder();
-            // Build based on our current criteria
-            bookListBuilder.setFilterOnText(mSearchCriteria.text);
-            bookListBuilder.setFilterOnTitle(mSearchCriteria.title);
-            bookListBuilder.setFilterOnAuthorName(mSearchCriteria.author);
-            bookListBuilder.setFilterOnSeriesName(mSearchCriteria.series);
-            bookListBuilder.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
-
-            bookListBuilder.setFilterOnBookIdList(mSearchCriteria.bookList);
-
-            bookListBuilder.setFilterOnBookshelfId(mCurrentBookshelf.getId());
+            bookListBuilder = createBooklistBuilder();
         }
 
         BuilderHolder h = new BuilderHolder(mCurrentPositionedBookId, mListCursor, mRebuildState);
-        //noinspection unchecked
-        ProgressDialogFragment<BuilderHolder> frag = (ProgressDialogFragment)
-                getSupportFragmentManager().findFragmentByTag(GetBookListTask.TAG);
-        if (frag == null) {
-            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_getting_books, true, 0);
-            frag.show(getSupportFragmentManager(), GetBookListTask.TAG);
-        }
-        new GetBookListTask(frag, h, fullRebuild, bookListBuilder).execute();
+        GetBookListTask.start(getSupportFragmentManager(), h, fullRebuild,
+                              bookListBuilder, mCurrentBookshelf.getId(), mSearchCriteria);
     }
 
     @Override
@@ -1242,7 +1217,7 @@ public class BooksOnBookshelf
      * @param result  BuilderHolder
      */
     @Override
-    public void onTaskFinished(final int taskId,
+    public void onTaskFinished(final Integer taskId,
                                final boolean success,
                                @Nullable final Object result) {
         if (taskId == R.id.TASK_ID_GET_BOOKLIST && result != null) {
@@ -1399,7 +1374,6 @@ public class BooksOnBookshelf
         private static final String TAG = GetBookListTask.class.getSimpleName();
         /** Generic identifier. */
         private static final int M_TASK_ID = R.id.TASK_ID_GET_BOOKLIST;
-        protected final ProgressDialogFragment<BuilderHolder> mFragment;
         /**
          * Indicates whole table structure needs rebuild,
          * versus just do a reselect of underlying data.
@@ -1411,6 +1385,8 @@ public class BooksOnBookshelf
         /** Holds the input/output and output-only fields to be returned to the activity. */
         @NonNull
         private final BuilderHolder mHolder;
+        @NonNull
+        protected final ProgressDialogFragment<BuilderHolder> mFragment;
         /**
          * {@link #doInBackground} should catch exceptions, and set this field.
          * {@link #onPostExecute} can then check it.
@@ -1426,26 +1402,64 @@ public class BooksOnBookshelf
         /**
          * Constructor.
          *
-         * @param frag            the fragment to use for progress updates
+         * @param fragment        ProgressDialogFragment
          * @param builderHolder   holder class with input fields / results.
          * @param isFullRebuild   Indicates whole table structure needs rebuild,
          *                        versus just do a reselect of underlying data
          * @param bookListBuilder the builder
          */
         @UiThread
-        GetBookListTask(@NonNull final ProgressDialogFragment<BuilderHolder> frag,
-                        @NonNull final BuilderHolder builderHolder,
-                        final boolean isFullRebuild,
-                        @NonNull final BooklistBuilder bookListBuilder) {
-
-            mFragment = frag;
-            mFragment.setTask(M_TASK_ID, this);
-            mIsFullRebuild = isFullRebuild;
-            mBooklistBuilder = bookListBuilder;
-            mHolder = builderHolder;
+        private GetBookListTask(@NonNull final ProgressDialogFragment<BuilderHolder> fragment,
+                                @NonNull final BuilderHolder builderHolder,
+                                final boolean isFullRebuild,
+                                @NonNull final BooklistBuilder bookListBuilder) {
 
             if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
                 Logger.info(this, "constructor", "mIsFullRebuild=" + isFullRebuild);
+            }
+
+            mFragment = fragment;
+            mIsFullRebuild = isFullRebuild;
+            mBooklistBuilder = bookListBuilder;
+            mHolder = builderHolder;
+        }
+
+        /**
+         * @param fm              fragment manager
+         * @param builderHolder   holder class with input fields / results.
+         * @param isFullRebuild   Indicates whole table structure needs rebuild,
+         *                        versus just do a reselect of underlying data
+         * @param bookListBuilder the builder
+         */
+        @UiThread
+        public static void start(@NonNull final FragmentManager fm,
+                                 @NonNull final BuilderHolder builderHolder,
+                                 final boolean isFullRebuild,
+                                 @NonNull final BooklistBuilder bookListBuilder,
+                                 final long bookshelfId,
+                                 @NonNull final SearchCriteria searchCriteria) {
+            if (fm.findFragmentByTag(TAG) == null) {
+                ProgressDialogFragment<BuilderHolder> frag =
+                        ProgressDialogFragment.newInstance(R.string.progress_msg_getting_books,
+                                                           true, 0);
+
+                // always limit to one bookshelf.
+                bookListBuilder.setFilterOnBookshelfId(bookshelfId);
+
+                // Use current criteria
+                bookListBuilder.setFilterOnText(searchCriteria.text);
+                bookListBuilder.setFilterOnTitle(searchCriteria.title);
+                bookListBuilder.setFilterOnAuthorName(searchCriteria.author);
+                bookListBuilder.setFilterOnSeriesName(searchCriteria.series);
+                bookListBuilder.setFilterOnLoanedToPerson(searchCriteria.loanee);
+
+                bookListBuilder.setFilterOnBookIdList(searchCriteria.bookList);
+
+                GetBookListTask task =
+                        new GetBookListTask(frag, builderHolder, isFullRebuild, bookListBuilder);
+                frag.setTask(M_TASK_ID, task);
+                frag.show(fm, TAG);
+                task.execute();
             }
         }
 
@@ -1598,7 +1612,7 @@ public class BooksOnBookshelf
                                 " Select: " + (t3 - t2));
                     Logger.info(this, "doInBackground",
                                 " Count(" + count + "): " + (t4 - t3)
-                            + '/' + (t5 - t4) + '/' + (t6 - t5));
+                                        + '/' + (t5 - t4) + '/' + (t6 - t5));
                     Logger.info(this, "doInBackground",
                                 " ====== ");
                     Logger.info(this, "doInBackground",
@@ -1646,20 +1660,20 @@ public class BooksOnBookshelf
         @Override
         @UiThread
         protected void onPostExecute(@NonNull final BuilderHolder result) {
-            mFragment.taskFinished(M_TASK_ID, mException == null, result);
+            mFragment.onTaskFinished(mException == null, result);
         }
     }
 
     /** value class for the Builder. */
     private static class BuilderHolder {
-
         /** input/output field for the activity. */
         final BooklistPseudoCursor listCursor;
         /** input/output field for the activity. */
         long currentPositionedBookId;
         /** input/output field for the activity. */
-
         int rebuildState;
+
+
         /** output field for the activity. */
         int resultTotalBooks;
         /** output field for the activity. */

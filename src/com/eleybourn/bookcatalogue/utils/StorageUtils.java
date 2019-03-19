@@ -245,7 +245,7 @@ public final class StorageUtils {
     /**
      * return the cover for the given uuid.
      *
-     * @param uuid of the book,
+     * @param uuid of the book, must be valid.
      *
      * @return The File object for existing files, or a new (jpg) placeholder.
      */
@@ -578,9 +578,9 @@ public final class StorageUtils {
      * Create a copy of the databases into the Shared Storage location.
      */
     public static void exportDatabaseFiles(@NonNull final Context context) {
-        exportFile(DBHelper.getDatabasePath(context),
+        exportFile(DBHelper.getDatabasePath(),
                    "DbExport.db");
-        exportFile(CoversDBA.CoversDbHelper.getDatabasePath(context),
+        exportFile(CoversDBA.CoversDbHelper.getDatabasePath(),
                    "DbExport-covers.db");
     }
 

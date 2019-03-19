@@ -204,7 +204,6 @@ public class BooklistGroup
         // now the prefs (none for now)
     }
 
-    /** {@link Parcelable}. */
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
@@ -977,7 +976,6 @@ public class BooklistGroup
             dest.writeTypedArray(domains, flags);
         }
 
-        /** {@link Parcelable}. */
         @SuppressWarnings("SameReturnValue")
         @Override
         public int describeContents() {

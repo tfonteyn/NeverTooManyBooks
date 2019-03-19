@@ -20,7 +20,6 @@
     <string name="lbl_date_published">Ημερομηνία έκδοσης</string>
     <string name="lbl_rating">Βαθμολογία</string>
     <string name="lbl_is_read">Έχετε διαβάσει αυτό το βιβλίο;</string>
-    <string name="lbl_series">Σειρές</string>
     <string name="lbl_pages">Σελίδες</string>
     <string name="btn_confirm_add_book">Προσθήκη Βιβλίου</string>
     <string name="btn_confirm_update">Ενημέρωση</string>
@@ -46,7 +45,9 @@
     <string name="lbl_search_for_books">Αναζήτηση για βιβλία</string>
     <string name="title_search_for">Αναζήτηση συγγραφέα ή τίτλου</string>
     <string name="warning_book_not_found">Το βιβλίο που σαρώθηκε δεν βρέθηκε. Κάποιες φορές το σωστό barcode βρίσκεται στο εσωτερικό του εξωφύλλου. Αλλιώς εισάγετε τις λεπτομέρειες χειροκίνητα.</string>
+    <string name="lbl_series">Σειρές</string>
     <string name="lbl_series_num">#</string>
+    <string name="lbl_series_num_long">Σειρές #</string>
     <string name="title_import_book_data">Εισαγωγή Βιβλιων</string>
     <string name="warning_import_be_cautious">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
     <string name="import_error_failed_is_csv_file_location_correct">ΣΦΑΛΜΑ: Εισαγωγή δεδομένων (από SDCard) απέτυχε. Βρίσκεται το αρχείο στη σωστή τοποθεσία;</string>

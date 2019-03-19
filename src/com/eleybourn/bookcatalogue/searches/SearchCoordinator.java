@@ -51,7 +51,7 @@ import com.eleybourn.bookcatalogue.utils.StringList;
 
 
 /**
- * Class to co-ordinate {@link ManagedSearchTask} objects using an existing {@link TaskManager}.
+ * Class to co-ordinate {@link SearchTask} objects using an existing {@link TaskManager}.
  * <p>
  * Uses the {@link TaskManager} and listens to {@link TaskManager.TaskManagerListener} messages.
  * <p>
@@ -138,8 +138,8 @@ public class SearchCoordinator {
                     }
 
                     // Handle the result, and optionally queue another task
-                    if (task instanceof ManagedSearchTask) {
-                        handleSearchTaskFinished((ManagedSearchTask) task);
+                    if (task instanceof SearchTask) {
+                        handleSearchTaskFinished((SearchTask) task);
                     }
 
                     int size;
@@ -675,7 +675,7 @@ public class SearchCoordinator {
             return false;
         }
 
-        ManagedSearchTask task = new ManagedSearchTask(mTaskManager, site, sm);
+        SearchTask task = new SearchTask(mTaskManager, site, sm);
         task.setIsbn(mIsbn);
         task.setAuthor(mAuthor);
         task.setTitle(mTitle);
@@ -700,7 +700,7 @@ public class SearchCoordinator {
      *
      * @see TaskManager.TaskManagerListener#onTaskFinished
      */
-    private void handleSearchTaskFinished(@NonNull final ManagedSearchTask task) {
+    private void handleSearchTaskFinished(@NonNull final SearchTask task) {
         if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
             Logger.info(this, "handleSearchTaskFinished", '`' + task.getName() + '`');
         }

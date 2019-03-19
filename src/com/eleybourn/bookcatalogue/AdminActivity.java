@@ -87,7 +87,7 @@ public class AdminActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_admin_functions;
+        return R.layout.activity_admin;
     }
 
     @Override
@@ -106,8 +106,6 @@ public class AdminActivity
 
         /* Manage Field Visibility */
         View v = findViewById(R.id.lbl_field_visibility);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -120,8 +118,6 @@ public class AdminActivity
 
         /* Preferences */
         v = findViewById(R.id.lbl_preferences);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -137,8 +133,6 @@ public class AdminActivity
 
         /* Automatically Update Fields from internet*/
         v = findViewById(R.id.lbl_update_internet);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -156,8 +150,6 @@ public class AdminActivity
 
         /* Search sites */
         v = findViewById(R.id.search_sites);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -170,8 +162,6 @@ public class AdminActivity
 
         /* Start the activity that shows the basic details of GoodReads tasks. */
         v = findViewById(R.id.lbl_background_tasks);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -184,8 +174,6 @@ public class AdminActivity
 
         /* Reset Hints */
         v = findViewById(R.id.lbl_reset_hints);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -199,8 +187,6 @@ public class AdminActivity
 
         /* Erase cover cache */
         v = findViewById(R.id.lbl_erase_cover_cache);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -213,8 +199,6 @@ public class AdminActivity
 
         /* Copy database for tech support */
         v = findViewById(R.id.lbl_copy_database);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -231,8 +215,6 @@ public class AdminActivity
 
         // Export (backup) to Archive
         v = findViewById(R.id.lbl_backup);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -247,8 +229,6 @@ public class AdminActivity
 
         // Import from Archive - Start the restore activity
         v = findViewById(R.id.lbl_import_from_archive);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -263,8 +243,6 @@ public class AdminActivity
 
         // Export to CSV
         v = findViewById(R.id.lbl_export);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -275,8 +253,6 @@ public class AdminActivity
 
         // Import From CSV
         v = findViewById(R.id.lbl_import);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -290,8 +266,6 @@ public class AdminActivity
         View v;
         // Goodreads Synchronize
         v = findViewById(R.id.lbl_sync_with_goodreads);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -302,8 +276,6 @@ public class AdminActivity
 
         // Goodreads Import
         v = findViewById(R.id.lbl_import_all_from_goodreads);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -314,8 +286,6 @@ public class AdminActivity
 
         // Goodreads Export (send to)
         v = findViewById(R.id.lbl_send_books_to_goodreads);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -328,8 +298,6 @@ public class AdminActivity
         View v;
         /* Goodreads credentials */
         v = findViewById(R.id.goodreads_auth);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -342,8 +310,6 @@ public class AdminActivity
 
         /* LibraryThing credentials */
         v = findViewById(R.id.librarything_auth);
-        // Make line flash when clicked.
-        v.setBackgroundResource(android.R.drawable.list_selector_background);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
@@ -361,14 +327,8 @@ public class AdminActivity
         File file = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
         ExportSettings settings = new ExportSettings(file);
         settings.what = ExportSettings.BOOK_CSV;
-        //noinspection unchecked
-        ProgressDialogFragment<Void> frag = (ProgressDialogFragment)
-                getSupportFragmentManager().findFragmentByTag(ExportCSVTask.TAG);
-        if (frag == null) {
-            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_backing_up, false, 0);
-            frag.show(getSupportFragmentManager(), ExportCSVTask.TAG);
-        }
-        new ExportCSVTask(frag, settings).execute();
+
+        ExportCSVTask.start(getSupportFragmentManager(), settings);
     }
 
     /**
@@ -435,14 +395,7 @@ public class AdminActivity
     private void importFromCSV(@NonNull final File file) {
         ImportSettings settings = new ImportSettings(file);
         settings.what = ImportSettings.BOOK_CSV;
-        //noinspection unchecked
-        ProgressDialogFragment<Void> frag = (ProgressDialogFragment)
-                getSupportFragmentManager().findFragmentByTag(ImportCSVTask.TAG);
-        if (frag == null) {
-            frag = ProgressDialogFragment.newInstance(R.string.progress_msg_importing, false, 0);
-            frag.show(getSupportFragmentManager(), ImportCSVTask.TAG);
-        }
-        new ImportCSVTask(frag, settings).execute();
+        ImportCSVTask.start(getSupportFragmentManager(), settings);
     }
 
     @Override
@@ -481,7 +434,7 @@ public class AdminActivity
      * @param result  not used
      */
     @Override
-    public void onTaskFinished(final int taskId,
+    public void onTaskFinished(final Integer taskId,
                                final boolean success,
                                @Nullable final Object result) {
         switch (taskId) {

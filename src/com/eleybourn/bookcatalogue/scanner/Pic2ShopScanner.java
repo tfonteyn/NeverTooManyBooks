@@ -60,7 +60,7 @@ public class Pic2ShopScanner
     }
 
     /**
-     * Start the activity with the passed request code.
+     * {@inheritDoc}
      * <p>
      * Note that we always send an intent; the caller should have checked that
      * one of the intents is valid, or catch the resulting errors.
@@ -78,9 +78,6 @@ public class Pic2ShopScanner
         activity.startActivityForResult(intent, requestCode);
     }
 
-    /**
-     * @return the barcode from the scan
-     */
     @Override
     @NonNull
     public String getBarcode(@NonNull final Intent data) {
