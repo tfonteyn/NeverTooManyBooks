@@ -29,10 +29,11 @@ import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.NonNull;
 
+import java.util.Date;
+
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils;
-
-import java.util.Date;
 
 import static com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDBHelper.DOM_CATEGORY;
 import static com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDBHelper.DOM_EVENT_COUNT;
@@ -214,7 +215,7 @@ public final class TasksCursor
         try {
             task = SerializationUtils.deserializeObject(blob);
         } catch (SerializationUtils.DeserializationException de) {
-            task = new LegacyTask();
+            task = new LegacyTask(App.getAppContext());
         }
         task.setId(getId());
         return task;

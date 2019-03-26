@@ -19,10 +19,12 @@
  */
 package com.eleybourn.bookcatalogue.utils;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 
@@ -30,7 +32,7 @@ import com.eleybourn.bookcatalogue.StartupActivity;
  * Class to manage the message that is displayed when the application is upgraded.
  * <p>
  * The app version is stored in preferences and when there are messages to display, the
- * {@link #getUpgradeMessage()} method returns a non-empty string. When the message has been
+ * {@link #getUpgradeMessage} method returns a non-empty string. When the message has been
  * acknowledged by the user, the startup activity should call {@link #setUpgradeAcknowledged()}
  * to store the current app version in preferences and so prevent re-display of the messages.
  */
@@ -84,7 +86,7 @@ public final class UpgradeMessageManager {
      * @return Upgrade message (or blank string)
      */
     @NonNull
-    public static String getUpgradeMessage() {
+    public static String getUpgradeMessage(@NonNull final Context context) {
         // If cached version exists, return it
         if (mMessage != null) {
             return mMessage;
@@ -94,7 +96,7 @@ public final class UpgradeMessageManager {
         final StringBuilder message = new StringBuilder();
 
         // See if we have a saved version id; if it's 0, it's an upgrade from a pre-98 install.
-        long lastVersion = Prefs.getPrefs().getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
+        long lastVersion = App.getPrefs().getLong(StartupActivity.PREF_STARTUP_LAST_VERSION, 0);
 
         boolean first = true;
         for (int[] msg : UPGRADE_MESSAGES) {
@@ -103,7 +105,7 @@ public final class UpgradeMessageManager {
                     message.append('\n');
                 }
                 first = false;
-                message.append(BookCatalogueApp.getResString(msg[1]));
+                message.append(context.getString(msg[1]));
             }
         }
 
@@ -112,9 +114,9 @@ public final class UpgradeMessageManager {
     }
 
     public static void setUpgradeAcknowledged() {
-        Prefs.getPrefs()
-             .edit()
-             .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, BookCatalogueApp.getVersion())
-             .apply();
+        App.getPrefs()
+           .edit()
+           .putLong(StartupActivity.PREF_STARTUP_LAST_VERSION, App.getVersion())
+           .apply();
     }
 }

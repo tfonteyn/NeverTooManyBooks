@@ -85,12 +85,6 @@ public class Publisher
         return mName;
     }
 
-    @Override
-    @NonNull
-    public String toString() {
-        return mName;
-    }
-
     /**
      * Replace local details from another publisher.
      *
@@ -98,6 +92,14 @@ public class Publisher
      */
     public void copyFrom(@NonNull final Publisher source) {
         mName = source.mName;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "Publisher{"
+                + "mName=`" + mName + '`'
+                + '}';
     }
 
     /**

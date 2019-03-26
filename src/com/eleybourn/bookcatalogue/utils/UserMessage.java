@@ -7,8 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.App;
 import com.google.android.material.snackbar.Snackbar;
 
 public final class UserMessage {
@@ -21,7 +20,7 @@ public final class UserMessage {
      */
     public static void showUserMessage(@NonNull final Activity activity,
                                        @StringRes final int message) {
-        if (0 == Prefs.getListPreference(R.string.pk_ui_messages_use, 0)) {
+        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message,
@@ -31,7 +30,7 @@ public final class UserMessage {
 
     public static void showUserMessage(@NonNull final View view,
                                        @StringRes final int message) {
-        if (0 == Prefs.getListPreference(R.string.pk_ui_messages_use, 0)) {
+        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, 0)) {
             Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
@@ -43,7 +42,7 @@ public final class UserMessage {
      */
     public static void showUserMessage(@NonNull final Activity activity,
                                        @NonNull final String message) {
-        if (0 == Prefs.getListPreference(R.string.pk_ui_messages_use, 0)) {
+        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, 0)) {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(activity.getWindow().getDecorView(), message,
@@ -51,18 +50,12 @@ public final class UserMessage {
         }
     }
 
-    /**
-     * Problem child: called from a task (thread) which has no activity/context at all.
-     * Hardwired to use the application context.
-     * Only called from a UI thread.
-     * <p>
-     * Does mean we can't use SnackBar
-     */
-    public static void showUserMessage(@NonNull final String message) {
-        Toast.makeText(BookCatalogueApp.getAppContext(), message, Toast.LENGTH_LONG).show();
+    public static void showUserMessage(@NonNull final View view,
+                                       @NonNull final String message) {
+        if (0 == App.getListPreference(Prefs.pk_ui_messages_use, 0)) {
+            Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
+        } else {
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+        }
     }
-
-//    public static void showUserMessage(@StringRes final int message) {
-//        Toast.makeText(BookCatalogueApp.getAppContext(), message, Toast.LENGTH_LONG).show();
-//    }
 }

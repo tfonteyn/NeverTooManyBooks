@@ -105,7 +105,7 @@ public class EditSeriesListActivity
     protected void onAdd(@NonNull final View target) {
         String title = mSeriesNameView.getText().toString().trim();
         if (title.isEmpty()) {
-            UserMessage.showUserMessage(this, R.string.warning_required_name);
+            UserMessage.showUserMessage(mSeriesNameView, R.string.warning_required_name);
             return;
         }
 
@@ -117,7 +117,7 @@ public class EditSeriesListActivity
         // and check it's not already in the list.
         for (Series series : mList) {
             if (series.equals(newSeries)) {
-                UserMessage.showUserMessage(this, R.string.warning_series_already_in_list);
+                UserMessage.showUserMessage(mSeriesNameView, R.string.warning_series_already_in_list);
                 return;
             }
         }
@@ -257,6 +257,7 @@ public class EditSeriesListActivity
     public static class EditBookSeriesDialogFragment
             extends DialogFragment {
 
+        /** Fragment manager tag. */
         public static final String TAG = EditBookSeriesDialogFragment.class.getSimpleName();
 
         private EditSeriesListActivity mActivity;
@@ -265,9 +266,9 @@ public class EditSeriesListActivity
         private Checkable mIsCompleteView;
         private EditText mNumberView;
 
-        private String mName;
-        private boolean mIsComplete;
-        private String mNumber;
+        private String mSeriesName;
+        private boolean mSeriesIsComplete;
+        private String mSeriesNumber;
 
         /**
          * Constructor.
@@ -292,13 +293,13 @@ public class EditSeriesListActivity
             final Series series = requireArguments().getParcelable(UniqueId.KEY_SERIES);
             if (savedInstanceState == null) {
                 //noinspection ConstantConditions
-                mName = series.getName();
-                mIsComplete = series.isComplete();
-                mNumber = series.getNumber();
+                mSeriesName = series.getName();
+                mSeriesIsComplete = series.isComplete();
+                mSeriesNumber = series.getNumber();
             } else {
-                mName = savedInstanceState.getString(UniqueId.KEY_SERIES);
-                mIsComplete = savedInstanceState.getBoolean(UniqueId.KEY_SERIES_IS_COMPLETE);
-                mNumber = savedInstanceState.getString(UniqueId.KEY_SERIES_NUM);
+                mSeriesName = savedInstanceState.getString(UniqueId.KEY_SERIES);
+                mSeriesIsComplete = savedInstanceState.getBoolean(UniqueId.KEY_SERIES_IS_COMPLETE);
+                mSeriesNumber = savedInstanceState.getString(UniqueId.KEY_SERIES_NUM);
             }
 
             final View root = mActivity.getLayoutInflater()
@@ -306,34 +307,33 @@ public class EditSeriesListActivity
 
             // the dialog fields != screen fields.
             mNameView = root.findViewById(R.id.series);
-            mNameView.setText(mName);
+            mNameView.setText(mSeriesName);
             mNameView.setAdapter(mActivity.mSeriesAdapter);
 
             mIsCompleteView = root.findViewById(R.id.is_complete);
             if (mIsCompleteView != null) {
-                mIsCompleteView.setChecked(mIsComplete);
+                mIsCompleteView.setChecked(mSeriesIsComplete);
             }
 
             mNumberView = root.findViewById(R.id.series_num);
-            mNumberView.setText(mNumber);
+            mNumberView.setText(mSeriesNumber);
 
             root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(@NonNull final View v) {
-                    mName = mNameView.getText().toString().trim();
-                    if (mName.isEmpty()) {
-                        UserMessage.showUserMessage(mActivity,
-                                                    R.string.warning_required_name);
+                    mSeriesName = mNameView.getText().toString().trim();
+                    if (mSeriesName.isEmpty()) {
+                        UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
                         return;
                     }
                     if (mIsCompleteView != null) {
-                        mIsComplete = mIsCompleteView.isChecked();
+                        mSeriesIsComplete = mIsCompleteView.isChecked();
                     }
-                    mNumber = mNumberView.getText().toString().trim();
+                    mSeriesNumber = mNumberView.getText().toString().trim();
                     dismiss();
 
                     //noinspection ConstantConditions
-                    mActivity.processChanges(series, mName, mIsComplete, mNumber);
+                    mActivity.processChanges(series, mSeriesName, mSeriesIsComplete, mSeriesNumber);
 
                 }
             });
@@ -353,11 +353,11 @@ public class EditSeriesListActivity
 
         @Override
         public void onPause() {
-            mName = mNameView.getText().toString().trim();
+            mSeriesName = mNameView.getText().toString().trim();
             if (mIsCompleteView != null) {
-                mIsComplete = mIsCompleteView.isChecked();
+                mSeriesIsComplete = mIsCompleteView.isChecked();
             }
-            mNumber = mNumberView.getText().toString().trim();
+            mSeriesNumber = mNumberView.getText().toString().trim();
 
             super.onPause();
         }
@@ -365,9 +365,9 @@ public class EditSeriesListActivity
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(UniqueId.KEY_SERIES, mName);
-            outState.putBoolean(UniqueId.KEY_SERIES_IS_COMPLETE, mIsComplete);
-            outState.putString(UniqueId.KEY_SERIES_NUM, mNumber);
+            outState.putString(UniqueId.KEY_SERIES, mSeriesName);
+            outState.putBoolean(UniqueId.KEY_SERIES_IS_COMPLETE, mSeriesIsComplete);
+            outState.putString(UniqueId.KEY_SERIES_NUM, mSeriesNumber);
         }
     }
 

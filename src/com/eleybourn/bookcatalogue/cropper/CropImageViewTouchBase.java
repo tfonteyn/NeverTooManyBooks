@@ -23,45 +23,45 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.eleybourn.bookcatalogue.R;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
-public abstract class CropImageViewTouchBase extends AppCompatImageView {
+public abstract class CropImageViewTouchBase
+        extends AppCompatImageView {
 
     private static final float SCALE_RATE = 1.25F;
     /** Maximum upscaling for a viewed image */
     private static final float SCALE_LIMIT_MAX = Float.MAX_VALUE;
-
+    /** The current bitmap being displayed. */
+    final CropRotateBitmap mBitmapDisplayed = new CropRotateBitmap();
     /**
      * This is the base transformation which is used to show the image
      * initially. The current computation for this shows the image in
      * it's entirety, letter boxing as needed. One could choose to
      * show the image as cropped instead.
-     *
+     * <p>
      * This matrix is recomputed when we go from the thumbnail image to
      * the full size image.
      */
     private final Matrix mBaseMatrix = new Matrix();
-
     /**
      * This is the supplementary transformation which reflects what
      * the user has done in terms of zooming and panning.
-     *
+     * <p>
      * This matrix remains the same when we go from the thumbnail image
      * to the full size image.
      */
     private final Matrix mSuppMatrix = new Matrix();
-    /** The current bitmap being displayed. */
-    final CropRotateBitmap mBitmapDisplayed = new CropRotateBitmap();
     private final Handler mHandler = new Handler();
     /**
      * This is the final matrix which is computed as the concatenation
@@ -72,9 +72,6 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
     private final float[] mMatrixValues = new float[9];
     protected int mLastXTouchPos;
     protected int mLastYTouchPos;
-    private int mThisWidth = -1;
-    private int mThisHeight = -1;
-    private float mMaxZoom;
     int mScrollY;
     int mScrollX;
     int mLeft;
@@ -85,6 +82,9 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
     int mPaddingBottom;
     int mPaddingLeft;
     int mPaddingRight;
+    private int mThisWidth = -1;
+    private int mThisHeight = -1;
+    private float mMaxZoom;
     private Recycler mRecycler;
     @Nullable
     private Runnable mOnLayoutRunnable = null;
@@ -94,10 +94,12 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
         init();
     }
 
-    public CropImageViewTouchBase(@NonNull final Context context, @NonNull final AttributeSet attrs) {
+    public CropImageViewTouchBase(@NonNull final Context context,
+                                  @NonNull final AttributeSet attrs) {
         super(context, attrs);
         init();
     }
+
     private void init() {
         setScaleType(ImageView.ScaleType.MATRIX);
         initRenderer();
@@ -109,20 +111,20 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
      * http://developer.android.com/guide/topics/graphics/hardware-accel.html
      * http://stackoverflow.com/questions/13676059/android-unsupportedoperationexception-at-canvas-clippath
      * so for API level > 11, we turn it off manually.
-     *
+     * <p>
      * 2018-11-30: making this a configuration option
-     *
+     * <p>
      * Actual system values:
-     *
-     *         View.LAYER_TYPE_SOFTWARE 1
-     *         View.LAYER_TYPE_HARDWARE 2
-     *
+     * <p>
+     * View.LAYER_TYPE_SOFTWARE 1
+     * View.LAYER_TYPE_HARDWARE 2
+     * <p>
      * We use 1 and 2; and 'abuse' -1 to mean 'leave it unset'
-     *
+     * <p>
      * see {@link View#setLayerType(int, Paint)}
      */
     private void initRenderer() {
-        int type = Prefs.getListPreference(R.string.pk_thumbnail_cropper_layer_type, -1);
+        int type = App.getListPreference(Prefs.pk_thumbnail_cropper_layer_type, -1);
         if (type == -1) {
             return;
         }
@@ -136,7 +138,10 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
 
     @Override
     @CallSuper
-    protected void onLayout(final boolean changed, final int left, final int top, final int right,
+    protected void onLayout(final boolean changed,
+                            final int left,
+                            final int top,
+                            final int right,
                             final int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         mLeft = left;
@@ -158,7 +163,8 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
 
     @Override
     @CallSuper
-    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
+    public boolean onKeyDown(final int keyCode,
+                             final KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && getScale() > 1.0f) {
             // If we're large in, pressing Back jumps out to show the entire
             // image, otherwise Back returns the user to the gallery.
@@ -174,7 +180,8 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     @CallSuper
-    private void setImageBitmap(@Nullable final Bitmap bitmap, final int rotation) {
+    private void setImageBitmap(@Nullable final Bitmap bitmap,
+                                final int rotation) {
         super.setImageBitmap(bitmap);
         Drawable d = getDrawable();
         if (d != null) {
@@ -198,7 +205,8 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
      * This function changes bitmap, reset base matrix according to the size
      * of the bitmap, and optionally reset the supplementary matrix.
      */
-    public void setImageBitmapResetBase(@Nullable final Bitmap bitmap, final boolean resetSupp) {
+    public void setImageBitmapResetBase(@Nullable final Bitmap bitmap,
+                                        final boolean resetSupp) {
         setImageRotateBitmapResetBase(new CropRotateBitmap(bitmap), resetSupp);
     }
 
@@ -246,7 +254,7 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
         Matrix m = getImageViewMatrix();
 
         RectF rect = new RectF(0, 0, mBitmapDisplayed.getBitmap().getWidth(),
-                mBitmapDisplayed.getBitmap().getHeight());
+                               mBitmapDisplayed.getBitmap().getHeight());
 
         m.mapRect(rect);
 
@@ -297,7 +305,8 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
     }
 
     /** Setup the base matrix so that the image is centered and scaled properly. */
-    private void getProperBaseMatrix(@NonNull final CropRotateBitmap bitmap, @NonNull final Matrix matrix) {
+    private void getProperBaseMatrix(@NonNull final CropRotateBitmap bitmap,
+                                     @NonNull final Matrix matrix) {
         float viewWidth = getWidth();
         float viewHeight = getHeight();
 
@@ -317,7 +326,7 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
         matrix.postScale(scale, scale);
 
         matrix.postTranslate((viewWidth - w * scale) / 2F,
-                (viewHeight - h * scale) / 2F);
+                             (viewHeight - h * scale) / 2F);
     }
 
     /**
@@ -452,6 +461,7 @@ public abstract class CropImageViewTouchBase extends AppCompatImageView {
      * its use of that Bitmap.
      */
     interface Recycler {
+
         void recycle(@NonNull final Bitmap b);
     }
 }

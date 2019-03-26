@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.backup.xml;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -41,7 +42,6 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -124,12 +124,15 @@ public class XmlExporter
     private static final int XML_EXPORTER_STYLES_VERSION = 1;
 
     @NonNull
+    private final Context mContext;
+    @NonNull
     private final DBA mDb;
     @NonNull
     private final ExportSettings mSettings;
 
-    public XmlExporter() {
-        mDb = new DBA(BookCatalogueApp.getAppContext());
+    public XmlExporter(@NonNull final Context context) {
+        mContext = context;
+        mDb = new DBA(mContext);
         mSettings = new ExportSettings();
         mSettings.what = ExportSettings.ALL;
     }
@@ -140,8 +143,10 @@ public class XmlExporter
      * @param settings exporting books respects {@link ExportSettings#dateFrom}
      *                 All other flags are ignored.
      */
-    public XmlExporter(@NonNull final ExportSettings settings) {
-        mDb = new DBA(BookCatalogueApp.getAppContext());
+    public XmlExporter(@NonNull final Context context,
+                       @NonNull final  ExportSettings settings) {
+        mContext = context;
+        mDb = new DBA(mContext);
         settings.validate();
         mSettings = settings;
     }
@@ -171,35 +176,35 @@ public class XmlExporter
                .append(">\n");
 
             if (!listener.isCancelled()) {
-                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_bookshelves),
+                listener.onProgress(mContext.getString(R.string.lbl_bookshelves),
                                     pos++);
                 pos += doBookshelves(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_author), pos++);
+                listener.onProgress(mContext.getString(R.string.lbl_author), pos++);
                 pos += doAuthors(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_series), pos++);
+                listener.onProgress(mContext.getString(R.string.lbl_series), pos++);
                 pos += doSeries(out, listener);
             }
 
             if (!listener.isCancelled()) {
-                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_book), pos++);
+                listener.onProgress(mContext.getString(R.string.lbl_book), pos++);
                 pos += doBooks(out, listener);
             }
 
             if (!listener.isCancelled()
                     && (mSettings.what & ExportSettings.BOOK_LIST_STYLES) != 0) {
-                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_styles), pos++);
+                listener.onProgress(mContext.getString(R.string.lbl_styles), pos++);
                 pos += doStyles(out, listener);
             }
 
             if (!listener.isCancelled()
                     && (mSettings.what & ExportSettings.PREFERENCES) != 0) {
-                listener.onProgress(BookCatalogueApp.getResString(R.string.lbl_preferences),
+                listener.onProgress(mContext.getString(R.string.lbl_settings),
                                     pos++);
                 pos += doPreferences(out, listener);
             }
@@ -531,7 +536,7 @@ public class XmlExporter
                              @NonNull final ExportListener listener)
             throws IOException {
         // remove the acra settings
-        Map<String, ?> all = Prefs.getPrefs().getAll();
+        Map<String, ?> all = App.getPrefs().getAll();
         Iterator<String> it = all.keySet().iterator();
         while (it.hasNext()) {
             String key = it.next();
@@ -894,7 +899,7 @@ public class XmlExporter
         @NonNull
         @Override
         public Object get(@NonNull final String key) {
-            if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                 Logger.info(this, "get", "uuid=" + current.getUuid() + "|name=" + key);
             }
             //noinspection ConstantConditions

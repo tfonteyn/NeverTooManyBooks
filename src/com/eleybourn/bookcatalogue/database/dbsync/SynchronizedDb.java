@@ -19,6 +19,7 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
  * Database wrapper class that performs thread synchronization on all operations.
@@ -101,7 +102,7 @@ public class SynchronizedDb {
     @SuppressWarnings({"JavaReflectionMemberAccess", "UnusedAssignment"})
     public static void printRefCount(@Nullable final String msg,
                                      @NonNull final SQLiteDatabase db) {
-        if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
             System.gc();
             try {
                 Field f = SQLiteClosable.class.getDeclaredField("mReferenceCount");
@@ -404,8 +405,8 @@ public class SynchronizedDb {
      * Locking-aware wrapper for underlying database method.
      */
     public void execSQL(@NonNull final String sql) {
-        if (DEBUG_SWITCHES.SQL && BuildConfig.DEBUG) {
-            Logger.info(this, "execSQL", sql);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXEC_SQL) {
+            Logger.info(this, Tracker.State.Enter,"execSQL", sql);
         }
 
         try {
@@ -585,7 +586,7 @@ public class SynchronizedDb {
     public boolean isCollationCaseSensitive() {
         if (mIsCollationCaseSensitive == null) {
             mIsCollationCaseSensitive = collationIsCaseSensitive();
-            if (DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
                 Logger.info(this, "isCollationCaseSensitive", "" + mIsCollationCaseSensitive);
             }
         }

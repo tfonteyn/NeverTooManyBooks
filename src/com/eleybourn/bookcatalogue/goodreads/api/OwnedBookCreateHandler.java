@@ -38,7 +38,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 
 /**
  * TODO: OwnedBookCreateHandler WORK IN PROGRESS.
@@ -107,7 +107,7 @@ public class OwnedBookCreateHandler
         try {
             id = isbnToId.isbnToId(isbn);
         } catch (BookNotFoundException e) {
-            throw new RTE.IsbnInvalidException(e);
+            throw new ISBN.IsbnInvalidException(e);
         }
 
         HttpPost post = new HttpPost(GoodreadsManager.BASE_URL + "/owned_books.xml");

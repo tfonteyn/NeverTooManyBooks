@@ -30,6 +30,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.MessageSwitch;
@@ -92,8 +93,8 @@ public abstract class BaseActivityWithTasks
         @Override
         public void onTaskFinished(@NonNull final TaskManager taskManager,
                                    @NonNull final ManagedTask task) {
-            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-                Logger.info(BaseActivityWithTasks.this,
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+                Logger.info(BaseActivityWithTasks.this, Tracker.State.Enter,
                             "onTaskFinished", "task=`" + task.getName());
             }
             // Just pass this one on. This will allow sub classes to override the base method,
@@ -108,11 +109,12 @@ public abstract class BaseActivityWithTasks
         public void onProgress(final int count,
                                final int max,
                                @NonNull final String message) {
-            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                 @SuppressWarnings("UnusedAssignment")
                 String dbgMsg = "onProgress: " + count + '/' + max + ", '"
-                        + message.replace("\n", "\\n") + '\'';
-                Logger.info(this, "onProgress", "msg=" + dbgMsg);
+                        + message.replace("\n", "\\n") + '`';
+                Logger.info(this, Tracker.State.Enter,"onProgress",
+                            "msg=" + dbgMsg);
             }
 
             // Save the details
@@ -238,8 +240,8 @@ public abstract class BaseActivityWithTasks
      * Setup the dialog according to our needs.
      */
     private void initProgressDialog() {
-        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-            Logger.info(this, "initProgressDialog","");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.info(this, Tracker.State.Enter,"initProgressDialog");
         }
 
         boolean wantInDeterminate = (mProgressMax == 0);
@@ -283,8 +285,8 @@ public abstract class BaseActivityWithTasks
      * Dismiss the Progress Dialog, and null it so we can recreate when needed.
      */
     private void closeProgressDialog() {
-        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-            Logger.info(this, "closeProgressDialog","");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.info(this, Tracker.State.Enter,"closeProgressDialog");
         }
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
@@ -309,8 +311,8 @@ public abstract class BaseActivityWithTasks
      * @param showProgress if <tt>true</tt> we'll force the progress dialog to show.
      */
     private void cancelAndUpdateProgress(final boolean showProgress) {
-        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-            Logger.info(this, "cancelAndUpdateProgress","");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.info(this, Tracker.State.Enter,"cancelAndUpdateProgress");
         }
         if (mTaskManager != null) {
             mTaskManager.cancelAllTasks();

@@ -7,14 +7,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <!-- Your small content view (in the FrameLayout) must be enclosed by this LinearLayout
          or else it will overflow the toolbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -22,14 +24,16 @@
             android:layout_width="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <FrameLayout
             android:id="@+id/main_fragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -38,7 +42,8 @@
     -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
-        style="@style/nav_panel_main"
+        style="@style/nav_view"
         app:headerLayout="@layout/nav_panel_header"
-        app:menu="@menu/nav_panel" />
+        app:menu="@menu/nav_view"
+        />
 </androidx.drawerlayout.widget.DrawerLayout>

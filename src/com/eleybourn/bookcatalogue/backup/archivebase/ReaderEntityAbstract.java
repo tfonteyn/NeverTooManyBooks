@@ -21,14 +21,14 @@ package com.eleybourn.bookcatalogue.backup.archivebase;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils;
-import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+
+import com.eleybourn.bookcatalogue.utils.SerializationUtils;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
+import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
  * Basic implementation of format-agnostic ReaderEntity methods using

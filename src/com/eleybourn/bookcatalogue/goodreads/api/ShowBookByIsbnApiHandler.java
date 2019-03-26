@@ -31,8 +31,7 @@ import org.apache.http.client.methods.HttpGet;
 import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 
 /**
  * Class to call the search.books api (using an ISBN).
@@ -68,8 +67,8 @@ public class ShowBookByIsbnApiHandler
                    BookNotFoundException,
                    IOException {
 
-        if (!IsbnUtils.isValid(isbn)) {
-            throw new RTE.IsbnInvalidException(isbn);
+        if (!ISBN.isValid(isbn)) {
+            throw new ISBN.IsbnInvalidException(isbn);
         }
 
         // Setup API call

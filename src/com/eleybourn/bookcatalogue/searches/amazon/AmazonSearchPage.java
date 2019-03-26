@@ -16,7 +16,7 @@ import com.amazon.device.associates.AssociatesAPI;
 import com.amazon.device.associates.LinkService;
 import com.amazon.device.associates.NotInitializedException;
 import com.amazon.device.associates.OpenSearchPageRequest;
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -85,7 +85,7 @@ public final class AmazonSearchPage {
             // Init Amazon API
             AssociatesAPI.initialize(
                     new AssociatesAPI.Config(
-                            BookCatalogueApp.getManifestString(AMAZON_KEY), context));
+                            App.getManifestString(AMAZON_KEY), context));
 
             LinkService linkService = AssociatesAPI.getLinkService();
             try {
@@ -137,7 +137,7 @@ public final class AmazonSearchPage {
 
     @NonNull
     private static String cleanupSearchString(@Nullable final String search) {
-        if (search == null) {
+        if (search == null || search.isEmpty()) {
             return "";
         }
 

@@ -22,10 +22,10 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 
 abstract class CropMonitoredActivity
         extends BaseActivity {

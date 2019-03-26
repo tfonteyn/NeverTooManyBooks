@@ -7,13 +7,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import org.xml.sax.SAXException;
 
@@ -43,9 +43,10 @@ import javax.xml.parsers.SAXParserFactory;
 public final class AmazonManager
         implements SearchSites.SearchSiteManager {
 
-    private static final String TAG = "Amazon.";
+    /** Preferences prefix. */
+    private static final String PREF_PREFIX = "Amazon.";
 
-    private static final String PREFS_HOST_URL = TAG + "hostUrl";
+    private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
 
     /**
      * Constructor.
@@ -56,11 +57,11 @@ public final class AmazonManager
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return Prefs.getPrefs().getString(PREFS_HOST_URL, "https://www.amazon.com");
+        return App.getPrefs().getString(PREFS_HOST_URL, "https://www.amazon.com");
     }
 
     public static void setBaseURL(@NonNull final String url) {
-        Prefs.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
+        App.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
     }
 
     @Override
@@ -109,7 +110,7 @@ public final class AmazonManager
         String url = "https://bc.theagiledirector.com/getRest_v3.php";
         if (!isbn.isEmpty()) {
             // sanity check
-            if (!IsbnUtils.isValid(isbn)) {
+            if (!ISBN.isValid(isbn)) {
                 return bookData;
             }
             url += "?isbn=" + isbn;

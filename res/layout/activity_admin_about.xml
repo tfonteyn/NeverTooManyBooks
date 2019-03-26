@@ -3,28 +3,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar" />
+        style="@style/toolbar"
+        />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/border"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -32,7 +37,8 @@
                     android:text="@string/app_name"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textStyle="bold"
-                    tools:text="NeverToManyBooks" />
+                    tools:text="NeverToManyBooks"
+                    />
 
                 <TextView
                     android:id="@+id/version"
@@ -42,7 +48,8 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textIsSelectable="true"
                     android:textStyle="bold"
-                    tools:text="6.0.0" />
+                    tools:text="6.0.0"
+                    />
             </LinearLayout>
 
             <TextView
@@ -50,87 +57,101 @@
                 style="@style/link_url"
                 android:layout_gravity="center_horizontal"
                 tools:ignore="SelectableText"
-                tools:text="website url" />
+                tools:text="website url"
+                />
 
             <TextView
                 android:id="@+id/sourcecode"
                 style="@style/link_url"
                 android:layout_gravity="center_horizontal"
                 tools:ignore="SelectableText"
-                tools:text="sourcecode url" />
+                tools:text="sourcecode url"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/border"
                 android:text="@string/about_lbl_contacts"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
 
             <TextView
                 android:id="@+id/contact1"
                 style="@style/link_url"
                 android:layout_marginStart="@dimen/border_triple"
-                android:text="@string/email_contact1" />
+                android:text="@string/email_contact1"
+                />
 
             <TextView
                 android:id="@+id/contact2"
                 style="@style/link_url"
                 android:layout_marginStart="@dimen/border_triple"
-                android:text="@string/email_contact2" />
+                android:text="@string/email_contact2"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/border"
                 android:text="@string/about_lbl_special_thanks"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
 
             <TextView
                 style="@style/txt_blurb_small"
-                android:text="@string/about_translators" />
+                android:text="@string/about_translators"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/border"
                 android:text="@string/about_lbl_donate"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
 
             <TextView
                 style="@style/txt_blurb_small"
-                android:text="@string/about_donate" />
+                android:text="@string/about_donate"
+                />
 
             <TextView
                 android:id="@+id/amazon_url"
                 style="@style/link_url"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/about_donate_amazon" />
+                android:text="@string/about_donate_amazon"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/about_dash_or_dash"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
 
             <TextView
                 android:id="@+id/donate_url"
                 style="@style/link_url"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/about_donate_paypal" />
+                android:text="@string/about_donate_paypal"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/border"
                 android:text="@string/amazon"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
 
             <TextView
                 android:id="@+id/amazon_links_info"
                 style="@style/txt_blurb_small"
                 tools:ignore="SelectableText"
-                tools:text="@string/hint_amazon_links_blurb" />
+                tools:text="@string/hint_amazon_links_blurb"
+                />
         </LinearLayout>
 
     </ScrollView>

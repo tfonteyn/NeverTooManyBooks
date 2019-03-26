@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
@@ -106,9 +105,11 @@ public class ImportAllTask
     /**
      * Constructor.
      */
-    ImportAllTask(final boolean isSync) {
+    ImportAllTask(@NonNull final Context context,
+                  final boolean isSync) {
 
-        super(BookCatalogueApp.getResString(R.string.gr_import_all_from_goodreads));
+        super(context.getString(R.string.gr_import_all_from_goodreads));
+
         mPosition = 0;
         mIsSync = isSync;
         // If it's a sync job, then find date of last successful sync and only apply
@@ -141,7 +142,7 @@ public class ImportAllTask
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
                 GoodreadsManager.setLastSyncDate(mStartDate);
-                QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(true),
+                QueueManager.getQueueManager().enqueueTask(new SendAllBooksTask(context, true),
                                                            QueueManager.Q_MAIN);
             }
             return ok;
@@ -675,16 +676,17 @@ public class ImportAllTask
 
     /**
      * Make a more informative description.
+     *
+     * @param context caller context
      */
     @Override
     @NonNull
     @CallSuper
-    public String getDescription() {
+    public String getDescription(@NonNull final Context context) {
 
-        String base = super.getDescription();
+        String base = super.getDescription(context);
         if (mUpdatesAfter == null) {
-            return base + " (" + BookCatalogueApp.getResString(R.string.x_of_y,
-                                                               mPosition, mTotalBooks) + ')';
+            return base + " (" + context.getString(R.string.x_of_y, mPosition, mTotalBooks) + ')';
         } else {
             return base + " (" + mPosition + ')';
         }

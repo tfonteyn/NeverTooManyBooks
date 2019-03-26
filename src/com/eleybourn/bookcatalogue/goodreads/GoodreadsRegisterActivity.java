@@ -97,7 +97,7 @@ public class GoodreadsRegisterActivity
     }
 
     @Override
-    public void onTaskFinished(final Integer taskId,
+    public void onTaskFinished(final int taskId,
                                final boolean success,
                                final Object result) {
         UserMessage.showUserMessage(this, (Integer) result);

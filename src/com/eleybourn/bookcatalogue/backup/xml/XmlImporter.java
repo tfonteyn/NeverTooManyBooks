@@ -1,38 +1,12 @@
 package com.eleybourn.bookcatalogue.backup.xml;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.backup.ExportSettings;
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
-import com.eleybourn.bookcatalogue.backup.Importer;
-import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
-import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity;
-import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
-import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
-import com.eleybourn.bookcatalogue.booklist.prefs.PCollection;
-import com.eleybourn.bookcatalogue.booklist.prefs.PInt;
-import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
-import com.eleybourn.bookcatalogue.booklist.prefs.PString;
-import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.RTE;
-import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
-import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -50,6 +24,32 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.backup.ImportSettings;
+import com.eleybourn.bookcatalogue.backup.Importer;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
+import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity;
+import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
+import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
+import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
+import com.eleybourn.bookcatalogue.booklist.prefs.PCollection;
+import com.eleybourn.bookcatalogue.booklist.prefs.PInt;
+import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
+import com.eleybourn.bookcatalogue.booklist.prefs.PString;
+import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
+import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
+import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
+import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
+
 /**
  * For now, only INFO, Preferences and Styles are implemented.
  */
@@ -60,6 +60,8 @@ public class XmlImporter
             "Unable to process XML entity ";
 
     @NonNull
+    private final Context mContext;
+    @NonNull
     private final DBA mDb;
     @NonNull
     private final ImportSettings mSettings;
@@ -67,8 +69,9 @@ public class XmlImporter
     /**
      * Constructor.
      */
-    public XmlImporter() {
-        mDb = new DBA(BookCatalogueApp.getAppContext());
+    public XmlImporter(@NonNull final Context context) {
+        mContext = context;
+        mDb = new DBA(mContext);
         mSettings = new ImportSettings();
         mSettings.what = ExportSettings.ALL;
     }
@@ -79,8 +82,10 @@ public class XmlImporter
      * @param settings the import settings
      */
     @SuppressWarnings("unused")
-    public XmlImporter(@NonNull final ImportSettings settings) {
-        mDb = new DBA(BookCatalogueApp.getAppContext());
+    public XmlImporter(@NonNull final Context context,
+                       @NonNull final ImportSettings settings) {
+        mContext = context;
+        mDb = new DBA(mContext);
         settings.validate();
         mSettings = settings;
     }
@@ -190,11 +195,11 @@ public class XmlImporter
                          String version = attrs.getValue(XmlUtils.ATTR_VERSION);
                          String id = attrs.getValue(XmlUtils.ATTR_ID);
                          String name = attrs.getValue(XmlUtils.ATTR_NAME);
-                         if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
+                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                              Logger.info(this, "fromXml",
-                                         "StartAction|NEW-ELEMENT" +
-                                     "|localName=`" + context.getLocalName() + '`' +
-                                     "|tag.name=`" + name + '`');
+                                         "StartAction|NEW-ELEMENT",
+                                         "localName=`" + context.getLocalName() + '`',
+                                         "tag.name=`" + name + '`');
                          }
                          accessor.startElement(
                                  version == null ? 0 : Integer.parseInt(version),
@@ -215,11 +220,12 @@ public class XmlImporter
                 tag.type = context.getLocalName();
                 tag.name = context.getAttributes().getValue(XmlUtils.ATTR_NAME);
                 tag.value = context.getAttributes().getValue(XmlUtils.ATTR_VALUE);
-                if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
-                    Logger.info(this, "fromXml","StartAction" +
-                            "|localName=`" + context.getLocalName() + '`' +
-                            "|tag.name=`" + tag.name + '`' +
-                            "|tag.value=`" + tag.value + '`');
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
+                    Logger.info(this, "fromXml",
+                                "StartAction",
+                                "localName=`" + context.getLocalName() + '`',
+                                "tag.name=`" + tag.name + '`',
+                                "tag.value=`" + tag.value + '`');
                 }
                 // if we have a value attribute, this tag is done. Handle those here.
                 if (tag.value != null) {
@@ -251,10 +257,11 @@ public class XmlImporter
         XmlFilter.XmlHandler endTypedTag = new XmlFilter.XmlHandler() {
             @Override
             public void process(@NonNull final ElementContext context) {
-                if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
-                    Logger.info(this, "fromXml","EndAction" +
-                            "|localName=`" + context.getLocalName() + '`' +
-                            "|tag.name=`" + tag.name + '`');
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
+                    Logger.info(this, "fromXml",
+                                "EndAction",
+                                "localName=`" + context.getLocalName() + '`',
+                                "tag.name=`" + tag.name + '`');
                 }
                 // tags with a value attribute were handled in the startElement call.
                 if (tag.value != null) {
@@ -382,22 +389,22 @@ public class XmlImporter
 
                          tag.name = context.getAttributes().getValue("name");
                          tag.type = context.getAttributes().getValue("type");
-                         if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
+                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                              Logger.info(this, "createPreV200Filter",
-                                         "StartAction" +
-                                     "|localName=`" + context.getLocalName() + '`' +
-                                     "|tag.name=`" + tag.name + '`');
+                                         "StartAction",
+                                         "localName=`" + context.getLocalName() + '`',
+                                         "tag.name=`" + tag.name + '`');
                          }
                      }
                  }, null)
                  .setEndAction(new XmlFilter.XmlHandler() {
                      @Override
                      public void process(@NonNull final ElementContext context) {
-                         if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
+                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                              Logger.info(this, "createPreV200Filter",
-                                         "EndAction" +
-                                     "|localName=`" + context.getLocalName() + '`' +
-                                     "|tag.name=`" + tag.name + '`');
+                                         "EndAction",
+                                         "localName=`" + context.getLocalName() + '`',
+                                         "tag.name=`" + tag.name + '`');
                          }
                          try {
                              String body = context.getBody();
@@ -426,7 +433,7 @@ public class XmlImporter
                                      break;
 
                                  default:
-                                     throw new RTE.IllegalTypeException(tag.type);
+                                     throw new IllegalTypeException(tag.type);
                              }
 
                          } catch (NumberFormatException e) {
@@ -615,7 +622,7 @@ public class XmlImporter
         @Override
         public void putStringSet(@NonNull final String key,
                                  @NonNull final Set<String> value) {
-            throw new RTE.IllegalTypeException("Collection<String>");
+            throw new IllegalTypeException("Collection<String>");
         }
 
         @Override
@@ -703,13 +710,13 @@ public class XmlImporter
         @Override
         public void putDouble(@NonNull final String key,
                               final double value) {
-            throw new RTE.IllegalTypeException(XmlUtils.XML_DOUBLE);
+            throw new IllegalTypeException(XmlUtils.XML_DOUBLE);
         }
 
         @Override
         public void putSerializable(@NonNull final String key,
                                     @NonNull final Serializable value) {
-            throw new RTE.IllegalTypeException(XmlUtils.XML_SERIALIZABLE);
+            throw new IllegalTypeException(XmlUtils.XML_SERIALIZABLE);
         }
     }
 
@@ -836,25 +843,25 @@ public class XmlImporter
         @Override
         public void putLong(@NonNull final String key,
                             final long value) {
-            throw new RTE.IllegalTypeException(XmlUtils.XML_LONG);
+            throw new IllegalTypeException(XmlUtils.XML_LONG);
         }
 
         @Override
         public void putFloat(@NonNull final String key,
                              final float value) {
-            throw new RTE.IllegalTypeException(XmlUtils.XML_FLOAT);
+            throw new IllegalTypeException(XmlUtils.XML_FLOAT);
         }
 
         @Override
         public void putDouble(@NonNull final String key,
                               final double value) {
-            throw new RTE.IllegalTypeException(XmlUtils.XML_DOUBLE);
+            throw new IllegalTypeException(XmlUtils.XML_DOUBLE);
         }
 
         @Override
         public void putSerializable(@NonNull final String key,
                                     @NonNull final Serializable value) {
-            throw new RTE.IllegalTypeException(XmlUtils.XML_SERIALIZABLE);
+            throw new IllegalTypeException(XmlUtils.XML_SERIALIZABLE);
         }
     }
 

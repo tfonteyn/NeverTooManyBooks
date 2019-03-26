@@ -21,13 +21,13 @@ package com.eleybourn.bookcatalogue.backup.archivebase;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 
 /**
  * Interface provided by every entity read from a backup file.

@@ -23,16 +23,16 @@ package com.eleybourn.bookcatalogue.database;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
-import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Manages the construction and closure of persisted SQLiteStatement objects.
@@ -80,7 +80,7 @@ public class SqlStatementManager
      * If already present, will close the old one and replace it with the new one.
      *
      * @param name of the statement
-     * @param sql of the statement
+     * @param sql  of the statement
      *
      * @return the statement
      */
@@ -97,7 +97,7 @@ public class SqlStatementManager
      * If already present, will close the old one and replace it with the new one.
      *
      * @param name of the statement
-     * @param sql of the statement
+     * @param sql  of the statement
      *
      * @return the statement
      */
@@ -138,7 +138,7 @@ public class SqlStatementManager
     protected void finalize()
             throws Throwable {
         if (!mStatements.isEmpty()) {
-            Logger.info(this,"finalize","closing statements.");
+            Logger.info(this, "finalize", "closing statements.");
             close();
         }
         super.finalize();

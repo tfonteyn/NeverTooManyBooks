@@ -298,10 +298,10 @@ class SearchGoogleBooksEntryHandler
                 break;
 
             default:
-                if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                     // see what we are missing.
                     Logger.info(this, "endElement",
-                                "Skipping: " + localName + "->'" + mBuilder + '\'');
+                                "Skipping: " + localName + "->`" + mBuilder + '`');
                 }
 
         }

@@ -41,7 +41,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * This is the About page.
- * It contains details about the app, links to my [original authors] website and email.
+ * It contains details about the app, links to [original authors] website and email.
  * <p>
  * URL's are hardcoded and should not be changed.
  *
@@ -63,7 +63,7 @@ public class About
 
         // Version Number
         TextView view = findViewById(R.id.version);
-        PackageInfo packageInfo = BookCatalogueApp.getPackageInfo(0);
+        PackageInfo packageInfo = App.getPackageInfo(0);
         if (packageInfo != null) {
             view.setText(packageInfo.versionName);
         }

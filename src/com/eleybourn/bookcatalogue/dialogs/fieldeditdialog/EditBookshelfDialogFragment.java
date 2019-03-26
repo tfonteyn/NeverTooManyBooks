@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
@@ -49,6 +50,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class EditBookshelfDialogFragment
         extends DialogFragment {
 
+    /** Fragment manager tag. */
     public static final String TAG = EditBookshelfDialogFragment.class.getSimpleName();
 
     private static final String BKEY_BOOKSHELF = "bs";
@@ -94,7 +96,7 @@ public class EditBookshelfDialogFragment
             public void onClick(@NonNull final View v) {
                 mName = mNameView.getText().toString().trim();
                 if (mName.isEmpty()) {
-                    UserMessage.showUserMessage(mActivity, R.string.warning_required_name);
+                    UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
                     return;
                 }
 
@@ -103,10 +105,11 @@ public class EditBookshelfDialogFragment
 
                 // are we adding a new Bookshelf but trying to use an existing name?
                 if ((mBookshelf.getId() == 0) && (existingShelf != null)) {
-                    UserMessage.showUserMessage(
-                            mActivity,
-                            mActivity.getString(R.string.warning_thing_already_exists,
-                                                mActivity.getString(R.string.lbl_bookshelf)));
+                    Context c = getContext();
+                    //noinspection ConstantConditions
+                    String msg = c.getString(R.string.warning_thing_already_exists,
+                                             c.getString(R.string.lbl_bookshelf));
+                    UserMessage.showUserMessage(mNameView, msg);
                     return;
                 }
 

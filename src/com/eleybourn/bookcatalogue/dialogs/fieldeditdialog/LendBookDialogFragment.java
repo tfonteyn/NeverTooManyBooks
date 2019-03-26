@@ -137,7 +137,7 @@ public class LendBookDialogFragment
             public void onClick(@NonNull final View v) {
                 String newName = mLoaneeView.getText().toString().trim();
                 if (newName.isEmpty()) {
-                    UserMessage.showUserMessage(mActivity, R.string.warning_required_name);
+                    UserMessage.showUserMessage(mLoaneeView, R.string.warning_required_name);
                     return;
                 }
 

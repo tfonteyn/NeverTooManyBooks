@@ -6,7 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border_double">
+    android:layout_margin="@dimen/border_double"
+    >
 
     <CheckBox
         android:id="@+id/is_anthology"
@@ -15,7 +16,8 @@
         android:text="@string/lbl_is_anthology"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <CheckBox
         android:id="@+id/same_author"
@@ -35,7 +37,8 @@
         android:hint="@string/lbl_author"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/same_author" />
+        app:layout_constraintTop_toBottomOf="@id/same_author"
+        />
 
     <EditText
         android:id="@+id/title"
@@ -46,7 +49,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
-        tools:ignore="Autofill" />
+        tools:ignore="Autofill"
+        />
 
     <EditText
         android:id="@+id/first_publication"
@@ -58,7 +62,8 @@
         app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
-        tools:ignore="Autofill" />
+        tools:ignore="Autofill"
+        />
 
     <Button
         android:id="@+id/btn_add"
@@ -67,7 +72,8 @@
         android:text="@string/btn_confirm_add"
         app:layout_constraintBaseline_toBaselineOf="@id/first_publication"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/first_publication" />
+        app:layout_constraintStart_toEndOf="@id/first_publication"
+        />
 
     <com.eleybourn.bookcatalogue.widgets.TouchListView
         android:id="@android:id/list"
@@ -76,6 +82,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_add"
-        tlv:grabber="@id/TLV_ROW_GRABBER" />
+        tlv:grabber="@id/TLV_ROW_GRABBER"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

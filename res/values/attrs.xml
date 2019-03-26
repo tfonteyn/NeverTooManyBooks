@@ -29,22 +29,14 @@
         <attr name="android:galleryItemBackground" />
     </declare-styleable>
 
-    <!-- logo for Goodreads -->
-    <attr name="ic_goodreads" format="reference" />
-
-    <!-- all vector xml files should use this for their color -->
+    <!-- all vector xml files should use this for their color. -->
     <attr name="fillColorVectorIcons" format="reference|color" />
-    <!-- the check mark for 'read' etc should standout -->
+    <!-- the check mark for 'read' etc should standout. -->
     <attr name="ic_check_fillColor" format="reference|color" />
-    <!-- the lock icon for 'complete' etc should standout -->
+    <!-- the lock icon for 'complete' etc should standout. -->
     <attr name="ic_lock_fillColor" format="reference|color" />
 
-    <!-- drawable border.xml uses this color -->
+    <!-- drawable border.xml uses this color. -->
     <attr name="color_border" format="reference|color" />
-
-    <attr name="color_background_nav_header" format="reference|color" />
-    <attr name="color_background_nav_panel" format="reference|color" />
-    <attr name="color_background_thumbnail" format="reference|color" />
-    <attr name="color_background_toolbar" format="reference|color" />
 
 </resources>

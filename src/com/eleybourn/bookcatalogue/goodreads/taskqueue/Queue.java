@@ -23,10 +23,10 @@ package com.eleybourn.bookcatalogue.goodreads.taskqueue;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.ref.WeakReference;
+
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDBAdapter.ScheduledTask;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Represents a thread that runs tasks from a related named queue.

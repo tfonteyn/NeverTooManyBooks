@@ -4,11 +4,11 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import java.util.Set;
 
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Used for {@link androidx.preference.MultiSelectListPreference}
@@ -28,10 +28,10 @@ public class PBitmask
      * @param uuid         the style id
      * @param defaultValue default to use if there is no global default
      */
-    public PBitmask(@StringRes final int key,
+    public PBitmask(@NonNull final String key,
                     @NonNull final String uuid,
                     final int defaultValue) {
-        super(key, uuid, Prefs.getMultiSelectListPreference(key, defaultValue));
+        super(key, uuid, App.getMultiSelectListPreference(key, defaultValue));
     }
 
     /**
@@ -42,10 +42,10 @@ public class PBitmask
         if (mUuid.isEmpty()) {
             mNonPersistedValue = value;
         } else if (value == null) {
-            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
+            App.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
-            Prefs.getPrefs(mUuid).edit()
-                 .putStringSet(getKey(), Prefs.toStringSet(value)).apply();
+            App.getPrefs(mUuid).edit()
+               .putStringSet(getKey(), Utils.toStringSet(value)).apply();
         }
     }
 
@@ -56,7 +56,7 @@ public class PBitmask
     public void set(@NonNull final SharedPreferences.Editor ed,
                     @Nullable final Integer value) {
         if (value != null) {
-            ed.putStringSet(getKey(), Prefs.toStringSet(value));
+            ed.putStringSet(getKey(), Utils.toStringSet(value));
         } else {
             ed.remove(getKey());
         }
@@ -71,11 +71,11 @@ public class PBitmask
         if (mUuid.isEmpty()) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            Set<String> sValue = Prefs.getPrefs(mUuid).getStringSet(getKey(), null);
+            Set<String> sValue = App.getPrefs(mUuid).getStringSet(getKey(), null);
             if (sValue == null || sValue.isEmpty()) {
                 return mDefaultValue;
             }
-            return Prefs.toInteger(sValue);
+            return Utils.toInteger(sValue);
         }
     }
 
@@ -83,7 +83,7 @@ public class PBitmask
     @NonNull
     public String toString() {
         return "PBitmask{" + super.toString()
-                + ",value=`" + Prefs.toStringSet(get()) + '`'
+                + ",value=`" + Utils.toStringSet(get()) + '`'
                 + '}';
     }
 }

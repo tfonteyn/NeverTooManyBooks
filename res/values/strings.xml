@@ -17,10 +17,6 @@ TODO: uniform quotes in all string:
 Check 's' versus 'd'
 -->
 <resources>
-    <!-- Regular expression !! - TODO: make this user controlled ? -->
-    <string name="series_number_prefixes" translatable="false">
-        (#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)
-    </string>
 
     <!-- ####################################################################################### -->
     <!-- == order formatters (mainly for RTL which we don't support yet) == -->
@@ -579,7 +575,9 @@ Check 's' versus 'd'
         Tapping on a book will show you the details of the book.
         A long-press on an item in the list will give you more options.
     </string>
-    <!-- A hint describing the benefit of following the Amazon links -->
+    <!-- A hint describing the benefit of following the Amazon links
+        Arguments 1-3 are menu names; allows us to change the names without the need to redo
+        this string. Argument 4 == &APP_NAME; but this is a CDATA block, so done from code.  -->
     <string name="hint_amazon_links_blurb"><![CDATA[
         <p>If you buy things from Amazon after selecting the <i>“%1$s”</i>, <i>“%2$s”</i>
         or <i>“%3$s”</i> menu items, a proportion of the purchase price will be sent to the
@@ -597,9 +595,7 @@ Check 's' versus 'd'
     <string name="no">No</string>
     <string name="help">Help</string>
     <string name="edit">Edit</string>
-
     <string name="unknown">Unknown</string>
-    <string name="unknown_uc">UNKNOWN</string>
 
     <!-- 'try again' -->
     <string name="retry">Retry</string>
@@ -620,11 +616,11 @@ Check 's' versus 'd'
     <!-- == Size measurements; for now only file-sizes.  == -->
     <!-- ####################################################################################### -->
 
-    <!-- e.g. "size of a file" -->
+    <!-- e.g. "size of a file" MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->
     <string name="size">Size</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
-    <string name="bytes">%.0f bytes</string>
+    <string name="bytes">%.0fB</string>
 
     <!-- ####################################################################################### -->
     <!-- == Menu strings. If a 'dialog_title' is identical, we use the menu string as title == -->
@@ -800,7 +796,7 @@ Check 's' versus 'd'
     <string name="lbl_by_author">by</string>
     <string name="lbl_family_name">Family Name</string>
     <string name="lbl_given_names">Given Names</string>
-    <string name="lbl_publishing">Publishing</string>
+    <string name="lbl_publication">Publication</string>
     <string name="lbl_publisher">Publisher</string>
     <string name="lbl_date_published">Date Published</string>
     <string name="lbl_book">Book</string>
@@ -864,9 +860,11 @@ Check 's' versus 'd'
     <string name="lbl_field_usage_add_extra">Appends extra data</string>
     <string name="lbl_field_usage_overwrite">Overwrites existing data</string>
 
-    <!-- heading/titles for preference screens -->
-    <string name="lbl_preferences">Preferences</string>
+    <!-- heading/titles for settings/preference screens -->
+    <string name="lbl_settings">Settings</string>
     <string name="lbl_preferred_styles">Preferred styles</string>
+    <string name="lbl_search_sites">Search Sites</string>
+    <string name="lbl_search_site_order">Search Order</string>
 
     <!-- grouping headings in book lists -->
     <string name="lbl_read">Read</string>
@@ -964,10 +962,6 @@ Check 's' versus 'd'
     <!-- Heading of the 'Loan' tab when editing a book. "Loan Book" is too long. -->
     <string name="tab_lbl_loan">Loan</string>
 
-    <string name="tab_lbl_search_sites">Search Sites</string>
-    <string name="tab_lbl_search_site_order">Order</string>
-    <string name="tab_lbl_search_site_cover_order">Cover Search Order</string>
-
     <!-- ####################################################################################### -->
     <!-- == About, Help, Thank you ... etc... == -->
     <!-- ####################################################################################### -->
@@ -1020,12 +1014,6 @@ Check 's' versus 'd'
     <string name="lbl_lend_to">Lend book to:</string>
     <!-- a one line label, with the name of the person appended -->
     <string name="lbl_loaned_to_name">On Loan to %1$s</string>
-
-    <!-- Shown in lists. Whether a book is available to be loaned out. Should be short -->
-    <string name="loan_book_available">Available</string>
-    <!-- Shown in lists. Whether a book is loaned to someone.
-    This is a little arrow pointing to the name of the person who has the book -->
-    <string name="lbl_loaned_to_short">→</string>
 
     <!-- ####################################################################################### -->
     <!-- === Import/Export specific strings == -->
@@ -1127,6 +1115,15 @@ Check 's' versus 'd'
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
     <!-- ####################################################################################### -->
     <string name="error_no_style_found">Could not find appropriate style</string>
+    <string name="error_starting_import_arg">There was a problem starting the import: %1$s</string>
+    <string name="error_download_thumbnail_failed">
+        Thumbnail Download Failed - Could not write to SDCard
+    </string>
+    <string name="error_storage_cannot_write">Could not write to the SD Card</string>
+    <string name="error_file_must_contain_column">File must contain column named “%1$s”</string>
+
+    <string name="warning_required_series">Series field is blank</string>
+    <string name="warning_required_author">Author field is blank</string>
     <string name="warning_cannot_edit_system">You cannot edit the system values</string>
     <string name="warning_cover_not_found2">No image found</string>
     <string name="warning_title_already_exists">The title already exists</string>
@@ -1136,6 +1133,7 @@ Check 's' versus 'd'
     <string name="warning_no_isbn_no_editions">
         Can not get editions for a book without a valid ISBN
     </string>
+
     <string name="info_option_not_available_until_book_saved">
         This option is not available until the book is saved
     </string>
@@ -1143,19 +1141,38 @@ Check 's' versus 'd'
         You have not created any bookshelves yet.
         Please add some using the menu at the bottom of this screen.
     </string>
-    <string name="error_storage_cannot_write">Could not write to the SD Card</string>
+
     <string name="menu_add_style">Add style</string>
     <string name="menu_edit_format">Edit Format…</string>
     <string name="menu_cover_options">Cover Options…</string>
     <string name="menu_search_books">Search Books</string>
     <string name="menu_preferences_booklist">Book List Preferences</string>
     <string name="menu_preferences_other">Other Preferences</string>
+    <string name="menu_sort_by">Sort By</string>
+    <string name="menu_admin_and_prefs">Admin and Preferences</string>
+
+    <string name="title_search_sites">Local websites.</string>
     <string name="title_add_style">New style</string>
     <string name="title_cover_detail">Cover Detail</string>
+    <string name="title_export_books">
+        The books in your catalogue will be exported. Select on one of two options to start
+        the export, or press “back” to cancel:</string>
+    <string name="title_import_books_blurb">
+        The books in this archive will be imported. Select one of two options to start the
+        import, or press “back” to cancel:
+    </string>
+
     <string name="btn_confirm_add_bs">Add Bookshelf</string>
     <string name="btn_confirm_save_bs">Save Bookshelf</string>
-    <string name="tab_info_search_sites">Local websites.</string>
+    <string name="btn_do_not_show_again">Do not show again</string>
+
+    <!-- Shown in lists. Whether a book is available to be loaned out. Should be short -->
+    <string name="lbl_loan_book_available">Available</string>
+    <!-- Shown in lists. Whether a book is loaned to someone.
+    This is a little arrow pointing to the name of the person who has the book -->
+    <string name="lbl_loaned_to_short">→</string>
     <string name="lbl_loaned_to_long">This book has been lend to:</string>
+
     <string name="import_export_info_book_details">The details of the books themselves</string>
     <string name="import_export_info_preferences">Preferences and user-defined list styles</string>
     <string name="export_info_cover_images">
@@ -1165,17 +1182,8 @@ Check 's' versus 'd'
         Import of data failed. Is the file in the correct place?
     </string>
     <string name="export_error_csv_failed">Export failed - could not write to SD card</string>
-    <string name="warning_required_series">Series field is blank</string>
-    <string name="warning_required_author">Author field is blank</string>
-    <string name="error_starting_import_arg">There was a problem starting the import: %1$s</string>
-    <string name="error_download_thumbnail_failed">
-        Thumbnail Download Failed - Could not write to SDCard
-    </string>
-    <string name="error_file_must_contain_column">File must contain column named “%1$s”</string>
     <string name="gr_search_goodreads">Search Goodreads</string>
-    <string name="menu_sort_by">Sort By</string>
-    <string name="menu_admin_and_prefs">Admin and Preferences</string>
-    <string name="btn_do_not_show_again">Do not show again</string>
+
     <string name="anthology_titles">Anthology Titles</string>
     <string name="booklist_background_style">Book list background style</string>
     <string name="textured_background">Textured background image</string>
@@ -1188,17 +1196,10 @@ Check 's' versus 'd'
     <string name="loan_return_edit_book">Loan, Return or Edit Book</string>
     <string name="search_title">Search Results</string>
     <string name="about_lbl_version_number">Version Number:</string>
-    <string name="pt_ui_system_locale">System Locale</string>
     <string name="unrecognized_task">Unrecognized Task</string>
     <string name="events_found">%1$d events found</string>
     <string name="pt_bob_filter_read">Select based on “Read” status</string>
-    <string name="title_export_books">
-        The books in your catalogue will be exported. Select on one of two options to start
-        the export, or press “back” to cancel:</string>
-    <string name="title_import_books_blurb">
-        The books in this archive will be imported. Select one of two options to start the
-        import, or press “back” to cancel:
-    </string>
+
     <string name="hint_startup_screen">
         This is the standard &APP_NAME; startup screen. If you prefer, you can startup directly
         in “My Books”; the preferred startup screen can be changed in preferences.
@@ -1265,6 +1266,8 @@ Check 's' versus 'd'
 
     <string name="books_found">%1$d books found</string>
     <string name="searching_openlibrary">Searching OpenLibrary</string>
-    <string name="error_database_upgrade_failed">Cannot upgrade from a version older than 4.0.0</string>
+    <string name="error_database_upgrade_failed">
+        Cannot upgrade from a version older than 4.0.0
+    </string>
 
 </resources>

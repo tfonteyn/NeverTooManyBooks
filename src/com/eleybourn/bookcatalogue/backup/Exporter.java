@@ -34,7 +34,7 @@ public interface Exporter {
     /**
      * Entry point for a generic/total export.
      * Implementations can call partial export methods at will.
-     *
+     * <p>
      * Export to an OutputStream.
      *
      * @param outputStream Stream for writing data

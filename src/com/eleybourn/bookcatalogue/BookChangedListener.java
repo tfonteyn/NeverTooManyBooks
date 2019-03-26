@@ -24,7 +24,8 @@ public interface BookChangedListener {
     /** the book was either lend out, or returned. */
     int BOOK_LOANEE = 1 << 8;
 
-    /** not really a field, but we want to be able to return the deleted bookId AND indicate
+    /**
+     * not really a field, but we want to be able to return the deleted bookId AND indicate
      * it was deleted.
      */
     int BOOK_WAS_DELETED = 1 << 9;

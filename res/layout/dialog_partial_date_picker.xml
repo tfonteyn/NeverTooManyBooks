@@ -2,33 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/dialogFrame"
-    android:layout_gravity="center_horizontal">
+    android:layout_gravity="center_horizontal"
+    >
 
     <LinearLayout
         android:id="@+id/dateSelector"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        >
 
         <!-- the order of the 3 columns will be changed dynamically depending on the Locale -->
         <LinearLayout
             android:id="@+id/yearSelector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <TextView
                 android:id="@+id/lbl_year"
                 style="@style/lbl_textField"
-                android:text="@string/lbl_year" />
+                android:text="@string/lbl_year"
+                />
 
             <Button
                 android:id="@+id/plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+"
-                tools:ignore="HardcodedText" />
+                tools:ignore="HardcodedText"
+                />
 
             <EditText
                 android:id="@+id/year"
@@ -37,14 +42,16 @@
                 android:ems="4"
                 android:hint="@string/lbl_year"
                 android:inputType="number"
-                tools:ignore="Autofill,LabelFor" />
+                tools:ignore="Autofill,LabelFor"
+                />
 
             <Button
                 android:id="@+id/minus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                tools:ignore="HardcodedText" />
+                tools:ignore="HardcodedText"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -52,64 +59,74 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="fill_vertical|fill"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <TextView
                 android:id="@+id/lbl_month"
                 style="@style/lbl_textField"
-                android:text="@string/lbl_month" />
+                android:text="@string/lbl_month"
+                />
 
             <Button
                 android:id="@+id/plusMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+"
-                tools:ignore="HardcodedText" />
+                tools:ignore="HardcodedText"
+                />
 
             <Spinner
                 android:id="@+id/month"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                />
 
             <Button
                 android:id="@+id/minusMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                tools:ignore="HardcodedText" />
+                tools:ignore="HardcodedText"
+                />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/daySelector"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <TextView
                 android:id="@+id/lbl_day"
                 style="@style/lbl_textField"
-                android:text="@string/lbl_day" />
+                android:text="@string/lbl_day"
+                />
 
             <Button
                 android:id="@+id/plusDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+"
-                tools:ignore="HardcodedText" />
+                tools:ignore="HardcodedText"
+                />
 
             <Spinner
                 android:id="@+id/day"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                />
 
             <Button
                 android:id="@+id/minusDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                tools:ignore="HardcodedText" />
+                tools:ignore="HardcodedText"
+                />
         </LinearLayout>
     </LinearLayout>
 
@@ -117,5 +134,6 @@
         android:id="@+id/buttonbar_cancel_ok"
         layout="@layout/inc_buttonbar_cancel_ok"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        />
 </LinearLayout>

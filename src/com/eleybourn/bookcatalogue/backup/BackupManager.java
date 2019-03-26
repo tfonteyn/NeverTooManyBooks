@@ -19,16 +19,18 @@
  */
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
-import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
-import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
+import com.eleybourn.bookcatalogue.backup.tararchive.TarBackupContainer;
 
 /**
  * Class for public static methods relating to backup/restore.
@@ -48,14 +50,16 @@ public final class BackupManager {
     /**
      * Create a BackupReader for the specified file.
      *
-     * @param file to read from
+     * @param context caller context
+     * @param file    to read from
      *
      * @return a new reader or null when not a valid archive
      *
      * @throws IOException (inaccessible, invalid or other errors)
      */
     @Nullable
-    public static BackupReader readFrom(@NonNull final File file)
+    public static BackupReader readFrom(@NonNull final Context context,
+                                        @NonNull final File file)
             throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException("Attempt to open non-existent backup file");
@@ -65,10 +69,10 @@ public final class BackupManager {
         // explore the file to determine which format to use
         BackupContainer bkp = new TarBackupContainer(file);
         // Each format should provide a validator of some kind
-        if (!bkp.isValid()) {
+        if (!bkp.isValid(context)) {
             return null;
         }
 
-        return bkp.newReader();
+        return bkp.newReader(context);
     }
 }

@@ -142,7 +142,7 @@ public class BackupFileDetails
                 }
 
                 if (mInfo.hasPreferences()) {
-                    args.add(res.getString(R.string.lbl_preferences));
+                    args.add(res.getString(R.string.lbl_settings));
                 }
                 if (mInfo.hasBooklistStyles()) {
                     args.add(res.getString(R.string.lbl_styles));

@@ -87,7 +87,7 @@ public class XmlResponseParser
             throws SAXException {
         super.startElement(uri, localName, qName, attributes);
 
-        if (DEBUG_SWITCHES.XML && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
             Logger.info(this, "startElement", "localName=`" + localName + '`');
         }
         // Create a new context for this new tag saving the current inter-tag text for later
@@ -131,8 +131,8 @@ public class XmlResponseParser
         // Minor paranoia. Make sure name matches. Total waste of time, right?
         if (!localName.equals(tag.getLocalName())) {
             throw new IllegalStateException(
-                    "End element '" + localName + "' does not match start element"
-                            + " '" + tag.getLocalName() + '\'');
+                    "End element `" + localName + "` does not match start element"
+                            + " `" + tag.getLocalName() + '`');
         }
 
         // Save the text that appeared inside this tag (but not inside inner tags)

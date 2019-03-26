@@ -42,7 +42,7 @@ public final class NetworkUtils {
             for (Network network : connectivity.getAllNetworks()) {
                 NetworkInfo info = connectivity.getNetworkInfo(network);
                 if (info != null && info.isConnected()) {
-                    if (DEBUG_SWITCHES.NETWORK && BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                         Logger.info(NetworkUtils.class, "isNetworkAvailable",
                                     info.toString());
                     }
@@ -107,7 +107,7 @@ public final class NetworkUtils {
             Socket sock = new Socket();
             sock.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_MS);
             sock.close();
-            if (DEBUG_SWITCHES.NETWORK && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                 Logger.info(NetworkUtils.class, "isAlive",
                             "Site: " + host + ':' + port
                                     + ", took " + (System.currentTimeMillis() - t) + " ms");

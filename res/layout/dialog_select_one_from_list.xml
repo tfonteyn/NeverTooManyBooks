@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialogFrame">
+    style="@style/dialogFrame"
+    >
 
     <TextView
         android:id="@+id/message"
@@ -11,23 +12,27 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textIsSelectable="false"
         android:textStyle="bold"
-        tools:text="some message" />
+        tools:text="some message"
+        />
 
     <View
         android:id="@+id/messageBottomDivider"
-        style="@style/div_horizontal" />
+        style="@style/div_horizontal"
+        />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        >
 
         <LinearLayout
             android:id="@+id/item_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/border"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            />
     </ScrollView>
 
 </LinearLayout>

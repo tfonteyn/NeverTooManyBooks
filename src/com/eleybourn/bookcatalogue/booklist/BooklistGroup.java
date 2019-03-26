@@ -42,12 +42,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.UniqueMap;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
@@ -214,8 +215,9 @@ public class BooklistGroup
         return kind;
     }
 
-    String getName() {
-        return RowKind.get(kind).getName();
+
+    String getName(@NonNull final Context context) {
+        return RowKind.get(kind).getName(context);
     }
 
     @NonNull
@@ -258,7 +260,7 @@ public class BooklistGroup
      *
      * @param screen to add the prefs to
      */
-    public void addPreferences(@NonNull final PreferenceScreen screen) {
+    public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
     }
 
     /**
@@ -298,13 +300,6 @@ public class BooklistGroup
         mUuid = uuid;
     }
 
-    /** make it easy to display the name in generic functions. */
-    @Override
-    @NonNull
-    public String toString() {
-        return getName();
-    }
-
     /**
      * Do not rename or move this class, deserialization will break.
      * <p>
@@ -330,9 +325,7 @@ public class BooklistGroup
                 };
 
         private static final long serialVersionUID = 9023218506278704155L;
-        /** mAllSeries Parameter values and descriptions. */
-        private static final String DESCRIPTION =
-                BookCatalogueApp.getResString(R.string.lbl_series);
+
         /** Show book under each series it appears in. */
         private transient PBoolean mAllSeries;
 
@@ -366,7 +359,7 @@ public class BooklistGroup
          */
         @Override
         protected void initPrefs() {
-            mAllSeries = new PBoolean(R.string.pk_bob_books_under_multiple_series, mUuid);
+            mAllSeries = new PBoolean(Prefs.pk_bob_books_under_multiple_series, mUuid);
         }
 
         boolean showAllSeries() {
@@ -393,24 +386,24 @@ public class BooklistGroup
          * @param screen to add the prefs to
          */
         @Override
-        public void addPreferences(@NonNull final PreferenceScreen screen) {
+        public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
             Context context = screen.getContext();
             PreferenceCategory category =
                     screen.findPreference(context.getString(R.string.lbl_series));
+            String description = context.getString(R.string.lbl_series);
             if (category != null) {
                 category.setVisible(true);
 
                 SwitchPreference pShowAll = new SwitchPreference(context);
                 pShowAll.setTitle(R.string.pt_bob_books_under_multiple_series);
                 pShowAll.setIcon(R.drawable.ic_functions);
-                pShowAll.setKey(context.getString(R.string.pk_bob_books_under_multiple_series));
+                pShowAll.setKey(Prefs.pk_bob_books_under_multiple_series);
                 pShowAll.setDefaultValue(false);
 
                 pShowAll.setSummaryOn(context.getString(
-                        R.string.pv_bob_books_under_multiple_each_1s, DESCRIPTION));
+                        R.string.pv_bob_books_under_multiple_each_1s, description));
                 pShowAll.setSummaryOff(context.getString(
-                        R.string.pv_bob_books_under_multiple_primary_1s_only,
-                        DESCRIPTION));
+                        R.string.pv_bob_books_under_multiple_primary_1s_only, description));
                 //pAllSeries.setHint(R.string.hint_series_book_may_appear_more_than_once);
                 category.addPreference(pShowAll);
             }
@@ -477,8 +470,6 @@ public class BooklistGroup
                     }
                 };
         private static final long serialVersionUID = -1984868877792780113L;
-        private static final String DESCRIPTION = BookCatalogueApp.getResString(
-                R.string.lbl_author);
         /** Support for 'Show All Authors of Book' property. */
         private transient PBoolean mAllAuthors;
         /** Support for 'Show Given Name First' property. */
@@ -515,8 +506,8 @@ public class BooklistGroup
          */
         @Override
         protected void initPrefs() {
-            mAllAuthors = new PBoolean(R.string.pk_bob_books_under_multiple_authors, mUuid);
-            mGivenNameFirst = new PBoolean(R.string.pk_bob_format_author_name, mUuid);
+            mAllAuthors = new PBoolean(Prefs.pk_bob_books_under_multiple_authors, mUuid);
+            mGivenNameFirst = new PBoolean(Prefs.pk_bob_format_author_name, mUuid);
         }
 
         boolean showAllAuthors() {
@@ -548,31 +539,32 @@ public class BooklistGroup
          * @param screen to add the prefs to
          */
         @Override
-        public void addPreferences(@NonNull final PreferenceScreen screen) {
+        public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
             Context context = screen.getContext();
             PreferenceCategory category =
                     screen.findPreference(context.getString(R.string.lbl_author));
+            String description = context.getString(R.string.lbl_author);
             if (category != null) {
                 category.setVisible(true);
 
                 SwitchPreference pShowAll = new SwitchPreference(context);
                 pShowAll.setTitle(R.string.pt_bob_books_under_multiple_authors);
                 pShowAll.setIcon(R.drawable.ic_functions);
-                pShowAll.setKey(context.getString(R.string.pk_bob_books_under_multiple_authors));
+                pShowAll.setKey(Prefs.pk_bob_books_under_multiple_authors);
                 pShowAll.setDefaultValue(false);
                 pShowAll.setSummaryOn(
                         context.getString(R.string.pv_bob_books_under_multiple_each_1s,
-                                          DESCRIPTION));
+                                          description));
                 pShowAll.setSummaryOff(
                         context.getString(R.string.pv_bob_books_under_multiple_primary_1s_only,
-                                          DESCRIPTION));
+                                          description));
                 //pAllAuthors.setHint(R.string.hint_authors_book_may_appear_more_than_once)
                 category.addPreference(pShowAll);
 
                 SwitchPreference pGivenNameFirst = new SwitchPreference(context);
                 pGivenNameFirst.setTitle(R.string.pt_bob_format_author_name);
                 pGivenNameFirst.setIcon(R.drawable.ic_title);
-                pGivenNameFirst.setKey(context.getString(R.string.pk_bob_format_author_name));
+                pGivenNameFirst.setKey(Prefs.pk_bob_format_author_name);
                 pGivenNameFirst.setDefaultValue(false);
                 pGivenNameFirst.setSummaryOn(R.string.pv_bob_format_author_name_given_first);
                 pGivenNameFirst.setSummaryOff(R.string.pv_bob_format_author_name_family_first);
@@ -901,14 +893,16 @@ public class BooklistGroup
         }
 
         @NonNull
-        String getName() {
-            return BookCatalogueApp.getResString(mLabelId);
+        String getName(@NonNull final Context context) {
+            return context.getString(mLabelId);
         }
 
         @Override
         @NonNull
         public String toString() {
-            return "RowKind{name=" + getName() + '}';
+            return "RowKind{"
+                    + "name=" + getName(App.getAppContext())
+                    + '}';
         }
     }
 

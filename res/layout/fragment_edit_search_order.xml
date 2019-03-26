@@ -6,4 +6,5 @@
     style="@style/tlv_TouchListView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tlv:grabber="@id/TLV_ROW_GRABBER" />
+    tlv:grabber="@id/TLV_ROW_GRABBER"
+    />

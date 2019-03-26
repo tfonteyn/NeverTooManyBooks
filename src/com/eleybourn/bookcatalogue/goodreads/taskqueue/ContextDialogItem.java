@@ -76,6 +76,9 @@ public class ContextDialogItem
         }
     }
 
+    /**
+     * @return the name of the item to display in the AlertDialog.
+     */
     @NonNull
     @Override
     public String toString() {

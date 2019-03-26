@@ -6,18 +6,18 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+import java.util.Objects;
+
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.Csv;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import java.util.List;
-import java.util.Objects;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_STYLE_ID;
@@ -170,7 +170,7 @@ public class Bookshelf
      * @return the preferred bookshelf.
      */
     public static Bookshelf getPreferred(@NonNull final DBA db) {
-        String bookshelfName = Prefs.getPrefs().getString(PREF_BOOKSHELF_CURRENT, null);
+        String bookshelfName = App.getPrefs().getString(PREF_BOOKSHELF_CURRENT, null);
         if (bookshelfName != null && !bookshelfName.isEmpty()) {
             // try to get the preferred shelf
             Bookshelf bookshelf = db.getBookshelfByName(bookshelfName);
@@ -216,7 +216,7 @@ public class Bookshelf
      * Set this bookshelf as the current/preferred.
      */
     public void setAsPreferred() {
-        Prefs.getPrefs().edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
+        App.getPrefs().edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
     }
 
     public long getId() {
@@ -297,20 +297,20 @@ public class Bookshelf
         return 0;
     }
 
-
     @Override
     @NonNull
     public String toString() {
         return "Bookshelf{"
                 + "mId=" + mId
-                + ", mName='" + mName + '\''
+                + ", mName=`" + mName + '`'
                 + ", mStyleId=" + mStyleId
                 + '}';
     }
 
     /**
      * Support for encoding to a text file.
-     *TOMF: fix/finish uuid stuff: give builtin styles a uuid?
+     * TOMF: fix/finish uuid stuff: give builtin styles a uuid?
+     *
      * @return the object encoded as a String.
      * <p>
      * "name * styleUUID"

@@ -36,7 +36,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -99,8 +99,8 @@ public class BackupAndRestoreActivity
     @Override
     protected FileChooserFragment createChooserFragment() {
         String lastBackupFile =
-                Prefs.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_FILE,
-                                           StorageUtils.getSharedStorage().getAbsolutePath());
+                App.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_FILE,
+                                         StorageUtils.getSharedStorage().getAbsolutePath());
         Objects.requireNonNull(lastBackupFile);
         return FileChooserFragment.newInstance(new File(lastBackupFile), getDefaultFileName());
     }
@@ -117,8 +117,7 @@ public class BackupAndRestoreActivity
             ProgressDialogFragment<ArrayList<FileChooserFragment.FileDetails>> frag =
                     ProgressDialogFragment.newInstance(R.string.progress_msg_searching_directory,
                                                        true, 0);
-            BackupListerTask task =
-                    new BackupListerTask(frag, root);
+            BackupListerTask task = new BackupListerTask(frag, root);
             frag.setTask(R.id.TASK_ID_FILE_LISTER, task);
             frag.show(fm, BackupListerTask.TAG);
             task.execute();
@@ -242,8 +241,8 @@ public class BackupAndRestoreActivity
         if ((settings.what & ExportSettings.EXPORT_SINCE) != 0) {
             // no date set, use "since last backup."
             if (settings.dateFrom == null) {
-                String lastBackup = Prefs.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_DATE,
-                                                               null);
+                String lastBackup = App.getPrefs().getString(BackupManager.PREF_LAST_BACKUP_DATE,
+                                                             null);
                 if (lastBackup != null && !lastBackup.isEmpty()) {
                     settings.dateFrom = DateUtils.parseDate(lastBackup);
                 }
@@ -266,7 +265,7 @@ public class BackupAndRestoreActivity
      *                - file lister: not used
      */
     @Override
-    public void onTaskFinished(final Integer taskId,
+    public void onTaskFinished(final int taskId,
                                final boolean success,
                                @Nullable final Object result) {
 
@@ -313,22 +312,20 @@ public class BackupAndRestoreActivity
             return;
         }
 
-        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
             Logger.info(this, "handleReadFromArchiveResults",
                         "Imported: " + resultSettings);
         }
         // see if there are any pre-200 preferences that need migrating.
         if ((resultSettings.what & ImportSettings.PREFERENCES) != 0) {
             Prefs.migratePreV200preferences(
-                    BookCatalogueApp.getAppContext()
-                                    .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE,
-                                                          Context.MODE_PRIVATE).getAll()
+                    getSharedPreferences(App.PREF_LEGACY_BOOK_CATALOGUE,
+                                             Context.MODE_PRIVATE).getAll()
             );
-            // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences("bookCatalogue");
-            BookCatalogueApp.getAppContext()
-                            .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE,
-                                                  Context.MODE_PRIVATE)
-                            .edit().clear().apply();
+            // API: 24 -> deleteSharedPreferences("bookCatalogue");
+            getSharedPreferences(App.PREF_LEGACY_BOOK_CATALOGUE,
+                                     Context.MODE_PRIVATE)
+               .edit().clear().apply();
         }
 
         // all done

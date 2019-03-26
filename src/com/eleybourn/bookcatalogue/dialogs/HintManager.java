@@ -33,14 +33,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.Utils;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
  * Class to manage the display of 'hints' within the application. Each hint dialog has
@@ -55,9 +54,10 @@ import java.util.Map;
 public final class HintManager {
 
     /** Preferences prefix. */
-    private static final String TAG = "HintManager.";
-    /** Preferences prefix for hints. */
-    private static final String PREF_HINT = TAG + "Hint.";
+    private static final String PREF_PREFIX = "HintManager.";
+    /** Preferences prefix for all hints. */
+    private static final String PREF_HINT = PREF_PREFIX + "Hint.";
+
     /** All hints managed by this class. */
     @SuppressLint("UseSparseArrays")
     private static final Map<Integer, Hint> mHints = new HashMap<>();
@@ -133,6 +133,13 @@ public final class HintManager {
 
     /**
      * Display the passed hint, if the user has not disabled it.
+     *
+     * @param inflater Inflater to use
+     * @param stringId identifier for "from where" we want the hint to be displayed.
+     *                 This allows two different places in the code use the same hint,
+     *                 but one place being 'disable the hint' and another 'show'.
+     * @param postRun  Optional Runnable to run after the hint was dismissed (or not displayed at all).
+     * @param args     Optional arguments for the hint string
      */
     public static void displayHint(@NonNull final LayoutInflater inflater,
                                    @StringRes final int stringId,
@@ -188,23 +195,23 @@ public final class HintManager {
          * @param visible Flag indicating future visibility
          */
         private void setVisibility(final boolean visible) {
-            Prefs.getPrefs().edit().putBoolean(mKey, visible).apply();
+            App.getPrefs().edit().putBoolean(mKey, visible).apply();
         }
 
         /**
          * Check if this hint should be shown.
          */
         private boolean shouldBeShown() {
-            return !mHasBeenDisplayed && Prefs.getPrefs().getBoolean(mKey, true);
+            return !mHasBeenDisplayed && App.getPrefs().getBoolean(mKey, true);
         }
 
         /**
          * display the hint.
          *
-         * @param inflater  to use
-         * @param stringId  for the message
-         * @param args      for the message
-         * @param postRun   Runnable to start afterwards
+         * @param inflater to use
+         * @param stringId for the message
+         * @param args     for the message
+         * @param postRun  Runnable to start afterwards
          */
         void display(@NonNull final LayoutInflater inflater,
                      @StringRes final int stringId,
@@ -217,7 +224,7 @@ public final class HintManager {
             // Setup the message
             final TextView messageView = root.findViewById(R.id.hint);
             if (messageView != null) {
-                String hintText = BookCatalogueApp.getResString(stringId, args);
+                String hintText = inflater.getContext().getString(stringId, args);
                 // allow links
                 messageView.setText(Utils.linkifyHtml(hintText));
                 // clicking a link, start a browser (or whatever)
@@ -239,16 +246,17 @@ public final class HintManager {
                 }
             });
 
-            root.findViewById(R.id.hint_do_not_show_again).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    dialog.dismiss();
-                    setVisibility(false);
-                    if (postRun != null) {
-                        postRun.run();
-                    }
-                }
-            });
+            root.findViewById(R.id.hint_do_not_show_again).setOnClickListener(
+                    new OnClickListener() {
+                        @Override
+                        public void onClick(@NonNull final View v) {
+                            dialog.dismiss();
+                            setVisibility(false);
+                            if (postRun != null) {
+                                postRun.run();
+                            }
+                        }
+                    });
             dialog.show();
             mHasBeenDisplayed = true;
         }

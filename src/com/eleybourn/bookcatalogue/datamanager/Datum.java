@@ -122,6 +122,8 @@ public class Datum {
     }
 
     /**
+     * DEBUG
+     *
      * Format the passed bundle in a way that is convenient for display.
      *
      * @param bundle Bundle to format, strings will be trimmed before adding

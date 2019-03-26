@@ -132,7 +132,7 @@
     <string name="error_backup_failed">Yedekleme başarısız!</string>
     <string name="error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
     <string name="import_error_csv_file_must_contain_any_column">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
-    <string name="error_column_is_blank">Sütun %1$s %2$s numaralı satırda boş</string>
+    <string name="error_column_is_blank">Sütun %1$s %2$d numaralı satırda boş</string>
     <string name="error_columns_are_blank">%1$s sütunlarının hepsi %2$d satırında boş</string>
     <string name="btn_confirm_save">Kaydet</string>
     <string name="btn_confirm_add">Ekle</string>
@@ -208,9 +208,9 @@
     <string name="about_send_info">Bilgi gönder</string>
     <string name="info_cleanup_files_text">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle \‘Bilgi gönder\’ düğmesini kullanmayı deneyin.</string>
     <string name="cleanup_files">Dosyaları temizle</string>
-    <string name="megabytes">%.2f MS</string>
-    <string name="kilobytes">%.2f kilobit</string>
-    <string name="bytes">%.0f bit</string>
+    <string name="megabytes">%.2fMB</string>
+    <string name="kilobytes">%.2fkB</string>
+    <string name="bytes">%.0fB</string>
     <string name="debug_subject">Hata ayıklama bilgisi alındı</string>
     <string name="debug_body">Lütfen yaşamakta olduğunuz sorunu kısaca anlatınız.</string>
     <string name="menu_duplicate_book">Kitabı kopyala</string>
@@ -261,7 +261,6 @@
     <string name="gr_title_send_book">Kitapları Goodreads\'e gönder</string>
     <string name="gr_tq_legacy_task">Eski görev</string>
     <string name="gr_tq_occurred_at">(%1$s içinde oluştu)</string>
-    <string name="unknown_uc">BİLİNMEYEN</string>
     <string name="warning_book_was_deleted_uc">BU BETİK SİLİNDİ</string>
     <string name="lbl_by_author_s">%1$s ile</string>
     <string name="warning_no_matching_book_found">Eşleşen kitap bulunamadı</string>
@@ -279,7 +278,7 @@
     <string name="gr_error_while_searching">Arama sırasında hata</string>
     <string name="gr_send_all_books_results">%1$d kitap işlendi: %2$d tanesi başarıyla gönderildi, %3$d tanesinin ISBN\'si yok ve %4$d tanesinin ISBN\'si Goodreads\'te bulunamadı</string>
     <string name="x_of_y">%1$d (Toplam %2$d)</string>
-    <string name="gr_send_book_to_goodreads">Bu kitabı Goodreads\'e gönder: %1$s</string>
+    <string name="gr_send_book_to_goodreads">Bu kitabı Goodreads\'e gönder: %1$d</string>
     <string name="erase_cover_cache">Kapak önbelleğini sil</string>
     <string name="acra_resToastText">&APP_NAME; bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="acra_resNotifTickerText">&APP_NAME; çöktü</string>
@@ -364,7 +363,7 @@
     <string name="plain_background_b_reduces_flicker_b">Düz ardalan (titremeyi azaltır)</string>
     <string name="warning_required_field_x">%1$s boş olamaz</string>
     <string name="edit">Düzenle</string>
-    <string name="lbl_preferences">Yeğlenenler</string>
+    <string name="lbl_settings">Yeğlenenler</string>
     <string name="error_unexpected_error">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki \‘Yardım\’ seçeneğinden bize gönderin</string>
     <string name="menu_delete_style">Biçemi sil</string>
     <string name="menu_edit_booklist_style">Biçemi düzenle</string>
@@ -454,7 +453,7 @@
     <string name="menu_sort_and_style_ellipsis">Sıralama &amp; biçemi…</string>
     <string name="disable_background_image">Ardalan resmini kapat</string>
     <string name="displaying_n_books_in_m_entries">%2$d giride %1$d kitap görüntüleniyor</string>
-    <string name="loan_book_available">Uygun</string>
+    <string name="lbl_loan_book_available">Uygun</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s geçerli birISBN değil</string>
     <string name="warning_cover_not_found2">Resim bulunamadı</string>
     <string name="warning_cover_copy_failed">Resim eşlemlenemedi</string>
@@ -486,7 +485,7 @@
     <string name="progress_end_import_complete">İçe aktarma başarılı</string>
     <string name="progress_msg_searching">Aranıyor…</string>
     <string name="progress_msg_adding_book">Kitap ekle…</string>
-    <string name="lbl_publishing">Yayımlanıyor</string>
+    <string name="lbl_publication">Yayınlama</string>
     <string name="lbl_by_author">ile</string>
     <string name="lbl_loaned_to_name">%1$s kişisine ödünç verilmiş</string>
     <string name="lbl_x_pages">%1$d bet</string>
@@ -525,10 +524,10 @@
     <string name="lbl_import_from_archive">Arşivden içe aktar</string>
 
     <!-- Hint displayed when a Backup is done -->
-    <string name="export_info_success_archive_details">%2$s adında bir %3$s dosyası SD kartınızın \“%1$s\” dizininde oluşturuldu.\n\nBu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
+    <string name="export_info_success_archive_details">%2$s adında bir %3$s dosyası SD kartınızın “%1$s” dizininde oluşturuldu.\n\nBu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
 
     <!-- Displayed in progress dialog when exporting covers -->
-    <string name="progress_msg_covers">%1$s kapak işlendi (%2$s bulunamadı)</string>
+    <string name="progress_msg_covers">%1$d kapak işlendi (%2$d bulunamadı)</string>
     <!-- Heading in Admin activity -->
     <string name="lbl_advanced_options">Gelişmiş seçenekler</string>
     <!-- Showed in progress dialog when an import starts -->
@@ -580,13 +579,18 @@
     <!-- Descriptive text associated with import options not available with older archives -->
     <string name="import_warning_old_archive">Bu seçenek eski arşiv sürümleri için geçerli değildir.</string>
     <!-- Part of the progress message displayed when importing books -->
-    <string name="progress_msg_n_created_m_updated">%1$s oluşturuldu, %2$s güncellendi</string>
+    <string name="progress_msg_n_created_m_updated">%1$d oluşturuldu, %2$d güncellendi</string>
 
     <!--  Explanatory text for 'export' dialogue -->
-    <string name="title_export_books">Kataloğunuzdaki kitaplar dışa aktarılacaktır. Aktarmaya başlamak için iki seçenekten birini seçin, iptal etmek için ise için \‘geri\’ düğmesine basın:</string>
+    <string name="title_export_books">
+        Kataloğunuzdaki kitaplar dışa aktarılacaktır. Aktarmaya başlamak için iki seçenekten
+        birini seçin, iptal etmek için ise için ‘geri’ düğmesine basın:
+    </string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="progress_msg_covers_skip">%1$s kapak işlendi (%2$s bulunamadı, %3$s atlandı)</string>
+    <string name="progress_msg_covers_skip">
+        %1$d kapak işlendi (%2$d bulunamadı, %3$d atlandı)
+    </string>
     <!-- Explanatory note for 'export all' option -->
     <string name="export_info_backup_all">Tüm kitaplar, kapaklar, ayarlar ve kişiselleştirilmiş biçemler arşive aktarılacaktır.</string>
     <!-- Explanatory note for 'advanced export' option -->
@@ -679,5 +683,6 @@
     <string name="menu_loan_return_book">Ödünç alınan kitap geri döndü</string>
     <string name="progress_msg_saving_image">Resim kaydediliyor…</string>
     <string name="error_google_play_missing">Google Play / Market yüklü değil</string>
+    <string name="lbl_is_complete">Tamamlandı</string>
 
 </resources>

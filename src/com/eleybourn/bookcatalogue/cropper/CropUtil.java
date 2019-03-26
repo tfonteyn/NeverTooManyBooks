@@ -22,6 +22,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -29,7 +30,6 @@ import androidx.annotation.Nullable;
  * Collection of utility functions used in this package.
  */
 final class CropUtil {
-    // private static final String TAG = "db.CropUtil";
 
     private CropUtil() {
     }
@@ -39,7 +39,7 @@ final class CropUtil {
      * minSideLength is used to specify that minimal width or height of a bitmap.
      * maxNumOfPixels is used to specify the maximal size in pixels that are tolerable
      * in terms of memory usage.
-     *
+     * <p>
      * The function returns a sample size based on the constraints. Both size and minSideLength
      * can be passed in as {@link CropIImage#UNCONSTRAINED}, which indicates no care of
      * the corresponding constraint.
@@ -61,14 +61,14 @@ final class CropUtil {
              * (or both) black.
              */
             Bitmap b2 = Bitmap.createBitmap(targetWidth, targetHeight,
-                    Bitmap.Config.ARGB_8888);
+                                            Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(b2);
 
             int deltaXHalf = Math.max(0, deltaX / 2);
             int deltaYHalf = Math.max(0, deltaY / 2);
             Rect src = new Rect(deltaXHalf, deltaYHalf, deltaXHalf
                     + Math.min(targetWidth, source.getWidth()), deltaYHalf
-                    + Math.min(targetHeight, source.getHeight()));
+                                        + Math.min(targetHeight, source.getHeight()));
             int dstX = (targetWidth - src.width()) / 2;
             int dstY = (targetHeight - src.height()) / 2;
             Rect dst = new Rect(dstX, dstY, targetWidth - dstX, targetHeight
@@ -102,7 +102,7 @@ final class CropUtil {
         if (matrix != null) {
             // this is used for mini thumb and crop, so we want to filter here.
             b1 = Bitmap.createBitmap(source, 0, 0, source.getWidth(),
-                    source.getHeight(), matrix, true);
+                                     source.getHeight(), matrix, true);
         } else {
             b1 = source;
         }
@@ -111,7 +111,7 @@ final class CropUtil {
         int dy1 = Math.max(0, b1.getHeight() - targetHeight);
 
         Bitmap b2 = Bitmap.createBitmap(b1, dx1 / 2, dy1 / 2, targetWidth,
-                targetHeight);
+                                        targetHeight);
 
         if (b1 != source) {
             b1.recycle();
@@ -129,12 +129,14 @@ final class CropUtil {
         // the thread will be done before the activity getting destroyed.
         @Deprecated
         ProgressDialog progressDialog = ProgressDialog.show(activity,
-                title, message, true, false);
+                                                            title, message, true, false);
         new Thread(new BackgroundJob(activity, job, progressDialog, handler)).start();
     }
 
-    private static class BackgroundJob extends
-            CropMonitoredActivity.LifeCycleAdapter implements Runnable {
+    private static class BackgroundJob
+            extends
+            CropMonitoredActivity.LifeCycleAdapter
+            implements Runnable {
 
         @NonNull
         private final CropMonitoredActivity mActivity;
@@ -148,8 +150,9 @@ final class CropUtil {
         private final Runnable mCleanupRunner = new Runnable() {
             public void run() {
                 mActivity.removeLifeCycleListener(BackgroundJob.this);
-                if (mDialog.getWindow() != null)
+                if (mDialog.getWindow() != null) {
                     mDialog.dismiss();
+                }
             }
         };
 

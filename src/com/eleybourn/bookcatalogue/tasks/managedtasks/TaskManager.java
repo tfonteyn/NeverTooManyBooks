@@ -111,11 +111,10 @@ public class TaskManager {
                     }
                 }
 
-                if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                     for (TaskInfo i : mManagedTasks) {
-                        Logger.info(
-                                TaskManager.this, "onTaskFinished",
-                                "Task `" + i.task.getName() + "` still running");
+                        Logger.info(TaskManager.this, "onTaskFinished",
+                                    "Task `" + i.task.getName() + "` still running");
                     }
                 }
             }
@@ -383,7 +382,7 @@ public class TaskManager {
         return "TaskManager{"
                 + "mMessageSenderId=" + mMessageSenderId
                 + ", mManagedTasks=" + mManagedTasks
-                + ", mBaseMessage='" + mBaseMessage + '\''
+                + ", mBaseMessage=`" + mBaseMessage + '`'
                 + ", mManagedTaskListener=" + mManagedTaskListener
                 + ", mCancelling=" + mCancelling
                 + ", mIsClosing=" + mIsClosing
@@ -436,7 +435,7 @@ public class TaskManager {
 
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
-            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                 Logger.info(this, "deliver",
                             "'TaskFinishedMessage' to listener: " + listener
                                     + "\n mTask=`" + mTask + '`');
@@ -473,7 +472,7 @@ public class TaskManager {
 
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
-            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                 Logger.info(this, "deliver",
                             "'TaskProgressMessage' to listener: " + listener
                                     + "\n mMessage=`" + mMessage + '`');
@@ -488,7 +487,7 @@ public class TaskManager {
             return "TaskProgressMessage{"
                     + "mCount=" + mCount
                     + ", mMax=" + mMax
-                    + ", mMessage='" + mMessage + '\''
+                    + ", mMessage=`" + mMessage + '`'
                     + '}';
         }
     }
@@ -505,7 +504,7 @@ public class TaskManager {
 
         @Override
         public boolean deliver(@NonNull final TaskManagerListener listener) {
-            if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                 Logger.info(this, "deliver",
                             "'TaskUserMessage' to listener: " + listener
                                     + "\n mMessage=`" + mMessage + '`');
@@ -517,7 +516,9 @@ public class TaskManager {
         @Override
         @NonNull
         public String toString() {
-            return "TaskUserMessage{mMessage='" + mMessage + '\'' + '}';
+            return "TaskUserMessage{"
+                    + "mMessage=`" + mMessage + '`'
+                    + '}';
         }
     }
 

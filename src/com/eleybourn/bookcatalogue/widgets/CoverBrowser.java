@@ -206,9 +206,8 @@ public class CoverBrowser
         removeTask(task);
 
         mAlternativeEditions = editions;
-
         if (mAlternativeEditions == null || mAlternativeEditions.isEmpty()) {
-            UserMessage.showUserMessage(mActivity, R.string.warning_no_editions);
+            UserMessage.showUserMessage(mPagerView, R.string.warning_no_editions);
             dismiss();
             return;
         }

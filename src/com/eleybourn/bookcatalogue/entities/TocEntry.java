@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
-import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -186,7 +186,12 @@ public class TocEntry
     @Override
     @NonNull
     public String toString() {
-        return stringEncoded();
+        return "TocEntry{"
+                + "mId=" + mId
+                + ", mAuthor=" + mAuthor
+                + ", mTitle=`" + mTitle + '`'
+                + ", mFirstPublicationDate=`" + mFirstPublicationDate + '`'
+                + '}';
     }
 
     /**
@@ -368,7 +373,7 @@ public class TocEntry
                     return multipleAuthors;
 
                 default:
-                    throw new RTE.IllegalTypeException("" + bitmask);
+                    throw new IllegalTypeException("" + bitmask);
             }
         }
     }

@@ -1,8 +1,11 @@
 package com.eleybourn.bookcatalogue;
 
 
+import android.os.Bundle;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
@@ -15,12 +18,50 @@ import com.eleybourn.bookcatalogue.entities.Book;
  * <p>
  * Full list:
  * {@link EditBookFieldsFragment}
+ * {@link EditBookPublicationFragment}
  * {@link EditBookNotesFragment}
  * {@link EditBookTOCFragment}
  */
 public abstract class EditBookBaseFragment
         extends BookBaseFragment
         implements DataEditor {
+
+
+    @Override
+    @CallSuper
+    protected void onLoadFieldsFromBook(@NonNull final Book book,
+                                        final boolean setAllFrom) {
+        Tracker.enterOnLoadFieldsFromBook(this, book.getId());
+        super.onLoadFieldsFromBook(book, setAllFrom);
+
+        // new book ? load data fields from Extras
+        if (book.getId() == 0) {
+            Bundle extras = requireActivity().getIntent().getExtras();
+            populateNewBookFieldsFromBundle(book, extras);
+        }
+
+        Tracker.exitOnLoadFieldsFromBook(this, book.getId());
+    }
+
+    /**
+     * Uses the values from the Bundle to populate the Book but don't overwrite existing values.
+     * <p>
+     * Can/should be overwritten for handling specific field defaults, e.g. Bookshelf.
+     *
+     * @param book   to populate
+     * @param bundle to load values from
+     */
+    protected void populateNewBookFieldsFromBundle(@NonNull final Book book,
+                                                   @Nullable final Bundle bundle) {
+        // Check if we have any data, for example from a Search
+        if (bundle != null) {
+            Bundle values = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
+            if (values != null) {
+                // if we do, add if not there yet
+                mFields.setAllFrom(values, false);
+            }
+        }
+    }
 
     /**
      * Trigger the Fragment to save it's Fields to the Book.
@@ -30,8 +71,10 @@ public abstract class EditBookBaseFragment
     @Override
     @CallSuper
     public void onPause() {
+        Tracker.enterOnPause(this);
         saveFieldsTo(getBookManager().getBook());
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     /**

@@ -105,7 +105,7 @@ public class MessageSwitch<T, U> {
     public void addListener(@NonNull final Long senderId,
                             @NonNull final T listener,
                             final boolean deliverLast) {
-        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
             Logger.info(this, "addListener", listener + "|senderId=" + senderId);
         }
         // Add the listener to the queue, creating the queue if necessary
@@ -125,14 +125,14 @@ public class MessageSwitch<T, U> {
             if (routingSlip != null) {
                 // Do it on the UI thread.
                 if (HANDLER.getLooper().getThread() == Thread.currentThread()) {
-                    if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                         Logger.info(this, "addListener",
                                     "|UI thread|delivering to listener: "
                                             + listener + "|msg=" + routingSlip.message.toString());
                     }
                     routingSlip.message.deliver(listener);
                 } else {
-                    if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                         Logger.info(this, "addListener",
                                     "|post runnable|delivering to listener: "
                                             + listener + "|msg=" + routingSlip.message.toString());
@@ -153,7 +153,7 @@ public class MessageSwitch<T, U> {
      */
     public void removeListener(@NonNull final Long senderId,
                                @NonNull final T listener) {
-        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
             Logger.info(this, "removeListener",
                         "senderId=" + senderId + '|' + listener);
         }
@@ -173,7 +173,7 @@ public class MessageSwitch<T, U> {
      */
     public void send(@NonNull final Long senderId,
                      @NonNull final Message<T> message) {
-        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
             Logger.info(this, "send",
                         "senderId=" + senderId + "|message: " + message);
         }
@@ -427,7 +427,7 @@ public class MessageSwitch<T, U> {
                 while (queueIterator.hasNext()) {
                     T listener = queueIterator.next();
                     try {
-                        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                             Logger.info(this, "deliver",
                                         "queueIterator|listener="
                                                 + listener + "|msg=" + message.toString());

@@ -8,4 +8,5 @@
     android:singleLine="true"
     android:textAlignment="inherit"
     android:textAppearance="?android:attr/textAppearanceLarge"
-    android:textIsSelectable="false" />
+    android:textIsSelectable="false"
+    />

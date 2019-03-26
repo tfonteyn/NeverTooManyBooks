@@ -61,6 +61,8 @@ public class BookFragment
      * We've had to move the book object before... this makes it easier if we do again.
      */
     private Book mBook;
+
+    /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
 
     private BaseActivity mActivity;
@@ -226,8 +228,9 @@ public class BookFragment
                .setFormatter(dateFormatter);
         mFields.add(R.id.price_paid, UniqueId.KEY_PRICE_PAID)
                .setFormatter(new Fields.PriceFormatter());
+        //noinspection ConstantConditions
         mFields.add(R.id.edition, UniqueId.KEY_EDITION_BITMASK)
-               .setFormatter(new Fields.BookEditionsFormatter());
+               .setFormatter(new Book.BookEditionsFormatter(getContext()));
         mFields.add(R.id.location, UniqueId.KEY_LOCATION);
         mFields.add(R.id.rating, UniqueId.KEY_RATING);
         mFields.add(R.id.notes, UniqueId.KEY_NOTES)
@@ -279,8 +282,10 @@ public class BookFragment
 
         // pass the CURRENT currency code to the price formatters
         //TODO: this defeats the ease of use of the formatter... populate manually or something...
+        //noinspection ConstantConditions
         ((Fields.PriceFormatter) mFields.getField(R.id.price_listed).getFormatter())
                 .setCurrencyCode(book.getString(UniqueId.KEY_PRICE_LISTED_CURRENCY));
+        //noinspection ConstantConditions
         ((Fields.PriceFormatter) mFields.getField(R.id.price_paid).getFormatter())
                 .setCurrencyCode(book.getString(UniqueId.KEY_PRICE_PAID_CURRENCY));
 
@@ -297,7 +302,7 @@ public class BookFragment
         mCoverHandler.updateCoverView();
 
         // handle 'text' DoNotFetch fields
-        ArrayList<Bookshelf> bsList = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        ArrayList<Bookshelf> bsList = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
         populateLoanedToField(mDb.getLoaneeByBookId(book.getId()));
 
@@ -408,7 +413,7 @@ public class BookFragment
      * The author field is a single csv String.
      */
     private void populateAuthorListField(@NonNull final Book book) {
-        ArrayList<Author> authors = book.getList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         int authorsCount = authors.size();
         boolean visible = authorsCount != 0;
         if (visible) {
@@ -430,7 +435,7 @@ public class BookFragment
      * The series field is a single String with line-breaks between multiple series.
      */
     void populateSeriesListField(@NonNull final Book book) {
-        ArrayList<Series> list = book.getList(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         int seriesCount = list.size();
         boolean visible = seriesCount != 0 && Fields.isVisible(UniqueId.KEY_SERIES);
         if (visible) {
@@ -489,7 +494,7 @@ public class BookFragment
      */
     private void populateTOC(@NonNull final Book book) {
         //ENHANCE: add to mFields?
-        ArrayList<TocEntry> list = book.getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        ArrayList<TocEntry> list = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         // only show if: field in use + it's flagged as having a toc + the toc actually has titles
         boolean visible = Fields.isVisible(UniqueId.KEY_TOC_BITMASK)
@@ -706,6 +711,8 @@ public class BookFragment
     /**
      * Listener to handle 'fling' events; we could handle others but need to be
      * careful about possible clicks and scrolling.
+     *
+     * ENHANCE: use ViewPager?
      */
     private class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {

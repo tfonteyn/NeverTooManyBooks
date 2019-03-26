@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/pg_ui">
-        <!-- the list contains 2-char strings in contrast to other ListPreference -->
+        <!-- the list contains Locale string id's in contrast to other ListPreference which use 0,1... -->
         <ListPreference
-            android:defaultValue="en"
+            android:defaultValue="system"
             android:entries="@array/pe_ui_language"
             android:entryValues="@array/pv_ui_language"
             android:icon="@drawable/ic_language"
-            android:key="@string/pk_ui_language"
+            android:key="App.Locale"
             android:title="@string/pt_ui_language" />
 
         <ListPreference
@@ -15,7 +15,7 @@
             android:entries="@array/pe_ui_theme"
             android:entryValues="@array/pv_ui_theme"
             android:icon="@drawable/ic_settings_brightness"
-            android:key="@string/pk_ui_theme"
+            android:key="App.Theme"
             android:title="@string/pt_ui_theme" />
 
         <ListPreference
@@ -23,8 +23,140 @@
             android:entries="@array/pe_ui_messages_use"
             android:entryValues="@array/pv_ui_messages_use"
             android:icon="@drawable/ic_message"
-            android:key="@string/pk_ui_messages_use"
+            android:key="App.UserMessage"
             android:title="@string/pt_ui_messages_use" />
+
+        <PreferenceScreen
+            android:icon="@drawable/ic_visibility"
+            android:key="@string/menu_manage_fields"
+            android:title="@string/menu_manage_fields">
+            <!-- NEWKIND: new fields visibility. Third part of the key name **MUST** be equal to the DOM column name. -->
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.isbn"
+                android:title="@string/lbl_isbn" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.thumbnail"
+                android:title="@string/lbl_cover" />
+
+            <!-- series name includes series 'isComplete' and series number. -->
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.series_name"
+                android:title="@string/lbl_series" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.description"
+                android:title="@string/lbl_description" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.publisher"
+                android:title="@string/lbl_publisher" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.date_published"
+                android:title="@string/lbl_date_published" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.first_publication"
+                android:title="@string/lbl_first_publication" />
+
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.format"
+                android:title="@string/lbl_format" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.genre"
+                android:title="@string/lbl_genre" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.language"
+                android:title="@string/lbl_language" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.pages"
+                android:title="@string/lbl_pages" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.list_price"
+                android:title="@string/lbl_price_listed" />
+
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.anthology"
+                android:title="@string/lbl_table_of_content" />
+
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.bookshelf"
+                android:title="@string/lbl_bookshelf" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.loaned_to"
+                android:title="@string/lbl_lending" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.notes"
+                android:title="@string/lbl_notes" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.location"
+                android:title="@string/lbl_location_long" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.price_paid"
+                android:title="@string/lbl_price_paid" />
+
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.read"
+                android:title="@string/lbl_is_read" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.read_start"
+                android:title="@string/lbl_read_start" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.read_end"
+                android:title="@string/lbl_read_end" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.edition_bm"
+                android:title="@string/lbl_edition" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.signed"
+                android:title="@string/lbl_is_signed" />
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="fields.visibility.rating"
+                android:title="@string/lbl_rating" />
+
+        </PreferenceScreen>
 
     </PreferenceCategory>
 
@@ -32,7 +164,7 @@
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_edit"
-            android:key="@string/pk_bob_open_book_read_only"
+            android:key="BooksOnBookshelf.OpenBookReadOnly"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_bob_open_book_read_only" />
@@ -42,7 +174,7 @@
             android:entries="@array/pe_bob_list_state"
             android:entryValues="@array/pv_bob_list_state"
             android:icon="@drawable/ic_view_list"
-            android:key="@string/pk_bob_list_state"
+            android:key="BookList.ListRebuildState"
             android:title="@string/pt_bob_list_state" />
 
         <ListPreference
@@ -50,7 +182,7 @@
             android:entries="@array/pe_bob_list_generation"
             android:entryValues="@array/pv_bob_list_generation"
             android:icon="@drawable/ic_build"
-            android:key="@string/pk_bob_list_generation"
+            android:key="BookList.CompatibilityMode"
             android:title="@string/pt_bob_list_generation" />
 
     </PreferenceCategory>
@@ -59,7 +191,7 @@
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_surround_sound"
-            android:key="@string/pk_scanning_beep_if_isbn_invalid"
+            android:key="SoundManager.BeepIfScannedIsbnInvalid"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_scanning_beep_if_isbn_invalid" />
@@ -67,7 +199,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_surround_sound"
-            android:key="@string/pk_scanning_beep_if_isbn_valid"
+            android:key="SoundManager.BeepIfScannedIsbnValid"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_scanning_beep_if_isbn_valid" />
@@ -77,7 +209,7 @@
             android:entries="@array/pe_scanning_preferred_scanner"
             android:entryValues="@array/pv_scanning_preferred_scanner"
             android:icon="@drawable/ic_scanner"
-            android:key="@string/pk_scanning_preferred_scanner"
+            android:key="ScannerManager.PreferredScanner"
             android:title="@string/pt_scanning_preferred_scanner" />
 
     </PreferenceCategory>
@@ -86,7 +218,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_crop_original"
-            android:key="@string/pk_thumbnails_crop_frame_is_whole_image"
+            android:key="Image.Cropper.FrameIsWholeImage"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_thumbnails_crop_frame_is_whole_image" />
@@ -94,7 +226,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_apps"
-            android:key="@string/pk_thumbnails_external_cropper"
+            android:key="Image.Cropper.UseExternalApp"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_thumbnails_external_cropper" />
@@ -102,7 +234,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_cached"
-            android:key="@string/pk_bob_thumbnails_cache_resized"
+            android:key="BookList.ThumbnailsCached"
             android:summaryOff="@string/pe_bob_thumbnails_cache_resized_each_time"
             android:summaryOn="@string/pe_bob_thumbnails_cache_resized_stored"
             android:title="@string/pt_bob_thumbnails_cache_resized" />
@@ -110,7 +242,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_directions_run"
-            android:key="@string/pk_bob_thumbnails_generating_mode"
+            android:key="BookList.ThumbnailsInBackground"
             android:summaryOff="@string/pe_bob_thumbnails_generating_mode_immediately"
             android:summaryOn="@string/pe_bob_thumbnails_generating_mode_background"
             android:title="@string/pt_bob_thumbnails_generating_mode" />
@@ -120,7 +252,7 @@
             android:entries="@array/pe_thumbnails_rotate_auto"
             android:entryValues="@array/pv_thumbnails_rotate_auto"
             android:icon="@android:drawable/ic_menu_camera"
-            android:key="@string/pk_thumbnails_rotate_auto"
+            android:key="Image.Camera.Autorotate"
             android:title="@string/pt_thumbnails_rotate_auto" />
 
         <ListPreference
@@ -129,10 +261,54 @@
             android:entries="@array/pe_thumbnails_cropper_layer_type"
             android:entryValues="@array/pv_thumbnails_cropper_layer_type"
             android:icon="@drawable/ic_build"
-            android:key="@string/pk_thumbnail_cropper_layer_type"
+            android:key="Image.ViewLayerType"
             android:title="@string/pt_thumbnail_cropper_layer_type" />
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/lbl_credentials">
+        <PreferenceScreen
+            android:icon="@drawable/ic_goodreads"
+            android:key="@string/goodreads"
+            android:title="@string/goodreads">
+            <intent android:action="goodreads.credentials.EDIT" />
+        </PreferenceScreen>
 
+        <PreferenceScreen
+            android:icon="@drawable/ic_security"
+            android:key="@string/library_thing"
+            android:title="@string/library_thing">
+            <intent android:action="librarything.credentials.EDIT" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/lbl_search_sites">
+        <PreferenceScreen
+            android:icon="@drawable/ic_sort"
+            android:key="@string/lbl_search_site_order"
+            android:title="@string/lbl_search_site_order">
+            <intent android:action="search.website.order.EDIT" />
+        </PreferenceScreen>
+
+        <EditTextPreference
+            android:defaultValue="https://books.google.com"
+            android:icon="@drawable/ic_link"
+            android:inputType="textUri"
+            android:key="GoogleBooks.hostUrl"
+            android:title="@string/google_books" />
+
+        <EditTextPreference
+            android:defaultValue="https://www.amazon.com"
+            android:icon="@drawable/ic_link"
+            android:inputType="textUri"
+            android:key="Amazon.hostUrl"
+            android:title="@string/amazon" />
+
+        <!--<EditTextPreference-->
+            <!--android:defaultValue="http://www.isfdb.org"-->
+            <!--android:icon="@drawable/ic_link"-->
+            <!--android:inputType="textUri"-->
+            <!--android:key="ISFDB.hostUrl"-->
+            <!--android:title="@string/ISFDB" />-->
+    </PreferenceCategory>
 </PreferenceScreen>

@@ -214,6 +214,8 @@ public class DomainDefinition
     }
 
     /**
+     * toString() NOT DEBUG
+     * <p>
      * useful for using the DomainDefinition in place of a domain name.
      *
      * @return the name of the domain.

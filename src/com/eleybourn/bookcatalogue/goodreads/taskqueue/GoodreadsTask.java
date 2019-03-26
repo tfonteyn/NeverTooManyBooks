@@ -97,7 +97,7 @@ public abstract class GoodreadsTask
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
         // Update task info binding
-        holder.description.setText(getDescription());
+        holder.description.setText(getDescription(context));
         String statusCode = tasksCursor.getStatusCode().toUpperCase();
         String statusText;
         switch (statusCode) {

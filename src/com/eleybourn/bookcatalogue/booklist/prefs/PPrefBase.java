@@ -5,10 +5,8 @@ import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.App;
 
 /**
  * Base class for a generic Preference.
@@ -29,18 +27,20 @@ public abstract class PPrefBase<T>
     @NonNull
     final T mDefaultValue;
     /** key for the Preference */
-    @StringRes
-    private final int mKey;
+    @NonNull
+    private final String mKey;
     /** in memory value used for non-persistence situations. */
     @Nullable
     T mNonPersistedValue;
 
     /**
+     * Constructor.
+     *
      * @param key          key of preference
      * @param uuid         of the style
      * @param defaultValue in memory default
      */
-    PPrefBase(@StringRes final int key,
+    PPrefBase(@NonNull final String key,
               @NonNull final String uuid,
               @NonNull final T defaultValue) {
         mKey = key;
@@ -51,13 +51,13 @@ public abstract class PPrefBase<T>
     @NonNull
     @Override
     public String getKey() {
-        return BookCatalogueApp.getResString(mKey);
+        return mKey;
     }
 
     @Override
     public void remove() {
         if (!mUuid.isEmpty()) {
-            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
+            App.getPrefs(mUuid).edit().remove(getKey()).apply();
         }
     }
 
@@ -71,9 +71,9 @@ public abstract class PPrefBase<T>
         if (mUuid.isEmpty()) {
             mNonPersistedValue = value;
         } else if (value == null) {
-            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
+            App.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
-            Prefs.getPrefs(mUuid).edit().putString(getKey(), String.valueOf(value)).apply();
+            App.getPrefs(mUuid).edit().putString(getKey(), String.valueOf(value)).apply();
         }
     }
 
@@ -117,7 +117,7 @@ public abstract class PPrefBase<T>
     @Override
     @NonNull
     public String toString() {
-        return "mKey=" + BookCatalogueApp.getResString(mKey)
+        return "mKey=" + mKey
                 + ", type=" + mDefaultValue.getClass().getSimpleName()
                 + ", defaultValue=`" + mDefaultValue + '`'
                 + ", mNonPersistedValue=`" + mNonPersistedValue + '`';

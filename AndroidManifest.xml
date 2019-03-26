@@ -21,7 +21,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
-        android:name=".BookCatalogueApp"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@drawable/bc_launcher4"
         android:label="@string/app_name"
@@ -67,7 +67,8 @@
             This is the activity that will appear in the app launcher
 
             The StartupActivity activity takes care of all pre-UI tasks.
-            It does not rebuild on orientation changes so progress dialogs are easier
+            android:configChanges="orientation|keyboardHidden" -> we'll basically IGNORE these,
+            hence it does not rebuild on orientation changes so progress dialogs are easier.
 
             The StartupActivity activity is just a forwarder to the BooksOnBookshelf Activity.
             So in theory it is OK to make it singleInstance
@@ -77,7 +78,7 @@
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleInstance"
             android:noHistory="true"
-            android:theme="@style/Invisible">
+            android:theme="@style/StartupActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -125,11 +126,23 @@
         <activity android:name=".UpdateFieldsFromInternetActivity" />
 
         <!-- AdminActivity: Credentials Goodreads -->
-        <activity android:name=".goodreads.GoodreadsRegisterActivity" />
+        <activity android:name=".goodreads.GoodreadsRegisterActivity" >
+            <intent-filter>
+                <action android:name="goodreads.credentials.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!-- AdminActivity: Credentials LibraryThing -->
         <activity android:name=".searches.librarything.LibraryThingAdminActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+            <intent-filter>
+                <action android:name="librarything.credentials.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!-- AdminActivity: Goodreads background tasks & events -->
         <activity android:name=".goodreads.taskqueue.TaskQueueListActivity" />
@@ -138,7 +151,13 @@
         <!-- AdminActivity: Search Sites configuration -->
         <activity
             android:name=".searches.SearchAdminActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+            <intent-filter>
+                <action android:name="search.website.order.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!-- Local Search -->
         <activity

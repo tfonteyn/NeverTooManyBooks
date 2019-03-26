@@ -19,10 +19,18 @@
  */
 package com.eleybourn.bookcatalogue.backup.csv;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.Exporter;
@@ -32,13 +40,6 @@ import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
@@ -104,6 +105,8 @@ public class CsvExporter
     /** backup copies to keep. */
     private static final int COPIES = 5;
     @NonNull
+    private final Context mContext;
+    @NonNull
     private final DBA mDb;
     @NonNull
     private final ExportSettings mSettings;
@@ -165,8 +168,10 @@ public class CsvExporter
      *                 Other flags are ignored, as this method only
      *                 handles {@link ExportSettings#BOOK_CSV} anyhow.
      */
-    public CsvExporter(@NonNull final ExportSettings settings) {
-        mDb = new DBA(BookCatalogueApp.getAppContext());
+    public CsvExporter(@NonNull final Context context,
+                       @NonNull final ExportSettings settings) {
+        mContext = context;
+        mDb = new DBA(mContext);
         mSettings = settings;
         settings.validate();
     }
@@ -190,12 +195,11 @@ public class CsvExporter
     public int doBooks(@NonNull final OutputStream outputStream,
                        @NonNull final ExportListener listener)
             throws IOException {
-        final String UNKNOWN = BookCatalogueApp.getResString(R.string.unknown);
-        final String AUTHOR = BookCatalogueApp.getResString(R.string.lbl_author);
+        final String UNKNOWN = mContext.getString(R.string.unknown);
+        final String AUTHOR = mContext.getString(R.string.lbl_author);
 
         // Display startup message
-        listener.onProgress(
-                BookCatalogueApp.getResString(R.string.progress_msg_export_starting), 0);
+        listener.onProgress(mContext.getString(R.string.progress_msg_export_starting), 0);
         boolean displayingStartupMessage = true;
 
         long lastUpdate = 0;

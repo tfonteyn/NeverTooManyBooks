@@ -2,23 +2,24 @@ package com.eleybourn.bookcatalogue.entities;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.R;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.R;
+
 /**
  * System wide book format representation.
- *
+ * <p>
  * ENHANCE: make a separate table for the format.
- *
+ * <p>
  * {@link com.eleybourn.bookcatalogue.database.DatabaseDefinitions#DOM_BOOK_FORMAT}
  */
 public final class Format {
 
     /** map to translate site book format' terminology with our own. */
     private static final Map<String, Integer> MAPPER = new HashMap<>();
+
     // use lowercase keys!
     static {
         MAPPER.put("pb", R.string.book_format_paperback);
@@ -43,7 +44,7 @@ public final class Format {
      */
     public static String map(@NonNull final String source) {
         Integer resId = MAPPER.get(source.toLowerCase());
-        return resId != null ? BookCatalogueApp.getResString(resId)
+        return resId != null ? App.getResString(resId)
                              : source;
     }
 }

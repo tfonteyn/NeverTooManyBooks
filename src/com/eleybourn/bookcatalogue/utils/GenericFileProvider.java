@@ -2,7 +2,7 @@ package com.eleybourn.bookcatalogue.utils;
 
 import androidx.core.content.FileProvider;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 
 /**
  * This does not really need to be a class as after all we only really want the AUTHORITY string.
@@ -16,6 +16,6 @@ public class GenericFileProvider
      * <p>
      * android:authorities="${packageName}.GenericFileProvider"
      */
-    public static final String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName() +
-            ".GenericFileProvider";
+    public static final String AUTHORITY =
+            App.getAppContext().getPackageName() + ".GenericFileProvider";
 }

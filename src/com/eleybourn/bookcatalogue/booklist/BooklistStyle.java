@@ -30,6 +30,7 @@ import android.util.TypedValue;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.MultiSelectListPreference;
 
@@ -44,9 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BooksMultiTypeListHandler;
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.filters.BooleanFilter;
 import com.eleybourn.bookcatalogue.booklist.prefs.PBitmask;
 import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
@@ -294,18 +294,20 @@ public class BooklistStyle
      * Standard Parcelable constructor.
      */
     protected BooklistStyle(@NonNull final Parcel in) {
-        this(in, false);
+        this(in, false, null);
     }
 
     /**
      * Custom Parcelable constructor which allows cloning/new.
      *
-     * @param in    Parcel to read the object from
-     * @param doNew when set to true, partially override the incoming data so we get
-     *              a 'new' object but with the settings from the Parcel.
+     * @param in      Parcel to read the object from
+     * @param doNew   when set to true, partially override the incoming data so we get
+     *                a 'new' object but with the settings from the Parcel.
+     * @param context caller context, will be null when doNew==false !
      */
     protected BooklistStyle(@NonNull final Parcel in,
-                            final boolean doNew) {
+                            final boolean doNew,
+                            @Nullable final Context context) {
         mId = in.readLong();
         mNameResId = in.readInt();
         //noinspection ConstantConditions
@@ -323,7 +325,8 @@ public class BooklistStyle
         // create new clone ?
         if (doNew) {
             // get a copy of the name first
-            setName(getDisplayName());
+            //noinspection ConstantConditions
+            setName(getDisplayName(context));
             // now reset the other identifiers.
             mId = 0;
             mNameResId = 0;
@@ -359,7 +362,7 @@ public class BooklistStyle
     @NonNull
     private String createUniqueName() {
         mUuid = UUID.randomUUID().toString();
-        Prefs.getPrefs(mUuid).edit().putString(PREF_STYLE_UUID, mUuid).apply();
+        App.getPrefs(mUuid).edit().putString(PREF_STYLE_UUID, mUuid).apply();
         return mUuid;
     }
 
@@ -376,43 +379,43 @@ public class BooklistStyle
      */
     private void initPrefs() {
 
-        mDisplayName = new PString(R.string.pk_bob_style_name, mUuid);
+        mDisplayName = new PString(Prefs.pk_bob_style_name, mUuid);
 
         mStyleGroups = new PStyleGroups(mUuid);
 
-        mIsPreferred = new PBoolean(R.string.pk_bob_preferred_style, mUuid);
-        mScaleSize = new PInteger(R.string.pk_bob_item_size, mUuid);
-        mShowHeaderInfo = new PBitmask(R.string.pk_bob_header, mUuid, SUMMARY_SHOW_ALL);
+        mIsPreferred = new PBoolean(Prefs.pk_bob_preferred_style, mUuid);
+        mScaleSize = new PInteger(Prefs.pk_bob_item_size, mUuid);
+        mShowHeaderInfo = new PBitmask(Prefs.pk_bob_header, mUuid, SUMMARY_SHOW_ALL);
 
-        mSortAuthor = new PBoolean(R.string.pk_bob_sort_author_name, mUuid);
+        mSortAuthor = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid);
 
-        mExtraShowThumbnails = new PBoolean(R.string.pk_bob_thumbnails_show, mUuid, true);
+        mExtraShowThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show, mUuid, true);
 
-        mExtraLargeThumbnails = new PBoolean(R.string.pk_bob_thumbnails_show_large, mUuid);
-        mExtraShowBookshelves = new PBoolean(R.string.pk_bob_show_bookshelves, mUuid);
-        mExtraShowLocation = new PBoolean(R.string.pk_bob_show_location, mUuid);
-        mExtraShowAuthor = new PBoolean(R.string.pk_bob_show_author, mUuid);
-        mExtraShowPublisher = new PBoolean(R.string.pk_bob_show_publisher, mUuid);
-        mExtraShowFormat = new PBoolean(R.string.pk_bob_show_format, mUuid);
+        mExtraLargeThumbnails = new PBoolean(Prefs.pk_bob_thumbnails_show_large, mUuid);
+        mExtraShowBookshelves = new PBoolean(Prefs.pk_bob_show_bookshelves, mUuid);
+        mExtraShowLocation = new PBoolean(Prefs.pk_bob_show_location, mUuid);
+        mExtraShowAuthor = new PBoolean(Prefs.pk_bob_show_author, mUuid);
+        mExtraShowPublisher = new PBoolean(Prefs.pk_bob_show_publisher, mUuid);
+        mExtraShowFormat = new PBoolean(Prefs.pk_bob_show_format, mUuid);
 
         mFilters = new LinkedHashMap<>();
 
-        mFilterRead = new BooleanFilter(R.string.pk_bob_filter_read, mUuid,
+        mFilterRead = new BooleanFilter(Prefs.pk_bob_filter_read, mUuid,
                                         DatabaseDefinitions.TBL_BOOKS,
                                         DatabaseDefinitions.DOM_BOOK_READ);
         mFilters.put(mFilterRead.getKey(), mFilterRead);
 
-        mFilterSigned = new BooleanFilter(R.string.pk_bob_filter_signed, mUuid,
+        mFilterSigned = new BooleanFilter(Prefs.pk_bob_filter_signed, mUuid,
                                           DatabaseDefinitions.TBL_BOOKS,
                                           DatabaseDefinitions.DOM_BOOK_SIGNED);
         mFilters.put(mFilterSigned.getKey(), mFilterSigned);
 
-        mFilterAnthology = new BooleanFilter(R.string.pk_bob_filter_anthology, mUuid,
+        mFilterAnthology = new BooleanFilter(Prefs.pk_bob_filter_anthology, mUuid,
                                              DatabaseDefinitions.TBL_BOOKS,
                                              DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK);
         mFilters.put(mFilterAnthology.getKey(), mFilterAnthology);
 
-        mFilterLoaned = new BooleanFilter(R.string.pk_bob_filter_loaned, mUuid,
+        mFilterLoaned = new BooleanFilter(Prefs.pk_bob_filter_loaned, mUuid,
                                           DatabaseDefinitions.TBL_BOOKS,
                                           DatabaseDefinitions.DOM_BOOK_LOANEE);
         mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
@@ -473,9 +476,9 @@ public class BooklistStyle
      * @return the system name or user-defined name based on kind of style this object defines.
      */
     @NonNull
-    public String getDisplayName() {
+    public String getDisplayName(@NonNull final Context context) {
         if (mNameResId != 0) {
-            return BookCatalogueApp.getResString(mNameResId);
+            return context.getString(mNameResId);
         } else {
             return mDisplayName.get();
         }
@@ -511,7 +514,7 @@ public class BooklistStyle
      * store the current style as the global default one.
      */
     public void setDefault() {
-        Prefs.getPrefs().edit().putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT, mId).apply();
+        App.getPrefs().edit().putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT, mId).apply();
     }
 
     /**
@@ -766,11 +769,11 @@ public class BooklistStyle
      * Convenience function to return a list of group names in a human readable format.
      */
     @NonNull
-    public String getGroupListDisplayNames() {
+    public String getGroupListDisplayNames(@NonNull final Context context) {
         return Csv.toDisplayString(mStyleGroups.getGroups(), new Csv.Formatter<BooklistGroup>() {
             @Override
             public String format(@NonNull final BooklistGroup element) {
-                return element.getName();
+                return element.getName(context);
             }
         });
     }
@@ -816,10 +819,10 @@ public class BooklistStyle
      * Used by built-in styles only.
      */
     @SuppressWarnings("SameParameterValue")
-    void setFilter(@NonNull final Integer key,
+    void setFilter(@NonNull final String key,
                    final boolean value) {
         //noinspection ConstantConditions
-        mFilters.get(BookCatalogueApp.getResString(key)).set(value);
+        mFilters.get(key).set(value);
     }
 
     /**
@@ -846,7 +849,7 @@ public class BooklistStyle
         } // else it's a pre-version object, just use it
 
 
-        SharedPreferences.Editor ed = Prefs.getPrefs(mUuid).edit();
+        SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
         mExtraShowThumbnails.set(ed, (Boolean) object);
 
         mExtraLargeThumbnails.set(ed, (Boolean) in.readObject());
@@ -917,7 +920,8 @@ public class BooklistStyle
      * The clone is committed! (written to a new pref file, and stored in the database)
      */
     @NonNull
-    public BooklistStyle getClone(@NonNull final DBA db) {
+    public BooklistStyle getClone(@NonNull final Context context,
+                                  @NonNull final DBA db) {
         Parcel parcel = Parcel.obtain();
         writeToParcel(parcel, 0);
         byte[] bytes = parcel.marshall();
@@ -926,7 +930,7 @@ public class BooklistStyle
         parcel = Parcel.obtain();
         parcel.unmarshall(bytes, 0, bytes.length);
         parcel.setDataPosition(0);
-        BooklistStyle clone = new BooklistStyle(parcel, true);
+        BooklistStyle clone = new BooklistStyle(parcel, true, context);
         parcel.recycle();
 
         clone.setId(db.insertBooklistStyle(clone));
@@ -968,7 +972,7 @@ public class BooklistStyle
 
         db.deleteBooklistStyle(mId);
         // API: 24 -> BookCatalogueApp.getAppContext().deleteSharedPreferences(mUuid);
-        Prefs.getPrefs(mUuid).edit().clear().apply();
+        App.getPrefs(mUuid).edit().clear().apply();
     }
 
     @Override
@@ -1005,7 +1009,7 @@ public class BooklistStyle
         private final ArrayList<BooklistGroup> mGroups = new ArrayList<>();
 
         PStyleGroups(final String uuid) {
-            super(R.string.pk_bob_groups, uuid);
+            super(Prefs.pk_bob_groups, uuid);
             loadGroups();
         }
 

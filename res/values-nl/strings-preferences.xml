@@ -56,12 +56,12 @@
     <string name="pt_ui_language">Interface taal</string>
 
     <!-- Preference - Degrees by which to rotate camera images automatically -->
-    <string name="pt_thumbnails_rotate_auto">met camera-opnames automatisch draaien</string>
+    <string name="pt_thumbnails_rotate_auto">Camera-opnames automatisch draaien</string>
     <string-array name="pe_thumbnails_rotate_auto">
         <item>Nee</item>
-        <item>Rechts draaien</item>
-        <item>Links draaien</item>
-        <item>180 graden draaien</item>
+        <item>Rechts</item>
+        <item>Links</item>
+        <item>180 graden</item>
     </string-array>
 
     <!-- Preference - Compatibility / bug workaround for some devices -->

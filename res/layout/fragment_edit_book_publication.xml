@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/border"
+        >
+
+        <TextView
+            android:id="@+id/lbl_format"
+            style="@style/lbl_editField"
+            android:labelFor="@id/format"
+            android:text="@string/lbl_format"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <AutoCompleteTextView
+            android:id="@+id/format"
+            style="@style/bookFormatTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:completionThreshold="2"
+            app:layout_constraintEnd_toStartOf="@id/btn_format"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_format"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_format"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/format"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/format"
+            app:layout_constraintTop_toTopOf="@id/format"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription"
+            />
+
+        <TextView
+            android:id="@+id/lbl_language"
+            style="@style/lbl_editField"
+            android:labelFor="@id/language"
+            android:text="@string/lbl_language"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/format"
+            />
+
+        <AutoCompleteTextView
+            android:id="@+id/language"
+            style="@style/languageTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:completionThreshold="2"
+            app:layout_constraintEnd_toStartOf="@id/btn_language"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_language"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_language"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/language"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/language"
+            app:layout_constraintTop_toTopOf="@id/language"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription"
+            />
+
+        <TextView
+            android:id="@+id/lbl_publishing"
+            style="@style/lbl_editField"
+            android:labelFor="@id/publisher"
+            android:text="@string/lbl_publisher"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/language"
+            />
+
+        <AutoCompleteTextView
+            android:id="@+id/publisher"
+            style="@style/personalNameTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:completionThreshold="2"
+            app:layout_constraintEnd_toStartOf="@id/btn_publisher"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_publisher"
+            style="@style/itemEditButton"
+            app:layout_constraintBottom_toBottomOf="@id/publisher"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/publisher"
+            app:layout_constraintTop_toTopOf="@id/publisher"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription"
+            />
+
+        <TextView
+            android:id="@+id/lbl_date_published"
+            style="@style/lbl_editField"
+            android:text="@string/lbl_date_published"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/publisher"
+            />
+
+        <Button
+            android:id="@+id/date_published"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_date_published"
+            />
+
+        <TextView
+            android:id="@+id/lbl_first_publication"
+            style="@style/lbl_editField"
+            android:text="@string/lbl_first_publication"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/date_published"
+            />
+
+        <Button
+            android:id="@+id/first_publication"
+            style="@style/buttonDataEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
+            />
+
+        <TextView
+            android:id="@+id/lbl_pages"
+            style="@style/lbl_editField"
+            android:labelFor="@id/pages"
+            android:text="@string/lbl_pages"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/first_publication"
+            />
+
+        <!-- input type text, so details like 'intro pages', 'appendix pages' etc can be used -->
+        <EditText
+            android:id="@+id/pages"
+            style="@style/simpleTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_pages"
+            tools:ignore="Autofill"
+            tools:text="999"
+            />
+
+        <TextView
+            android:id="@+id/lbl_price_listed"
+            style="@style/lbl_editField"
+            android:labelFor="@id/price_listed"
+            android:text="@string/lbl_price_listed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pages"
+            />
+
+        <EditText
+            android:id="@+id/price_listed"
+            style="@style/priceTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@id/price_listed_currency"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
+            tools:ignore="Autofill"
+            tools:text="14.99"
+            />
+
+        <AutoCompleteTextView
+            android:id="@+id/price_listed_currency"
+            style="@style/currencyTextEntry"
+            app:layout_constraintBaseline_toBaselineOf="@id/price_listed"
+            app:layout_constraintEnd_toStartOf="@id/btn_price_listed_currency"
+            app:layout_constraintStart_toEndOf="@id/price_listed"
+            tools:ignore="Autofill,LabelFor"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_price_listed_currency"
+            style="@style/itemEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/price_listed_currency"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/price_listed_currency"
+            app:layout_constraintTop_toTopOf="@id/price_listed_currency"
+            app:srcCompat="@drawable/ic_arrow_drop_down"
+            tools:ignore="ContentDescription"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

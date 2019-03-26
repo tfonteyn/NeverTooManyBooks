@@ -20,12 +20,13 @@
 
 package com.eleybourn.bookcatalogue.booklist;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.utils.Prefs;
@@ -77,8 +78,7 @@ public final class BooklistStyles {
     private static final int BUILTIN_RATING = -17;
     private static final int BUILTIN_BOOKSHELF = -18;
     private static final int BUILTIN_DATE_LAST_UPDATE = -19;
-    /** initialised at first use. */
-    private static Map<Long, BooklistStyle> mBuiltinStyles;
+
     private BooklistStyles() {
     }
 
@@ -91,7 +91,7 @@ public final class BooklistStyles {
      */
     public static BooklistStyle getDefaultStyle(@NonNull final DBA db) {
         // read the global user default, or if not present the hardcoded default.
-        long id = Prefs.getPrefs().getLong(PREF_BL_STYLE_CURRENT_DEFAULT, DEFAULT_STYLE);
+        long id = App.getPrefs().getLong(PREF_BL_STYLE_CURRENT_DEFAULT, DEFAULT_STYLE);
         // now check that the style really/still exists!
         BooklistStyle style = getStyles(db, true).get(id);
         if (style == null) {
@@ -131,11 +131,9 @@ public final class BooklistStyles {
      */
     @NonNull
     private static Map<Long, BooklistStyle> getBuiltinStyles() {
-        if (mBuiltinStyles != null) {
-            return mBuiltinStyles;
-        }
 
-        mBuiltinStyles = new LinkedHashMap<>();
+        //TODO: cache this map, but rebuild if the Locale changes.
+        Map<Long, BooklistStyle> builtinStyles = new LinkedHashMap<>();
         BooklistStyle style;
 
         // Author/Series
@@ -143,21 +141,21 @@ public final class BooklistStyles {
                                   R.string.style_builtin_author_series,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Unread
         style = new BooklistStyle(BUILTIN_UNREAD_AUTHOR_THEN_SERIES,
                                   R.string.style_builtin_unread,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
-        style.setFilter(R.string.pk_bob_filter_read, false);
+        builtinStyles.put(style.getId(), style);
+        style.setFilter(Prefs.pk_bob_filter_read, false);
 
         // Compact
         style = new BooklistStyle(BUILTIN_COMPACT,
                                   R.string.style_builtin_compact,
                                   BooklistGroup.RowKind.AUTHOR);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
         style.setScaleSize(BooklistStyle.SCALE_SIZE_SMALLER);
         style.setShowThumbnails(false);
 
@@ -165,13 +163,13 @@ public final class BooklistStyles {
         style = new BooklistStyle(BUILTIN_TITLE_FIRST_LETTER,
                                   R.string.style_builtin_title_first_letter,
                                   BooklistGroup.RowKind.TITLE_LETTER);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Series
         style = new BooklistStyle(BUILTIN_SERIES,
                                   R.string.style_builtin_series,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Genre
         style = new BooklistStyle(BUILTIN_GENRE,
@@ -179,7 +177,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.GENRE,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Loaned
         style = new BooklistStyle(BUILTIN_LENDING,
@@ -187,7 +185,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.LOANED,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Read & Unread
         style = new BooklistStyle(BUILTIN_READ_AND_UNREAD,
@@ -195,7 +193,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.READ_STATUS,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Publication date
         style = new BooklistStyle(BUILTIN_PUBLICATION_DATA,
@@ -204,7 +202,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.DATE_PUBLISHED_MONTH,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Added date
         style = new BooklistStyle(BUILTIN_DATE_ADDED,
@@ -213,7 +211,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.DATE_ADDED_MONTH,
                                   BooklistGroup.RowKind.DATE_ADDED_DAY,
                                   BooklistGroup.RowKind.AUTHOR);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Acquired date
         style = new BooklistStyle(BUILTIN_DATE_ACQUIRED,
@@ -222,7 +220,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.DATE_ACQUIRED_MONTH,
                                   BooklistGroup.RowKind.DATE_ACQUIRED_DAY,
                                   BooklistGroup.RowKind.AUTHOR);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Author/Publication date
         style = new BooklistStyle(BUILTIN_AUTHOR_AND_YEAR,
@@ -230,13 +228,13 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.DATE_PUBLISHED_YEAR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Format
         style = new BooklistStyle(BUILTIN_FORMAT,
                                   R.string.lbl_format,
                                   BooklistGroup.RowKind.FORMAT);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Read date
         style = new BooklistStyle(BUILTIN_DATE_READ,
@@ -244,7 +242,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.DATE_READ_YEAR,
                                   BooklistGroup.RowKind.DATE_READ_MONTH,
                                   BooklistGroup.RowKind.AUTHOR);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Location
         style = new BooklistStyle(BUILTIN_LOCATION,
@@ -252,7 +250,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.LOCATION,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Location
         style = new BooklistStyle(BUILTIN_LANGUAGE,
@@ -260,7 +258,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.LANGUAGE,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Rating
         style = new BooklistStyle(BUILTIN_RATING,
@@ -268,7 +266,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.RATING,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Bookshelf
         style = new BooklistStyle(BUILTIN_BOOKSHELF,
@@ -276,7 +274,7 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.BOOKSHELF,
                                   BooklistGroup.RowKind.AUTHOR,
                                   BooklistGroup.RowKind.SERIES);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
 
         // Update date
         style = new BooklistStyle(BUILTIN_DATE_LAST_UPDATE,
@@ -284,12 +282,12 @@ public final class BooklistStyles {
                                   BooklistGroup.RowKind.DATE_LAST_UPDATE_YEAR,
                                   BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH,
                                   BooklistGroup.RowKind.DATE_LAST_UPDATE_DAY);
-        mBuiltinStyles.put(style.getId(), style);
+        builtinStyles.put(style.getId(), style);
         style.setShowAuthor(true);
 
         // NEWKIND: BooklistStyle
 
-        return mBuiltinStyles;
+        return builtinStyles;
     }
 
     /**
@@ -380,7 +378,7 @@ public final class BooklistStyles {
     @NonNull
     private static Set<Long> getPreferredStyleMenuOrder() {
         Set<Long> ids = new LinkedHashSet<>();
-        String itemsStr = Prefs.getPrefs().getString(PREF_BL_PREFERRED_STYLES, null);
+        String itemsStr = App.getPrefs().getString(PREF_BL_PREFERRED_STYLES, null);
 
         if (itemsStr != null && !itemsStr.isEmpty()) {
             String[] entries = itemsStr.split(",");
@@ -402,10 +400,10 @@ public final class BooklistStyles {
      * @param list of style id's
      */
     private static void setPreferredStyleMenuOrder(@NonNull final Set<Long> list) {
-        Prefs.getPrefs()
-             .edit()
-             .putString(PREF_BL_PREFERRED_STYLES, TextUtils.join(",", list))
-             .apply();
+        App.getPrefs()
+           .edit()
+           .putString(PREF_BL_PREFERRED_STYLES, TextUtils.join(",", list))
+           .apply();
     }
 
     /**
@@ -443,18 +441,20 @@ public final class BooklistStyles {
      *
      * @return internal id, or the default style id if not found.
      */
-    public static long getStyleId(@NonNull final String name) {
+    public static long getStyleId(@NonNull final Context context,
+                                  @NonNull final String name) {
+
         // check builtin first.
         for (BooklistStyle style : getBuiltinStyles().values()) {
-            if (style.getDisplayName().equals(name)) {
+            if (style.getDisplayName(context).equals(name)) {
                 return style.getId();
             }
         }
 
         // try user-defined
-        try (DBA db = new DBA(BookCatalogueApp.getAppContext())) {
+        try (DBA db = new DBA(context)) {
             for (BooklistStyle style : BooklistStyles.getUserStyles(db).values()) {
-                if (style.getDisplayName().equals(name)) {
+                if (style.getDisplayName(context).equals(name)) {
                     return style.getId();
                 }
             }

@@ -5,8 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/border_double"
     android:orientation="vertical"
-    android:layout_margin="@dimen/border_double">
+    >
 
     <ImageButton
         android:id="@+id/btn_path_up"
@@ -19,7 +20,8 @@
         app:layout_constraintEnd_toStartOf="@id/path"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_folder_open" />
+        app:srcCompat="@drawable/ic_folder_open"
+        />
 
     <TextView
         android:id="@+id/current_folder"
@@ -35,14 +37,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn_path_up"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="/storage/emulated/0/MyDirectory/subdir" />
+        tools:text="/storage/emulated/0/MyDirectory/sub"
+        />
 
     <View
         android:id="@+id/header_divider"
         style="@style/div_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_path_up" />
+        app:layout_constraintTop_toBottomOf="@id/btn_path_up"
+        />
 
     <!-- a ListView is probably good enough. I guess it needed to be 'fast' when all covers
     were residing in the root directory. -->
@@ -55,7 +59,8 @@
         app:layout_constraintBottom_toTopOf="@id/footer_divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_divider">
+        app:layout_constraintTop_toBottomOf="@id/header_divider"
+        >
 
         <requestFocus />
     </ListView>
@@ -66,7 +71,8 @@
         app:layout_constraintBottom_toTopOf="@id/file_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@android:id/list" />
+        app:layout_constraintTop_toBottomOf="@android:id/list"
+        />
 
     <!-- no style used on purpose -->
     <EditText
@@ -81,6 +87,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/footer_divider"
         tools:ignore="LabelFor,UnusedAttribute"
-        tools:text="my_library-2019-03-08.bcbk" />
+        tools:text="my_library-2019-03-08.bcbk"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,4 +3,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coverImage"
     style="@style/zoomedCoverImage"
-    tools:ignore="ContentDescription" />
+    tools:ignore="ContentDescription"
+    />

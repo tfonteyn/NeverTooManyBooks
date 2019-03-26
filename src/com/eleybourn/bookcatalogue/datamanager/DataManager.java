@@ -27,6 +27,12 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.datamanager.accessors.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.validators.BlankValidator;
@@ -38,13 +44,7 @@ import com.eleybourn.bookcatalogue.datamanager.validators.NonBlankValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.OrValidator;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.RTE;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 
 /**
  * Class to manage a version of a set of related data.
@@ -423,7 +423,7 @@ public class DataManager {
                     break;
 
                 default:
-                    throw new RTE.IllegalTypeException("" + cursor.getType(i));
+                    throw new IllegalTypeException("" + cursor.getType(i));
             }
         }
 
@@ -468,7 +468,7 @@ public class DataManager {
      * @return The Parcelable ArrayList
      */
     @NonNull
-    protected <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {
+    public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {
         return mDatumMap.get(key).getParcelableArrayList(this, mRawData);
     }
 
@@ -633,15 +633,12 @@ public class DataManager {
         }
     }
 
-    /**
-     * Format the passed bundle in a way that is convenient for display.
-     *
-     * @return Formatted string
-     */
     @NonNull
     @Override
     public String toString() {
-        return Datum.toString(mRawData);
+        return "DataManager{" + super.toString()
+                + ",mRawData=" + Datum.toString(mRawData)
+                + '}';
     }
 
     /**

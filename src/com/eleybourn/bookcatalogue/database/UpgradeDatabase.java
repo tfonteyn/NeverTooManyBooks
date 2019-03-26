@@ -5,14 +5,14 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
 
+import java.io.File;
+
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
 import com.eleybourn.bookcatalogue.database.dbsync.TransactionException;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.File;
 
 import static com.eleybourn.bookcatalogue.database.DBA.COLLATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
@@ -21,7 +21,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS
 /**
  * Moved all upgrade specific definitions/methods from {@link DBHelper} here.
  * and removed all pre v4.0.0 upgrades.
- * As 4.0.0 was from 2012, and it's now Jan-2019...
+ * As 4.0.0 was from 2012, and it's now Mar-2019...
  * <p>
  * This should help reduce memory footprint.
  * <p>
@@ -191,7 +191,7 @@ public final class UpgradeDatabase {
 
     /** Set the flag to indicate an FTS rebuild is required. */
     private static void scheduleFtsRebuild() {
-        Prefs.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
+        App.getPrefs().edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
     }
 
     /**
@@ -321,8 +321,8 @@ public final class UpgradeDatabase {
         }
         if (curVersion < 75) {
             curVersion = 75;
-            Prefs.getPrefs()
-                 .edit().putBoolean(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true).apply();
+            App.getPrefs()
+               .edit().putBoolean(V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED, true).apply();
         }
         if (curVersion < 80) {
             curVersion = 80;

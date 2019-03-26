@@ -27,17 +27,17 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Closeable;
+
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
-
-import java.io.Closeable;
 
 /**
  * Cursor implementation for book-related queries. The cursor wraps common
  * column lookups and reduces code clutter when accessing common columns by
  * providing a {@link BookCursorRow}
- *
+ * <p>
  * Note: why are the methods of BookCursorRow not simply here?
  * Answer: (I think) because this way we have two-way inheritance,
  * parts of the RowView can be re-used for different cursors.
@@ -86,7 +86,6 @@ public class BookCursor
     }
 
     /**
-     *
      * @return the row object
      */
     @NonNull

@@ -23,17 +23,17 @@ package com.eleybourn.bookcatalogue.goodreads.taskqueue;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.eleybourn.bookcatalogue.App;
 
 /**
  * Class to handle service-level aspects of the queues.
@@ -309,7 +309,7 @@ public final class QueueManager {
      */
     boolean runTask(@NonNull final Task task) {
         if (task instanceof GoodreadsTask) {
-            return ((GoodreadsTask) task).run(this, BookCatalogueApp.getAppContext());
+            return ((GoodreadsTask) task).run(this, App.getAppContext());
         } else {
             // Either extend RunnableTask, or override QueueManager.runTask()
             throw new IllegalStateException("Can not handle tasks that are not RunnableTasks");
@@ -329,11 +329,14 @@ public final class QueueManager {
 
     /**
      * Make a toast message for the caller. Queue in UI thread if necessary.
+     * <p>
+     * Hardwired to use the application context as there is no way to get an activity or view
+     * for using SnackBar
      */
     private void doToast(@NonNull final String message) {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
-                UserMessage.showUserMessage(message);
+                Toast.makeText(App.getAppContext(), message, Toast.LENGTH_LONG).show();
             }
         } else {
             /* Send message to the handler */
@@ -475,6 +478,7 @@ public final class QueueManager {
     }
 
     public interface OnChangeListener {
+
         void onChange();
     }
 

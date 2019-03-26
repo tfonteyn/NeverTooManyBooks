@@ -44,7 +44,7 @@ import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.debug.MustImplementException;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -68,10 +68,7 @@ public class FileChooserFragment
         public void onClick(@NonNull final View v) {
             String parent = mRootPath.getParent();
             if (parent == null) {
-                //Snackbar.make(requireView(),
-                // R.string.no_parent_directory_found, Snackbar.LENGTH_LONG).show();
-                UserMessage.showUserMessage(requireActivity(),
-                                            R.string.warning_no_parent_directory_found);
+                UserMessage.showUserMessage(v, R.string.warning_no_parent_directory_found);
                 return;
             }
             mRootPath = new File(parent);
@@ -121,7 +118,7 @@ public class FileChooserFragment
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
         if (!(context instanceof OnPathChangedListener)) {
-            throw new RTE.MustImplementException(context, OnPathChangedListener.class);
+            throw new MustImplementException(context, OnPathChangedListener.class);
         }
     }
 

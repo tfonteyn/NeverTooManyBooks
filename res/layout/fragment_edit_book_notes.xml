@@ -4,12 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border">
+        android:layout_margin="@dimen/border"
+        >
+
+        <TextView
+            android:id="@+id/lbl_rating"
+            style="@style/lbl_editField"
+            android:labelFor="@id/rating"
+            android:text="@string/lbl_rating"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <RatingBar
+            android:id="@+id/rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_rating"
+            />
 
         <CheckBox
             android:id="@+id/read"
@@ -17,14 +37,16 @@
             android:layout_height="wrap_content"
             android:text="@string/lbl_is_read"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/rating"
+            />
 
         <TextView
             android:id="@+id/lbl_read_start"
             style="@style/lbl_editField"
             android:text="@string/lbl_read_start"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/read" />
+            app:layout_constraintTop_toBottomOf="@id/read"
+            />
 
         <Button
             android:id="@+id/read_start"
@@ -33,14 +55,16 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_read_start" />
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_start"
+            />
 
         <TextView
             android:id="@+id/lbl_read_end"
             style="@style/lbl_editField"
             android:text="@string/lbl_read_end"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/read_start" />
+            app:layout_constraintTop_toBottomOf="@id/read_start"
+            />
 
         <Button
             android:id="@+id/read_end"
@@ -49,7 +73,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_read_end" />
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_end"
+            />
 
         <TextView
             android:id="@+id/lbl_location"
@@ -57,7 +82,8 @@
             android:labelFor="@id/location"
             android:text="@string/lbl_location_long"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/read_end" />
+            app:layout_constraintTop_toBottomOf="@id/read_end"
+            />
 
         <AutoCompleteTextView
             android:id="@+id/location"
@@ -68,7 +94,8 @@
             android:inputType="textCapSentences"
             app:layout_constraintEnd_toStartOf="@id/btn_location"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_location" />
+            app:layout_constraintTop_toBottomOf="@id/lbl_location"
+            />
 
         <ImageButton
             android:id="@+id/btn_location"
@@ -80,49 +107,16 @@
             app:layout_constraintStart_toEndOf="@id/location"
             app:layout_constraintTop_toTopOf="@id/location"
             app:srcCompat="@drawable/ic_arrow_drop_down"
-            tools:ignore="ContentDescription" />
-
-        <TextView
-            android:id="@+id/lbl_rating"
-            style="@style/lbl_editField"
-            android:labelFor="@+id/rating"
-            android:text="@string/lbl_rating"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/location" />
-
-        <RatingBar
-            android:id="@+id/rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:numStars="5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_rating" />
-
-        <TextView
-            android:id="@+id/lbl_notes"
-            style="@style/lbl_editField"
-            android:labelFor="@+id/notes"
-            android:text="@string/menu_edit_book_notes"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rating" />
-
-        <EditText
-            android:id="@+id/notes"
-            style="@style/multiLineTextEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_notes"
-            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-            tools:ignore="Autofill" />
+            tools:ignore="ContentDescription"
+            />
 
         <TextView
             android:id="@+id/lbl_date_acquired"
             style="@style/lbl_editField"
             android:text="@string/lbl_date_acquired"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notes" />
+            app:layout_constraintTop_toBottomOf="@id/location"
+            />
 
         <Button
             android:id="@+id/date_acquired"
@@ -131,7 +125,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired" />
+            app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
+            />
 
         <TextView
             android:id="@+id/lbl_price_paid"
@@ -140,7 +135,8 @@
             android:text="@string/lbl_price_paid"
             app:layout_constraintBottom_toTopOf="@id/price_paid"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/date_acquired" />
+            app:layout_constraintTop_toBottomOf="@id/date_acquired"
+            />
 
         <EditText
             android:id="@+id/price_paid"
@@ -153,7 +149,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
             tools:ignore="Autofill"
-            tools:text="14.99" />
+            tools:text="14.99"
+            />
 
         <AutoCompleteTextView
             android:id="@+id/price_paid_currency"
@@ -161,7 +158,8 @@
             app:layout_constraintBaseline_toBaselineOf="@id/price_paid"
             app:layout_constraintEnd_toStartOf="@id/btn_price_paid_currency"
             app:layout_constraintStart_toEndOf="@id/price_paid"
-            tools:ignore="Autofill,LabelFor" />
+            tools:ignore="Autofill,LabelFor"
+            />
 
         <ImageButton
             android:id="@+id/btn_price_paid_currency"
@@ -173,22 +171,16 @@
             app:layout_constraintStart_toEndOf="@id/price_paid_currency"
             app:layout_constraintTop_toTopOf="@id/price_paid_currency"
             app:srcCompat="@drawable/ic_arrow_drop_down"
-            tools:ignore="ContentDescription" />
-
-        <CheckBox
-            android:id="@+id/signed"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/lbl_is_signed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/price_paid" />
+            tools:ignore="ContentDescription"
+            />
 
         <TextView
             android:id="@+id/lbl_edition"
             style="@style/lbl_editField"
             android:text="@string/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/signed" />
+            app:layout_constraintTop_toBottomOf="@id/price_paid"
+            />
 
         <Button
             android:id="@+id/edition"
@@ -197,9 +189,46 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_edition" />
+            app:layout_constraintTop_toBottomOf="@id/lbl_edition"
+            />
 
+        <CheckBox
+            android:id="@+id/signed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_is_signed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edition"
+            />
 
+        <View
+            android:id="@+id/notes_divider"
+            style="@style/div_horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/signed"
+            />
+
+        <TextView
+            android:id="@+id/lbl_notes"
+            style="@style/lbl_editField"
+            android:labelFor="@id/notes"
+            android:text="@string/menu_edit_book_notes"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/notes_divider"
+            />
+
+        <EditText
+            android:id="@+id/notes"
+            style="@style/multiLineTextEntry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_notes"
+            tools:ignore="Autofill"
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

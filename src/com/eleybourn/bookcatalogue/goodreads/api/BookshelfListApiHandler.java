@@ -143,8 +143,8 @@ public class BookshelfListApiHandler
         // into standard form.
         Bundle results = mFilters.getData();
 
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-            Logger.info(this, "run","Found "
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            Logger.info(this, "run", "Found "
                     + results.getLong(GrBookshelfFields.TOTAL)
                     + " shelves in " + (System.currentTimeMillis() - t0) + "ms");
         }

@@ -44,6 +44,7 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -51,7 +52,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.TaskManager;
 import com.eleybourn.bookcatalogue.utils.Csv;
-import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -391,8 +392,9 @@ public class UpdateFieldsFromInternetTask
      */
     public void onSearchFinished(final boolean wasCancelled,
                                  @NonNull final Bundle bookData) {
-        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "onSearchFinished", "bookId=" + mCurrentBookId);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+            Logger.info(this, Tracker.State.Enter,"onSearchFinished",
+                        "bookId=" + mCurrentBookId);
         }
 
 
@@ -434,7 +436,7 @@ public class UpdateFieldsFromInternetTask
                                       @NonNull final Map<String, Fields.FieldUsage> requestedFields,
                                       @NonNull final Bundle newBookData,
                                       @NonNull final Bundle originalBookData) {
-        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
             Logger.info(this, "processSearchResults", "bookId=" + bookId);
         }
         // First, filter the data to remove keys we don't care about
@@ -519,9 +521,9 @@ public class UpdateFieldsFromInternetTask
 
             default:
                 // No idea how to handle this for non-arrays
-                throw new RTE.IllegalTypeException("Illegal usage '" + usage.usage
-                                                           + "' for field '"
-                                                           + usage.fieldId + '\'');
+                throw new IllegalTypeException("Illegal usage `" + usage.usage
+                                                           + "` for field `"
+                                                           + usage.fieldId + '`');
         }
     }
 

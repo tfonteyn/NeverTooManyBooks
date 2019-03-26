@@ -28,14 +28,14 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import java.util.Date;
+
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-
-import java.util.Date;
 
 /**
  * Class to encapsulate the INFO block from an archive.
@@ -137,7 +137,7 @@ public class BackupInfo
         infoBundle.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
         infoBundle.putString(INFO_CREATION_DATE, DateUtils.utcSqlDateTimeForToday());
 
-        PackageInfo packageInfo = BookCatalogueApp.getPackageInfo(0);
+        PackageInfo packageInfo = App.getPackageInfo(0);
         if (packageInfo != null) {
             infoBundle.putString(INFO_APPPACKAGE, packageInfo.packageName);
             infoBundle.putString(INFO_APPVERSIONNAME, packageInfo.versionName);
@@ -303,7 +303,7 @@ public class BackupInfo
      * @return <tt>true</tt> if valid
      */
     public boolean isValid() {
-        if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
             Logger.info(this, "isValid", mBundle.toString());
         }
         // extremely simple check: we assume that if one field is present, the rest will be there.

@@ -47,46 +47,37 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * <p>
  * error methods will always print a stacktrace (even if you do not pass in an exception)
  * <p>
- * Log.d: compiled in, but stripped out at runtime
+ * * ALWAYS call the 'info' methods like this:
+ * *         if (BuildConfig.DEBUG) {
+ * *             Logger.info(...);
+ * *         }
  */
 public final class Logger {
 
-    private static final String TAG = "BC_Logger";
+    private static final String LOG_TAG = "BC_Logger";
     @SuppressLint("SimpleDateFormat")
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private Logger() {
     }
 
-    /* ****************************************************************************************** */
-
     /**
      * For instance callers
      */
     public static void info(@NonNull final Object object,
                             @NonNull final String methodName,
-                            @Nullable final String message) {
-        if (/* always log */ BuildConfig.DEBUG) {
-            Log.d(TAG, buildInfoMessage(object, methodName, message));
-        }
+                            @NonNull final Object... params) {
+        Log.w(LOG_TAG, buildInfoMessage(object, Tracker.State.Running, methodName, concat(params)));
     }
 
     /**
-     * For tracking enter/exit of methods, with parameter dump.
+     * For tracking enter/exit of methods, with optional parameter dump.
      */
     public static void info(@NonNull final Object object,
                             @NonNull final Tracker.State state,
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
-        if (BuildConfig.DEBUG) {
-            StringBuilder message = new StringBuilder("(");
-            for (Object parameter : params) {
-                message.append(parameter).append(',');
-            }
-            message.append(')');
-
-            Log.d(TAG, buildInfoMessage(object, methodName, state + "|" + message.toString()));
-        }
+        Log.w(LOG_TAG, buildInfoMessage(object, state, methodName, concat(params)));
     }
 
     /**
@@ -94,19 +85,27 @@ public final class Logger {
      */
     public static void info(@NonNull final Class clazz,
                             @Nullable final String message) {
-        if (/* always log */ BuildConfig.DEBUG) {
-            Log.d(TAG, "INFO|" + clazz.getCanonicalName() + '|' + message);
-        }
+        Log.w(LOG_TAG, "INFO|" + clazz.getCanonicalName() + '|' + message);
     }
 
-
+    private static String concat(@NonNull final Object[] params) {
+        StringBuilder message = new StringBuilder("|");
+        for (Object parameter : params) {
+            message.append(parameter).append(',');
+        }
+        message.append('.');
+        return message.toString();
+    }
 
     private static String buildInfoMessage(@NonNull final Object object,
+                                           @NonNull final Tracker.State state,
                                            @NonNull final String methodName,
                                            @Nullable final String message) {
         Class clazz = object.getClass();
         StringBuilder msg = new StringBuilder("INFO|");
         msg.append(clazz.isAnonymousClass() ? "AnonymousClass" : clazz.getCanonicalName());
+        msg.append('|');
+        msg.append(state);
         msg.append('|');
         if (!methodName.isEmpty()) {
             msg.append(methodName).append('|');
@@ -115,13 +114,11 @@ public final class Logger {
         return msg.toString();
     }
 
-
-
     /* ****************************************************************************************** */
 
     public static void debug(@NonNull final String message) {
         if (/* always log */ BuildConfig.DEBUG) {
-            Log.e(TAG, buildErrorMessage(new DebugStackTrace(), message)
+            Log.e(LOG_TAG, buildErrorMessage(new DebugStackTrace(), message)
                     .replaceFirst("ERROR", "DEBUG"));
         }
     }
@@ -159,8 +156,9 @@ public final class Logger {
         String result = buildErrorMessage(e, message);
         // only place where we should write to the logfile.
         writeToLog(result);
+        // for convenience also send to console during development
         if (/* always log */ BuildConfig.DEBUG) {
-            Log.e(TAG, result);
+            Log.e(LOG_TAG, result);
         }
     }
 
@@ -221,9 +219,6 @@ public final class Logger {
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignore) {
             // Ignore backup failure...
-        } finally {
-            // 'touch' to get a new logfile.
-            writeToLog("");
         }
     }
 

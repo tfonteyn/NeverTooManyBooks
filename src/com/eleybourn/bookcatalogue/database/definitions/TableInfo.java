@@ -5,11 +5,11 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 
 /**
  * Details of a database table.

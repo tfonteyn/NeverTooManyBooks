@@ -133,7 +133,6 @@ public class EditBookNotesFragment
         mFields.add(R.id.rating, UniqueId.KEY_RATING);
 
         mFields.add(R.id.notes, UniqueId.KEY_NOTES);
-        //ENHANCE: initTextFieldEditor(R.id.notes, R.string.lbl_notes, R.id.btn_notes, true);
 
         mFields.add(R.id.price_paid, UniqueId.KEY_PRICE_PAID);
         field = mFields.add(R.id.price_paid_currency, UniqueId.KEY_PRICE_PAID_CURRENCY);
@@ -143,10 +142,13 @@ public class EditBookNotesFragment
         field = mFields.add(R.id.location, UniqueId.KEY_LOCATION);
         initValuePicker(field, R.string.lbl_location, R.id.btn_location, getLocations());
 
+        //noinspection ConstantConditions
         field = mFields.add(R.id.edition, UniqueId.KEY_EDITION_BITMASK)
-                       .setFormatter(new Fields.BookEditionsFormatter());
-        initCheckListEditor(TAG, field, R.string.lbl_edition,
-                            new CheckListEditorListGetter<Integer>() {
+                       .setFormatter(new Book.BookEditionsFormatter(getContext()));
+        //noinspection ConstantConditions
+        initCheckListEditor(getTag(), field, R.string.lbl_edition,
+                            new CheckListEditorDialogFragment.CheckListEditorListGetter<Integer>() {
+                                @NonNull
                                 @Override
                                 public ArrayList<CheckListItem<Integer>> getList() {
                                     return getBookManager().getBook().getEditableEditionList();
@@ -155,15 +157,15 @@ public class EditBookNotesFragment
 
         field = mFields.add(R.id.date_acquired, UniqueId.KEY_DATE_ACQUIRED)
                        .setFormatter(dateFormatter);
-        initPartialDatePicker(TAG, field, R.string.lbl_date_acquired, true);
+        initPartialDatePicker(getTag(), field, R.string.lbl_date_acquired, true);
 
         field = mFields.add(R.id.read_start, UniqueId.KEY_READ_START)
                        .setFormatter(dateFormatter);
-        initPartialDatePicker(TAG, field, R.string.lbl_read_start, true);
+        initPartialDatePicker(getTag(), field, R.string.lbl_read_start, true);
 
         field = mFields.add(R.id.read_end, UniqueId.KEY_READ_END)
                        .setFormatter(dateFormatter);
-        initPartialDatePicker(TAG, field, R.string.lbl_read_end, true);
+        initPartialDatePicker(getTag(), field, R.string.lbl_read_end, true);
 
         mFields.addCrossValidator(new Fields.FieldCrossValidator() {
             private static final long serialVersionUID = -3288341939109142352L;
@@ -205,13 +207,6 @@ public class EditBookNotesFragment
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment shutdown">
-
-    @Override
-    @CallSuper
-    public void onPause() {
-        onSaveFieldsToBook(getBookManager().getBook());
-        super.onPause();
-    }
 
     /**
      * Overriding to get extra debug.

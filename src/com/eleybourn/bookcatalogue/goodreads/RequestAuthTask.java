@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.goodreads;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 class RequestAuthTask
         extends AsyncTask<Void, Object, Integer> {
 
+    /** Fragment manager tag. */
     private static final String TAG = RequestAuthTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_GR_REQUEST_AUTH;
@@ -61,6 +63,8 @@ class RequestAuthTask
     @NonNull
     @WorkerThread
     protected Integer doInBackground(final Void... params) {
+        Context context = mFragment.getContextWithHorribleClutch();
+
         GoodreadsManager grMgr = new GoodreadsManager();
         // should only happen if the developer forgot to add the Goodreads keys.... (me)
         if (grMgr.noKey()) {
@@ -70,7 +74,8 @@ class RequestAuthTask
         // This next step can take several seconds....
         if (!grMgr.hasValidCredentials()) {
             try {
-                grMgr.requestAuthorization(mFragment.requireContext());
+                //noinspection ConstantConditions
+                grMgr.requestAuthorization(context);
             } catch (IOException e) {
                 Logger.error(e);
                 return R.string.gr_access_error;

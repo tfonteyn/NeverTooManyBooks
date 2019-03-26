@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <com.eleybourn.bookcatalogue.widgets.PagerLayout
         android:id="@+id/gallery"
@@ -11,12 +12,14 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        >
 
         <!-- layout_width/layout_height is controlled from CoverBrowser.java, changing it here has no effect -->
         <androidx.viewpager.widget.ViewPager
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            />
     </com.eleybourn.bookcatalogue.widgets.PagerLayout>
 
     <TextView
@@ -27,7 +30,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/gallery"
-        tools:text="switcher status text" />
+        tools:text="switcher status text"
+        />
 
     <ImageSwitcher
         android:id="@+id/switcher"
@@ -38,6 +42,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/switcherStatus"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

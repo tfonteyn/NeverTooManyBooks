@@ -62,7 +62,7 @@ public class EventQueueListActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
 
         mTaskId = getIntent().getLongExtra(REQUEST_BKEY_TASK_ID, 0);
-         // Once we have the task id, call the parent
+        // Once we have the task id, call the parent
         super.onCreate(savedInstanceState);
 
         setTitle(R.string.gr_tq_title_task_errors);

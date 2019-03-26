@@ -7,11 +7,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +20,10 @@ import java.util.List;
 public class ISFDBManager
         implements SearchSites.SearchSiteManager {
 
-    private static final String TAG = "ISFDB.";
+    /** Preferences prefix. */
+    private static final String PREF_PREFIX = "ISFDB.";
 
-    private static final String PREFS_HOST_URL = TAG + "hostUrl";
+    private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
 
     /**
      * Constructor.
@@ -33,11 +34,11 @@ public class ISFDBManager
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return Prefs.getPrefs().getString(PREFS_HOST_URL, "http://www.isfdb.org");
+        return App.getPrefs().getString(PREFS_HOST_URL, "http://www.isfdb.org");
     }
 
     public static void setBaseURL(@NonNull final String url) {
-        Prefs.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
+        App.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
     }
 
 
@@ -102,7 +103,7 @@ public class ISFDBManager
 
         Bundle bookData = new Bundle();
 
-        if (IsbnUtils.isValid(isbn)) {
+        if (ISBN.isValid(isbn)) {
             List<String> editions = new Editions(isbn).fetch();
             if (!editions.isEmpty()) {
                 ISFDBBook isfdbBook = new ISFDBBook(editions);

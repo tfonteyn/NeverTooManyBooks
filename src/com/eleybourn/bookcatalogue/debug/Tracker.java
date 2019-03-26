@@ -53,19 +53,18 @@ public final class Tracker {
                                      @Nullable final Bundle savedInstanceState) {
         createEvent(a, State.Enter, "onCreate");
 
-        if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(a, "onCreate", State.Enter
-                    + "|savedInstanceState=" + savedInstanceState);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+            Logger.info(a, State.Enter, "onCreate",
+                        "savedInstanceState=" + savedInstanceState);
 
             if (a instanceof Activity) {
                 @SuppressWarnings("UnusedAssignment")
                 Bundle extras = ((Activity) a).getIntent().getExtras();
                 if (extras != null) {
-                    Logger.info(a, "onCreate", State.Running
-                            + "|extras=" + extras);
+                    Logger.info(a, "onCreate", "extras=" + extras);
                     if (extras.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                        Logger.info(a, "onCreate", State.Running
-                                + "|extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
+                        Logger.info(a, "onCreate",
+                                    "extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
                     }
                 }
             }
@@ -81,34 +80,32 @@ public final class Tracker {
 
     /**
      * @param fragment           Fragment
-     * @param message            generic string
      * @param savedInstanceState Bundle
      */
     public static void enterOnActivityCreated(@NonNull final Fragment fragment,
-                                              @NonNull final String message,
                                               @Nullable final Bundle savedInstanceState) {
         createEvent(fragment, State.Enter, "onActivityCreated");
 
-        if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(fragment, message + "|onActivityCreated", State.Enter
-                    + "|savedInstanceState=" + savedInstanceState);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+            Logger.info(fragment, State.Enter, "onActivityCreated",
+                        "savedInstanceState=" + savedInstanceState);
             @SuppressWarnings("UnusedAssignment")
             Bundle args = fragment.getArguments();
             if (args != null) {
-                Logger.info(fragment, message + "|onActivityCreated",
-                            State.Running + "|args=" + args);
+                Logger.info(fragment, "onActivityCreated", "args=" + args);
                 if (args.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                    Logger.info(fragment, "onActivityCreated", State.Running
-                            + "|args=" + args.getBundle(
-                            UniqueId.BKEY_BOOK_DATA));
+                    Logger.info(fragment, "onActivityCreated",
+                                "args=" + args.getBundle(UniqueId.BKEY_BOOK_DATA));
                 }
             }
-
         }
     }
 
     public static void exitOnActivityCreated(@NonNull final Object a) {
         createEvent(a, State.Exit, "onActivityCreated");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+            Logger.info(a, State.Exit, "onActivityCreated");
+        }
     }
 
 
@@ -118,95 +115,115 @@ public final class Tracker {
                                              @Nullable final Intent data) {
         createEvent(a, State.Enter, "onActivityResult" + requestCode + '|' + resultCode);
 
-        if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
-            Logger.info(a, "onActivityResult", State.Enter
-                    + "|requestCode=" + requestCode
-                    + "|resultCode=" + resultCode
-                    + "|data=" + data);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.info(a, State.Enter, "onActivityResult",
+                        "requestCode=" + requestCode,
+                        "resultCode=" + resultCode,
+                        "data=" + data);
         }
     }
 
     public static void exitOnActivityResult(@NonNull final Object a) {
         createEvent(a, State.Exit, "onActivityResult");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.info(a, State.Exit, "nActivityResult");
+        }
     }
-
 
     public static void enterOnSaveInstanceState(@NonNull final Object a,
                                                 @NonNull final Bundle outState) {
         createEvent(a, State.Enter, "onSaveInstanceState");
-        if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveInstanceState", State.Enter
-                    + "|outState=" + outState);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+            Logger.info(a, State.Enter, "onSaveInstanceState",
+                        "outState=" + outState);
         }
     }
 
     public static void exitOnSaveInstanceState(@NonNull final Object a,
                                                @NonNull final Bundle outState) {
         createEvent(a, State.Exit, "onSaveInstanceState");
-        if (DEBUG_SWITCHES.INSTANCE_STATE && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveInstanceState", State.Exit
-                    + "|outState=" + outState);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+            Logger.info(a, State.Exit, "onSaveInstanceState",
+                        "outState=" + outState);
         }
     }
 
     public static void enterOnLoadFieldsFromBook(@NonNull final Object a,
                                                  final long bookId) {
         createEvent(a, State.Enter, "onLoadFieldsFromBook");
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onLoadFieldsFromBook", State.Enter
-                    + "|bookId=" + bookId);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS) {
+            Logger.info(a, State.Enter, "onLoadFieldsFromBook",
+                        "bookId=" + bookId);
         }
     }
 
     public static void exitOnLoadFieldsFromBook(@NonNull final Object a,
                                                 final long bookId) {
         createEvent(a, State.Exit, "onLoadFieldsFromBook");
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onLoadFieldsFromBook", State.Exit
-                    + "|bookId=" + bookId);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS) {
+            Logger.info(a, State.Exit, "onLoadFieldsFromBook",
+                        "bookId=" + bookId);
         }
     }
 
     public static void enterOnSaveFieldsToBook(@NonNull final Object a,
                                                final long bookId) {
         createEvent(a, State.Enter, "onSaveFieldsToBook");
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveFieldsToBook", State.Enter
-                    + "|bookId=" + bookId);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS) {
+            Logger.info(a, State.Enter, "onSaveFieldsToBook",
+                        "bookId=" + bookId);
         }
     }
 
     public static void exitOnSaveFieldsToBook(@NonNull final Object a,
                                               final long bookId) {
         createEvent(a, State.Exit, "onSaveFieldsToBook");
-        if (DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS && BuildConfig.DEBUG) {
-            Logger.info(a, "onSaveFieldsToBook", State.Exit
-                    + "|bookId=" + bookId);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_BOOK_TRANSFERS) {
+            Logger.info(a, State.Exit, "onSaveFieldsToBook",
+                        "bookId=" + bookId);
         }
     }
 
     public static void enterOnDestroy(@NonNull final Object a) {
         createEvent(a, State.Enter, "onDestroy");
+        if (/* always debug */ BuildConfig.DEBUG) {
+            Logger.info(a, State.Enter, "onDestroy");
+        }
     }
 
     public static void exitOnDestroy(@NonNull final Object a) {
         createEvent(a, State.Exit, "onDestroy");
+        if (/* always debug */ BuildConfig.DEBUG) {
+            Logger.info(a, State.Exit, "onDestroy");
+        }
     }
 
     public static void enterOnPause(@NonNull final Object a) {
         createEvent(a, State.Enter, "onPause");
+        if (/* always debug */ BuildConfig.DEBUG) {
+            Logger.info(a, State.Enter, "onPause");
+        }
     }
 
     public static void exitOnPause(@NonNull final Object a) {
         createEvent(a, State.Exit, "onPause");
+        if (/* always debug */ BuildConfig.DEBUG) {
+            Logger.info(a, State.Exit, "onPause");
+        }
     }
 
     public static void enterOnResume(@NonNull final Object a) {
         createEvent(a, State.Enter, "onResume");
+        if (/* always debug */ BuildConfig.DEBUG) {
+            Logger.info(a, State.Enter, "onResume");
+        }
     }
 
     public static void exitOnResume(@NonNull final Object a) {
         createEvent(a, State.Exit, "onResume");
+        if (/* always debug */ BuildConfig.DEBUG) {
+            Logger.info(a, State.Exit, "onResume");
+        }
     }
 
     private static void createEvent(@NonNull final Object o,
@@ -239,6 +256,7 @@ public final class Tracker {
         Exit,
         Running;
 
+        @NonNull
         @Override
         public String toString() {
             switch (this) {
@@ -248,6 +266,7 @@ public final class Tracker {
                     return "Exit";
                 case Running:
                     return "Running";
+                //noinspection UnnecessaryDefault
                 default:
                     return "";
             }

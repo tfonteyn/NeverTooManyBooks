@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue.booklist.filters;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import com.eleybourn.bookcatalogue.booklist.prefs.PInteger;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
@@ -27,7 +26,7 @@ public class BooleanFilter
     private final TableDefinition mTable;
     private final DomainDefinition mDomain;
 
-    public BooleanFilter(@StringRes final int key,
+    public BooleanFilter(@NonNull final String key,
                          @NonNull final String uuid,
                          @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
                          @NonNull final DomainDefinition domain) {

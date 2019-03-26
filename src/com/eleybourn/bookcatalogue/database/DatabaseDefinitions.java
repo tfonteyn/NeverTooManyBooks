@@ -20,6 +20,9 @@
 
 package com.eleybourn.bookcatalogue.database;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
@@ -28,9 +31,6 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition.TableTypes;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Static definitions of database objects.
@@ -42,8 +42,10 @@ import java.util.Map;
  */
 public final class DatabaseDefinitions {
 
-    /** A collection of all tables used to be able to rebuild indexes etc...,
-     * added in order so interdependency's work out */
+    /**
+     * A collection of all tables used to be able to rebuild indexes etc...,
+     * added in order so interdependency's work out
+     */
     @SuppressWarnings("WeakerAccess")
     public static final Map<String, TableDefinition> ALL_TABLES = new LinkedHashMap<>();
 
@@ -100,55 +102,10 @@ public final class DatabaseDefinitions {
      */
     public static final TableDefinition TBL_BOOKS_FTS =
             new TableDefinition("books_fts").setType(TableTypes.FTS3);
-
-
-    /** Base Name of BOOK_LIST-related tables. */
-    private static final String DB_TB_BOOK_LIST_NAME = "book_list_tmp";
-
-    /** Keeps track of nodes in the list. Added to {@link #ALL_TABLES}.*/
-    public static final TableDefinition TBL_BOOK_LIST_NODE_SETTINGS =
-            new TableDefinition(DB_TB_BOOK_LIST_NAME + "_node_settings")
-                    .setAlias("blns");
-
-    /** Should NOT be added to {@link #ALL_TABLES}. */
-    public static final TableDefinition TBL_BOOK_LIST =
-            new TableDefinition(DB_TB_BOOK_LIST_NAME)
-                    //RELEASE Make sure is TEMPORARY
-                    .setType(TableTypes.Temporary)
-                    .setAlias("bl");
-
-    /** Should NOT be added to {@link #ALL_TABLES}. */
-    public static final TableDefinition TBL_ROW_NAVIGATOR =
-            new TableDefinition(DB_TB_BOOK_LIST_NAME + "_row_pos")
-                    //RELEASE Make sure is TEMPORARY
-                    .setType(TableTypes.Temporary)
-                    .setAlias("blrp");
-
-    /**
-     * Should NOT be added to {@link #ALL_TABLES}.
-     * <p>
-     * This table should always be created without column constraints applied,
-     * with the exception of the "_id" primary key autoincrement
-     */
-    public static final TableDefinition TBL_ROW_NAVIGATOR_FLATTENED =
-            new TableDefinition(DB_TB_BOOK_LIST_NAME + "_row_pos_flattened")
-                    //RELEASE Make sure is TEMPORARY
-                    .setType(TableTypes.Temporary)
-                    .setAlias("blrpf");
-
-    /* ========================================================================================== */
-    /*
-     * Domain definitions.
-     *
-     * NOTE!!! Because Java String comparisons are not case-insensitive, it is
-     * important that ALL these fields 'name' be listed in LOWER CASE.
-     */
-    /* ========================================================================================== */
     /** FTS primary key. */
     public static final DomainDefinition DOM_PK_DOCID = new DomainDefinition("docid");
     /** primary key. */
     public static final DomainDefinition DOM_PK_ID = new DomainDefinition("_id");
-
     /** foreign key. */
     public static final DomainDefinition DOM_FK_AUTHOR_ID =
             new DomainDefinition("author", ColumnInfo.TYPE_INTEGER, true)
@@ -161,6 +118,15 @@ public final class DatabaseDefinitions {
     public static final DomainDefinition DOM_FK_BOOK_ID =
             new DomainDefinition("book", ColumnInfo.TYPE_INTEGER, true)
                     .references(TBL_BOOKS, "ON DELETE CASCADE ON UPDATE CASCADE");
+
+    /* ========================================================================================== */
+    /*
+     * Domain definitions.
+     *
+     * NOTE!!! Because Java String comparisons are not case-insensitive, it is
+     * important that ALL these fields 'name' be listed in LOWER CASE.
+     */
+    /* ========================================================================================== */
     /** foreign key. */
     public static final DomainDefinition DOM_FK_SERIES_ID =
             new DomainDefinition("series_id", ColumnInfo.TYPE_INTEGER, true)
@@ -170,16 +136,14 @@ public final class DatabaseDefinitions {
     public static final DomainDefinition DOM_FK_TOC_ENTRY_ID =
             new DomainDefinition("anthology", ColumnInfo.TYPE_INTEGER, true)
                     .references(TBL_TOC_ENTRIES, "ON DELETE CASCADE ON UPDATE CASCADE");
-
-    /** foreign key.
-     * WARNING: if a style is deleted, this key will be set to DEFAULT */
+    /**
+     * foreign key.
+     * WARNING: if a style is deleted, this key will be set to DEFAULT
+     */
     public static final DomainDefinition DOM_FK_STYLE_ID =
             new DomainDefinition("style", ColumnInfo.TYPE_INTEGER, true)
                     .setDefault(BooklistStyles.DEFAULT_STYLE)
                     .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE");
-
-    /* ========================================================================================== */
-
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
     public static final DomainDefinition DOM_TITLE =
             new DomainDefinition("title", ColumnInfo.TYPE_TEXT, true);
@@ -191,9 +155,6 @@ public final class DatabaseDefinitions {
     public static final DomainDefinition DOM_LAST_UPDATE_DATE =
             new DomainDefinition("last_update_date", ColumnInfo.TYPE_DATETIME, true)
                     .setDefault("current_timestamp");
-
-    /* ========================================================================================== */
-
     /** {@link #TBL_AUTHORS}. */
     public static final DomainDefinition DOM_AUTHOR_FAMILY_NAME =
             new DomainDefinition("family_name", ColumnInfo.TYPE_TEXT, true);
@@ -201,6 +162,8 @@ public final class DatabaseDefinitions {
     public static final DomainDefinition DOM_AUTHOR_GIVEN_NAMES =
             new DomainDefinition("given_names", ColumnInfo.TYPE_TEXT, true)
                     .setDefaultEmptyString();
+
+    /* ========================================================================================== */
     /** {@link #TBL_AUTHORS}. */
     public static final DomainDefinition DOM_AUTHOR_IS_COMPLETE =
             new DomainDefinition("author_complete", ColumnInfo.TYPE_BOOLEAN, true)
@@ -213,7 +176,6 @@ public final class DatabaseDefinitions {
             new DomainDefinition("author_formatted_given_first", ColumnInfo.TYPE_TEXT, true);
 
     /* ========================================================================================== */
-
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_UUID =
             new DomainDefinition("book_uuid", ColumnInfo.TYPE_TEXT, true)
@@ -234,6 +196,8 @@ public final class DatabaseDefinitions {
     public static final DomainDefinition DOM_BOOK_EDITION_BITMASK =
             new DomainDefinition("edition_bm", ColumnInfo.TYPE_INTEGER, true)
                     .setDefault(0);
+
+    /* ========================================================================================== */
     /** {@link #TBL_BOOKS}. See {@link TocEntry.Type}. */
     public static final DomainDefinition DOM_BOOK_ANTHOLOGY_BITMASK =
             new DomainDefinition("anthology", ColumnInfo.TYPE_INTEGER, true)
@@ -325,9 +289,6 @@ public final class DatabaseDefinitions {
     public static final DomainDefinition DOM_BOOK_DATE_ADDED =
             new DomainDefinition("date_added", ColumnInfo.TYPE_DATETIME, true)
                     .setDefault("current_timestamp");
-
-    /* ========================================================================================== */
-
     /** {@link #TBL_SERIES). */
     public static final DomainDefinition DOM_SERIES_NAME =
             new DomainDefinition("series_name", ColumnInfo.TYPE_TEXT, true);
@@ -338,20 +299,14 @@ public final class DatabaseDefinitions {
     /** {@link #TBL_SERIES). */
     public static final DomainDefinition DOM_SERIES_FORMATTED =
             new DomainDefinition("series_formatted", ColumnInfo.TYPE_TEXT, true);
-
-    /* ========================================================================================== */
-
     /** {@link #TBL_BOOKSHELF). */
     public static final DomainDefinition DOM_BOOKSHELF =
             new DomainDefinition("bookshelf", ColumnInfo.TYPE_TEXT, true);
-
-    /* ========================================================================================== */
-
     /** {@link #TBL_BOOK_AUTHOR}. */
     public static final DomainDefinition DOM_BOOK_AUTHOR_POSITION =
             new DomainDefinition("author_position", ColumnInfo.TYPE_INTEGER, true);
-    /* ========================================================================================== */
 
+    /* ========================================================================================== */
     /** {@link #TBL_BOOK_SERIES}. */
     public static final DomainDefinition DOM_BOOK_SERIES_NUM =
             new DomainDefinition("series_num", ColumnInfo.TYPE_TEXT);
@@ -362,47 +317,44 @@ public final class DatabaseDefinitions {
      */
     public static final DomainDefinition DOM_BOOK_SERIES_POSITION =
             new DomainDefinition("series_position", ColumnInfo.TYPE_INTEGER, true);
-
-    /* ========================================================================================== */
-
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final DomainDefinition DOM_BOOK_LOANEE =
             new DomainDefinition("loaned_to", ColumnInfo.TYPE_TEXT, true);
 
     /* ========================================================================================== */
-
-    /** {@link #TBL_BOOK_TOC_ENTRIES}. */
-    static final DomainDefinition DOM_BOOK_TOC_ENTRY_POSITION =
-            new DomainDefinition("toc_entry_position", ColumnInfo.TYPE_INTEGER, true);
-
-    /* ========================================================================================== */
-
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
     public static final DomainDefinition DOM_UUID =
             new DomainDefinition("uuid", ColumnInfo.TYPE_TEXT, true)
                     .setDefaultEmptyString();
 
     /* ========================================================================================== */
-
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_LOANED_TO_SORT =
             new DomainDefinition("loaned_to_sort", ColumnInfo.TYPE_INTEGER, true);
+    /* ========================================================================================== */
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_AUTHOR_SORT =
             new DomainDefinition("author_sort", ColumnInfo.TYPE_TEXT, true);
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_READ_STATUS =
             new DomainDefinition("read_status", ColumnInfo.TYPE_TEXT, true);
+
+    /* ========================================================================================== */
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_TITLE_LETTER =
             new DomainDefinition("title_letter", ColumnInfo.TYPE_TEXT);
 
+    /* ========================================================================================== */
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_DATE_ADDED_DAY =
             new DomainDefinition("added_day", ColumnInfo.TYPE_INTEGER);
+
+    /* ========================================================================================== */
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_DATE_ADDED_MONTH =
             new DomainDefinition("added_month", ColumnInfo.TYPE_INTEGER);
+
+    /* ========================================================================================== */
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_DATE_ADDED_YEAR =
             new DomainDefinition("added_year", ColumnInfo.TYPE_INTEGER);
@@ -445,8 +397,6 @@ public final class DatabaseDefinitions {
     /** sorting and grouping in {@link BooklistGroup}. */
     public static final DomainDefinition DOM_DATE_PUBLISHED_YEAR =
             new DomainDefinition("pub_year", ColumnInfo.TYPE_INTEGER);
-
-    /* ========================================================================================== */
     /**
      * Series number, cast()'d for sorting purposes in {@link BooklistBuilder}
      * so we can sort it numerically regardless of content.
@@ -468,6 +418,8 @@ public final class DatabaseDefinitions {
     /** {@link #TBL_BOOK_LIST} {@link BooklistBuilder}. */
     public static final DomainDefinition DOM_BL_BOOK_COUNT =
             new DomainDefinition("book_count", ColumnInfo.TYPE_INTEGER);
+
+    /* ========================================================================================== */
     /** {@link #TBL_BOOK_LIST} {@link BooklistBuilder}. */
     public static final DomainDefinition DOM_BL_PRIMARY_SERIES_COUNT =
             new DomainDefinition("primary_series_count", ColumnInfo.TYPE_INTEGER);
@@ -486,15 +438,46 @@ public final class DatabaseDefinitions {
     public static final DomainDefinition DOM_BL_SELECTED =
             new DomainDefinition("selected", ColumnInfo.TYPE_BOOLEAN)
                     .setDefault(0);
+    /** {@link #TBL_BOOK_TOC_ENTRIES}. */
+    static final DomainDefinition DOM_BOOK_TOC_ENTRY_POSITION =
+            new DomainDefinition("toc_entry_position", ColumnInfo.TYPE_INTEGER, true);
     /**
      * {@link #TBL_BOOKS_FTS}
      * specific formatted list; example: "stephen baxter;arthur c. clarke;"
      */
     static final DomainDefinition DOM_FTS_AUTHOR_NAME =
             new DomainDefinition("author_name", ColumnInfo.TYPE_TEXT, true);
+    /** Base Name of BOOK_LIST-related tables. */
+    private static final String DB_TB_BOOK_LIST_NAME = "book_list_tmp";
+    /** Keeps track of nodes in the list. Added to {@link #ALL_TABLES}. */
+    public static final TableDefinition TBL_BOOK_LIST_NODE_SETTINGS =
+            new TableDefinition(DB_TB_BOOK_LIST_NAME + "_node_settings")
+                    .setAlias("blns");
+    /** Should NOT be added to {@link #ALL_TABLES}. */
+    public static final TableDefinition TBL_BOOK_LIST =
+            new TableDefinition(DB_TB_BOOK_LIST_NAME)
+                    //RELEASE Make sure is TEMPORARY
+                    .setType(TableTypes.Temporary)
+                    .setAlias("bl");
+    /** Should NOT be added to {@link #ALL_TABLES}. */
+    public static final TableDefinition TBL_ROW_NAVIGATOR =
+            new TableDefinition(DB_TB_BOOK_LIST_NAME + "_row_pos")
+                    //RELEASE Make sure is TEMPORARY
+                    .setType(TableTypes.Temporary)
+                    .setAlias("blrp");
+    /**
+     * Should NOT be added to {@link #ALL_TABLES}.
+     * <p>
+     * This table should always be created without column constraints applied,
+     * with the exception of the "_id" primary key autoincrement
+     */
+    public static final TableDefinition TBL_ROW_NAVIGATOR_FLATTENED =
+            new TableDefinition(DB_TB_BOOK_LIST_NAME + "_row_pos_flattened")
+                    //RELEASE Make sure is TEMPORARY
+                    .setType(TableTypes.Temporary)
+                    .setAlias("blrpf");
 
     /* ========================================================================================== */
-
 
     static {
         TBL_BOOKLIST_STYLES.addDomains(DOM_PK_ID,
@@ -574,9 +557,6 @@ public final class DatabaseDefinitions {
                  .addIndex(DOM_BOOK_OPEN_LIBRARY_ID.name, false, DOM_BOOK_OPEN_LIBRARY_ID)
                  .addIndex(DOM_BOOK_ISFDB_ID.name, false, DOM_BOOK_ISFDB_ID);
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
-
-
-
 
 
         TBL_BOOKSHELF.addDomains(DOM_PK_ID,

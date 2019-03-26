@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/row_in_ListView">
+    style="@style/row_in_ListView"
+    >
 
     <TextView
         android:id="@+id/title"
@@ -14,14 +15,16 @@
         app:layout_constraintEnd_toStartOf="@id/year"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The" />
+        tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The"
+        />
 
     <TextView
         android:id="@+id/year"
         style="@style/txt_detail_small"
-        android:textIsSelectable="false"
         android:layout_marginStart="@dimen/border_double"
+        android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="(1971)" />
+        tools:text="(1971)"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

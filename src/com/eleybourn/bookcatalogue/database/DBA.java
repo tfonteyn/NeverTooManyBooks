@@ -48,7 +48,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -77,7 +77,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -342,7 +342,7 @@ public class DBA
         // statements are instance based/managed
         mStatements = new SqlStatementManager(mSyncedDb);
 
-        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
             Logger.info(this, "DBA",
                         "instances created: " + DEBUG_INSTANCE_COUNT.incrementAndGet());
             //debugAddInstance(this);
@@ -353,7 +353,7 @@ public class DBA
      * @return the synchronizer object for this database in case there is some other activity
      * that needs to be synced.
      * <p>
-     * Note: Cursor requery() is the only thing found so far.
+     * Note: {@link Cursor#requery()} is the only thing found so far.
      */
     @NonNull
     public static Synchronizer getSynchronizer() {
@@ -564,7 +564,7 @@ public class DBA
             mStatements.close();
         }
 
-        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
             Logger.info(this, "close",
                         "instances left: " + DEBUG_INSTANCE_COUNT.decrementAndGet());
             //debugRemoveInstance(this);
@@ -848,7 +848,7 @@ public class DBA
             return true;
         }
 
-        if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
             Logger.info(this, "globalReplaceAuthor",
                         "from=" + from.getId() + ", to=" + to.getId());
         }
@@ -980,7 +980,8 @@ public class DBA
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlSelect.COUNT_BOOKS_BY_AUTHOR)) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                SqlSelect.COUNT_BOOKS_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
             return stmt.count();
         }
@@ -996,7 +997,8 @@ public class DBA
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlSelect.COUNT_TOC_ENTRIES_BY_AUTHOR)) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                SqlSelect.COUNT_TOC_ENTRIES_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
             return stmt.count();
         }
@@ -1024,7 +1026,7 @@ public class DBA
         }
 
         // Handle ANTHOLOGY_BITMASK only, no handling of actual titles here
-        ArrayList<TocEntry> tocEntries = book.getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        ArrayList<TocEntry> tocEntries = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
         if (!tocEntries.isEmpty()) {
             // definitively an anthology, overrule whatever the KEY_TOC_BITMASK was.
             int type = TocEntry.Type.MULTIPLE_WORKS;
@@ -1225,7 +1227,7 @@ public class DBA
      * @return the book UUID
      *
      * @throws IllegalArgumentException if the bookId==0
-     * @throws SQLiteDoneException if zero rows found, which should never happen... flw.
+     * @throws SQLiteDoneException      if zero rows found, which should never happen... flw.
      */
     @NonNull
     public String getBookUuid(final long bookId)
@@ -1375,7 +1377,7 @@ public class DBA
         }
 
         try {
-            if (DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT) {
                 Logger.info(this, "insertBookWithId", book.getRawData().toString());
             }
             // Cleanup fields (author, series, title and remove blank fields for which
@@ -1393,7 +1395,7 @@ public class DBA
             }
 
             // Make sure we have an author
-            List<Author> authors = book.getList(UniqueId.BKEY_AUTHOR_ARRAY);
+            List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
             if (authors.isEmpty()) {
                 Logger.error("No authors in book from\n" + book);
                 return -1L;
@@ -1458,7 +1460,7 @@ public class DBA
         }
 
         try {
-            if (DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE) {
                 Logger.info(this, "updateBook", book.getRawData().toString());
             }
 
@@ -1518,22 +1520,22 @@ public class DBA
                                       @NonNull final Book book) {
 
         if (book.containsKey(UniqueId.BKEY_BOOKSHELF_ARRAY)) {
-            ArrayList<Bookshelf> list = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+            ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
             insertBookBookshelf(bookId, list);
         }
 
         if (book.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)) {
-            ArrayList<Author> list = book.getList(UniqueId.BKEY_AUTHOR_ARRAY);
+            ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
             insertBookAuthors(bookId, list);
         }
 
         if (book.containsKey(UniqueId.BKEY_SERIES_ARRAY)) {
-            ArrayList<Series> list = book.getList(UniqueId.BKEY_SERIES_ARRAY);
+            ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
             insertBookSeries(bookId, list);
         }
 
         if (book.containsKey(UniqueId.BKEY_TOC_ENTRY_ARRAY)) {
-            ArrayList<TocEntry> list = book.getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+            ArrayList<TocEntry> list = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
             // update: toc entries are two steps away; they can exist in other books
             updateOrInsertTOC(bookId, list);
         }
@@ -1558,27 +1560,33 @@ public class DBA
     /**
      * @param isbn to search for (10 or 13)
      * @param both set to <tt>true</tt> to search for both isbn 10 and 13.
-     *             TOMF: stmt not protected
      *
      * @return book id, or 0 if not found
      */
     public long getBookIdFromIsbn(@NonNull final String isbn,
                                   final boolean both) {
         SynchronizedStatement stmt;
-        if (both && IsbnUtils.isValid(isbn)) {
+        if (both && ISBN.isValid(isbn)) {
             stmt = mStatements.get(STMT_GET_BOOK_ID_FROM_ISBN_2);
             if (stmt == null) {
                 stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_ISBN_2, SqlGet.BOOK_ID_BY_ISBN2);
             }
-            stmt.bindString(2, IsbnUtils.isbn2isbn(isbn));
+            synchronized (stmt) {
+                stmt.bindString(1, isbn);
+                stmt.bindString(2, ISBN.isbn2isbn(isbn));
+                return stmt.simpleQueryForLongOrZero();
+            }
         } else {
             stmt = mStatements.get(STMT_GET_BOOK_ID_FROM_ISBN_1);
             if (stmt == null) {
                 stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_ISBN_1, SqlGet.BOOK_ID_BY_ISBN);
             }
+            synchronized (stmt) {
+                stmt.bindString(1, isbn);
+                return stmt.simpleQueryForLongOrZero();
+            }
         }
-        stmt.bindString(1, isbn);
-        return stmt.simpleQueryForLongOrZero();
+
     }
 
     /**
@@ -1715,11 +1723,12 @@ public class DBA
 
         SynchronizedStatement insertBookTocStmt = mStatements.get(STMT_INSERT_BOOK_TOC_ENTRY);
         if (insertBookTocStmt == null) {
-            insertBookTocStmt = mStatements.add(STMT_INSERT_BOOK_TOC_ENTRY, SqlInsert.BOOK_TOC_ENTRY);
+            insertBookTocStmt = mStatements.add(STMT_INSERT_BOOK_TOC_ENTRY,
+                                                SqlInsert.BOOK_TOC_ENTRY);
         }
 
         for (TocEntry tocEntry : list) {
-            if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TMP_ANTHOLOGY) {
                 Logger.info(this, "updateOrInsertTOC",
                             "Adding TocEntryByBookId: " + tocEntry);
             }
@@ -1771,7 +1780,7 @@ public class DBA
                 insertBookTocStmt.executeInsert();
             }
 
-            if (DEBUG_SWITCHES.TMP_ANTHOLOGY && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TMP_ANTHOLOGY) {
                 Logger.info(this, "updateOrInsertTOC", "     bookId   : " + bookId);
                 Logger.info(this, "updateOrInsertTOC", "     authorId : " + author.getId());
                 Logger.info(this, "updateOrInsertTOC", "     tocId    : " + tocEntry.getId());
@@ -2025,7 +2034,7 @@ public class DBA
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(fromId),
                                                                   String.valueOf(toId)})) {
 
-            if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
                 Logger.info(this, "globalReplacePositionedBookItem",
                             "Re-position, total count=" + cursor.getCount());
             }
@@ -2064,7 +2073,7 @@ public class DBA
                 replacementIdPosStmt.bindLong(1, bookId);
                 replacementIdPosStmt.bindLong(2, toId);
                 long replacementIdPos = replacementIdPosStmt.simpleQueryForLong();
-                if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
                     Logger.info(this, "globalReplacePositionedBookItem",
                                 "id=" + bookId + ", to=" + toId + "=> replacementIdPos=" + replacementIdPos);
                 }
@@ -2076,7 +2085,7 @@ public class DBA
                 // If the deleted object was more prominent than the new object,
                 // move the new one up
                 if (replacementIdPos > pos) {
-                    if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
                         Logger.info(this, "globalReplacePositionedBookItem",
                                     "id=" + bookId + ", pos=" + pos
                                             + ", replacementIdPos=" + replacementIdPos);
@@ -2096,7 +2105,7 @@ public class DBA
                 long minPos = checkMinStmt.simpleQueryForLong();
                 // If it's > 1, move it to 1
                 if (minPos > 1) {
-                    if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
                         Logger.info(this, "globalReplacePositionedBookItem",
                                     "id=" + bookId + ", pos to 1, minPos=" + minPos);
                     }
@@ -3138,7 +3147,7 @@ public class DBA
             return true;
         }
 
-        if (DEBUG_SWITCHES.DBA_GLOBAL_REPLACE && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
             Logger.info(this, "globalReplaceSeries",
                         "from=" + from.getId() + ", to=" + to.getId());
         }
@@ -3173,7 +3182,8 @@ public class DBA
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlSelect.COUNT_BOOKS_IN_SERIES)) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                SqlSelect.COUNT_BOOKS_IN_SERIES)) {
             stmt.bindLong(1, series.getId());
             return stmt.count();
         }
@@ -3608,7 +3618,7 @@ public class DBA
         }
 
         long t0;
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             //noinspection UnusedAssignment
             t0 = System.currentTimeMillis();
         }
@@ -3655,7 +3665,7 @@ public class DBA
             }
         }
 
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             Logger.info(this, "rebuildFts",
                         (System.currentTimeMillis() - t0) + "ms");
         }
@@ -3817,7 +3827,7 @@ public class DBA
          */
         private static final String AUTHOR_FAMILY_COMMA_GIVEN =
                 TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-                        + " || ',' || " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES);
+                        + " || ', ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES);
 
         /**
          * Author "GivenNames FamilyName" in one SQL column.
@@ -3852,8 +3862,8 @@ public class DBA
 
 
         /**
-         * If no number -> series name.
-         * otherwise -> series name #number
+         * If no number -> "name".
+         * otherwise -> "name #number"
          */
         private static final String SERIES_WITH_NUMBER =
                 " CASE WHEN " + DOM_BOOK_SERIES_NUM + "=''"
@@ -3863,14 +3873,22 @@ public class DBA
                         + " AS " + DOM_SERIES_FORMATTED;
 
         /**
+         * "name (number)"
+         */
+        private static final String SERIES_WITH_NUMBER_IN_BRACKETS =
+                DOM_SERIES_NAME + "||' ('||" + DOM_BOOK_SERIES_NUM + "||')'"
+                        + " AS " + DOM_SERIES_FORMATTED;
+
+        /**
          * Series a book belongs to.
          * If the book has more then one series, concat " et al" after the primary series.
          */
         private static final String SERIES_LIST =
                 " CASE WHEN " + COLUMN_ALIAS_NR_OF_SERIES + " < 2"
                         + " THEN Coalesce(s." + DOM_SERIES_FORMATTED + ",'')"
-                        + " ELSE " + DOM_SERIES_FORMATTED
-                        + "||' " + BookCatalogueApp.getResString(R.string.and_others) + '\''
+                        + " ELSE "
+                        + DOM_SERIES_FORMATTED + "||' " + App.getResString(
+                        R.string.and_others) + '\''
                         + " END"
                         + " AS " + DOM_SERIES_FORMATTED;
         /**
@@ -4020,8 +4038,7 @@ public class DBA
                         + ',' + TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE)
                         + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_NUM)
                         + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_POSITION)
-                        + ',' + DOM_SERIES_NAME + "||' ('||" + DOM_BOOK_SERIES_NUM + "||')'"
-                        + /*    */ " AS " + DOM_SERIES_FORMATTED
+                        + ',' + SqlColumns.SERIES_WITH_NUMBER_IN_BRACKETS
                         + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
                         + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=?"
                         + " ORDER BY " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION)

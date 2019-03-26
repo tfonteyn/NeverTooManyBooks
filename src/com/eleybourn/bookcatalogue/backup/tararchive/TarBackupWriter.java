@@ -19,14 +19,10 @@
  */
 package com.eleybourn.bookcatalogue.backup.tararchive;
 
+import android.content.Context;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-
-import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
-import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriterAbstract;
-
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -34,6 +30,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
+import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriterAbstract;
 
 /**
  * Implementation of TAR-specific writer functions.
@@ -51,10 +53,13 @@ public class TarBackupWriter
     /**
      * Constructor.
      *
+     * @param context caller context
      * @param container Parent
      */
-    TarBackupWriter(@NonNull final TarBackupContainer container)
+    TarBackupWriter(@NonNull final Context context,
+                    @NonNull final TarBackupContainer container)
             throws IOException {
+        super(context);
         mContainer = container;
         // Open the archive for writing
         FileOutputStream out = new FileOutputStream(container.getFile());

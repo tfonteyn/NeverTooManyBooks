@@ -27,13 +27,13 @@ import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
 /**
  * Cursor subclass used to make accessing TaskExceptions a little easier.

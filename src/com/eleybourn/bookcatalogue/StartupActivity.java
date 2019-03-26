@@ -48,7 +48,6 @@ import androidx.core.content.PermissionChecker;
 
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.backup.ui.BackupAndRestoreActivity;
@@ -63,7 +62,6 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -84,6 +82,7 @@ public class StartupActivity
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     public static final String PREFS_STARTUP_COUNTDOWN = "Startup.StartCountdown";
+    /** Fragment manager tag. */
     private static final String TAG = StartupActivity.class.getSimpleName();
     /** Number of app startup's between offers to backup. */
     private static final int PROMPT_WAIT_BACKUP = 5;
@@ -129,8 +128,10 @@ public class StartupActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        LocaleUtils.applyPreferred(this);
+
         // https://developer.android.com/reference/android/os/StrictMode
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STRICT_MODE) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                                                .detectAll()
                                                .penaltyLog()
@@ -223,8 +224,8 @@ public class StartupActivity
             return;
         }
         // Display upgrade message if necessary, otherwise go on to next stage
-        String message = UpgradeMessageManager.getUpgradeMessage();
-        if (message.isEmpty()) {
+        String upgradeMessage = UpgradeMessageManager.getUpgradeMessage(this);
+        if (upgradeMessage.isEmpty()) {
             startNextStage();
             return;
         }
@@ -232,7 +233,7 @@ public class StartupActivity
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.about_lbl_upgrade)
                 .setIcon(R.drawable.ic_info_outline)
-                .setMessage(Html.fromHtml(UpgradeMessageManager.getUpgradeMessage()))
+                .setMessage(Html.fromHtml(upgradeMessage))
                 .create();
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
@@ -302,7 +303,7 @@ public class StartupActivity
         if (mBackupRequired) {
             Intent backupIntent = new Intent(this, BackupAndRestoreActivity.class)
                     .putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                              BackupAndRestoreActivity.BVAL_MODE_SAVE);
+                              BackupAndRestoreActivity.MODE_SAVE);
             startActivity(backupIntent);
         }
 
@@ -360,10 +361,10 @@ public class StartupActivity
      * @return <tt>true</tt> when counter reached 0
      */
     private boolean decreaseStartupCounters() {
-        int opened = Prefs.getPrefs().getInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
-        int startCount = Prefs.getPrefs().getInt(PREF_STARTUP_COUNT, 0) + 1;
+        int opened = App.getPrefs().getInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
+        int startCount = App.getPrefs().getInt(PREF_STARTUP_COUNT, 0) + 1;
 
-        final SharedPreferences.Editor ed = Prefs.getPrefs().edit();
+        final SharedPreferences.Editor ed = App.getPrefs().edit();
         if (opened == 0) {
             ed.putInt(PREFS_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
         } else {
@@ -409,8 +410,8 @@ public class StartupActivity
             mDb = new DBA(this);
         } catch (DBHelper.UpgradeException e) {
             Logger.info(this, "openDBA", e.getLocalizedMessage());
-            BookCatalogueApp.showNotification(this, R.string.error_unknown,
-                                              getString(e.messageId));
+            App.showNotification(this, R.string.error_unknown,
+                                 getString(e.messageId));
             finish();
         }
     }
@@ -485,8 +486,8 @@ public class StartupActivity
             new DBCleanerTask(++taskId, mDb).execute();
             mAllTasks.add(taskId);
 
-            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
-                                            false)) {
+            if (App.getPrefs().getBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED,
+                                          false)) {
                 new RebuildFtsTask(++taskId, mDb).execute();
                 mAllTasks.add(taskId);
             }
@@ -581,14 +582,7 @@ public class StartupActivity
         @Override
         protected Void doInBackground(final Void... params) {
             publishProgress(R.string.progress_msg_updating_languages);
-
-            // generate initial language2iso mappings.
-            LocaleUtils.createLanguageMappingCache(LocaleUtils.getSystemLocal());
-            // the one the user has configured our app into using (set at earliest app startup code)
-            LocaleUtils.createLanguageMappingCache(Locale.getDefault());
-            // and English
-            LocaleUtils.createLanguageMappingCache(Locale.ENGLISH);
-
+            LocaleUtils.createLanguageMappingCache();
             return null;
         }
     }
@@ -662,10 +656,10 @@ public class StartupActivity
 
             mDb.rebuildFts();
 
-            Prefs.getPrefs()
-                 .edit()
-                 .putBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)
-                 .apply();
+            App.getPrefs()
+               .edit()
+               .putBoolean(UpgradeDatabase.PREF_STARTUP_FTS_REBUILD_REQUIRED, false)
+               .apply();
 
             return null;
         }
@@ -703,13 +697,13 @@ public class StartupActivity
                 mDb.recreateTriggers();
             }
 
-            if (Prefs.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED,
-                                            false)) {
+            if (App.getPrefs().getBoolean(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED,
+                                          false)) {
                 UpgradeDatabase.v74_fixupAuthorsAndSeries(mDb);
-                Prefs.getPrefs()
-                     .edit()
-                     .remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED)
-                     .apply();
+                App.getPrefs()
+                   .edit()
+                   .remove(UpgradeDatabase.V74_PREF_AUTHOR_SERIES_FIX_UP_REQUIRED)
+                   .apply();
             }
 
             if (BooklistBuilder.imagesAreCached()) {

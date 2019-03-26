@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import org.apache.http.client.methods.HttpGet;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -212,28 +212,31 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 public abstract class ShowBookApiHandler
         extends ApiHandler {
 
-
     /**
      * Flag to indicate if request should be signed. Signed requests via ISB cause server errors
      * and unsigned requests do not return review (not a big problem for searches)
      */
-    private final boolean mSignRequest;
+    private final boolean mRequireSignedRequest;
 
+    // Current series being processed
+//    private int mCurrSeriesId = 0;
     private final XmlHandler mHandleSeriesStart = new XmlHandler() {
         @Override
         public void process(@NonNull final ElementContext context) {
-            //mCurrSeries = new Series();
+//            mCurrSeries = new Series();
         }
     };
     private final XmlHandler mHandleSeriesId = new XmlHandler() {
         @Override
         public void process(@NonNull final ElementContext context) {
 //            try {
-//                mCurrSeriesId = Integer.parseInt(context.body.trim());
+//                mCurrSeriesId = Integer.parseInt(context.getBody());
 //            } catch (NumberFormatException ignore) {
 //            }
         }
     };
+    // Current author being processed
+    //private long mCurrAuthorId = 0;
     private final XmlHandler mHandleAuthorStart = new XmlHandler() {
         @Override
         public void process(@NonNull final ElementContext context) {
@@ -244,12 +247,11 @@ public abstract class ShowBookApiHandler
         @Override
         public void process(@NonNull final ElementContext context) {
 //            try {
-//                mCurrAuthorId = Long.parseLong(context.body.trim());
+//                mCurrAuthorId = Long.parseLong(context.getBody());
 //            } catch (Exception ignore) {
 //            }
         }
     };
-
     /** Transient global data for current work in search results. */
     private Bundle mBookData;
     private final XmlHandler mHandleText = new XmlHandler() {
@@ -275,8 +277,7 @@ public abstract class ShowBookApiHandler
             }
         }
     };
-    // Current series being processed
-    //private int mCurrSeriesId = 0;
+
     private final XmlHandler mHandleFloat = new XmlHandler() {
 
         @Override
@@ -292,8 +293,6 @@ public abstract class ShowBookApiHandler
         }
     };
 
-    // Current author being processed
-    //private long mCurrAuthorId = 0;
     private final XmlHandler mHandleBoolean = new XmlHandler() {
 
         @Override
@@ -426,13 +425,13 @@ public abstract class ShowBookApiHandler
      * Constructor.
      *
      * @param manager     Goodreads manager
-     * @param signRequest set <tt>true</tt> if a request should be signed.
+     * @param requireSignedRequest set <tt>true</tt> if a request should be signed.
      */
     ShowBookApiHandler(@NonNull final GoodreadsManager manager,
-                       @SuppressWarnings("SameParameterValue") final boolean signRequest) {
+                       @SuppressWarnings("SameParameterValue") final boolean requireSignedRequest) {
 
         super(manager);
-        mSignRequest = signRequest;
+        mRequireSignedRequest = requireSignedRequest;
         // Build the XML filters needed to get the data we're interested in.
         buildFilters();
     }
@@ -458,7 +457,7 @@ public abstract class ShowBookApiHandler
         // Get a handler and run query.
         XmlResponseParser handler = new XmlResponseParser(mRootFilter);
         // We sign the GET request so we get shelves
-        mManager.execute(request, handler, mSignRequest);
+        mManager.execute(request, handler, mRequireSignedRequest);
 
         // When we get here, the data has been collected but needs processing into standard form.
 
@@ -531,10 +530,10 @@ public abstract class ShowBookApiHandler
         }
 
         // is it an eBook ? Overwrite the format key
-        if (mBookData.containsKey(ShowBookFieldNames.IS_EBOOK) && mBookData.getBoolean(
-                ShowBookFieldNames.IS_EBOOK)) {
+        if (mBookData.containsKey(ShowBookFieldNames.IS_EBOOK)
+                && mBookData.getBoolean(ShowBookFieldNames.IS_EBOOK)) {
             mBookData.putString(UniqueId.KEY_FORMAT,
-                                BookCatalogueApp.getResString(R.string.book_format_ebook));
+                                App.getResString(R.string.book_format_ebook));
         }
 
         // Cleanup the title by removing series name, if present

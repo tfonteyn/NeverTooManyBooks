@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/margin_div">
+    android:layout_margin="@dimen/margin_div"
+    >
 
     <!-- tools:text fields are set to the longest string used (hum, at least in english)
          which gave the 4/6 weight ratio -->
@@ -13,22 +14,24 @@
         android:id="@+id/field"
         style="@style/lbl_textField"
         android:layout_width="0dp"
-        app:layout_constraintHorizontal_weight="4"
         app:layout_constraintEnd_toStartOf="@id/usage"
+        app:layout_constraintHorizontal_weight="4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_first_publication" />
+        tools:text="@string/lbl_first_publication"
+        />
 
     <CheckBox
         android:id="@+id/usage"
         style="@style/lbl_textField"
         android:layout_width="0dp"
         android:textStyle="italic"
-        app:layout_constraintHorizontal_weight="6"
         app:layout_constraintBaseline_toBaselineOf="@id/field"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="6"
         app:layout_constraintStart_toEndOf="@id/field"
-        tools:text="@string/lbl_field_usage_overwrite" />
+        tools:text="@string/lbl_field_usage_overwrite"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

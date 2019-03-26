@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialogFrame">
+    style="@style/dialogFrame"
+    >
 
     <TextView
         android:id="@+id/title"
@@ -12,7 +13,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_title" />
+        tools:text="@string/lbl_title"
+        />
 
     <TextView
         android:id="@+id/author"
@@ -21,7 +23,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_author" />
+        tools:text="@string/lbl_author"
+        />
 
     <View
         android:id="@+id/div1"
@@ -29,7 +32,8 @@
         android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author" />
+        app:layout_constraintTop_toBottomOf="@id/author"
+        />
 
     <AutoCompleteTextView
         android:id="@+id/loaned_to"
@@ -41,7 +45,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/div1"
-        tools:text="Alvin" />
+        tools:text="Alvin"
+        />
 
     <Button
         android:id="@+id/cancel"
@@ -54,7 +59,8 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/loaned_to" />
+        app:layout_constraintTop_toBottomOf="@id/loaned_to"
+        />
 
     <Button
         android:id="@+id/return_book"
@@ -65,7 +71,8 @@
         app:layout_constraintBaseline_toBaselineOf="@id/confirm"
         app:layout_constraintEnd_toStartOf="@id/confirm"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/cancel" />
+        app:layout_constraintStart_toEndOf="@id/cancel"
+        />
 
     <Button
         android:id="@+id/confirm"
@@ -76,6 +83,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/return_book"
-        app:layout_constraintTop_toBottomOf="@id/loaned_to" />
+        app:layout_constraintTop_toBottomOf="@id/loaned_to"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

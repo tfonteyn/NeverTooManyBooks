@@ -4,9 +4,8 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.App;
 
 /**
  * A Boolean is stored as a Boolean.
@@ -22,9 +21,9 @@ public class PBoolean
      * @param key  of the preference
      * @param uuid the style id
      */
-    public PBoolean(@StringRes final int key,
+    public PBoolean(@NonNull final String key,
                     @NonNull final String uuid) {
-        super(key, uuid, Prefs.getBoolean(key, false));
+        super(key, uuid, App.getPrefs().getBoolean(key, false));
     }
 
     /**
@@ -35,10 +34,10 @@ public class PBoolean
      * @param uuid         the style id
      * @param defaultValue default to use if there is no global default
      */
-    public PBoolean(@StringRes final int key,
+    public PBoolean(@NonNull final String key,
                     @NonNull final String uuid,
                     @NonNull final Boolean defaultValue) {
-        super(key, uuid, Prefs.getBoolean(key, defaultValue));
+        super(key, uuid, App.getPrefs().getBoolean(key, defaultValue));
     }
 
     @Override
@@ -46,9 +45,9 @@ public class PBoolean
         if (mUuid.isEmpty()) {
             mNonPersistedValue = value;
         } else if (value == null) {
-            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
+            App.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
-            Prefs.getPrefs(mUuid).edit().putBoolean(getKey(), value).apply();
+            App.getPrefs(mUuid).edit().putBoolean(getKey(), value).apply();
         }
     }
 
@@ -68,7 +67,7 @@ public class PBoolean
         if (mUuid.isEmpty()) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            return Prefs.getPrefs(mUuid).getBoolean(getKey(), mDefaultValue);
+            return App.getPrefs(mUuid).getBoolean(getKey(), mDefaultValue);
         }
     }
 
@@ -78,6 +77,7 @@ public class PBoolean
     public boolean isTrue() {
         return get();
     }
+
     /**
      * syntax sugar...
      */

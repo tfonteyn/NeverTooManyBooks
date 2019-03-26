@@ -20,18 +20,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 
 /**
  * https://openlibrary.org/developers/api
@@ -62,9 +64,10 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
 public class OpenLibraryManager
         implements SearchSites.SearchSiteManager {
 
-    private static final String TAG = "OpenLibrary.";
+    /** Preferences prefix. */
+    private static final String PREF_PREFIX = "OpenLibrary.";
 
-    private static final String PREFS_HOST_URL = TAG + "hostUrl";
+    private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
 
     /** param 1: isbn, param 2: L/M/S for the size. */
     private static final String BASE_URL_COVERS
@@ -82,11 +85,11 @@ public class OpenLibraryManager
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return Prefs.getPrefs().getString(PREFS_HOST_URL, "https://openlibrary.org");
+        return App.getPrefs().getString(PREFS_HOST_URL, "https://openlibrary.org");
     }
 
     public static void setBaseURL(@NonNull final String url) {
-        Prefs.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
+        App.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
     }
 
 
@@ -109,7 +112,7 @@ public class OpenLibraryManager
                               @Nullable final SearchSites.ImageSizes size) {
 
         // sanity check
-        if (!IsbnUtils.isValid(isbn)) {
+        if (!ISBN.isValid(isbn)) {
             return null;
         }
 
@@ -186,7 +189,7 @@ public class OpenLibraryManager
                          final boolean fetchThumbnail)
             throws IOException {
 
-        if (IsbnUtils.isValid(isbn)) {
+        if (ISBN.isValid(isbn)) {
             String url = getBaseURL() + "/api/books?jscmd=data&format=json&bibkeys=ISBN:" + isbn;
 
             // get and store the result into a string.
@@ -372,9 +375,11 @@ public class OpenLibraryManager
     private Bundle handleResponse(final JSONObject jsonObject,
                                   final boolean fetchThumbnail)
             throws JSONException {
-        // dump it
-        Logger.info(this, "handleResponse", jsonObject.toString(2));
-
+        if (BuildConfig.DEBUG) {
+            // dump it
+            Logger.info(this, Tracker.State.Enter,
+                        "handleResponse", jsonObject.toString(2));
+        }
         Iterator<String> it = jsonObject.keys();
         // we only handle the first result for now.
         if (it.hasNext()) {
@@ -532,7 +537,9 @@ public class OpenLibraryManager
         }
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
 
-        Logger.info(this, "handleBook", bookData.toString());
+        if (BuildConfig.DEBUG) {
+            Logger.info(this, Tracker.State.Exit, "handleBook", bookData.toString());
+        }
         return bookData;
     }
 }

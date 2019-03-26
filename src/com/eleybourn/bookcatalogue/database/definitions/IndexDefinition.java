@@ -5,14 +5,15 @@ import android.database.SQLException;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Csv;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class to store an index using a table name and a list of domain definitions.
@@ -129,8 +130,9 @@ public class IndexDefinition {
         sql.append(" INDEX ").append(mName).append(" ON ").append(mTable.getName())
            .append('(').append(Csv.join(",", mDomains)).append(')');
 
-        if (DEBUG_SWITCHES.SQL_CREATE_INDEX && BuildConfig.DEBUG) {
-            Logger.info(this, "getSqlCreateStatement", sql.toString());
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_CREATE_INDEX) {
+            Logger.info(this, Tracker.State.Exit, "getSqlCreateStatement",
+                        sql.toString());
         }
         return sql.toString();
     }

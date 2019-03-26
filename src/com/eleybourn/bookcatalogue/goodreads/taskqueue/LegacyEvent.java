@@ -30,10 +30,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-
-import java.util.List;
 
 /**
  * Class to wrap events that can not be de-serialized so that the EventsCursor *always*
@@ -46,7 +46,7 @@ public class LegacyEvent
 
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
-    private static final long serialVersionUID = 8961033939258102422L;
+    private static final long serialVersionUID = 3505922919300986308L;
 
     LegacyEvent() {
         super("Legacy Event");

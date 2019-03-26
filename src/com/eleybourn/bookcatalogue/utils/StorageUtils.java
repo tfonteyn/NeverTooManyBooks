@@ -51,7 +51,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -176,7 +176,7 @@ public final class StorageUtils {
     }
 
     private static File getTemp() {
-        return BookCatalogueApp.getAppContext().getExternalCacheDir();
+        return App.getAppContext().getExternalCacheDir();
     }
 
     public static File getCoverStorage() {
@@ -357,7 +357,7 @@ public final class StorageUtils {
 
         @SuppressWarnings("unused")
         StringBuilder debugInfo;
-        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
             //noinspection UnusedAssignment
             debugInfo = new StringBuilder("Getting mounted file systems\n");
         }
@@ -370,7 +370,7 @@ public final class StorageUtils {
 
             String line;
             while ((line = in.readLine()) != null) {
-                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                     debugInfo.append("   checking ").append(line).append('\n');
                 }
                 final Matcher m = MOUNT_POINT_PATH.matcher(line);
@@ -379,14 +379,14 @@ public final class StorageUtils {
                     // See if it has a bookCatalogue directory
                     final File dir =
                             new File(m.group(1) + File.separator + DIRECTORY_NAME);
-                    if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                         debugInfo.append("       matched ")
                                  .append(dir.getAbsolutePath())
                                  .append('\n');
                     }
                     dirs.add(dir);
                 } else {
-                    if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                         debugInfo.append("       NO match\n");
                     }
                 }
@@ -397,7 +397,7 @@ public final class StorageUtils {
 
         // Sometimes (Android 6?) the /proc/mount search seems to fail,
         // so we revert to environment vars
-        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
             debugInfo.append("Found ").append(dirs.size()).append(" directories\n");
         }
 
@@ -406,12 +406,12 @@ public final class StorageUtils {
             if (loc1 != null) {
                 final File dir = new File(loc1 + File.separator + DIRECTORY_NAME);
                 dirs.add(dir);
-                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                     debugInfo.append("EXTERNAL_STORAGE added ").append(
                             dir.getAbsolutePath()).append('\n');
                 }
             } else {
-                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                     debugInfo.append("EXTERNAL_STORAGE was null\n");
                 }
             }
@@ -420,12 +420,12 @@ public final class StorageUtils {
             if (loc2 != null && !loc2.equals(loc1)) {
                 final File dir = new File(loc2 + File.separator + DIRECTORY_NAME);
                 dirs.add(dir);
-                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                     debugInfo.append("SECONDARY_STORAGE added ").append(
                             dir.getAbsolutePath()).append('\n');
                 }
             } else {
-                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                     debugInfo.append("SECONDARY_STORAGE ignored: ").append(loc2).append('\n');
                 }
             }
@@ -435,7 +435,7 @@ public final class StorageUtils {
 
         final Set<String> paths = new HashSet<>();
 
-        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
             debugInfo.append("Looking for files in directories\n");
         }
 
@@ -446,37 +446,37 @@ public final class StorageUtils {
                     // Loop for csv files
                     final File[] csvFiles = dir.listFiles(csvFilter);
                     if (csvFiles != null) {
-                        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                             debugInfo.append("    found ")
                                      .append(csvFiles.length)
                                      .append(" in ").append(dir.getAbsolutePath()).append('\n');
                         }
                         for (File f : csvFiles) {
-                            if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                                 debugInfo.append("Found: ").append(f.getAbsolutePath());
                             }
                             final String cp = f.getCanonicalPath();
                             if (paths.contains(cp)) {
-                                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                                     debugInfo.append("        already present as ")
                                              .append(cp).append('\n');
                                 }
                             } else {
                                 files.add(f);
                                 paths.add(cp);
-                                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                                     debugInfo.append("        added as ").append(cp).append('\n');
                                 }
                             }
                         }
                     } else {
-                        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                             debugInfo.append("    null returned by listFiles() in ")
                                      .append(dir.getAbsolutePath()).append('\n');
                         }
                     }
                 } else {
-                    if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                         debugInfo.append("    ").append(dir.getAbsolutePath())
                                  .append(" does not exist\n");
                     }
@@ -486,7 +486,7 @@ public final class StorageUtils {
             }
         }
 
-        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
             Logger.info(StorageUtils.class, debugInfo.toString());
         }
 
@@ -540,7 +540,7 @@ public final class StorageUtils {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
-                if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                     Logger.info(StorageUtils.class,
                                 "deleteFile|file=" + file.getAbsolutePath());
                 }
@@ -559,7 +559,7 @@ public final class StorageUtils {
      */
     public static boolean renameFile(@NonNull final File src,
                                      @NonNull final File dst) {
-        if (DEBUG_SWITCHES.STORAGE_UTILS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
             Logger.info(StorageUtils.class, "renameFile|src=" + src.getAbsolutePath()
                     + "|dst=" + dst.getAbsolutePath());
         }

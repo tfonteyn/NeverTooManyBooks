@@ -93,6 +93,7 @@
     <item name="MENU_CLEAR_FILTERS" type="id"/>
 
     <!-- debug options for the options menu; only shown in debug mode. -->
+    <item name="SUBMENU_DEBUG" type="id" />
     <item name="MENU_DEBUG_DUMP_PREFS" type="id"/>
     <item name="MENU_DEBUG_DUMP_STYLE" type="id"/>
     <item name="MENU_DEBUG_DUMP_TRACKER" type="id"/>

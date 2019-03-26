@@ -38,11 +38,11 @@ import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -89,7 +89,7 @@ public class LibraryThingAdminActivity
         });
 
         EditText devKeyView = findViewById(R.id.dev_key);
-        String key = Prefs.getPrefs().getString(LibraryThingManager.PREFS_DEV_KEY, "");
+        String key = App.getPrefs().getString(LibraryThingManager.PREFS_DEV_KEY, "");
         devKeyView.setText(key);
 
         findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
@@ -97,10 +97,10 @@ public class LibraryThingAdminActivity
             public void onClick(@NonNull final View v) {
                 EditText devKeyView = findViewById(R.id.dev_key);
                 String devKey = devKeyView.getText().toString().trim();
-                Prefs.getPrefs()
-                     .edit()
-                     .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
-                     .apply();
+                App.getPrefs()
+                   .edit()
+                   .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
+                   .apply();
 
                 if (!devKey.isEmpty()) {
                     ValidateKey.start(getSupportFragmentManager());
@@ -111,7 +111,7 @@ public class LibraryThingAdminActivity
         findViewById(R.id.reset_messages).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                SharedPreferences prefs = Prefs.getPrefs();
+                SharedPreferences prefs = App.getPrefs();
                 SharedPreferences.Editor ed = prefs.edit();
                 for (String key : prefs.getAll().keySet()) {
                     if (key.toLowerCase()
@@ -125,7 +125,7 @@ public class LibraryThingAdminActivity
     }
 
     @Override
-    public void onTaskFinished(final Integer taskId,
+    public void onTaskFinished(final int taskId,
                                final boolean success,
                                final Object result) {
         UserMessage.showUserMessage(this, (Integer) result);
@@ -137,6 +137,7 @@ public class LibraryThingAdminActivity
     private static class ValidateKey
             extends AsyncTask<Void, Object, Integer> {
 
+        /** Fragment manager tag. */
         private static final String TAG = ValidateKey.class.getSimpleName();
 
         /** Generic identifier. */

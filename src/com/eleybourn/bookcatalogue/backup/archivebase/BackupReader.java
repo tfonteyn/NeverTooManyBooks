@@ -22,10 +22,10 @@ package com.eleybourn.bookcatalogue.backup.archivebase;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.backup.ImportSettings;
-
 import java.io.Closeable;
 import java.io.IOException;
+
+import com.eleybourn.bookcatalogue.backup.ImportSettings;
 
 /**
  * Public interface for any backup archive reader.

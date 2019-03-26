@@ -12,13 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Class to handle details of specific scanner interfaces and return a
@@ -95,8 +96,8 @@ public final class ScannerManager {
     @Nullable
     public static Scanner getScanner(@NonNull final Activity activity) {
         // Find out what the user prefers if any
-        int prefScanner = Prefs.getListPreference(R.string.pk_scanning_preferred_scanner,
-                                                  SCANNER_ZXING_COMPATIBLE);
+        int prefScanner = App.getListPreference(Prefs.pk_scanning_preferred_scanner,
+                                                SCANNER_ZXING_COMPATIBLE);
 
         // See if preferred one is present, if so return a new instance
         ScannerFactory psf = SCANNER_FACTORIES.get(prefScanner);
@@ -119,7 +120,7 @@ public final class ScannerManager {
     public static void promptForScannerInstallAndFinish(@NonNull final Activity activity,
                                                         final boolean noScanner) {
         int messageId = noScanner ? R.string.info_install_scanner
-                                   : R.string.warning_bad_scanner;
+                                  : R.string.warning_bad_scanner;
 
         final AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.title_install_scan)

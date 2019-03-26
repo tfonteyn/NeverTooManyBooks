@@ -55,8 +55,8 @@ public abstract class FileChooserBaseActivity
 
     /** Key for member of EXTRAS that specifies the mode of operation of this dialog. */
     public static final String BKEY_MODE = "mode";
-    public static final String BVAL_MODE_SAVE = "saveAs";
-    public static final String BVAL_MODE_OPEN = "open";
+    public static final int MODE_SAVE = 0;
+    public static final int MODE_OPEN = 1;
 
     /** Flag indicating nature of this activity. */
     private boolean mIsSave;
@@ -82,7 +82,7 @@ public abstract class FileChooserBaseActivity
         super.onCreate(savedInstanceState);
 
         // Determine the dialog type
-        mIsSave = BVAL_MODE_SAVE.equals(getIntent().getStringExtra(BKEY_MODE));
+        mIsSave = MODE_SAVE == getIntent().getIntExtra(BKEY_MODE, MODE_SAVE);
 
         if (null == getSupportFragmentManager().findFragmentById(R.id.browser_fragment)) {
             // Create the browser
@@ -149,7 +149,8 @@ public abstract class FileChooserBaseActivity
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if (!file.exists() || !file.isFile()) {
-                UserMessage.showUserMessage(this, R.string.warning_select_an_existing_file);
+                //noinspection ConstantConditions
+                UserMessage.showUserMessage(frag.getView(), R.string.warning_select_an_existing_file);
                 return;
             }
             onOpen(file);
@@ -165,7 +166,8 @@ public abstract class FileChooserBaseActivity
             FileChooserFragment bf = (FileChooserFragment) frag;
             File file = bf.getSelectedFile();
             if (file.exists() && !file.isFile()) {
-                UserMessage.showUserMessage(this, R.string.warning_select_a_non_directory);
+                //noinspection ConstantConditions
+                UserMessage.showUserMessage(frag.getView(), R.string.warning_select_a_non_directory);
                 return;
             }
             onSave(file);

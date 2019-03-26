@@ -163,7 +163,7 @@ public abstract class ManagedTask
                 new MessageSwitch.Message<ManagedTaskListener>() {
                     @Override
                     public boolean deliver(@NonNull final ManagedTaskListener listener) {
-                        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
                             Logger.info(ManagedTask.this, "run",
                                         "ManagedTask=" + getName() +
                                                 "|Delivering 'onTaskFinished'" +
@@ -180,7 +180,7 @@ public abstract class ManagedTask
      * Mark this thread as 'cancelled'.
      */
     protected void cancelTask() {
-        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
             Logger.info(this, "cancelTask", "");
         }
         mCancelFlg = true;

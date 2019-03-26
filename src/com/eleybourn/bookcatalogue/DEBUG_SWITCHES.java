@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
+
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
@@ -15,7 +17,7 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
  * When set to true, the global BuildConfig.DEBUG should still suppress them
  * Use something like this:
  * <p>
- * if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+ * if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
  * Logger.info("some debug info);
  * }
  * <p>
@@ -26,6 +28,11 @@ import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 public final class DEBUG_SWITCHES {
 
     public static final boolean TMP_ANTHOLOGY = false;
+
+    /**
+     * Enable strict mode reporting on network,disc,... usage.
+     */
+    public static final boolean STRICT_MODE = false;
 
     /**
      * Add a debug menu to the main activity's options menu.
@@ -64,6 +71,8 @@ public final class DEBUG_SWITCHES {
     /** Network access. */
     public static final boolean NETWORK = false;
 
+    /** Log the full flow of {@link Activity#recreate()}. */
+    public static final boolean RECREATE_ACTIVITY = true;
 
     /** {@link ISFDBBook}. */
     public static final boolean ISFDB_SEARCH = false;
@@ -124,8 +133,8 @@ public final class DEBUG_SWITCHES {
      */
     public static final boolean DB_SYNC_SIMPLE_QUERY_FOR = false;
 
-    /** dump *all* SQL strings to the log. */
-    public static final boolean SQL = false;
+    /** dump execSQL strings to the log. */
+    public static final boolean DB_SYNC_EXEC_SQL = false;
 
     /**
      * Dump SQL CREATE TABLE strings to the log.

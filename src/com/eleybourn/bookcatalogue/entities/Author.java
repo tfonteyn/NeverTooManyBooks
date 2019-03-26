@@ -26,15 +26,15 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
-import com.eleybourn.bookcatalogue.utils.StringList;
-import com.eleybourn.bookcatalogue.utils.Utils;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
+import com.eleybourn.bookcatalogue.utils.StringList;
+import com.eleybourn.bookcatalogue.utils.Utils;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
@@ -174,10 +174,6 @@ public class Author
         mIsComplete = in.readByte() != 0;
     }
 
-    public boolean isComplete() {
-        return mIsComplete;
-    }
-
     public static boolean setComplete(@NonNull final DBA db,
                                       final long id,
                                       final boolean isComplete) {
@@ -187,45 +183,6 @@ public class Author
         author.setComplete(isComplete);
         int rowsAffected = db.updateAuthor(author);
         return rowsAffected == 1;
-    }
-
-    public void setComplete(final boolean complete) {
-        mIsComplete = complete;
-    }
-
-    public long getId() {
-        return mId;
-    }
-
-    public void setId(final long id) {
-        mId = id;
-    }
-
-    /**
-     * Syntax sugar to set the names in one call.
-     *
-     * @param familyName Family name
-     * @param givenNames Given names
-     */
-    public void setName(@NonNull final String familyName,
-                        @NonNull final String givenNames) {
-        mFamilyName = familyName;
-        mGivenNames = givenNames;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mFamilyName);
-        dest.writeString(mGivenNames);
-        dest.writeByte((byte) (mIsComplete ? 1 : 0));
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     /**
@@ -298,6 +255,49 @@ public class Author
         return new Author(buildFamilyName.toString(), buildGivenNames.toString());
     }
 
+    public boolean isComplete() {
+        return mIsComplete;
+    }
+
+    public void setComplete(final boolean complete) {
+        mIsComplete = complete;
+    }
+
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(final long id) {
+        mId = id;
+    }
+
+    /**
+     * Syntax sugar to set the names in one call.
+     *
+     * @param familyName Family name
+     * @param givenNames Given names
+     */
+    public void setName(@NonNull final String familyName,
+                        @NonNull final String givenNames) {
+        mFamilyName = familyName;
+        mGivenNames = givenNames;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeLong(mId);
+        dest.writeString(mFamilyName);
+        dest.writeString(mGivenNames);
+        dest.writeByte((byte) (mIsComplete ? 1 : 0));
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     public String getFamilyName() {
         return mFamilyName;
     }
@@ -338,7 +338,12 @@ public class Author
     @Override
     @NonNull
     public String toString() {
-        return stringEncoded();
+        return "Author{"
+                + "mId=" + mId
+                + ", mFamilyName=`" + mFamilyName + '`'
+                + ", mGivenNames=`" + mGivenNames + '`'
+                + ", mIsComplete=" + mIsComplete
+                + '}';
     }
 
     /**

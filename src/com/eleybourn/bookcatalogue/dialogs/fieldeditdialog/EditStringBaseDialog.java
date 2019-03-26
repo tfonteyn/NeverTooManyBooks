@@ -87,7 +87,7 @@ public abstract class EditStringBaseDialog {
             public void onClick(@NonNull final View v) {
                 String newText = editView.getText().toString().trim();
                 if (newText.isEmpty()) {
-                    UserMessage.showUserMessage(mActivity, R.string.warning_required_name);
+                    UserMessage.showUserMessage(editView, R.string.warning_required_name);
                     return;
                 }
                 dialog.dismiss();

@@ -21,6 +21,7 @@ import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 public class ImportCSVTask
         extends AsyncTask<Void, Object, Void> {
 
+    /** Fragment manager tag. */
     private static final String TAG = ImportCSVTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_CSV_IMPORT;
@@ -33,6 +34,22 @@ public class ImportCSVTask
      */
     @Nullable
     private Exception mException;
+
+    /**
+     * Constructor.
+     *
+     * @param fragment ProgressDialogFragment
+     * @param settings the import settings
+     */
+    @UiThread
+    private ImportCSVTask(@NonNull final ProgressDialogFragment<Void> fragment,
+                          @NonNull final ImportSettings settings) {
+
+        mFragment = fragment;
+        mSettings = settings;
+        //noinspection ConstantConditions
+        mImporter = new CsvImporter(mFragment.getContextWithHorribleClutch(), settings);
+    }
 
     /**
      * @param fm       FragmentManager
@@ -50,21 +67,6 @@ public class ImportCSVTask
             frag.show(fm, TAG);
             task.execute();
         }
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param fragment ProgressDialogFragment
-     * @param settings the import settings
-     */
-    @UiThread
-    private ImportCSVTask(@NonNull final ProgressDialogFragment<Void> fragment,
-                          @NonNull final ImportSettings settings) {
-
-        mFragment = fragment;
-        mSettings = settings;
-        mImporter = new CsvImporter(settings);
     }
 
     @Override

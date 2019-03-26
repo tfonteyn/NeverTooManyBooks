@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.GoodreadsTask;
@@ -58,8 +58,8 @@ public class GoodreadsAuthorizationResultCheckTask
     /**
      * Constructor sets the task description.
      */
-    GoodreadsAuthorizationResultCheckTask() {
-        super(BookCatalogueApp.getResString(R.string.gr_auth_check));
+    GoodreadsAuthorizationResultCheckTask(@NonNull final Context context) {
+        super(context.getString(R.string.gr_auth_check));
     }
 
     /**
@@ -74,25 +74,22 @@ public class GoodreadsAuthorizationResultCheckTask
             grMgr.handleAuthentication();
 
             if (grMgr.hasValidCredentials()) {
-                BookCatalogueApp.showNotification(
-                        context, R.string.info_authorized,
-                        context.getString(R.string.gr_auth_successful));
+                App.showNotification(context, R.string.info_authorized,
+                                     context.getString(R.string.gr_auth_successful));
             } else {
-                BookCatalogueApp.showNotification(
-                        context, R.string.info_not_authorized,
-                        context.getString(R.string.error_authorization_failed,
-                                          context.getString(R.string.goodreads)));
+                String msg = context.getString(R.string.error_authorization_failed,
+                                               context.getString(R.string.goodreads));
+                App.showNotification(context, R.string.info_not_authorized, msg);
             }
         } catch (AuthorizationException e) {
             Logger.error(e);
-            BookCatalogueApp.showNotification(
-                    context, R.string.info_not_authorized, e.getLocalizedMessage());
+            App.showNotification(context, R.string.info_not_authorized, e.getLocalizedMessage());
 
         } catch (IOException e) {
             Logger.error(e);
             String msg = context.getString(R.string.gr_auth_error) + ' '
                     + context.getString(R.string.error_if_the_problem_persists);
-            BookCatalogueApp.showNotification(context, R.string.info_not_authorized, msg);
+            App.showNotification(context, R.string.info_not_authorized, msg);
         }
         return true;
     }

@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.entities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,18 +40,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
+import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.accessors.BitmaskDataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.accessors.BooleanDataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.accessors.DataAccessor;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
+import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -93,7 +95,7 @@ public class Book
 
     /** mapping the edition bit to a resource string for displaying. */
     @SuppressLint("UseSparseArrays")
-    public static final Map<Integer, Integer> EDITIONS = new HashMap<>();
+    private static final Map<Integer, Integer> EDITIONS = new HashMap<>();
 
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
@@ -115,7 +117,7 @@ public class Book
 
     /** first edition ever of this work/content/story. */
     private static final int EDITION_FIRST = 1;
-    /** First printing of the 'this' edition. */
+    /** First printing of 'this' edition. */
     private static final int EDITION_FIRST_IMPRESSION = 1 << 1;
     /** This edition had a limited run. (Numbered or not). */
     private static final int EDITION_LIMITED = 1 << 2;
@@ -400,10 +402,11 @@ public class Book
                 // Put all cursor fields in collection
                 putAll(book);
                 // load lists (or init with empty lists)
-                putList(UniqueId.BKEY_BOOKSHELF_ARRAY, db.getBookshelvesByBookId(bookId));
-                putList(UniqueId.BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
-                putList(UniqueId.BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
-                putList(UniqueId.BKEY_TOC_ENTRY_ARRAY, db.getTocEntryByBook(bookId));
+                putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY,
+                                       db.getBookshelvesByBookId(bookId));
+                putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
+                putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
+                putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, db.getTocEntryByBook(bookId));
             }
         }
     }
@@ -414,7 +417,7 @@ public class Book
     public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final DBA db) {
         ArrayList<CheckListItem<Bookshelf>> list = new ArrayList<>();
         // get the list of all shelves the book is currently on.
-        List<Bookshelf> currentShelves = getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        List<Bookshelf> currentShelves = getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         // Loop through all bookshelves in the database and build the list for this book
         for (Bookshelf bookshelf : db.getBookshelves()) {
             list.add(new BookshelfCheckListItem(bookshelf, currentShelves.contains(bookshelf)));
@@ -457,7 +460,7 @@ public class Book
      */
     @Nullable
     public String getPrimaryAuthor() {
-        ArrayList<Author> list = getList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         return !list.isEmpty() ? list.get(0).getDisplayName() : null;
     }
 
@@ -467,15 +470,15 @@ public class Book
      * @return a formatted string for author list.
      */
     @NonNull
-    public String getAuthorTextShort() {
+    public String getAuthorTextShort(@NonNull final Context context) {
         String newText;
-        List<Author> list = getList(UniqueId.BKEY_AUTHOR_ARRAY);
+        List<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (list.isEmpty()) {
             return "";
         } else {
             newText = list.get(0).getDisplayName();
             if (list.size() > 1) {
-                newText += ' ' + BookCatalogueApp.getResString(R.string.and_others);
+                newText += ' ' + context.getString(R.string.and_others);
             }
             return newText;
         }
@@ -487,40 +490,11 @@ public class Book
      * @param db Database connection
      */
     public void refreshAuthorList(@NonNull final DBA db) {
-        ArrayList<Author> list = getList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         for (Author author : list) {
             db.refreshAuthor(author);
         }
-        putList(UniqueId.BKEY_AUTHOR_ARRAY, list);
-    }
-
-    /**
-     * Update series details from DB.
-     *
-     * @param db Database connection
-     */
-    public void refreshSeriesList(@NonNull final DBA db) {
-        ArrayList<Series> list = getList(UniqueId.BKEY_SERIES_ARRAY);
-        for (Series series : list) {
-            db.refreshSeries(series);
-        }
-        putList(UniqueId.BKEY_SERIES_ARRAY, list);
-    }
-
-    /**
-     * Convenience method to get a list.
-     */
-    @NonNull
-    public <T extends Parcelable> ArrayList<T> getList(@NonNull final String key) {
-        return super.getParcelableArrayList(key);
-    }
-
-    /**
-     * Convenience method to set a list.
-     */
-    public void putList(@NonNull final String key,
-                        @NonNull final ArrayList<? extends Parcelable> list) {
-        super.putParcelableArrayList(key, list);
+        putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
     }
 
     /**
@@ -528,7 +502,7 @@ public class Book
      */
     @Nullable
     public String getPrimarySeries() {
-        ArrayList<Series> list = getList(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         return !list.isEmpty() ? list.get(0).getName() : null;
     }
 
@@ -538,18 +512,31 @@ public class Book
      * Build a formatted string for series list.
      */
     @NonNull
-    public String getSeriesTextShort() {
+    public String getSeriesTextShort(@NonNull final Context context) {
         String newText;
-        ArrayList<Series> list = getList(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (list.isEmpty()) {
             return "";
         } else {
             newText = list.get(0).getDisplayName();
             if (list.size() > 1) {
-                newText += ' ' + BookCatalogueApp.getResString(R.string.and_others);
+                newText += ' ' + context.getString(R.string.and_others);
             }
             return newText;
         }
+    }
+
+    /**
+     * Update series details from DB.
+     *
+     * @param db Database connection
+     */
+    public void refreshSeriesList(@NonNull final DBA db) {
+        ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        for (Series series : list) {
+            db.refreshSeries(series);
+        }
+        putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
     }
 
     /**
@@ -665,8 +652,9 @@ public class Book
         /**
          * @return the label to display
          */
-        public String getLabel() {
-            return BookCatalogueApp.getResString(mLabelId);
+        @Override
+        public String getLabel(@NonNull final Context context) {
+            return context.getString(mLabelId);
         }
     }
 
@@ -725,8 +713,60 @@ public class Book
          * @return the label to display
          */
         @NonNull
-        public String getLabel() {
+        public String getLabel(@NonNull final Context context) {
             return getItem().getName();
+        }
+    }
+
+    /**
+     * Field Formatter for a bitmask based Book Editions field.
+     * <p>
+     * Does not support {@link Fields.FieldFormatter#extract}.
+     */
+    public static class BookEditionsFormatter
+            implements Fields.FieldFormatter {
+
+        @NonNull
+        private final Context mContext;
+
+        /**
+         * @param context the caller context for resource
+         */
+        @SuppressWarnings("WeakerAccess")
+        public BookEditionsFormatter(@NonNull final Context context) {
+            mContext = context;
+        }
+
+        @NonNull
+        @Override
+        public String format(@NonNull final Fields.Field field,
+                             @Nullable final String source) {
+            if (source == null || source.isEmpty()) {
+                return "";
+            }
+
+            int bitmask;
+            try {
+                bitmask = Integer.parseInt(source);
+            } catch (NumberFormatException ignore) {
+                return source;
+            }
+            List<String> list = new ArrayList<>();
+            for (Integer edition : EDITIONS.keySet()) {
+                if ((edition & bitmask) != 0) {
+                    @SuppressWarnings("ConstantConditions")
+                    int resId = EDITIONS.get(edition);
+                    list.add(mContext.getString(resId));
+                }
+            }
+            return Csv.toDisplayString(list, null);
+        }
+
+        @NonNull
+        @Override
+        public String extract(@NonNull final Fields.Field field,
+                              @NonNull final String source) {
+            throw new UnsupportedOperationException();
         }
     }
 }

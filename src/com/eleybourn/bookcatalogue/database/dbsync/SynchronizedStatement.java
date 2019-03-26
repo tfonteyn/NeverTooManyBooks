@@ -8,11 +8,11 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Closeable;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
-
-import java.io.Closeable;
 
 /**
  * Wrapper for statements that ensures locking is used.
@@ -41,10 +41,11 @@ public class SynchronizedStatement
     /**
      * Constructor.
      * Do not use directly!
-     *
+     * <p>
      * Always use {@link SynchronizedDb#compileStatement(String)} to get a new instance.
+     * (why? -> compileStatement uses locks)
      *
-     * @param db the database
+     * @param db  the database
      * @param sql the sql for this statement
      */
     public SynchronizedStatement(@NonNull final SynchronizedDb db,
@@ -54,7 +55,7 @@ public class SynchronizedStatement
         // this is not a debug flag, but used to get a shared versus exclusive lock
         mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
 
-        if (BuildConfig.DEBUG) {
+        if (/* always debug */ BuildConfig.DEBUG) {
             mIsCount = sql.trim().toUpperCase().startsWith("SELECT COUNT(");
         }
     }
@@ -142,9 +143,9 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             long result = mStatement.simpleQueryForLong();
-            if (DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
                 Logger.info(this, "simpleQueryForLong", mStatement.toString());
-                Logger.info(this, "simpleQueryForLong","result: " + result);
+                Logger.info(this, "simpleQueryForLong", "result: " + result);
             }
             return result;
         } finally {
@@ -165,9 +166,9 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             long result = mStatement.simpleQueryForLong();
-            if (DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
                 Logger.info(this, "simpleQueryForLongOrZero", mStatement.toString());
-                Logger.info(this, "simpleQueryForLongOrZero","result: " + result);
+                Logger.info(this, "simpleQueryForLongOrZero", "result: " + result);
             }
             return result;
         } catch (SQLiteDoneException ignore) {
@@ -188,7 +189,7 @@ public class SynchronizedStatement
      * @return The result of the query.
      */
     public long count() {
-        if (DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
             if (!mIsCount) {
                 Logger.debug("count statement not a count?");
             }
@@ -211,9 +212,9 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             String result = mStatement.simpleQueryForString();
-            if (DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR && BuildConfig.DEBUG) {
-                Logger.info(this, "simpleQueryForString",mStatement.toString());
-                Logger.info(this, "simpleQueryForString",result);
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
+                Logger.info(this, "simpleQueryForString", mStatement.toString());
+                Logger.info(this, "simpleQueryForString", result);
             }
             return result;
 
@@ -238,8 +239,8 @@ public class SynchronizedStatement
             return mStatement.simpleQueryForString();
         } catch (SQLiteDoneException e) {
             if (/* always print debug */ BuildConfig.DEBUG) {
-                Logger.info(this, "simpleQueryForStringOrNull",mStatement.toString());
-                Logger.info(this, "simpleQueryForStringOrNull","NULL");
+                Logger.info(this, "simpleQueryForStringOrNull", mStatement.toString());
+                Logger.info(this, "simpleQueryForStringOrNull", "NULL");
             }
             return null;
         } finally {
@@ -261,7 +262,7 @@ public class SynchronizedStatement
             txLock = mSync.getExclusiveLock();
         }
         try {
-            if (DEBUG_SWITCHES.DB_SYNC_EXECUTE && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE) {
                 Logger.info(this, "execute", mStatement.toString());
             }
             mStatement.execute();
@@ -287,9 +288,9 @@ public class SynchronizedStatement
         Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
         try {
             int rowsAffected = mStatement.executeUpdateDelete();
-            if (DEBUG_SWITCHES.DB_SYNC_ROWS_AFFECTED && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_ROWS_AFFECTED) {
                 Logger.info(this, "executeUpdateDelete", mStatement.toString());
-                Logger.info(this, "executeUpdateDelete","rowsAffected=" + rowsAffected);
+                Logger.info(this, "executeUpdateDelete", "rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
         } catch (SQLException e) {
@@ -314,9 +315,9 @@ public class SynchronizedStatement
         try {
             long id = mStatement.executeInsert();
 
-            if (DEBUG_SWITCHES.DB_SYNC_EXECUTE_INSERT && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE_INSERT) {
                 Logger.info(this, "executeInsert", mStatement.toString());
-                Logger.info(this, "executeInsert","id=" + id);
+                Logger.info(this, "executeInsert", "id=" + id);
             }
             if (id == -1) {
                 Logger.error("Insert failed");
@@ -335,9 +336,10 @@ public class SynchronizedStatement
     @CallSuper
     protected void finalize()
             throws Throwable {
-        if (!mIsClosed && BuildConfig.DEBUG) {
-            Logger.info(this, "finalize","Finalizing non-closed statement (potential error/small)\n"
-                    + mStatement.toString());
+        if (BuildConfig.DEBUG && !mIsClosed) {
+            Logger.info(this, "finalize",
+                        "Finalizing non-closed statement (potential error/small)\n"
+                                + mStatement.toString());
         }
         mStatement.close();
         super.finalize();
@@ -346,6 +348,8 @@ public class SynchronizedStatement
     @Override
     @NonNull
     public String toString() {
-        return "SynchronizedStatement{" + mStatement.toString() + '}';
+        return "SynchronizedStatement{"
+                + mStatement.toString()
+                + '}';
     }
 }

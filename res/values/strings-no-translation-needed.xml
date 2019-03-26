@@ -47,7 +47,7 @@
 
     <string name="brackets" translatable="false">(%1$s)</string>
 
-    <!-- debug user visible strings, not normally seen -->
+    <!-- debug user visible strings, not normally seen; here to please lint. -->
     <string name="debug" translatable="false">Debug</string>
     <string name="debug_history" translatable="false">History</string>
 </resources>

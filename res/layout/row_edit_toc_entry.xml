@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/TLV_ROW"
-    style="@style/row_in_ListView">
+    style="@style/row_in_ListView"
+    >
 
     <ImageButton
         android:id="@id/TLV_ROW_DELETE"
@@ -13,14 +14,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_delete"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@id/TLV_ROW_DETAILS"
         style="@style/tlv_details_row"
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
         app:layout_constraintStart_toEndOf="@id/TLV_ROW_DELETE"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        >
 
         <TextView
             android:id="@+id/title"
@@ -29,7 +32,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SelectableText"
-            tools:text="@string/lbl_title" />
+            tools:text="@string/lbl_title"
+            />
 
         <TextView
             android:id="@+id/year"
@@ -37,7 +41,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:ignore="SelectableText"
-            tools:text="(1987)" />
+            tools:text="(1987)"
+            />
 
         <TextView
             android:id="@+id/author"
@@ -46,16 +51,18 @@
             app:layout_constraintStart_toEndOf="@id/year"
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:ignore="SelectableText"
-            tools:text="@string/lbl_author" />
+            tools:text="@string/lbl_author"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
         android:id="@id/TLV_ROW_GRABBER"
         style="@style/tlv_dragHandle"
-        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_drag_handle"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

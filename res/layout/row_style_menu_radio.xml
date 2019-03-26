@@ -7,4 +7,5 @@
     android:layout_margin="@dimen/border_double"
     android:background="@android:drawable/list_selector_background"
     android:checked="false"
-    tools:text="some radio option" />
+    tools:text="some radio option"
+    />

@@ -19,6 +19,7 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Csv;
 
 /**
@@ -114,7 +115,7 @@ public class TableDefinition
      */
     private static void drop(@NonNull final SynchronizedDb db,
                              @NonNull final String name) {
-        if (DEBUG_SWITCHES.DB_ADAPTER && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
             Logger.info(TableDefinition.class, "Dropping TABLE " + name);
         }
         db.execSQL("DROP TABLE IF EXISTS " + name);
@@ -292,6 +293,8 @@ public class TableDefinition
     }
 
     /**
+     * toString() NOT DEBUG
+     * <p>
      * useful for using the TableDefinition in place of a table name.
      */
     @Override
@@ -812,8 +815,9 @@ public class TableDefinition
         // end of column/constraint list
         sql.append(')');
 
-        if (DEBUG_SWITCHES.SQL_CREATE_TABLE && BuildConfig.DEBUG) {
-            Logger.info(this, "getSqlCreateStatement", sql.toString());
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_CREATE_TABLE) {
+            Logger.info(this, Tracker.State.Exit, "getSqlCreateStatement",
+                        sql.toString());
         }
         return sql.toString();
     }
@@ -849,8 +853,8 @@ public class TableDefinition
         } else {
             fk = mParents.get(to);
         }
-        Objects.requireNonNull(fk, "No foreign key between '" + getName()
-                + "' and '" + to.getName() + '\'');
+        Objects.requireNonNull(fk, "No foreign key between `" + getName()
+                + "` and `" + to.getName() + '`');
 
         return fk.getPredicate();
     }
@@ -973,7 +977,7 @@ public class TableDefinition
         @NonNull
         String getPredicate() {
             List<DomainDefinition> pk = mParent.getPrimaryKey();
-            if (BuildConfig.DEBUG) {
+            if (/* always debug */ BuildConfig.DEBUG) {
                 if (pk.isEmpty()) {
                     throw new IllegalStateException("no primary key on table: " + mParent);
                 }
@@ -1010,11 +1014,11 @@ public class TableDefinition
         @Override
         @NonNull
         public String toString() {
-            return "FkReference{" +
-                    "mParent=" + mParent +
-                    ", mChild=" + mChild +
-                    ", mDomains=" + mDomains +
-                    '}';
+            return "FkReference{"
+                    + "mParent=" + mParent
+                    + ", mChild=" + mChild
+                    + ", mDomains=" + mDomains
+                    + '}';
         }
     }
 }

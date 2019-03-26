@@ -19,6 +19,7 @@
  */
 package com.eleybourn.bookcatalogue.backup.csv;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
 import android.text.TextUtils;
 
@@ -35,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportException;
@@ -44,6 +44,7 @@ import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -77,8 +78,9 @@ public class CsvImporter
     private static final String LEGACY_BOOKSHELF_TEXT_COLUMN = "bookshelf_text";
 
     @NonNull
+    private final Context mContext;
+    @NonNull
     private final DBA mDb;
-
     @NonNull
     private final ImportSettings mSettings;
 
@@ -86,7 +88,6 @@ public class CsvImporter
     private Integer mCreated = 0;
     @NonNull
     private Integer mUpdated = 0;
-
 
     /**
      * Constructor.
@@ -98,8 +99,10 @@ public class CsvImporter
      *                 Other flags are ignored, as this class only
      *                 handles {@link ImportSettings#BOOK_CSV} anyhow.
      */
-    public CsvImporter(@NonNull final ImportSettings settings) {
-        mDb = new DBA(BookCatalogueApp.getAppContext());
+    public CsvImporter(@NonNull final Context context,
+                       @NonNull final ImportSettings settings) {
+        mContext = context;
+        mDb = new DBA(mContext);
         mSettings = settings;
     }
 
@@ -262,9 +265,8 @@ public class CsvImporter
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
-                    String msg =
-                            BookCatalogueApp.getResString(R.string.progress_msg_n_created_m_updated,
-                                                          mCreated, mUpdated);
+                    String msg = mContext.getString(R.string.progress_msg_n_created_m_updated,
+                                                  mCreated, mUpdated);
                     listener.onProgress(title + "\n(" + msg + ')', row);
                     lastUpdate = now;
                 }
@@ -284,7 +286,7 @@ public class CsvImporter
         }
 
         // minus 1 for the headers.
-        Logger.info(this,"doImport",
+        Logger.info(this, Tracker.State.Exit,"doImport",
                     "Csv Import successful: rows processed: " + (row - 1) +
                             ", created:" + mCreated + ", updated: " + mUpdated);
         return row;
@@ -372,7 +374,7 @@ public class CsvImporter
         ArrayList<Bookshelf> list = StringList.getBookshelfCoder()
                                               .decode(Bookshelf.MULTI_SHELF_SEPARATOR, encodedList,
                                                       false);
-        book.putList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
+        book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
 
         book.remove(UniqueId.KEY_BOOKSHELF);
         book.remove(LEGACY_BOOKSHELF_TEXT_COLUMN);
@@ -394,7 +396,7 @@ public class CsvImporter
             if (!list.isEmpty()) {
                 // fixup the id's
                 Utils.pruneList(db, list);
-                book.putList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
+                book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
             }
         }
 
@@ -426,7 +428,7 @@ public class CsvImporter
         final ArrayList<Series> list = StringList.getSeriesCoder().decode(encodedList, false);
         Series.pruneSeriesList(list);
         Utils.pruneList(db, list);
-        book.putList(UniqueId.BKEY_SERIES_ARRAY, list);
+        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_SERIES);
     }
 
@@ -465,14 +467,14 @@ public class CsvImporter
         // (it seems a 'book' record gets written without an 'author' record; should not happen)
         // so we allow blank author_details and fill in a regional version of "Author, Unknown"
         if (encodedList.isEmpty()) {
-            encodedList = BookCatalogueApp.getResString(R.string.lbl_author) + ", "
-                    + BookCatalogueApp.getResString(R.string.unknown);
+            encodedList = mContext.getString(R.string.lbl_author) + ", "
+                    + mContext.getString(R.string.unknown);
         }
 
         // Now build the array for authors
         final ArrayList<Author> list = StringList.getAuthorCoder().decode(encodedList, false);
         Utils.pruneList(db, list);
-        book.putList(UniqueId.BKEY_AUTHOR_ARRAY, list);
+        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
     }
 
@@ -614,9 +616,9 @@ public class CsvImporter
             }
         }
 
-        throw new ImportException(BookCatalogueApp.getResString(
-                R.string.import_error_csv_file_must_contain_any_column,
-                TextUtils.join(",", names)));
+        throw new ImportException(
+                mContext.getString(R.string.import_error_csv_file_must_contain_any_column,
+                                 TextUtils.join(",", names)));
     }
 
     private void requireNonBlankOrThrow(@NonNull final Book book,
@@ -627,8 +629,7 @@ public class CsvImporter
         if (!book.getString(name).isEmpty()) {
             return;
         }
-        throw new ImportException(
-                BookCatalogueApp.getResString(R.string.error_column_is_blank, name, row));
+        throw new ImportException(mContext.getString(R.string.error_column_is_blank, name, row));
     }
 
     @SuppressWarnings("unused")
@@ -642,9 +643,8 @@ public class CsvImporter
             }
         }
 
-        throw new ImportException(
-                BookCatalogueApp.getResString(R.string.error_columns_are_blank,
-                                              TextUtils.join(",", names), row));
+        throw new ImportException(mContext.getString(R.string.error_columns_are_blank,
+                                                   TextUtils.join(",", names), row));
     }
 
     /**

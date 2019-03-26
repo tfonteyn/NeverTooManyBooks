@@ -26,6 +26,10 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map.Entry;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
@@ -33,40 +37,36 @@ import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map.Entry;
-
 /**
  * Yet Another Rabbit Burrow ("YARB" -- did I invent a new acronym?). What led to this?
- *
+ * <p>
  * 1. The call to getCount() that ListView does when it is passed a cursor added approximately 25%
  * to the total time building a book list. Given the way book lists are constructed (a flat table
  * with an index table that is ordered by ID), it was worth replacing getCount() with a local
  * version that simply returned the number of 'visible' rows in the nav table.
- *
+ * <p>
  * 2. This worked (approx 5ms vs. 500ms for a big list), but failed if the current position was
  * saved at the end of a long list. For some reason this caused lots of 'skip_rows' messages
  * from 'Cursor', and a *very* jittery backwards scroll.
- *
+ * <p>
  * 3. FUD: SQLite cursors seem to use memory based on the number of rows in the cursor. They doo
  * not *seem* to refer back to the database and cache a window. If true, with lots of a books and
  * a small phone memory, this would lead to problems.
- *
+ * <p>
  * The result?
- *
+ * <p>
  * A pseudo cursor that is made up of multiple cursors around a given position. Originally, the
  * plan was to build the surrounding cursors in a background thread, but the build time for small
  * cursors is remarkably small (approx 10ms on a 1.5GHz dual CPU).
  * So, this much simpler implementation was chosen.
- *
+ * <p>
  * What does it do?
- *
+ * <p>
  * getCount() is implemented as one would hope: a direct count of visible rows.
- *
+ * <p>
  * onMove(...) results in a new cursor being built when the row is not available in
  * existing cursors.
- *
+ * <p>
  * Cursors are kept in a hash based on their position; cursors more than 3 'windows' away from the
  * current position are eligible for purging if they are not in the Most Recently Used (MRU) list.
  * The MRU list holds 8 cursors.
@@ -251,11 +251,11 @@ public class BooklistPseudoCursor
         }
         // Purge them
         for (Integer i : toPurge) {
-            if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
-                Logger.info(this, "purgeOldCursors","Removing cursor at " + i);
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+                Logger.info(this, "purgeOldCursors", "Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
-            if (c!= null) {
+            if (c != null) {
                 c.close();
             }
         }
@@ -379,18 +379,18 @@ public class BooklistPseudoCursor
     @Override
     @CallSuper
     public void close() {
-        Logger.info(this, Tracker.State.Enter, "Close " , this);
+        Logger.info(this, Tracker.State.Enter, "Close ", this);
         super.close();
 
         clearCursors();
-        Logger.info(this, Tracker.State.Exit, "Close " , this);
+        Logger.info(this, Tracker.State.Exit, "Close ", this);
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "BooklistPseudoCursor{" +
-                "mCursors=" + mCursors +
-                '}';
+        return "BooklistPseudoCursor{"
+                + "mCursors=" + mCursors
+                + '}';
     }
 }

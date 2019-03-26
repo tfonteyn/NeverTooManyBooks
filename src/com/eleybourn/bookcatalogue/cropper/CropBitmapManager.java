@@ -17,6 +17,7 @@
 package com.eleybourn.bookcatalogue.cropper;
 
 import android.graphics.BitmapFactory;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -25,19 +26,20 @@ import java.util.WeakHashMap;
 
 /**
  * This class provides several utilities to cancel bitmap decoding.
- *
+ * <p>
  * The function decodeFileDescriptor() is used to decode a bitmap. During
  * decoding if another thread wants to cancel it, it calls the function
  * cancelThreadDecoding() specifying the Thread which is in decoding.
- *
+ * <p>
  * cancelThreadDecoding() is sticky until allowThreadDecoding() is called.
- *
+ * <p>
  * You can also cancel decoding for a set of threads using ThreadSet as the
  * parameter for cancelThreadDecoding. To put a thread into a ThreadSet, use the
  * add() method. A ThreadSet holds (weak) references to the threads, so you
  * don't need to remove Thread from it if some thread dies.
  */
 class CropBitmapManager {
+
     @Nullable
     private static CropBitmapManager sManager;
     private final Map<Thread, ThreadStatus> mThreadStatus = new WeakHashMap<>();
@@ -52,7 +54,7 @@ class CropBitmapManager {
         }
         return sManager;
     }
-        
+
     private enum State {
         Cancel, Allow;
 
@@ -70,6 +72,7 @@ class CropBitmapManager {
     }
 
     private static class ThreadStatus {
+
         @NonNull
         State mState = State.Allow;
         @Nullable

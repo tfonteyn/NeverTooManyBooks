@@ -65,7 +65,7 @@ public class FlattenedBooklist
                              @NonNull final String tableName) {
         TableDefinition flat = DatabaseDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
         flat.setName(tableName);
-        if (DEBUG_SWITCHES.TEMP_TABLES_ARE_STANDARD && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TEMP_TABLES_ARE_STANDARD) {
             flat.setType(TableTypes.Standard);
         } else {
             //RELEASE Make sure is TEMPORARY

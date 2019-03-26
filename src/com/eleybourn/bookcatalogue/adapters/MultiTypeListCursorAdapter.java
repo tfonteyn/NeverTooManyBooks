@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.widgets.FastScroller;
 
 /**
@@ -141,9 +140,9 @@ public class MultiTypeListCursorAdapter
         final String[] section = mListHandler.getSectionText(listCursor);
         listCursor.moveToPosition(savedPos);
 
-        if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             for (String s : section) {
-                Logger.info(this, "getSectionTextForPosition","Section: " + s);
+                Logger.info(this, "getSectionTextForPosition", "Section: " + s);
             }
         }
         //Tracker.info(this, Tracker.State.Exit, "getSectionTextForPosition");

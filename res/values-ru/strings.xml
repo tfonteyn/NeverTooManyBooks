@@ -135,7 +135,7 @@
     <string name="error_backup_failed">Резервное копирование не удалось</string>
     <string name="error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
     <string name="import_error_csv_file_must_contain_any_column">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
-    <string name="error_column_is_blank">Столбец %1$s в строке %2$s пуст</string>
+    <string name="error_column_is_blank">Столбец %1$s в строке %2$d пуст</string>
     <string name="error_columns_are_blank">В строке %2$d столбцы %1$s пусты</string>
     <string name="btn_confirm_save">Сохранить</string>
     <string name="btn_confirm_add">Добавить</string>
@@ -261,7 +261,6 @@
     <string name="gr_title_send_book">Отправить книги на Goodreads</string>
     <string name="gr_tq_legacy_task">Действующая задача</string>
     <string name="gr_tq_occurred_at">(случилось в %1$s)</string>
-    <string name="unknown_uc">НЕИЗВЕСТНО</string>
     <string name="warning_book_was_deleted_uc">ЭТА КИНГА БЫЛА УДАЛЕНА</string>
     <string name="lbl_by_author_s">к %1$s</string>
     <string name="warning_no_matching_book_found">Нет совпавших книг</string>
@@ -279,7 +278,7 @@
     <string name="gr_error_while_searching">Ошибка во время поиска</string>
     <string name="gr_send_all_books_results">%1$d книг обработано: %2$d отправлено успешно, %3$d без ISBN и %4$d с ISBN но не найдено в Goodreads</string>
     <string name="x_of_y">%1$d из %2$d</string>
-    <string name="gr_send_book_to_goodreads">Отправить книгу %1$s на Goodreads</string>
+    <string name="gr_send_book_to_goodreads">Отправить книгу %1$d на Goodreads</string>
     <string name="erase_cover_cache">Очистить кэш обложек</string>
     <string name="acra_resToastText">&APP_NAME; завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку.</string>
     <string name="acra_resNotifTickerText">&APP_NAME; завершилось с ошибкой</string>
@@ -349,7 +348,7 @@
     <string name="plain_background_b_reduces_flicker_b">Ровный фон (уменьшает мерцание)</string>
     <string name="warning_required_field_x">%1$s должен быть не пустым</string>
     <string name="edit">Редактировать</string>
-    <string name="lbl_preferences">Настройки</string>
+    <string name="lbl_settings">Настройки</string>
     <string name="error_unexpected_error">Случилась неожиданная ошибка, пожалуйста, отошлите детали в поддержку, используя меню \‘Помощь\’ из Главного меню</string>
     <string name="menu_delete_style">Удалить стиль</string>
     <string name="menu_edit_booklist_style">Редактировать стиль</string>
@@ -438,7 +437,7 @@
     <string name="menu_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
     <string name="disable_background_image">Отключить фоновый рисунок</string>
     <string name="displaying_n_books_in_m_entries">отображается %1$d книг, в %2$d элементах</string>
-    <string name="loan_book_available">Доступно</string>
+    <string name="lbl_loan_book_available">Доступно</string>
 
     <string name="warning_x_is_not_a_valid_isbn">%1$s не правльный ISBN</string>
     <string name="warning_cover_not_found2">Рисунок не найден</string>
@@ -471,7 +470,7 @@
     <string name="progress_end_import_complete">Импорт завершен</string>
     <string name="progress_msg_searching">Поиск…</string>
     <string name="progress_msg_adding_book">Добавление книги…</string>
-    <string name="lbl_publishing">Публикация</string>
+    <string name="lbl_publication">публикация</string>
     <string name="lbl_by_author">от</string>
     <string name="lbl_loaned_to_name">Дана вдолг: %1$s</string>
     <string name="lbl_x_pages">Страниц: %1$d</string>
@@ -499,7 +498,7 @@
         Файл %3$s с именем %2$s был создан в папке \“%1$s\” на вашей SD карте.\n
         \nВам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.
     </string>
-    <string name="progress_msg_covers">%1$s обложек обработано (%2$s пропущено)</string>
+    <string name="progress_msg_covers">%1$d обложек обработано (%2$d пропущено)</string>
     <string name="lbl_advanced_options">Тонкие настройки</string>
     <string name="progress_msg_backing_up">Делаю бэкап…</string>
     <string name="progress_msg_importing">Импорт…</string>
@@ -521,9 +520,14 @@
     <string name="import_option_new_and_changed_books">Новые и обновленные книги</string>
     <string name="import_option_info_new_and_changed_books">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>
     <string name="import_warning_old_archive">Эта опция не поддерживается для архивов более ранних версий.</string>
-    <string name="progress_msg_n_created_m_updated">%1$s создано, %2$s обновлено</string>
-    <string name="title_export_books">Книги этого архива будут экспортированы. Выберите один из вариантов, чтобы начать экспорт, или \‘НАЗАД\’ для отмены:</string>
-    <string name="progress_msg_covers_skip">%1$s обложек обработано (%2$s не хватает, %3$s пропущено)</string>
+    <string name="progress_msg_n_created_m_updated">%1$d создано, %2$d обновлено</string>
+    <string name="title_export_books">
+        Книги этого архива будут экспортированы. Выберите один из вариантов, чтобы начать
+        экспорт, или \‘НАЗАД\’ для отмены:
+    </string>
+    <string name="progress_msg_covers_skip">
+        %1$d обложек обработано (%2$d не хватает, %3$d пропущено)
+    </string>
 
     <string name="import_error_failed_is_csv_file_location_correct">Импорт не удался.</string>
 
@@ -605,5 +609,6 @@
     <string name="menu_loan_return_book">Заимствованная книга возвращается</string>
     <string name="progress_msg_saving_image">Сохранение изображения…</string>
     <string name="error_google_play_missing">Google Play / Market не установлен</string>
+    <string name="lbl_is_complete">Завершено</string>
 
 </resources>

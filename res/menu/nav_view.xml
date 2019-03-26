@@ -12,13 +12,18 @@
 
     <item
         android:id="@+id/nav_edit_list_styles"
-        android:icon="@drawable/ic_settings"
+        android:icon="@drawable/ic_details"
         android:title="@string/menu_edit_booklist_styles" />
 
     <item
         android:id="@+id/nav_admin"
         android:icon="@drawable/ic_build"
         android:title="@string/menu_administration" />
+
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/lbl_settings" />
 
     <item
         android:id="@+id/nav_help"

@@ -24,8 +24,6 @@ import android.util.Base64;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.utils.RTE;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
@@ -34,6 +32,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 
 /**
  * Utility functions for backup/restore code.
@@ -356,7 +356,7 @@ public final class XmlUtils {
 
         } else {
             //noinspection ConstantConditions
-            throw new RTE.IllegalTypeException(value.getClass().getCanonicalName());
+            throw new IllegalTypeException(value.getClass().getCanonicalName());
         }
     }
 

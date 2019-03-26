@@ -22,6 +22,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public class ExportCSVTask
         extends AsyncTask<Void, Object, Void> {
 
+    /** Fragment manager tag. */
     private static final String TAG = ExportCSVTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_CSV_EXPORT;
@@ -48,7 +49,8 @@ public class ExportCSVTask
     private ExportCSVTask(@NonNull final ProgressDialogFragment<Void> fragment,
                           @NonNull final ExportSettings settings) {
         mFragment = fragment;
-        mExporter = new CsvExporter(settings);
+        //noinspection ConstantConditions
+        mExporter = new CsvExporter(mFragment.getContextWithHorribleClutch(), settings);
         tmpFile = StorageUtils.getFile(CsvExporter.EXPORT_TEMP_FILE_NAME);
     }
 
@@ -84,7 +86,6 @@ public class ExportCSVTask
     @Nullable
     @WorkerThread
     protected Void doInBackground(final Void... params) {
-
         try (FileOutputStream out = new FileOutputStream(tmpFile)) {
             // start the export
             mExporter.doBooks(out, new Exporter.ExportListener() {

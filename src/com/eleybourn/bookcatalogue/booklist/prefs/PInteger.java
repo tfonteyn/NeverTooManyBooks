@@ -1,9 +1,8 @@
 package com.eleybourn.bookcatalogue.booklist.prefs;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.App;
 
 /**
  * An Integer is stored as a String
@@ -21,9 +20,9 @@ public class PInteger
      * @param key  of the preference
      * @param uuid the style id
      */
-    public PInteger(@StringRes final int key,
+    public PInteger(@NonNull final String key,
                     @NonNull final String uuid) {
-        super(key, uuid, Prefs.getListPreference(key, 0));
+        super(key, uuid, App.getListPreference(key, 0));
     }
 
     /**
@@ -34,10 +33,10 @@ public class PInteger
      * @param uuid         the style id
      * @param defaultValue default to use if there is no global default
      */
-    protected PInteger(@StringRes final int key,
+    protected PInteger(@NonNull final String key,
                        @NonNull final String uuid,
                        @NonNull final Integer defaultValue) {
-        super(key, uuid, Prefs.getListPreference(key, defaultValue));
+        super(key, uuid, App.getListPreference(key, defaultValue));
     }
 
     @NonNull
@@ -47,7 +46,7 @@ public class PInteger
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             // Use a workaround for the real default value not being a String.
-            String sValue = Prefs.getPrefs(mUuid).getString(getKey(), null);
+            String sValue = App.getPrefs(mUuid).getString(getKey(), null);
             if (sValue == null || sValue.isEmpty()) {
                 return mDefaultValue;
             }

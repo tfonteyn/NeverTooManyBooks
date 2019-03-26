@@ -27,12 +27,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedCursor;
-import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 import java.io.Closeable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -40,6 +34,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedCursor;
+import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * DEBUG CLASS to help com.eleybourn.bookcatalogue.debug cursor leakage.
@@ -86,8 +86,8 @@ public class TrackedCursor
                          @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
 
-        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
-            Logger.info(this, "TrackedCursor","instances created: "
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
+            Logger.info(this, "TrackedCursor", "instances created: "
                     + DEBUG_INSTANCE_COUNTER.incrementAndGet());
             // Record who called us. It's only from about the 7th element that matters.
             mStackTrace = Thread.currentThread().getStackTrace();
@@ -111,7 +111,7 @@ public class TrackedCursor
      */
     @SuppressWarnings("unused")
     public static long getCursorCountApproximate() {
-        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
             synchronized (CURSORS) {
                 return CURSORS.size();
             }
@@ -129,7 +129,7 @@ public class TrackedCursor
      */
     @SuppressWarnings({"unused", "UnusedAssignment"})
     public static long getCursorCount() {
-        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
             long count = 0;
             List<WeakReference<TrackedCursor>> list = new ArrayList<>();
             synchronized (CURSORS) {
@@ -154,7 +154,7 @@ public class TrackedCursor
      * DEBUG Dump all open cursors.
      */
     public static void dumpCursors() {
-        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
             @SuppressWarnings("UnusedAssignment")
             List<TrackedCursor> cursors = getCursors();
             if (cursors == null) {
@@ -180,7 +180,7 @@ public class TrackedCursor
     @SuppressWarnings("UnusedAssignment")
     @Nullable
     private static List<TrackedCursor> getCursors() {
-        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
             List<TrackedCursor> list = new ArrayList<>();
             synchronized (CURSORS) {
                 for (WeakReference<TrackedCursor> r : CURSORS) {
@@ -202,12 +202,12 @@ public class TrackedCursor
     @CallSuper
     public void close() {
         super.close();
-        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
             if (!mIsClosedFlg) {
                 removeCursor();
                 mIsClosedFlg = true;
             }
-            Logger.info(this, "close","instances left: "
+            Logger.info(this, "close", "instances left: "
                     + DEBUG_INSTANCE_COUNTER.decrementAndGet());
         }
     }
@@ -219,7 +219,7 @@ public class TrackedCursor
     @Override
     @CallSuper
     protected void finalize() {
-        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
             // This is a cursor that is being deleted before it is closed.
             // Setting a break here is sometimes useful.
             removeCursor();

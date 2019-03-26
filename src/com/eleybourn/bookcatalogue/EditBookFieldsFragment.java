@@ -38,21 +38,17 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItem;
-import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogFragment;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
 import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
@@ -63,7 +59,6 @@ public class EditBookFieldsFragment
         extends EditBookBaseFragment
         implements
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Bookshelf>,
-        PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener,
         TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener {
 
     /** Fragment manager tag. */
@@ -77,16 +72,9 @@ public class EditBookFieldsFragment
      * Lists in database so far, we cache them for performance but only load
      * them when really needed.
      */
-    private List<String> mFormats;
-    /** Field drop down list. */
     private List<String> mGenres;
-    /** Field drop down list. */
-    private List<String> mLanguages;
-    /** Field drop down list. */
-    private List<String> mPublishers;
-    /** Field drop down list. */
-    private List<String> mListPriceCurrencies;
 
+    /** Handles cover replacement, rotation, etc. */
     private CoverHandler mCoverHandler;
 
     /* ------------------------------------------------------------------------------------------ */
@@ -129,12 +117,24 @@ public class EditBookFieldsFragment
     @CallSuper
     protected void initFields() {
         super.initFields();
-        // multiple use
-        Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
         Field field;
 
         // book fields
+
+        mFields.add(R.id.title, UniqueId.KEY_TITLE);
+        mFields.add(R.id.isbn, UniqueId.KEY_ISBN);
+        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION);
+
+        // ENHANCE: {@link Fields.ImageViewAccessor}
+//        field = mFields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
+        field = mFields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
+        ImageUtils.ImageSize imageSize = ImageUtils.getImageSizes(requireActivity());
+//        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
+//        iva.setMaxSize( imageSize.small, imageSize.small);
+        mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
+                                         mFields.getField(R.id.isbn), field,
+                                         imageSize.small, imageSize.small);
 
         // defined, but handled manually
         mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR)
@@ -144,7 +144,8 @@ public class EditBookFieldsFragment
                     public void onClick(@NonNull final View v) {
                         String title = mFields.getField(R.id.title).getValue().toString().trim();
                         ArrayList<Author> list =
-                                getBookManager().getBook().getList(UniqueId.BKEY_AUTHOR_ARRAY);
+                                getBookManager().getBook().getParcelableArrayList(
+                                        UniqueId.BKEY_AUTHOR_ARRAY);
 
                         Intent intent = new Intent(requireActivity(), EditAuthorListActivity.class)
                                 .putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId())
@@ -162,7 +163,8 @@ public class EditBookFieldsFragment
                     public void onClick(@NonNull final View v) {
                         String title = mFields.getField(R.id.title).getValue().toString().trim();
                         ArrayList<Series> list =
-                                getBookManager().getBook().getList(UniqueId.BKEY_SERIES_ARRAY);
+                                getBookManager().getBook().getParcelableArrayList(
+                                        UniqueId.BKEY_SERIES_ARRAY);
 
                         Intent intent = new Intent(requireActivity(), EditSeriesListActivity.class)
                                 .putExtra(UniqueId.KEY_ID, getBookManager().getBook().getId())
@@ -172,57 +174,18 @@ public class EditBookFieldsFragment
                     }
                 });
 
-        mFields.add(R.id.pages, UniqueId.KEY_PAGES);
-        mFields.add(R.id.title, UniqueId.KEY_TITLE);
-        mFields.add(R.id.isbn, UniqueId.KEY_ISBN);
-
-        field = mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
-                       .setShowHtml(true);
-        initTextFieldEditor(TAG, field, R.string.lbl_description, R.id.btn_description, true);
-
         field = mFields.add(R.id.genre, UniqueId.KEY_GENRE);
         initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, getGenres());
-
-        field = mFields.add(R.id.language, UniqueId.KEY_LANGUAGE)
-                       .setFormatter(new Fields.LanguageFormatter());
-        initValuePicker(field, R.string.lbl_language, R.id.btn_language, getLanguages());
-
-        field = mFields.add(R.id.format, UniqueId.KEY_FORMAT);
-        initValuePicker(field, R.string.lbl_format, R.id.btn_format, getFormats());
-
-        field = mFields.add(R.id.publisher, UniqueId.KEY_PUBLISHER);
-        initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher, getPublishers());
-
-        field = mFields.add(R.id.date_published, UniqueId.KEY_DATE_PUBLISHED)
-                       .setFormatter(dateFormatter);
-        initPartialDatePicker(TAG, field, R.string.lbl_date_published, false);
-
-        field = mFields.add(R.id.first_publication, UniqueId.KEY_DATE_FIRST_PUBLISHED)
-                       .setFormatter(dateFormatter);
-        initPartialDatePicker(TAG, field, R.string.lbl_first_publication, false);
-
-        // ENHANCE: {@link Fields.ImageViewAccessor}
-//        field = mFields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
-        field = mFields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
-        ImageUtils.ImageSize imageSize = ImageUtils.getImageSizes(requireActivity());
-//        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
-//        iva.setMaxSize( imageSize.small, imageSize.small);
-        mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
-                                         mFields.getField(R.id.isbn), field,
-                                         imageSize.small, imageSize.small);
-
-        mFields.add(R.id.price_listed, UniqueId.KEY_PRICE_LISTED);
-        field = mFields.add(R.id.price_listed_currency, UniqueId.KEY_PRICE_LISTED_CURRENCY);
-        initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency,
-                        getListPriceCurrencyCodes());
 
         // Personal fields
 
         // defined, but handled manually (reminder: storing the list back into the book
         // is handled by onCheckListEditorSave)
         field = mFields.add(R.id.bookshelves, "", UniqueId.KEY_BOOKSHELF);
-        initCheckListEditor(TAG, field, R.string.lbl_bookshelves_long,
-                            new CheckListEditorListGetter<Bookshelf>() {
+        //noinspection ConstantConditions
+        initCheckListEditor(getTag(), field, R.string.lbl_bookshelves_long,
+                            new CheckListEditorDialogFragment.CheckListEditorListGetter<Bookshelf>() {
+                                @NonNull
                                 @Override
                                 public ArrayList<CheckListItem<Bookshelf>> getList() {
                                     return getBookManager().getBook()
@@ -238,15 +201,10 @@ public class EditBookFieldsFragment
         Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
-        // new book ? load data fields from Extras
-        if (book.getId() <= 0) {
-            Bundle extras = requireActivity().getIntent().getExtras();
-            populateNewBookFieldsFromBundle(book, extras);
-        }
-
         populateAuthorListField(book);
         populateSeriesListField(book);
-        ArrayList<Bookshelf> bsList = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+
+        ArrayList<Bookshelf> bsList = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         mFields.getField(R.id.bookshelves).setValue(Bookshelf.toDisplayString(bsList));
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
@@ -268,24 +226,24 @@ public class EditBookFieldsFragment
 
     //<editor-fold desc="Populate">
 
-    private void populateNewBookFieldsFromBundle(@NonNull final Book book,
-                                                 @Nullable final Bundle bundle) {
-        // Check if we have any data, for example from a Search
-        if (bundle != null) {
-            Bundle values = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
-            if (values != null) {
-                // if we do, add if not there yet
-                mFields.setAllFrom(values, false);
-            }
-        }
+    /**
+     * Handle the Bookshelf default.
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    protected void populateNewBookFieldsFromBundle(@NonNull final Book book,
+                                                   @Nullable final Bundle bundle) {
+        super.populateNewBookFieldsFromBundle(book, bundle);
 
         // If the new book is not on any Bookshelf, use the current bookshelf as default
-        final ArrayList<Bookshelf> list = book.getList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        final ArrayList<Bookshelf> list = book.getParcelableArrayList(
+                UniqueId.BKEY_BOOKSHELF_ARRAY);
         if (list.isEmpty()) {
 
             Bookshelf bookshelf = null;
-            String name = Prefs.getPrefs()
-                               .getString(Bookshelf.PREF_BOOKSHELF_CURRENT, null);
+            String name = App.getPrefs()
+                             .getString(Bookshelf.PREF_BOOKSHELF_CURRENT, null);
             if (name != null && !name.isEmpty()) {
                 bookshelf = mDb.getBookshelfByName(name);
             }
@@ -297,18 +255,19 @@ public class EditBookFieldsFragment
             mFields.getField(R.id.bookshelves).setValue(bookshelf.getName());
             // add to set, and store in book.
             list.add(bookshelf);
-            book.putList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
+            book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
         }
     }
 
     private void populateAuthorListField(@NonNull final Book book) {
-        ArrayList<Author> list = book.getList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (!list.isEmpty() && Utils.pruneList(mDb, list)) {
             getBookManager().setDirty(true);
-            book.putList(UniqueId.BKEY_AUTHOR_ARRAY, list);
+            book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }
 
-        String newText = book.getAuthorTextShort();
+        //noinspection ConstantConditions
+        String newText = book.getAuthorTextShort(getContext());
         if (newText.isEmpty()) {
             newText = getString(R.string.btn_set_authors);
         }
@@ -318,13 +277,14 @@ public class EditBookFieldsFragment
     private void populateSeriesListField(@NonNull final Book book) {
         boolean visible = mFields.getField(R.id.series).isVisible();
         if (visible) {
-            ArrayList<Series> list = book.getList(UniqueId.BKEY_SERIES_ARRAY);
+            ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
             if (!list.isEmpty() && Utils.pruneList(mDb, list)) {
                 getBookManager().setDirty(true);
-                book.putList(UniqueId.BKEY_SERIES_ARRAY, list);
+                book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
             }
 
-            String newText = book.getSeriesTextShort();
+            //noinspection ConstantConditions
+            String newText = book.getSeriesTextShort(getContext());
             if (newText.isEmpty()) {
                 newText = getString(R.string.btn_set_series);
             }
@@ -412,7 +372,8 @@ public class EditBookFieldsFragment
 
         if (destinationFieldId == R.id.bookshelves) {
             ArrayList<Bookshelf> bsList = new Book.BookshelfCheckListItem().extractList(list);
-            getBookManager().getBook().putList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
+            getBookManager().getBook().putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY,
+                                                              bsList);
             mFields.getField(destinationFieldId).setValue(Bookshelf.toDisplayString(bsList));
         }
     }
@@ -423,31 +384,9 @@ public class EditBookFieldsFragment
         mFields.getField(destinationFieldId).setValue(newText);
     }
 
-    @Override
-    public void onPartialDatePickerSave(final int destinationFieldId,
-                                        @Nullable final Integer year,
-                                        @Nullable final Integer month,
-                                        @Nullable final Integer day) {
-        mFields.getField(destinationFieldId).setValue(DateUtils.buildPartialDate(year, month, day));
-    }
-
     //</editor-fold>
 
     //<editor-fold desc="Field drop down lists">
-
-    /**
-     * Load a publisher list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of publishers
-     */
-    @NonNull
-    private List<String> getPublishers() {
-        if (mPublishers == null) {
-            mPublishers = mDb.getPublisherNames();
-        }
-        return mPublishers;
-    }
 
     /**
      * Load a genre list; reloading this list every time a tab changes is slow.
@@ -463,47 +402,6 @@ public class EditBookFieldsFragment
         return mGenres;
     }
 
-    /**
-     * Load a language list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of languages; full displayName
-     */
-    @NonNull
-    private List<String> getLanguages() {
-        if (mLanguages == null) {
-            mLanguages = mDb.getLanguages();
-        }
-        return mLanguages;
-    }
-
-    /**
-     * Load a format list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of formats
-     */
-    @NonNull
-    private List<String> getFormats() {
-        if (mFormats == null) {
-            mFormats = mDb.getFormats();
-        }
-        return mFormats;
-    }
-
-    /**
-     * Load a currency list; reloading this list every time a tab changes is slow.
-     * So we cache it.
-     *
-     * @return List of ISO currency codes
-     */
-    @NonNull
-    private List<String> getListPriceCurrencyCodes() {
-        if (mListPriceCurrencies == null) {
-            mListPriceCurrencies = mDb.getCurrencyCodes(UniqueId.KEY_PRICE_LISTED_CURRENCY);
-        }
-        return mListPriceCurrencies;
-    }
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -524,8 +422,8 @@ public class EditBookFieldsFragment
                         //noinspection ConstantConditions
                         ArrayList<Author> list =
                                 data.getExtras().getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-                        book.putList(UniqueId.BKEY_AUTHOR_ARRAY,
-                                     list != null ? list : new ArrayList<Author>());
+                        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
+                                                    list != null ? list : new ArrayList<Author>());
 
                         getBookManager().setDirty(true);
                     } else {
@@ -548,8 +446,8 @@ public class EditBookFieldsFragment
                         //noinspection ConstantConditions
                         ArrayList<Series> list =
                                 data.getExtras().getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-                        book.putList(UniqueId.BKEY_SERIES_ARRAY,
-                                     list != null ? list : new ArrayList<Series>());
+                        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
+                                                    list != null ? list : new ArrayList<Series>());
 
                         populateSeriesListField(book);
                         getBookManager().setDirty(true);

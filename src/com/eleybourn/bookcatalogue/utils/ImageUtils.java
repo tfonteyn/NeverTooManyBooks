@@ -139,7 +139,7 @@ public final class ImageUtils {
         final int samplePow2 =
                 (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
-        if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.info(ImageUtils.class, "getImageAndPutIntoView:\n"
                     + " filename = " + fileSpec + '\n'
                     + "  exact       = " + exact + '\n'
@@ -192,7 +192,7 @@ public final class ImageUtils {
             return null;
         }
 
-        if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.info(ImageUtils.class,
                         "bm.width = " + bm.getWidth() + ", bm.height = " + bm.getHeight());
         }
@@ -352,7 +352,7 @@ public final class ImageUtils {
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length,
                                                       new BitmapFactory.Options());
 
-        if (DEBUG_SWITCHES.IMAGE_UTILS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Logger.info(ImageUtils.class, "Array " + bytes.length + " bytes, bitmap "
                     + bitmap.getHeight() + 'x' + bitmap.getWidth());
         }

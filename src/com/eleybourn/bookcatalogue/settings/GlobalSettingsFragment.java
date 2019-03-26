@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.settings;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -12,9 +11,7 @@ import com.eleybourn.bookcatalogue.R;
  * Global settings page.
  */
 public class GlobalSettingsFragment
-        extends BaseSettingsFragment
-        implements
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        extends BaseSettingsFragment {
 
     /** Fragment manager tag. */
     public static final String TAG = GlobalSettingsFragment.class.getSimpleName();
@@ -25,7 +22,7 @@ public class GlobalSettingsFragment
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
         PreferenceScreen screen = getPreferenceScreen();
-        screen.setTitle(R.string.lbl_preferences);
+        screen.setTitle(R.string.lbl_settings);
         setSummary(screen);
     }
 }

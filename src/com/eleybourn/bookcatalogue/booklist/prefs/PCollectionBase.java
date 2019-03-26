@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.App;
 
 /**
  * Base for a Collection (List, Set,...) of elements (Integer, String, ...)
@@ -29,11 +29,13 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     static final String DELIM = ",";
 
     /**
+     * Constructor.
+     *
      * @param key          key of preference
      * @param uuid         of the style
      * @param defaultValue in memory default
      */
-    PCollectionBase(final int key,
+    PCollectionBase(@NonNull final String key,
                     @NonNull final String uuid,
                     @NonNull final T defaultValue) {
         super(key, uuid, defaultValue);
@@ -44,10 +46,10 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         if (mUuid.isEmpty()) {
             mNonPersistedValue = value;
         } else if (value == null) {
-            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
+            App.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
-            Prefs.getPrefs(mUuid).edit()
-                 .putString(getKey(), TextUtils.join(DELIM, value)).apply();
+            App.getPrefs(mUuid).edit()
+               .putString(getKey(), TextUtils.join(DELIM, value)).apply();
         }
     }
 
@@ -60,10 +62,10 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         }
 
         if (value == null) {
-            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
+            App.getPrefs(mUuid).edit().remove(getKey()).apply();
         } else {
-            Prefs.getPrefs(mUuid).edit()
-                 .putString(getKey(), TextUtils.join(DELIM, value)).apply();
+            App.getPrefs(mUuid).edit()
+               .putString(getKey(), TextUtils.join(DELIM, value)).apply();
         }
     }
 
@@ -82,7 +84,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             //noinspection ConstantConditions
             mNonPersistedValue.clear();
         } else {
-            Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
+            App.getPrefs(mUuid).edit().remove(getKey()).apply();
         }
     }
 
@@ -96,13 +98,13 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             //noinspection ConstantConditions
             mNonPersistedValue.add(value);
         } else {
-            String sValues = Prefs.getPrefs(mUuid).getString(getKey(), null);
+            String sValues = App.getPrefs(mUuid).getString(getKey(), null);
             if (sValues == null) {
                 sValues = String.valueOf(value);
             } else {
                 sValues += DELIM + value;
             }
-            Prefs.getPrefs(mUuid).edit().putString(getKey(), sValues).apply();
+            App.getPrefs(mUuid).edit().putString(getKey(), sValues).apply();
         }
     }
 
@@ -111,7 +113,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             //noinspection ConstantConditions
             mNonPersistedValue.remove(value);
         } else {
-            String sValues = Prefs.getPrefs(mUuid).getString(getKey(), null);
+            String sValues = App.getPrefs(mUuid).getString(getKey(), null);
             if (sValues != null && !sValues.isEmpty()) {
                 List<String> newList = new ArrayList<>();
                 for (String e : sValues.split(DELIM)) {
@@ -120,10 +122,10 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                     }
                 }
                 if (!newList.isEmpty()) {
-                    Prefs.getPrefs(mUuid).edit()
-                         .putString(getKey(), TextUtils.join(DELIM, newList)).apply();
+                    App.getPrefs(mUuid).edit()
+                       .putString(getKey(), TextUtils.join(DELIM, newList)).apply();
                 } else {
-                    Prefs.getPrefs(mUuid).edit().remove(getKey()).apply();
+                    App.getPrefs(mUuid).edit().remove(getKey()).apply();
                 }
             }
         }

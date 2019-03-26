@@ -135,7 +135,7 @@
     <string name="error_backup_failed">Copia de seguridad errónea</string>
     <string name="error_file_must_contain_column">El fichero debe tener una columna con el nombre %1$s</string>
     <string name="import_error_csv_file_must_contain_any_column">El fichero debe tener una columna con uno de los nombres siguientes: %1$s</string>
-    <string name="error_column_is_blank">La columna %1$s tiene en blanco la fila %2$s</string>
+    <string name="error_column_is_blank">La columna %1$s tiene en blanco la fila %2$d</string>
     <string name="error_columns_are_blank">Las columnas %1$s tienen en blanco la fila %2$d</string>
     <string name="btn_confirm_save">Guardar</string>
     <string name="btn_confirm_add">Añadir</string>
@@ -215,7 +215,7 @@
     <string name="cleanup_files">Borrar ficheros</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
-    <string name="bytes">%.0f bytes</string>
+    <string name="bytes">%.0fB</string>
     <string name="debug_subject">Recopilando información sobre fallos</string>
     <string name="debug_body">Por favor, explique brevemente el problema experimentado.</string>
     <string name="menu_duplicate_book">Duplicar libro</string>
@@ -266,7 +266,6 @@
     <string name="gr_title_send_book">Enviar libros a Goodreads</string>
     <string name="gr_tq_legacy_task">Operaciones obsoletas</string>
     <string name="gr_tq_occurred_at">(ocurrido en %1$s)</string>
-    <string name="unknown_uc">DESCONOCIDO</string>
     <string name="warning_book_was_deleted_uc">ESTE LIBRO HA SIDO ELIMINADO</string>
     <string name="lbl_by_author_s">por %1$s</string>
     <string name="warning_no_matching_book_found">No se ha encontrado ningún libro</string>
@@ -284,7 +283,7 @@
     <string name="gr_error_while_searching">Error buscando.</string>
     <string name="gr_send_all_books_results">%1$d libros procesados: %2$d enviados correctamente, %3$d sin ISBN y %4$d con ISBN pero no encontrados en Goodreads</string>
     <string name="x_of_y">%1$d de %2$d</string>
-    <string name="gr_send_book_to_goodreads">Enviar libro %1$s a Goodreads</string>
+    <string name="gr_send_book_to_goodreads">Enviar libro %1$d a Goodreads</string>
 
     <string name="erase_cover_cache">Borrar caché de portadas</string>
     <string name="acra_resToastText">&APP_NAME; se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
@@ -371,7 +370,7 @@
     <string name="plain_background_b_reduces_flicker_b">Fondo liso (reduce el parpadeo)</string>
     <string name="warning_required_field_x">%1$s no puede ser blanco</string>
     <string name="edit">Editar</string>
-    <string name="lbl_preferences">Preferencias</string>
+    <string name="lbl_settings">Preferencias</string>
     <string name="error_unexpected_error">Se ha producido un error inesperado. Por favor, envíe los detalles a soporte utilizando la opción \‘Help\’ del menú principal</string>
     <string name="menu_delete_style">Eliminar Estilo</string>
     <string name="menu_edit_booklist_style">Editar Estilo</string>
@@ -471,7 +470,7 @@
     <string name="menu_sort_and_style_ellipsis">Estilo de &amp; ordenación…</string>
     <string name="disable_background_image">Deshabilitar fondo</string>
     <string name="displaying_n_books_in_m_entries">Se muestran %1$d libros, en %2$d entradas</string>
-    <string name="loan_book_available">Disponible</string>
+    <string name="lbl_loan_book_available">Disponible</string>
 
     <string name="warning_x_is_not_a_valid_isbn">%1$s no es un ISBN válido</string>
     <string name="warning_cover_not_found2">No se ha encontrado imagen</string>
@@ -503,7 +502,7 @@
     <string name="progress_end_import_complete">Importación finalizada</string>
     <string name="progress_msg_searching">Buscando…</string>
     <string name="progress_msg_adding_book">Añadiendo libro…</string>
-    <string name="lbl_publishing">Editor</string>
+    <string name="lbl_publication">Publicación</string>
     <string name="lbl_by_author">por</string>
     <string name="lbl_loaned_to_name">Prestado a %1$s</string>
     <string name="lbl_x_pages">%1$d páginas</string>
@@ -552,7 +551,7 @@
     </string>
 
     <!-- Displayed in progress dialog when exporting covers -->
-    <string name="progress_msg_covers">%1$s portadas procesadas (%2$s descartadas)</string>
+    <string name="progress_msg_covers">%1$d portadas procesadas (%2$d descartadas)</string>
     <!-- Heading in Admin activity -->
     <string name="lbl_advanced_options">Opciones avanzadas</string>
     <!-- Showed in progress dialog when an import starts -->
@@ -604,16 +603,24 @@
     <!-- Descriptive text associated with import options not available with older archives -->
     <string name="import_warning_old_archive">Esta opción no está soportada para versiones de archivo antiguas.</string>
     <!-- Part of the progress message displayed when importing books -->
-    <string name="progress_msg_n_created_m_updated">%1$s creados, %2$s actualizados</string>
+    <string name="progress_msg_n_created_m_updated">%1$d creados, %2$d actualizados</string>
 
     <!--  Explanatory text for 'export' dialogue -->
-    <string name="title_export_books">Se exportarán los libros de su catálogo. Seleccione una opción para iniciar la exportación, o pulse \‘Atrás\’ para cancelar:</string>
+    <string name="title_export_books">
+        Se exportarán los libros de su catálogo. Seleccione una opción para iniciar la
+        exportación, o pulse \‘Atrás\’ para cancelar:
+    </string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="progress_msg_covers_skip">%1$s portadas procesadas (%2$s no encontradas, %3$s saltadas)</string>
+    <string name="progress_msg_covers_skip">
+        %1$d portadas procesadas (%2$d no encontradas, %3$d saltadas)
+    </string>
 
     <!-- Explanatory note for 'export all' option -->
-    <string name="export_info_backup_all">Se exportarán al fichero todos los libros, portadas, configuraciones y estilos personalizados.</string>
+    <string name="export_info_backup_all">
+        Se exportarán al fichero todos los libros, portadas, configuraciones y estilos
+        personalizados.
+    </string>
     <!-- Explanatory note for 'advanced export' option -->
     <string name="export_options_dialog_title">Seleccione lo que desea exportar al fichero.</string>
 
@@ -624,12 +631,20 @@
     <!-- Text for button -->
     <string name="lbl_cover_images">Portadas</string>
     <!-- Brief description -->
-    <string name="export_info_cover_images">Portadas de todos los libros seleccionadas. La exportación requerirá mucho más tiempo.</string>
+    <string name="export_info_cover_images">
+        Portadas de todos los libros seleccionadas.
+        La exportación requerirá mucho más tiempo.
+    </string>
     <!-- Brief description -->
-    <string name="import_export_info_preferences">Preferencias y estilos definidos por el usuario</string>
+    <string name="import_export_info_preferences">
+        Preferencias y estilos definidos por el usuario.
+    </string>
 
     <!-- Explanatory note for export date (not yet implemented) -->
-    <string name="export_option_info_books_since_date">Si lo desea, especifique una fecha para seleccionar los libros o portadas que se exportarán:</string>
+    <string name="export_option_info_books_since_date">
+        Si lo desea, especifique una fecha para seleccionar los libros o portadas
+        que se exportarán:
+    </string>
 
     <!-- Explanatory note for export date (not yet implemented) -->
     <string name="export_option_books_since_date">Todos los libros añadidos o actualizados desde:</string>
@@ -720,7 +735,8 @@
     <string name="menu_set_complete">Marcar como completo</string>
     <string name="menu_set_incomplete">Marcar como incompleto</string>
     <string name="error_search_configuration">Error de configuración web. Abra la página de administración y verifique la configuración en las páginas de búsqueda.</string>
-    <string name="tab_lbl_search_site_order">Orden</string>
+    <string name="lbl_search_sites">Sitios de búsqueda</string>
+    <string name="lbl_search_site_order">Orden</string>
     <string name="search_with_text">Buscar: %1$s</string>
     <string name="btn_options">Opciones</string>
     <string name="lbl_price_paid">Pagado</string>
@@ -740,7 +756,6 @@
     <string name="progress_msg_cleaning_database">Limpieza de base de datos…</string>
     <string name="progress_msg_updating_languages">Actualizando idiomas…</string>
     <string name="menu_internet_update_fields">Actualizar campos</string>
-    <string name="tab_lbl_search_sites">Sitios de búsqueda</string>
     <string name="progress_msg_process_booklist_style">Estilos de listas de libros…</string>
     <string name="usage_skip">Omitir</string>
     <string name="progress_msg_saving_image">Guardando imagen…</string>
@@ -751,4 +766,6 @@
     <string name="lbl_books">Libros</string>
     <string name="menu_loan_return_book">El libro prestado esta de vuelta</string>
     <string name="error_google_play_missing">Google Play / Market no está instalado</string>
+    <string name="lbl_styles">Estilos</string>
+    <string name="lbl_style">Estilo</string>
 </resources>

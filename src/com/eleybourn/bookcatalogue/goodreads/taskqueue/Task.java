@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.goodreads.taskqueue;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -42,12 +44,11 @@ import java.io.Serializable;
 public abstract class Task
         implements Serializable, BindableItemCursorAdapter.BindableItem {
 
-    static final int CAT_LEGACY = 0;
     public static final int CAT_GOODREADS_AUTH_RESULT = 2;
     public static final int CAT_GOODREADS_IMPORT_ALL = 3;
     public static final int CAT_GOODREADS_EXPORT_ALL = 4;
     public static final int CAT_GOODREADS_EXPORT_ONE = 5;
-
+    static final int CAT_LEGACY = 0;
     static final String STATUS_COMPLETE = "S";
     static final String STATUS_FAILED = "F";
     static final String STATUS_QUEUED = "Q";
@@ -84,7 +85,7 @@ public abstract class Task
     public abstract int getCategory();
 
     @NonNull
-    public String getDescription() {
+    public String getDescription(@NonNull final Context context) {
         return mDescription;
     }
 

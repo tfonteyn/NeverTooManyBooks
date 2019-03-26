@@ -17,17 +17,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public final class SimpleDialog {
 
@@ -414,15 +414,6 @@ public final class SimpleDialog {
         @NonNull
         public CompoundButton getSelector(@NonNull final View view) {
             return (CompoundButton) view.findViewById(R.id.selector);
-        }
-
-        /**
-         * Get the underlying object as a string.
-         */
-        @Override
-        @NonNull
-        public String toString() {
-            return mRawValue.toString();
         }
     }
 }

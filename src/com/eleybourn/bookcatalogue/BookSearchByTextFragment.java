@@ -122,7 +122,7 @@ public class BookSearchByTextFragment
 
         //sanity check
         if ((mAuthorSearchText.isEmpty()) || mTitleSearchText.isEmpty()) {
-            UserMessage.showUserMessage(mActivity, R.string.warning_required_at_least_one);
+            UserMessage.showUserMessage(mAuthorView, R.string.warning_required_at_least_one);
             return;
         }
         if (super.startSearch(mAuthorSearchText, mTitleSearchText, "")) {

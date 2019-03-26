@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.backup;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 public class RestoreTask
         extends AsyncTask<Void, Object, ImportSettings> {
 
+    /** Fragment manager tag. */
     private static final String TAG = RestoreTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_READ_FROM_ARCHIVE;
@@ -25,6 +27,7 @@ public class RestoreTask
     private final ProgressDialogFragment<ImportSettings> mFragment;
     @NonNull
     private final ImportSettings mSettings;
+
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
@@ -69,8 +72,11 @@ public class RestoreTask
     @NonNull
     @WorkerThread
     protected ImportSettings doInBackground(final Void... params) {
+
+        Context context = mFragment.getContextWithHorribleClutch();
+
         //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.readFrom(mSettings.file)) {
+        try (BackupReader reader = BackupManager.readFrom(context, mSettings.file)) {
             //noinspection ConstantConditions
             reader.restore(mSettings, new BackupReader.BackupReaderListener() {
 

@@ -5,23 +5,17 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.preference.ListPreference;
-import androidx.preference.MultiSelectListPreference;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BooksOnBookshelf;
 import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
@@ -32,97 +26,70 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 
-/**
- * Quick and easy.
- * - get the default prefs using the application context
- * - use string resource id's instead of strings for the preference key.
- */
 public final class Prefs {
 
-    public static final String PREF_LEGACY_BOOK_CATALOGUE = "bookCatalogue";
+    public static final String pk_ui_language = "App.Locale";
+    public static final String pk_ui_theme = "App.Theme";
+    public static final String pk_ui_messages_use = "App.UserMessage";
+
+    public static final String pk_thumbnails_rotate_auto = "Image.Camera.Autorotate";
+    public static final String pk_thumbnail_cropper_layer_type = "Image.ViewLayerType";
+    public static final String pk_thumbnails_external_cropper = "Image.Cropper.UseExternalApp";
+    public static final String pk_thumbnails_crop_frame_is_whole_image = "Image.Cropper.FrameIsWholeImage";
+
+    public static final String pk_scanning_beep_if_isbn_valid = "SoundManager.BeepIfScannedIsbnValid";
+    public static final String pk_scanning_beep_if_isbn_invalid = "SoundManager.BeepIfScannedIsbnInvalid";
+
+    public static final String pk_bob_open_book_read_only = "BooksOnBookshelf.OpenBookReadOnly";
+
+    public static final String pk_scanning_preferred_scanner = "ScannerManager.PreferredScanner";
+
+    public static final String pk_bob_list_state = "BookList.ListRebuildState";
+    public static final String pk_bob_list_generation = "BookList.CompatibilityMode";
+    public static final String pk_bob_thumbnails_generating_mode = "BookList.ThumbnailsInBackground";
+    public static final String pk_bob_thumbnails_cache_resized = "BookList.ThumbnailsCached";
+
+    public static final String pk_bob_thumbnails_show_large = "BookList.Style.Show.LargeThumbnails";
+    public static final String pk_bob_thumbnails_show = "BookList.Style.Show.Thumbnails";
+
+    public static final String pk_bob_style_name = "BookList.Style.Name";
+    public static final String pk_bob_groups = "BookList.Style.Groups";
+    public static final String pk_bob_preferred_style = "BookList.Style.Preferred";
+    public static final String pk_bob_item_size = "BookList.Style.Scaling";
+    public static final String pk_bob_header = "BookList.Style.Show.HeaderInfo";
+
+    public static final String pk_bob_books_under_multiple_authors = "BookList.Style.Group.Authors.ShowAll";
+    public static final String pk_bob_books_under_multiple_series = "BookList.Style.Group.Series.ShowAll";
+    public static final String pk_bob_format_author_name = "BookList.Style.Group.Authors.DisplayFirstThenLast";
+    public static final String pk_bob_sort_author_name = "BookList.Style.Sort.Author.GivenFirst";
+
+    /** Show list of bookshelves for each book. */
+    public static final String pk_bob_show_bookshelves = "BookList.Style.Show.Bookshelves";
+    /** Show location for each book. */
+    public static final String pk_bob_show_location = "BookList.Style.Show.Location";
+    /** Show author for each book. */
+    public static final String pk_bob_show_author = "BookList.Style.Show.Author";
+    /** Show publisher for each book. */
+    public static final String pk_bob_show_publisher = "BookList.Style.Show.Publisher";
+    /** Show format for each book. */
+    public static final String pk_bob_show_format = "BookList.Style.Show.Format";
+
+    /** Booklist Filter. */
+    public static final String pk_bob_filter_read = "BookList.Style.Filter.Read";
+    public static final String pk_bob_filter_signed = "BookList.Style.Filter.Signed";
+    public static final String pk_bob_filter_loaned = "BookList.Style.Filter.Loaned";
+    public static final String pk_bob_filter_anthology = "BookList.Style.Filter.Anthology";
 
     private Prefs() {
     }
-
-    @NonNull
-    public static SharedPreferences getPrefs() {
-        return PreferenceManager.getDefaultSharedPreferences(BookCatalogueApp.getAppContext());
-    }
-
-    @NonNull
-    public static SharedPreferences getPrefs(@NonNull final String uuid) {
-        return BookCatalogueApp.getAppContext().getSharedPreferences(uuid, Context.MODE_PRIVATE);
-    }
-
-    /**
-     * Used by {@link androidx.preference.SwitchPreference} and standard booleans.
-     *
-     * @return boolean global preference
-     */
-    public static boolean getBoolean(@StringRes final int keyId,
-                                     final boolean defaultValue) {
-        return getPrefs().getBoolean(BookCatalogueApp.getResString(keyId), defaultValue);
-    }
-
-    /**
-     * @return String global preference, can be empty but never null
-     */
-    @NonNull
-    public static String getString(@StringRes final int keyId) {
-        String sValue = getPrefs().getString(BookCatalogueApp.getResString(keyId), null);
-        return sValue != null ? sValue : "";
-    }
-
-    /**
-     * @return String global preference
-     */
-    @Nullable
-    public static String getString(@StringRes final int keyId,
-                                   @Nullable final String defaultValue) {
-        return getPrefs().getString(BookCatalogueApp.getResString(keyId), defaultValue);
-    }
-
-    /**
-     * {@link ListPreference} store the selected value as a String.
-     * But they are really Integer values. Hence this transmogrification....
-     *
-     * @return int (stored as String) global preference
-     */
-    public static int getListPreference(@StringRes final int keyId,
-                                        final int defaultValue) {
-        String sValue = getPrefs().getString(BookCatalogueApp.getResString(keyId), null);
-        if (sValue == null || sValue.isEmpty()) {
-            return defaultValue;
-        }
-        return Integer.parseInt(sValue);
-    }
-
-    /**
-     * {@link MultiSelectListPreference} store the selected value as a StringSet.
-     * But they are really Integer values. Hence this transmogrification....
-     *
-     * @return int (stored as StringSet) global preference
-     */
-    public static Integer getMultiSelectListPreference(@StringRes final int keyId,
-                                                       final int defaultValue) {
-        Set<String> sValue = getPrefs().getStringSet(BookCatalogueApp.getResString(keyId), null);
-        if (sValue == null || sValue.isEmpty()) {
-            return defaultValue;
-        }
-        return toInteger(sValue);
-    }
-
-
-
-    /* ****************************************************************************************** */
 
     /**
      * DEBUG method.
      */
     public static void dumpPreferences(@Nullable final String uuid) {
-        if (/* always show debug */ BuildConfig.DEBUG) {
-            Map<String, ?> map = uuid != null ? getPrefs(uuid).getAll()
-                                              : getPrefs().getAll();
+        if (/* always debug */ BuildConfig.DEBUG) {
+            Map<String, ?> map = uuid != null ? App.getPrefs(uuid).getAll()
+                                              : App.getPrefs().getAll();
             List<String> keyList = new ArrayList<>(map.keySet());
             String[] keys = keyList.toArray(new String[]{});
             Arrays.sort(keys);
@@ -134,7 +101,7 @@ public final class Prefs {
                 sb.append('\n').append(key).append('=').append(value);
             }
             sb.append("\n\n");
-            Logger.info(BookCatalogueApp.class, sb.toString());
+            Logger.info(App.class, sb.toString());
         }
     }
 
@@ -148,8 +115,10 @@ public final class Prefs {
             return;
         }
 
+        Context context = App.getAppContext();
+
         // write to default prefs
-        SharedPreferences.Editor ed = getPrefs().edit();
+        SharedPreferences.Editor ed = App.getPrefs().edit();
 
         // note that strings could be empty. Check if needed
         for (String key : oldMap.keySet()) {
@@ -165,19 +134,16 @@ public final class Prefs {
                     case "App.Locale":
                         String tmp = (String) oldValue;
                         if (!tmp.isEmpty()) {
-                            ed.putString(key, tmp);
+                            ed.putString(pk_ui_language, tmp);
                         }
                         break;
 
                     case "App.OpenBookReadOnly":
-                        ed.putBoolean(
-                                BookCatalogueApp.getResString(R.string.pk_bob_open_book_read_only),
-                                (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_open_book_read_only, (Boolean) oldValue);
                         break;
 
                     case "BookList.Global.BooklistState":
-                        ed.putString(BookCatalogueApp.getResString(R.string.pk_bob_list_state),
-                                     String.valueOf((Integer) oldValue - 1));
+                        ed.putString(pk_bob_list_state, String.valueOf((Integer) oldValue - 1));
                         break;
 
                     case "App.BooklistGenerationMode":
@@ -198,9 +164,7 @@ public final class Prefs {
                             default:
                                 compatMode = BooklistBuilder.CompatibilityMode.PREF_MODE_DEFAULT;
                         }
-                        ed.putString(
-                                BookCatalogueApp.getResString(R.string.pk_bob_list_generation),
-                                String.valueOf(compatMode));
+                        ed.putString(pk_bob_list_generation, String.valueOf(compatMode));
                         break;
 
                     case "SoundManager.BeepIfScannedIsbnInvalid":
@@ -216,105 +180,76 @@ public final class Prefs {
                         break;
 
                     case "App.CropFrameWholeImage":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_thumbnails_crop_frame_is_whole_image),
+                        ed.putBoolean(pk_thumbnails_crop_frame_is_whole_image,
                                       (Boolean) oldValue);
                         break;
 
                     case "App.UseExternalImageCropper":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_thumbnails_external_cropper),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_thumbnails_external_cropper, (Boolean) oldValue);
                         break;
 
                     case "BookList.Global.CacheThumbnails":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_thumbnails_cache_resized),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_thumbnails_cache_resized, (Boolean) oldValue);
                         break;
 
                     case "BookList.Global.BackgroundThumbnails":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_thumbnails_generating_mode),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_thumbnails_generating_mode, (Boolean) oldValue);
                         break;
 
                     case "App.AutorotateCameraImages":
-                        ed.putString(BookCatalogueApp.getResString(
-                                R.string.pk_thumbnails_rotate_auto),
-                                     String.valueOf(oldValue));
+                        ed.putString(pk_thumbnails_rotate_auto, String.valueOf(oldValue));
                         break;
 
                     /*
                      * Global defaults for styles
                      */
                     case "BookList.ShowAuthor":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_show_author),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_show_author, (Boolean) oldValue);
                         break;
 
                     case "BookList.ShowBookshelves":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_show_bookshelves),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_show_bookshelves, (Boolean) oldValue);
                         break;
 
                     case "BookList.ShowPublisher":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_show_publisher),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_show_publisher, (Boolean) oldValue);
                         break;
 
                     case "BookList.ShowThumbnails":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_thumbnails_show),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_thumbnails_show, (Boolean) oldValue);
                         break;
 
                     case "BookList.LargeThumbnails":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_thumbnails_show_large),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_thumbnails_show_large, (Boolean) oldValue);
                         break;
 
                     case "BookList.ShowLocation":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_show_location),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_show_location, (Boolean) oldValue);
                         break;
 
                     case "APP.DisplayFirstThenLast":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_format_author_name),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_format_author_name, (Boolean) oldValue);
                         break;
 
                     case "APP.ShowAllAuthors":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_books_under_multiple_authors),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_books_under_multiple_authors, (Boolean) oldValue);
                         break;
 
                     case "APP.ShowAllSeries":
-                        ed.putBoolean(BookCatalogueApp.getResString(
-                                R.string.pk_bob_books_under_multiple_series),
-                                      (Boolean) oldValue);
+                        ed.putBoolean(pk_bob_books_under_multiple_series, (Boolean) oldValue);
                         break;
 
                     case "BookList.Condensed":
                         int con = (Boolean) oldValue ? BooklistStyle.SCALE_SIZE_SMALLER
                                                      : BooklistStyle.SCALE_SIZE_NORMAL;
                         // this is now a PInteger, stored as a string
-                        ed.putString(BookCatalogueApp.getResString(R.string.pk_bob_item_size),
-                                     String.valueOf(con));
+                        ed.putString(pk_bob_item_size, String.valueOf(con));
                         break;
 
                     case "BookList.ShowHeaderInfo":
                         int shi = ((Integer) oldValue) & BooklistStyle.SUMMARY_SHOW_ALL;
                         // this is now a PBitmask, stored as a Set
-                        ed.putStringSet(BookCatalogueApp.getResString(R.string.pk_bob_header),
-                                        toStringSet(shi));
+                        ed.putStringSet(pk_bob_header, Utils.toStringSet(shi));
                         break;
 
                     /*
@@ -355,19 +290,19 @@ public final class Prefs {
                         break;
 
                     case "BooksOnBookshelf.LIST_STYLE":
-                        String entry = (String) oldValue;
+                        String e = (String) oldValue;
                         ed.putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
-                                   BooklistStyles.getStyleId(
-                                           entry.substring(0, entry.length() - 2)));
+                                   BooklistStyles.getStyleId(context,
+                                                             e.substring(0, e.length() - 2)));
                         break;
 
                     case "BooklistStyles.Menu.Items":
                         // using a set to eliminate duplicates
                         Set<Long> styleIds = new LinkedHashSet<>();
                         String[] styles = ((String) oldValue).split(",");
-                        for (String styleStringList : styles) {
-                            styleIds.add(BooklistStyles.getStyleId(
-                                    styleStringList.substring(0, styleStringList.length() - 2)));
+                        for (String style : styles) {
+                            styleIds.add(BooklistStyles.getStyleId(context, style.substring(0,
+                                                                                            style.length() - 2)));
                         }
                         ed.putString(BooklistStyles.PREF_BL_PREFERRED_STYLES,
                                      Csv.join(",", styleIds));
@@ -394,11 +329,13 @@ public final class Prefs {
                             if (!tmp1.isEmpty()) {
                                 ed.putString(key, tmp1);
                             }
+
                         } else if (key.startsWith("Backup")) {
                             String tmp1 = (String) oldValue;
                             if (!tmp1.isEmpty()) {
                                 ed.putString(key, tmp1);
                             }
+
                         } else if (key.startsWith("HintManager")) {
                             ed.putBoolean(key, (Boolean) oldValue);
 
@@ -406,10 +343,20 @@ public final class Prefs {
                             ed.putString(key.replace("lt_hide_alert_",
                                                      LibraryThingManager.PREFS_HIDE_ALERT),
                                          (String) oldValue);
+
                         } else if (key.startsWith("field_visibility_")) {
-                            ed.putBoolean(key.replace("field_visibility_",
-                                                      Fields.PREFS_FIELD_VISIBILITY),
-                                          (Boolean) oldValue);
+                            switch (key) {
+                                // remove these as obsolete
+                                case "field_visibility_series_num":
+                                    break;
+
+                                default:
+                                    // move everything else
+                                    ed.putBoolean(key.replace("field_visibility_",
+                                                              Fields.PREFS_FIELD_VISIBILITY),
+                                                  (Boolean) oldValue);
+                            }
+
                         } else if (!key.startsWith("state_current_group")) {
 
                             Logger.info(Prefs.class, "unknown|key=" + key
@@ -424,43 +371,5 @@ public final class Prefs {
             }
         }
         ed.apply();
-    }
-
-    /**
-     * Convert a set where each element represents one bit to an int bitmask
-     *
-     * @param set the set
-     *
-     * @return the value
-     */
-    @NonNull
-    public static Integer toInteger(@NonNull final Set<String> set) {
-        int tmp = 0;
-        for (String s : set) {
-            tmp += Integer.parseInt(s);
-        }
-        return tmp;
-    }
-
-    /**
-     * Convert an int (bitmask) to a set where each element represents one bit.
-     *
-     * @param bitmask the value
-     *
-     * @return the set
-     */
-    @NonNull
-    public static Set<String> toStringSet(@NonNull final Integer bitmask) {
-        Set<String> set = new HashSet<>();
-        int tmp = bitmask;
-        int bit = 1;
-        while (tmp != 0) {
-            if ((tmp & 1) == 1) {
-                set.add(String.valueOf(bit));
-            }
-            bit *= 2;
-            tmp = tmp >> 1;
-        }
-        return set;
     }
 }

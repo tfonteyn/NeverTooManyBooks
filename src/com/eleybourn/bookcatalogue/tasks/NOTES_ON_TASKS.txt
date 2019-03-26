@@ -34,13 +34,14 @@ Used by:
 ==> the SearchManager/SearchTasks for getting book information from web sites.
 
 ----------------------------------------------------------------------------------------------------
-4. taskqueue - minimalistic traditional database backed 'MessageQueue' like product
+4. task-queue - minimalistic traditional database backed 'MessageQueue' like product
    Task
    LegacyTask extends Task
    RunnableTask extends Task
    GenericTask extends RunnableTask
 
 Only used by the GoodReads api where it does make sense to have 'survivable' tasks.
+Hardcoded defaults clean up dead tasks after 7 days.
 -> Android Service ?
 
  ----------------------------------------------------------------------------------------------------

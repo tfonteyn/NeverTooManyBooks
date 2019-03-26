@@ -4,44 +4,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/TLV_ROW"
-    style="@style/row_in_ListView">
+    style="@style/row_in_ListView"
+    >
 
     <ImageButton
         android:id="@id/TLV_ROW_DELETE"
         style="@style/tlv_delete_button"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_DETAILS"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_delete"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        />
 
     <LinearLayout
         android:id="@id/TLV_ROW_DETAILS"
         style="@style/tlv_details_row"
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
         app:layout_constraintStart_toEndOf="@id/TLV_ROW_DELETE"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        >
 
         <TextView
             android:id="@+id/row_author"
             style="@style/tlv_details_row_major"
             tools:ignore="SelectableText"
-            tools:text="row_author" />
+            tools:text="row_author"
+            />
 
         <TextView
             android:id="@+id/row_author_sort"
             style="@style/tlv_details_row_minor"
             tools:ignore="SelectableText"
-            tools:text="row_author_sort" />
+            tools:text="row_author_sort"
+            />
     </LinearLayout>
 
     <ImageView
         android:id="@id/TLV_ROW_GRABBER"
         style="@style/tlv_dragHandle"
-        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_drag_handle"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

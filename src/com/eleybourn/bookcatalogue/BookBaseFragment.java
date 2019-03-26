@@ -43,7 +43,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +65,6 @@ import com.eleybourn.bookcatalogue.dialogs.editordialog.PartialDatePickerDialogF
 import com.eleybourn.bookcatalogue.dialogs.editordialog.TextFieldEditorDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.BookManager;
-import com.eleybourn.bookcatalogue.settings.FieldVisibilitySettingsFragment;
 
 /**
  * Based class for {@link BookFragment} and {@link EditBookBaseFragment}.
@@ -93,7 +91,7 @@ public abstract class BookBaseFragment
             if (book.getId() > 0) {
                 // an existing book
                 actionBar.setTitle(book.getString(UniqueId.KEY_TITLE));
-                actionBar.setSubtitle(book.getAuthorTextShort());
+                actionBar.setSubtitle(book.getAuthorTextShort(mActivity));
             } else {
                 // new book
                 actionBar.setTitle(R.string.title_add_book);
@@ -180,8 +178,12 @@ public abstract class BookBaseFragment
 
     /**
      * Populate all Fields with the data from the Book.
+     * <p>
+     * Used as normal when the fragment loads, but also when the user flings left/right
+     * through the flattened book list. The latter does a load of the book followed by a call
+     * here to re-populate all fields on the fragment.
      */
-    void populateFieldsFromBook() {
+    final void populateFieldsFromBook() {
         // load the book, while disabling the AfterFieldChangeListener
         mFields.setAfterFieldChangeListener(null);
         Book book = getBookManager().getBook();
@@ -422,6 +424,8 @@ public abstract class BookBaseFragment
     /**
      * bind a field (button) to bring up a text editor in an overlapping dialog.
      *
+     * TODO: no in use right now (remove?) / cancel/ok buttons are hidden by soft keyboard.
+     *
      * @param callerTag     the fragment class that is calling the editor
      * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
@@ -483,13 +487,13 @@ public abstract class BookBaseFragment
      * @param callerTag     the fragment class that is calling the editor
      * @param field         {@link Field} to edit
      * @param dialogTitleId title of the dialog box.
-     * @param listGetter    {@link CheckListEditorListGetter<T>} interface to get the *current* list
+     * @param listGetter    {@link CheckListEditorDialogFragment.CheckListEditorListGetter <T>} interface to get the *current* list
      * @param <T>           type of the {@link CheckListItem}
      */
     <T> void initCheckListEditor(@NonNull final String callerTag,
                                  @NonNull final Field field,
                                  @StringRes final int dialogTitleId,
-                                 @NonNull final CheckListEditorListGetter<T> listGetter) {
+                                 @NonNull final CheckListEditorDialogFragment.CheckListEditorListGetter<T> listGetter) {
         // only bother when visible
         if (!field.isVisible()) {
             return;
@@ -528,7 +532,7 @@ public abstract class BookBaseFragment
                         // ENHANCE: merge if in edit mode.
                         Book book = new Book(bookId, mDb);
                         getBookManager().setBook(book);
-                        loadFieldsFrom(book);
+                        populateFieldsFromBook();
                     } else {
                         boolean wasCancelled =
                                 data.getBooleanExtra(UniqueId.BKEY_CANCELED, false);
@@ -565,10 +569,8 @@ public abstract class BookBaseFragment
      * - read status
      *
      * @param hideIfEmpty set to <tt>true</tt> when displaying; <tt>false</tt> when editing.
-     *
-     * @see FieldVisibilitySettingsFragment
      */
-    protected void showHideFields(final boolean hideIfEmpty) {
+    void showHideFields(final boolean hideIfEmpty) {
         mFields.resetVisibility();
 
         // actual book
@@ -586,7 +588,8 @@ public abstract class BookBaseFragment
         showHideField(hideIfEmpty, R.id.publisher);
         showHideField(hideIfEmpty, R.id.date_published);
         showHideField(hideIfEmpty, R.id.first_publication, R.id.lbl_first_publication);
-        showHideField(hideIfEmpty, R.id.price_listed, R.id.price_listed_currency, R.id.lbl_price_listed);
+        showHideField(hideIfEmpty, R.id.price_listed, R.id.price_listed_currency,
+                      R.id.lbl_price_listed);
 
         // personal fields
         showHideField(hideIfEmpty, R.id.bookshelves, R.id.name, R.id.lbl_bookshelves);
@@ -646,15 +649,6 @@ public abstract class BookBaseFragment
                 }
             }
         }
-    }
-
-    /**
-     * Loads the {@link CheckListEditorDialogFragment} with the *current* list,
-     * e.g. not the state of the list at init time.
-     */
-    public interface CheckListEditorListGetter<T> {
-
-        ArrayList<CheckListItem<T>> getList();
     }
 
     static final class ViewUtils {

@@ -136,7 +136,7 @@
     <string name="error_backup_failed">Αντίγραφο απέτυχε</string>
     <string name="error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %1$s</string>
     <string name="import_error_csv_file_must_contain_any_column">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
-    <string name="error_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$s</string>
+    <string name="error_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$d</string>
     <string name="error_columns_are_blank">Οι στήλες %1$s είναι όλες κενές στη σειρά %2$d</string>
     <string name="btn_confirm_save">Αποθήκευση</string>
     <string name="btn_confirm_add">Προσθήκη</string>
@@ -214,7 +214,7 @@
     <string name="cleanup_files">Εκκαθάριση αρχείων</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
-    <string name="bytes">%.0f bytes</string>
+    <string name="bytes">%.0fB</string>
     <string name="debug_subject">Συλλέχθησαν πληροφορίες debugging</string>
     <string name="debug_body">Παρακαλούμε περιγράψτε συνοπτικά το πρόβλημα που αντιμετωπίζετε.</string>
     <string name="menu_duplicate_book">Αντιγραφή Βιβλίου(Διπλότυπο)</string>
@@ -265,7 +265,6 @@
     <string name="gr_title_send_book">Αποστολή βιβλίων στο Goodreads</string>
     <string name="gr_tq_legacy_task">Legacy εργασία</string>
     <string name="gr_tq_occurred_at">(συνέβη στο %1$s)</string>
-    <string name="unknown_uc">ΑΓΝΩΣΤΟ</string>
     <string name="warning_book_was_deleted_uc">ΑΥΤΟ ΤΟ ΒΙΒΛΙΟ ΕΧΕΙ ΔΙΑΓΡΑΦΕΙ</string>
     <string name="lbl_by_author_s">κατα %1$s</string>
     <string name="warning_no_matching_book_found">Δεν βρέθηκε βιβλίο που να ταιριάζει</string>
@@ -283,7 +282,7 @@
     <string name="gr_error_while_searching">Σφάλμα κατά την αναζήτηση.</string>
     <string name="gr_send_all_books_results">%1$d βιβλία επεξεργάστηκαν: %2$d αποστάλθηκαν επιτυχώς, %3$d χωρίς ISBN και %4$d με ISBN αλλά δεν βρέθηκαν στο Goodreads</string>
     <string name="x_of_y">%1$d από %2$d</string>
-    <string name="gr_send_book_to_goodreads">Αποστολή βιβλίου %1$s στο Goodreads</string>
+    <string name="gr_send_book_to_goodreads">Αποστολή βιβλίου %1$d στο Goodreads</string>
     <string name="erase_cover_cache">Διαγραφή εξωφύλλων από προσωρινή μνήμη</string>
     <string name="acra_resToastText">Η λειτουργία του &APP_NAME; διακόπηκε. Παρακαλούμε βοηθήστε μας να βελτιώσουμε την εφαρμογή στέλνοντας την αναφορά της διακοπής.</string>
     <string name="acra_resNotifTickerText">Το &APP_NAME; σταμάτησε να λειτουργεί</string>
@@ -368,7 +367,7 @@
     <string name="plain_background_b_reduces_flicker_b">Απλό φόντο (μείωση τρεμοπαίγματος)</string>
     <string name="warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="edit">Επεξεργασία</string>
-    <string name="lbl_preferences">Επιλογές</string>
+    <string name="lbl_settings">Επιλογές</string>
     <string name="error_unexpected_error">Ένα απροσδόκητο σφάλμα συνέβη, παρακαλούμε στείλτε τις λεπτομέρειες στην υποστήριξη με χρήση της επιλογής \‘Βοήθεια\’ από το κεντρικό μενού.</string>
     <string name="menu_delete_style">Διαγραφή στυλ</string>
     <string name="menu_edit_booklist_style">Επεξεργασία στυλ</string>
@@ -458,7 +457,7 @@
     <string name="menu_sort_and_style_ellipsis">Ταξινόμηση &amp; Στυλ…</string>
     <string name="disable_background_image">Απενεργοποίηση εικόνων παρασκηνίου</string>
     <string name="displaying_n_books_in_m_entries">εμφανίζονται %1$d βιβλία, σε %2$d καταχωρήσεις</string>
-    <string name="loan_book_available">Διαθέσιμο</string>
+    <string name="lbl_loan_book_available">Διαθέσιμο</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s δεν είναι έγκυρος κωδικός ISBN</string>
     <string name="warning_cover_not_found2">Δε βρέθηκε εικόνα</string>
     <string name="warning_cover_copy_failed">Δεν ήταν δυνατή η αντιγραφή εικόνας</string>
@@ -490,7 +489,7 @@
     <string name="progress_end_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
     <string name="progress_msg_searching">Γίνεται αναζήτηση…</string>
     <string name="progress_msg_adding_book">Γίνεται πρόσθεση βιβλίου…</string>
-    <string name="lbl_publishing">Εκδόσεις</string>
+    <string name="lbl_publication">Δημοσίευση</string>
     <string name="lbl_by_author">από</string>
     <string name="lbl_x_pages">%1$d σελίδες</string>
     <string name="lbl_loaned_to_name">Δανεισμένο σε %1$s</string>
@@ -532,7 +531,7 @@
     κάρτα SD.\n\nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.</string>
 
     <!-- Displayed in progress dialog when exporting covers -->
-    <string name="progress_msg_covers">%1$s εξώφυλλα επεξεργάστηκαν (%2$s λείπουν)</string>
+    <string name="progress_msg_covers">%1$d εξώφυλλα επεξεργάστηκαν (%2$d λείπουν)</string>
     <!-- Heading in Admin activity and in 'Export' dialogue -->
     <string name="lbl_advanced_options">Προχωρημένες Επιλογές</string>
     <!-- Showed in progress dialog when an import starts -->
@@ -585,12 +584,12 @@
     <!-- Descriptive text associated with import options not available with older archives -->
     <string name="import_warning_old_archive">Αυτή η επιλογή δεν υποστηρίζεται από Αρχεία παλαιότερης έκδοσης.</string>
     <!-- Part of the progress message displayed when importing books -->
-    <string name="progress_msg_n_created_m_updated">%1$s δημιουργήθηκαν, %2$s ενημερώθηκαν</string>
+    <string name="progress_msg_n_created_m_updated">%1$d δημιουργήθηκαν, %2$d ενημερώθηκαν</string>
 
     <!--  Explanatory text for 'export' dialogue -->
     <string name="title_export_books">Τα βιβλία στον κατάλογό σας θα εξαχθούν. Επιλέξτε μία από τις δύο επιλογές για να αρχίσει η εξαγωγή, ή πατήστε \‘Πίσω\’ για να ακυρωθεί:</string>
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="progress_msg_covers_skip">%1$s εξώφυλλα επεξεργάστηκαν (%2$s λείπουν, %3$s παρελείφθησαν)</string>
+    <string name="progress_msg_covers_skip">%1$d εξώφυλλα επεξεργάστηκαν (%2$d λείπουν, %3$d παρελείφθησαν)</string>
 
     <!-- Explanatory note for 'export all' option -->
     <string name="export_info_backup_all">Όλα τα βιβλία, εξώφυλλα, ρυθμίσεις και προσαρμοσμένα στυλ θα εξαχθούν στο Αρχείο.</string>
@@ -681,5 +680,6 @@
     <string name="menu_loan_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
     <string name="progress_msg_saving_image">Αποθήκευση της εικόνας…</string>
     <string name="error_google_play_missing">Το Google Play / Market δεν είναι εγκατεστημένο</string>
+    <string name="lbl_is_complete">Ολοκληρώθηκε</string>
 
 </resources>

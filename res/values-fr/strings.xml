@@ -155,7 +155,7 @@
     <string name="error_backup_failed">Sauvegarde échouée</string>
     <string name="error_file_must_contain_column">Le fichier doit contenir une colonne nommée %1$s</string>
     <string name="import_error_csv_file_must_contain_any_column">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
-    <string name="error_column_is_blank">La colonne %1$s est vide à la ligne %2$s</string>
+    <string name="error_column_is_blank">La colonne %1$s est vide à la ligne %2$d</string>
     <string name="error_columns_are_blank">Les colonnes %1$s sont toutes vides à la ligne %2$d</string>
     <string name="btn_confirm_save">Sauvegarder</string>
     <string name="btn_confirm_add">Ajouter</string>
@@ -277,8 +277,8 @@
         « envoyer l\'information »
     </string>
     <string name="cleanup_files">Nettoyer les fichiers</string>
-    <string name="megabytes">%.2f Mo</string>
-    <string name="kilobytes">%.2f ko</string>
+    <string name="megabytes">%.2fMo</string>
+    <string name="kilobytes">%.2fko</string>
     <string name="bytes">%.0f octets</string>
     <string name="select_bookshelves">Choisir des bibliothèques</string>
     <string name="debug_subject">Collecte des informations de débogage en cours</string>
@@ -333,7 +333,6 @@
     <string name="gr_title_send_book">Envoyer les livres à Goodreads</string>
     <string name="gr_tq_legacy_task">Tâches obsolètes</string>
     <string name="gr_tq_occurred_at">(S\'est produit à %1$s)</string>
-    <string name="unknown_uc">INCONNU</string>
     <string name="warning_book_was_deleted_uc">Ce livre a été supprimé</string>
     <string name="lbl_by_author_s">par %1$s</string>
     <string name="warning_no_matching_book_found">Aucun livre correspondant n\'a été trouvé</string>
@@ -351,7 +350,7 @@
     <string name="gr_error_while_searching">Erreur lors de la recherche.</string>
     <string name="x_of_y">%1$d de %2$d</string>
     <string name="gr_send_all_books_results">%1$d livres traités : %2$d envoyés avec succès, %3$d sans ISBN et %4$d avec ISBN mais non trouvés sur Goodreads</string>
-    <string name="gr_send_book_to_goodreads">Envoyer le livre %1$s à Goodreads</string>
+    <string name="gr_send_book_to_goodreads">Envoyer le livre %1$d à Goodreads</string>
     <string name="erase_cover_cache">Effacer le cache des couvertures</string>
     <string name="acra_resToastText">&APP_NAME; a planté. Merci de nous aider en reportant ce crash.</string>
     <string name="acra_resNotifTickerText">&APP_NAME; a planté.</string>
@@ -444,7 +443,7 @@
     <string name="plain_background_b_reduces_flicker_b">Arrière plan uni (réduit le clignotement)</string>
     <string name="warning_required_field_x">%1$s ne doit pas être vide</string>
     <string name="edit">Modifier</string>
-    <string name="lbl_preferences">Préférences</string>
+    <string name="lbl_settings">Préférences</string>
     <string name="error_unexpected_error">Une erreur inattendue s\'est produite. Merci d\'envoyer les détails au support par l\'option « aide » du menu principal.</string>
     <string name="menu_delete_style">Supprimer le style</string>
     <string name="menu_edit_booklist_style">Modifier le style</string>
@@ -549,7 +548,7 @@
     <string name="menu_sort_and_style_ellipsis">Tri &amp; style…</string>
     <string name="disable_background_image">Désactiver l\'image d\'arrière plan</string>
     <string name="displaying_n_books_in_m_entries">Affichage de %1$d livres, parmi %2$d entrées</string>
-    <string name="loan_book_available">Disponible</string>
+    <string name="lbl_loan_book_available">Disponible</string>
 
     <string name="warning_x_is_not_a_valid_isbn">%1$s n\'est pas un ISBN valable</string>
     <string name="warning_cover_not_found2">Aucune image trouvée</string>
@@ -619,10 +618,11 @@
     <!-- Hint displayed when a Backup is done -->
     <string name="export_info_success_archive_details">
         Le fichier %2$s (%3$s) a été créé dans le répertoire “%1$s” de votre carte carte SD.\n
-        \nVous devriez le copier sur un autre média comme sauvegarde en cas de perte, vol ou destruction de votre équipement
+        \nVous devriez le copier sur un autre média comme sauvegarde en cas de perte,
+        vol ou destruction de votre équipement.
     </string>
     <!-- Displayed in progress dialog when exporting covers -->
-    <string name="progress_msg_covers">Couverture de %1$s exportée (%2$s manquante)</string>
+    <string name="progress_msg_covers">Couverture de %1$d exportée (%2$d manquante)</string>
 
     <!-- Heading in Admin activity -->
     <string name="lbl_advanced_options">Options avancées</string>
@@ -655,7 +655,7 @@
     <string name="error_storage_not_readable">Veuillez vérifier que votre carte SD est bien accessible.</string>
 
     <!-- Missed as they had no comment -->
-    <string name="lbl_publishing">Édition</string>
+    <string name="lbl_publication">Édition</string>
     <string name="lbl_by_author">par</string>
     <string name="lbl_loaned_to_name">En prêt chez %1$s</string>
 
@@ -672,13 +672,18 @@
     <!-- Descriptive text associated with import options not available with older archives -->
     <string name="import_warning_old_archive">Cette option n\'est pas supportée par les anciennes sauvegardes.</string>
     <!-- Part of the progress message displayed when importing books -->
-    <string name="progress_msg_n_created_m_updated">%1$s ajoutés, %2$s mis à jour</string>
+    <string name="progress_msg_n_created_m_updated">%1$d ajoutés, %2$d mis à jour</string>
 
     <!--  Explanatory text for 'export' dialogue -->
-    <string name="title_export_books">Les livres de votre catalogue seront exportés. Choisissez une des deux options pour exporter vos livres ou cliquez sur « retour » pour annuler :</string>
+    <string name="title_export_books">
+        Les livres de votre catalogue seront exportés. Choisissez une des deux options pour
+        exporter vos livres ou cliquez sur « retour » pour annuler:
+    </string>
 
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
-    <string name="progress_msg_covers_skip">%1$s couvertures enregistrées (%2$s manquantes, %3$s ignorées)</string>
+    <string name="progress_msg_covers_skip">
+        %1$d couvertures enregistrées (%2$d manquantes, %3$d ignorées)
+    </string>
 
     <!-- Explanatory note for 'export all' option -->
     <string name="export_info_backup_all">Tous les livres, couvertures, préférence et styles de liste personnels du catalogue seront enregistrés dans la sauvegarde.</string>
@@ -800,7 +805,8 @@
     <string name="menu_set_incomplete">Marquer comme incomplet</string>
     <string name="menu_set_complete">Marquer comme complet</string>
     <string name="error_search_configuration">Erreur de configuration Web. Ouvrez la page Admin et vérifiez les paramètres des pages de recherche.</string>
-    <string name="tab_lbl_search_site_order">Ordre</string>
+    <string name="lbl_search_sites">Sites de recherche</string>
+    <string name="lbl_search_site_order">Ordre</string>
     <string name="search_with_text">Recherche: %1$s</string>
     <string name="btn_options">Options</string>
     <string name="lbl_price_paid">Payé</string>
@@ -821,7 +827,6 @@
     <string name="progress_msg_cleaning_database">Nettoyage de la base de données…</string>
     <string name="progress_msg_updating_languages">Mise à jour des langues…</string>
     <string name="menu_internet_update_fields">Mise à jour des champs</string>
-    <string name="tab_lbl_search_sites">Sites de recherche</string>
     <string name="progress_msg_process_booklist_style">Styles de la liste de lecture…</string>
     <string name="usage_skip">Omettre</string>
     <string name="progress_msg_saving_image">Sauvegarde d\'image…</string>
@@ -833,4 +838,5 @@
     <string name="title_edit_genre">Modifier les détails du genre</string>
     <string name="menu_loan_return_book">Le livre emprunté est de retour</string>
     <string name="error_google_play_missing">Google Play / Market n\'est pas installé</string>
+    <string name="lbl_style">Style</string>
 </resources>

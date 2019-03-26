@@ -19,9 +19,20 @@
  */
 package com.eleybourn.bookcatalogue.backup.tararchive;
 
+import android.content.Context;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.regex.Pattern;
+
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReaderAbstract;
@@ -30,15 +41,6 @@ import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntity.BackupEntityT
 import com.eleybourn.bookcatalogue.backup.archivebase.ReaderEntityAbstract;
 import com.eleybourn.bookcatalogue.backup.xml.XmlImporter;
 import com.eleybourn.bookcatalogue.debug.Logger;
-
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.regex.Pattern;
 
 /**
  * Implementation of TAR-specific reader functions.
@@ -61,11 +63,13 @@ public class TarBackupReader
     /**
      * Constructor.
      *
+     * @param context   caller context
      * @param container Parent
      */
-    TarBackupReader(@NonNull final TarBackupContainer container)
+    TarBackupReader(@NonNull final Context context,
+                    @NonNull final TarBackupContainer container)
             throws IOException {
-
+        super(context);
         // Open the file and create the archive stream
         final FileInputStream in = new FileInputStream(container.getFile());
         mInput = new TarArchiveInputStream(in);
@@ -78,7 +82,7 @@ public class TarBackupReader
 
         // read the INFO
         mInfo = new BackupInfo();
-        try (XmlImporter importer = new XmlImporter()) {
+        try (XmlImporter importer = new XmlImporter(context)) {
             importer.doBackupInfoBlock(entity, mInfo);
         }
 

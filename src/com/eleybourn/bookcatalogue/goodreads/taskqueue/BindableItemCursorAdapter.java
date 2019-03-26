@@ -199,7 +199,8 @@ public class BindableItemCursorAdapter
          * Called to bind a specific event to a View in the list. It is passed to the subclass
          * so that any application-specific context can be added, or it can just be passed off
          * to the Event object itself.
-         *  @param context     the caller context
+         *
+         * @param context     the caller context
          * @param cursor      Cursor, positions at the relevant row
          * @param convertView View to populate
          */

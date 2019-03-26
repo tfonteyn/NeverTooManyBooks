@@ -35,7 +35,6 @@ public class SearchAdminActivity
 
     public static final int TAB_ORDER = 0;
     public static final int TAB_COVER_ORDER = 1;
-    private static final int TAB_HOSTS = 2;
     private static final int SHOW_ALL_TABS = -1;
 
     private ViewPagerAdapter mAdapter;
@@ -62,14 +61,14 @@ public class SearchAdminActivity
             case TAB_ORDER:
                 tabLayout.setVisibility(View.GONE);
                 initSingleTab(AdminSearchOrderFragment.TAG + TAB_ORDER,
-                              R.string.tab_lbl_search_site_order,
+                              R.string.lbl_books,
                               SearchSites.getSites());
                 break;
 
             case TAB_COVER_ORDER:
                 tabLayout.setVisibility(View.GONE);
                 initSingleTab(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER,
-                              R.string.tab_lbl_search_site_cover_order,
+                              R.string.lbl_cover,
                               SearchSites.getSitesForCoverSearches());
                 break;
 
@@ -126,17 +125,11 @@ public class SearchAdminActivity
 
         FragmentManager fm = getSupportFragmentManager();
         // add them in order! i.e. in the order the TAB_* constants are defined.
-        mAdapter.add(new FragmentHolder(
-                fm, AdminSearchOrderFragment.TAG + TAB_ORDER,
-                getString(R.string.tab_lbl_search_site_order)));
+        mAdapter.add(new FragmentHolder(fm, AdminSearchOrderFragment.TAG + TAB_ORDER,
+                                        getString(R.string.lbl_books)));
 
-        mAdapter.add(new FragmentHolder(
-                fm, AdminSearchOrderFragment.TAG + TAB_COVER_ORDER,
-                getString(R.string.tab_lbl_search_site_cover_order)));
-
-        mAdapter.add(new FragmentHolder(
-                fm, AdminHostsFragment.TAG, getString(R.string.tab_lbl_search_sites)));
-
+        mAdapter.add(new FragmentHolder(fm, AdminSearchOrderFragment.TAG + TAB_COVER_ORDER,
+                                        getString(R.string.lbl_cover)));
 
         findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,8 +137,6 @@ public class SearchAdminActivity
                 if (isDirty()) {
                     //ENHANCE: compare this approach to what is used in EditBookFragment & children.
                     // Decide later...
-
-                    ((AdminHostsFragment) mAdapter.getItem(TAB_HOSTS)).saveSettings();
 
                     ArrayList<SearchSites.Site> list;
                     list = ((AdminSearchOrderFragment)
@@ -176,8 +167,7 @@ public class SearchAdminActivity
 
     protected boolean isDirty() {
         return ((AdminSearchOrderFragment) mAdapter.getItem(TAB_ORDER)).isDirty()
-                || ((AdminSearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).isDirty()
-                || ((AdminHostsFragment) mAdapter.getItem(TAB_HOSTS)).isDirty();
+                || ((AdminSearchOrderFragment) mAdapter.getItem(TAB_COVER_ORDER)).isDirty();
     }
 
     private static class ViewPagerAdapter
@@ -221,7 +211,7 @@ public class SearchAdminActivity
         @NonNull
         final String tag;
         @NonNull
-        String title;
+        final String title;
         @NonNull
         Fragment fragment;
 
@@ -238,23 +228,18 @@ public class SearchAdminActivity
             //noinspection ConstantConditions
             fragment = fm.findFragmentByTag(tag);
             if (fragment == null) {
-                if (AdminHostsFragment.TAG.equals(tag)) {
-                    fragment = new AdminHostsFragment();
 
-                } else if (tag.equals(AdminSearchOrderFragment.TAG + TAB_ORDER)) {
-                    fragment = new AdminSearchOrderFragment();
-                    Bundle args = new Bundle();
-                    args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES,
-                                                SearchSites.getSites());
-                    fragment.setArguments(args);
-
-                } else if (tag.equals(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER)) {
-                    fragment = new AdminSearchOrderFragment();
-                    Bundle args = new Bundle();
-                    args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES,
-                                                SearchSites.getSitesForCoverSearches());
-                    fragment.setArguments(args);
+                ArrayList<SearchSites.Site> list;
+                if (tag.equals(AdminSearchOrderFragment.TAG + TAB_ORDER)) {
+                    list = SearchSites.getSites();
+                } else /* if (tag.equals(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER)) */ {
+                    list = SearchSites.getSitesForCoverSearches();
                 }
+
+                Bundle args = new Bundle();
+                args.putParcelableArrayList(SearchSites.BKEY_SEARCH_SITES, list);
+                fragment = new AdminSearchOrderFragment();
+                fragment.setArguments(args);
             }
         }
     }

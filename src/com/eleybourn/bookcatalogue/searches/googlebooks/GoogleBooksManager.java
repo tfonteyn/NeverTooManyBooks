@@ -8,13 +8,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import org.xml.sax.SAXException;
 
@@ -33,9 +33,10 @@ import javax.xml.parsers.SAXParserFactory;
 public final class GoogleBooksManager
         implements SearchSites.SearchSiteManager {
 
-    private static final String TAG = "GoogleBooks.";
+    /** Preferences prefix. */
+    private static final String PREF_PREFIX = "GoogleBooks.";
 
-    private static final String PREFS_HOST_URL = TAG + "hostUrl";
+    private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
 
     /**
      * Constructor.
@@ -46,11 +47,11 @@ public final class GoogleBooksManager
     @NonNull
     public static String getBaseURL() {
         //noinspection ConstantConditions
-        return Prefs.getPrefs().getString(PREFS_HOST_URL, "https://books.google.com");
+        return App.getPrefs().getString(PREFS_HOST_URL, "https://books.google.com");
     }
 
     public static void setBaseURL(@NonNull final String url) {
-        Prefs.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
+        App.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
     }
 
     /**
@@ -111,7 +112,7 @@ public final class GoogleBooksManager
         String url = getBaseURL() + "/books/feeds/volumes";
         if (!isbn.isEmpty()) {
             // sanity check
-            if (!IsbnUtils.isValid(isbn)) {
+            if (!ISBN.isValid(isbn)) {
                 return bookData;
             }
             url += "?q=ISBN%3C" + isbn + "%3E";

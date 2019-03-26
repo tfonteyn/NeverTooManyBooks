@@ -66,7 +66,7 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -90,10 +90,8 @@ import com.eleybourn.bookcatalogue.goodreads.api.ShowBookByIsbnApiHandler;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.RTE;
 
 /**
  * Class to wrap all Goodreads API calls and manage an API connection.
@@ -109,23 +107,28 @@ public class GoodreadsManager
      */
     public static final String WEBSITE = "https://www.goodreads.com";
     public static final String BASE_URL = WEBSITE;
-    private static final String TAG = "GoodReads.";
+
+    /** Preferences prefix. */
+    private static final String PREF_PREFIX = "GoodReads.";
+
     /** last time we synced with Goodreads. */
-    private static final String PREFS_LAST_SYNC_DATE = TAG + "LastSyncDate";
+    private static final String PREFS_LAST_SYNC_DATE = PREF_PREFIX + "LastSyncDate";
+
     /* authorization tokens. */
-    private static final String ACCESS_TOKEN = TAG + "AccessToken.Token";
-    private static final String ACCESS_SECRET = TAG + "AccessToken.Secret";
-    private static final String REQUEST_TOKEN = TAG + "RequestToken.Token";
-    private static final String REQUEST_SECRET = TAG + "RequestToken.Secret";
+    private static final String ACCESS_TOKEN = PREF_PREFIX + "AccessToken.Token";
+    private static final String ACCESS_SECRET = PREF_PREFIX + "AccessToken.Secret";
+    private static final String REQUEST_TOKEN = PREF_PREFIX + "RequestToken.Token";
+    private static final String REQUEST_SECRET = PREF_PREFIX + "RequestToken.Secret";
 
     /* meta data keys in manifest. */
     private static final String GOODREADS_DEV_KEY = "goodreads.dev_key";
     private static final String GOODREADS_DEV_SECRET = "goodreads.dev_secret";
+
     /** the developer keys. */
     private static final String DEV_KEY =
-            BookCatalogueApp.getManifestString(GOODREADS_DEV_KEY);
+            App.getManifestString(GOODREADS_DEV_KEY);
     private static final String DEV_SECRET =
-            BookCatalogueApp.getManifestString(GOODREADS_DEV_SECRET);
+            App.getManifestString(GOODREADS_DEV_SECRET);
 
     /**
      * the call back Intent URL.
@@ -148,7 +151,7 @@ public class GoodreadsManager
      * </pre>
      */
     private static final String AUTHORIZATION_CALLBACK =
-            BookCatalogueApp.getAppContext().getPackageName() + "://goodreadsauth";
+            App.getAppContext().getPackageName() + "://goodreadsauth";
 
     /** to control access to mLastRequestTime, we synchronize on this final Object. */
     @NonNull
@@ -298,7 +301,7 @@ public class GoodreadsManager
      */
     @Nullable
     public static Date getLastSyncDate() {
-        return DateUtils.parseDate(Prefs.getPrefs().getString(PREFS_LAST_SYNC_DATE, null));
+        return DateUtils.parseDate(App.getPrefs().getString(PREFS_LAST_SYNC_DATE, null));
     }
 
     /**
@@ -309,7 +312,7 @@ public class GoodreadsManager
     public static void setLastSyncDate(@Nullable final Date date) {
 
         String dateStr = date != null ? DateUtils.utcSqlDateTime(date) : null;
-        Prefs.getPrefs().edit().putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
+        App.getPrefs().edit().putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
     }
 
     /**
@@ -320,10 +323,10 @@ public class GoodreadsManager
         mAccessToken = "";
         mAccessSecret = "";
         mHasValidCredentials = false;
-        Prefs.getPrefs().edit()
-             .putString(ACCESS_TOKEN, "")
-             .putString(ACCESS_SECRET, "")
-             .apply();
+        App.getPrefs().edit()
+           .putString(ACCESS_TOKEN, "")
+           .putString(ACCESS_SECRET, "")
+           .apply();
     }
 
     /**
@@ -338,8 +341,8 @@ public class GoodreadsManager
         }
 
         // Get the stored token values from prefs, and setup the consumer if present
-        mAccessToken = Prefs.getPrefs().getString(ACCESS_TOKEN, null);
-        mAccessSecret = Prefs.getPrefs().getString(ACCESS_SECRET, null);
+        mAccessToken = App.getPrefs().getString(ACCESS_TOKEN, null);
+        mAccessSecret = App.getPrefs().getString(ACCESS_SECRET, null);
 
         return !(mAccessToken == null || mAccessToken.isEmpty()
                 || mAccessSecret == null || mAccessSecret.isEmpty());
@@ -401,7 +404,7 @@ public class GoodreadsManager
         }
 
         HttpEntity entity = response.getEntity();
-        if (DEBUG_SWITCHES.GOODREADS && DEBUG_SWITCHES.DUMP_HTTP_RESPONSE && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS && DEBUG_SWITCHES.DUMP_HTTP_RESPONSE) {
             entity.writeTo(System.out);
             if (!entity.isRepeatable()) {
                 return;
@@ -677,7 +680,7 @@ public class GoodreadsManager
 
         if (grId == 0 && !isbn.isEmpty()) {
 
-            if (!IsbnUtils.isValid(isbn)) {
+            if (!ISBN.isValid(isbn)) {
                 return ExportDisposition.notFound;
             }
 
@@ -927,12 +930,12 @@ public class GoodreadsManager
                    BookNotFoundException,
                    IOException {
 
-        if (IsbnUtils.isValid(isbn)) {
+        if (ISBN.isValid(isbn)) {
             ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(this);
             // Run the search
             return api.get(isbn, true);
         } else {
-            throw new RTE.IsbnInvalidException(isbn);
+            throw new ISBN.IsbnInvalidException(isbn);
         }
     }
 
@@ -1000,8 +1003,8 @@ public class GoodreadsManager
     @WorkerThread
     private boolean validateCredentials() {
         // Get the stored token values from prefs, and setup the consumer
-        mAccessToken = Prefs.getPrefs().getString(ACCESS_TOKEN, "");
-        mAccessSecret = Prefs.getPrefs().getString(ACCESS_SECRET, "");
+        mAccessToken = App.getPrefs().getString(ACCESS_TOKEN, "");
+        mAccessSecret = App.getPrefs().getString(ACCESS_SECRET, "");
 
         mConsumer.setTokenWithSecret(mAccessToken, mAccessSecret);
 
@@ -1031,8 +1034,6 @@ public class GoodreadsManager
     /**
      * Request authorization for this application, from the current user,
      * by going to the OAuth web page.
-     * <p>
-     * No network access, as actual auth is done via a browser (with Intent.ACTION_VIEW).
      *
      * @author Philip Warner
      */
@@ -1056,23 +1057,23 @@ public class GoodreadsManager
             throw new AuthorizationException(R.string.goodreads, e);
         }
 
-        if (DEBUG_SWITCHES.GOODREADS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
             Logger.info(this, "requestAuthorization", "authUrl: " + authUrl);
         }
         //TEST: double check if this ever gives issues!
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
             // Make a valid URL for the parser (some come back without a schema)
             authUrl = "http://" + authUrl;
-            if (DEBUG_SWITCHES.GOODREADS && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
                 Logger.info(this, "requestAuthorization", "replacing with: " + authUrl);
             }
         }
 
         // Save the token; this object may well be destroyed before the web page has returned.
-        Prefs.getPrefs().edit()
-             .putString(REQUEST_TOKEN, mConsumer.getToken())
-             .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
-             .apply();
+        App.getPrefs().edit()
+           .putString(REQUEST_TOKEN, mConsumer.getToken())
+           .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
+           .apply();
 
         // Open the web page
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
@@ -1089,8 +1090,8 @@ public class GoodreadsManager
                    IOException {
 
         // Get the saved request tokens.
-        String tokenString = Prefs.getPrefs().getString(REQUEST_TOKEN, null);
-        String secretString = Prefs.getPrefs().getString(REQUEST_SECRET, null);
+        String tokenString = App.getPrefs().getString(REQUEST_TOKEN, null);
+        String secretString = App.getPrefs().getString(REQUEST_SECRET, null);
 
         if (tokenString == null || tokenString.isEmpty()
                 || secretString == null || secretString.isEmpty()) {
@@ -1119,10 +1120,10 @@ public class GoodreadsManager
         mAccessToken = mConsumer.getToken();
         mAccessSecret = mConsumer.getTokenSecret();
 
-        Prefs.getPrefs().edit()
-             .putString(ACCESS_TOKEN, mAccessToken)
-             .putString(ACCESS_SECRET, mAccessSecret)
-             .apply();
+        App.getPrefs().edit()
+           .putString(ACCESS_TOKEN, mAccessToken)
+           .putString(ACCESS_SECRET, mAccessSecret)
+           .apply();
     }
 
     /**

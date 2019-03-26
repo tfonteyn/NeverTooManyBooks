@@ -3,14 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/dialogFrame">
+    style="@style/dialogFrame"
+    >
 
     <TextView
         android:id="@+id/lbl_info"
         style="@style/sectionHeader"
         android:text="@string/export_options_dialog_title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <include
         android:id="@+id/import_export_options"
@@ -19,14 +21,16 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_info" />
+        app:layout_constraintTop_toBottomOf="@id/lbl_info"
+        />
 
     <TextView
         android:id="@+id/export_advanced_date_blurb"
         style="@style/sectionHeader"
         android:text="@string/export_option_info_books_since_date"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/import_export_options" />
+        app:layout_constraintTop_toBottomOf="@id/import_export_options"
+        />
 
     <RadioGroup
         android:id="@+id/radio_buttons"
@@ -34,18 +38,21 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/export_advanced_date_blurb">
+        app:layout_constraintTop_toBottomOf="@id/export_advanced_date_blurb"
+        >
 
         <RadioButton
             android:id="@+id/radioAllBooks"
             style="@style/row_option_checkable"
             android:checked="true"
-            android:text="@string/all_books"/>
+            android:text="@string/all_books"
+            />
 
         <RadioButton
             android:id="@+id/radioSinceLastBackup"
             style="@style/row_option_checkable"
-            android:text="@string/export_option_books_since_last_full_backup" />
+            android:text="@string/export_option_books_since_last_full_backup"
+            />
 
         <!-- This option and the related date/button below are disabled to reduce complexity
          of the UI and app; may enable one day. Deemed to be too rarely of use. -->
@@ -57,7 +64,8 @@
             android:text="@string/export_option_books_since_date"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="gone"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            />
     </RadioGroup>
 
     <EditText
@@ -73,7 +81,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/radio_buttons"
         tools:ignore="LabelFor,Autofill"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        />
 
     <Button
         android:id="@+id/date_button"
@@ -85,7 +94,8 @@
         app:layout_constraintStart_toEndOf="@id/txtDate"
         app:layout_constraintTop_toBottomOf="@id/radio_buttons"
         tools:ignore="HardcodedText"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        />
 
     <include
         android:id="@+id/buttonbar_cancel_ok"
@@ -95,5 +105,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/date_button" />
+        app:layout_constraintTop_toBottomOf="@id/date_button"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

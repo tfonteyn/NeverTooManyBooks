@@ -63,20 +63,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -154,7 +151,7 @@ public class Fields {
      */
     public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
 
-    /** The activity related to this object. */
+    /** The activity or fragment related to this object. */
     @NonNull
     private final FieldsContext mFieldContext;
     /** A list of cross-validators to apply if all fields pass simple validation. */
@@ -229,12 +226,7 @@ public class Fields {
 
     @SuppressWarnings("WeakerAccess")
     public static boolean isVisible(@NonNull final String fieldName) {
-        return Prefs.getPrefs().getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
-    }
-
-    public static void setVisibility(@NonNull final String fieldName,
-                                     final boolean isVisible) {
-        Prefs.getPrefs().edit().putBoolean(PREFS_FIELD_VISIBILITY + fieldName, isVisible).apply();
+        return App.getPrefs().getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
     }
 
     /**
@@ -987,7 +979,7 @@ public class Fields {
             if (value != null) {
                 File image;
                 if (value.isEmpty()) {
-                  image = StorageUtils.getTempCoverFile();
+                    image = StorageUtils.getTempCoverFile();
                 } else {
                     // We store the uuid as a tag on the view.
                     view.setTag(R.id.TAG_UUID, value);
@@ -1147,13 +1139,7 @@ public class Fields {
             if (source == null || source.isEmpty()) {
                 return "";
             }
-
-            Date d = DateUtils.parseDate(source);
-            if (d != null) {
-                return DateUtils.toPrettyDate(d);
-            }
-
-            return source;
+            return DateUtils.toPrettyDate(source);
         }
 
         /**
@@ -1324,47 +1310,6 @@ public class Fields {
     }
 
     /**
-     * Formatter for a bitmask based Book Editions field.
-     * <p>
-     * Does not support {@link FieldFormatter#extract}.
-     */
-    public static class BookEditionsFormatter
-            implements FieldFormatter {
-
-        @NonNull
-        @Override
-        public String format(@NonNull final Field field,
-                             @Nullable final String source) {
-            if (source == null || source.isEmpty()) {
-                return "";
-            }
-
-            int bitmask;
-            try {
-                bitmask = Integer.parseInt(source);
-            } catch (NumberFormatException ignore) {
-                return source;
-            }
-            List<String> list = new ArrayList<>();
-            for (Integer edition : Book.EDITIONS.keySet()) {
-                if ((edition & bitmask) != 0) {
-                    @SuppressWarnings("ConstantConditions")
-                    int resId = Book.EDITIONS.get(edition);
-                    list.add(BookCatalogueApp.getResString(resId));
-                }
-            }
-            return Csv.toDisplayString(list, null);
-        }
-
-        @NonNull
-        @Override
-        public String extract(@NonNull final Field field,
-                              @NonNull final String source) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    /**
      * How to handle a field when updating the entity it belongs to.
      * e.g. skip it, overwrite the value, etc...
      */
@@ -1481,7 +1426,7 @@ public class Fields {
         @Nullable
         public View findViewById(@IdRes final int id) {
             if (mActivity.get() == null) {
-                if (/* always show debug */ BuildConfig.DEBUG) {
+                if (/* always debug */ BuildConfig.DEBUG) {
                     Logger.debug("Activity is NULL");
                 }
                 return null;
@@ -1518,14 +1463,14 @@ public class Fields {
         @Nullable
         public View findViewById(@IdRes final int id) {
             if (mFragment.get() == null) {
-                if (/* always show debug */ BuildConfig.DEBUG) {
+                if (/* always debug */ BuildConfig.DEBUG) {
                     Logger.debug("Fragment is NULL");
                 }
                 return null;
             }
             final View view = mFragment.get().getView();
             if (view == null) {
-                if (/* always show debug */ BuildConfig.DEBUG) {
+                if (/* always debug */ BuildConfig.DEBUG) {
                     Logger.debug("View is NULL");
                 }
                 return null;
@@ -1664,7 +1609,7 @@ public class Fields {
 
                 } else if (view instanceof ImageView) {
                     //ENHANCE: ImageViewAccessor needs more work
-                    Logger.info(this,"Field", "ImageViewAccessor needs more work, disabled.");
+                    Logger.info(this, "Field", "ImageViewAccessor needs more work, disabled.");
 //                    mFieldDataAccessor = new ImageViewAccessor(fields.getFieldContext().getContext());
                     // temp dummy, does not actually work for images of course
                     mFieldDataAccessor = new StringDataAccessor();
@@ -1675,7 +1620,7 @@ public class Fields {
 
                 } else {
                     //noinspection ConstantConditions
-                    throw new RTE.IllegalTypeException(view.getClass().getCanonicalName());
+                    throw new IllegalTypeException(view.getClass().getCanonicalName());
                 }
                 mIsVisible = Fields.isVisible(group);
                 if (!mIsVisible) {
@@ -1707,16 +1652,6 @@ public class Fields {
         }
 
         /**
-         * @param formatter to use
-         *
-         * @return field (for chaining)
-         */
-        public Field setFormatter(@NonNull final FieldFormatter formatter) {
-            this.formatter = formatter;
-            return this;
-        }
-
-        /**
          * For specialized access.
          *
          * @return the field formatter.
@@ -1724,6 +1659,16 @@ public class Fields {
         @Nullable
         public FieldFormatter getFormatter() {
             return formatter;
+        }
+
+        /**
+         * @param formatter to use
+         *
+         * @return field (for chaining)
+         */
+        public Field setFormatter(@NonNull final FieldFormatter formatter) {
+            this.formatter = formatter;
+            return this;
         }
 
         /**
@@ -1915,7 +1860,7 @@ public class Fields {
          * Set the value of this field from the passed DataManager.
          * Useful for getting access to raw data values from a saved data bundle.
          */
-        void setValueFrom(@NonNull final DataManager dataManager) {
+        public void setValueFrom(@NonNull final DataManager dataManager) {
             if (!mColumn.isEmpty() && !mDoNoFetch) {
                 mFieldDataAccessor.setFieldValueFrom(this, dataManager);
 

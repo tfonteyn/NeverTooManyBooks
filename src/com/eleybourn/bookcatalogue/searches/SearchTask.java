@@ -36,6 +36,7 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
@@ -146,8 +147,9 @@ public class SearchTask
     @WorkerThread
     protected void runTask() {
 
-        if (DEBUG_SWITCHES.MANAGED_TASKS && BuildConfig.DEBUG) {
-            Logger.info(this, "runTask", getContext().getString(mProgressTitleResId));
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.info(this, Tracker.State.Enter, "runTask",
+                        getContext().getString(mProgressTitleResId));
         }
         // keys? site up? etc...
         if (!mSearchSiteManager.isAvailable()) {

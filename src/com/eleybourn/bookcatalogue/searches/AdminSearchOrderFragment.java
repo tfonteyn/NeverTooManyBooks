@@ -148,14 +148,13 @@ public class AdminSearchOrderFragment
      */
     private class Holder {
 
-        SearchSites.Site site;
-
         @NonNull
         final CheckedTextView checkableView;
         @NonNull
         final View rowDetailsView;
         @NonNull
         final TextView nameView;
+        SearchSites.Site site;
 
         public Holder(@NonNull final View rowView) {
             rowDetailsView = rowView.findViewById(R.id.TLV_ROW_DETAILS);

@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.searches;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -212,6 +211,115 @@ public class FTSSearchActivity
     }
 
     /**
+     * Called in the timer thread, this code will run the search then queue the UI
+     * updates to the main thread.
+     */
+    private void doSearch() {
+        // Get search criteria
+        mAuthorSearchText = mAuthorView.getText().toString().trim();
+        mTitleSearchText = mTitleView.getText().toString().trim();
+        mGenericSearchText = mCSearchView.getText().toString().trim();
+
+        // Save time to log how long query takes.
+        long t0 = System.currentTimeMillis();
+
+        // Get the cursor
+        String tmpMsg = null;
+        try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
+                                           mTitleSearchText,
+                                           mGenericSearchText)) {
+            // Null return means searchFts thought parameters were effectively blank
+            if (cursor != null) {
+                tmpMsg = getString(R.string.books_found, cursor.getCount());
+
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+                    t0 = System.currentTimeMillis() - t0;
+                    tmpMsg += "\n in " + t0 + "ms)";
+                }
+                mBookIdsFound = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    mBookIdsFound.add(cursor.getInt(0));
+                }
+
+            }
+        } catch (RuntimeException e) {
+            Logger.error(e);
+        }
+
+        final String message = (tmpMsg != null) ? tmpMsg : "";
+
+        // Update the UI in main thread.
+        mSCHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mBooksFound.setText(message);
+            }
+        });
+    }
+
+    /**
+     * Called when a UI element detects the user doing something.
+     *
+     * @param dirty Indicates the user action made the last search invalid
+     */
+    private void userIsActive(final boolean dirty) {
+        synchronized (FTSSearchActivity.this) {
+            // Mark search dirty if necessary
+            mSearchIsDirty = mSearchIsDirty || dirty;
+            // Reset the idle timer since the user did something
+            mIdleStart = System.currentTimeMillis();
+            // If the search is dirty, make sure idle timer is running and update UI
+            if (mSearchIsDirty) {
+                startIdleTimer();
+            }
+        }
+    }
+
+    /**
+     * When activity resumes, set search as dirty.
+     */
+    @Override
+    @CallSuper
+    protected void onResume() {
+        super.onResume();
+        userIsActive(true);
+    }
+
+    /**
+     * When activity pauses, stop timer and get the search fields.
+     */
+    @Override
+    @CallSuper
+    protected void onPause() {
+        stopIdleTimer();
+        // Get search criteria
+        mAuthorSearchText = mAuthorView.getText().toString().trim();
+        mTitleSearchText = mTitleView.getText().toString().trim();
+        mGenericSearchText = mCSearchView.getText().toString().trim();
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
+        outState.putString(UniqueId.KEY_TITLE, mTitleSearchText);
+        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mGenericSearchText);
+    }
+
+    @Override
+    @CallSuper
+    public void onDestroy() {
+        stopIdleTimer();
+
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
+    }
+
+    /**
      * start the idle timer.
      */
     private void startIdleTimer() {
@@ -243,122 +351,7 @@ public class FTSSearchActivity
     }
 
     /**
-     * Called in the timer thread, this code will run the search then queue the UI
-     * updates to the main thread.
-     */
-    private void doSearch() {
-        // Get search criteria
-        mAuthorSearchText = mAuthorView.getText().toString().trim();
-        mTitleSearchText = mTitleView.getText().toString().trim();
-        mGenericSearchText = mCSearchView.getText().toString().trim();
-
-        // Save time to log how long query takes.
-        long t0 = System.currentTimeMillis();
-
-        // Get the cursor
-        String tmpMsg = null;
-        try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
-                                           mTitleSearchText,
-                                           mGenericSearchText)) {
-            if (cursor != null) {
-                tmpMsg = getString(R.string.books_found, cursor.getCount());
-
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
-                    t0 = System.currentTimeMillis() - t0;
-                    tmpMsg += "  in " + t0 + "ms)";
-                }
-                mBookIdsFound = new ArrayList<>();
-                while (cursor.moveToNext()) {
-                    mBookIdsFound.add(cursor.getInt(0));
-                }
-
-            } else if (BuildConfig.DEBUG) {
-                // Null return means searchFts thought parameters were effectively blank
-                tmpMsg = "(dbg enter search criteria)";
-            }
-        } catch (RuntimeException e) {
-            Logger.error(e);
-        }
-
-        final String message = (tmpMsg != null) ? tmpMsg : "";
-
-        // Update the UI in main thread.
-        mSCHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mBooksFound.setText(message);
-            }
-        });
-    }
-
-    /**
-     * Called when a UI element detects the user doing something.
-     *
-     * @param dirty Indicates the user action made the last search invalid
-     */
-    @SuppressLint("SetTextI18n")
-    private void userIsActive(final boolean dirty) {
-        synchronized (FTSSearchActivity.this) {
-            // Mark search dirty if necessary
-            mSearchIsDirty = mSearchIsDirty || dirty;
-            // Reset the idle timer since the user did something
-            mIdleStart = System.currentTimeMillis();
-            // If the search is dirty, make sure idle timer is running and update UI
-            if (mSearchIsDirty) {
-                if (BuildConfig.DEBUG) {
-                    mBooksFound.setText("(dbg waiting for idle)");
-                }
-                startIdleTimer();
-            }
-        }
-    }
-
-    /**
-     * When activity pauses, stop timer and get the search fields.
-     */
-    @Override
-    @CallSuper
-    protected void onPause() {
-        stopIdleTimer();
-        // Get search criteria
-        mAuthorSearchText = mAuthorView.getText().toString().trim();
-        mTitleSearchText = mTitleView.getText().toString().trim();
-        mGenericSearchText = mCSearchView.getText().toString().trim();
-
-        super.onPause();
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        outState.putString(UniqueId.KEY_TITLE, mTitleSearchText);
-        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mGenericSearchText);
-    }
-
-    /**
-     * When activity resumes, set search as dirty.
-     */
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        userIsActive(true);
-    }
-
-    @Override
-    @CallSuper
-    public void onDestroy() {
-        stopIdleTimer();
-
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
-    }
-
-    /**
-     * Class to implement a timer task and do a search when necessary, if idle.
+     * Implements a timer task and does a search when the user is idle.
      * <p>
      * If a search happens, we stop the idle timer.
      *

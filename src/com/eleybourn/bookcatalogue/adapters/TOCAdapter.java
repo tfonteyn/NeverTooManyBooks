@@ -54,7 +54,7 @@ public class TOCAdapter
         } else {
             // Not recycling, get a new View and make the holder for it.
             convertView = LayoutInflater.from(getContext())
-                                        .inflate(mRowLayoutId, parent,false);
+                                        .inflate(mRowLayoutId, parent, false);
             holder = new Holder(convertView);
         }
 

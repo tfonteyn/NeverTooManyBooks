@@ -4,15 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <ImageView
         android:id="@+id/coverImage"
         style="@style/coverImage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"
         tools:src="@drawable/ic_image"
-        tools:ignore="ContentDescription" />
+        />
 
     <TextView
         android:id="@+id/lbl_title"
@@ -20,7 +22,8 @@
         android:labelFor="@id/title"
         android:text="@string/lbl_title"
         app:layout_constraintStart_toEndOf="@id/coverImage"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <TextView
         android:id="@+id/title"
@@ -28,16 +31,18 @@
         android:layout_marginStart="@dimen/border_double"
         app:layout_constraintStart_toStartOf="@id/lbl_title"
         app:layout_constraintTop_toBottomOf="@id/lbl_title"
+        tools:ignore="SelectableText"
         tools:text="@string/lbl_title"
-        tools:ignore="SelectableText" />
+        />
 
     <TextView
         android:id="@+id/lbl_author"
         style="@style/lbl_textField"
         android:labelFor="@id/author"
         android:text="@string/lbl_author"
+        app:layout_constraintStart_toStartOf="@id/lbl_title"
         app:layout_constraintTop_toBottomOf="@id/title"
-        app:layout_constraintStart_toStartOf="@id/lbl_title" />
+        />
 
     <TextView
         android:id="@+id/author"
@@ -45,7 +50,8 @@
         android:layout_marginStart="@dimen/border_double"
         app:layout_constraintStart_toStartOf="@id/lbl_title"
         app:layout_constraintTop_toBottomOf="@id/lbl_author"
+        tools:ignore="SelectableText"
         tools:text="@string/lbl_author"
-        tools:ignore="SelectableText" />
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

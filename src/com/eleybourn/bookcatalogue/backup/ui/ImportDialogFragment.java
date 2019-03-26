@@ -25,7 +25,7 @@ import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupReader;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.debug.MustImplementException;
 
 public class ImportDialogFragment
         extends DialogFragment {
@@ -61,8 +61,8 @@ public class ImportDialogFragment
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
         if (!(context instanceof OnImportTypeSelectionDialogResultsListener)) {
-            throw new RTE.MustImplementException(context,
-                                                 OnImportTypeSelectionDialogResultsListener.class);
+            throw new MustImplementException(context,
+                                             OnImportTypeSelectionDialogResultsListener.class);
         }
     }
 
@@ -138,7 +138,7 @@ public class ImportDialogFragment
     private boolean archiveHasValidDates() {
         boolean mArchiveHasValidDates;
         //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.readFrom(mImportSettings.file)) {
+        try (BackupReader reader = BackupManager.readFrom(getContext(), mImportSettings.file)) {
             Objects.requireNonNull(reader);
             BackupInfo info = reader.getInfo();
             reader.close();

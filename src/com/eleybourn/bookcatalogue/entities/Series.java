@@ -34,8 +34,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.StringList;
@@ -74,10 +72,13 @@ public class Series
                 }
             };
 
-    /** Trim extraneous punctuation and whitespace from the name. Locale specific. */
+    /** Regular expression - TODO: make this user controlled ? Add more languages ? */
+    private static final String NUMBER_PREFIXES =
+            "(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)";
+
+    /** Trim extraneous punctuation and whitespace from the name. */
     private static final String SERIES_REGEX_SUFFIX =
-            BookCatalogueApp.getResString(R.string.series_number_prefixes)
-                    + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
+            NUMBER_PREFIXES + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
 
     /** Parse a string into name + number. */
     private static final Pattern FROM_STRING_PATTERN = Pattern.compile("^(.*)\\s*\\((.*)\\)\\s*$");
@@ -167,8 +168,6 @@ public class Series
 
     /**
      * Constructor that will attempt to parse a single string into a Series name and number.
-     *
-     * BUG: Tschai, Planet of Adventure (4.1\\|Omnibus 1-4)|Planet of Adventure (66)
      *
      * @param fromString string to decode
      *
@@ -417,7 +416,12 @@ public class Series
     @Override
     @NonNull
     public String toString() {
-        return stringEncoded();
+        return "Series{"
+                + "mId=" + mId
+                + ", mName=`" + mName + '`'
+                + ", mIsComplete=" + mIsComplete
+                + ", mNumber=`" + mNumber + '`'
+                + '}';
     }
 
     /**

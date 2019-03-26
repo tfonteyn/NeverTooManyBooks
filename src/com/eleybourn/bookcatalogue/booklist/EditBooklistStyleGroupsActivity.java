@@ -88,7 +88,7 @@ public class EditBooklistStyleGroupsActivity
         super.onCreate(savedInstanceState);
 
         setTitle(getString(R.string.name_colon_value,
-                           getString(R.string.pg_groupings), mStyle.getDisplayName()));
+                           getString(R.string.pg_groupings), mStyle.getDisplayName(this)));
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
@@ -148,7 +148,7 @@ public class EditBooklistStyleGroupsActivity
         // Apply any saved properties.
         mStyle.updatePreferences(allPreferences);
 
-        if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             Logger.info(this, "onSave", mStyle.toString());
         }
         data.putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
@@ -271,7 +271,7 @@ public class EditBooklistStyleGroupsActivity
             }
             // Setup the variant fields in the holder
             holder.groupWrapper = item;
-            holder.nameView.setText(item.group.getName());
+            holder.nameView.setText(item.group.getName(getContext()));
             holder.checkableView.setChecked(holder.groupWrapper.present);
         }
 

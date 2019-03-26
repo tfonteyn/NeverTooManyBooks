@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="@dimen/border_double">
+    android:padding="@dimen/border_double"
+    >
 
     <TextView
         android:id="@+id/message"
@@ -12,7 +13,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textIsSelectable="true"
-        tools:text="message will be here" />
+        tools:text="message will be here"
+        />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -20,6 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:max="100"
-        android:progress="0" />
+        android:progress="0"
+        />
 
 </LinearLayout>

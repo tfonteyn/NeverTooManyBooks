@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 
-import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 
 /**
  * Based on the pic2shop client code at github, this object will start pic2shop and
@@ -85,7 +85,7 @@ public class Pic2ShopScanner
         // only for Pro:
         String barcodeFormat = data.getStringExtra(Pro.FORMAT);
         if (barcodeFormat != null && !Arrays.asList(Pro.BARCODE_TYPES).contains(barcodeFormat)) {
-            throw new RTE.IllegalTypeException("Unexpected format for barcode: " + barcodeFormat);
+            throw new IllegalTypeException("Unexpected format for barcode: " + barcodeFormat);
         }
 
         return barcode;

@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
@@ -44,8 +45,8 @@ import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -276,10 +277,9 @@ public class CoverHandler
             case R.id.SUBMENU_THUMB_ROTATE:
                 // Just a submenu; skip, but display a hint if user is rotating a camera image
                 if (mGotCameraImage) {
-                    HintManager.displayHint(
-                            mActivity.getLayoutInflater(),
-                            R.string.hint_autorotate_camera_images,
-                            null);
+                    HintManager.displayHint(mActivity.getLayoutInflater(),
+                                            R.string.hint_autorotate_camera_images,
+                                            null);
                     mGotCameraImage = false;
                 }
                 return true;
@@ -368,7 +368,7 @@ public class CoverHandler
 
         String isbn = mIsbnField.getValue().toString();
 
-        if (IsbnUtils.isValid(isbn)) {
+        if (ISBN.isValid(isbn)) {
             // we must use the same fragment manager as the hosting fragment.
             FragmentManager fm = mFragment.requireFragmentManager();
             mCoverBrowserFragment = (CoverBrowser) fm.findFragmentByTag(CoverBrowser.TAG);
@@ -380,9 +380,8 @@ public class CoverHandler
             // at least we don't need to travel round to the Activity this way.
             mCoverBrowserFragment.setTargetFragment(mFragment, REQ_ALT_EDITION);
         } else {
-            //Snackbar.make(mIsbnField.getView(), R.string.editions_require_isbn,
-            //              Snackbar.LENGTH_LONG).show();
-            UserMessage.showUserMessage(mActivity, R.string.warning_editions_require_isbn);
+            UserMessage.showUserMessage(mIsbnField.getView(),
+                                        R.string.warning_editions_require_isbn);
         }
     }
 
@@ -415,7 +414,7 @@ public class CoverHandler
         Bitmap bitmap = (Bitmap) bundle.get(CropImageActivity.BKEY_DATA);
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
             Matrix m = new Matrix();
-            m.postRotate(Prefs.getListPreference(R.string.pk_thumbnails_rotate_auto, 0));
+            m.postRotate(App.getListPreference(Prefs.pk_thumbnails_rotate_auto, 0));
             bitmap = Bitmap.createBitmap(bitmap, 0, 0,
                                          bitmap.getWidth(), bitmap.getHeight(),
                                          m, true);
@@ -468,20 +467,20 @@ public class CoverHandler
             } catch (FileNotFoundException e) {
                 Logger.error(e, "Unable to copy content to file");
             }
+
             if (imageOk) {
                 // Update the ImageView with the new image
                 updateCoverView();
             } else {
-                String s = mActivity.getString(
-                        R.string.warning_cover_copy_failed) + ". "
+                String msg = mActivity.getString(R.string.warning_cover_copy_failed) + ". "
                         + mActivity.getString(R.string.error_if_the_problem_persists);
-                UserMessage.showUserMessage(mActivity, s);
+                UserMessage.showUserMessage(mCoverField.getView(), msg);
             }
         } else {
             /* Deal with the case where the chooser returns a null intent. This seems to happen
              * when the filename is not properly understood by the chooser (eg. an apostrophe in
              * the file name confuses ES File Explorer in the current version as of 23-Sep-2012. */
-            UserMessage.showUserMessage(mActivity, R.string.warning_cover_copy_failed);
+            UserMessage.showUserMessage(mCoverField.getView(), R.string.warning_cover_copy_failed);
         }
     }
 
@@ -539,7 +538,7 @@ public class CoverHandler
 
 
     private void cropCoverImage(@NonNull final File imageFile) {
-        boolean external = Prefs.getBoolean(R.string.pk_thumbnails_external_cropper, false);
+        boolean external = App.getPrefs().getBoolean(Prefs.pk_thumbnails_external_cropper, false);
         if (external) {
             cropCoverImageExternal(imageFile);
         } else {
@@ -553,8 +552,8 @@ public class CoverHandler
      * @param imageFile to crop
      */
     private void cropCoverImageInternal(@NonNull final File imageFile) {
-        boolean cropFrameWholeImage = Prefs.getBoolean(
-                R.string.pk_thumbnails_crop_frame_is_whole_image, false);
+        boolean cropFrameWholeImage = App.getPrefs().getBoolean(Prefs.pk_thumbnails_crop_frame_is_whole_image,
+                false);
 
         // Get the output file spec, and make sure it does not already exist.
         File cropped = getCroppedTempCoverFile();

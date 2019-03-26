@@ -32,7 +32,6 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 
@@ -43,8 +42,8 @@ public class LegacyTask
     private static final int TEXT_FIELD_2 = 2;
     private static final long serialVersionUID = -8686257363994080502L;
 
-    public LegacyTask() {
-        super(BookCatalogueApp.getResString(R.string.gr_tq_legacy_task));
+    public LegacyTask(@NonNull final Context context) {
+        super(context.getString(R.string.gr_tq_legacy_task));
     }
 
     @Override

@@ -24,7 +24,11 @@ import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -35,13 +39,8 @@ import com.eleybourn.bookcatalogue.backup.xml.XmlImporter;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.SerializationUtils.DeserializationException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
 
 /**
  * Basic implementation of format-agnostic BackupReader methods using
@@ -52,6 +51,8 @@ import java.util.Date;
 public abstract class BackupReaderAbstract
         implements BackupReader {
 
+    @NonNull
+    private final Context mContext;
     @NonNull
     private final DBA mDb;
     /** progress message. */
@@ -68,13 +69,13 @@ public abstract class BackupReaderAbstract
     /**
      * Constructor.
      */
-    protected BackupReaderAbstract() {
-        Context context = BookCatalogueApp.getAppContext();
-        mDb = new DBA(context);
+    protected BackupReaderAbstract(@NonNull final Context context) {
+        mContext = context;
+        mDb = new DBA(mContext);
 
-        processPreferences = context.getString(R.string.progress_msg_process_preferences);
-        processCover = context.getString(R.string.progress_msg_process_cover);
-        processBooklistStyles = context.getString(R.string.progress_msg_process_booklist_style);
+        processPreferences = mContext.getResources().getString(R.string.progress_msg_process_preferences);
+        processCover = mContext.getString(R.string.progress_msg_process_cover);
+        processBooklistStyles = mContext.getString(R.string.progress_msg_process_booklist_style);
     }
 
     /**
@@ -116,7 +117,7 @@ public abstract class BackupReaderAbstract
 
             // process each entry based on type, unless we are cancelled, as in Nikita
             while (entity != null && !mProgressListener.isCancelled()) {
-                if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
                     Logger.info(this, "restore", "entity=" + entity.getName());
                 }
                 switch (entity.getType()) {
@@ -140,10 +141,10 @@ public abstract class BackupReaderAbstract
                         // current format
                         if ((mSettings.what & ImportSettings.PREFERENCES) != 0) {
                             mProgressListener.onProgressStep(processPreferences, 1);
-                            try (XmlImporter importer = new XmlImporter()) {
+                            try (XmlImporter importer = new XmlImporter(mContext)) {
 
                                 importer.doPreferences(entity, new ForwardingListener(),
-                                                       Prefs.getPrefs());
+                                                       App.getPrefs());
                             }
                             entitiesRead |= ImportSettings.PREFERENCES;
                         }
@@ -154,7 +155,7 @@ public abstract class BackupReaderAbstract
                         // current format
                         if ((mSettings.what & ImportSettings.BOOK_LIST_STYLES) != 0) {
                             mProgressListener.onProgressStep(processBooklistStyles, 1);
-                            try (XmlImporter importer = new XmlImporter()) {
+                            try (XmlImporter importer = new XmlImporter(mContext)) {
                                 importer.doEntity(entity, new ForwardingListener());
                             }
                             entitiesRead |= ImportSettings.BOOK_LIST_STYLES;
@@ -171,10 +172,10 @@ public abstract class BackupReaderAbstract
                         if ((mSettings.what & ImportSettings.PREFERENCES) != 0) {
                             mProgressListener.onProgressStep(processPreferences, 1);
                             // read them into the 'old' prefs. Migration is done at a later stage.
-                            try (XmlImporter importer = new XmlImporter()) {
+                            try (XmlImporter importer = new XmlImporter(mContext)) {
                                 importer.doPreferences(entity, new ForwardingListener(),
-                                                       Prefs.getPrefs(
-                                                               Prefs.PREF_LEGACY_BOOK_CATALOGUE));
+                                                       App.getPrefs(
+                                                               App.PREF_LEGACY_BOOK_CATALOGUE));
                             }
                             entitiesRead |= ImportSettings.PREFERENCES;
                         }
@@ -205,8 +206,8 @@ public abstract class BackupReaderAbstract
             // report what we actually imported
             mSettings.what = entitiesRead;
 
-            if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                Logger.info(this, "restore","imported covers#=" + coverCount);
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
+                Logger.info(this, "restore", "imported covers#=" + coverCount);
             }
             try {
                 close();
@@ -249,7 +250,7 @@ public abstract class BackupReaderAbstract
         };
 
         // Now do the import
-        try (CsvImporter importer = new CsvImporter(mSettings)) {
+        try (CsvImporter importer = new CsvImporter(mContext, mSettings)) {
             importer.doImport(entity.getStream(), null, importListener);
         }
     }
@@ -298,7 +299,7 @@ public abstract class BackupReaderAbstract
         try {
             // deserialization will take care of writing the v200+ SharedPreference file
             style = entity.getSerializable();
-            if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
                 Logger.info(this, "restorePreV200Style", style.toString());
             }
         } catch (DeserializationException e) {

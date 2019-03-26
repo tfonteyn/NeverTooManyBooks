@@ -10,7 +10,8 @@ import java.io.File;
 import java.util.Date;
 import java.util.Objects;
 
-public class ExportSettings implements Parcelable {
+public class ExportSettings
+        implements Parcelable {
 
     /*
      * options as to *what* should be exported
@@ -36,7 +37,7 @@ public class ExportSettings implements Parcelable {
     /**
      * Options to indicate new books or books with more recent update_date
      * fields should be exported.
-     *
+     * <p>
      * 0: all books
      * 1: books added/updated since {@link #dateFrom}. If latter is null, then since last backup.
      */
@@ -51,7 +52,17 @@ public class ExportSettings implements Parcelable {
      * all defined flags.
      */
     public static final int MASK = ALL | EXPORT_SINCE;
+    public static final Creator<ExportSettings> CREATOR = new Creator<ExportSettings>() {
+        @Override
+        public ExportSettings createFromParcel(@NonNull final Parcel source) {
+            return new ExportSettings(source);
+        }
 
+        @Override
+        public ExportSettings[] newArray(final int size) {
+            return new ExportSettings[size];
+        }
+    };
     /** file to export to. */
     @Nullable
     public File file;
@@ -59,7 +70,6 @@ public class ExportSettings implements Parcelable {
      * bitmask for the options.
      */
     public int what = NOTHING;
-
     /**
      * EXPORT_SINCE.
      */
@@ -117,18 +127,6 @@ public class ExportSettings implements Parcelable {
         return 0;
     }
 
-    public static final Creator<ExportSettings> CREATOR = new Creator<ExportSettings>() {
-        @Override
-        public ExportSettings createFromParcel(@NonNull final Parcel source) {
-            return new ExportSettings(source);
-        }
-
-        @Override
-        public ExportSettings[] newArray(final int size) {
-            return new ExportSettings[size];
-        }
-    };
-
     public void validate() {
         // if we want 'since', we *must* have a valid dateFrom
         if ((what & ExportSettings.EXPORT_SINCE) != 0) {
@@ -142,10 +140,10 @@ public class ExportSettings implements Parcelable {
     @Override
     @NonNull
     public String toString() {
-        return "ExportSettings{" +
-                "file=" + file +
-                ", what=0%" + Integer.toBinaryString(what) +
-                ", dateFrom=" + dateFrom +
-                '}';
+        return "ExportSettings{"
+                + "file=`" + file + '`'
+                + ", what=0%" + Integer.toBinaryString(what)
+                + ", dateFrom=" + dateFrom
+                + '}';
     }
 }

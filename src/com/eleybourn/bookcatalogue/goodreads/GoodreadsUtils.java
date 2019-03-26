@@ -25,6 +25,9 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
+/**
+ * TOMF: reverse logic on tasks/progress-fragment
+ */
 public final class GoodreadsUtils {
 
     /** file suffix for cover files. */
@@ -134,10 +137,11 @@ public final class GoodreadsUtils {
                 //noinspection unchecked
                 mFragment = (ProgressDialogFragment)
                         activity.getSupportFragmentManager()
-                               .findFragmentByTag(TAG_GOODREADS_SEND_BOOKS);
+                                .findFragmentByTag(TAG_GOODREADS_SEND_BOOKS);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
+                    mFragment.setTask(R.id.TASK_ID_GR_SEND_BOOKS, this);
                     mFragment.show(activity.getSupportFragmentManager(), TAG_GOODREADS_SEND_BOOKS);
                 }
             }
@@ -230,7 +234,7 @@ public final class GoodreadsUtils {
     /**
      * Start a background task that exports all books to goodreads.
      *
-     * @param activity     the caller context
+     * @param activity    the caller context
      * @param updatesOnly <tt>true</tt> if you only want to send updated book,
      *                    <tt>false</tt> to send ALL books.
      */
@@ -251,10 +255,11 @@ public final class GoodreadsUtils {
                 //noinspection unchecked
                 mFragment = (ProgressDialogFragment)
                         activity.getSupportFragmentManager()
-                               .findFragmentByTag(TAG_GOODREADS_SEND_ALL_BOOKS);
+                                .findFragmentByTag(TAG_GOODREADS_SEND_ALL_BOOKS);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
+                    mFragment.setTask(R.id.TASK_ID_GR_SEND_ALL_BOOKS, this);
                     mFragment.show(activity.getSupportFragmentManager(),
                                    TAG_GOODREADS_SEND_ALL_BOOKS);
                 }
@@ -270,9 +275,10 @@ public final class GoodreadsUtils {
                         if (isCancelled()) {
                             return R.string.progress_end_cancelled;
                         }
-                        QueueManager.getQueueManager()
-                                    .enqueueTask(new SendAllBooksTask(updatesOnly),
-                                                 QueueManager.Q_MAIN);
+                        //noinspection ConstantConditions
+                        QueueManager.getQueueManager().enqueueTask(
+                                new SendAllBooksTask(mFragment.getContextWithHorribleClutch(), updatesOnly),
+                                QueueManager.Q_MAIN);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
                     return msg;
@@ -300,7 +306,7 @@ public final class GoodreadsUtils {
      * Start a background task that exports a single books to goodreads.
      *
      * @param activity the caller context
-     * @param bookId  the book to send
+     * @param bookId   the book to send
      */
     public static void sendOneBook(@NonNull final FragmentActivity activity,
                                    final long bookId) {
@@ -319,10 +325,11 @@ public final class GoodreadsUtils {
                 //noinspection unchecked
                 mFragment = (ProgressDialogFragment)
                         activity.getSupportFragmentManager()
-                               .findFragmentByTag(TAG_GOODREADS_SEND_ONE_BOOK);
+                                .findFragmentByTag(TAG_GOODREADS_SEND_ONE_BOOK);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
+                    mFragment.setTask(R.id.TASK_ID_GR_SEND_ONE_BOOK, this);
                     mFragment.show(activity.getSupportFragmentManager(),
                                    TAG_GOODREADS_SEND_ONE_BOOK);
                 }
@@ -338,7 +345,9 @@ public final class GoodreadsUtils {
                         return R.string.progress_end_cancelled;
                     }
                     if (msg == 0) {
-                        QueueManager.getQueueManager().enqueueTask(new SendOneBookTask(bookId),
+                        //noinspection ConstantConditions
+                        QueueManager.getQueueManager()
+                                    .enqueueTask(new SendOneBookTask(mFragment.getContextWithHorribleClutch(),bookId),
                                                                    QueueManager.Q_SMALL_JOBS);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
@@ -370,7 +379,9 @@ public final class GoodreadsUtils {
                                  final boolean isSync) {
 
         new AsyncTask<Void, Object, Integer>() {
+
             ProgressDialogFragment<Integer> mFragment;
+
             /**
              * {@link #doInBackground} should catch exceptions, and set this field.
              * {@link #onPostExecute} can then check it.
@@ -383,10 +394,11 @@ public final class GoodreadsUtils {
                 //noinspection unchecked
                 mFragment = (ProgressDialogFragment)
                         activity.getSupportFragmentManager()
-                               .findFragmentByTag(TAG_GOODREADS_IMPORT_ALL);
+                                .findFragmentByTag(TAG_GOODREADS_IMPORT_ALL);
                 if (mFragment == null) {
                     mFragment = ProgressDialogFragment.newInstance(
                             R.string.progress_msg_connecting_to_web_site, true, 0);
+                    mFragment.setTask(R.id.TASK_ID_GR_IMPORT_ALL, this);
                     mFragment.show(activity.getSupportFragmentManager(), TAG_GOODREADS_IMPORT_ALL);
                 }
             }
@@ -402,8 +414,10 @@ public final class GoodreadsUtils {
                             return R.string.progress_end_cancelled;
                         }
 
-                        QueueManager.getQueueManager().enqueueTask(new ImportAllTask(isSync),
-                                                                   QueueManager.Q_MAIN);
+                        //noinspection ConstantConditions
+                        QueueManager.getQueueManager()
+                                    .enqueueTask(new ImportAllTask(mFragment.getContextWithHorribleClutch(), isSync),
+                                                 QueueManager.Q_MAIN);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
                     return msg;

@@ -6,7 +6,8 @@
     android:id="@id/BLB_ROW_DETAILS"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/border">
+    android:layout_marginTop="@dimen/border"
+    >
 
     <ImageView
         android:id="@+id/coverImage"
@@ -15,7 +16,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
-        tools:src="@drawable/ic_image" />
+        tools:src="@drawable/ic_image"
+        />
 
     <TextView
         android:id="@+id/series_num_long"
@@ -24,7 +26,8 @@
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="series_num_long" />
+        tools:text="series_num_long"
+        />
 
     <TextView
         android:id="@+id/series_num"
@@ -35,7 +38,8 @@
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/series_num_long"
         tools:ignore="SelectableText"
-        tools:text="###" />
+        tools:text="###"
+        />
 
     <TextView
         android:id="@+id/title"
@@ -46,7 +50,8 @@
         app:layout_constraintStart_toEndOf="@id/series_num"
         app:layout_constraintTop_toBottomOf="@id/series_num_long"
         tools:ignore="SelectableText"
-        tools:text="eoijoeij uo oiiu ouyuoyoiy oi uoiyoioiu oknlk hyugiuf tf iugiygyf tfytf yg" />
+        tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        />
 
     <TextView
         android:id="@+id/author"
@@ -55,7 +60,8 @@
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_author" />
+        tools:text="@string/lbl_author"
+        />
 
     <TextView
         android:id="@+id/publisher"
@@ -64,7 +70,8 @@
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_publisher" />
+        tools:text="@string/lbl_publisher"
+        />
 
     <TextView
         android:id="@+id/format"
@@ -73,7 +80,8 @@
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/publisher"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_format" />
+        tools:text="@string/lbl_format"
+        />
 
     <TextView
         android:id="@+id/shelves"
@@ -82,7 +90,8 @@
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/format"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_bookshelves" />
+        tools:text="@string/lbl_bookshelves"
+        />
 
     <TextView
         android:id="@+id/location"
@@ -91,7 +100,8 @@
         app:layout_constraintStart_toEndOf="@id/coverImage"
         app:layout_constraintTop_toBottomOf="@id/shelves"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_location" />
+        tools:text="@string/lbl_location"
+        />
 
     <CheckedTextView
         android:id="@+id/read"
@@ -100,5 +110,6 @@
         app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

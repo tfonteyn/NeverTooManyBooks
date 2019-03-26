@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/TLV_ROW"
-    style="@style/row_in_ListView">
+    style="@style/row_in_ListView"
+    >
 
     <CheckedTextView
         android:id="@id/TLV_ROW_CHECKABLE"
@@ -12,36 +13,41 @@
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:checked="true" />
+        tools:checked="true"
+        />
 
     <LinearLayout
         android:id="@id/TLV_ROW_DETAILS"
         style="@style/tlv_details_row"
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
         app:layout_constraintStart_toEndOf="@id/TLV_ROW_CHECKABLE"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        >
 
         <TextView
             android:id="@+id/name"
             style="@style/tlv_details_row_major"
+            tools:ignore="SelectableText"
             tools:text="style name"
-            tools:ignore="SelectableText" />
+            />
 
         <TextView
             android:id="@+id/info"
             style="@style/tlv_details_row_minor"
             tools:ignore="SelectableText"
-            tools:text="info" />
+            tools:text="info"
+            />
 
     </LinearLayout>
 
     <ImageView
         android:id="@id/TLV_ROW_GRABBER"
         style="@style/tlv_dragHandle"
-        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_drag_handle"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

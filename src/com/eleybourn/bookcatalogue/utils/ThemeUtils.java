@@ -1,7 +1,11 @@
 package com.eleybourn.bookcatalogue.utils;
 
+import android.app.Activity;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.StyleRes;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 
 /**
@@ -20,14 +24,6 @@ public final class ThemeUtils {
             R.style.AppTheme,
             R.style.AppTheme_Light,
             };
-    private static final int[] DIALOG_THEMES = {
-            R.style.AppTheme_Dialog,
-            R.style.AppTheme_Light_Dialog,
-            };
-    private static final int[] DIALOG_ALERT_THEMES = {
-            R.style.AppTheme_Dialog_Alert,
-            R.style.AppTheme_Dialog_Alert_Light,
-            };
 
     /** Cache the User-specified theme currently in use. */
     private static int mCurrentTheme;
@@ -37,7 +33,7 @@ public final class ThemeUtils {
 
     /* static constructor. */
     static {
-        loadPreferred();
+        mCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
         mLastTheme = mCurrentTheme;
     }
 
@@ -49,26 +45,18 @@ public final class ThemeUtils {
         return APP_THEMES[mCurrentTheme];
     }
 
-    @StyleRes
-    public static int getDialogThemeResId() {
-        return DIALOG_THEMES[mCurrentTheme];
-    }
-
-    @SuppressWarnings("unused")
-    @StyleRes
-    public static int getDialogAlertThemeResId() {
-        return DIALOG_ALERT_THEMES[mCurrentTheme];
-    }
-
     /**
      * Load the Theme setting from the users SharedPreference.
      *
      * @return <tt>true</tt> if the theme was changed
      */
-    public static boolean loadPreferred() {
-        mCurrentTheme = Prefs.getListPreference(R.string.pk_ui_theme, DEFAULT_THEME);
+    public static boolean applyPreferred(@NonNull final Activity activity) {
+        mCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+
         if (mCurrentTheme != mLastTheme) {
             mLastTheme = mCurrentTheme;
+
+            activity.setTheme(APP_THEMES[mCurrentTheme]);
             return true;
         }
         return false;

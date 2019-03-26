@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import java.io.File;
 import java.io.IOException;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupContainer;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupWriter;
@@ -21,12 +22,12 @@ import com.eleybourn.bookcatalogue.backup.ui.BackupFileDetails;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 public class BackupTask
         extends AsyncTask<Void, Object, ExportSettings> {
 
+    /** Fragment manager tag. */
     private static final String TAG = BackupTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_SAVE_TO_ARCHIVE;
@@ -109,7 +110,8 @@ public class BackupTask
     @WorkerThread
     protected ExportSettings doInBackground(final Void... params) {
         BackupContainer bkp = new TarBackupContainer(mTmpFile);
-        try (BackupWriter wrt = bkp.newWriter()) {
+        //noinspection ConstantConditions
+        try (BackupWriter wrt = bkp.newWriter(mFragment.getContextWithHorribleClutch())) {
             // go go go...
             wrt.backup(mSettings, new BackupWriter.BackupWriterListener() {
 
@@ -142,7 +144,7 @@ public class BackupTask
             //noinspection ConstantConditions
             StorageUtils.renameFile(mTmpFile, mSettings.file);
 
-            SharedPreferences.Editor ed = Prefs.getPrefs().edit();
+            SharedPreferences.Editor ed = App.getPrefs().edit();
             // if the backup was a full one (not a 'since') remember that.
             if ((mSettings.what & ExportSettings.ALL) != 0) {
                 ed.putString(BackupManager.PREF_LAST_BACKUP_DATE, mBackupDate);

@@ -51,14 +51,8 @@ import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.OnClickListener;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.SimpleDialogFileItem;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.SimpleDialogItem;
-import com.eleybourn.bookcatalogue.goodreads.GoodreadsRegisterActivity;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
-import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
-import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingAdminActivity;
-import com.eleybourn.bookcatalogue.settings.FieldVisibilitySettingsFragment;
-import com.eleybourn.bookcatalogue.settings.GlobalSettingsFragment;
-import com.eleybourn.bookcatalogue.settings.SettingsActivity;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
@@ -96,121 +90,6 @@ public class AdminActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.menu_administration_long);
 
-        /*
-         * This function builds the Administration page in 4 sections.
-         * 1. General management functions
-         * 2. Import / Export
-         * 3. Credentials
-         * 4. Advanced Options
-         */
-
-        /* Manage Field Visibility */
-        View v = findViewById(R.id.lbl_field_visibility);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this, SettingsActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, FieldVisibilitySettingsFragment.TAG);
-                startActivity(intent);
-            }
-        });
-
-
-        /* Preferences */
-        v = findViewById(R.id.lbl_preferences);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this, SettingsActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, GlobalSettingsFragment.TAG);
-                startActivity(intent);
-            }
-        });
-
-
-        setupImportExport();
-
-
-        /* Automatically Update Fields from internet*/
-        v = findViewById(R.id.lbl_update_internet);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this,
-                                           UpdateFieldsFromInternetActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
-        setupGoodreadsImportExport();
-
-        setupCredentials();
-
-
-        /* Search sites */
-        v = findViewById(R.id.search_sites);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this,
-                                           SearchAdminActivity.class);
-                startActivityForResult(intent, REQ_ADMIN_SEARCH_SETTINGS);
-            }
-        });
-
-
-        /* Start the activity that shows the basic details of GoodReads tasks. */
-        v = findViewById(R.id.lbl_background_tasks);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this,
-                                           TaskQueueListActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
-        /* Reset Hints */
-        v = findViewById(R.id.lbl_reset_hints);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                HintManager.resetHints();
-                //Snackbar.make(v, R.string.hints_have_been_reset, Snackbar.LENGTH_LONG).show();
-                UserMessage.showUserMessage(AdminActivity.this,
-                                            R.string.hints_have_been_reset);
-            }
-        });
-
-
-        /* Erase cover cache */
-        v = findViewById(R.id.lbl_erase_cover_cache);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
-                    coversDBAdapter.deleteAll();
-                }
-            }
-        });
-
-
-        /* Copy database for tech support */
-        v = findViewById(R.id.lbl_copy_database);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                StorageUtils.exportDatabaseFiles(AdminActivity.this);
-                //Snackbar.make(v, R.string.backup_success, Snackbar.LENGTH_LONG).show();
-                UserMessage.showUserMessage(AdminActivity.this,
-                                            R.string.progress_end_backup_success);
-            }
-        });
-    }
-
-    private void setupImportExport() {
         View v;
 
         // Export (backup) to Archive
@@ -221,7 +100,7 @@ public class AdminActivity
                 Intent intent = new Intent(AdminActivity.this,
                                            BackupAndRestoreActivity.class)
                         .putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                                  BackupAndRestoreActivity.BVAL_MODE_SAVE);
+                                  BackupAndRestoreActivity.MODE_SAVE);
                 startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
             }
         });
@@ -235,7 +114,7 @@ public class AdminActivity
                 Intent intent = new Intent(AdminActivity.this,
                                            BackupAndRestoreActivity.class)
                         .putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                                  BackupAndRestoreActivity.BVAL_MODE_OPEN);
+                                  BackupAndRestoreActivity.MODE_OPEN);
                 startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
             }
         });
@@ -260,10 +139,20 @@ public class AdminActivity
                 confirmToImportFromCSV();
             }
         });
-    }
 
-    private void setupGoodreadsImportExport() {
-        View v;
+
+        /* Automatically Update Fields from internet*/
+        v = findViewById(R.id.lbl_update_internet);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                Intent intent = new Intent(AdminActivity.this,
+                                           UpdateFieldsFromInternetActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
         // Goodreads Synchronize
         v = findViewById(R.id.lbl_sync_with_goodreads);
         v.setOnClickListener(new View.OnClickListener() {
@@ -292,30 +181,49 @@ public class AdminActivity
                 GoodreadsUtils.sendBooks(AdminActivity.this);
             }
         });
-    }
 
-    private void setupCredentials() {
-        View v;
-        /* Goodreads credentials */
-        v = findViewById(R.id.goodreads_auth);
+        /* Start the activity that shows the basic details of GoodReads tasks. */
+        v = findViewById(R.id.lbl_background_tasks);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
                 Intent intent = new Intent(AdminActivity.this,
-                                           GoodreadsRegisterActivity.class);
+                                           TaskQueueListActivity.class);
                 startActivity(intent);
             }
         });
 
 
-        /* LibraryThing credentials */
-        v = findViewById(R.id.librarything_auth);
+        /* Reset Hints */
+        v = findViewById(R.id.lbl_reset_hints);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this,
-                                           LibraryThingAdminActivity.class);
-                startActivity(intent);
+                HintManager.resetHints();
+                UserMessage.showUserMessage(v, R.string.hints_have_been_reset);
+            }
+        });
+
+
+        /* Erase cover cache */
+        v = findViewById(R.id.lbl_erase_cover_cache);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
+                    coversDBAdapter.deleteAll();
+                }
+            }
+        });
+
+
+        /* Copy database for tech support */
+        v = findViewById(R.id.lbl_copy_database);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull final View v) {
+                StorageUtils.exportDatabaseFiles(AdminActivity.this);
+                UserMessage.showUserMessage(v, R.string.progress_end_backup_success);
             }
         });
     }
@@ -434,7 +342,7 @@ public class AdminActivity
      * @param result  not used
      */
     @Override
-    public void onTaskFinished(final Integer taskId,
+    public void onTaskFinished(final int taskId,
                                final boolean success,
                                @Nullable final Object result) {
         switch (taskId) {

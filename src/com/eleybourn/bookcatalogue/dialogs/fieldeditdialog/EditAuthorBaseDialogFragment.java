@@ -83,7 +83,7 @@ public abstract class EditAuthorBaseDialogFragment
             public void onClick(@NonNull final View v) {
                 mFamilyName = mFamilyNameView.getText().toString().trim();
                 if (mFamilyName.isEmpty()) {
-                    UserMessage.showUserMessage(mActivity, R.string.warning_required_name);
+                    UserMessage.showUserMessage(mFamilyNameView, R.string.warning_required_name);
                     return;
                 }
 

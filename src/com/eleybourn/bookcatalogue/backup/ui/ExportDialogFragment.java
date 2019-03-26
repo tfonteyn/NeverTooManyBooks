@@ -18,8 +18,8 @@ import androidx.fragment.app.FragmentActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
+import com.eleybourn.bookcatalogue.debug.MustImplementException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.RTE;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 public class ExportDialogFragment
@@ -53,8 +53,8 @@ public class ExportDialogFragment
     public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
         if (!(context instanceof OnExportTypeSelectionDialogResultsListener)) {
-            throw new RTE.MustImplementException(context,
-                                                 OnExportTypeSelectionDialogResultsListener.class);
+            throw new MustImplementException(context,
+                                             OnExportTypeSelectionDialogResultsListener.class);
         }
     }
 
@@ -128,10 +128,9 @@ public class ExportDialogFragment
             EditText dateSinceView = dialog.findViewById(R.id.txtDate);
             try {
                 mExportSettings.what |= ExportSettings.EXPORT_SINCE;
-                mExportSettings.dateFrom = DateUtils.parseDate(
-                        dateSinceView.getText().toString().trim());
+                mExportSettings.dateFrom =
+                        DateUtils.parseDate(dateSinceView.getText().toString().trim());
             } catch (RuntimeException e) {
-                //Snackbar.make(v, R.string.no_date, Snackbar.LENGTH_LONG).show();
                 UserMessage.showUserMessage(mActivity, R.string.warning_date_not_set);
                 mExportSettings.what = ExportSettings.NOTHING;
             }

@@ -49,8 +49,7 @@ final class MenuHandler {
      */
     static void addCreateBookSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_BOOK_ADD, R.id.SUBMENU_BOOK_ADD,
-                                          Menu.NONE,
-                                          BookCatalogueApp.getResString(R.string.menu_add_book));
+                                          0, R.string.menu_add_book);
 
         subMenu.setIcon(R.drawable.ic_add)
                .getItem()
@@ -117,28 +116,33 @@ final class MenuHandler {
      * Normally called from your {@link Fragment#onCreateOptionsMenu}.
      *
      * @param menu Root menu
+     *
+     * @return the submenu for further manipulation if needed.
      */
-    static void addAmazonSearchSubMenu(@NonNull final Menu menu) {
+    static SubMenu addAmazonSearchSubMenu(@NonNull final Menu menu) {
         SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_AMAZON_SEARCH, R.id.SUBMENU_AMAZON_SEARCH,
-                                          Menu.NONE,
-                                          BookCatalogueApp.getResString(R.string.amazon_ellipsis));
+                                          0, R.string.amazon_ellipsis);
 
-        subMenu.setIcon(R.drawable.ic_search);
+        subMenu.setIcon(R.drawable.ic_search)
+               .setHeaderIcon(R.drawable.ic_search);
+
         // we use the group to make the entry visible/invisible, hence it's == the actual id.
-        subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, Menu.NONE,
-                    R.string.menu_amazon_books_by_author)
-               .setIcon(R.drawable.ic_search);
+        subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, 0,
+                    R.string.menu_amazon_books_by_author);
         subMenu.add(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
-                    R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, Menu.NONE,
-                    R.string.menu_amazon_books_by_author_in_series)
-               .setIcon(R.drawable.ic_search);
-        subMenu.add(R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.id.MENU_AMAZON_BOOKS_IN_SERIES, Menu.NONE,
-                    R.string.menu_amazon_books_in_series)
-               .setIcon(R.drawable.ic_search);
+                    R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES, 0,
+                    R.string.menu_amazon_books_by_author_in_series);
+        subMenu.add(R.id.MENU_AMAZON_BOOKS_IN_SERIES, R.id.MENU_AMAZON_BOOKS_IN_SERIES, 0,
+                    R.string.menu_amazon_books_in_series);
+
+        return subMenu;
     }
 
     /**
-     * Set visibility of the Amazon menus.
+     * Set visibility of the Amazon sub menu itself.
+     * <p>
+     * After the user selects the submenu, individual menu items are made visible/hidden in:
+     * {@link #handleAmazonSearchSubMenu}.
      * <p>
      * Normally called from your {@link Fragment#onPrepareOptionsMenu(Menu)}.
      *
@@ -147,8 +151,8 @@ final class MenuHandler {
      */
     static void prepareAmazonSearchSubMenu(final Menu menu,
                                            final Book book) {
-        boolean hasAuthor = !book.getList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
-        boolean hasSeries = !book.getList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
+        boolean hasAuthor = !book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
+        boolean hasSeries = !book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
         menu.setGroupVisible(R.id.SUBMENU_AMAZON_SEARCH, hasAuthor || hasSeries);
     }
 
@@ -166,9 +170,12 @@ final class MenuHandler {
                                              @NonNull final Book book) {
         switch (menuItem.getItemId()) {
             case R.id.SUBMENU_AMAZON_SEARCH:
-                Menu menu = menuItem.getSubMenu();
-                boolean hasAuthor = !book.getList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
-                boolean hasSeries = !book.getList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
+                // after the user selects the submenu, we make individual items visible/hidden.
+                SubMenu menu = menuItem.getSubMenu();
+                boolean hasAuthor = !book.getParcelableArrayList(
+                        UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
+                boolean hasSeries = !book.getParcelableArrayList(
+                        UniqueId.BKEY_SERIES_ARRAY).isEmpty();
 
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR, hasAuthor);
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,

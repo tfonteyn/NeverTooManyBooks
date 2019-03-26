@@ -3,26 +3,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar" />
+        style="@style/toolbar"
+        />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/border"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <TextView
                 style="@style/txt_blurb_medium"
-                android:text="@string/gr_auth_blurb_part1" />
+                android:text="@string/gr_auth_blurb_part1"
+                />
 
             <TextView
                 android:id="@+id/goodreads_url"
@@ -30,11 +35,13 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/border_double"
                 tools:ignore="SelectableText"
-                tools:text="Goodreads url here" />
+                tools:text="Goodreads url here"
+                />
 
             <TextView
                 style="@style/txt_blurb_medium"
-                android:text="@string/gr_auth_blurb_part2" />
+                android:text="@string/gr_auth_blurb_part2"
+                />
 
             <Button
                 android:id="@+id/authorize"
@@ -42,16 +49,19 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/border_double"
-                android:text="@string/gr_title_auth_access" />
+                android:text="@string/gr_title_auth_access"
+                />
 
             <TextView
                 style="@style/txt_blurb_medium"
-                android:text="@string/gr_auth_blurb_part3" />
+                android:text="@string/gr_auth_blurb_part3"
+                />
 
             <TextView
                 android:id="@+id/forget_blurb"
                 style="@style/txt_blurb_medium"
-                android:text="@string/gr_auth_blurb_part4" />
+                android:text="@string/gr_auth_blurb_part4"
+                />
 
             <Button
                 android:id="@+id/btn_forget_credentials"
@@ -59,7 +69,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/border_double"
-                android:text="@string/gr_btn_forget_credentials" />
+                android:text="@string/gr_btn_forget_credentials"
+                />
 
         </LinearLayout>
 

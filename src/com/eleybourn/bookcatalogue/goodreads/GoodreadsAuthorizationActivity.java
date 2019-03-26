@@ -65,7 +65,7 @@ public class GoodreadsAuthorizationActivity
 
             // Handle the auth response by passing it off to a background task to check.
             GoodreadsAuthorizationResultCheckTask task =
-                    new GoodreadsAuthorizationResultCheckTask();
+                    new GoodreadsAuthorizationResultCheckTask(this);
             QueueManager.getQueueManager().enqueueTask(task, QueueManager.Q_SMALL_JOBS);
         }
 

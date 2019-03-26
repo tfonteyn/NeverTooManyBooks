@@ -42,6 +42,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.dialogs.AlertDialogListener;
@@ -71,9 +72,11 @@ public class EditBookFragment
     public static final String REQUEST_BKEY_TAB = "tab";
     public static final int TAB_EDIT = 0;
     @SuppressWarnings("WeakerAccess")
-    public static final int TAB_EDIT_NOTES = 1;
+    public static final int TAB_EDIT_PUBLICATION = 1;
     @SuppressWarnings("WeakerAccess")
-    public static final int TAB_EDIT_ANTHOLOGY = 2;
+    public static final int TAB_EDIT_NOTES = 2;
+    @SuppressWarnings("WeakerAccess")
+    public static final int TAB_EDIT_ANTHOLOGY = 3;
 
     /**
      * The one and only book we're editing.
@@ -88,8 +91,8 @@ public class EditBookFragment
     /** cache our activity to avoid multiple requireActivity and casting. */
     private EditBookActivity mActivity;
 
-    /** The tabs. */
-    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
+    private ViewPagerAdapter mPagerAdapter;
 
     /* ------------------------------------------------------------------------------------------ */
 
@@ -113,7 +116,6 @@ public class EditBookFragment
     }
 
     /**
-     *
      * @return <tt>true</tt> if our data was changed.
      */
     public boolean isDirty() {
@@ -121,7 +123,6 @@ public class EditBookFragment
     }
 
     /**
-     *
      * @param isDirty set to <tt>true</tt> if our data was changed.
      */
     public void setDirty(final boolean isDirty) {
@@ -155,6 +156,7 @@ public class EditBookFragment
         int showTab = TAB_EDIT;
         switch (tabWanted) {
             case TAB_EDIT:
+            case TAB_EDIT_PUBLICATION:
             case TAB_EDIT_NOTES:
                 showTab = tabWanted;
                 break;
@@ -170,24 +172,25 @@ public class EditBookFragment
         }
 
         FragmentManager fm = getChildFragmentManager();
-        ViewPagerAdapter adapter = new ViewPagerAdapter(fm);
+        mPagerAdapter = new ViewPagerAdapter(fm);
         // add them in order! i.e. in the order the TAB_* constants are defined.
-        adapter.add(new FragmentHolder(fm, EditBookFieldsFragment.TAG,
-                                       getString(R.string.tab_lbl_details)));
-        adapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
-                                       getString(R.string.tab_lbl_notes)));
+        mPagerAdapter.add(new FragmentHolder(fm, EditBookFieldsFragment.TAG,
+                                             getString(R.string.tab_lbl_details)));
+        mPagerAdapter.add(new FragmentHolder(fm, EditBookPublicationFragment.TAG,
+                                             getString(R.string.lbl_publication)));
+        mPagerAdapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
+                                             getString(R.string.tab_lbl_notes)));
         if (Fields.isVisible(UniqueId.KEY_TOC_BITMASK)) {
-            adapter.add(new FragmentHolder(fm, EditBookTOCFragment.TAG,
-                                           getString(R.string.tab_lbl_content)));
+            mPagerAdapter.add(new FragmentHolder(fm, EditBookTOCFragment.TAG,
+                                                 getString(R.string.tab_lbl_content)));
         }
 
-        ViewPager viewPager = requireView().findViewById(R.id.tab_fragment);
-        viewPager.setAdapter(adapter);
+        mViewPager = requireView().findViewById(R.id.tab_fragment);
+        mViewPager.setAdapter(mPagerAdapter);
 
-        mTabLayout = requireView().findViewById(R.id.tab_panel);
-        mTabLayout.setupWithViewPager(viewPager);
-
-        viewPager.setCurrentItem(showTab);
+        TabLayout tabLayout = requireView().findViewById(R.id.tab_panel);
+        tabLayout.setupWithViewPager(mViewPager);
+        mViewPager.setCurrentItem(showTab);
 
         boolean isExistingBook = getBook().getId() > 0;
         Button confirmButton = requireView().findViewById(R.id.confirm);
@@ -226,11 +229,12 @@ public class EditBookFragment
         });
     }
 
-    //</editor-fold>
+//</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment shutdown">
+
 
 //    @Override
 //    @CallSuper
@@ -245,7 +249,7 @@ public class EditBookFragment
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(REQUEST_BKEY_TAB, mTabLayout.getSelectedTabPosition());
+        outState.putInt(REQUEST_BKEY_TAB, mViewPager.getCurrentItem());
     }
 
     //</editor-fold>
@@ -275,24 +279,22 @@ public class EditBookFragment
     private void doSave(@NonNull final AlertDialogListener nextStep) {
         Book book = getBook();
 
-        // ask the currently displayed tab fragment to add it's fields; the others
-        // did when they went in hiding
-        //ENHANCE: alternative method: see SearchAdminActivity. Decide later
-        DataEditor currentChildFragment = (DataEditor)
-                getChildFragmentManager().findFragmentById(R.id.tab_fragment);
-        //noinspection ConstantConditions
-        currentChildFragment.saveFieldsTo(book);
-
+        // ask any page that has not gone into 'onPause' to add it's fields.
+        for (int p = 0; p < mPagerAdapter.getCount(); p++) {
+            Fragment frag = mPagerAdapter.getItem(p);
+            if (frag.isResumed()) {
+                ((DataEditor) frag).saveFieldsTo(book);
+            }
+        }
 
         // Ignore validation failures; but we still validate to get the current values updated.
         book.validate();
-//        if (!book.validate()) {
-//              StandardDialogs.sendTaskUserMessage(this,
-//               book.getValidationExceptionMessage(getResources()));
-//        }
-
+        // if (!book.validate()) {
+        //      StandardDialogs.sendTaskUserMessage(this,
+        //      book.getValidationExceptionMessage(getResources()));
+        // }
         // However, there is some data that we really do require...
-        if (book.getList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
+        if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
             UserMessage.showUserMessage(mActivity, R.string.warning_required_author_long);
             return;
         }
@@ -314,6 +316,11 @@ public class EditBookFragment
         nextStep.onPositiveButton();
     }
 
+    /**
+     * Note that when the user clicks 'cancel' we still put all the fields into the book.
+     * So if they subsequently cancel the cancel in {@link BaseActivity#finishIfClean(boolean)}
+     * we can resume with the latest data.
+     */
     private void doCancel() {
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
@@ -347,6 +354,7 @@ public class EditBookFragment
             mDb.updateBook(book.getId(), book, 0);
         }
     }
+
 
     private static class ViewPagerAdapter
             extends FragmentPagerAdapter {
@@ -389,7 +397,7 @@ public class EditBookFragment
         @NonNull
         final String tag;
         @NonNull
-        String title;
+        final String title;
         @NonNull
         Fragment fragment;
 
@@ -409,6 +417,9 @@ public class EditBookFragment
             if (fragment == null) {
                 if (EditBookFieldsFragment.TAG.equals(tag)) {
                     fragment = new EditBookFieldsFragment();
+
+                } else if (EditBookPublicationFragment.TAG.equals(tag)) {
+                    fragment = new EditBookPublicationFragment();
 
                 } else if (EditBookNotesFragment.TAG.equals(tag)) {
                     fragment = new EditBookNotesFragment();

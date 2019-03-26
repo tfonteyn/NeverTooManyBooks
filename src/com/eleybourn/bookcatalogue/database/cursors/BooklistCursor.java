@@ -26,11 +26,11 @@ import android.database.sqlite.SQLiteQuery;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Closeable;
+
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistSupportProvider;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
-
-import java.io.Closeable;
 
 /**
  * Cursor object that makes the underlying BooklistBuilder available to users of the Cursor, as

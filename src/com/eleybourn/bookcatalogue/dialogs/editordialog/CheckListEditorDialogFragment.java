@@ -35,8 +35,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.BookBaseFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
@@ -55,8 +55,8 @@ public class CheckListEditorDialogFragment<T>
 
     /** Argument. */
     private static final String BKEY_CHECK_LIST = "list";
+
     /** The list of items to display. Object + checkbox. */
-    @Nullable
     private ArrayList<CheckListItem<T>> mList;
 
     /**
@@ -74,7 +74,7 @@ public class CheckListEditorDialogFragment<T>
             @NonNull final String callerTag,
             @NonNull final Fields.Field field,
             @StringRes final int dialogTitleId,
-            @NonNull final BookBaseFragment.CheckListEditorListGetter<T> listGetter) {
+            @NonNull final CheckListEditorListGetter<T> listGetter) {
 
         CheckListEditorDialogFragment<T> frag = new CheckListEditorDialogFragment<>();
         Bundle args = new Bundle();
@@ -96,38 +96,22 @@ public class CheckListEditorDialogFragment<T>
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
+        Objects.requireNonNull(mList);
 
         CheckListEditorDialog editor = new CheckListEditorDialog(requireActivity());
         if (mTitleId != 0) {
             editor.setTitle(mTitleId);
         }
-        if (mList != null) {
-            editor.setList(mList);
-        }
-        return editor;
-    }
+        editor.createContentList();
 
-    /**
-     * Make sure data is saved in onPause() because onSaveInstanceState will have lost the views.
-     */
-    @Override
-    @CallSuper
-    public void onPause() {
-        @SuppressWarnings("unchecked")
-        CheckListEditorDialog dialog = (CheckListEditorDialog) getDialog();
-        if (dialog != null) {
-            mList = dialog.getList();
-        }
-        super.onPause();
+        return editor;
     }
 
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mList != null) {
             outState.putParcelableArrayList(BKEY_CHECK_LIST, mList);
-        }
     }
 
     /**
@@ -148,6 +132,16 @@ public class CheckListEditorDialogFragment<T>
     }
 
     /**
+     * Loads the {@link CheckListEditorDialogFragment} with the *current* list,
+     * e.g. not the state of the list at init time.
+     */
+    public interface CheckListEditorListGetter<T> {
+
+        @NonNull
+        ArrayList<CheckListItem<T>> getList();
+    }
+
+    /**
      * The custom dialog.
      */
     public class CheckListEditorDialog
@@ -156,8 +150,6 @@ public class CheckListEditorDialogFragment<T>
 
         /** body of the dialog. */
         private final ViewGroup mContent;
-        /** the list to display in the content view. */
-        private ArrayList<CheckListItem<T>> mList;
 
         /**
          * Constructor.
@@ -196,22 +188,14 @@ public class CheckListEditorDialogFragment<T>
             );
         }
 
-        /**
-         * @return the current list
-         */
-        @NonNull
-        public ArrayList<CheckListItem<T>> getList() {
-            return mList;
-        }
-
-        /** @param list the current list to use. */
-        public void setList(@NonNull final ArrayList<CheckListItem<T>> list) {
-            mList = list;
+        /** Takes the list of items and create a list of checkboxes in the display. */
+        void createContentList() {
             for (CheckListItem item : mList) {
                 CompoundButton buttonView = new CheckBox(getContext());
-                buttonView.setChecked(item.isSelected());
-                buttonView.setText(item.getLabel());
+                buttonView.setChecked(item.isChecked());
+                buttonView.setText(item.getLabel(getContext()));
                 buttonView.setOnCheckedChangeListener(this);
+                // the button holds the item itself for easy updating.
                 buttonView.setTag(R.id.TAG_DIALOG_ITEM, item);
                 mContent.addView(buttonView);
             }
@@ -227,7 +211,7 @@ public class CheckListEditorDialogFragment<T>
         public void onCheckedChanged(final CompoundButton buttonView,
                                      final boolean isChecked) {
             CheckListItem item = (CheckListItem) buttonView.getTag(R.id.TAG_DIALOG_ITEM);
-            item.setSelected(isChecked);
+            item.setChecked(isChecked);
         }
     }
 }

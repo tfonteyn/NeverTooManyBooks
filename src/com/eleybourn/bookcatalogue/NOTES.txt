@@ -1,5 +1,3 @@
-
-
 TODO: New anthology stuff:
  * to think about:
  * - when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding to new books / wish list?

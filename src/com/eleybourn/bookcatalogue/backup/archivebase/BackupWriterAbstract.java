@@ -19,12 +19,21 @@
  */
 package com.eleybourn.bookcatalogue.backup.archivebase;
 
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -40,15 +49,6 @@ import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
 /**
  * Basic implementation of format-agnostic BackupWriter methods using
  * only a limited set of methods from the base interface.
@@ -59,14 +59,17 @@ public abstract class BackupWriterAbstract
         implements BackupWriter {
 
     @NonNull
+    private final Context mContext;
+    @NonNull
     private final DBA mDb;
 
     private ExportSettings mSettings;
 
     private BackupWriter.BackupWriterListener mProgressListener;
 
-    protected BackupWriterAbstract() {
-        mDb = new DBA(BookCatalogueApp.getAppContext());
+    protected BackupWriterAbstract(@NonNull final Context context) {
+        mContext = context;
+        mDb = new DBA(mContext);
     }
 
     /**
@@ -102,7 +105,7 @@ public abstract class BackupWriterAbstract
                 tempBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
                 tempBookCsvFile.deleteOnExit();
                 try (FileOutputStream output = new FileOutputStream(tempBookCsvFile)) {
-                    CsvExporter exporter = new CsvExporter(mSettings);
+                    CsvExporter exporter = new CsvExporter(mContext, mSettings);
                     infoValues.bookCount = exporter.doBooks(output, new ForwardingListener());
                 }
             }
@@ -152,8 +155,8 @@ public abstract class BackupWriterAbstract
             }
         } finally {
             mSettings.what = entitiesWritten;
-            if (DEBUG_SWITCHES.BACKUP && BuildConfig.DEBUG) {
-                Logger.info(this, "backup","exported covers#=" + infoValues.coverCount);
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
+                Logger.info(this, "backup", "exported covers#=" + infoValues.coverCount);
             }
             try {
                 close();
@@ -171,7 +174,7 @@ public abstract class BackupWriterAbstract
         final BufferedWriter out = new BufferedWriter(
                 new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
 
-        try (XmlExporter xmlExporter = new XmlExporter()) {
+        try (XmlExporter xmlExporter = new XmlExporter(mContext)) {
             xmlExporter.doBackupInfoBlock(out, new ForwardingListener(),
                                           BackupInfo.newInstance(getContainer(), infoValues));
         }
@@ -187,7 +190,7 @@ public abstract class BackupWriterAbstract
         tempXmlBackupFile.deleteOnExit();
 
         try (FileOutputStream output = new FileOutputStream(tempXmlBackupFile)) {
-            XmlExporter exporter = new XmlExporter(mSettings);
+            XmlExporter exporter = new XmlExporter(mContext, mSettings);
             exporter.doExport(output, new ForwardingListener());
             putXmlData(tempXmlBackupFile);
         } finally {
@@ -202,7 +205,7 @@ public abstract class BackupWriterAbstract
         final BufferedWriter out = new BufferedWriter(
                 new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
 
-        try (XmlExporter xmlExporter = new XmlExporter()) {
+        try (XmlExporter xmlExporter = new XmlExporter(mContext)) {
             xmlExporter.doPreferences(out, new ForwardingListener());
         }
         out.close();
@@ -219,7 +222,7 @@ public abstract class BackupWriterAbstract
             final BufferedWriter out = new BufferedWriter(
                     new OutputStreamWriter(data, StandardCharsets.UTF_8), XmlUtils.BUFFER_SIZE);
 
-            try (XmlExporter xmlExporter = new XmlExporter()) {
+            try (XmlExporter xmlExporter = new XmlExporter(mContext)) {
                 xmlExporter.doStyles(out, new ForwardingListener());
             }
             out.close();
@@ -244,8 +247,6 @@ public abstract class BackupWriterAbstract
         int ok = 0;
         int missing = 0;
         int skipped = 0;
-        String fmtNoSkip = BookCatalogueApp.getResString(R.string.progress_msg_covers);
-        String fmtSkip = BookCatalogueApp.getResString(R.string.progress_msg_covers_skip);
 
         try (Cursor cursor = mDb.fetchBookUuidList()) {
             final int uuidCol = cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.name);
@@ -268,16 +269,17 @@ public abstract class BackupWriterAbstract
                 if (!dryRun) {
                     String message;
                     if (skipped == 0) {
-                        message = String.format(fmtNoSkip, ok, missing);
+                        message = mContext.getString(R.string.progress_msg_covers, ok, missing);
                     } else {
-                        message = String.format(fmtSkip, ok, missing, skipped);
+                        message = mContext.getString(R.string.progress_msg_covers_skip, ok, missing,
+                                                     skipped);
                     }
                     mProgressListener.onProgressStep(message, 1);
                 }
             }
         }
         if (!dryRun) {
-            Logger.info(this, "doCovers"," Wrote " + ok + " Images, " + missing + " missing,"
+            Logger.info(this, "doCovers", " Wrote " + ok + " Images, " + missing + " missing,"
                     + " and " + skipped + " skipped");
         }
 

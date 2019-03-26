@@ -24,14 +24,13 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 /**
  * Task to send a single books details to Goodreads.
@@ -54,8 +53,9 @@ public class SendOneBookTask
      *
      * @param bookId Book to send
      */
-    SendOneBookTask(final long bookId) {
-        super(BookCatalogueApp.getResString(R.string.gr_send_book_to_goodreads, bookId));
+    SendOneBookTask(@NonNull final Context context,
+                    final long bookId) {
+        super(context.getString(R.string.gr_send_book_to_goodreads, bookId));
         mBookId = bookId;
     }
 

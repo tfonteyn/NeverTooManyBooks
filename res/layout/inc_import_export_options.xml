@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <View style="@style/div_horizontal" />
 
@@ -13,25 +14,29 @@
         android:checked="false"
         android:text="@string/import_export_xml_tables"
         android:visibility="gone"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        />
 
     <CheckBox
         android:id="@+id/books_check"
         style="@style/row_option_checkable"
         android:checked="true"
-        android:text="@string/book_details" />
+        android:text="@string/book_details"
+        />
 
     <CheckBox
         android:id="@+id/covers_check"
         style="@style/row_option_checkable"
         android:checked="true"
-        android:text="@string/lbl_cover_images" />
+        android:text="@string/lbl_cover_images"
+        />
 
     <CheckBox
         android:id="@+id/preferences_check"
         style="@style/row_option_checkable"
         android:checked="true"
-        android:text="@string/lbl_preferences" />
+        android:text="@string/lbl_settings"
+        />
 
     <View style="@style/div_horizontal" />
 

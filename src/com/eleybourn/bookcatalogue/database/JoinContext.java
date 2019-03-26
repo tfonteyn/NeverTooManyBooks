@@ -109,9 +109,8 @@ public class JoinContext {
     /**
      * @return the current SQL
      */
-    @Override
     @NonNull
-    public String toString() {
+    public String getSql() {
         return mSql.toString();
     }
 }

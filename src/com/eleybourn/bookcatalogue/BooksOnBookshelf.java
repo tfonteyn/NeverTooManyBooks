@@ -26,13 +26,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -84,6 +84,7 @@ import com.eleybourn.bookcatalogue.searches.FTSSearchActivity;
 import com.eleybourn.bookcatalogue.settings.BooklistStyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -97,8 +98,7 @@ public class BooksOnBookshelf
         extends BaseListActivity
         implements
         BookChangedListener,
-        ProgressDialogFragment.OnTaskFinishedListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        ProgressDialogFragment.OnTaskFinishedListener {
 
     /** Preference name - Saved position of last top row. */
     public static final String PREF_BOB_TOP_ROW = "BooksOnBookshelf.TopRow";
@@ -192,8 +192,8 @@ public class BooksOnBookshelf
         mCurrentBookshelf = Bookshelf.getPreferred(mDb);
 
         // Restore list position on bookshelf
-        mTopRow = Prefs.getPrefs().getInt(PREF_BOB_TOP_ROW, 0);
-        mTopRowOffset = Prefs.getPrefs().getInt(PREF_BOB_TOP_ROW_OFFSET, 0);
+        mTopRow = App.getPrefs().getInt(PREF_BOB_TOP_ROW, 0);
+        mTopRowOffset = App.getPrefs().getInt(PREF_BOB_TOP_ROW_OFFSET, 0);
 
         // set the search capability to local (application) search
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -247,20 +247,43 @@ public class BooksOnBookshelf
         return true;
     }
 
+    private void setActivityTitle() {
+        // Update the activity title from the current style name.
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(mCurrentBookshelf.getStyle(mDb).getDisplayName(this));
+            actionBar.setSubtitle(null);
+        }
+    }
+
     @Override
     @CallSuper
     public void onResume() {
         Tracker.enterOnResume(this);
         super.onResume();
+        if (App.isRecreating()) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Logger.info(this, Tracker.State.Exit, "onResume", LocaleUtils.toString(this));
+            }
+            return;
+        }
 
         // Try to prevent null-pointer errors for rapidly pressing 'back'; this
         // is in response to errors reporting NullPointerException when, most likely,
         // a null is returned by getResources(). The most likely explanation for that
         // is the call occurs after Activity is destroyed.
+        //
+        // we also need to make sure we don't start the initBookList task in these cases.
         if (isFinishing() || isDestroyed()) {
+            if (BuildConfig.DEBUG) {
+                Logger.info(this, Tracker.State.Exit, "onResume",
+                            "isFinishing=" + isFinishing(),
+                            "isDestroyed=" + isDestroyed());
+            }
             return;
         }
 
+        setActivityTitle();
         populateBookShelfSpinner();
 
         // mDoFullRebuild can be set in onActivityResult
@@ -280,10 +303,12 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public void onPause() {
+        Tracker.enterOnPause(this);
         if (mSearchCriteria.isEmpty()) {
             savePosition();
         }
         super.onPause();
+        Tracker.exitOnPause(this);
     }
 
     @Override
@@ -296,15 +321,17 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     protected void onDestroy() {
+        Tracker.enterOnDestroy(this);
         if (mListCursor != null) {
             mListCursor.getBuilder().close();
             mListCursor.close();
         }
 
-        if (DEBUG_SWITCHES.TRACKED_CURSOR && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
             TrackedCursor.dumpCursors();
         }
         super.onDestroy();
+        Tracker.exitOnDestroy(this);
     }
 
     /**
@@ -326,8 +353,8 @@ public class BooksOnBookshelf
             // If it's a book, view or edit it.
             case BooklistGroup.RowKind.BOOK:
                 long bookId = mListCursor.getCursorRow().getBookId();
-                boolean openInReadOnly = Prefs.getBoolean(R.string.pk_bob_open_book_read_only,
-                                                          true);
+                boolean openInReadOnly =
+                        App.getPrefs().getBoolean(Prefs.pk_bob_open_book_read_only, true);
 
                 if (openInReadOnly) {
                     String listTable = mListCursor.getBuilder()
@@ -422,6 +449,8 @@ public class BooksOnBookshelf
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
+        Logger.info(this, Tracker.State.Enter, "onPrepareOptionsMenu", LocaleUtils.toString(this));
+//        menu.clear();
         MenuHandler.addCreateBookSubMenu(menu);
 
         menu.add(Menu.NONE, R.id.MENU_SORT, 0, R.string.menu_sort_and_style_ellipsis)
@@ -437,11 +466,14 @@ public class BooksOnBookshelf
         menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
             .setIcon(R.drawable.ic_unfold_less);
 
-        if (DEBUG_SWITCHES.SHOW_DEBUG_MENU && BuildConfig.DEBUG) {
-            menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_PREFS, 0, R.string.lbl_preferences);
-            menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_STYLE, 0, R.string.lbl_style);
-            menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, 0, R.string.debug_history);
-            menu.add(Menu.NONE, R.id.MENU_DEBUG_EXPORT_DATABASE, 0, R.string.menu_copy_database);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SHOW_DEBUG_MENU) {
+            SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
+                                              0, R.string.debug);
+
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_PREFS, 0, R.string.lbl_settings);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_STYLE, 0, R.string.lbl_style);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, 0, R.string.debug_history);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_EXPORT_DATABASE, 0, R.string.menu_copy_database);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -496,23 +528,25 @@ public class BooksOnBookshelf
                 return true;
 
             default:
-                if (DEBUG_SWITCHES.SHOW_DEBUG_MENU && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SHOW_DEBUG_MENU) {
                     switch (item.getItemId()) {
                         case R.id.MENU_DEBUG_DUMP_PREFS:
                             Prefs.dumpPreferences(null);
                             return true;
+
                         case R.id.MENU_DEBUG_DUMP_STYLE:
                             Logger.info(this, "onOptionsItemSelected",
                                         mCurrentBookshelf.getStyle(mDb).toString());
                             return true;
+
                         case R.id.MENU_DEBUG_DUMP_TRACKER:
                             Logger.info(this, "onOptionsItemSelected", Tracker.getEventsInfo());
                             return true;
+
                         case R.id.MENU_DEBUG_EXPORT_DATABASE:
                             StorageUtils.exportDatabaseFiles(this);
-                            UserMessage.showUserMessage(this,
-                                                        R.string.progress_end_backup_success);
-                            break;
+                            UserMessage.showUserMessage(this, R.string.progress_end_backup_success);
+                            return true;
                     }
                 }
                 return MenuHandler.handleBookSubMenu(this, item)
@@ -692,6 +726,10 @@ public class BooksOnBookshelf
                 break;
             }
 
+            case UniqueId.REQ_NAV_PANEL_SETTINGS:
+                App.setNeedsRecreating();
+                return;
+
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
@@ -716,7 +754,7 @@ public class BooksOnBookshelf
         populateBookCountField(headersToShow);
 
         long t0 = 0;
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             //noinspection UnusedAssignment
             t0 = System.currentTimeMillis();
         }
@@ -796,12 +834,6 @@ public class BooksOnBookshelf
                 }
         );
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(mCurrentBookshelf.getStyle(mDb).getDisplayName());
-            actionBar.setSubtitle(null);
-        }
-
         // Close old list
         if (oldList != null) {
             if (mListCursor.getBuilder() != oldList.getBuilder()) {
@@ -809,7 +841,7 @@ public class BooksOnBookshelf
             }
             oldList.close();
         }
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             Logger.info(this, "displayList",
                         +(System.currentTimeMillis() - t0) + "ms");
         }
@@ -854,7 +886,7 @@ public class BooksOnBookshelf
                 int first = listView.getFirstVisiblePosition();
                 int last = listView.getLastVisiblePosition();
                 int centre = (last + first) / 2;
-                if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
                     Logger.info(BooksOnBookshelf.class, "fixPositionWhenDrawn",
                                 " New List: (" + first + ", " + last + ")<-" + centre);
                 }
@@ -871,13 +903,13 @@ public class BooksOnBookshelf
                     }
                 }
 
-                if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
                     Logger.info(BooksOnBookshelf.class, "fixPositionWhenDrawn",
                                 " Best listPosition @" + best.listPosition);
                 }
                 // Try to put at top if not already visible, or only partially visible
                 if (first >= best.listPosition || last <= best.listPosition) {
-                    if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
                         Logger.info(BooksOnBookshelf.class, "fixPositionWhenDrawn",
                                     " Adjusting position");
                     }
@@ -907,7 +939,7 @@ public class BooksOnBookshelf
                     });
 
                     //int newTop = best.listPosition - (last-first)/2;
-                    // if (BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
+                    // if (BuildConfig.DEBUG && BOOKS_ON_BOOKSHELF) {
                     //Logger.info(this, "fixPositionWhenDrawn", "New Top @" + newTop );
                     //}
                     //lv.setSelection(newTop);
@@ -939,10 +971,10 @@ public class BooksOnBookshelf
             View v = lv.getChildAt(0);
             mTopRowOffset = v == null ? 0 : v.getTop();
 
-            Prefs.getPrefs().edit()
-                 .putInt(PREF_BOB_TOP_ROW, mTopRow)
-                 .putInt(PREF_BOB_TOP_ROW_OFFSET, mTopRowOffset)
-                 .apply();
+            App.getPrefs().edit()
+               .putInt(PREF_BOB_TOP_ROW, mTopRow)
+               .putInt(PREF_BOB_TOP_ROW_OFFSET, mTopRowOffset)
+               .apply();
         }
     }
 
@@ -1003,13 +1035,13 @@ public class BooksOnBookshelf
                                        final int position,
                                        final long id) {
 
-                if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
                     Logger.info(this, "mBookshelfSpinner onItemSelected", "pos=" + position);
                 }
 
                 String bsName = (String) parent.getItemAtPosition(position);
                 if (bsName != null && !bsName.equalsIgnoreCase(mCurrentBookshelf.getName())) {
-                    if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
                         Logger.info(this, "mBookshelfSpinner onItemSelected",
                                     "spinning to shelf: " + bsName);
                     }
@@ -1037,6 +1069,8 @@ public class BooksOnBookshelf
      * Populate the BookShelf list in the Spinner and switch to the preferred bookshelf/style.
      */
     private void populateBookShelfSpinner() {
+        Logger.info(this, Tracker.State.Enter, "populateBookShelfSpinner",
+                    LocaleUtils.toString(this));
         mBookshelfAdapter.clear();
         // Add the default All Books bookshelf
         mBookshelfAdapter.add(getString(R.string.all_books));
@@ -1053,11 +1087,13 @@ public class BooksOnBookshelf
 
         // Set the current bookshelf. We use this to force the correct bookshelf after
         // the state has been restored.
-        if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
             Logger.info(this, "populateBookShelfSpinner",
                         "calling mBookshelfSpinner.setSelection pos=" + currentPos);
         }
         mBookshelfSpinner.setSelection(currentPos);
+
+        Logger.info(this, Tracker.State.Exit, "populateBookShelfSpinner");
     }
 
     @Override
@@ -1070,20 +1106,15 @@ public class BooksOnBookshelf
             if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
                 savePosition();
                 initBookList(false);
-                return;
-            }
-            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
+            } else if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
                 // we don't display the lend-status in the list for now.
 //                if (data != null) {
 //                    data.getString(UniqueId.KEY_LOANEE);
 //                }
-                return;
-            }
-            if ((fieldsChanged & BookChangedListener.BOOK_WAS_DELETED) != 0) {
-                //ENHANCE: remove the defunct book from the dataset
+            } else if ((fieldsChanged & BookChangedListener.BOOK_WAS_DELETED) != 0) {
+                //ENHANCE: remove the defunct book
                 savePosition();
                 initBookList(true);
-                return;
             }
         } else {
             if (fieldsChanged != 0) {
@@ -1100,11 +1131,9 @@ public class BooksOnBookshelf
      * @param showAll if <tt>true</tt> show all styles, otherwise only the preferred ones.
      */
     private void doSortMenu(final boolean showAll) {
-        FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(SortMenuFragment.TAG) == null) {
-            SortMenuFragment.newInstance(showAll)
-                            .show(fm, SortMenuFragment.TAG);
-        }
+        // always create a new fragment. We only 'leave' it with a dismiss.
+        SortMenuFragment.newInstance(showAll)
+                        .show(getSupportFragmentManager(), SortMenuFragment.TAG);
     }
 
     /**
@@ -1143,7 +1172,7 @@ public class BooksOnBookshelf
      */
     @NonNull
     private BooklistBuilder createBooklistBuilder() {
-        if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             Logger.info(this, "createBooklistBuilder",
                         mCurrentBookshelf.getStyle(mDb).toString());
         }
@@ -1195,20 +1224,6 @@ public class BooksOnBookshelf
                               bookListBuilder, mCurrentBookshelf.getId(), mSearchCriteria);
     }
 
-    @Override
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
-                                          @NonNull final String key) {
-        // this will likely not happen while we're actively listening.
-        if (Bookshelf.PREF_BOOKSHELF_CURRENT.equals(key)) {
-            Bookshelf newBookshelf = Bookshelf.getPreferred(mDb);
-            if (!mCurrentBookshelf.equals(newBookshelf)) {
-                populateBookShelfSpinner();
-            }
-            return;
-        }
-        super.onSharedPreferenceChanged(sharedPreferences, key);
-    }
-
     /**
      * Called when a task finishes.
      *
@@ -1217,9 +1232,10 @@ public class BooksOnBookshelf
      * @param result  BuilderHolder
      */
     @Override
-    public void onTaskFinished(final Integer taskId,
+    public void onTaskFinished(final int taskId,
                                final boolean success,
                                @Nullable final Object result) {
+
         if (taskId == R.id.TASK_ID_GET_BOOKLIST && result != null) {
             // Save a flag to say list was loaded at least once successfully (or not)
             mListHasBeenLoaded = success;
@@ -1245,6 +1261,7 @@ public class BooksOnBookshelf
     public static class SortMenuFragment
             extends DialogFragment {
 
+        /** Fragment manager tag. */
         public static final String TAG = SortMenuFragment.class.getSimpleName();
 
         private static final String BKEY_SHOW_ALL = "showAll";
@@ -1326,7 +1343,7 @@ public class BooksOnBookshelf
                                             @NonNull final BooklistStyle style) {
             CompoundButton btn = (CompoundButton) inf.inflate(R.layout.row_style_menu_radio,
                                                               radioGroup, false);
-            btn.setText(style.getDisplayName());
+            btn.setText(style.getDisplayName(inf.getContext()));
             btn.setChecked(mCurrentStyleId == style.getId());
             btn.setOnClickListener(new OnClickListener() {
                 @Override
@@ -1371,9 +1388,12 @@ public class BooksOnBookshelf
     private static class GetBookListTask
             extends AsyncTask<Void, Object, BuilderHolder> {
 
+        /** Fragment manager tag. */
         private static final String TAG = GetBookListTask.class.getSimpleName();
         /** Generic identifier. */
         private static final int M_TASK_ID = R.id.TASK_ID_GET_BOOKLIST;
+        @NonNull
+        protected final ProgressDialogFragment<BuilderHolder> mFragment;
         /**
          * Indicates whole table structure needs rebuild,
          * versus just do a reselect of underlying data.
@@ -1385,8 +1405,6 @@ public class BooksOnBookshelf
         /** Holds the input/output and output-only fields to be returned to the activity. */
         @NonNull
         private final BuilderHolder mHolder;
-        @NonNull
-        protected final ProgressDialogFragment<BuilderHolder> mFragment;
         /**
          * {@link #doInBackground} should catch exceptions, and set this field.
          * {@link #onPostExecute} can then check it.
@@ -1414,7 +1432,7 @@ public class BooksOnBookshelf
                                 final boolean isFullRebuild,
                                 @NonNull final BooklistBuilder bookListBuilder) {
 
-            if (DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
                 Logger.info(this, "constructor", "mIsFullRebuild=" + isFullRebuild);
             }
 
@@ -1528,7 +1546,7 @@ public class BooksOnBookshelf
         protected BuilderHolder doInBackground(final Void... params) {
             try {
                 long t0 = 0;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
                     t0 = System.currentTimeMillis();
                 }
@@ -1546,7 +1564,7 @@ public class BooksOnBookshelf
                 }
 
                 long t1 = 0;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
                     t1 = System.currentTimeMillis();
                 }
@@ -1558,7 +1576,7 @@ public class BooksOnBookshelf
                 }
 
                 long t2 = 0;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
                     t2 = System.currentTimeMillis();
                 }
@@ -1569,7 +1587,7 @@ public class BooksOnBookshelf
                 mHolder.currentPositionedBookId = 0;
 
                 long t3 = 0;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
                     t3 = System.currentTimeMillis();
                 }
@@ -1580,7 +1598,7 @@ public class BooksOnBookshelf
                 int count = tempList.getCount();
 
                 long t4 = 0;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
                     t4 = System.currentTimeMillis();
                 }
@@ -1591,19 +1609,19 @@ public class BooksOnBookshelf
                 }
 
                 long t5 = 0;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
                     t5 = System.currentTimeMillis();
                 }
                 mHolder.resultTotalBooks = tempList.getBookCount();
 
                 long t6 = 0;
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
                     t6 = System.currentTimeMillis();
                 }
 
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     Logger.info(this, "doInBackground",
                                 " Build: " + (t1 - t0));
                     Logger.info(this, "doInBackground",
@@ -1649,6 +1667,8 @@ public class BooksOnBookshelf
                 tempList.close();
             }
             tempList = null;
+            // close the progress dialog
+            mFragment.dismiss();
         }
 
         /**
@@ -1666,6 +1686,7 @@ public class BooksOnBookshelf
 
     /** value class for the Builder. */
     private static class BuilderHolder {
+
         /** input/output field for the activity. */
         final BooklistPseudoCursor listCursor;
         /** input/output field for the activity. */

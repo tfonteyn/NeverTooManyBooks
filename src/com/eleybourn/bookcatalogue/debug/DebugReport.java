@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
@@ -43,8 +44,6 @@ public final class DebugReport {
     /**
      * Return the MD5 hash of the public key that signed this app, or a useful
      * text message if an error or other problem occurred.
-     * <p>
-     * No longer caching as only needed at a crash anyhow
      */
     public static String signedBy(@NonNull final Context context) {
         StringBuilder signedBy = new StringBuilder();
@@ -147,7 +146,7 @@ public final class DebugReport {
         // Scanners installed
         try {
             message.append("Pref. Scanner: ")
-                   .append(Prefs.getListPreference(R.string.pk_scanning_preferred_scanner, -1))
+                   .append(App.getListPreference(Prefs.pk_scanning_preferred_scanner, -1))
                    .append('\n');
             String[] scanners = new String[]{
                     ZxingScanner.ACTION,

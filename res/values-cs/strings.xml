@@ -130,7 +130,7 @@
     <string name="error_backup_failed">Zálohování selhalo</string>
     <string name="error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
     <string name="import_error_csv_file_must_contain_any_column">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
-    <string name="error_column_is_blank">Sloupec %1$s je prázdný na řádku %2$s</string>
+    <string name="error_column_is_blank">Sloupec %1$s je prázdný na řádku %2$d</string>
     <string name="error_columns_are_blank">Sloupce %1$s jsou prázdné na řádku %2$d</string>
     <string name="btn_confirm_save">Uložit</string>
     <string name="btn_confirm_add">Přidat</string>
@@ -208,7 +208,7 @@
     <string name="cleanup_files">Odstranit soubory</string>
     <string name="megabytes">%.2fMB</string>
     <string name="kilobytes">%.2fkB</string>
-    <string name="bytes">%.0f bytů</string>
+    <string name="bytes">%.0fB</string>
     <string name="debug_subject">Shromáždit informace o debugování</string>
     <string name="debug_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
     <string name="menu_duplicate_book">Duplicitní kniha</string>
@@ -256,7 +256,6 @@
     <string name="gr_title_send_book">Poslat knihu do Goodreads</string>
     <string name="gr_tq_legacy_task">Odkaz úlohy</string>
     <string name="gr_tq_occurred_at">(nastal v %1$s)</string>
-    <string name="unknown_uc">NEZNÁMÉ</string>
     <string name="warning_book_was_deleted_uc">TATO KNIHA BYLA SMAZÁNA</string>
     <string name="lbl_by_author_s">(kým) %1$s</string>
     <string name="warning_no_matching_book_found">Nebyla nalezena odpovídající kniha</string>
@@ -274,7 +273,7 @@
     <string name="gr_error_while_searching">Během vyhledávání došlo k chybě.</string>
     <string name="gr_send_all_books_results">%1$d knih zpracováno: %2$d úspěšně odesláno, %3$d bez ISBN a %4$d s ISBN, které nebyly v Goodreads nalezeny.</string>
     <string name="x_of_y">%1$d z %2$d</string>
-    <string name="gr_send_book_to_goodreads">Poslat knihu %1$s do Goodreads</string>
+    <string name="gr_send_book_to_goodreads">Poslat knihu %1$d do Goodreads</string>
     <string name="erase_cover_cache">Vymazat vyrovnávací paměť pro obálky</string>
     <string name="acra_resToastText">Došlo k neočekávanému pádu aplikace &APP_NAME;. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
     <string name="acra_resNotifTickerText">&APP_NAME; spadl</string>
@@ -355,7 +354,7 @@
     <string name="plain_background_b_reduces_flicker_b">Jednobarevné pozadí (redukuje blikání)</string>
     <string name="warning_required_field_x">%1$s nemůže být prázdné</string>
     <string name="edit">Upravit</string>
-    <string name="lbl_preferences">Nastavení</string>
+    <string name="lbl_settings">Nastavení</string>
     <string name="error_unexpected_error">Došlo k neočekávané chybě, prosím zašlete nám detaily o této chybě prostřednictvím \‘Nápovědy\’ v hlavním menu.</string>
     <string name="menu_delete_style">Smazat styl</string>
     <string name="menu_edit_booklist_style">Upravit styl</string>
@@ -448,11 +447,13 @@
     <string name="lbl_update_month">Měsíc aktualizace</string>
     <string name="lbl_update_year">Rok aktualizace</string>
     <string name="lbl_x_pages">%1$d stran</string>
-    <string name="loan_book_available">Dostupný</string>
+    <string name="lbl_loan_book_available">Dostupný</string>
     <string name="menu_edit">Upravit…</string>
     <string name="lbl_books">Knihy</string>
     <string name="title_edit_genre">Upravit podrobnosti o žánru</string>
     <string name="menu_loan_return_book">Vypůjčená kniha je zpět</string>
     <string name="progress_msg_saving_image">Uložení obrázku…</string>
     <string name="error_google_play_missing">Google Play / Market není nainstalován</string>
+    <string name="lbl_language">Jazyk</string>
+    <string name="lbl_is_complete">Je kompletní</string>
 </resources>

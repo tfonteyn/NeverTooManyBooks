@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/TLV_ROW"
-    style="@style/row_in_ListView">
+    style="@style/row_in_ListView"
+    >
 
     <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView
@@ -14,7 +15,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The" />
+        tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The"
+        />
 
     <TextView
         android:id="@+id/year"
@@ -25,7 +27,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"
-        tools:text="(1971)" />
+        tools:text="(1971)"
+        />
 
     <TextView
         android:id="@+id/author"
@@ -34,6 +37,7 @@
         app:layout_constraintStart_toEndOf="@id/year"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"
-        tools:text="Philip J. Farmer" />
+        tools:text="Philip J. Farmer"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -25,14 +25,14 @@ import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
+import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 /**
  * Background task class to send all books in the database to Goodreads.
@@ -62,8 +62,9 @@ public class SendAllBooksTask
     /**
      * Constructor.
      */
-    SendAllBooksTask(final boolean updatesOnly) {
-        super(BookCatalogueApp.getResString(R.string.gr_title_send_book));
+    SendAllBooksTask(@NonNull final Context context,
+                     final boolean updatesOnly) {
+        super(context.getString(R.string.gr_title_send_book));
         mUpdatesOnly = updatesOnly;
     }
 
@@ -111,22 +112,25 @@ public class SendAllBooksTask
 
         // Notify the user: '15 books processed:
         // 3 sent successfully, 5 with no ISBN and 7 with ISBN but not found in Goodreads'
-        BookCatalogueApp.showNotification(context, R.string.gr_title_send_book,
-                context.getString(R.string.gr_send_all_books_results, mCount, mSent, mNoIsbn,
-                                  mNotFound));
+        App.showNotification(context, R.string.gr_title_send_book,
+                             context.getString(R.string.gr_send_all_books_results,
+                                                            mCount, mSent, mNoIsbn,
+                                                            mNotFound));
 
         return true;
     }
 
     /**
      * Make a more informative description.
+     *
+     * @param context caller context
      */
     @NonNull
     @Override
     @CallSuper
-    public String getDescription() {
-        return super.getDescription() + " ("
-                + BookCatalogueApp.getResString(R.string.x_of_y, mCount, mTotalBooks) + ')';
+    public String getDescription(@NonNull final Context context) {
+        return super.getDescription(context)
+                + " (" + context.getString(R.string.x_of_y, mCount, mTotalBooks) + ')';
     }
 
     @Override

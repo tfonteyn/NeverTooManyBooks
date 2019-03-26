@@ -1,9 +1,8 @@
 package com.eleybourn.bookcatalogue.booklist.prefs;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.App;
 
 /**
  * A String is stored as a String.
@@ -19,9 +18,9 @@ public class PString
      * @param key  of the preference
      * @param uuid the style id
      */
-    public PString(@StringRes final int key,
+    public PString(@NonNull final String key,
                    @NonNull final String uuid) {
-        super(key, uuid, Prefs.getString(key));
+        super(key, uuid, App.getPrefString(key));
     }
 
     @NonNull
@@ -31,7 +30,7 @@ public class PString
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             // guard against the pref being there, but with value null.
-            String tmp = Prefs.getPrefs(mUuid).getString(getKey(), mDefaultValue);
+            String tmp = App.getPrefs(mUuid).getString(getKey(), mDefaultValue);
             return tmp != null ? tmp : mDefaultValue;
         }
     }

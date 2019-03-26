@@ -100,7 +100,7 @@ public class EditAuthorListActivity
     protected void onAdd(@NonNull final View target) {
         String authorName = mAuthorNameView.getText().toString().trim();
         if (authorName.isEmpty()) {
-            UserMessage.showUserMessage(this, R.string.warning_required_name);
+            UserMessage.showUserMessage(mAuthorNameView, R.string.warning_required_name);
             return;
         }
 
@@ -110,7 +110,7 @@ public class EditAuthorListActivity
         // and check it's not already in the list.
         for (Author author : mList) {
             if (author.equals(newAuthor)) {
-                UserMessage.showUserMessage(this, R.string.warning_author_already_in_list);
+                UserMessage.showUserMessage(mAuthorNameView, R.string.warning_author_already_in_list);
                 return;
             }
         }

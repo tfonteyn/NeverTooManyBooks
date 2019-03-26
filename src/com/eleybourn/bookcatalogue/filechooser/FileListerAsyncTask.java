@@ -39,7 +39,7 @@ public abstract class FileListerAsyncTask
             };
 
     @NonNull
-    private final ProgressDialogFragment<ArrayList<FileDetails>> mFragment;
+    protected final ProgressDialogFragment<ArrayList<FileDetails>> mFragment;
     @NonNull
     private final File mRoot;
     /**

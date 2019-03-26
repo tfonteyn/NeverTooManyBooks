@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -30,8 +31,11 @@ public class SettingsActivity
         super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
-        //noinspection ConstantConditions
-        String tag = extras.getString(UniqueId.BKEY_FRAGMENT_TAG, GlobalSettingsFragment.TAG);
+
+        String tag = extras != null ? extras.getString(UniqueId.BKEY_FRAGMENT_TAG,
+                                                       GlobalSettingsFragment.TAG)
+                                    : GlobalSettingsFragment.TAG;
+
         if (null == getSupportFragmentManager().findFragmentByTag(tag)) {
             Fragment frag = createFragment(tag);
             frag.setArguments(getIntent().getExtras());
@@ -53,13 +57,23 @@ public class SettingsActivity
     private Fragment createFragment(@NonNull final String tag) {
         if (GlobalSettingsFragment.TAG.equals(tag)) {
             return new GlobalSettingsFragment();
-        } else if (FieldVisibilitySettingsFragment.TAG.equals(tag)) {
-            return new FieldVisibilitySettingsFragment();
         } else if (BooklistStyleSettingsFragment.TAG.equals(tag)) {
             return new BooklistStyleSettingsFragment();
         } else {
             throw new IllegalArgumentException("tag=" + tag);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        App.getPrefs().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        App.getPrefs().unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
     }
 
     /**
@@ -78,12 +92,15 @@ public class SettingsActivity
         // start a NEW copy of the same fragment
         //noinspection ConstantConditions
         Fragment frag = createFragment(caller.getTag());
-        // and set it to start with the new root key (screen)
-        Bundle args = new Bundle();
-        args.putAll(caller.getArguments());
-        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, pref.getKey());
-        frag.setArguments(args);
 
+        // and set it to start with the new root key (screen)
+        Bundle callerArgs = caller.getArguments();
+        Bundle args = new Bundle();
+        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, pref.getKey());
+        if (callerArgs != null) {
+            args.putAll(callerArgs);
+        }
+        frag.setArguments(args);
         getSupportFragmentManager()
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -93,4 +110,6 @@ public class SettingsActivity
 
         return true;
     }
+
+
 }

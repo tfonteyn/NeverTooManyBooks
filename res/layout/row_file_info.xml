@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/TLV_ROW"
-    style="@style/row_in_ListView">
+    style="@style/row_in_ListView"
+    >
 
     <ImageView
         android:id="@+id/icon"
@@ -17,7 +18,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_business_center"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        />
 
     <TextView
         android:id="@+id/filename"
@@ -27,13 +29,15 @@
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="my_library.bcbk" />
+        tools:text="my_library.bcbk"
+        />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/file_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="file_content,size,date" />
+        app:constraint_referenced_ids="file_content,size,date"
+        />
 
     <TextView
         android:id="@+id/file_content"
@@ -43,7 +47,8 @@
         app:layout_constraintStart_toStartOf="@id/filename"
         app:layout_constraintTop_toBottomOf="@id/filename"
         tools:ignore="SelectableText"
-        tools:text="1023 books, 3 covers,..." />
+        tools:text="1023 books, 3 covers,..."
+        />
 
     <TextView
         android:id="@+id/size"
@@ -53,17 +58,19 @@
         app:layout_constraintStart_toStartOf="@id/filename"
         app:layout_constraintTop_toBottomOf="@id/file_content"
         tools:ignore="SelectableText"
-        tools:text="10 Mb" />
+        tools:text="10 Mb"
+        />
 
     <TextView
         android:id="@+id/date"
         style="@style/txt_row_fileInfo"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_marginStart="@dimen/border_double"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/size"
         app:layout_constraintTop_toBottomOf="@id/file_content"
         tools:ignore="SelectableText"
-        tools:text="Fri, 23 July, 17:54:01 2011" />
+        tools:text="Fri, 23 July, 17:54:01 2011"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

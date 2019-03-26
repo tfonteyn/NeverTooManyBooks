@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
@@ -18,13 +19,13 @@ public final class SoundManager {
     }
 
     public static void beepLow(@NonNull final Context context) {
-        if (Prefs.getBoolean(R.string.pk_scanning_beep_if_isbn_invalid, true)) {
+        if (App.getPrefs().getBoolean(Prefs.pk_scanning_beep_if_isbn_invalid, true)) {
             playFile(context, R.raw.beep_low);
         }
     }
 
     public static void beepHigh(@NonNull final Context context) {
-        if (Prefs.getBoolean(R.string.pk_scanning_beep_if_isbn_valid, false)) {
+        if (App.getPrefs().getBoolean(Prefs.pk_scanning_beep_if_isbn_valid, false)) {
             playFile(context, R.raw.beep_high);
         }
     }

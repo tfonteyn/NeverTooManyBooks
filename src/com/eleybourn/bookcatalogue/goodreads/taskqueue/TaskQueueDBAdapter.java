@@ -31,14 +31,14 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
-import com.eleybourn.bookcatalogue.utils.DateUtils;
-import com.eleybourn.bookcatalogue.utils.SerializationUtils;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 
 import static com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDBHelper.DOM_CATEGORY;
 import static com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDBHelper.DOM_EVENT;
@@ -65,12 +65,17 @@ import static com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueDBHelper.
  */
 class TaskQueueDBAdapter {
 
+    private static final String SQL_GET_QUEUE_ID =
+            "SELECT " + DOM_ID + " FROM " + TBL_QUEUE + " WHERE " + DOM_NAME + "=?";
+    private static final String SQL_GET_ALL_QUEUES =
+            "SELECT " + DOM_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + DOM_NAME;
+    private static final String SQL_COUNT_EVENTS =
+            "SELECT COUNT(*) FROM " + TBL_EVENT + " WHERE " + DOM_TASK_ID + "=?";
+
     @NonNull
     private final TaskQueueDBHelper mTaskQueueDBHelper;
-
     /** List of statements build by this adapter so that they can be removed on close. */
     private final List<SQLiteStatement> mStatements = new ArrayList<>();
-
     /** Static Factory object to create the custom cursor. */
     private final CursorFactory mEventsCursorFactory = new CursorFactory() {
         @Override
@@ -88,7 +93,7 @@ class TaskQueueDBAdapter {
      * Constructor.
      */
     TaskQueueDBAdapter() {
-        mTaskQueueDBHelper = new TaskQueueDBHelper(BookCatalogueApp.getAppContext());
+        mTaskQueueDBHelper = new TaskQueueDBHelper(App.getAppContext());
     }
 
     /**
@@ -109,9 +114,7 @@ class TaskQueueDBAdapter {
      * @return The ID of the queue, 0 if no match
      */
     private long getQueueId(@NonNull final String name) {
-        final String sql = "SELECT " + DOM_ID + " FROM " + TBL_QUEUE + " WHERE " + DOM_NAME + "=?";
-
-        try (Cursor cursor = getDb().rawQuery(sql, new String[]{name})) {
+        try (Cursor cursor = getDb().rawQuery(SQL_GET_QUEUE_ID, new String[]{name})) {
             if (cursor.moveToFirst()) {
                 return cursor.getInt(0);
             } else {
@@ -126,9 +129,7 @@ class TaskQueueDBAdapter {
      * @param queueManager Owner of the created Queue objects
      */
     void getAllQueues(@NonNull final QueueManager queueManager) {
-        String sql = "SELECT " + DOM_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + DOM_NAME;
-
-        try (Cursor cursor = getDb().rawQuery(sql, null)) {
+        try (Cursor cursor = getDb().rawQuery(SQL_GET_ALL_QUEUES, null)) {
             while (cursor.moveToNext()) {
                 // Create the Queue. It will register itself with its QueueManager.
                 new Queue(queueManager, cursor.getString(0));
@@ -274,17 +275,16 @@ class TaskQueueDBAdapter {
         SQLiteDatabase db = getDb();
 
         // See if the task has any Events recorded
-        String sql = "SELECT COUNT(*) FROM " + TBL_EVENT + " WHERE " + DOM_TASK_ID + "=?";
-        try (Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(task.getId())})) {
+        try (Cursor cursor = db.rawQuery(SQL_COUNT_EVENTS,
+                                         new String[]{String.valueOf(task.getId())})) {
             if (cursor.moveToFirst() && cursor.getLong(0) == 0) {
                 // Delete successful tasks with no events
                 db.delete(TBL_TASK, DOM_ID + " =?",
                           new String[]{String.valueOf(task.getId())});
             } else {
                 // Just set is as successful
-                sql = "UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S'"
-                        + " WHERE " + DOM_ID + '=' + task.getId();
-                db.execSQL(sql);
+                db.execSQL("UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S'"
+                                   + " WHERE " + DOM_ID + '=' + task.getId());
             }
         }
     }

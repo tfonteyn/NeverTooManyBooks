@@ -23,7 +23,7 @@
  * # of books in archive (will/may be fewer pictures).
  * <p>
  * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_APPVERSIONCODE}
- * BC Version that created it.
+ * Application Version that created it.
  * <p>
  * For a full list, see {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo}
  * <p>

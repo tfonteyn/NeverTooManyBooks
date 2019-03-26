@@ -145,14 +145,13 @@ public class GoodreadsSearchResultsActivity
      */
     private static class Holder {
 
-        GoodreadsWork work;
-
         @NonNull
         final ImageView coverView;
         @NonNull
         final TextView titleView;
         @NonNull
         final TextView authorView;
+        GoodreadsWork work;
 
         Holder(@NonNull final View rowView) {
             coverView = rowView.findViewById(R.id.coverImage);

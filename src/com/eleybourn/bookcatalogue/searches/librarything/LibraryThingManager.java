@@ -42,6 +42,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -50,9 +51,8 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
 
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
@@ -84,13 +84,14 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
 public class LibraryThingManager
         implements SearchSites.SearchSiteManager {
 
-    private static final String TAG = "LibraryThing.";
+    /** Preferences prefix. */
+    private static final String PREF_PREFIX = "LibraryThing.";
 
-    /** Name of preference that contains the dev key for the user. */
-    public static final String PREFS_DEV_KEY = TAG + "dev_key";
+    /** Preference that contains the dev key for the user. */
+    public static final String PREFS_DEV_KEY = PREF_PREFIX + "dev_key";
 
-    /** Name of preference that controls display of alert about LibraryThing. */
-    public static final String PREFS_HIDE_ALERT = TAG + "hide_alert.";
+    /** Preference that controls display of alert about LibraryThing. */
+    public static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_LT";
@@ -203,7 +204,7 @@ public class LibraryThingManager
             showAlert = true;
         } else {
             msgId = R.string.lt_uses_info;
-            showAlert = !Prefs.getPrefs().getBoolean(prefName, false);
+            showAlert = !App.getPrefs().getBoolean(prefName, false);
         }
 
         if (!showAlert) {
@@ -234,7 +235,7 @@ public class LibraryThingManager
                     new DialogInterface.OnClickListener() {
                         public void onClick(@NonNull final DialogInterface dialog,
                                             final int which) {
-                            Prefs.getPrefs().edit().putBoolean(prefName, true).apply();
+                            App.getPrefs().edit().putBoolean(prefName, true).apply();
                             dialog.dismiss();
                         }
                     });
@@ -269,13 +270,13 @@ public class LibraryThingManager
         List<String> editions = new ArrayList<>();
 
         // sanity check
-        if (!IsbnUtils.isValid(isbn)) {
+        if (!ISBN.isValid(isbn)) {
             return editions;
         }
 
         // add the original isbn, as there might be more images at the time this search is done.
         editions.add(isbn);
-        if (DEBUG_SWITCHES.LIBRARY_THING_MANAGER && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
             Logger.info(LibraryThingManager.class, "searchEditions|isbn=" + isbn);
         }
 
@@ -298,7 +299,7 @@ public class LibraryThingManager
             Logger.error(e);
         }
 
-        if (DEBUG_SWITCHES.LIBRARY_THING_MANAGER && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
             Logger.info(LibraryThingManager.class, "searchEditions|editions=" + editions);
         }
         return editions;
@@ -322,7 +323,7 @@ public class LibraryThingManager
      */
     @NonNull
     private static String getDevKey() {
-        String key = Prefs.getPrefs().getString(PREFS_DEV_KEY, null);
+        String key = App.getPrefs().getString(PREFS_DEV_KEY, null);
         if (key != null && !key.isEmpty()) {
             return key.replaceAll("[\\r\\t\\n\\s]*", "");
         }
@@ -348,7 +349,7 @@ public class LibraryThingManager
             return null;
         }
         // sanity check
-        if (!IsbnUtils.isValid(isbn)) {
+        if (!ISBN.isValid(isbn)) {
             return null;
         }
 
@@ -406,7 +407,7 @@ public class LibraryThingManager
         Bundle bookData = new Bundle();
 
         // sanity check
-        if (!IsbnUtils.isValid(isbn)) {
+        if (!ISBN.isValid(isbn)) {
             return bookData;
         }
 

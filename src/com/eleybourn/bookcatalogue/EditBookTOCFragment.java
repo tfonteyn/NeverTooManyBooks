@@ -23,8 +23,8 @@ package com.eleybourn.bookcatalogue;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -147,7 +147,7 @@ public class EditBookTOCFragment
         // Author AutoCompleteTextView
         mAuthorTextView = view.findViewById(R.id.author);
         ArrayAdapter<String> authorAdapter =
-                new ArrayAdapter<>(requireActivity(),
+                new ArrayAdapter<>(requireContext(),
                                    android.R.layout.simple_dropdown_item_1line,
                                    mDb.getAuthorsFormattedName());
         mAuthorTextView.setAdapter(authorAdapter);
@@ -176,7 +176,7 @@ public class EditBookTOCFragment
     protected void initFields() {
         super.initFields();
 
-        /* Anthology is provided as a boolean, see {@link Book#initValidators()}*/
+        /* Anthology is provided as a bitmask, see {@link Book#initValidators()}*/
         mFields.add(R.id.is_anthology, Book.HAS_MULTIPLE_WORKS);
 //               .getView().setOnClickListener(
 //                new View.OnClickListener() {
@@ -186,18 +186,23 @@ public class EditBookTOCFragment
 //                    }
 //                });
 
+        mSingleAuthor = mFields.add(R.id.same_author, Book.HAS_MULTIPLE_AUTHORS)
+                               .getView();
+        mSingleAuthor.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        // hide/show related field as needed
+                        mAuthorTextView.setVisibility(mSingleAuthor.isChecked() ? View.GONE
+                                                                                : View.VISIBLE);
+                    }
+                }
+        );
+
         /*
-         * No real Field's but might as well do these here.
+         * No real Field but might as well do these here.
          */
         View view = requireView();
-        // mSingleAuthor checkbox
-        mSingleAuthor = view.findViewById(R.id.same_author);
-        mSingleAuthor.setOnClickListener(new View.OnClickListener() {
-            public void onClick(@NonNull final View v) {
-                mAuthorTextView.setVisibility(mSingleAuthor.isChecked() ? View.GONE : View.VISIBLE);
-            }
-        });
-
         mListView = view.findViewById(android.R.id.list);
         mListView.setOnCreateContextMenuListener(this);
         mListView.setOnItemClickListener(new OnItemClickListener() {
@@ -220,13 +225,12 @@ public class EditBookTOCFragment
         Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
-        boolean isAnt = book.isBitSet(UniqueId.KEY_TOC_BITMASK,
-                                      TocEntry.Type.MULTIPLE_WORKS);
-        mFields.getField(R.id.is_anthology).setValue(isAnt ? "1" : "0");
-
         // populateFields
         populateSingleAuthorStatus(book);
         populateContentList();
+
+        // Restore default visibility
+        showHideFields(false);
 
         Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
@@ -235,10 +239,9 @@ public class EditBookTOCFragment
      * Show or hide the author field.
      */
     private void populateSingleAuthorStatus(@NonNull final Book book) {
-        boolean singleAuthor = !book.isBitSet(UniqueId.KEY_TOC_BITMASK,
-                                              TocEntry.Type.MULTIPLE_AUTHORS);
-        mSingleAuthor.setChecked(singleAuthor);
-        mAuthorTextView.setVisibility(singleAuthor ? View.GONE : View.VISIBLE);
+        mFields.getField(R.id.same_author).setValueFrom(book);
+        // hide/show related field as needed
+        mAuthorTextView.setVisibility(mSingleAuthor.isChecked() ? View.GONE : View.VISIBLE);
     }
 
     /**
@@ -246,10 +249,10 @@ public class EditBookTOCFragment
      */
     private void populateContentList() {
         // Get all of the rows and create the item list
-        mList = getBookManager().getBook().getList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        mList = getBookManager().getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         // Create a simple array adapter and set it to display
-        ArrayAdapter<TocEntry> adapter = new TOCListAdapterForEditing(requireActivity(), mList);
+        ArrayAdapter<TocEntry> adapter = new TOCListAdapterForEditing(requireContext(), mList);
         mListView.setAdapter(adapter);
     }
 
@@ -265,19 +268,7 @@ public class EditBookTOCFragment
         Tracker.enterOnSaveFieldsToBook(this, book.getId());
         super.onSaveFieldsToBook(book);
 
-        // as a reminder....
-        book.putList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
-
-        // multiple authors is now automatically done during database access.
-        // The checkbox is only a visual aid for hiding/showing the author EditText.
-        // So while this command is 'correct', it does not stop (and does not bother) the user
-        // setting it wrong. insert/update into the database will correctly set it by
-        // simply looking at the toc itself
-        int type = TocEntry.Type.MULTIPLE_WORKS;
-        if (!mSingleAuthor.isChecked()) {
-            type |= TocEntry.Type.MULTIPLE_AUTHORS;
-        }
-        book.putLong(UniqueId.KEY_TOC_BITMASK, type);
+        book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
 
         Tracker.exitOnSaveFieldsToBook(this, book.getId());
     }
@@ -384,14 +375,15 @@ public class EditBookTOCFragment
         List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (series != null && !series.isEmpty()) {
             ArrayList<Series> inBook = getBookManager().getBook()
-                                                       .getList(UniqueId.BKEY_SERIES_ARRAY);
+                                                       .getParcelableArrayList(
+                                                               UniqueId.BKEY_SERIES_ARRAY);
             // add, weeding out duplicates
             for (Series s : series) {
                 if (!inBook.contains(s)) {
                     inBook.add(s);
                 }
             }
-            getBookManager().getBook().putList(UniqueId.BKEY_SERIES_ARRAY, inBook);
+            getBookManager().getBook().putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, inBook);
         }
 
         // update the book with the first publication date that was gathered from the TOC
@@ -504,6 +496,7 @@ public class EditBookTOCFragment
     public static class ConfirmTOC
             extends DialogFragment {
 
+        /** Fragment manager tag. */
         public static final String TAG = ConfirmTOC.class.getSimpleName();
         private static final String BKEY_HAS_OTHER_EDITIONS = "hasOtherEditions";
 
@@ -520,24 +513,6 @@ public class EditBookTOCFragment
             frag.setTargetFragment(target, 0);
             frag.setArguments(bookData);
             return frag;
-        }
-
-        /**
-         * Get the textSize attribute of the standard "TextAppearance_Small" style.
-         * API 23 required to use it directly :(
-         *
-         * @param context of caller
-         *
-         * @return the size
-         */
-        private static int getTextAppearanceSmallTextSize(@NonNull final Context context) {
-            // The attributes you want retrieved
-            int[] attrs = {android.R.attr.textSize};
-            TypedArray ta = context.obtainStyledAttributes(android.R.style.TextAppearance_Small,
-                                                           attrs);
-            int size = ta.getIndex(0);
-            ta.recycle();
-            return size;
         }
 
         @NonNull
@@ -563,14 +538,18 @@ public class EditBookTOCFragment
 
             TextView content = new TextView(getContext());
             content.setText(msg);
+
+            // we read the value from the attr/style in pixels
             //noinspection ConstantConditions
-            content.setTextSize(getTextAppearanceSmallTextSize(getContext()));
+            content.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                                App
+                                        .getTextAppearanceSmallTextSizeInPixels(getContext()));
             //API: 23:
             //content.setTextAppearance(android.R.style.TextAppearance_Small);
             //API: 26 ?
             //content.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
 
-            final AlertDialog dialog = new AlertDialog.Builder(requireActivity())
+            final AlertDialog dialog = new AlertDialog.Builder(requireContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setView(content)
                     .create();

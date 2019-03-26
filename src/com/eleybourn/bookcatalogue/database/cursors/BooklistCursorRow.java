@@ -81,12 +81,15 @@ public class BooklistCursorRow
         super(cursor);
         mBuilder = builder;
         mMapper.addDomains(DOM_FK_BOOK_ID,
+
                            DOM_FK_SERIES_ID,
                            DOM_SERIES_NAME,
                            DOM_SERIES_IS_COMPLETE,
                            DOM_BOOK_SERIES_NUM,
+
                            DOM_FK_AUTHOR_ID,
                            DOM_AUTHOR_IS_COMPLETE,
+
                            DOM_BL_ABSOLUTE_POSITION,
                            DOM_BL_NODE_ROW_KIND,
                            DOM_BL_NODE_LEVEL);
@@ -144,6 +147,13 @@ public class BooklistCursorRow
 
     public boolean isSeriesComplete() {
         return mMapper.getBoolean(DOM_SERIES_IS_COMPLETE);
+    }
+
+    /**
+     * @return <tt>true</tt> if the list can display a series number.
+     */
+    public boolean hasSeriesNumber() {
+        return mCursor.getColumnIndex(DOM_BOOK_SERIES_NUM.name) >= 0;
     }
 
     @Nullable

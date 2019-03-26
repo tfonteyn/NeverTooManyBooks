@@ -18,10 +18,12 @@ package com.eleybourn.bookcatalogue.cropper;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 class CropRotateBitmap {
+
     private Bitmap mBitmap;
     private int mRotation;
 
@@ -43,6 +45,7 @@ class CropRotateBitmap {
 
     /**
      * Can return null
+     *
      * @see #recycle()
      */
     @Nullable

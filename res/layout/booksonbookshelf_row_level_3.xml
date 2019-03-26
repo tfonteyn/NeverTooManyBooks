@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/BLB_ROW_DETAILS"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <!-- this is really annoying: setting visibility of the ConstraintLayout to GONE
          does NOT shrink it to size zero. You're forced to set all widgets inside also.
@@ -16,7 +17,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="name,div_bottom" />
+        app:constraint_referenced_ids="name,div_bottom"
+        />
 
     <TextView
         android:id="@+id/name"
@@ -29,7 +31,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:drawableEnd="@drawable/ic_lock"
-        tools:text="third level" />
+        tools:text="third level"
+        />
 
     <View
         android:id="@+id/div_bottom"
@@ -37,6 +40,7 @@
         android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/name" />
+        app:layout_constraintTop_toBottomOf="@id/name"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

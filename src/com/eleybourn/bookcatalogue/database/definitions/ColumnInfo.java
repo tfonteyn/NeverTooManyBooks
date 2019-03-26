@@ -4,7 +4,7 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 
 /**
  * Column info support. This is useful for auto-building queries from maps that have
@@ -71,15 +71,15 @@ public class ColumnInfo {
     @Override
     @NonNull
     public String toString() {
-        return "ColumnInfo{" +
-                "name='" + name + '\'' +
-                ", isPrimaryKey=" + isPrimaryKey +
-                ", storageClass=" + storageClass +
-                ", position=" + position +
-                ", typeName='" + typeName + '\'' +
-                ", allowNull=" + allowNull +
-                ", defaultValue='" + defaultValue + '\'' +
-                '}';
+        return "ColumnInfo{"
+                + "name=`" + name + '`'
+                + ", isPrimaryKey=" + isPrimaryKey
+                + ", storageClass=" + storageClass
+                + ", position=" + position
+                + ", typeName=`" + typeName + '`'
+                + ", allowNull=" + allowNull
+                + ", defaultValue=`" + defaultValue + '`'
+                + '}';
     }
 
     /**
@@ -116,7 +116,7 @@ public class ColumnInfo {
                 default:
                     // note that "" (empty) type is treated as TEXT.
                     // But we really should not allow our columns to be defined without a type.
-                    throw new RTE.IllegalTypeException("columnType=`" + columnType + '`');
+                    throw new IllegalTypeException("columnType=`" + columnType + '`');
             }
         }
     }

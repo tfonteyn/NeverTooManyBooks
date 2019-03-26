@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.amazon.AmazonManager;
@@ -25,9 +26,8 @@ import com.eleybourn.bookcatalogue.searches.isfdb.ISFDBManager;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
-import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.RTE;
+import com.eleybourn.bookcatalogue.utils.ISBN;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -40,20 +40,22 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  * 2. Add your new engine to {@link Site#getSearchSiteManager};
  * 3. create+add a new {@link Site} instance to {@link #SEARCH_ORDER_DEFAULTS}
  * and {@link #COVER_SEARCH_ORDER_DEFAULTS}
- * 4. Optional: add to {@link AdminHostsFragment} if the url should be editable.
+ * 4. Optional: add to res/xml/preferences.xml if the url should be editable.
  */
 public final class SearchSites {
 
     /** */
     static final String BKEY_SEARCH_SITES = "searchSitesList";
-    /** */
-    private static final String TAG = "SearchManager";
+    /** Preferences prefix. */
+    private static final String PREF_PREFIX = "SearchManager.";
+
     /** the default search site order for standard data/covers. */
     private static final ArrayList<Site> SEARCH_ORDER_DEFAULTS = new ArrayList<>();
     /** the default search site order for _dedicated_ cover searches. */
     private static final ArrayList<Site> COVER_SEARCH_ORDER_DEFAULTS = new ArrayList<>();
     /** ENHANCE: reliability order is not user configurable for now, but plumbing installed. */
     private static final List<Site> PREFERRED_RELIABILITY_ORDER;
+
     /** the users preferred search site order. */
     private static ArrayList<Site> mPreferredSearchOrder;
     /** the users preferred search site order specific for covers. */
@@ -132,7 +134,7 @@ public final class SearchSites {
      */
     static void setSearchOrder(@NonNull final ArrayList<Site> newList) {
         mPreferredSearchOrder = newList;
-        SharedPreferences.Editor ed = Prefs.getPrefs().edit();
+        SharedPreferences.Editor ed = App.getPrefs().edit();
         for (Site site : newList) {
             site.saveToPrefs(ed);
         }
@@ -151,7 +153,7 @@ public final class SearchSites {
      */
     static void setCoverSearchOrder(@NonNull final ArrayList<Site> newList) {
         mPreferredCoverSearchOrder = newList;
-        SharedPreferences.Editor ed = Prefs.getPrefs().edit();
+        SharedPreferences.Editor ed = App.getPrefs().edit();
         for (Site site : newList) {
             site.saveToPrefs(ed);
         }
@@ -178,7 +180,7 @@ public final class SearchSites {
     public static File getCoverImageFallback(@NonNull final SearchSiteManager site,
                                              @NonNull final String isbn) {
         // sanity check
-        if (!IsbnUtils.isValid(isbn)) {
+        if (!ISBN.isValid(isbn)) {
             return null;
         }
 
@@ -408,7 +410,7 @@ public final class SearchSites {
                     return "OpenLibrary";
 
                 default:
-                    throw new RTE.IllegalTypeException("Unexpected search source: " + id);
+                    throw new IllegalTypeException("Unexpected search source: " + id);
             }
         }
 
@@ -447,7 +449,7 @@ public final class SearchSites {
                     break;
 
                 default:
-                    throw new RTE.IllegalTypeException("Unexpected search source: " + mName);
+                    throw new IllegalTypeException("Unexpected search source: " + mName);
             }
 
             return mSearchSiteManager;
@@ -467,16 +469,16 @@ public final class SearchSites {
         }
 
         private void loadFromPrefs() {
-            mEnabled = Prefs.getPrefs().getBoolean(TAG + '.' + mName + ".enabled", mEnabled);
-            mPriority = Prefs.getPrefs().getInt(TAG + '.' + mName + ".order", mPriority);
-            mReliability = Prefs.getPrefs().getInt(TAG + '.' + mName + ".reliability",
-                                                   mReliability);
+            mEnabled = App.getPrefs().getBoolean(PREF_PREFIX + mName + ".enabled", mEnabled);
+            mPriority = App.getPrefs().getInt(PREF_PREFIX + mName + ".order", mPriority);
+            mReliability = App.getPrefs().getInt(PREF_PREFIX + mName + ".reliability",
+                                                 mReliability);
         }
 
         void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
-            editor.putBoolean(TAG + '.' + mName + ".enabled", mEnabled);
-            editor.putInt(TAG + '.' + mName + ".order", mPriority);
-            editor.putInt(TAG + '.' + mName + ".reliability", mReliability);
+            editor.putBoolean(PREF_PREFIX + mName + ".enabled", mEnabled);
+            editor.putInt(PREF_PREFIX + mName + ".order", mPriority);
+            editor.putInt(PREF_PREFIX + mName + ".reliability", mReliability);
         }
 
         @SuppressWarnings("SameReturnValue")
@@ -517,16 +519,5 @@ public final class SearchSites {
         public void setReliability(final int reliability) {
             mReliability = reliability;
         }
-
-        //        @Override
-//        public String toString() {
-//            return "SearchSite{" +
-//                    "id=" + id +
-//                    ", name='" + name + '\'' +
-//                    ", enabled=" + enabled +
-//                    ", order=" + order +
-//                    ", reliability=" + reliability +
-//                    '}';
-//        }
     }
 }

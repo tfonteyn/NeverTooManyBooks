@@ -41,7 +41,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
@@ -60,8 +60,8 @@ import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
+import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.RTE;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
@@ -167,13 +167,11 @@ public class BooklistBuilder
             + " END";
 
     /**
-     * SQL column: return "Available" if the book is available, "→ name" if not.
+     * SQL column: return "" if the book is available, "loanee name" if not.
      */
     private static final String X_BOOK_IS_AVAILABLE_AS_TEXT = "CASE"
             + " WHEN " + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE) + " IS NULL"
-            + "  THEN '" + BookCatalogueApp.getResString(R.string.loan_book_available) + '\''
-            + "  ELSE '" + BookCatalogueApp.getResString(R.string.lbl_loaned_to_short)
-            + /*   */ "' || " + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE)
+            + "  THEN '' ELSE '" + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE)
             + " END";
 
     private static final String X_PRIMARY_SERIES_COUNT_AS_BOOLEAN = "CASE"
@@ -257,8 +255,8 @@ public class BooklistBuilder
                                       BooklistBuilder.this);
         }
     };
-    /** not static, allow prefs to change. */
-    private final String mUnknown = BookCatalogueApp.getResString(R.string.unknown_uc);
+    /** The word 'UNKNOWN', used for year/month if those are (guess what...) unknown. */
+    private final String mUnknown;
     /** the list of Filters; both active and non-active. */
     private final transient ArrayList<Filter> mFilters = new ArrayList<>();
     /** used in debug. */
@@ -299,14 +297,16 @@ public class BooklistBuilder
      */
     public BooklistBuilder(@NonNull final Context context,
                            @NonNull final BooklistStyle style) {
-        if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
-            Logger.info(this, "BooklistBuilder",
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
+            Logger.info(this, Tracker.State.Enter, "BooklistBuilder",
                         "instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet());
         }
         // Allocate ID
         mBooklistBuilderId = ID_COUNTER.incrementAndGet();
 
         mContext = context;
+
+        mUnknown = mContext.getString(R.string.unknown).toUpperCase();
 
         // Get the database and create a statements collection
         mDb = new DBA(mContext);
@@ -320,16 +320,15 @@ public class BooklistBuilder
      * @return the current preferred rebuild state for the list.
      */
     public static int getListRebuildState() {
-        return Prefs.getListPreference(R.string.pk_bob_list_state,
-                                       PREF_LIST_REBUILD_ALWAYS_EXPANDED);
+        return App.getListPreference(Prefs.pk_bob_list_state, PREF_LIST_REBUILD_ALWAYS_EXPANDED);
     }
 
     public static boolean imagesAreCached() {
-        return Prefs.getBoolean(R.string.pk_bob_thumbnails_cache_resized, false);
+        return App.getPrefs().getBoolean(Prefs.pk_bob_thumbnails_cache_resized, false);
     }
 
     public static boolean imagesAreGeneratedInBackground() {
-        return Prefs.getBoolean(R.string.pk_bob_thumbnails_generating_mode, false);
+        return App.getPrefs().getBoolean(Prefs.pk_bob_thumbnails_generating_mode, false);
     }
 
     /**
@@ -407,7 +406,7 @@ public class BooklistBuilder
             }
             if (!ok) {
                 throw new IllegalStateException(
-                        "Required domain '" + domain.name + '\''
+                        "Required domain `" + domain.name + '`'
                                 + " added with differing source expression");
             }
         } else {
@@ -426,7 +425,7 @@ public class BooklistBuilder
         mNavTable.drop(mSyncedDb);
         mNavTable.create(mSyncedDb, true, false);
 
-        if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
             Logger.info(this, "rebuild", "mBaseBuildStmt|" + mBaseBuildStmt.toString() + '\n');
         }
 
@@ -435,7 +434,7 @@ public class BooklistBuilder
 
         // Rebuild all the rest
         for (SynchronizedStatement stmt : mLevelBuildStmts) {
-            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
                 Logger.info(this, "rebuild", "mLevelBuildStmts|" + stmt.toString() + '\n');
             }
             stmt.execute();
@@ -900,7 +899,7 @@ public class BooklistBuilder
                                                 + ',' + DOM_BL_NODE_EXPANDED
                                                 + ',' + DOM_BL_ROOT_KEY + ')');
 
-                if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
                     Logger.info(this, "build", "add|" + STMT_NAV_IX_1
                             + '|' + ixStmt1.toString());
                 }
@@ -918,7 +917,7 @@ public class BooklistBuilder
                                                 + " ON " + mNavTable
                                                 + '(' + DOM_BL_REAL_ROW_ID + ')');
 
-                if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
                     Logger.info(this, "build", "add|" + STMT_NAV_IX_2
                             + '|' + ixStmt2.toString());
                 }
@@ -930,7 +929,7 @@ public class BooklistBuilder
                 final long t12_nav_table_index_IX2_created = System.currentTimeMillis();
                 mSyncedDb.analyze(mNavTable);
 
-                if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     Logger.info(this, "build",
                                 "T01: " + (t1_basic_setup_done - t0));
                     Logger.info(this, "build",
@@ -1031,7 +1030,7 @@ public class BooklistBuilder
         // Always save the state-preserving navigator for rebuilds
         SynchronizedStatement navStmt = mStatements.add(STMT_NAV_TABLE_INSERT, insSql);
 
-        if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
             Logger.info(this, "populateNavigationTable", "add|" + STMT_NAV_TABLE_INSERT
                     + '|' + navStmt.toString());
         }
@@ -1041,11 +1040,11 @@ public class BooklistBuilder
         switch (preferredState) {
             case PREF_LIST_REBUILD_ALWAYS_COLLAPSED:
                 String sqlc = mNavTable.getInsert(false,
-                                                 DOM_BL_REAL_ROW_ID,
-                                                 DOM_BL_NODE_LEVEL,
-                                                 DOM_BL_ROOT_KEY,
-                                                 DOM_BL_NODE_VISIBLE,
-                                                 DOM_BL_NODE_EXPANDED)
+                                                  DOM_BL_REAL_ROW_ID,
+                                                  DOM_BL_NODE_LEVEL,
+                                                  DOM_BL_ROOT_KEY,
+                                                  DOM_BL_NODE_VISIBLE,
+                                                  DOM_BL_NODE_EXPANDED)
                         + " SELECT " + mListTable.dot(DOM_PK_ID)
                         + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
                         + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
@@ -1063,11 +1062,11 @@ public class BooklistBuilder
 
             case PREF_LIST_REBUILD_ALWAYS_EXPANDED:
                 String sqle = mNavTable.getInsert(false,
-                                                 DOM_BL_REAL_ROW_ID,
-                                                 DOM_BL_NODE_LEVEL,
-                                                 DOM_BL_ROOT_KEY,
-                                                 DOM_BL_NODE_VISIBLE,
-                                                 DOM_BL_NODE_EXPANDED)
+                                                  DOM_BL_REAL_ROW_ID,
+                                                  DOM_BL_NODE_LEVEL,
+                                                  DOM_BL_ROOT_KEY,
+                                                  DOM_BL_NODE_VISIBLE,
+                                                  DOM_BL_NODE_EXPANDED)
                         + " SELECT " + mListTable.dot(DOM_PK_ID)
                         + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
                         + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
@@ -1178,7 +1177,7 @@ public class BooklistBuilder
 
             // Save, compile and run this statement
             SynchronizedStatement stmt = mStatements.add("Level" + i, summarySql);
-            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
                 Logger.info(this, "baseBuildWithoutTriggers",
                             "add|" + "Level" + i + '|' + stmt.toString());
             }
@@ -1219,7 +1218,7 @@ public class BooklistBuilder
 //                    + '(' + DOM_BL_NODE_LEVEL + ',' + DOM_BL_NODE_EXPANDED
 //                    + ',' + DOM_BL_ROOT_KEY + ')';
             SynchronizedStatement stmt = mStatements.add(STMT_IX_1, ix1Sql);
-            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
                 Logger.info(this, "baseBuildWithoutTriggers",
                             "add|" + STMT_IX_1 + '|' + stmt.toString());
             }
@@ -1227,7 +1226,7 @@ public class BooklistBuilder
             stmt.execute();
         }
 
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             for (
                 //noinspection UnusedAssignment
                     int i = 0; i < mStyle.groupCount();
@@ -1347,7 +1346,6 @@ public class BooklistBuilder
 
             case BooklistGroup.RowKind.BOOKSHELF:
                 buildInfoHolder.hasGroupBOOKSHELF = true;
-
                 summary.addDomain(booklistGroup.getDisplayDomain(),
                                   TBL_BOOKSHELF.dot(DOM_BOOKSHELF),
                                   SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
@@ -1560,7 +1558,7 @@ public class BooklistBuilder
                 break;
 
             default:
-                throw new RTE.IllegalTypeException("" + booklistGroup.getKind());
+                throw new IllegalTypeException("" + booklistGroup.getKind());
         }
     }
 
@@ -1611,7 +1609,7 @@ public class BooklistBuilder
         // Join with series to get name
         join.leftOuterJoin(TBL_SERIES);
 
-        return join.toString();
+        return join.getSql();
     }
 
     /**
@@ -1754,7 +1752,7 @@ public class BooklistBuilder
                     + "\n END";
             SynchronizedStatement stmt = mStatements.add(tgName, tgSql);
 
-            if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
                 Logger.info(this, "makeNestedTriggers",
                             "add|" + tgName + '|' + stmt.toString());
             }
@@ -1776,7 +1774,7 @@ public class BooklistBuilder
                 + "\n END";
 
         SynchronizedStatement stmt = mStatements.add(currentValueTriggerName, tgSql);
-        if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
             Logger.info(this, "makeNestedTriggers",
                         "add|" + currentValueTriggerName
                                 + '|' + stmt.toString());
@@ -1929,7 +1927,7 @@ public class BooklistBuilder
         SynchronizedStatement stmt =
                 mStatements.add(tgForwardName, oneBigTrigger.toString());
 
-        if (DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
             Logger.info(this, "makeSingleTrigger",
                         "add|" + tgForwardName + '|' + stmt.toString());
         }
@@ -2184,7 +2182,7 @@ public class BooklistBuilder
             count = (int) stmt.count();
         }
 
-        if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             Logger.info(this, "pseudoCount",
                         name + '=' + count + " completed in "
                                 + (System.currentTimeMillis() - t0) + "ms");
@@ -2314,7 +2312,7 @@ public class BooklistBuilder
                 deleteListNodeSettings();
             }
 
-            if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Logger.info(this, "expandAll", (System.currentTimeMillis() - t0) + "ms");
             }
 
@@ -2450,7 +2448,7 @@ public class BooklistBuilder
      */
     private void cleanup(final boolean isFinalize) {
         if (!mStatements.isEmpty()) {
-            if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
                 Logger.info(this, "cleanup",
                             "Finalizing with active mStatements (this is not an error): ");
                 for (String name : mStatements.getNames()) {
@@ -2462,7 +2460,7 @@ public class BooklistBuilder
         }
 
         if (mNavTable != null) {
-            if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
                 Logger.info(this, "cleanup",
                             "Finalizing with mNavTable (this is not an error)");
             }
@@ -2475,7 +2473,7 @@ public class BooklistBuilder
             }
         }
         if (mListTable != null) {
-            if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG && isFinalize) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
                 Logger.info(this, "cleanup",
                             "Finalizing with mListTable (this is not an error)");
             }
@@ -2490,7 +2488,7 @@ public class BooklistBuilder
 
         mDb.close();
 
-        if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             if (!mDebugReferenceDecremented) {
                 // Only de-reference once!
                 Logger.info(this, "cleanup",
@@ -2534,7 +2532,7 @@ public class BooklistBuilder
          * Constructor.
          */
         private CompatibilityMode() {
-            int mode = Prefs.getListPreference(R.string.pk_bob_list_generation, PREF_MODE_DEFAULT);
+            int mode = App.getListPreference(Prefs.pk_bob_list_generation, PREF_MODE_DEFAULT);
             // we'll always use triggers unless we're in 'ancient' mode
             useTriggers = mode != PREF_MODE_OLD_STYLE;
 
@@ -2545,7 +2543,7 @@ public class BooklistBuilder
                             // or if the user explicitly asked for them
                             || (mode == PREF_MODE_NESTED_TRIGGERS);
 
-            if (DEBUG_SWITCHES.BOOKLIST_BUILDER && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
                 Logger.info(this, "CompatibilityMode",
                             "listMode          : " + mode);
                 Logger.info(this, "CompatibilityMode",
@@ -2777,7 +2775,7 @@ public class BooklistBuilder
             //has to be withConstraints==false
             mListTable.create(mSyncedDb, false);
 
-            if (DEBUG_SWITCHES.TIMERS && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Logger.info(this, "recreateTable",
                             "Drop   = " + (t1 - t0));
                 Logger.info(this, "recreateTable",

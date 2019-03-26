@@ -94,9 +94,9 @@ public abstract class BookSearchBaseFragment
         if ((mSearchSites & SearchSites.Site.SEARCH_LIBRARY_THING) != 0) {
             LibraryThingManager.showLtAlertIfNecessary(mActivity, false, "search");
         }
-
         if (!NetworkUtils.isNetworkAvailable(mActivity)) {
-            UserMessage.showUserMessage(mActivity, R.string.error_no_internet_connection);
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(), R.string.error_no_internet_connection);
         }
     }
 
@@ -110,7 +110,7 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.tab_lbl_search_sites)
+        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.lbl_search_sites)
             .setIcon(R.drawable.ic_search)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
@@ -158,11 +158,11 @@ public abstract class BookSearchBaseFragment
                         @NonNull final String titleSearchText,
                         @NonNull final String isbnSearchText) {
 
-        if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
-            Logger.info(this, "startSearch",
-                    "isbn=" + isbnSearchText
-                    + "|author=" + authorSearchText
-                    + "|title=" + titleSearchText);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+            Logger.info(this, Tracker.State.Enter,"startSearch",
+                        "isbn=" + isbnSearchText,
+                                 "author=" + authorSearchText,
+                                 "title=" + titleSearchText);
         }
 
         try {
@@ -238,7 +238,7 @@ public abstract class BookSearchBaseFragment
 
             default:
                 // lowest level of our Fragment, see if we missed anything
-                Logger.info(this,"BookSearchBaseFragment.onActivityResult",
+                Logger.info(this, "BookSearchBaseFragment.onActivityResult",
                             "NOT HANDLED:"
                                     + " requestCode=" + requestCode + ", resultCode=" + resultCode);
                 super.onActivityResult(requestCode, resultCode, data);

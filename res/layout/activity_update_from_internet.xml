@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -12,7 +13,8 @@
         android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <TextView
         android:id="@+id/title"
@@ -20,7 +22,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         tools:ignore="SelectableText"
-        tools:text="Anna Karenina" />
+        tools:text="Anna Karenina"
+        />
 
     <TextView
         android:id="@+id/author"
@@ -30,7 +33,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"
-        tools:text="by Lev Tolstoy" />
+        tools:text="by Lev Tolstoy"
+        />
 
     <TextView
         android:id="@+id/select_fields_blurb"
@@ -38,7 +42,8 @@
         android:text="@string/info_select_fields_to_update"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author" />
+        app:layout_constraintTop_toBottomOf="@id/author"
+        />
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -48,14 +53,16 @@
         app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_update"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/select_fields_blurb">
+        app:layout_constraintTop_toBottomOf="@id/select_fields_blurb"
+        >
 
         <LinearLayout
             android:id="@+id/manage_fields_scrollview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/border"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
             <!-- fields are added here dynamically -->
         </LinearLayout>
     </ScrollView>
@@ -67,5 +74,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

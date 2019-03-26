@@ -45,7 +45,7 @@ public final class DateUtils {
      */
     private static final TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
     /**
-     * Date formatter for {@link #toPrettyDate(Date)}.
+     * Date formatter for {@link #toPrettyDate}.
      * only used to display dates in the local timezone.
      */
     private static final DateFormat PRETTY_DATE_FORMATTER =
@@ -172,38 +172,33 @@ public final class DateUtils {
     /* ------------------------------------------------------------------------------------------ */
 
     /**
-     * Pretty format a (potentially) partial SQL date; local timezone.
+     * Pretty format a (potentially partial) SQL date; local timezone.
+     *
+     * @return human readable date string
      *
      * @throws NumberFormatException on failure to parse
      */
-    public static String toPrettyDate(@NonNull final String partialDate)
+    public static String toPrettyDate(@NonNull final String dateString)
             throws NumberFormatException {
-        switch (partialDate.length()) {
-            // YYYY-MM-DD
+        switch (dateString.length()) {
             case 10:
-                Date d = parseDate(partialDate);
-                if (d != null) {
-                    return toPrettyDate(d);
+                // YYYY-MM-DD
+                Date date = parseDate(dateString);
+                if (date != null) {
+                    return PRETTY_DATE_FORMATTER.format(date);
                 }
                 break;
 
-            // YYYY-MM
+
             case 7:
-                int month = Integer.parseInt(partialDate.substring(5));
+                // YYYY-MM
+                int month = Integer.parseInt(dateString.substring(5));
                 // MMM YYYY
-                return getMonthName(month, true) + ' ' + partialDate.substring(0, 4);
+                return getMonthName(month, true) + ' ' + dateString.substring(0, 4);
         }
 
         // YYYY (or whatever came in)
-        return partialDate;
-    }
-
-    /**
-     * Pretty format a date; local timezone.
-     */
-    @NonNull
-    public static String toPrettyDate(@NonNull final Date date) {
-        return PRETTY_DATE_FORMATTER.format(date);
+        return dateString;
     }
 
     /**
@@ -218,6 +213,8 @@ public final class DateUtils {
 
     /**
      * Convert a Date to a UTC based SQL date-string.
+     *
+     * @return SQL date-string
      */
     @NonNull
     public static String utcSqlDate(@NonNull final Date date) {
@@ -226,6 +223,8 @@ public final class DateUtils {
 
     /**
      * Convert a Date to a UTC based SQL datetime-string.
+     *
+     * @return SQL datetime-string
      */
     @NonNull
     public static String utcSqlDateTime(@NonNull final Date date) {

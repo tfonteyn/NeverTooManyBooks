@@ -28,7 +28,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.database.DBA;
 
 /**
@@ -46,7 +46,7 @@ public class SearchSuggestionProvider
      * <p>
      * android:authorities="${packageName}.SearchSuggestionProvider"
      */
-    private static final String AUTHORITY = BookCatalogueApp.getAppContext().getPackageName()
+    private static final String AUTHORITY = App.getAppPackageName()
             + ".SearchSuggestionProvider";
 
     private static final int MODE = DATABASE_MODE_QUERIES;

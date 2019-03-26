@@ -3,42 +3,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        style="@style/toolbar" />
+        style="@style/toolbar"
+        />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/border"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <TextView
                 style="@style/txt_blurb_medium"
-                android:text="@string/lt_info" />
+                android:text="@string/lt_info"
+                />
 
             <TextView
                 android:id="@+id/register_url"
                 style="@style/link_url"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/lt_register_text" />
+                android:text="@string/lt_register_text"
+                />
 
             <TextView
                 android:id="@+id/dev_key_url"
                 style="@style/link_url"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/lt_dev_key_text" />
+                android:text="@string/lt_dev_key_text"
+                />
 
             <TextView
                 style="@style/txt_blurb_medium"
-                android:text="@string/lt_got_key" />
+                android:text="@string/lt_got_key"
+                />
 
             <!-- no style used on purpose -->
             <EditText
@@ -48,25 +56,29 @@
                 android:hint="@string/lt_developer_key"
                 android:inputType="text"
                 android:maxLines="1"
-                tools:ignore="Autofill" />
+                tools:ignore="Autofill"
+                />
 
             <Button
                 android:id="@+id/confirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/btn_confirm_save" />
+                android:text="@string/btn_confirm_save"
+                />
 
             <TextView
                 style="@style/txt_blurb_medium"
-                android:text="@string/lt_reset_messages_info" />
+                android:text="@string/lt_reset_messages_info"
+                />
 
             <Button
                 android:id="@+id/reset_messages"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/btn_reset" />
+                android:text="@string/btn_reset"
+                />
         </LinearLayout>
 
     </ScrollView>

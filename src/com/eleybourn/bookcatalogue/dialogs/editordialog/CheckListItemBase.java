@@ -1,5 +1,6 @@
 package com.eleybourn.bookcatalogue.dialogs.editordialog;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * The main reason that you need to extend this is because each type of encapsulated item
  * will have its own way of storing a label (to display next to the checkbox).
  * Using .toString is not really a nice solution, hence... extends this class
- * and implement: String {@link CheckListItem#getLabel()}
+ * and implement: String {@link CheckListItem#getLabel}
  *
  * @param <T> type of encapsulated item
  */
@@ -71,17 +72,15 @@ public abstract class CheckListItemBase<T>
     }
 
     @Override
-    public String getLabel() {
-        throw new java.lang.UnsupportedOperationException("must be overridden");
-    }
+    public abstract String getLabel(@NonNull final Context context);
 
     @Override
-    public boolean isSelected() {
+    public boolean isChecked() {
         return mSelected;
     }
 
     @Override
-    public void setSelected(final boolean selected) {
+    public void setChecked(final boolean selected) {
         mSelected = selected;
     }
 
@@ -96,7 +95,7 @@ public abstract class CheckListItemBase<T>
     public ArrayList<T> extractList(@NonNull final List<CheckListItem<T>> list) {
         ArrayList<T> result = new ArrayList<>();
         for (CheckListItem<T> entry : list) {
-            if (entry.isSelected()) {
+            if (entry.isChecked()) {
                 result.add(entry.getItem());
             }
         }

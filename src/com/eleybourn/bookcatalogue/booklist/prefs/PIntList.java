@@ -3,12 +3,11 @@ package com.eleybourn.bookcatalogue.booklist.prefs;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.utils.Prefs;
+import com.eleybourn.bookcatalogue.App;
 
 /**
  * An List<Integer> is stored as a CSV String.
@@ -18,7 +17,13 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
 public class PIntList
         extends PCollectionBase<Integer, List<Integer>> {
 
-    protected PIntList(@StringRes final int key,
+    /**
+     * Constructor.
+     *
+     * @param key  key of preference
+     * @param uuid of the style
+     */
+    protected PIntList(@NonNull final String key,
                        @NonNull final String uuid) {
         super(key, uuid, new ArrayList<Integer>());
         mNonPersistedValue = new ArrayList<>();
@@ -37,7 +42,7 @@ public class PIntList
         if (mUuid.isEmpty()) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            String sValues = Prefs.getPrefs(mUuid).getString(getKey(), null);
+            String sValues = App.getPrefs(mUuid).getString(getKey(), null);
             if (sValues == null || sValues.isEmpty()) {
                 return mDefaultValue;
             }

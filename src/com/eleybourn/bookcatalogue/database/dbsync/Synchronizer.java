@@ -3,32 +3,32 @@ package com.eleybourn.bookcatalogue.database.dbsync;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
+import com.eleybourn.bookcatalogue.debug.Logger;
+
 /**
  * Implementation of a Readers/Writer lock that is fully reentrant.
- *
+ * <p>
  * Because SQLite throws exception on locking conflicts, this class can be used to serialize
  * WRITE access while allowing concurrent read access.
- *
+ * <p>
  * Each logical database should have its own {@link Synchronizer}
  * Before any read, or group of reads, a call to getSharedLock() should be made.
  * A call to getExclusiveLock() should be made before any update.
  * Multiple calls can be made as necessary so long as an unlock() is called for all get*()
  * calls by using the SyncLock object returned from the get*() call.
- *
+ * <p>
  * These can be called in any order and locks in the current thread never block requests.
- *
+ * <p>
  * Deadlocks are not possible because the implementation involves a single lock object.
- *
+ * <p>
  * NOTE: This lock can cause writer starvation since it does not introduce pending locks.
  *
  * @author Philip Warner
@@ -122,7 +122,7 @@ public class Synchronizer {
 
     /**
      * Return when exclusive access is available.
-     *
+     * <p>
      * - take a lock on the collection
      * - see if there are any other locks
      * - if not, return with the lock still held -- this prevents more EX or SH locks.
@@ -166,14 +166,14 @@ public class Synchronizer {
                 }
             }
         } finally {
-            if (DEBUG_SWITCHES.TIMERS && DEBUG_SWITCHES.DB_SYNC && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS && DEBUG_SWITCHES.DB_SYNC) {
                 if (mLock.isHeldByCurrentThread()) {
                     Logger.info(this, "getExclusiveLock",
                                 ourThread.getName() + " waited "
                                         + (System.currentTimeMillis() - t0)
                                         + "ms for EXCLUSIVE access");
                 } else {
-                    Logger.info(this,"getExclusiveLock",
+                    Logger.info(this, "getExclusiveLock",
                                 ourThread.getName() + " waited "
                                         + (System.currentTimeMillis() - t0)
                                         + "ms AND FAILED TO GET EXCLUSIVE access");
@@ -212,12 +212,15 @@ public class Synchronizer {
         LockType getType();
     }
 
-    public static class LockException extends RuntimeException {
+    public static class LockException
+            extends RuntimeException {
+
         private static final long serialVersionUID = -6266684663589932716L;
 
         LockException(@Nullable final String msg) {
             super(msg);
         }
+
         LockException(@SuppressWarnings("SameParameterValue") @Nullable final String msg,
                       @Nullable final Exception inner) {
             super(msg, inner);

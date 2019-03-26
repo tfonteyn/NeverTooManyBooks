@@ -4,7 +4,6 @@ import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.entities.Book;
-import com.eleybourn.bookcatalogue.settings.FieldVisibilitySettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -62,22 +61,32 @@ public final class UniqueId {
     /** Activity Request Code. */
     public static final int REQ_NAV_PANEL_ADMIN = 1_002;
     /** Activity Request Code. */
+    public static final int REQ_NAV_PANEL_SETTINGS = 1_003;
+    /** Activity Request Code. */
+    public static final int REQ_NAV_PANEL_EDIT_BOOKSHELVES = 1_004;
+
+    /** Activity Request Code. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_BOOK_EDIT = 2_000;
     /** Activity Request Code. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_BOOK_DUPLICATE = 2_001;
+
     /** Activity Request Code. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_ANDROID_PERMISSIONS = 9_000;
-    /** Activity Request Code. */
-    public static final int REQ_NAV_PANEL_EDIT_BOOKSHELVES = 1_003;
+
     /** generic delete. */
     public static final int ACTIVITY_RESULT_DELETED_SOMETHING = 10_001;
     /** {@link PreferredStylesActivity} need distinct code as it can trickle up. */
     public static final int ACTIVITY_RESULT_OK_BooklistPreferredStyles = 10_101;
     /** need distinct code as it can trickle up. */
     public static final int ACTIVITY_RESULT_OK_BooklistStyleProperties = 10_102;
+
+    /** result code from an Activity received in onActivityResult
+     * indicating we should restart.
+     */
+    public static final int ACTIVITY_RESULT_RESTART_ON_RESUME = 10_200;
 
     /**
      * Bundle keys for ParcelableArrayList<Entity>.
@@ -176,9 +185,9 @@ public final class UniqueId {
      * <p>
      * - Indicate if we 'have' a thumbnail (in which case {@link StorageUtils#getTempCoverFile()}
      * will point to that image.
-     *
+     * <p>
      * - Flag to indicate we 'want' a thumbnail, in {@link Fields.FieldUsage.Usage}
-     * - Visibility indicator, see {@link FieldVisibilitySettingsFragment}
+     * - Visibility flag
      * <p>
      * boolean
      */

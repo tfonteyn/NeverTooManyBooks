@@ -126,7 +126,7 @@ public final class StandardDialogs {
                                        final long bookId,
                                        @NonNull final Runnable onDeleted) {
 
-        String UNKNOWN = '<' + context.getString(R.string.unknown_uc) + '>';
+        String UNKNOWN = '<' + context.getString(R.string.unknown).toUpperCase() + '>';
         List<Author> authorList = db.getAuthorsByBookId(bookId);
 
         String title = db.getBookTitle(bookId);

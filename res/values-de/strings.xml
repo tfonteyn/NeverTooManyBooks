@@ -190,7 +190,7 @@
     <string name="import_error_csv_file_must_contain_any_column">
         Die Datei muss eine Spalte mit den folgenden Namen enthalten: %1$s
     </string>
-    <string name="error_column_is_blank">Die Spalte %1$s ist in Zeile %2$s leer</string>
+    <string name="error_column_is_blank">Die Spalte %1$s ist in Zeile %2$d leer</string>
     <string name="error_columns_are_blank">Die Spalten %1$s sind in der Zeile %2$d leer</string>
     <string name="btn_confirm_save">Speichern</string>
     <string name="btn_confirm_add">Hinzufügen</string>
@@ -337,9 +337,9 @@
         ziehen Sie bitte in Betracht, den ‘Sende Informationen’ Knopf zuerst zu benutzen.
     </string>
     <string name="cleanup_files">Dateien bereinigen</string>
-    <string name="megabytes">%.2f MB</string>
-    <string name="kilobytes">%.2f kB</string>
-    <string name="bytes">%.0f Bytes</string>
+    <string name="megabytes">%.2fMB</string>
+    <string name="kilobytes">%.2fkB</string>
+    <string name="bytes">%.0fB</string>
     <string name="debug_subject">Gesammelte Debug-Informationen</string>
     <string name="debug_body">
         Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.
@@ -407,7 +407,6 @@
     <string name="gr_title_send_book">Bücher zu Goodreads senden</string>
     <string name="gr_tq_legacy_task">Veraltete Aufgaben</string>
     <string name="gr_tq_occurred_at">(ist bei %1$s aufgetreten)</string>
-    <string name="unknown_uc">UNBEKANNT</string>
     <string name="warning_book_was_deleted_uc">DIESES BUCH WURDE GELÖSCHT</string>
     <string name="lbl_by_author_s">von %1$s</string>
     <string name="warning_no_matching_book_found">Kein passendes Buch gefunden</string>
@@ -432,7 +431,7 @@
         in Goodreads nicht auffindbaren ISBN
     </string>
     <string name="x_of_y">%1$d von %2$d</string>
-    <string name="gr_send_book_to_goodreads">Buch %1$s an Goodreads senden</string>
+    <string name="gr_send_book_to_goodreads">Buch %1$d an Goodreads senden</string>
     <string name="erase_cover_cache">Zwischenspeicher für Cover-Bilder löschen</string>
     <string name="acra_resToastText">
         &APP_NAME; ist abgestürzt. Bitte helfen Sie uns bei der Verbesserung der App,
@@ -533,7 +532,7 @@
     </string>
     <string name="warning_required_field_x">%1$s darf nicht leer sein</string>
     <string name="edit">Bearbeiten</string>
-    <string name="lbl_preferences">Einstellungen</string>
+    <string name="lbl_settings">Einstellungen</string>
     <string name="error_unexpected_error">
         Ein unerwarteter Fehler ist aufgetreten. Bitte senden Sie die Details an den Support
         über den  Eintrag ‘Hilfe’ in Hauptmenü
@@ -659,7 +658,7 @@
     <string name="displaying_n_books_in_m_entries">
         %1$d Bücher in %2$d Einträgen werden angezeigt
     </string>
-    <string name="loan_book_available">Verfügbar</string>
+    <string name="lbl_loan_book_available">Verfügbar</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s ist keine gültige ISBN</string>
     <string name="warning_cover_not_found2">Kein Bild gefunden</string>
     <string name="warning_cover_copy_failed">Konnte Bild nicht kopieren</string>
@@ -744,7 +743,7 @@
         \nSie sollten diese Datei händisch an einen sicheren Ort kopieren, um Ihre Daten vor
         Beschädigung, Verlust oder Diebstahl zu schützen.
     </string>
-    <string name="progress_msg_covers">%1$s Cover bearbeitet (%2$s offen)</string>
+    <string name="progress_msg_covers">%1$d Cover bearbeitet (%2$d offen)</string>
     <string name="lbl_advanced_options">Erweiterte Optionen</string>
     <string name="progress_msg_backing_up">Sichere…</string>
     <string name="progress_msg_importing">Importiere…</string>
@@ -801,7 +800,7 @@
         Diese Option wird für ältere Archivversionen nicht unterstützt.
     </string>
     <!-- Part of the progress message displayed when importing books -->
-    <string name="progress_msg_n_created_m_updated">%1$s erzeugt, %2$s aktualisiert</string>
+    <string name="progress_msg_n_created_m_updated">%1$d erzeugt, %2$d aktualisiert</string>
     <!--  Explanatory text for ‘export’ dialogue -->
     <string name="title_export_books">
         Die Bücher aus Ihrem Katalog werden exportiert. Tippen Sie auf eine der beiden Optionen,
@@ -809,7 +808,7 @@
     </string>
     <!-- Displayed in progress dialog when exporting covers in incremental mode -->
     <string name="progress_msg_covers_skip">
-        %1$s Cover bearbeitet (%2$s fehlen, %3$s übersprungen)
+        %1$d Cover bearbeitet (%2$d fehlen, %3$d übersprungen)
     </string>
 
     <!-- Explanatory note for ‘export all’ option -->
@@ -929,7 +928,7 @@
     <string name="tab_lbl_content">Inhalt</string>
     <string name="warning_thing_already_exists">%1$s existiert bereits</string>
     <string name="info_tap_to_edit">Tippen Sie hier, um den Namen zu bearbeiten</string>
-    <string name="lbl_publishing">Veröffentlichung</string>
+    <string name="lbl_publication">Veröffentlichung</string>
     <string name="lbl_by_author">Durch</string>
     <string name="error_email_failed">Das Senden der E-Mail ist fehlgeschlagen.</string>
     <string name="error_network_timeout">Keine Antwort, bitte versuchen Sie es erneut</string>
@@ -957,7 +956,8 @@
         Suchkonfigurationsfehler. Öffnen Sie die Admin-Seite und überprüfen Sie die
         Einstellungen für die Suchseiten
     </string>
-    <string name="tab_lbl_search_site_order">Reihenfolge</string>
+    <string name="lbl_search_sites">Suchmaschinen</string>
+    <string name="lbl_search_site_order">Reihenfolge</string>
     <string name="search_with_text">Suche: %1$s</string>
     <string name="btn_options">Optionen</string>
     <string name="lbl_price_paid">Bezahlt</string>
@@ -978,7 +978,6 @@
     <string name="progress_msg_cleaning_database">Bereinigung der Datenbank…</string>
     <string name="progress_msg_updating_languages">Sprachen werden aktualisiert…</string>
     <string name="menu_internet_update_fields">Felder aktualisieren</string>
-    <string name="tab_lbl_search_sites">Suchmaschinen</string>
     <string name="progress_msg_process_booklist_style">Bücherlistenstile…</string>
     <string name="usage_skip">Überspringen</string>
     <string name="progress_msg_saving_image">Bild speichern…</string>
@@ -992,6 +991,8 @@
     <string name="title_edit_location">Standortdetails bearbeiten</string>
     <string name="menu_loan_return_book">Geliehenes Buch ist zurück</string>
     <string name="error_google_play_missing">Google Play / Market ist nicht installiert</string>
+    <string name="lbl_style">Stil</string>
+    <string name="lbl_styles">Stile</string>
 
     <!-- Begin: Added/Updated in [Next Version] DO NOT TRANSLATE YET! MAY CHANGE OR BE DELETED! -->
 

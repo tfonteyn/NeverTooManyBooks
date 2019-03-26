@@ -20,6 +20,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 
 /**
@@ -29,9 +30,7 @@ import com.eleybourn.bookcatalogue.dialogs.HintManager;
  * If the uuid is null, then we're editing the global defaults.
  */
 public class BooklistStyleSettingsFragment
-        extends BaseSettingsFragment
-        implements
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        extends BaseSettingsFragment {
 
     /** Fragment manager tag. */
     public static final String TAG = BooklistStyleSettingsFragment.class.getSimpleName();
@@ -49,12 +48,14 @@ public class BooklistStyleSettingsFragment
                                     @Nullable final String rootKey) {
 
         mStyle = requireArguments().getParcelable(REQUEST_BKEY_STYLE);
-        Objects.requireNonNull(mStyle);
-        if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
-            Logger.info(this, "onCreatePreferences", mStyle.toString());
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
+            //noinspection ConstantConditions
+            Logger.info(this, Tracker.State.Enter,
+                        "onCreatePreferences", mStyle.toString());
         }
 
         // We use the style UUID as the filename for the prefs.
+        //noinspection ConstantConditions
         String uuid = mStyle.getUuid();
         if (!uuid.isEmpty()) {
             getPreferenceManager().setSharedPreferencesName(uuid);
@@ -64,23 +65,24 @@ public class BooklistStyleSettingsFragment
 
         PreferenceScreen screen = getPreferenceScreen();
 
-        // doing this in our base class. TODO: use this for all prefs instead of our own code.
+        // doing this in our base class. TODO: use this for all prefs instead of our own code
 //        EditTextPreference np =
 //            screen.findPreference(BookCatalogueApp.getResString(R.string.name));
 //        np.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
         // add the preferences from all groups:
         for (BooklistGroup group : mStyle.getGroups()) {
-            group.addPreferences(screen);
+            group.addPreferencesTo(screen);
         }
 
+        Activity activity = requireActivity();
         // Set the title (not the screen title)
         if (mStyle.getId() == 0) {
-            requireActivity().setTitle(
-                    getString(R.string.title_clone_style_colon_name, mStyle.getDisplayName()));
+            activity.setTitle(
+                    getString(R.string.title_clone_style_colon_name, mStyle.getDisplayName(activity)));
         } else {
-            requireActivity().setTitle(
-                    getString(R.string.title_edit_style_colon_name, mStyle.getDisplayName()));
+            activity.setTitle(
+                    getString(R.string.title_edit_style_colon_name, mStyle.getDisplayName(activity)));
         }
         // Display hint if required
         if (savedInstanceState == null) {
@@ -97,7 +99,7 @@ public class BooklistStyleSettingsFragment
         Intent data = new Intent()
                 .putExtra(UniqueId.KEY_ID, mStyle.getId())
                 .putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
-        requireActivity().setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties, data);
+        activity.setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties, data);
     }
 
     /**
@@ -120,7 +122,7 @@ public class BooklistStyleSettingsFragment
         //noinspection ConstantConditions
         Preference preference = findPreference(getContext().getString(R.string.pg_groupings));
         if (preference != null) {
-            preference.setSummary(mStyle.getGroupListDisplayNames());
+            preference.setSummary(mStyle.getGroupListDisplayNames(getContext()));
 
             preference.getIntent().putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
             preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

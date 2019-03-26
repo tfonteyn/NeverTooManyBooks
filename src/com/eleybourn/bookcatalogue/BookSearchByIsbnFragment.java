@@ -26,7 +26,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
 import com.eleybourn.bookcatalogue.scanner.ScannerManager;
 import com.eleybourn.bookcatalogue.searches.SearchCoordinator;
-import com.eleybourn.bookcatalogue.utils.IsbnUtils;
+import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.SoundManager;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -61,6 +61,8 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 // getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 // hide on entry, field gets focus, up it pops
 //  getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+// field gets focus, up it pops
+// getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
 
 public class BookSearchByIsbnFragment
         extends BookSearchBaseFragment {
@@ -237,12 +239,12 @@ public class BookSearchByIsbnFragment
             public void onCheckedChanged(@NonNull final CompoundButton buttonView,
                                          final boolean isChecked) {
                 if (isChecked) {
-                                        // over-optimisation... asin is used less then ISBN
+                    // over-optimisation... asin is used less then ISBN
                     DigitsKeyListener asinListener = DigitsKeyListener.getInstance(ASIN_DIGITS);
                     //noinspection ConstantConditions
                     mIsbnView.setKeyListener(asinListener);
                 } else {
-                                        //noinspection ConstantConditions
+                    //noinspection ConstantConditions
                     mIsbnView.setKeyListener(ISBN_LISTENER);
                     // remove invalid digits
                     String txt = mIsbnView.getText().toString();
@@ -291,7 +293,7 @@ public class BookSearchByIsbnFragment
         }
 
         // intercept UPC numbers
-        mIsbnSearchText = IsbnUtils.upc2isbn(mIsbnSearchText);
+        mIsbnSearchText = ISBN.upc2isbn(mIsbnSearchText);
         if (mIsbnSearchText.isEmpty()) {
             return;
         }
@@ -300,8 +302,7 @@ public class BookSearchByIsbnFragment
         final boolean allowAsin = mAllowAsinCb != null && mAllowAsinCb.isChecked();
 
         // not a valid ISBN/ASIN ?
-        if (!IsbnUtils.isValid(mIsbnSearchText) && (!allowAsin || !IsbnUtils.isValidAsin(
-                mIsbnSearchText))) {
+        if (!ISBN.isValid(mIsbnSearchText) && (!allowAsin || !ISBN.isValidAsin(mIsbnSearchText))) {
             if (mScanMode) {
                 // Optionally beep if scan failed.
                 SoundManager.beepLow(mActivity);
@@ -312,7 +313,8 @@ public class BookSearchByIsbnFragment
             } else {
                 msg = R.string.warning_x_is_not_a_valid_isbn;
             }
-            UserMessage.showUserMessage(mActivity, getString(msg, mIsbnSearchText));
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(mIsbnView, getString(msg, mIsbnSearchText));
             if (mScanMode) {
                 // reset the now-discarded details
                 mIsbnSearchText = "";

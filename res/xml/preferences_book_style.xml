@@ -6,7 +6,7 @@
 
         <EditTextPreference
             android:hint="@string/info_tap_to_edit"
-            android:key="@string/pk_bob_style_name"
+            android:key="BookList.Style.Name"
             android:selectAllOnFocus="true"
             android:title="@string/name" />
 
@@ -26,28 +26,28 @@
                 android:defaultValue="-1"
                 android:entries="@array/pe_bob_filter_read"
                 android:entryValues="@array/pv_bob_filter_values"
-                android:key="@string/pk_bob_filter_read"
+                android:key="BookList.Style.Filter.Read"
                 android:title="@string/lbl_read" />
 
             <ListPreference
                 android:defaultValue="-1"
                 android:entries="@array/pe_bob_filter_signed"
                 android:entryValues="@array/pv_bob_filter_values"
-                android:key="@string/pk_bob_filter_signed"
+                android:key="BookList.Style.Filter.Signed"
                 android:title="@string/lbl_signed" />
 
             <ListPreference
                 android:defaultValue="-1"
                 android:entries="@array/pe_bob_filter_anthology"
                 android:entryValues="@array/pv_bob_filter_values"
-                android:key="@string/pk_bob_filter_anthology"
+                android:key="BookList.Style.Filter.Anthology"
                 android:title="@string/lbl_anthology" />
 
             <ListPreference
                 android:defaultValue="-1"
                 android:entries="@array/pe_bob_filter_loaned"
                 android:entryValues="@array/pv_bob_filter_values"
-                android:key="@string/pk_bob_filter_loaned"
+                android:key="BookList.Style.Filter.Loaned"
                 android:title="@string/lbl_loaned" />
 
         </PreferenceScreen>
@@ -59,27 +59,27 @@
 
             <SwitchPreference
                 android:defaultValue="false"
-                android:key="@string/pk_bob_show_bookshelves"
+                android:key="BookList.Style.Show.Bookshelves"
                 android:title="@string/lbl_bookshelves_long" />
 
             <SwitchPreference
                 android:defaultValue="false"
-                android:key="@string/pk_bob_show_location"
+                android:key="BookList.Style.Show.Location"
                 android:title="@string/lbl_location" />
 
             <SwitchPreference
                 android:defaultValue="false"
-                android:key="@string/pk_bob_show_publisher"
+                android:key="BookList.Style.Show.Publisher"
                 android:title="@string/lbl_publisher" />
 
             <SwitchPreference
                 android:defaultValue="false"
-                android:key="@string/pk_bob_show_format"
+                android:key="BookList.Style.Show.Format"
                 android:title="@string/lbl_format" />
 
             <SwitchPreference
                 android:defaultValue="false"
-                android:key="@string/pk_bob_show_author"
+                android:key="BookList.Style.Show.Author"
                 android:title="@string/lbl_author" />
         </PreferenceScreen>
 
@@ -88,7 +88,7 @@
             android:entries="@array/pe_bob_header"
             android:entryValues="@array/pv_bob_header"
             android:icon="@drawable/ic_view_headline"
-            android:key="@string/pk_bob_header"
+            android:key="BookList.Style.Show.HeaderInfo"
             android:title="@string/pt_bob_header" />
 
         <ListPreference
@@ -96,7 +96,7 @@
             android:entries="@array/pe_bob_item_size"
             android:entryValues="@array/pv_bob_item_size"
             android:icon="@drawable/ic_format_size"
-            android:key="@string/pk_bob_item_size"
+            android:key="BookList.Style.Scaling"
             android:title="@string/pt_bob_item_size" />
 
     </PreferenceCategory>
@@ -108,7 +108,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_sort_by_alpha"
-            android:key="@string/pk_bob_sort_author_name"
+            android:key="BookList.Style.Sort.Author.GivenFirst"
             android:summaryOff="@string/pv_bob_format_author_name_family_first"
             android:summaryOn="@string/pv_bob_format_author_name_given_first"
             android:title="@string/pt_bob_sort_author_name" />
@@ -129,13 +129,13 @@
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_image"
-            android:key="@string/pk_bob_thumbnails_show"
+            android:key="BookList.Style.Show.Thumbnails"
             android:title="@string/pt_bob_thumbnails_show" />
 
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_photo_size_select_large"
-            android:key="@string/pk_bob_thumbnails_show_large"
+            android:key="BookList.Style.Show.LargeThumbnails"
             android:title="@string/pt_bob_thumbnails_show_large" />
 
     </PreferenceCategory>

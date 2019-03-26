@@ -6,4 +6,5 @@
     android:layout_margin="@dimen/border_double"
     android:background="@android:drawable/list_selector_background"
     android:textAppearance="?android:attr/textAppearanceMedium"
-    tools:text="some text option" />
+    tools:text="some text option"
+    />

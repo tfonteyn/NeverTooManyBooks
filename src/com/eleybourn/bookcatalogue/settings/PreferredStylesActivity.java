@@ -120,7 +120,7 @@ public class PreferredStylesActivity
                                    final long id) {
         BooklistStyle style = mListAdapter.getItem(position);
         //noinspection ConstantConditions
-        String menuTitle = style.getDisplayName();
+        String menuTitle = style.getDisplayName(this);
 
         // legal trick to get an instance of Menu.
         mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
@@ -165,13 +165,13 @@ public class PreferredStylesActivity
 
             case R.id.MENU_STYLE_EDIT:
                 if (!style.isUserDefined()) {
-                    style = style.getClone(mDb);
+                    style = style.getClone(this, mDb);
                 }
                 editStyle(style);
                 return true;
 
             case R.id.MENU_STYLE_CLONE:
-                editStyle(style.getClone(mDb));
+                editStyle(style.getClone(this, mDb));
                 return true;
 
             default:
@@ -186,8 +186,8 @@ public class PreferredStylesActivity
      * @param style to edit
      */
     private void editStyle(@NonNull final BooklistStyle style) {
-        if (DEBUG_SWITCHES.DUMP_STYLE && BuildConfig.DEBUG) {
-            Logger.info(this, "editStyle", style.toString());
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
+            Logger.info(this, Tracker.State.Enter,"editStyle", style.toString());
         }
         Intent intent = new Intent(this, SettingsActivity.class)
                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BooklistStyleSettingsFragment.TAG)
@@ -351,10 +351,10 @@ public class PreferredStylesActivity
 
             // Setup the variant fields in the holder
             holder.style = item;
-            holder.nameView.setText(item.getDisplayName());
+            holder.nameView.setText(item.getDisplayName(getContext()));
             holder.checkableView.setChecked(item.isPreferred());
 
-            holder.groupsView.setText(item.getGroupListDisplayNames());
+            holder.groupsView.setText(item.getGroupListDisplayNames(getContext()));
             if (item.isUserDefined()) {
                 holder.kindView.setText(R.string.style_is_user_defined);
             } else {

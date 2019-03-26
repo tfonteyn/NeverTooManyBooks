@@ -17,6 +17,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.eleybourn.bookcatalogue.About;
 import com.eleybourn.bookcatalogue.AdminActivity;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.EditBookshelfListActivity;
@@ -27,6 +28,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
+import com.eleybourn.bookcatalogue.settings.SettingsActivity;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.ThemeUtils;
@@ -49,9 +51,6 @@ public abstract class BaseActivity
     @Nullable
     private NavigationView mNavigationView;
 
-    /** when a locale or theme is changed, a restart of the activity is needed. */
-    private boolean mRestartActivityOnResume;
-
     /**
      * Override this and return the id you need.
      *
@@ -64,8 +63,9 @@ public abstract class BaseActivity
     @Override
     @CallSuper
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        Tracker.enterOnCreate(this, savedInstanceState);
-        // call setTheme before super.onCreate
+        // apply the user-preferred Locale to the configuration before super.onCreate
+        LocaleUtils.applyPreferred(this);
+        // apply the Theme before super.onCreate
         setTheme(ThemeUtils.getThemeResId());
 
         super.onCreate(savedInstanceState);
@@ -83,8 +83,43 @@ public abstract class BaseActivity
         setNavigationView((NavigationView) findViewById(R.id.nav_view));
 
         initToolbar();
+    }
 
-        Tracker.exitOnCreate(this);
+    /**
+     * When resuming, recreate activity if needed.
+     */
+    @Override
+    @CallSuper
+    protected void onResume() {
+        super.onResume();
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+            Logger.info(this, Tracker.State.Enter,
+                        "BaseActivity.onResume", LocaleUtils.toString(this));
+        }
+
+        if (App.isInNeedOfRecreating()) {
+            recreate();
+            App.setIsRecreating();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Logger.info(this, Tracker.State.Exit,
+                            "BaseActivity.onResume", "Recreate!");
+            }
+
+        } else if (App.isRecreating()) {
+            App.clearRecreateFlag();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Logger.info(this, Tracker.State.Exit,
+                            "BaseActivity.onResume", "isRecreating");
+            }
+
+        } else {
+            // this is just paranoia... the flag should already have been cleared.
+            App.clearRecreateFlag();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Logger.info(this, Tracker.State.Exit,
+                            "BaseActivity.onResume", "Resuming");
+            }
+        }
     }
 
     /**
@@ -151,6 +186,11 @@ public abstract class BaseActivity
                                        UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES);
                 return true;
 
+            case R.id.nav_settings:
+                startActivityForResult(new Intent(this, SettingsActivity.class),
+                                       UniqueId.REQ_NAV_PANEL_SETTINGS);
+                return true;
+
             case R.id.nav_admin:
                 startActivityForResult(new Intent(this, AdminActivity.class),
                                        UniqueId.REQ_NAV_PANEL_ADMIN);
@@ -215,66 +255,50 @@ public abstract class BaseActivity
         // some activities MIGHT support the navigation panel, but are not (always)
         // reacting to results, or need to react. Some debug/reminder logging here
         switch (requestCode) {
+
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
-                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.info(this, "onActivityResult",
                                 "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
+
             case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES:
-                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.info(this, "onActivityResult",
                                 "REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
                 }
                 return;
+
             case UniqueId.REQ_NAV_PANEL_ADMIN:
-                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.info(this, "onActivityResult",
                                 "REQ_NAV_PANEL_ADMIN");
                 }
                 return;
 
+            case UniqueId.REQ_NAV_PANEL_SETTINGS:
+                if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
+                    Logger.info(this, "onActivityResult",
+                                "REQ_NAV_PANEL_SETTINGS");
+                }
+                return;
+
             default:
-                if (DEBUG_SWITCHES.ON_ACTIVITY_RESULT && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     // lowest level of our Activities, see if we missed anything
                     // that we should not miss.
-                    Logger.info(this, "onActivityResult", "NOT HANDLED:"
-                            + " requestCode=" + requestCode + ','
-                            + " resultCode=" + resultCode);
+                    Logger.info(this, "onActivityResult",
+                                "NOT HANDLED",
+                                "requestCode=" + requestCode + ',',
+                                "resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
-
         }
 
         Tracker.exitOnActivityResult(this);
     }
 
-    /**
-     * When resuming, restart activity if needed.
-     */
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-
-        if (mRestartActivityOnResume) {
-            if (/* always show debug */ BuildConfig.DEBUG) {
-                Logger.info(this, "onResume", "Restarting activity");
-            }
-            finish();
-            startActivity(getIntent());
-        } else {
-            // listen for changes
-            Prefs.getPrefs().registerOnSharedPreferenceChangeListener(this);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        // stop listening for changes
-        Prefs.getPrefs().unregisterOnSharedPreferenceChangeListener(this);
-        super.onPause();
-    }
 
     /**
      * Check if edits need saving.
@@ -309,18 +333,27 @@ public abstract class BaseActivity
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
 
-        if (key.equals(getString(R.string.pk_ui_theme))) {
-            if (ThemeUtils.loadPreferred()) {
-                setTheme(ThemeUtils.getThemeResId());
-            }
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+            Logger.info(this, Tracker.State.Enter, "BaseActivity.onSharedPreferenceChanged",
+                        "key=" + key);
+        }
 
-        } else if (key.equals(getString(R.string.pk_ui_language))) {
-            // Trigger a restart of this activity in onResume, if the locale has changed.
-            LocaleUtils.loadPreferred();
-            if (LocaleUtils.loadPreferred()) {
-                LocaleUtils.apply(getBaseContext().getResources());
-                mRestartActivityOnResume = true;
-            }
+        // Trigger a recreate of this activity, if the setting has changed.
+        switch (key) {
+            case Prefs.pk_ui_theme:
+                if (ThemeUtils.applyPreferred(this)) {
+                    recreate();
+                    App.setIsRecreating();
+                }
+                break;
+
+            case Prefs.pk_ui_language:
+                if (LocaleUtils.isChanged(this)) {
+                    recreate();
+                    App.setIsRecreating();
+                }
+                break;
+
         }
     }
 }

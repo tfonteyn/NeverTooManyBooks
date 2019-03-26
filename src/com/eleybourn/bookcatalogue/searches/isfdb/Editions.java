@@ -12,6 +12,7 @@ import org.jsoup.select.Elements;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.debug.Tracker;
 
 public class Editions
         extends AbstractBase {
@@ -75,8 +76,8 @@ public class Editions
             }
         }
 
-        if (DEBUG_SWITCHES.ISFDB_SEARCH && BuildConfig.DEBUG) {
-            Logger.info(this, "fetch",mEditions.toString());
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
+            Logger.info(this, Tracker.State.Exit,"fetch", mEditions.toString());
         }
         return mEditions;
     }

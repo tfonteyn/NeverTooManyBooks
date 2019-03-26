@@ -154,20 +154,62 @@ public final class Utils {
 
     /**
      * Format a number of bytes in a human readable form.
+     * <p>
+     * 2019-03-16: decimalize as per IEC: https://en.wikipedia.org/wiki/File_size
+     *
+     * @return formatted # bytes
      */
     @NonNull
     public static String formatFileSize(@NonNull final Context context,
                                         final float space) {
-        if (space < 3072) {
+        if (space < 3_000) {
             // Show 'bytes' if < 3k
             return String.format(context.getString(R.string.bytes), space);
-        } else if (space < 250 * 1024) {
+        } else if (space < 250_000) {
             // Show Kb if less than 250kB
-            return String.format(context.getString(R.string.kilobytes), space / 1024);
+            return String.format(context.getString(R.string.kilobytes), space / 1_000);
         } else {
             // Show MB otherwise...
-            return String.format(context.getString(R.string.megabytes), space / (1024 * 1024));
+            return String.format(context.getString(R.string.megabytes), space / 1_000_000);
         }
+    }
+
+    /**
+     * Convert a set where each element represents one bit to an int bitmask
+     *
+     * @param set the set
+     *
+     * @return the value
+     */
+    @NonNull
+    public static Integer toInteger(@NonNull final Set<String> set) {
+        int tmp = 0;
+        for (String s : set) {
+            tmp += Integer.parseInt(s);
+        }
+        return tmp;
+    }
+
+    /**
+     * Convert an int (bitmask) to a set where each element represents one bit.
+     *
+     * @param bitmask the value
+     *
+     * @return the set
+     */
+    @NonNull
+    public static Set<String> toStringSet(@NonNull final Integer bitmask) {
+        Set<String> set = new HashSet<>();
+        int tmp = bitmask;
+        int bit = 1;
+        while (tmp != 0) {
+            if ((tmp & 1) == 1) {
+                set.add(String.valueOf(bit));
+            }
+            bit *= 2;
+            tmp = tmp >> 1;
+        }
+        return set;
     }
 
     /**

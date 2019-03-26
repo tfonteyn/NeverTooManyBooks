@@ -3,18 +3,20 @@ package com.eleybourn.bookcatalogue.cropper;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.eleybourn.bookcatalogue.debug.Logger;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class CropImageView extends CropImageViewTouchBase {
+import com.eleybourn.bookcatalogue.debug.Logger;
+
+class CropImageView
+        extends CropImageViewTouchBase {
 
     private static final boolean ENSURE_VISIBLE = true;
 
@@ -27,7 +29,8 @@ class CropImageView extends CropImageViewTouchBase {
     private float mLastY;
     private int mMotionEdge;
 
-    public CropImageView(@NonNull Context context, @NonNull AttributeSet attrs) {
+    public CropImageView(@NonNull Context context,
+                         @NonNull AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
@@ -53,7 +56,9 @@ class CropImageView extends CropImageViewTouchBase {
 
     @Override
     @CallSuper
-    protected void zoomTo(final float scale, final float centerX, final float centerY) {
+    protected void zoomTo(final float scale,
+                          final float centerX,
+                          final float centerY) {
         super.zoomTo(scale, centerX, centerY);
         for (CropHighlightView hv : mHighlightViews) {
             hv.mMatrix.set(getImageMatrix());
@@ -83,7 +88,8 @@ class CropImageView extends CropImageViewTouchBase {
 
     @Override
     @CallSuper
-    protected void postTranslate(final float dx, final float dy) {
+    protected void postTranslate(final float dx,
+                                 final float dy) {
         super.postTranslate(dx, dy);
         for (int i = 0; i < mHighlightViews.size(); i++) {
             CropHighlightView hv = mHighlightViews.get(i);
@@ -138,8 +144,9 @@ class CropImageView extends CropImageViewTouchBase {
                             mLastX = event.getX();
                             mLastY = event.getY();
                             mMotionHighlightView
-                                    .setMode((edge == CropHighlightView.MOVE) ? CropHighlightView.ModifyMode.Move
-                                            : CropHighlightView.ModifyMode.Grow);
+                                    .setMode(
+                                            (edge == CropHighlightView.MOVE) ? CropHighlightView.ModifyMode.Move
+                                                                             : CropHighlightView.ModifyMode.Grow);
                             break;
                         }
                     }
@@ -238,7 +245,7 @@ class CropImageView extends CropImageViewTouchBase {
         zoom = Math.max(1F, zoom);
         if ((Math.abs(zoom - getScale()) / zoom) > .1) {
             float[] coordinates = new float[]{hv.mCropRect.centerX(),
-                    hv.mCropRect.centerY()};
+                                              hv.mCropRect.centerY()};
             getImageMatrix().mapPoints(coordinates);
             zoomTo(zoom, coordinates[0], coordinates[1], 300F);
         }

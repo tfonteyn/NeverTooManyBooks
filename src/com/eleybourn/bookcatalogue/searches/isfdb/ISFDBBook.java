@@ -208,7 +208,7 @@ public class ISFDBBook
         String tmp;
 
         for (Element li : lis) {
-            if (DEBUG_SWITCHES.ISFDB_SEARCH && BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
                 Logger.info(this, "fetch", li.toString());
             }
             try {
@@ -225,7 +225,7 @@ public class ISFDBBook
                     continue;
                 }
 
-                if (DEBUG_SWITCHES.ISFDB_SEARCH && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
                     Logger.info(this, "fetch", "fieldName=`" + fieldName + '`');
                 }
 

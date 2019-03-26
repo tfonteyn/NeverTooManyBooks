@@ -101,7 +101,7 @@ public class PartialDatePickerDialogFragment
         } else {
             date = value.toString();
         }
-        if (DEBUG_SWITCHES.DATETIME && BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
             Logger.info(PartialDatePickerDialogFragment.class,
                         "newInstance", "date.toString(): " + date);
         }
@@ -138,15 +138,21 @@ public class PartialDatePickerDialogFragment
         if (mTitleId != 0) {
             editor.setTitle(mTitleId);
         }
-        editor.setDate(mYear, mMonth, mDay);
+        editor.updateDisplay();
 
         return editor;
     }
 
     /**
-     * Private helper, NOT a public accessor which would be violating the Fragment contract.
+     * Private helper, NOT a public accessor.
      *
-     * @param dateString SQL formatted date, may be null
+     * Now allowing partial dates:
+     * yyyy-mm-dd time
+     * yyyy-mm-dd
+     * yyyy-mm
+     * yyyy
+     *
+     * @param dateString SQL formatted (partial) date, may be null
      */
     private void setDate(@NonNull final String dateString) {
         Integer yyyy = null;
@@ -156,43 +162,21 @@ public class PartialDatePickerDialogFragment
             String[] dateAndTime = dateString.split(" ");
             String[] date = dateAndTime[0].split("-");
             yyyy = Integer.parseInt(date[0]);
-            mm = Integer.parseInt(date[1]);
-            dd = Integer.parseInt(date[2]);
+            if (date.length > 1) {
+                mm = Integer.parseInt(date[1]);
+            }if (date.length > 2) {
+                dd = Integer.parseInt(date[2]);
+            }
         } catch (NumberFormatException ignore) {
         }
 
-        setDate(yyyy, mm, dd);
-    }
-
-    /**
-     * Private helper, NOT a public accessor which would be violating the Fragment contract.
-     */
-    private void setDate(@Nullable final Integer year,
-                         @Nullable final Integer month,
-                         @Nullable final Integer day) {
-        mYear = year;
-        mMonth = month;
-        mDay = day;
-        PartialDatePickerDialog d = (PartialDatePickerDialog) getDialog();
-        if (d != null) {
-            d.setDate(mYear, mMonth, mDay);
-        }
-    }
-
-    /**
-     * Make sure data is saved in onPause() because onSaveInstanceState()
-     * will have lost the views.
-     */
-    @Override
-    @CallSuper
-    public void onPause() {
+        mYear = yyyy;
+        mMonth = mm;
+        mDay = dd;
         PartialDatePickerDialog dialog = (PartialDatePickerDialog) getDialog();
         if (dialog != null) {
-            mYear = dialog.getYear();
-            mMonth = dialog.getMonth();
-            mDay = dialog.getDay();
+            dialog.updateDisplay();
         }
-        super.onPause();
     }
 
     @Override
@@ -229,30 +213,16 @@ public class PartialDatePickerDialogFragment
 
         private static final String UNKNOWN_MONTH = "---";
         private static final String UNKNOWN_DAY = "--";
-        /** Calling context. */
-        @NonNull
-        private final Activity mActivity;
 
+        /** Local ref to year text view. */
+        private final EditText mYearView;
         /** Local ref to month spinner. */
         private final Spinner mMonthSpinner;
-
         /** Local ref to day spinner. */
         private final Spinner mDaySpinner;
         /** Local ref to day spinner adapter. */
         @NonNull
         private final ArrayAdapter<String> mDayAdapter;
-
-        /** Local ref to year text view. */
-        private final EditText mYearView;
-        /** Currently displayed year; null if empty/invalid. */
-        @Nullable
-        private Integer mYear;
-        /** Currently displayed month; null if empty/invalid. */
-        @Nullable
-        private Integer mMonth;
-        /** Currently displayed day; null if empty/invalid. */
-        @Nullable
-        private Integer mDay;
 
         /**
          * Constructor.
@@ -260,29 +230,7 @@ public class PartialDatePickerDialogFragment
          * @param activity Calling context
          */
         PartialDatePickerDialog(@NonNull final Activity activity) {
-            this(activity, null, null, null);
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param activity Calling context
-         * @param year     Starting year
-         * @param month    Starting month
-         * @param day      Starting day
-         */
-        @SuppressWarnings("SameParameterValue")
-        private PartialDatePickerDialog(@NonNull final Activity activity,
-                                        @Nullable final Integer year,
-                                        @Nullable final Integer month,
-                                        @Nullable final Integer day) {
             super(activity);
-
-            mActivity = activity;
-
-            mYear = year;
-            mMonth = month;
-            mDay = day;
 
             // Get the layout
             @SuppressLint("InflateParams")
@@ -301,12 +249,12 @@ public class PartialDatePickerDialogFragment
 
             // Create month spinner adapter
             ArrayAdapter<String> monthAdapter =
-                    new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item);
+                    new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
             monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             mMonthSpinner.setAdapter(monthAdapter);
 
             // Create day spinner adapter
-            mDayAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item);
+            mDayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
             mDayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             mDaySpinner.setAdapter(mDayAdapter);
 
@@ -338,8 +286,7 @@ public class PartialDatePickerDialogFragment
                                                    @NonNull final View view,
                                                    final int position,
                                                    final long id) {
-                            int pos = mMonthSpinner.getSelectedItemPosition();
-                            handleMonth(pos);
+                            handleMonth(mMonthSpinner.getSelectedItemPosition());
                         }
 
                         @Override
@@ -358,8 +305,7 @@ public class PartialDatePickerDialogFragment
                                                    @NonNull final View view,
                                                    final int position,
                                                    final long id) {
-                            int pos = mDaySpinner.getSelectedItemPosition();
-                            handleDay(pos);
+                            handleDay(mDaySpinner.getSelectedItemPosition());
                         }
 
                         @Override
@@ -433,83 +379,78 @@ public class PartialDatePickerDialogFragment
             );
 
             // Handle MONTH +
-            root.findViewById(R.id.plusMonth)
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(@NonNull final View v) {
-                                int pos = (mMonthSpinner.getSelectedItemPosition() + 1)
-                                        % mMonthSpinner.getCount();
-                                mMonthSpinner.setSelection(pos);
-                            }
+            root.findViewById(R.id.plusMonth).setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(@NonNull final View v) {
+                            int pos = (mMonthSpinner.getSelectedItemPosition() + 1)
+                                    % mMonthSpinner.getCount();
+                            mMonthSpinner.setSelection(pos);
                         }
-                );
+                    }
+            );
 
             // Handle MONTH -
-            root.findViewById(R.id.minusMonth)
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(@NonNull final View v) {
-                                int pos = (mMonthSpinner.getSelectedItemPosition() - 1
-                                        + mMonthSpinner.getCount()) % mMonthSpinner.getCount();
-                                mMonthSpinner.setSelection(pos);
-                            }
+            root.findViewById(R.id.minusMonth).setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(@NonNull final View v) {
+                            int pos = (mMonthSpinner.getSelectedItemPosition() - 1
+                                    + mMonthSpinner.getCount()) % mMonthSpinner.getCount();
+                            mMonthSpinner.setSelection(pos);
                         }
-                );
+                    }
+            );
 
             // Handle DAY +
-            root.findViewById(R.id.plusDay)
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(@NonNull final View v) {
-                                int pos = (mDaySpinner.getSelectedItemPosition() + 1)
-                                        % mDaySpinner.getCount();
-                                mDaySpinner.setSelection(pos);
-                            }
+            root.findViewById(R.id.plusDay).setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(@NonNull final View v) {
+                            int pos = (mDaySpinner.getSelectedItemPosition() + 1)
+                                    % mDaySpinner.getCount();
+                            mDaySpinner.setSelection(pos);
                         }
-                );
+                    }
+            );
 
             // Handle DAY -
-            root.findViewById(R.id.minusDay)
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(@NonNull final View v) {
-                                int pos = (mDaySpinner.getSelectedItemPosition() - 1
-                                        + mDaySpinner.getCount()) % mDaySpinner.getCount();
-                                mDaySpinner.setSelection(pos);
-                            }
+            root.findViewById(R.id.minusDay).setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(@NonNull final View v) {
+                            int pos = (mDaySpinner.getSelectedItemPosition() - 1
+                                    + mDaySpinner.getCount()) % mDaySpinner.getCount();
+                            mDaySpinner.setSelection(pos);
                         }
-                );
+                    }
+            );
 
             // Handle OK
-            root.findViewById(R.id.confirm)
-                .setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(@NonNull final View v) {
-                                // Ensure the date is 'hierarchically valid';
-                                // require year, if month is non-null,
-                                // require month, if day non-null
-                                if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
-                                    UserMessage.showUserMessage(
-                                            mActivity,
-                                            R.string.warning_if_day_set_month_and_year_must_be);
-                                } else if (mMonth != null && mMonth > 0 && mYear == null) {
-                                    UserMessage.showUserMessage(
-                                            mActivity,
-                                            R.string.warning_if_month_set_year_must_be);
-                                } else {
-                                    dismiss();
-                                    getFragmentListener()
-                                            .onPartialDatePickerSave(mDestinationFieldId,
-                                                                     year, month, day);
-                                }
+            root.findViewById(R.id.confirm).setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(@NonNull final View v) {
+                            // Ensure the date is 'hierarchically valid';
+                            // require year, if month is non-null,
+                            // require month, if day non-null
+                            if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
+                                UserMessage.showUserMessage(
+                                        mMonthSpinner,
+                                        R.string.warning_if_day_set_month_and_year_must_be);
+                            } else if (mMonth != null && mMonth > 0 && mYear == null) {
+                                UserMessage.showUserMessage(
+                                        mYearView,
+                                        R.string.warning_if_month_set_year_must_be);
+                            } else {
+                                dismiss();
+                                getFragmentListener()
+                                        .onPartialDatePickerSave(mDestinationFieldId,
+                                                                 mYear, mMonth, mDay);
                             }
                         }
-                );
+                    }
+            );
 
             // Handle Cancel
             root.findViewById(R.id.cancel).setOnClickListener(
@@ -522,27 +463,16 @@ public class PartialDatePickerDialogFragment
             );
 
             // Set the initial date
-            setDate(year, month, day);
+            updateDisplay();
         }
 
         /**
          * Set the date to display.
-         *
-         * @param year  Year (or null)
-         * @param month Month (or null)
-         * @param day   Day (or null)
          */
-        @SuppressWarnings("WeakerAccess")
-        public void setDate(@Nullable final Integer year,
-                            @Nullable final Integer month,
-                            @Nullable final Integer day) {
-            mYear = year;
-            mMonth = month;
-            mDay = day;
-
+        void updateDisplay() {
             String yearVal;
-            if (year != null) {
-                yearVal = year.toString();
+            if (mYear != null) {
+                yearVal = mYear.toString();
             } else {
                 yearVal = "";
             }
@@ -556,32 +486,17 @@ public class PartialDatePickerDialogFragment
                                                      | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             }
 
-            if (month == null || month == 0) {
+            if (mMonth == null || mMonth == 0) {
                 mMonthSpinner.setSelection(0);
             } else {
-                mMonthSpinner.setSelection(month);
+                mMonthSpinner.setSelection(mMonth);
             }
 
-            if (day == null || day == 0) {
+            if (mDay == null || mDay == 0) {
                 mDaySpinner.setSelection(0);
             } else {
-                mDaySpinner.setSelection(day);
+                mDaySpinner.setSelection(mDay);
             }
-        }
-
-        @Nullable
-        public Integer getYear() {
-            return mYear;
-        }
-
-        @Nullable
-        public Integer getMonth() {
-            return mMonth;
-        }
-
-        @Nullable
-        public Integer getDay() {
-            return mDay;
         }
 
         /**
@@ -599,8 +514,6 @@ public class PartialDatePickerDialogFragment
             // Seems reasonable to disable other spinners if year invalid, but it's actually
             // not very friendly when entering data for new books.
             regenDaysOfMonth(null);
-
-            // Handle the result
             //if (mYear == null) {
             //  mMonthSpinner.setEnabled(false);
             //  mDaySpinner.setEnabled(false);
@@ -706,7 +619,7 @@ public class PartialDatePickerDialogFragment
                 // the locale-specific date format has the day name (EEE) in it. So we exit and
                 // just use our default order in these cases.
                 // See Issue #712.
-                order = DateFormat.getDateFormatOrder(mActivity);
+                order = DateFormat.getDateFormatOrder(getContext());
             } catch (RuntimeException e) {
                 return;
             }

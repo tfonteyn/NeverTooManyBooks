@@ -39,7 +39,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
@@ -70,8 +70,9 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public final class CoversDBA
         implements AutoCloseable {
 
-    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
-    private static final Synchronizer SYNCHRONIZER = new Synchronizer();
+    /** Compresses images to 70%. */
+    private static final int IMAGE_QUALITY_PERCENTAGE = 70;
+
     /** DB name. */
     private static final String COVERS_DATABASE_NAME = "covers.db";
     /**
@@ -79,6 +80,9 @@ public final class CoversDBA
      * v2: dropped size/type columns + shortened 'filename'.
      */
     private static final int COVERS_DATABASE_VERSION = 2;
+
+    /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
+    private static final Synchronizer SYNCHRONIZER = new Synchronizer();
 
     /** Static Factory object to create the custom cursor. */
     private static final SQLiteDatabase.CursorFactory TRACKED_CURSOR_FACTORY =
@@ -131,13 +135,10 @@ public final class CoversDBA
                     + " WHERE " + DOM_CACHE_ID + "=?";
 
     /**
-     * Not debug!
-     * close() will only really close if INSTANCE_COUNTER == 0 is reached.
+     * NOT DEBUG: close() will only really close if INSTANCE_COUNTER == 0 is reached.
      */
     @NonNull
     private static final AtomicInteger INSTANCE_COUNTER = new AtomicInteger();
-    /** Compresses images to 70%. */
-    private static final int QUALITY_PERCENTAGE = 70;
 
 
     /**
@@ -181,7 +182,7 @@ public final class CoversDBA
         }
 
         int noi = INSTANCE_COUNTER.incrementAndGet();
-        if (/* always show debug */ BuildConfig.DEBUG) {
+        if (/* always debug */ BuildConfig.DEBUG) {
             Logger.info(mInstance, "getInstance", "instances created: " + noi);
         }
         return mInstance;
@@ -243,7 +244,7 @@ public final class CoversDBA
         // must be in a synchronized, as we use noi twice.
         synchronized (INSTANCE_COUNTER) {
             int noi = INSTANCE_COUNTER.decrementAndGet();
-            if (/* always show debug */BuildConfig.DEBUG) {
+            if (/* always debug */BuildConfig.DEBUG) {
                 Logger.info(this, "close", "instances left: " + INSTANCE_COUNTER);
             }
 
@@ -297,10 +298,10 @@ public final class CoversDBA
      * Called in the UI thread, will return a cached image OR NULL.
      * and (if found) put it in the view.
      *
-     * @param uuid         for the image
-     * @param maxWidth     used to construct the cacheId
-     * @param maxHeight    used to construct the cacheId
-     * @param destView     View to populate if non-null
+     * @param uuid      for the image
+     * @param maxWidth  used to construct the cacheId
+     * @param maxHeight used to construct the cacheId
+     * @param destView  View to populate if non-null
      *
      * @return Bitmap (if cached) or null (if not cached)
      */
@@ -327,7 +328,7 @@ public final class CoversDBA
 
     /**
      * Save the passed bitmap to a 'file' in the covers database.
-     * Compresses to QUALITY_PERCENTAGE first.
+     * Compresses to IMAGE_QUALITY_PERCENTAGE first.
      */
     public void saveFile(@NonNull final Bitmap bitmap,
                          @NonNull final String filename) {
@@ -336,7 +337,7 @@ public final class CoversDBA
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY_PERCENTAGE, out);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
         byte[] image = out.toByteArray();
 
         SynchronizedStatement existsStmt = mStatements.get(STMT_EXISTS);
@@ -414,8 +415,8 @@ public final class CoversDBA
          */
         private CoversDbHelper(@SuppressWarnings("SameParameterValue")
                                @NonNull final SQLiteDatabase.CursorFactory factory) {
-            super(BookCatalogueApp.getAppContext(),
-                  COVERS_DATABASE_NAME, factory, COVERS_DATABASE_VERSION);
+            // *always* use the app context!
+            super(App.getAppContext(), COVERS_DATABASE_NAME, factory, COVERS_DATABASE_VERSION);
         }
 
         /**
@@ -432,9 +433,9 @@ public final class CoversDBA
         }
 
         public static String getDatabasePath() {
-            return BookCatalogueApp.getAppContext()
-                                   .getDatabasePath(COVERS_DATABASE_NAME)
-                                   .getAbsolutePath();
+            return App.getAppContext()
+                      .getDatabasePath(COVERS_DATABASE_NAME)
+                      .getAbsolutePath();
         }
 
         /**

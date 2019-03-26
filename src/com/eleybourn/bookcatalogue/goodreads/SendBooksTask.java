@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
 import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
@@ -175,7 +174,7 @@ public abstract class SendBooksTask
             @Override
             public void onClick(@NonNull final View v) {
                 BookEventHolder holder = (BookEventHolder) v.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
-                holder.event.retry();
+                holder.event.retry(v.getContext());
             }
         };
         private static final long serialVersionUID = 8056090158313083738L;
@@ -184,13 +183,12 @@ public abstract class SendBooksTask
         /**
          * Constructor.
          *
-         * @param bookId    ID of related book.
-         * @param messageId Description of this event.
+         * @param description Description of this event.
+         * @param bookId      ID of related book.
          */
-        GrSendBookEvent(@NonNull final Context context,
-                        final long bookId,
-                        @StringRes final int messageId) {
-            super(context.getResources().getString(messageId));
+        GrSendBookEvent(@NonNull final String description,
+                        final long bookId) {
+            super(description);
             mBookId = bookId;
         }
 
@@ -206,9 +204,9 @@ public abstract class SendBooksTask
         /**
          * Resubmit this book and delete this event.
          */
-        public void retry() {
+        public void retry(@NonNull final Context context) {
             QueueManager qm = QueueManager.getQueueManager();
-            SendOneBookTask task = new SendOneBookTask(mBookId);
+            SendOneBookTask task = new SendOneBookTask(context, mBookId);
             qm.enqueueTask(task, QueueManager.Q_SMALL_JOBS);
             qm.deleteEvent(getId());
         }
@@ -257,10 +255,10 @@ public abstract class SendBooksTask
             if (!authors.isEmpty()) {
                 author = authors.get(0).getDisplayName();
                 if (authors.size() > 1) {
-                    author = author + ' ' + BookCatalogueApp.getResString(R.string.and_others);
+                    author = author + ' ' + context.getString(R.string.and_others);
                 }
             } else {
-                author = context.getString(R.string.unknown_uc);
+                author = context.getString(R.string.unknown).toUpperCase();
             }
 
             String title = db.getBookTitle(mBookId);
@@ -273,7 +271,7 @@ public abstract class SendBooksTask
             holder.errorView.setText(getDescription());
 
             String date = DateUtils.toPrettyDateTime(eventsCursor.getEventDate());
-            holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at,date));
+            holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 
             holder.retryView.setVisibility(View.GONE);
 
@@ -374,7 +372,7 @@ public abstract class SendBooksTask
                                 try {
                                     GrSendBookEvent event =
                                             (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
-                                    event.retry();
+                                    event.retry(context);
                                     QueueManager.getQueueManager().deleteEvent(id);
                                 } catch (RuntimeException ignore) {
                                     // not a book event?
@@ -420,11 +418,12 @@ public abstract class SendBooksTask
             extends GrSendBookEvent
             implements HintManager.HintOwner {
 
-        private static final long serialVersionUID = -7684121345325648066L;
+
+        private static final long serialVersionUID = 8764019100842546976L;
 
         GrNoMatchEvent(@NonNull final Context context,
                        final long bookId) {
-            super(context, bookId, R.string.warning_no_matching_book_found);
+            super(context.getString(R.string.warning_no_matching_book_found), bookId);
         }
 
         @Override
@@ -442,11 +441,12 @@ public abstract class SendBooksTask
             extends GrSendBookEvent
             implements HintManager.HintOwner {
 
-        private static final long serialVersionUID = 7260496259505914311L;
+
+        private static final long serialVersionUID = -8208929167310932723L;
 
         GrNoIsbnEvent(@NonNull final Context context,
                       final long bookId) {
-            super(context, bookId, R.string.warning_no_isbn_stored_for_book);
+            super(context.getString(R.string.warning_no_isbn_stored_for_book), bookId);
         }
 
         @Override

@@ -12,7 +12,7 @@ import androidx.annotation.StringRes;
 
 import java.io.File;
 
-import com.eleybourn.bookcatalogue.BookCatalogueApp;
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.StartupActivity;
@@ -131,10 +131,11 @@ public class DBHelper
      * @param synchronizer needed in onCreate/onUpgrade
      */
     private DBHelper(@SuppressWarnings("SameParameterValue")
-             @NonNull final SQLiteDatabase.CursorFactory factory,
-             @SuppressWarnings("SameParameterValue")
-             @NonNull final Synchronizer synchronizer) {
-        super(BookCatalogueApp.getAppContext(), DATABASE_NAME, factory, DATABASE_VERSION);
+                     @NonNull final SQLiteDatabase.CursorFactory factory,
+                     @SuppressWarnings("SameParameterValue")
+                     @NonNull final Synchronizer synchronizer) {
+        // *always* use the app context!
+        super(App.getAppContext(), DATABASE_NAME, factory, DATABASE_VERSION);
         mSynchronizer = synchronizer;
     }
 
@@ -153,11 +154,12 @@ public class DBHelper
         }
         return mInstance;
     }
+
     /**
      * @return the physical path of the database file.
      */
     public static String getDatabasePath() {
-        return BookCatalogueApp.getAppContext().getDatabasePath(DATABASE_NAME).getAbsolutePath();
+        return App.getAppContext().getDatabasePath(DATABASE_NAME).getAbsolutePath();
     }
 
     /**
@@ -295,7 +297,7 @@ public class DBHelper
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ')'
                                  + " VALUES ('"
-                                 + BookCatalogueApp.getResString(R.string.initial_bookshelf)
+                                 + App.getResString(R.string.initial_bookshelf)
                                  + "')");
 
         // insert the builtin style id's so foreign key rules are possible.
@@ -626,18 +628,15 @@ public class DBHelper
 
             // migrate old properties.
             Prefs.migratePreV200preferences(
-                    BookCatalogueApp
-                            .getAppContext()
-                            .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE,
-                                                  Context.MODE_PRIVATE)
-                            .getAll());
+                    App.getAppContext()
+                       .getSharedPreferences(App.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE)
+                       .getAll());
 
-            // API: 24 -> BookCatalogueApp.getAppContext()
+            // API: 24 -> App.getAppContext()
             //                  .deleteSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
-            BookCatalogueApp
-                    .getAppContext()
-                    .getSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE)
-                    .edit().clear().apply();
+            App.getAppContext()
+               .getSharedPreferences(App.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE)
+               .edit().clear().apply();
 
             // this trigger was replaced.
             syncedDb.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");
@@ -647,7 +646,7 @@ public class DBHelper
 
             // these two are due to a remark in the CSV exporter that (at one time?)
             // the author name and title could be bad
-            final String UNKNOWN = BookCatalogueApp.getResString(R.string.unknown);
+            final String UNKNOWN = App.getResString(R.string.unknown);
             db.execSQL("UPDATE " + TBL_AUTHORS
                                + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + '\''
                                + " WHERE " + DOM_AUTHOR_FAMILY_NAME + "=''"

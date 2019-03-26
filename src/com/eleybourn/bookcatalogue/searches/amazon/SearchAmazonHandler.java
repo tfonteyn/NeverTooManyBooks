@@ -320,8 +320,8 @@ public class SearchAmazonHandler
         } catch (NumberFormatException ignore) {
             if (BuildConfig.DEBUG) {
                 Logger.info(this, "handleListPrice",
-                            "mCurrencyCode=" + mCurrencyCode
-                                    + ", mCurrencyAmount=" + mCurrencyAmount);
+                            "mCurrencyCode=" + mCurrencyCode,
+                            "mCurrencyAmount=" + mCurrencyAmount);
             }
         }
     }
@@ -456,10 +456,10 @@ public class SearchAmazonHandler
                 }
 
             } else {
-                if (DEBUG_SWITCHES.SEARCH_INTERNET && BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                     // see what we are missing.
-                    Logger.info(this, "endElement","Skipping: "
-                            + localName + "->'" + mBuilder + '\'');
+                    Logger.info(this, "endElement", "Skipping: "
+                            + localName + "->`" + mBuilder + '`');
                 }
             }
         } //else if (localName.equalsIgnoreCase(XML_TOTAL_RESULTS)){

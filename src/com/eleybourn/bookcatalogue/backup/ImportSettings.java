@@ -34,11 +34,6 @@ public class ImportSettings
      * 1: only new books and books with more recent update_date fields should be imported.
      */
     public static final int IMPORT_ONLY_NEW_OR_UPDATED = 1 << 16;
-
-    /**
-     * all defined flags.
-     */
-    static final int MASK = ALL | IMPORT_ONLY_NEW_OR_UPDATED;
     public static final Creator<ImportSettings> CREATOR = new Creator<ImportSettings>() {
         @Override
         public ImportSettings createFromParcel(@NonNull final Parcel source) {
@@ -50,6 +45,10 @@ public class ImportSettings
             return new ImportSettings[size];
         }
     };
+    /**
+     * all defined flags.
+     */
+    static final int MASK = ALL | IMPORT_ONLY_NEW_OR_UPDATED;
     /**
      * Bitmask.
      */
@@ -97,10 +96,10 @@ public class ImportSettings
     @Override
     @NonNull
     public String toString() {
-        return "ImportSettings{" +
-                "what=0%" + Integer.toBinaryString(what) +
-                ", file=" + file +
-                '}';
+        return "ImportSettings{"
+                + "file=`" + file + '`'
+                + "what=0%" + Integer.toBinaryString(what)
+                + '}';
     }
 
     public void validate() {

@@ -6,7 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -14,7 +15,8 @@
         android:layout_width="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <TextView
         android:id="@+id/title"
@@ -23,7 +25,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         tools:ignore="SelectableText"
-        tools:text="Book Title goes here" />
+        tools:text="Book Title goes here"
+        />
 
     <AutoCompleteTextView
         android:id="@+id/author"
@@ -35,7 +38,8 @@
         android:hint="@string/lbl_author"
         app:layout_constraintEnd_toStartOf="@id/add"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+        app:layout_constraintTop_toBottomOf="@id/title"
+        />
 
     <Button
         android:id="@+id/add"
@@ -44,7 +48,8 @@
         android:text="@string/btn_confirm_add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/author"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+        app:layout_constraintTop_toBottomOf="@id/title"
+        />
 
     <com.eleybourn.bookcatalogue.widgets.TouchListView
         android:id="@android:id/list"
@@ -53,7 +58,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
-        tlv:grabber="@id/TLV_ROW_GRABBER" />
+        tlv:grabber="@id/TLV_ROW_GRABBER"
+        />
 
     <TextView
         android:id="@android:id/empty"
@@ -62,7 +68,8 @@
         app:layout_constraintBottom_toTopOf="@id/buttonbar_cancel_save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author" />
+        app:layout_constraintTop_toBottomOf="@id/author"
+        />
 
     <include
         android:id="@+id/buttonbar_cancel_save"
@@ -71,6 +78,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

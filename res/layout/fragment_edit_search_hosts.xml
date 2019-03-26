@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/border_double">
+    android:layout_margin="@dimen/border_double"
+    >
 
     <TextView
         android:id="@+id/lbl_google"
@@ -13,7 +14,8 @@
         android:layout_height="wrap_content"
         android:text="@string/google_books"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <!-- no style used on purpose -->
     <EditText
@@ -25,7 +27,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_google"
-        tools:ignore="Autofill,HardcodedText" />
+        tools:ignore="Autofill,HardcodedText"
+        />
 
     <TextView
         android:id="@+id/lbl_amazon"
@@ -47,7 +50,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_amazon"
-        tools:ignore="Autofill,HardcodedText" />
+        tools:ignore="Autofill,HardcodedText"
+        />
 
     <!-- there is only one valid URL, so not showing ISFDB. Keeping it for completeness sake -->
     <TextView
@@ -59,7 +63,8 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/amazon_url"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        />
 
     <!-- no style used on purpose -->
     <EditText
@@ -73,5 +78,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_isfdb"
         tools:ignore="Autofill,HardcodedText"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
