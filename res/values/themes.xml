@@ -12,7 +12,7 @@
     <!-- =========== -->
     <!-- Dark theme. -->
     <!-- =========== -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
 
         <!-- rectangular border around an element -->
         <item name="color_border">@color/grey_800</item>
@@ -55,10 +55,55 @@
         <!--<item name="colorBackgroundFloating"></item>-->
     </style>
 
-    <!-- ============ -->
-    <!-- Light theme. -->
-    <!-- ============ -->
-    <style name="AppTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- =================== -->
+    <!-- Light theme - Blue. -->
+    <!-- =================== -->
+    <style name="AppTheme.Light.Blue" parent="Theme.AppCompat.Light.NoActionBar">
+
+        <!-- rectangular border around an element -->
+        <item name="color_border">@color/grey_400</item>
+
+        <!-- ============ -->
+        <!-- Vector icons -->
+        <!-- ============ -->
+
+        <!-- ic_file_name.xml vector icons have their 'fillColor' set to this reference -->
+        <item name="fillColorVectorIcons">?android:attr/textColorSecondary</item>
+        <!-- ic_check.xml vector icon uses 'fillColor' set to this reference -->
+        <item name="ic_check_fillColor">?attr/colorControlActivated</item>
+        <!-- ic_lock.xml vector icon uses 'fillColor' set to this reference -->
+        <item name="ic_lock_fillColor">@color/amber_a700</item>
+
+        <!-- ============================ -->
+        <!-- AppCompatTheme Color palette -->
+        <!-- ============================ -->
+
+        <item name="colorPrimary">@color/blue_500</item>
+        <!-- Dark variant of the primary branding color. By default, this is the color applied to
+            the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
+        <item name="colorPrimaryDark">@color/blue_900</item>
+        <!-- Bright complement to the primary branding color. By default, this is the color applied
+          to framework controls (via colorControlActivated). -->
+        <item name="colorAccent">@color/blue_a700</item>
+        <!-- The color applied to framework controls in their normal state. -->
+        <item name="colorControlNormal">@color/black</item>
+        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
+        <item name="colorControlActivated">@color/green_a700</item>
+        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
+        <item name="colorControlHighlight">@color/blue_300</item>
+        <!-- The color applied to framework buttons in their normal state. -->
+        <item name="colorButtonNormal">@color/blue_600</item>
+        <!-- The color applied to framework switch thumbs in their normal state. -->
+        <!--<item name="colorSwitchThumbNormal"></item>-->
+        <!-- Default color of background imagery for floating components, ex. dialogs, popups, and cards. -->
+        <!--<item name="colorBackgroundFloating"></item>-->
+
+    </style>
+
+    <!-- ================== -->
+    <!-- Light theme - Red. -->
+    <!-- ================== -->
+    <style name="AppTheme.Light.Red" parent="Theme.AppCompat.Light.NoActionBar">
 
         <!-- rectangular border around an element -->
         <item name="color_border">@color/grey_400</item>

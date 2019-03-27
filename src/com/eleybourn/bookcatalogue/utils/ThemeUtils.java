@@ -15,14 +15,16 @@ public final class ThemeUtils {
 
     /**
      * NEWKIND: APP THEME.
-     * Also add new themes in {@link R.array#pv_ui_theme},
+     * 1. add it to themes.xml
+     * 2. add it to {@link R.array#pv_ui_theme},
      * the string-array order must match the APP_THEMES order
      * The preferences choice will be build according to the string-array list/order.
      */
     private static final int DEFAULT_THEME = 0;
     private static final int[] APP_THEMES = {
-            R.style.AppTheme,
-            R.style.AppTheme_Light,
+            R.style.AppTheme_Dark,
+            R.style.AppTheme_Light_Blue,
+            R.style.AppTheme_Light_Red,
             };
 
     /** Cache the User-specified theme currently in use. */

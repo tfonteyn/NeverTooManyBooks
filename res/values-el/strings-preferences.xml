@@ -50,6 +50,7 @@
     <string-array name="pe_ui_theme">
         <item>Σκούρο</item>
         <item>Φως</item>
+        <item>Φως 2</item>
     </string-array>
 
     <!-- Preference - Preferred interface Locale -->

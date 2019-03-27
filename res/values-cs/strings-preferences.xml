@@ -52,6 +52,7 @@
     <string-array name="pe_ui_theme">
         <item>Dark</item>
         <item>Light</item>
+        <item>Light 2</item>
     </string-array>
 
     <!-- Preference - Preferred interface Locale -->

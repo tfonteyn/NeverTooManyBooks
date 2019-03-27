@@ -60,10 +60,12 @@
     <string-array name="pe_ui_theme">
         <item>Dark</item>
         <item>Light</item>
+        <item>Light 2</item>
     </string-array>
     <string-array name="pv_ui_theme">
         <item translatable="false">0</item>
         <item translatable="false">1</item>
+        <item translatable="false">2</item>
     </string-array>
 
     <!-- ListPreference - Preferred interface Locale -->
@@ -82,7 +84,7 @@
         <item translatable="false">Türk</item>
     </string-array>
     <string-array name="pv_ui_language">
-        <item translatable="false" />
+        <item translatable="false">system</item>
         <item translatable="false">en</item>
         <item translatable="false">de</item>
         <item translatable="false">fr</item>
