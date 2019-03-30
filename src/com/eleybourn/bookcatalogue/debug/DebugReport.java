@@ -194,7 +194,7 @@ public final class DebugReport {
         message.append("Details:\n\n")
                .append(activity.getString(R.string.debug_body)).append("\n\n");
 
-        Logger.info(DebugReport.class, message.toString());
+        Logger.info(DebugReport.class, "sendDebugInfo", message.toString());
 
         ArrayList<String> extraText = new ArrayList<>();
         extraText.add(message.toString());

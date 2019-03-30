@@ -20,11 +20,14 @@
 package com.eleybourn.bookcatalogue.backup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
+ * TOMF: fix inconsistencies introduced in the XmlExporter: OutputStream/BufferedWriter
+ *
  * Interface definition for an exporter.
  *
  * @author pjw
@@ -32,20 +35,19 @@ import java.io.OutputStream;
 public interface Exporter {
 
     /**
-     * Entry point for a generic/total export.
-     * Implementations can call partial export methods at will.
-     * <p>
-     * Export to an OutputStream.
+     * Export Books to an OutputStream.
      *
      * @param outputStream Stream for writing data
      * @param listener     Progress and cancellation interface
      *
-     * @return number of items exported
+     * @return number of books exported
      *
      * @throws IOException on any error
      */
-    int doExport(@NonNull OutputStream outputStream,
-                 @NonNull ExportListener listener)
+    @SuppressWarnings("UnusedReturnValue")
+    @WorkerThread
+    int doBooks(@NonNull OutputStream outputStream,
+                @NonNull ExportListener listener)
             throws IOException;
 
     /**

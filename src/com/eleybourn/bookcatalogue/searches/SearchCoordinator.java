@@ -37,6 +37,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -97,7 +98,7 @@ public class SearchCoordinator {
     @SuppressLint("UseSparseArrays")
     @NonNull
     private final Map<Integer, Bundle> mSearchResults =
-            Collections.synchronizedMap(new HashMap<Integer, Bundle>());
+            Collections.synchronizedMap(new HashMap<>());
     /** Flags applicable to *current* search. */
     private int mSearchFlags;
     /** Accumulated book data. */
@@ -234,7 +235,7 @@ public class SearchCoordinator {
      * @return Present/absent
      */
     private static boolean hasIsbn(@NonNull final Bundle bundle) {
-        String s = bundle.getString(UniqueId.KEY_ISBN);
+        String s = bundle.getString(DatabaseDefinitions.KEY_ISBN);
         return s != null && !s.trim().isEmpty();
     }
 
@@ -367,8 +368,8 @@ public class SearchCoordinator {
                         "Processing data from search engine: id=" + searchId);
         }
         for (String key : bookData.keySet()) {
-            if (UniqueId.KEY_DATE_PUBLISHED.equals(key)
-                    || UniqueId.KEY_DATE_FIRST_PUBLISHED.equals(key)) {
+            if (DatabaseDefinitions.KEY_DATE_PUBLISHED.equals(key)
+                    || DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED.equals(key)) {
                 accumulateDates(key, bookData);
 
             } else if (UniqueId.BKEY_AUTHOR_ARRAY.equals(key)
@@ -525,8 +526,8 @@ public class SearchCoordinator {
             for (SearchSites.Site site : SearchSites.getSitesByReliability()) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
-                    if (bookData != null && bookData.containsKey(UniqueId.KEY_ISBN)) {
-                        if (ISBN.matches(mIsbn, bookData.getString(UniqueId.KEY_ISBN))) {
+                    if (bookData != null && bookData.containsKey(DatabaseDefinitions.KEY_ISBN)) {
+                        if (ISBN.matches(mIsbn, bookData.getString(DatabaseDefinitions.KEY_ISBN))) {
                             results.add(site.id);
                         }
                     } else {
@@ -536,7 +537,7 @@ public class SearchCoordinator {
             }
             results.addAll(uncertain);
             // Add the passed ISBN first; avoid overwriting
-            mBookData.putString(UniqueId.KEY_ISBN, mIsbn);
+            mBookData.putString(DatabaseDefinitions.KEY_ISBN, mIsbn);
         } else {
             // If ISBN was not passed, then just use the default order
             for (SearchSites.Site site : SearchSites.getSitesByReliability()) {
@@ -553,23 +554,23 @@ public class SearchCoordinator {
         ImageUtils.cleanupImages(mBookData);
 
         // Try to use/construct isbn
-        String isbn = mBookData.getString(UniqueId.KEY_ISBN);
+        String isbn = mBookData.getString(DatabaseDefinitions.KEY_ISBN);
         if (isbn == null || isbn.isEmpty()) {
             // use the isbn we originally searched for.
             isbn = mIsbn;
         }
         if (isbn != null && !isbn.isEmpty()) {
-            mBookData.putString(UniqueId.KEY_ISBN, isbn);
+            mBookData.putString(DatabaseDefinitions.KEY_ISBN, isbn);
         }
 
         // Try to use/construct title
-        String title = mBookData.getString(UniqueId.KEY_TITLE);
+        String title = mBookData.getString(DatabaseDefinitions.KEY_TITLE);
         if (title == null || title.isEmpty()) {
             // use the title we originally searched for.
             title = mTitle;
         }
         if (title != null && !title.isEmpty()) {
-            mBookData.putString(UniqueId.KEY_TITLE, title);
+            mBookData.putString(DatabaseDefinitions.KEY_TITLE, title);
         }
 
         // check required data
@@ -590,20 +591,17 @@ public class SearchCoordinator {
         // All done, Pass the data back
         MESSAGE_SWITCH
                 .send(mMessageSenderId,
-                      new MessageSwitch.Message<SearchCoordinatorListener>() {
-                          @Override
-                          public boolean deliver(@NonNull final SearchCoordinatorListener listener) {
-                              if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                                  Logger.info(SearchCoordinator.this,
-                                              "sendResults",
-                                              "Delivering to SearchListener=" + listener
-                                                      + "|title=`"
-                                                      + mBookData
-                                                      .getString(UniqueId.KEY_TITLE) + '`');
-                              }
-                              listener.onSearchFinished(mCancelledFlg, mBookData);
-                              return true;
+                      listener -> {
+                          if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+                              Logger.info(SearchCoordinator.this,
+                                          "sendResults",
+                                          "Delivering to SearchListener=" + listener,
+                                          "title=`"
+                                                  + mBookData
+                                                  .getString(DatabaseDefinitions.KEY_TITLE) + '`');
                           }
+                          listener.onSearchFinished(mCancelledFlg, mBookData);
+                          return true;
                       }
                 );
     }
@@ -724,7 +722,7 @@ public class SearchCoordinator {
                 } else {
                     // See if we got author/title
                     mAuthor = bookData.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-                    mTitle = bookData.getString(UniqueId.KEY_TITLE);
+                    mTitle = bookData.getString(DatabaseDefinitions.KEY_TITLE);
                     if (mAuthor != null && !mAuthor.isEmpty()
                             && mTitle != null && !mTitle.isEmpty()) {
                         // We got them, so pretend we are searching by author/title now,
@@ -742,7 +740,7 @@ public class SearchCoordinator {
                 if (hasIsbn(bookData)) {
 
                     mWaitingForIsbn = false;
-                    mIsbn = bookData.getString(UniqueId.KEY_ISBN);
+                    mIsbn = bookData.getString(DatabaseDefinitions.KEY_ISBN);
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                         Logger.info(this, "handleSearchTaskFinished",

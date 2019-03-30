@@ -218,11 +218,6 @@ class CropHighlightView {
         }
     }
 
-    @NonNull
-    public ModifyMode getMode() {
-        return mMode;
-    }
-
     public void setMode(@NonNull final ModifyMode mode) {
         if (mode != mMode) {
             mMode = mode;

@@ -198,12 +198,7 @@ public final class QueueManager {
                 }
             } else {
                 try {
-                    mMessageHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onChange();
-                        }
-                    });
+                    mMessageHandler.post(listener::onChange);
                 } catch (RuntimeException ignore) {
                 }
             }
@@ -225,12 +220,7 @@ public final class QueueManager {
                 }
             } else {
                 try {
-                    mMessageHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onChange();
-                        }
-                    });
+                    mMessageHandler.post(listener::onChange);
                 } catch (RuntimeException ignore) {
                 }
             }

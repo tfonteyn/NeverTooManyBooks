@@ -53,7 +53,7 @@ public class BooleanFilter
      */
     @Override
     @Nullable
-    public String getExpression(@Nullable final String uuid) {
+    public String getExpression() {
         Integer value = get();
         if (P_NOT_USED.equals(value)) {
             return null;

@@ -21,11 +21,8 @@ package com.eleybourn.bookcatalogue.booklist;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursorDriver;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
-import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -244,17 +241,9 @@ public class BooklistBuilder
      * and the rowView. We could probably send less context, but in the first instance this
      * guarantees we get all the info we need downstream.
      */
-    private final CursorFactory mBooklistCursorFactory = new CursorFactory() {
-        @Override
-        public Cursor newCursor(
-                @NonNull final SQLiteDatabase db,
-                @NonNull final SQLiteCursorDriver masterQuery,
-                @NonNull final String editTable,
-                @NonNull final SQLiteQuery query) {
-            return new BooklistCursor(masterQuery, editTable, query, DBA.getSynchronizer(),
-                                      BooklistBuilder.this);
-        }
-    };
+    private final CursorFactory mBooklistCursorFactory = (db, masterQuery, editTable, query) ->
+            new BooklistCursor(masterQuery, editTable, query, DBA.getSynchronizer(),
+                               BooklistBuilder.this);
     /** The word 'UNKNOWN', used for year/month if those are (guess what...) unknown. */
     private final String mUnknown;
     /** the list of Filters; both active and non-active. */
@@ -544,14 +533,7 @@ public class BooklistBuilder
      */
     public void setGenericCriteria(@Nullable final String filter) {
         if (isNonBlank(filter)) {
-            mFilters.add(new Filter() {
-
-                @Override
-                @NonNull
-                public String getExpression(@Nullable final String uuid) {
-                    return '(' + filter + ')';
-                }
-            });
+            mFilters.add(() -> '(' + filter + ')');
         }
     }
 
@@ -564,17 +546,11 @@ public class BooklistBuilder
      */
     public void setFilterOnLoanedToPerson(@Nullable final String filter) {
         if (isNonBlank(filter)) {
-            mFilters.add(new Filter() {
-                @Override
-                @NonNull
-                public String getExpression(@Nullable final String uuid) {
-                    return "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                            + " WHERE "
-                            + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE)
-                            + "='" + DBA.encodeString(filter) + '\''
-                            + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ')';
-                }
-            });
+            mFilters.add(() -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
+                    + " WHERE "
+                    + TBL_BOOK_LOANEE.dot(DOM_BOOK_LOANEE)
+                    + "='" + DBA.encodeString(filter) + '\''
+                    + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS) + ')');
         }
     }
 
@@ -587,17 +563,11 @@ public class BooklistBuilder
      */
     public void setFilterOnAuthorName(@Nullable final String filter) {
         if (isNonBlank(filter)) {
-            mFilters.add(new Filter() {
-                @Override
-                @NonNull
-                public String getExpression(@Nullable final String uuid) {
-                    return '(' + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
-                            + " LIKE '%" + DBA.encodeString(filter) + "%'"
-                            + " OR "
-                            + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
-                            + " LIKE '%" + DBA.encodeString(filter) + "%')";
-                }
-            });
+            mFilters.add(() -> '(' + TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
+                    + " LIKE '%" + DBA.encodeString(filter) + "%'"
+                    + " OR "
+                    + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
+                    + " LIKE '%" + DBA.encodeString(filter) + "%')");
         }
     }
 
@@ -651,16 +621,10 @@ public class BooklistBuilder
             // we do case folding here using the default locale.
             final String cleanCriteria = filter.toLowerCase(Locale.getDefault());
 
-            mFilters.add(new Filter() {
-                @Override
-                @NonNull
-                public String getExpression(@Nullable final String uuid) {
-                    return '(' + TBL_BOOKS.dot(DOM_PK_ID)
-                            + " IN (SELECT " + DOM_PK_DOCID + " FROM " + TBL_BOOKS_FTS
-                            + " WHERE " + TBL_BOOKS_FTS + " match '"
-                            + DBA.encodeString(DBA.cleanupFtsCriterion(cleanCriteria)) + "'))";
-                }
-            });
+            mFilters.add(() -> '(' + TBL_BOOKS.dot(DOM_PK_ID)
+                    + " IN (SELECT " + DOM_PK_DOCID + " FROM " + TBL_BOOKS_FTS
+                    + " WHERE " + TBL_BOOKS_FTS + " match '"
+                    + DBA.encodeString(DBA.cleanupFtsCriterion(cleanCriteria)) + "'))");
         }
     }
 
@@ -747,21 +711,17 @@ public class BooklistBuilder
 
             // Now we know if we have a Bookshelf group, add the Filter on it if we want one.
             if (mFilterOnBookshelfId > 0) {
-                mFilters.add(new Filter() {
-                    @Override
-                    @NonNull
-                    public String getExpression(@Nullable final String uuid) {
-                        if (buildInfoHolder.hasGroupBOOKSHELF) {
-                            return "EXISTS(SELECT NULL FROM "
-                                    + TBL_BOOK_BOOKSHELF.ref() + ' '
-                                    + TBL_BOOK_BOOKSHELF.join(TBL_BOOKS)
-                                    + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF_ID)
-                                    + '=' + mFilterOnBookshelfId
-                                    + ')';
-                        } else {
-                            return '(' + TBL_BOOKSHELF.dot(
-                                    DOM_PK_ID) + '=' + mFilterOnBookshelfId + ')';
-                        }
+                mFilters.add(() -> {
+                    if (buildInfoHolder.hasGroupBOOKSHELF) {
+                        return "EXISTS(SELECT NULL FROM "
+                                + TBL_BOOK_BOOKSHELF.ref() + ' '
+                                + TBL_BOOK_BOOKSHELF.join(TBL_BOOKS)
+                                + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF_ID)
+                                + '=' + mFilterOnBookshelfId
+                                + ')';
+                    } else {
+                        return '(' + TBL_BOOKSHELF.dot(DOM_PK_ID)
+                                + '=' + mFilterOnBookshelfId + ')';
                     }
                 });
             }
@@ -1626,12 +1586,12 @@ public class BooklistBuilder
             if (where.length() != 0) {
                 where.append(" AND ");
             }
-            where.append(' ').append(filter.getExpression(mStyle.getUuid()));
+            where.append(' ').append(filter.getExpression());
         }
 
         // Add BooklistStyle Filters
         for (Filter filter : mStyle.getFilters().values()) {
-            String filterSql = filter.getExpression(mStyle.getUuid());
+            String filterSql = filter.getExpression();
             if (filterSql != null) {
                 if (where.length() != 0) {
                     where.append(" AND ");
@@ -2584,11 +2544,13 @@ public class BooklistBuilder
     private static class SqlComponents {
 
         public String destinationColumns;
+        /** constructed & assigned, but not used right now (2019-03-29). */
         public String rootKeyExpression;
         public String join;
         public String insert;
         public String select;
         public String insertSelect;
+        /** constructed & assigned, but not used right now (2019-03-29). */
         public String insertValues;
         public String where;
 

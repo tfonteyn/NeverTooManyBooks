@@ -42,6 +42,7 @@ import com.eleybourn.bookcatalogue.backup.ImportException;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.backup.Importer;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -62,7 +63,7 @@ import com.eleybourn.bookcatalogue.utils.Utils;
  * @author pjw
  */
 public class CsvImporter
-        implements Importer, Closeable {
+        implements Importer {
 
     private static final int BUFFER_SIZE = 32768;
 
@@ -70,7 +71,7 @@ public class CsvImporter
     private static final char ESCAPE_CHAR = '\\';
     private static final char SEPARATOR = ',';
 
-    private static final String STRINGED_ID = UniqueId.KEY_ID;
+    private static final String STRINGED_ID = DatabaseDefinitions.KEY_ID;
 
     /** as used in older versions, or from arbitrarily constructed CSV files. */
     private static final String OLD_STYLE_AUTHOR_NAME = "author_name";
@@ -106,21 +107,10 @@ public class CsvImporter
         mSettings = settings;
     }
 
-    /**
-     * Import from an InputStream.
-     *
-     * @param importStream Stream for reading data
-     * @param coverFinder  (Optional) object to find a file on the local device
-     * @param listener     Progress and cancellation provider
-     *
-     * @return number of items handled (!= imported)
-     *
-     * @throws IOException on any error
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public int doImport(@NonNull final InputStream importStream,
-                        @Nullable final CoverFinder coverFinder,
-                        @NonNull final ImportListener listener)
+    @Override
+    public int doBooks(@NonNull final InputStream importStream,
+                       @Nullable final CoverFinder coverFinder,
+                       @NonNull final ImportListener listener)
             throws IOException {
 
         final List<String> importedList = new ArrayList<>();
@@ -151,8 +141,8 @@ public class CsvImporter
         // Version 1->3.3 export with family_name and author_id.
         // Version 3.4+ do not; latest versions make an attempt at escaping
         // characters etc to preserve formatting.
-        boolean fullEscaping = !book.containsKey(UniqueId.KEY_AUTHOR)
-                || !book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME);
+        boolean fullEscaping = !book.containsKey(DatabaseDefinitions.KEY_AUTHOR)
+                || !book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME);
 
         // Make sure required fields in Book bundle are present.
         // ENHANCE: Rationalize import to allow updates using 1 or 2 columns.
@@ -164,23 +154,23 @@ public class CsvImporter
         // ENHANCE: Export/Import should use GUIDs for book IDs, and put GUIDs on Image file names.
 
         // need either ID or UUID
-        requireColumnOrThrow(book, UniqueId.KEY_ID, UniqueId.KEY_BOOK_UUID);
+        requireColumnOrThrow(book, DatabaseDefinitions.KEY_ID, DatabaseDefinitions.KEY_BOOK_UUID);
 
         // need some type of author name.
         requireColumnOrThrow(book,
                              CsvExporter.CSV_COLUMN_AUTHORS,
                              // aka author_details: preferred one as used in latest versions
 
-                             UniqueId.KEY_AUTHOR_FAMILY_NAME,
-                             UniqueId.KEY_AUTHOR_FORMATTED,
+                             DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME,
+                             DatabaseDefinitions.KEY_AUTHOR_FORMATTED,
                              OLD_STYLE_AUTHOR_NAME
         );
 
         final boolean updateOnlyIfNewer;
         if ((mSettings.what & ImportSettings.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
-            if (!book.containsKey(UniqueId.KEY_DATE_LAST_UPDATED)) {
+            if (!book.containsKey(DatabaseDefinitions.KEY_DATE_LAST_UPDATED)) {
                 throw new IllegalArgumentException(
-                        "Imported data does not contain " + UniqueId.KEY_DATE_LAST_UPDATED);
+                        "Imported data does not contain " + DatabaseDefinitions.KEY_DATE_LAST_UPDATED);
             }
             updateOnlyIfNewer = true;
         } else {
@@ -221,8 +211,8 @@ public class CsvImporter
                 // Validate IDs
                 BookIds bids = new BookIds(book);
                 // check title
-                requireNonBlankOrThrow(book, row, UniqueId.KEY_TITLE);
-                final String title = book.getString(UniqueId.KEY_TITLE);
+                requireNonBlankOrThrow(book, row, DatabaseDefinitions.KEY_TITLE);
+                final String title = book.getString(DatabaseDefinitions.KEY_TITLE);
                 // Lookup id's etc, but do not write to db! Storing the book data does all that
                 handleAuthors(mDb, book);
                 handleSeries(mDb, book);
@@ -235,7 +225,7 @@ public class CsvImporter
                 // => ignore, we don't / can't use it anyhow.
                 // "bookshelf" == UniqueId.KEY_BOOKSHELF
                 // I suspect "bookshelf_text" is from older versions and obsolete now (Classic ?)
-                if (book.containsKey(UniqueId.KEY_BOOKSHELF)
+                if (book.containsKey(DatabaseDefinitions.KEY_BOOKSHELF)
                         && !book.containsKey(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
                     handleBookshelves(mDb, book);
                 }
@@ -286,7 +276,7 @@ public class CsvImporter
         }
 
         // minus 1 for the headers.
-        Logger.info(this, Tracker.State.Exit,"doImport",
+        Logger.info(this, Tracker.State.Exit,"doBooks",
                     "Csv Import successful: rows processed: " + (row - 1) +
                             ", created:" + mCreated + ", updated: " + mUpdated);
         return row;
@@ -358,7 +348,7 @@ public class CsvImporter
                                       final long bookId) {
 
         Date bookDate = DateUtils.parseDate(db.getBookLastUpdateDate(bookId));
-        Date importDate = DateUtils.parseDate(book.getString(UniqueId.KEY_DATE_LAST_UPDATED));
+        Date importDate = DateUtils.parseDate(book.getString(DatabaseDefinitions.KEY_DATE_LAST_UPDATED));
 
         return importDate != null && (bookDate == null || importDate.compareTo(bookDate) > 0);
     }
@@ -370,13 +360,13 @@ public class CsvImporter
      */
     private void handleBookshelves(@NonNull final DBA db,
                                    @NonNull final Book book) {
-        String encodedList = book.getString(UniqueId.KEY_BOOKSHELF);
+        String encodedList = book.getString(DatabaseDefinitions.KEY_BOOKSHELF);
         ArrayList<Bookshelf> list = StringList.getBookshelfCoder()
                                               .decode(Bookshelf.MULTI_SHELF_SEPARATOR, encodedList,
                                                       false);
         book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
 
-        book.remove(UniqueId.KEY_BOOKSHELF);
+        book.remove(DatabaseDefinitions.KEY_BOOKSHELF);
         book.remove(LEGACY_BOOKSHELF_TEXT_COLUMN);
         book.remove("bookshelf_id");
     }
@@ -414,10 +404,10 @@ public class CsvImporter
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
         if (encodedList.isEmpty()) {
             // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
-            if (book.containsKey(UniqueId.KEY_SERIES)) {
-                encodedList = book.getString(UniqueId.KEY_SERIES);
+            if (book.containsKey(DatabaseDefinitions.KEY_SERIES)) {
+                encodedList = book.getString(DatabaseDefinitions.KEY_SERIES);
                 if (!encodedList.isEmpty()) {
-                    String seriesNum = book.getString(UniqueId.KEY_SERIES_NUM);
+                    String seriesNum = book.getString(DatabaseDefinitions.KEY_SERIES_NUM);
                     encodedList += '(' + seriesNum + ')';
                 } else {
                     encodedList = null;
@@ -444,19 +434,19 @@ public class CsvImporter
         if (encodedList.isEmpty()) {
             // Need to build it from other/older fields.
 
-            if (book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
+            if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
                 // Build from family/given
-                encodedList = book.getString(UniqueId.KEY_AUTHOR_FAMILY_NAME);
+                encodedList = book.getString(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME);
                 String given = "";
-                if (book.containsKey(UniqueId.KEY_AUTHOR_GIVEN_NAMES)) {
-                    given = book.getString(UniqueId.KEY_AUTHOR_GIVEN_NAMES);
+                if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES)) {
+                    given = book.getString(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES);
                 }
                 if (!given.isEmpty()) {
                     encodedList += ", " + given;
                 }
 
-            } else if (book.containsKey(UniqueId.KEY_AUTHOR_FORMATTED)) {
-                encodedList = book.getString(UniqueId.KEY_AUTHOR_FORMATTED);
+            } else if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FORMATTED)) {
+                encodedList = book.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED);
 
             } else if (book.containsKey(OLD_STYLE_AUTHOR_NAME)) {
                 encodedList = book.getString(OLD_STYLE_AUTHOR_NAME);
@@ -682,11 +672,11 @@ public class CsvImporter
             }
 
             // Get the UUID, and remove from collection if null/blank
-            uuid = book.getString(UniqueId.KEY_BOOK_UUID);
+            uuid = book.getString(DatabaseDefinitions.KEY_BOOK_UUID);
             if (uuid.isEmpty()) {
                 // Remove any blank UUID column, just in case
-                if (book.containsKey(UniqueId.KEY_BOOK_UUID)) {
-                    book.remove(UniqueId.KEY_BOOK_UUID);
+                if (book.containsKey(DatabaseDefinitions.KEY_BOOK_UUID)) {
+                    book.remove(DatabaseDefinitions.KEY_BOOK_UUID);
                 }
             }
         }

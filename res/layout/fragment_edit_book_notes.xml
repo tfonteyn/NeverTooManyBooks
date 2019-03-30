@@ -27,6 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="5"
+            tools:rating="5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_rating"
             />
@@ -133,9 +134,19 @@
             style="@style/lbl_editField"
             android:labelFor="@id/price_paid"
             android:text="@string/lbl_price_paid"
-            app:layout_constraintBottom_toTopOf="@id/price_paid"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/date_acquired"
+            />
+
+        <!-- this invisible EditText is needed to allow show/hide of price_paid
+            while maintaining the baseline -->
+        <EditText
+            android:id="@+id/lbl_price_paid_baseline"
+            style="@style/priceTextEntry"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
+            tools:ignore="Autofill,LabelFor"
             />
 
         <EditText
@@ -143,11 +154,9 @@
             style="@style/priceTextEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBaseline_toBaselineOf="@id/price_paid_currency"
-            app:layout_constraintBottom_toTopOf="@id/signed"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid_baseline"
             app:layout_constraintEnd_toStartOf="@id/price_paid_currency"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
             tools:ignore="Autofill"
             tools:text="14.99"
             />
@@ -155,7 +164,7 @@
         <AutoCompleteTextView
             android:id="@+id/price_paid_currency"
             style="@style/currencyTextEntry"
-            app:layout_constraintBaseline_toBaselineOf="@id/price_paid"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid_baseline"
             app:layout_constraintEnd_toStartOf="@id/btn_price_paid_currency"
             app:layout_constraintStart_toEndOf="@id/price_paid"
             tools:ignore="Autofill,LabelFor"
@@ -179,7 +188,7 @@
             style="@style/lbl_editField"
             android:text="@string/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/price_paid"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_baseline"
             />
 
         <Button

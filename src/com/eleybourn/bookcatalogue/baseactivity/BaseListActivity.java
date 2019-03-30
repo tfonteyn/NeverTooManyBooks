@@ -262,22 +262,19 @@ public abstract class BaseListActivity
                                                   @NonNull final SimpleDialog.ContextMenuInfo
                                                           menuInfo) {
         if (menu.size() > 0) {
-            SimpleDialog.showContextMenu(
-                    getLayoutInflater(), menuInfo.title, menu,
-                    new SimpleDialog.OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull final SimpleDialog.SimpleDialogItem item) {
-                            MenuItem menuItem =
-                                    ((SimpleDialog.SimpleDialogMenuItem) item).getMenuItem();
-                            if (menuItem.hasSubMenu()) {
-                                // bring up sub-menu
-                                menuInfo.title = menuItem.getTitle().toString();
-                                onCreateListViewContextMenu(view, menuItem.getSubMenu(), menuInfo);
-                            } else {
-                                onListViewContextItemSelected(menuItem, menuInfo.position);
-                            }
-                        }
-                    });
+
+            SimpleDialog.OnClickListener<MenuItem> handler = item -> {
+                MenuItem menuItem =item.getItem();
+                if (menuItem.hasSubMenu()) {
+                    // bring up sub-menu
+                    menuInfo.title = menuItem.getTitle().toString();
+                    onCreateListViewContextMenu(view, menuItem.getSubMenu(), menuInfo);
+                } else {
+                    onListViewContextItemSelected(menuItem, menuInfo.position);
+                }
+            };
+
+            SimpleDialog.showContextMenu(getLayoutInflater(), menuInfo.title, menu, handler);
         }
     }
 

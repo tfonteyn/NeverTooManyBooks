@@ -195,25 +195,14 @@ public class TextFieldEditorDialogFragment
 
             // Handle OK
             root.findViewById(R.id.confirm).setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull final View v) {
-                            dismiss();
-                            getFragmentListener()
-                                    .onTextFieldEditorSave(mDestinationFieldId, getText());
-                        }
+                    v -> {
+                        dismiss();
+                        getFragmentListener().onTextFieldEditorSave(mDestinationFieldId, getText());
                     }
             );
 
             // Handle Cancel
-            root.findViewById(R.id.cancel).setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull final View v) {
-                            dismiss();
-                        }
-                    }
-            );
+            root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
             // Setup the layout
             setView(root);

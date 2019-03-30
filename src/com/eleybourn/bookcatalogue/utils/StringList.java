@@ -352,12 +352,7 @@ public class StringList<E> {
     public String encode(final char delim,
                          @NonNull final Collection<E> list) {
 
-        return Csv.join(String.valueOf(delim), list, new Csv.Formatter<E>() {
-            @Override
-            public String format(@NonNull final E element) {
-                return mFactory.encode(element);
-            }
-        });
+        return Csv.join(String.valueOf(delim), list, mFactory::encode);
     }
 
     public interface Factory<E> {

@@ -36,8 +36,8 @@ import androidx.fragment.app.DialogFragment;
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.EditSeriesListActivity;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -65,7 +65,7 @@ public class EditSeriesDialogFragment
     public static EditSeriesDialogFragment newInstance(@NonNull final Series series) {
         EditSeriesDialogFragment frag = new EditSeriesDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(UniqueId.KEY_SERIES, series);
+        args.putParcelable(DatabaseDefinitions.KEY_SERIES, series);
         frag.setArguments(args);
         return frag;
     }
@@ -76,14 +76,14 @@ public class EditSeriesDialogFragment
         final Activity mActivity = requireActivity();
         mDb = new DBA(mActivity);
 
-        final Series series = requireArguments().getParcelable(UniqueId.KEY_SERIES);
+        final Series series = requireArguments().getParcelable(DatabaseDefinitions.KEY_SERIES);
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             mName = series.getName();
             mIsComplete = series.isComplete();
         } else {
-            mName = savedInstanceState.getString(UniqueId.KEY_SERIES);
-            mIsComplete = savedInstanceState.getBoolean(UniqueId.KEY_SERIES_IS_COMPLETE);
+            mName = savedInstanceState.getString(DatabaseDefinitions.KEY_SERIES);
+            mIsComplete = savedInstanceState.getBoolean(DatabaseDefinitions.KEY_SERIES_IS_COMPLETE);
         }
 
         View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_series, null);
@@ -99,43 +99,35 @@ public class EditSeriesDialogFragment
         mIsCompleteView = root.findViewById(R.id.is_complete);
         mIsCompleteView.setChecked(mIsComplete);
 
-        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                mName = mNameView.getText().toString().trim();
-                if (mName.isEmpty()) {
-                    UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
-                    return;
-                }
-                mIsComplete = mIsCompleteView.isChecked();
-                dismiss();
+        root.findViewById(R.id.confirm).setOnClickListener(v -> {
+            mName = mNameView.getText().toString().trim();
+            if (mName.isEmpty()) {
+                UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
+                return;
+            }
+            mIsComplete = mIsCompleteView.isChecked();
+            dismiss();
 
-                //noinspection ConstantConditions
-                if (series.getName().equals(mName)
-                        && series.isComplete() == mIsComplete) {
-                    return;
-                }
-                series.setName(mName);
-                series.setComplete(mIsComplete);
-                mDb.updateOrInsertSeries(series);
-                // Let the Activity know
-                if (mActivity instanceof BookChangedListener) {
-                    final BookChangedListener bcl = (BookChangedListener) mActivity;
-                    bcl.onBookChanged(0, BookChangedListener.SERIES, null);
-                }
+            //noinspection ConstantConditions
+            if (series.getName().equals(mName)
+                    && series.isComplete() == mIsComplete) {
+                return;
+            }
+            series.setName(mName);
+            series.setComplete(mIsComplete);
+            mDb.updateOrInsertSeries(series);
+            // Let the Activity know
+            if (mActivity instanceof BookChangedListener) {
+                final BookChangedListener bcl = (BookChangedListener) mActivity;
+                bcl.onBookChanged(0, BookChangedListener.SERIES, null);
             }
         });
 
-        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dismiss();
-            }
-        });
+        root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
         return new AlertDialog.Builder(mActivity)
                 .setView(root)
-                .setTitle(R.string.title_edit_series)
+                .setTitle(R.string.lbl_series)
                 .create();
     }
 
@@ -150,8 +142,8 @@ public class EditSeriesDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.KEY_SERIES, mName);
-        outState.putBoolean(UniqueId.KEY_SERIES_IS_COMPLETE, mIsComplete);
+        outState.putString(DatabaseDefinitions.KEY_SERIES, mName);
+        outState.putBoolean(DatabaseDefinitions.KEY_SERIES_IS_COMPLETE, mIsComplete);
     }
 
     @Override

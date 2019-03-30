@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -229,7 +229,7 @@ public class BookCursorRowBase {
     }
 
     public final int getAnthologyBitMask() {
-        return mMapper.getInt(DOM_BOOK_ANTHOLOGY_BITMASK);
+        return mMapper.getInt(DOM_BOOK_TOC_BITMASK);
     }
 
     public final int getEditionBitMask() {

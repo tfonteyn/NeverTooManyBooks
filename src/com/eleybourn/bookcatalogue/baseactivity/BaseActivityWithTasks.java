@@ -230,9 +230,9 @@ public abstract class BaseActivityWithTasks
      * @see TaskManagerListener#onTaskFinished
      */
     protected void onTaskFinished(@NonNull final ManagedTask task) {
-        String message = task.getFinalMessage();
-        if (message != null && !message.isEmpty()) {
-            UserMessage.showUserMessage(this, message);
+        String msg = task.getFinalMessage();
+        if (msg != null && !msg.isEmpty()) {
+            UserMessage.showUserMessage(this, msg);
         }
     }
 

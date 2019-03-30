@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,9 +47,6 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
-import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.OnClickListener;
-import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.SimpleDialogFileItem;
-import com.eleybourn.bookcatalogue.dialogs.SimpleDialog.SimpleDialogItem;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsUtils;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.TaskQueueListActivity;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
@@ -72,8 +68,6 @@ public class AdminActivity
     /** requestCode for doing a restore/import from archive. */
     private static final int REQ_ARCHIVE_RESTORE = 1;
 
-    private static final int REQ_ADMIN_SEARCH_SETTINGS = 10;
-
     /**
      * collected results from all started activities, which we'll pass on up in our own setResult.
      */
@@ -94,137 +88,93 @@ public class AdminActivity
 
         // Export (backup) to Archive
         v = findViewById(R.id.lbl_backup);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this,
-                                           BackupAndRestoreActivity.class)
-                        .putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                                  BackupAndRestoreActivity.MODE_SAVE);
-                startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
-            }
+        v.setOnClickListener(v1 -> {
+            Intent intent = new Intent(AdminActivity.this,
+                                       BackupAndRestoreActivity.class)
+                    .putExtra(BackupAndRestoreActivity.BKEY_MODE,
+                              BackupAndRestoreActivity.MODE_SAVE);
+            startActivityForResult(intent, REQ_ARCHIVE_BACKUP);
         });
 
 
         // Import from Archive - Start the restore activity
         v = findViewById(R.id.lbl_import_from_archive);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this,
-                                           BackupAndRestoreActivity.class)
-                        .putExtra(BackupAndRestoreActivity.BKEY_MODE,
-                                  BackupAndRestoreActivity.MODE_OPEN);
-                startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
-            }
+        v.setOnClickListener(v1 -> {
+            Intent intent = new Intent(AdminActivity.this,
+                                       BackupAndRestoreActivity.class)
+                    .putExtra(BackupAndRestoreActivity.BKEY_MODE,
+                              BackupAndRestoreActivity.MODE_OPEN);
+            startActivityForResult(intent, REQ_ARCHIVE_RESTORE);
         });
 
 
         // Export to CSV
         v = findViewById(R.id.lbl_export);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                exportToCSV();
-            }
-        });
+        v.setOnClickListener(v1 -> exportToCSV());
 
 
         // Import From CSV
         v = findViewById(R.id.lbl_import);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                // Verify - this can be a dangerous operation
-                confirmToImportFromCSV();
-            }
+        v.setOnClickListener(v1 -> {
+            // Verify - this can be a dangerous operation
+            confirmToImportFromCSV();
         });
 
 
         /* Automatically Update Fields from internet*/
         v = findViewById(R.id.lbl_update_internet);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this,
-                                           UpdateFieldsFromInternetActivity.class);
-                startActivity(intent);
-            }
+        v.setOnClickListener(v1 -> {
+            Intent intent = new Intent(AdminActivity.this,
+                                       UpdateFieldsFromInternetActivity.class);
+            startActivity(intent);
         });
 
 
         // Goodreads Synchronize
         v = findViewById(R.id.lbl_sync_with_goodreads);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                GoodreadsUtils.importAll(AdminActivity.this, true);
-            }
-        });
+        v.setOnClickListener(v1 -> GoodreadsUtils.importAll(AdminActivity.this, true));
 
 
         // Goodreads Import
         v = findViewById(R.id.lbl_import_all_from_goodreads);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                GoodreadsUtils.importAll(AdminActivity.this, false);
-            }
-        });
+        v.setOnClickListener(v1 -> GoodreadsUtils.importAll(AdminActivity.this, false));
 
 
         // Goodreads Export (send to)
         v = findViewById(R.id.lbl_send_books_to_goodreads);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                GoodreadsUtils.sendBooks(AdminActivity.this);
-            }
-        });
+        v.setOnClickListener(v1 -> GoodreadsUtils.sendBooks(AdminActivity.this));
 
         /* Start the activity that shows the basic details of GoodReads tasks. */
         v = findViewById(R.id.lbl_background_tasks);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(AdminActivity.this,
-                                           TaskQueueListActivity.class);
-                startActivity(intent);
-            }
+        v.setOnClickListener(v1 -> {
+            Intent intent = new Intent(AdminActivity.this,
+                                       TaskQueueListActivity.class);
+            startActivity(intent);
         });
 
 
         /* Reset Hints */
         v = findViewById(R.id.lbl_reset_hints);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                HintManager.resetHints();
-                UserMessage.showUserMessage(v, R.string.hints_have_been_reset);
-            }
+        v.setOnClickListener(v1 -> {
+            HintManager.resetHints();
+            UserMessage.showUserMessage(v1, R.string.hints_have_been_reset);
         });
 
 
         /* Erase cover cache */
         v = findViewById(R.id.lbl_erase_cover_cache);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
-                    coversDBAdapter.deleteAll();
-                }
+        v.setOnClickListener(v1 -> {
+            try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
+                coversDBAdapter.deleteAll();
             }
         });
 
 
         /* Copy database for tech support */
         v = findViewById(R.id.lbl_copy_database);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                StorageUtils.exportDatabaseFiles(AdminActivity.this);
-                UserMessage.showUserMessage(v, R.string.progress_end_backup_success);
-            }
+        v.setOnClickListener(v1 -> {
+            StorageUtils.exportDatabaseFiles();
+            UserMessage.showUserMessage(v1, R.string.progress_end_backup_success);
         });
     }
 
@@ -247,21 +197,9 @@ public class AdminActivity
                 .setMessage(R.string.warning_import_be_cautious)
                 .setTitle(R.string.title_import_book_data)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> {/* do nothing */ })
+                .setPositiveButton(android.R.string.ok, (d, which) -> importFromCSV())
                 .create();
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 importFromCSV();
-                             }
-                         });
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 //do nothing
-                             }
-                         });
         dialog.show();
     }
 
@@ -280,17 +218,10 @@ public class AdminActivity
             } else {
                 // If more than one, ask user which file
                 // ENHANCE: Consider asking about importing cover images.
-                SimpleDialog.selectFileDialog(
-                        getLayoutInflater(),
-                        getString(R.string.import_warning_select_csv_file),
-                        files,
-                        new OnClickListener() {
-                            @Override
-                            public void onClick(@NonNull final SimpleDialogItem item) {
-                                SimpleDialogFileItem fileItem = (SimpleDialogFileItem) item;
-                                importFromCSV(fileItem.getFile());
-                            }
-                        });
+                SimpleDialog.selectFileDialog(getLayoutInflater(),
+                                              getString(R.string.import_warning_select_csv_file),
+                                              files,
+                                              item -> importFromCSV(item.getItem()));
             }
         }
     }
@@ -318,7 +249,6 @@ public class AdminActivity
         }
 
         switch (requestCode) {
-            case REQ_ADMIN_SEARCH_SETTINGS:
             case REQ_ARCHIVE_BACKUP:
             case REQ_ARCHIVE_RESTORE:
                 if (resultCode == RESULT_OK) {
@@ -361,30 +291,15 @@ public class AdminActivity
      * Callback for the CSV export task.
      */
     private void onExportFinished() {
-        final AlertDialog dialog = new AlertDialog.Builder(AdminActivity.this)
+        final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.export_csv_email)
                 .setIcon(R.drawable.ic_send)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    emailCSVFile();
+                    d.dismiss();
+                })
                 .create();
-
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                         getString(android.R.string.ok),
-                         new DialogInterface.OnClickListener() {
-                             @Override
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 emailCSVFile();
-                                 dialog.dismiss();
-                             }
-                         });
-
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                         getString(android.R.string.cancel),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                             }
-                         });
 
         if (!isFinishing()) {
             try {
@@ -413,7 +328,7 @@ public class AdminActivity
         ArrayList<Uri> uris = new ArrayList<>();
         try {
             File csvExportFile = StorageUtils.getFile(CsvExporter.EXPORT_FILE_NAME);
-            Uri coverURI = FileProvider.getUriForFile(AdminActivity.this,
+            Uri coverURI = FileProvider.getUriForFile(this,
                                                       GenericFileProvider.AUTHORITY,
                                                       csvExportFile);
 
@@ -422,7 +337,7 @@ public class AdminActivity
             startActivity(Intent.createChooser(intent, getString(R.string.send_mail)));
         } catch (NullPointerException e) {
             Logger.error(e);
-            UserMessage.showUserMessage(AdminActivity.this, R.string.error_email_failed);
+            UserMessage.showUserMessage(this, R.string.error_email_failed);
         }
     }
 }

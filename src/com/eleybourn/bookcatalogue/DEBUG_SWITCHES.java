@@ -72,7 +72,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean NETWORK = false;
 
     /** Log the full flow of {@link Activity#recreate()}. */
-    public static final boolean RECREATE_ACTIVITY = true;
+    public static final boolean RECREATE_ACTIVITY = false;
 
     /** {@link ISFDBBook}. */
     public static final boolean ISFDB_SEARCH = false;

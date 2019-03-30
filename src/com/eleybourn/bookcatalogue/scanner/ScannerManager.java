@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -133,34 +132,21 @@ public final class ScannerManager {
                 AlertDialog.BUTTON_POSITIVE,
                 /* text hardcoded as a it is a product name */
                 "ZXing",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        installScanner(activity,
-                                       "market://details?id=com.google.zxing.client.android");
-                    }
-                });
+                (d, which) -> installScanner(activity,
+                               "market://details?id=com.google.zxing.client.android"));
         dialog.setButton(
                 AlertDialog.BUTTON_NEGATIVE,
                 /* text hardcoded as a it is a product name */
                 "pic2shop",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        installScanner(activity,
-                                       "market://details?id=com.visionsmarts.pic2shop");
-                    }
-                });
+                (d, which) -> installScanner(activity,
+                               "market://details?id=com.visionsmarts.pic2shop"));
 
         dialog.setButton(
                 AlertDialog.BUTTON_NEUTRAL, activity.getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        //do nothing
-                        activity.setResult(Activity.RESULT_CANCELED);
-                        activity.finish();
-                    }
+                (d, which) -> {
+                    //do nothing
+                    activity.setResult(Activity.RESULT_CANCELED);
+                    activity.finish();
                 });
 
         dialog.show();

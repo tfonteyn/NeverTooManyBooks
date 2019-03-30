@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Checkable;
 import android.widget.EditText;
 
@@ -70,30 +69,22 @@ public class ExportDialogFragment
 
         View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_export_options, null);
 
-        root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                updateOptions();
-                OnExportTypeSelectionDialogResultsListener listener =
-                        (OnExportTypeSelectionDialogResultsListener) mActivity;
-                listener.onExportTypeSelectionDialogResult(mExportSettings);
-                dismiss();
-            }
+        root.findViewById(R.id.confirm).setOnClickListener(v -> {
+            updateOptions();
+            OnExportTypeSelectionDialogResultsListener listener =
+                    (OnExportTypeSelectionDialogResultsListener) mActivity;
+            listener.onExportTypeSelectionDialogResult(mExportSettings);
+            dismiss();
         });
 
-        root.findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dismiss();
-            }
-        });
+        root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
-        root.findViewById(R.id.xml_tables_check).setVisibility(View.VISIBLE);
+        root.findViewById(R.id.cbx_xml_tables).setVisibility(View.VISIBLE);
+        root.findViewById(R.id.cbx_xml_tables_info).setVisibility(View.VISIBLE);
 
         AlertDialog dialog = new AlertDialog.Builder(mActivity)
                 .setView(root)
-                .setTitle(R.string.lbl_backup)
-                .setIcon(R.drawable.ic_warning)
+                .setTitle(R.string.export_options_dialog_title)
                 .create();
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
@@ -103,16 +94,16 @@ public class ExportDialogFragment
         Dialog dialog = getDialog();
         // what to export. All checked == ExportSettings.ALL
         //noinspection ConstantConditions
-        if (((Checkable) dialog.findViewById(R.id.xml_tables_check)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.cbx_xml_tables)).isChecked()) {
             mExportSettings.what |= ExportSettings.XML_TABLES;
         }
-        if (((Checkable) dialog.findViewById(R.id.books_check)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.cbx_books_csv)).isChecked()) {
             mExportSettings.what |= ExportSettings.BOOK_CSV;
         }
-        if (((Checkable) dialog.findViewById(R.id.covers_check)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.cbx_covers)).isChecked()) {
             mExportSettings.what |= ExportSettings.COVERS;
         }
-        if (((Checkable) dialog.findViewById(R.id.preferences_check)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.cbx_preferences)).isChecked()) {
             mExportSettings.what |= ExportSettings.PREFERENCES | ExportSettings.BOOK_LIST_STYLES;
         }
 
@@ -131,7 +122,7 @@ public class ExportDialogFragment
                 mExportSettings.dateFrom =
                         DateUtils.parseDate(dateSinceView.getText().toString().trim());
             } catch (RuntimeException e) {
-                UserMessage.showUserMessage(mActivity, R.string.warning_date_not_set);
+                UserMessage.showUserMessage(dateSinceView, R.string.warning_date_not_set);
                 mExportSettings.what = ExportSettings.NOTHING;
             }
         }

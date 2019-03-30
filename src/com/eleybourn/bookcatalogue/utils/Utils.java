@@ -59,6 +59,7 @@ public final class Utils {
      *
      * @param db   Database connection to lookup IDs
      * @param list List to clean up
+     * @param <T>  ItemWithIdFixup object
      *
      * @return <tt>true</tt> if the list was modified.
      */
@@ -157,25 +158,28 @@ public final class Utils {
      * <p>
      * 2019-03-16: decimalize as per IEC: https://en.wikipedia.org/wiki/File_size
      *
+     * @param context caller context
+     * @param bytes   to format
+     *
      * @return formatted # bytes
      */
     @NonNull
     public static String formatFileSize(@NonNull final Context context,
-                                        final float space) {
-        if (space < 3_000) {
+                                        final float bytes) {
+        if (bytes < 3_000) {
             // Show 'bytes' if < 3k
-            return String.format(context.getString(R.string.bytes), space);
-        } else if (space < 250_000) {
+            return context.getString(R.string.bytes, bytes);
+        } else if (bytes < 250_000) {
             // Show Kb if less than 250kB
-            return String.format(context.getString(R.string.kilobytes), space / 1_000);
+            return context.getString(R.string.kilobytes, bytes / 1_000);
         } else {
             // Show MB otherwise...
-            return String.format(context.getString(R.string.megabytes), space / 1_000_000);
+            return context.getString(R.string.megabytes, bytes / 1_000_000);
         }
     }
 
     /**
-     * Convert a set where each element represents one bit to an int bitmask
+     * Convert a set where each element represents one bit to an int bitmask.
      *
      * @param set the set
      *

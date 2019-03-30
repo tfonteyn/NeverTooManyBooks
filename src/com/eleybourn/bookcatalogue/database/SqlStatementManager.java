@@ -50,7 +50,7 @@ public class SqlStatementManager
     @NonNull
     private final Map<String, SynchronizedStatement> mStatements =
             // not sure sync is needed. But this used to be a HashTable.
-            Collections.synchronizedMap(new HashMap<String, SynchronizedStatement>());
+            Collections.synchronizedMap(new HashMap<>());
 
     @Nullable
     private final SynchronizedDb mSyncedDb;

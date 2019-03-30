@@ -40,10 +40,10 @@ public final class LocaleUtils {
     }
 
     /**
-     * Needs to be called from main thread (usually at app startup).
+     * Needs to be called from main thread at App startup.
      */
     @UiThread
-    public static void init(@NonNull final Context context) {
+    public static void init() {
 
         // preserve startup==system Locale
         sSystemInitialLocale = Locale.getDefault();
@@ -89,6 +89,13 @@ public final class LocaleUtils {
         }
     }
 
+    /**
+     * Check if the preferred theme is different from the currently in use Locale.
+     *
+     * @param context to check the configuration Locale
+     *
+     * @return <tt>true</tt> if there is a change (difference)
+     */
     public static boolean isChanged(@NonNull final Context context) {
         boolean changed = !context.getResources().getConfiguration().locale.equals(getPreferredLocal());
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
@@ -103,7 +110,7 @@ public final class LocaleUtils {
     public static void applyPreferred(@NonNull final Context context) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.info(context, Tracker.State.Enter, "applyPreferred",
-                        toString(context));
+                        toDebugString(context));
         }
         if (!isChanged(context)) {
             return;
@@ -126,7 +133,7 @@ public final class LocaleUtils {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.info(context, Tracker.State.Exit, "applyPreferred", "==true",
-                        toString(context));
+                        toDebugString(context));
         }
     }
 
@@ -151,6 +158,8 @@ public final class LocaleUtils {
     @NonNull
     public static Locale getPreferredLocal() {
         String lang = App.getPrefString(Prefs.pk_ui_language);
+        // the string "system" is also hardcoded in the preference string-array and
+        // in the default setting in the preference screen.
         if (lang.isEmpty() || "system".equalsIgnoreCase(lang)) {
             return sSystemInitialLocale;
         } else {
@@ -207,8 +216,17 @@ public final class LocaleUtils {
         return displayName;
     }
 
-    public static String currencyToISO(@NonNull final String datum) {
-        return CURRENCY_MAP.get(datum.trim().toLowerCase());
+    /**
+     * Convert the passed string with a (hopefully valid) currency unit, into the ISO3 code
+     * for that currency.
+     *
+     * @param currency  to convert
+     *
+     * @return ISO3 code.
+     */
+    @Nullable
+    public static String currencyToISO(@NonNull final String currency) {
+        return CURRENCY_MAP.get(currency.trim().toLowerCase());
     }
 
     /**
@@ -234,6 +252,7 @@ public final class LocaleUtils {
         createLanguageMappingCache(Locale.ENGLISH);
     }
 
+    /** Convenience method to get the language SharedPreferences file. */
     private static SharedPreferences getLanguageCache() {
         return App.getAppContext().getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
@@ -257,8 +276,7 @@ public final class LocaleUtils {
         ed.apply();
     }
 
-
-    public static String toString(@NonNull final Context context) {
+    public static String toDebugString(@NonNull final Context context) {
         return    "\nsSystemInitialLocale            : " + sSystemInitialLocale.getDisplayName()
                 + "\ncontext configuration.locale    : " + context.getResources().getConfiguration().locale.getDisplayName()
                 + "\nLocale.getDefault()             : " + Locale.getDefault().getDisplayName()

@@ -179,14 +179,24 @@
             app:layout_constraintTop_toBottomOf="@id/pages"
             />
 
+        <!-- this invisible EditText is needed to allow show/hide of price_listed
+            while maintaining the baseline -->
+        <EditText
+            android:id="@+id/lbl_price_listed_baseline"
+            style="@style/priceTextEntry"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
+            tools:ignore="Autofill,LabelFor"
+            />
         <EditText
             android:id="@+id/price_listed"
             style="@style/priceTextEntry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_listed_baseline"
             app:layout_constraintEnd_toStartOf="@id/price_listed_currency"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
             tools:ignore="Autofill"
             tools:text="14.99"
             />
@@ -194,7 +204,7 @@
         <AutoCompleteTextView
             android:id="@+id/price_listed_currency"
             style="@style/currencyTextEntry"
-            app:layout_constraintBaseline_toBaselineOf="@id/price_listed"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_listed_baseline"
             app:layout_constraintEnd_toStartOf="@id/btn_price_listed_currency"
             app:layout_constraintStart_toEndOf="@id/price_listed"
             tools:ignore="Autofill,LabelFor"

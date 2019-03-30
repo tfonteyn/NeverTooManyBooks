@@ -101,7 +101,7 @@ public final class Prefs {
                 sb.append('\n').append(key).append('=').append(value);
             }
             sb.append("\n\n");
-            Logger.info(App.class, sb.toString());
+            Logger.info(App.class, "dumpPreferences", sb.toString());
         }
     }
 
@@ -110,8 +110,14 @@ public final class Prefs {
      * Some of these are real migrations,
      * some just for aesthetics's making the key's naming standard.
      */
-    public static void migratePreV200preferences(@NonNull final Map<String, ?> oldMap) {
+    public static void migratePreV200preferences(@NonNull final String name) {
+
+        SharedPreferences oldPrefs = App.getPrefs(name);
+
+        Map<String, ?> oldMap = oldPrefs.getAll();
         if (oldMap.isEmpty()) {
+            // API: 24 -> App.getAppContext().deleteSharedPreferences(name);
+            oldPrefs.edit().clear().apply();
             return;
         }
 
@@ -359,8 +365,9 @@ public final class Prefs {
 
                         } else if (!key.startsWith("state_current_group")) {
 
-                            Logger.info(Prefs.class, "unknown|key=" + key
-                                    + "|value=" + oldValue.toString());
+                            Logger.info(Prefs.class, "migratePreV200preferences",
+                                        "unknown key=" + key,
+                                        "value=" + oldValue.toString());
                         }
                         break;
                 }
@@ -371,5 +378,8 @@ public final class Prefs {
             }
         }
         ed.apply();
+
+        // API: 24 -> App.getAppContext().deleteSharedPreferences(name);
+        oldPrefs.edit().clear().apply();
     }
 }

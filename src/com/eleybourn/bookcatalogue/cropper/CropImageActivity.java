@@ -33,7 +33,6 @@ import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -238,26 +237,24 @@ public class CropImageActivity
                 faceBitmap.recycle();
             }
 
-            mHandler.post(new Runnable() {
-                public void run() {
-                    mWaitingToPickFace = mNumFaces > 1;
-                    if (mNumFaces > 0) {
-                        for (int i = 0; i < mNumFaces; i++) {
-                            handleFace(mFaces[i]);
-                        }
-                    } else {
-                        makeDefault();
+            mHandler.post(() -> {
+                mWaitingToPickFace = mNumFaces > 1;
+                if (mNumFaces > 0) {
+                    for (int i = 0; i < mNumFaces; i++) {
+                        handleFace(mFaces[i]);
                     }
-                    mImageView.invalidate();
-                    if (mImageView.mHighlightViews.size() == 1) {
-                        mCrop = mImageView.mHighlightViews.get(0);
-                        mCrop.setFocus(true);
-                    }
+                } else {
+                    makeDefault();
+                }
+                mImageView.invalidate();
+                if (mImageView.mHighlightViews.size() == 1) {
+                    mCrop = mImageView.mHighlightViews.get(0);
+                    mCrop.setFocus(true);
+                }
 
-                    if (mNumFaces > 1) {
-                        UserMessage.showUserMessage(CropImageActivity.this,
-                                                    "Multi face crop help not available.");
-                    }
+                if (mNumFaces > 1) {
+                    UserMessage.showUserMessage(CropImageActivity.this,
+                                                "Multi face crop help not available.");
                 }
             });
         }
@@ -323,18 +320,12 @@ public class CropImageActivity
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
             findViewById(R.id.cancel).setOnClickListener(
-                    new View.OnClickListener() {
-                        public void onClick(@NonNull final View v) {
-                            setResult(Activity.RESULT_CANCELED);
-                            finish();
-                        }
+                    v -> {
+                        setResult(Activity.RESULT_CANCELED);
+                        finish();
                     });
 
-            findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-                public void onClick(@NonNull final View v) {
-                    onSaveClicked();
-                }
-            });
+            findViewById(R.id.confirm).setOnClickListener(v -> onSaveClicked());
             startFaceDetection();
         } else {
             setResult(Activity.RESULT_CANCELED);
@@ -373,32 +364,28 @@ public class CropImageActivity
 
         CropUtil.startBackgroundJob(
                 this, null, getString(R.string.progress_msg_please_wait),
-                new Runnable() {
-                    public void run() {
-                        final CountDownLatch latch = new CountDownLatch(1);
-                        final Bitmap b = mBitmap;
-                        mHandler.post(new Runnable() {
-                            public void run() {
-                                if (b != mBitmap && b != null) {
-                                    // Do not recycle until mBitmap has been set to the new bitmap!
-                                    Bitmap toRecycle = mBitmap;
-                                    mBitmap = b;
-                                    mImageView.setImageBitmapResetBase(mBitmap, true);
-                                    toRecycle.recycle();
-                                }
-                                if (mImageView.getScale() == 1F) {
-                                    mImageView.center(true, true);
-                                }
-                                latch.countDown();
-                            }
-                        });
-                        try {
-                            latch.await();
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
+                () -> {
+                    final CountDownLatch latch = new CountDownLatch(1);
+                    final Bitmap b = mBitmap;
+                    mHandler.post(() -> {
+                        if (b != mBitmap && b != null) {
+                            // Do not recycle until mBitmap has been set to the new bitmap!
+                            Bitmap toRecycle = mBitmap;
+                            mBitmap = b;
+                            mImageView.setImageBitmapResetBase(mBitmap, true);
+                            toRecycle.recycle();
                         }
-                        mRunFaceDetection.run();
+                        if (mImageView.getScale() == 1F) {
+                            mImageView.center(true, true);
+                        }
+                        latch.countDown();
+                    });
+                    try {
+                        latch.await();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
+                    mRunFaceDetection.run();
                 }, mHandler);
     }
 
@@ -501,11 +488,7 @@ public class CropImageActivity
             // save to the URI in a background task
             final Bitmap bitmap = croppedImage;
             CropUtil.startBackgroundJob(this, null, getString(R.string.progress_msg_saving_image),
-                                        new Runnable() {
-                                            public void run() {
-                                                saveOutput(bitmap);
-                                            }
-                                        }, mHandler);
+                                        () -> saveOutput(bitmap), mHandler);
         }
     }
 

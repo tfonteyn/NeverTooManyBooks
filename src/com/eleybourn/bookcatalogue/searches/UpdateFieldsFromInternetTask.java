@@ -227,7 +227,7 @@ public class UpdateFieldsFromInternetTask
                 // Get the book ID
                 mCurrentBookId = books.getId();
                 // Get the book UUID
-                mCurrentUuid = mOriginalBookData.getString(UniqueId.KEY_BOOK_UUID);
+                mCurrentUuid = mOriginalBookData.getString(DatabaseDefinitions.KEY_BOOK_UUID);
 
                 // Get the array data about the book
                 mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
@@ -241,9 +241,9 @@ public class UpdateFieldsFromInternetTask
 
                 // Make sure the searchable fields are not NULL
                 // (legacy data, and possibly set to null when adding new book)
-                String isbn = mOriginalBookData.getString(UniqueId.KEY_ISBN, "");
-                String author = mOriginalBookData.getString(UniqueId.KEY_AUTHOR_FORMATTED, "");
-                String title = mOriginalBookData.getString(UniqueId.KEY_TITLE, "");
+                String isbn = mOriginalBookData.getString(DatabaseDefinitions.KEY_ISBN, "");
+                String author = mOriginalBookData.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED, "");
+                String title = mOriginalBookData.getString(DatabaseDefinitions.KEY_TITLE, "");
 
                 // Check which fields this book needs.
                 mCurrentBookFieldUsages = getCurrentBookFieldUsages(mFields);

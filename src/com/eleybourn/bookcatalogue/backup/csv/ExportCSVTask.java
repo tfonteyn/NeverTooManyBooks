@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.ExportSettings;
@@ -29,9 +30,10 @@ public class ExportCSVTask
     @NonNull
     private final ProgressDialogFragment<Void> mFragment;
     @NonNull
-    private final CsvExporter mExporter;
+    private final Exporter mExporter;
     @NonNull
     private final File tmpFile;
+
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can then check it.
@@ -86,7 +88,7 @@ public class ExportCSVTask
     @Nullable
     @WorkerThread
     protected Void doInBackground(final Void... params) {
-        try (FileOutputStream out = new FileOutputStream(tmpFile)) {
+        try (OutputStream out = new FileOutputStream(tmpFile)) {
             // start the export
             mExporter.doBooks(out, new Exporter.ExportListener() {
                 @Override
@@ -110,7 +112,7 @@ public class ExportCSVTask
                 return null;
             }
             // success
-            mExporter.renameFiles(tmpFile);
+            CsvExporter.renameFiles(tmpFile);
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
             Logger.error(e);

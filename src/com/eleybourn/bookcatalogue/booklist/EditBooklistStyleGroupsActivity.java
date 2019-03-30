@@ -27,7 +27,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
@@ -257,16 +256,13 @@ public class EditBooklistStyleGroupsActivity
                 holder.checkableView.setTag(holder);
 
                 // Handle a click on the CheckedTextView
-                holder.checkableView.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull View v) {
-                        Holder h = (Holder) v.getTag();
-                        boolean newStatus = !h.groupWrapper.present;
-                        h.groupWrapper.present = newStatus;
-                        h.checkableView.setChecked(newStatus);
-                        // no need to update the list, item itself is updated
-                        //onListChanged();
-                    }
+                holder.checkableView.setOnClickListener(v -> {
+                    Holder h = (Holder) v.getTag();
+                    boolean newStatus = !h.groupWrapper.present;
+                    h.groupWrapper.present = newStatus;
+                    h.checkableView.setChecked(newStatus);
+                    // no need to update the list, item itself is updated
+                    //onListChanged();
                 });
             }
             // Setup the variant fields in the holder

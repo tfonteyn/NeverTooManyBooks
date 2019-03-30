@@ -6,6 +6,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 
@@ -471,7 +472,7 @@ class SearchLibraryThingHandler
             if ("work".equalsIgnoreCase(type)) {
                 try {
                     long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
-                    mBookData.putLong(UniqueId.KEY_LIBRARY_THING_ID, id);
+                    mBookData.putLong(DatabaseDefinitions.KEY_LIBRARY_THING_ID, id);
                 } catch (NumberFormatException ignore) {
                 }
             }
@@ -505,7 +506,7 @@ class SearchLibraryThingHandler
             switch (mFieldType) {
 
                 case Title:
-                    addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
+                    addIfNotPresent(mBookData, DatabaseDefinitions.KEY_TITLE, mBuilder.toString());
                     break;
 
                 case Series:

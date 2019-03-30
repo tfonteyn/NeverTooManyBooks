@@ -73,7 +73,8 @@ public abstract class BackupReaderAbstract
         mContext = context;
         mDb = new DBA(mContext);
 
-        processPreferences = mContext.getResources().getString(R.string.progress_msg_process_preferences);
+        processPreferences = mContext.getResources().getString(
+                R.string.progress_msg_process_preferences);
         processCover = mContext.getString(R.string.progress_msg_process_cover);
         processBooklistStyles = mContext.getString(R.string.progress_msg_process_booklist_style);
     }
@@ -226,7 +227,7 @@ public abstract class BackupReaderAbstract
      */
     private void restoreBooks(@NonNull final ReaderEntity entity)
             throws IOException {
-        // Listener for the 'doImport' function that just passes on the progress to our own listener
+        // Listener that just passes on the progress to our own listener
         Importer.ImportListener importListener = new Importer.ImportListener() {
             private int mLastPos;
 
@@ -250,8 +251,8 @@ public abstract class BackupReaderAbstract
         };
 
         // Now do the import
-        try (CsvImporter importer = new CsvImporter(mContext, mSettings)) {
-            importer.doImport(entity.getStream(), null, importListener);
+        try (Importer importer = new CsvImporter(mContext, mSettings)) {
+            importer.doBooks(entity.getStream(), null, importListener);
         }
     }
 
@@ -324,8 +325,7 @@ public abstract class BackupReaderAbstract
     }
 
     /**
-     * Listener for the '{@link com.eleybourn.bookcatalogue.backup.Exporter#doExport} method
-     * that just passes on the progress to our own listener.
+     * Listener that just passes on the progress to our own listener.
      * <p>
      * It basically translates between 'delta' and 'absolute' positions for the progress counter
      */

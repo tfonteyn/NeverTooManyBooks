@@ -21,6 +21,7 @@ package com.eleybourn.bookcatalogue.backup.archivebase;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.Closeable;
 import java.io.File;
@@ -43,6 +44,7 @@ public interface BackupWriter
      *
      * @throws IOException on failure
      */
+    @WorkerThread
     void backup(@NonNull ExportSettings settings,
                 @NonNull BackupWriter.BackupWriterListener listener)
             throws IOException;

@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.datamanager;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -696,9 +697,6 @@ public class Fields {
         /** DEBUG only. */
         @Nullable
         Object dbgGetOwnerContext();
-
-        @NonNull
-        Context getContext();
 
         @Nullable
         View findViewById(@IdRes int id);
@@ -1416,12 +1414,6 @@ public class Fields {
             return mActivity.get();
         }
 
-        @NonNull
-        @Override
-        public Context getContext() {
-            return mActivity.get();
-        }
-
         @Override
         @Nullable
         public View findViewById(@IdRes final int id) {
@@ -1450,13 +1442,6 @@ public class Fields {
         @Nullable
         public Object dbgGetOwnerContext() {
             return mFragment.get();
-        }
-
-        @NonNull
-        @Override
-        public Context getContext() {
-            //noinspection ConstantConditions
-            return (mFragment.get()).getActivity();
         }
 
         @Override
@@ -1534,10 +1519,6 @@ public class Fields {
          * into the {@link DataManager} (or Bundle).
          */
         private boolean mDoNoFetch;
-
-        /** Optional field-specific tag object. */
-        @Nullable
-        private Object mTag;
 
         /**
          * Constructor.
@@ -1730,21 +1711,17 @@ public class Fields {
          *
          * @param view The view to watch
          */
+        @SuppressLint("ClickableViewAccessibility")
         private void addTouchSignalsDirty(@NonNull final View view) {
             // Touching this is considered a change
             //TODO: We need to introduce a better way to handle this.
-            view.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(@NonNull final View v,
-                                       @NonNull final MotionEvent event) {
-                    if (MotionEvent.ACTION_UP == event.getAction()) {
-                        if (mAfterFieldChangeListener != null) {
-                            mAfterFieldChangeListener.afterFieldChange(Field.this,
-                                                                       null);
-                        }
+            view.setOnTouchListener((v, event) -> {
+                if (MotionEvent.ACTION_UP == event.getAction()) {
+                    if (mAfterFieldChangeListener != null) {
+                        mAfterFieldChangeListener.afterFieldChange(Field.this, null);
                     }
-                    return false;
                 }
+                return false;
             });
         }
 
@@ -1775,23 +1752,6 @@ public class Fields {
                 throw new NullPointerException("view is NULL");
             }
             return view;
-        }
-
-        /**
-         * Return the current value of the tag field.
-         *
-         * @return Current value of tag.
-         */
-        @Nullable
-        public Object getTag() {
-            return mTag;
-        }
-
-        /**
-         * Set the current value of the tag field.
-         */
-        public void setTag(@NonNull final Object tag) {
-            mTag = tag;
         }
 
         /**

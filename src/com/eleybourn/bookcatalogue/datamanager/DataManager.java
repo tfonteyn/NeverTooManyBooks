@@ -130,7 +130,7 @@ public class DataManager {
      *
      * @param key Key of data object
      *
-     * @return Data object
+     * @return Data object, or null when not present
      */
     @Nullable
     public Object get(@NonNull final String key) {
@@ -140,7 +140,7 @@ public class DataManager {
     /**
      * Get the data object specified by the passed {@link Datum}.
      *
-     * @return Data object
+     * @return Data object, or null when not present
      */
     @Nullable
     public Object get(@NonNull final Datum datum) {

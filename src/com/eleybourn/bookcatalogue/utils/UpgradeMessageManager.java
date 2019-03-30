@@ -83,6 +83,8 @@ public final class UpgradeMessageManager {
     /**
      * Get the upgrade message for the running app instance; caches the result for later use.
      *
+     * @param context caller context
+     *
      * @return Upgrade message (or blank string)
      */
     @NonNull
@@ -113,6 +115,9 @@ public final class UpgradeMessageManager {
         return mMessage;
     }
 
+    /**
+     * Should be called after the user aknowledged the upgrade dialog message.
+     */
     public static void setUpgradeAcknowledged() {
         App.getPrefs()
            .edit()

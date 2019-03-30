@@ -39,8 +39,8 @@ import com.eleybourn.bookcatalogue.utils.DateUtils;
 public final class Tracker {
 
     private static final int K_MAX_EVENTS = 100;
-    private static final Event[] mEventBuffer = new Event[K_MAX_EVENTS];
-    private static int mNextEventBufferPos = 0;
+    private static final Event[] M_EVENT_BUFFER = new Event[K_MAX_EVENTS];
+    private static int mNextEventBufferPos;
 
     private Tracker() {
     }
@@ -57,17 +57,7 @@ public final class Tracker {
             Logger.info(a, State.Enter, "onCreate",
                         "savedInstanceState=" + savedInstanceState);
 
-            if (a instanceof Activity) {
-                @SuppressWarnings("UnusedAssignment")
-                Bundle extras = ((Activity) a).getIntent().getExtras();
-                if (extras != null) {
-                    Logger.info(a, "onCreate", "extras=" + extras);
-                    if (extras.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                        Logger.info(a, "onCreate",
-                                    "extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
-                    }
-                }
-            }
+            dumpExtras(a, "onCreate");
         }
     }
 
@@ -76,6 +66,42 @@ public final class Tracker {
      */
     public static void exitOnCreate(@NonNull final Object a) {
         createEvent(a, State.Exit, "onCreate");
+    }
+
+    /**
+     * @param a                  Activity or Fragment
+     * @param savedInstanceState Bundle
+     */
+    public static void enterOnCreateDialog(@NonNull final Object a,
+                                           @Nullable final Bundle savedInstanceState) {
+        createEvent(a, State.Enter, "onCreateDialog");
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+            Logger.info(a, State.Enter, "onCreateDialog",
+                        "savedInstanceState=" + savedInstanceState);
+            dumpExtras(a, "onCreateDialog");
+        }
+    }
+
+    private static void dumpExtras(@NonNull final Object a,
+                                   final String methodName) {
+        if (a instanceof Activity) {
+            Bundle extras = ((Activity) a).getIntent().getExtras();
+            if (extras != null) {
+                Logger.info(a, methodName, "extras=" + extras);
+                if (extras.containsKey(UniqueId.BKEY_BOOK_DATA)) {
+                    Logger.info(a, methodName,
+                                "extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
+                }
+            }
+        }
+    }
+
+    /**
+     * @param a Activity or Fragment
+     */
+    public static void exitOnCreateDialog(@NonNull final Object a) {
+        createEvent(a, State.Exit, "onCreateDialog");
     }
 
     /**
@@ -184,6 +210,20 @@ public final class Tracker {
         }
     }
 
+    public static void enterOnAttach(@NonNull final Object a) {
+        createEvent(a, State.Enter, "onAttach");
+        if (/* always debug */ BuildConfig.DEBUG) {
+            Logger.info(a, State.Enter, "onAttach");
+        }
+    }
+
+    public static void exitOnAttach(@NonNull final Object a) {
+        createEvent(a, State.Exit, "onAttach");
+        if (/* always debug */ BuildConfig.DEBUG) {
+            Logger.info(a, State.Exit, "onAttach");
+        }
+    }
+
     public static void enterOnDestroy(@NonNull final Object a) {
         createEvent(a, State.Enter, "onDestroy");
         if (/* always debug */ BuildConfig.DEBUG) {
@@ -230,7 +270,7 @@ public final class Tracker {
                                     @NonNull final State type,
                                     @NonNull final String message) {
         Event e = new Event(o, type, message);
-        mEventBuffer[mNextEventBufferPos] = e;
+        M_EVENT_BUFFER[mNextEventBufferPos] = e;
         ACRA.getErrorReporter().putCustomData("History-" + mNextEventBufferPos, e.getInfo());
         mNextEventBufferPos = (mNextEventBufferPos + 1) % K_MAX_EVENTS;
     }
@@ -241,7 +281,7 @@ public final class Tracker {
         int pos = mNextEventBufferPos;
         for (int i = 0; i < K_MAX_EVENTS; i++) {
             int index = (pos + i) % K_MAX_EVENTS;
-            Event e = mEventBuffer[index];
+            Event e = M_EVENT_BUFFER[index];
             if (e != null) {
                 s.append(e.getInfo());
                 s.append('\n');
@@ -276,27 +316,27 @@ public final class Tracker {
     private static class Event {
 
         @NonNull
-        final String message;
+        private final String mMessage;
         @NonNull
-        final State state;
+        private final State mState;
         @NonNull
-        final Date date;
+        private final Date mDate;
         @NonNull
-        final String clazz;
+        private final String mClazz;
 
         Event(@NonNull final Object clazz,
               @NonNull final State state,
               @NonNull final String message) {
             //noinspection ConstantConditions
-            this.clazz = clazz.getClass().getCanonicalName();
-            this.message = message;
-            this.state = state;
-            date = new Date();
+            mClazz = clazz.getClass().getCanonicalName();
+            mMessage = message;
+            mState = state;
+            mDate = new Date();
         }
 
         @NonNull
         String getInfo() {
-            return DateUtils.utcSqlDateTime(date) + '|' + clazz + '|' + state + '|' + message;
+            return DateUtils.utcSqlDateTime(mDate) + '|' + mClazz + '|' + mState + '|' + mMessage;
         }
     }
 }

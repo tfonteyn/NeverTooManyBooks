@@ -27,7 +27,6 @@ import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
@@ -337,15 +336,12 @@ public class PreferredStylesActivity
                 holder.checkableView.setTag(holder);
 
                 // Handle clicks on the CheckedTextView
-                holder.checkableView.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final View v) {
-                        Holder h = (Holder) v.getTag();
-                        boolean newStatus = !h.style.isPreferred();
-                        h.style.setPreferred(newStatus);
-                        h.checkableView.setChecked(newStatus);
-                        onListChanged();
-                    }
+                holder.checkableView.setOnClickListener(v -> {
+                    Holder h = (Holder) v.getTag();
+                    boolean newStatus = !h.style.isPreferred();
+                    h.style.setPreferred(newStatus);
+                    h.checkableView.setChecked(newStatus);
+                    onListChanged();
                 });
             }
 

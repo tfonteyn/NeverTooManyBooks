@@ -23,12 +23,10 @@ package com.eleybourn.bookcatalogue;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
@@ -60,12 +58,7 @@ public class Help
                 getString(R.string.url_help, getString(R.string.about_help_click_here))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
-        findViewById(R.id.send_info).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                DebugReport.sendDebugInfo(Help.this);
-            }
-        });
+        findViewById(R.id.send_info).setOnClickListener(v -> DebugReport.sendDebugInfo(Help.this));
     }
 
     @Override
@@ -84,12 +77,9 @@ public class Help
         final Button cleanupBtn = findViewById(R.id.cleanup_button);
         final TextView cleanupTxt = findViewById(R.id.cleanup_text);
 
-        cleanupBtn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                StorageUtils.purgeFiles(true);
-                initCleanupButton();
-            }
+        cleanupBtn.setOnClickListener(v -> {
+            StorageUtils.purgeFiles(true);
+            initCleanupButton();
         });
 
         final float space = StorageUtils.purgeFiles(false);

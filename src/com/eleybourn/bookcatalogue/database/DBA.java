@@ -23,11 +23,8 @@ import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursorDriver;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
-import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.CallSuper;
@@ -87,7 +84,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_AUTHOR_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
@@ -119,6 +115,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
@@ -207,30 +204,13 @@ public class DBA
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
 
     /** Static Factory object to create our custom cursor. */
-    private static final CursorFactory CURSOR_FACTORY = new CursorFactory() {
-        @Override
-        @NonNull
-        public Cursor newCursor(
-                final SQLiteDatabase db,
-                @NonNull final SQLiteCursorDriver masterQuery,
-                @NonNull final String editTable,
-                @NonNull final SQLiteQuery query) {
-            return new TrackedCursor(masterQuery, editTable, query, SYNCHRONIZER);
-        }
-    };
+    private static final CursorFactory CURSOR_FACTORY = (db, masterQuery, editTable, query) ->
+            new TrackedCursor(masterQuery, editTable, query, SYNCHRONIZER);
 
     /** Static Factory object to create our custom cursor. */
     @NonNull
-    private static final CursorFactory BOOKS_CURSOR_FACTORY = new CursorFactory() {
-        @Override
-        public Cursor newCursor(
-                @NonNull final SQLiteDatabase db,
-                @NonNull final SQLiteCursorDriver masterQuery,
-                @NonNull final String editTable,
-                @NonNull final SQLiteQuery query) {
-            return new BookCursor(masterQuery, editTable, query, SYNCHRONIZER);
-        }
-    };
+    private static final CursorFactory BOOKS_CURSOR_FACTORY = (db, masterQuery, editTable, query)
+            -> new BookCursor(masterQuery, editTable, query, SYNCHRONIZER);
 
     /** DEBUG only. */
     private static final ArrayList<InstanceRefDebug> INSTANCES = new ArrayList<>();
@@ -502,16 +482,6 @@ public class DBA
     @NonNull
     public Context getContext() {
         return mContext;
-    }
-
-    /**
-     * Really only meant for backup purposes.
-     *
-     * @return the path to the actual database file
-     */
-    @NonNull
-    public String getPath() {
-        return mSyncedDb.getPath();
     }
 
     public void analyze() {
@@ -1014,15 +984,15 @@ public class DBA
                                 @NonNull final Book book) {
 
         // Handle AUTHOR. When is this needed? Legacy archive import ?
-        if (book.containsKey(UniqueId.KEY_AUTHOR_FORMATTED)
-                || book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
+        if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FORMATTED)
+                || book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
             preprocessLegacyAuthor(book);
         }
 
         // Handle TITLE; but only for new books
-        if (isNew && book.containsKey(UniqueId.KEY_TITLE)) {
-            String cleanTitle = preprocessTitle(book.getString(UniqueId.KEY_TITLE));
-            book.putString(UniqueId.KEY_TITLE, cleanTitle);
+        if (isNew && book.containsKey(DatabaseDefinitions.KEY_TITLE)) {
+            String cleanTitle = preprocessTitle(book.getString(DatabaseDefinitions.KEY_TITLE));
+            book.putString(DatabaseDefinitions.KEY_TITLE, cleanTitle);
         }
 
         // Handle ANTHOLOGY_BITMASK only, no handling of actual titles here
@@ -1033,73 +1003,89 @@ public class DBA
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
                 type |= TocEntry.Type.MULTIPLE_AUTHORS;
             }
-            book.putLong(UniqueId.KEY_TOC_BITMASK, type);
+            book.putLong(DatabaseDefinitions.KEY_TOC_BITMASK, type);
         }
 
         //ENHANCE: handle price fields for legacy embedded currencies.
         // Perhaps moving those to currency fields ?
 
         // Handle currencies making sure they are uppercase
-        if (book.containsKey(UniqueId.KEY_PRICE_LISTED_CURRENCY)) {
-            book.putString(UniqueId.KEY_PRICE_LISTED_CURRENCY,
-                           book.getString(UniqueId.KEY_PRICE_LISTED_CURRENCY).toUpperCase());
+        if (book.containsKey(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
+            book.putString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                           book.getString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY).toUpperCase());
         }
-        if (book.containsKey(UniqueId.KEY_PRICE_PAID_CURRENCY)) {
-            book.putString(UniqueId.KEY_PRICE_PAID_CURRENCY,
-                           book.getString(UniqueId.KEY_PRICE_PAID_CURRENCY).toUpperCase());
+        if (book.containsKey(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY)) {
+            book.putString(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY,
+                           book.getString(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY).toUpperCase());
         }
 
         // Handle Language field. Try to only store ISO3 code.
-        if (book.containsKey(UniqueId.KEY_LANGUAGE)) {
-            String lang = book.getString(UniqueId.KEY_LANGUAGE);
+        if (book.containsKey(DatabaseDefinitions.KEY_LANGUAGE)) {
+            String lang = book.getString(DatabaseDefinitions.KEY_LANGUAGE);
             if (lang.length() > 3) {
                 // translate to iso3 code, or if that fails, stores the original
-                book.putString(UniqueId.KEY_LANGUAGE, LocaleUtils.getISO3Language(lang));
+                book.putString(DatabaseDefinitions.KEY_LANGUAGE, LocaleUtils.getISO3Language(lang));
             }
         }
 
-        // Remove blank/null fields that have default values defined in the database
-        // or which should never be blank.
+        // Remove NULL fields that have default values defined in the database
+        // or should never be NULL.
         for (String name : new String[]{
-                UniqueId.KEY_BOOK_UUID,
+                //ENHANCE: can we automate this list ? maybe by looping over the table def. ?
+                // Basically we want "NOT NULL fields which have STRING default.
+                DatabaseDefinitions.KEY_ISBN,
+                DatabaseDefinitions.KEY_PUBLISHER,
+                DatabaseDefinitions.KEY_DATE_PUBLISHED,
+                DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED,
 
-                UniqueId.KEY_ISBN,
-                UniqueId.KEY_PUBLISHER,
-                UniqueId.KEY_DATE_PUBLISHED,
-                UniqueId.KEY_DATE_FIRST_PUBLISHED,
-                UniqueId.KEY_EDITION_BITMASK,
-                UniqueId.KEY_TOC_BITMASK,
+                DatabaseDefinitions.KEY_PRICE_LISTED,
+                DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                DatabaseDefinitions.KEY_PRICE_PAID,
+                DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY,
+                DatabaseDefinitions.KEY_DATE_ACQUIRED,
 
-                UniqueId.KEY_PRICE_LISTED,
-                UniqueId.KEY_PRICE_LISTED_CURRENCY,
-                UniqueId.KEY_PRICE_PAID,
-                UniqueId.KEY_PRICE_PAID_CURRENCY,
-                UniqueId.KEY_DATE_ACQUIRED,
+                DatabaseDefinitions.KEY_FORMAT,
+                DatabaseDefinitions.KEY_GENRE,
+                DatabaseDefinitions.KEY_LANGUAGE,
+                DatabaseDefinitions.KEY_LOCATION,
+                DatabaseDefinitions.KEY_PAGES,
 
-                UniqueId.KEY_FORMAT,
-                UniqueId.KEY_GENRE,
-                UniqueId.KEY_LANGUAGE,
-                UniqueId.KEY_LOCATION,
+                DatabaseDefinitions.KEY_READ_START,
+                DatabaseDefinitions.KEY_READ_END,
 
-                UniqueId.KEY_READ,
-                UniqueId.KEY_READ_START,
-                UniqueId.KEY_READ_END,
+                DatabaseDefinitions.KEY_DESCRIPTION,
+                DatabaseDefinitions.KEY_NOTES,
+                }) {
+            if (book.containsKey(name)) {
+                if (book.get(name) == null) {
+                    book.remove(name);
+                }
+            }
+        }
 
-                UniqueId.KEY_SIGNED,
-                UniqueId.KEY_RATING,
+        // what about the external id's ?
 
-                UniqueId.KEY_DESCRIPTION,
-                UniqueId.KEY_NOTES,
 
-                UniqueId.KEY_BOOK_GR_LAST_SYNC_DATE,
-
-                UniqueId.KEY_DATE_ADDED,
-                UniqueId.KEY_DATE_LAST_UPDATED,
+        // Remove null/blank fields that should never be null/blank.
+        // "NOT NULL" fields + fields with a NON-String default
+        // list correct/complete on 2019-03-27.
+        for (String name : new String[]{
+                // auto-generated
+                DatabaseDefinitions.KEY_BOOK_UUID,
+                // number
+                DatabaseDefinitions.KEY_EDITION_BITMASK,
+                DatabaseDefinitions.KEY_TOC_BITMASK,
+                DatabaseDefinitions.KEY_RATING,
+                // boolean
+                DatabaseDefinitions.KEY_SIGNED,
+                DatabaseDefinitions.KEY_READ,
+                // dates with defaults
+                DatabaseDefinitions.KEY_BOOK_GR_LAST_SYNC_DATE,
+                DatabaseDefinitions.KEY_DATE_ADDED,
+                DatabaseDefinitions.KEY_DATE_LAST_UPDATED,
                 }) {
             if (book.containsKey(name)) {
                 Object o = book.get(name);
-                // Need to allow for the possibility the value is not a string,
-                // in which case getString() would return a NULL.
                 if (o == null || o.toString().isEmpty()) {
                     book.remove(name);
                 }
@@ -1114,9 +1100,9 @@ public class DBA
 
         // If present, get the author ID from the author name
         // (it may have changed with a name change)
-        if (book.containsKey(UniqueId.KEY_AUTHOR_FORMATTED)) {
+        if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FORMATTED)) {
 
-            Author author = Author.fromString(book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
+            Author author = Author.fromString(book.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED));
             if (author.fixupId(this) == 0) {
                 if (BuildConfig.DEBUG) {
                     Logger.info(this, "preprocessBook",
@@ -1125,13 +1111,13 @@ public class DBA
                 }
                 insertAuthor(author);
             }
-            book.putLong(UniqueId.KEY_AUTHOR, author.getId());
+            book.putLong(DatabaseDefinitions.KEY_AUTHOR, author.getId());
 
-        } else if (book.containsKey(UniqueId.KEY_AUTHOR_FAMILY_NAME)) {
-            String family = book.getString(UniqueId.KEY_AUTHOR_FAMILY_NAME);
+        } else if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
+            String family = book.getString(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME);
             String given;
-            if (book.containsKey(UniqueId.KEY_AUTHOR_GIVEN_NAMES)) {
-                given = book.getString(UniqueId.KEY_AUTHOR_GIVEN_NAMES);
+            if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES)) {
+                given = book.getString(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES);
             } else {
                 given = "";
             }
@@ -1145,7 +1131,7 @@ public class DBA
                 }
                 insertAuthor(author);
             }
-            book.putLong(UniqueId.KEY_AUTHOR, author.getId());
+            book.putLong(DatabaseDefinitions.KEY_AUTHOR, author.getId());
         }
     }
 
@@ -1390,8 +1376,8 @@ public class DBA
              * KEY_RATING, KEY_LOCATION
              * KEY_READ, KEY_READ_START, KEY_READ_END
              */
-            if (!book.containsKey(UniqueId.KEY_DATE_ADDED)) {
-                book.putString(UniqueId.KEY_DATE_ADDED, DateUtils.utcSqlDateTimeForToday());
+            if (!book.containsKey(DatabaseDefinitions.KEY_DATE_ADDED)) {
+                book.putString(DatabaseDefinitions.KEY_DATE_ADDED, DateUtils.utcSqlDateTimeForToday());
             }
 
             // Make sure we have an author
@@ -1424,7 +1410,7 @@ public class DBA
             }
 
             // set the new id on the Book itself
-            book.putLong(UniqueId.KEY_ID, newBookId);
+            book.putLong(DatabaseDefinitions.KEY_ID, newBookId);
             // and return it
             return newBookId;
 
@@ -1494,7 +1480,7 @@ public class DBA
                 mSyncedDb.setTransactionSuccessful();
             }
             // make sure the Book has the correct id.
-            book.putLong(UniqueId.KEY_ID, bookId);
+            book.putLong(DatabaseDefinitions.KEY_ID, bookId);
 
             return rowsAffected;
         } catch (RuntimeException e) {
@@ -1540,8 +1526,8 @@ public class DBA
             updateOrInsertTOC(bookId, list);
         }
 
-        if (book.containsKey(UniqueId.KEY_LOANEE)
-                && !book.getString(UniqueId.KEY_LOANEE).isEmpty()) {
+        if (book.containsKey(DatabaseDefinitions.KEY_LOANEE)
+                && !book.getString(DatabaseDefinitions.KEY_LOANEE).isEmpty()) {
             updateOrInsertLoan(bookId, book.getString(DOM_BOOK_LOANEE.name));
         }
     }
@@ -2390,12 +2376,7 @@ public class DBA
             where.append("='").append(encodeString(isbnList.get(0))).append('\'');
         } else {
             where.append(" IN (")
-                 .append(Csv.join(",", isbnList, new Csv.Formatter<String>() {
-                     @Override
-                     public String format(@NonNull final String element) {
-                         return '\'' + encodeString(element) + '\'';
-                     }
-                 }))
+                 .append(Csv.join(",", isbnList, element -> '\'' + encodeString(element) + '\''))
                  .append(')');
         }
         return (BookCursor) mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
@@ -2728,7 +2709,7 @@ public class DBA
     @NonNull
     public ArrayList<String> getCurrencyCodes(@NonNull final String type) {
         String column;
-        if (UniqueId.KEY_PRICE_LISTED_CURRENCY.equals(type)) {
+        if (DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY.equals(type)) {
             column = DOM_BOOK_PRICE_LISTED_CURRENCY.name;
 //        } else if (UniqueId.KEY_PRICE_PAID_CURRENCY.equals(type)) {
         } else {
@@ -3753,7 +3734,7 @@ public class DBA
                         // publication data
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN)
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER)
-                        + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ANTHOLOGY_BITMASK)
+                        + ',' + TBL_BOOKS.dotAs(DOM_BOOK_TOC_BITMASK)
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_PUBLISHED)
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED)
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY)
@@ -3823,14 +3804,18 @@ public class DBA
                         + " AS " + COLUMN_ALIAS_NR_OF_AUTHORS;
 
         /**
-         * Author "FamilyName, GivenNames" in one SQL column.
+         * Single column, with the formatted name of the Author.
+         * <p>
+         * "FamilyName, GivenNames"
          */
         private static final String AUTHOR_FAMILY_COMMA_GIVEN =
                 TBL_AUTHORS.dot(DOM_AUTHOR_FAMILY_NAME)
                         + " || ', ' || " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES);
 
         /**
-         * Author "GivenNames FamilyName" in one SQL column.
+         * Single column, with the formatted name of the Author.
+         * <p>
+         * "GivenNames FamilyName"
          */
         private static final String AUTHOR_GIVEN_SPACE_FAMILY =
                 TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES)
@@ -3839,8 +3824,8 @@ public class DBA
         /**
          * Single column, with the formatted name of the Author.
          * <p>
-         * If no given name -> family name.
-         * otherwise -> family, given.
+         * If no given name -> "FamilyName"
+         * otherwise -> "FamilyName, GivenNames"
          */
         private static final String AUTHOR_FORMATTED =
                 " CASE WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
@@ -3850,8 +3835,10 @@ public class DBA
                         + " AS " + DOM_AUTHOR_FORMATTED;
 
         /**
-         * If no given name -> family name.
-         * otherwise -> given family.
+         * Single column, with the formatted name of the Author.
+         * <p>
+         * If no given name -> "FamilyName"
+         * otherwise -> "GivenNames FamilyName"
          */
         private static final String AUTHOR_FORMATTED_GIVEN_FIRST =
                 " CASE WHEN " + TBL_AUTHORS.dot(DOM_AUTHOR_GIVEN_NAMES) + "=''"
@@ -3862,8 +3849,10 @@ public class DBA
 
 
         /**
-         * If no number -> "name".
-         * otherwise -> "name #number"
+         * Single column, with the formatted name of the Series.
+         * <p>
+         * If no number -> "SeriesName".
+         * otherwise -> "SeriesName #number"
          */
         private static final String SERIES_WITH_NUMBER =
                 " CASE WHEN " + DOM_BOOK_SERIES_NUM + "=''"
@@ -3873,7 +3862,10 @@ public class DBA
                         + " AS " + DOM_SERIES_FORMATTED;
 
         /**
-         * "name (number)"
+         * Single column, with the formatted name of the Series.
+         * <p>
+         * If no number -> "SeriesName".
+         * otherwise -> "SeriesName (number)"
          */
         private static final String SERIES_WITH_NUMBER_IN_BRACKETS =
                 DOM_SERIES_NAME + "||' ('||" + DOM_BOOK_SERIES_NUM + "||')'"
@@ -3881,22 +3873,23 @@ public class DBA
 
         /**
          * Series a book belongs to.
+         * <p>
          * If the book has more then one series, concat " et al" after the primary series.
          */
         private static final String SERIES_LIST =
                 " CASE WHEN " + COLUMN_ALIAS_NR_OF_SERIES + " < 2"
                         + " THEN Coalesce(s." + DOM_SERIES_FORMATTED + ",'')"
                         + " ELSE "
-                        + DOM_SERIES_FORMATTED + "||' " + App.getResString(
-                        R.string.and_others) + '\''
+                        + DOM_SERIES_FORMATTED
+                        + "||' " + App.getResString(R.string.and_others) + '\''
                         + " END"
                         + " AS " + DOM_SERIES_FORMATTED;
+
         /**
-         * The columns from {@link DatabaseDefinitions#TBL_BOOKS} we need.
-         * to send a Book to Goodreads.
+         * Columns from {@link DatabaseDefinitions#TBL_BOOKS} we need to send a Book to Goodreads.
          * <p>
          * See {@link GoodreadsManager#sendOneBook(DBA, BookCursorRow)}
-         * -> notes disabled for now.
+         * -> notes column disabled for now.
          */
         private static final String GOODREADS_FIELDS_FOR_SENDING =
                 DOM_PK_ID.name
@@ -3910,7 +3903,7 @@ public class DBA
     }
 
     /**
-     * Sql SELECT of a single table, without a where clause.
+     * Sql SELECT of a single table, without a WHERE clause.
      */
     private static final class SqlSelectFullTable {
 

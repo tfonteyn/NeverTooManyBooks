@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -68,22 +67,12 @@ public class AlertDialogFragment
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok,
-                                   new DialogInterface.OnClickListener() {
-                                       public void onClick(@NonNull final DialogInterface dialog,
-                                                           final int which) {
-                                           ((AlertDialogListener) requireActivity())
-                                                   .onPositiveButton();
-                                       }
-                                   }
+                                   (d, which) -> ((AlertDialogListener) requireActivity())
+                                           .onPositiveButton()
                 )
                 .setNegativeButton(android.R.string.cancel,
-                                   new DialogInterface.OnClickListener() {
-                                       public void onClick(@NonNull final DialogInterface dialog,
-                                                           final int which) {
-                                           ((AlertDialogListener) requireActivity())
-                                                   .onNegativeButton();
-                                       }
-                                   }
+                                   (d, which) -> ((AlertDialogListener) requireActivity())
+                                           .onNegativeButton()
                 )
                 .create();
     }

@@ -16,8 +16,8 @@ import androidx.fragment.app.DialogFragment;
 import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -45,16 +45,16 @@ public abstract class EditAuthorBaseDialogFragment
         mActivity = requireActivity();
         mDb = new DBA(mActivity);
 
-        final Author author = requireArguments().getParcelable(UniqueId.KEY_AUTHOR);
+        final Author author = requireArguments().getParcelable(DatabaseDefinitions.KEY_AUTHOR);
         Objects.requireNonNull(author);
         if (savedInstanceState == null) {
             mFamilyName = author.getFamilyName();
             mGivenNames = author.getGivenNames();
             mIsComplete = author.isComplete();
         } else {
-            mFamilyName = savedInstanceState.getString(UniqueId.KEY_AUTHOR_FAMILY_NAME);
-            mGivenNames = savedInstanceState.getString(UniqueId.KEY_AUTHOR_GIVEN_NAMES);
-            mIsComplete = savedInstanceState.getBoolean(UniqueId.KEY_AUTHOR_IS_COMPLETE);
+            mFamilyName = savedInstanceState.getString(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME);
+            mGivenNames = savedInstanceState.getString(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES);
+            mIsComplete = savedInstanceState.getBoolean(DatabaseDefinitions.KEY_AUTHOR_IS_COMPLETE);
         }
 
         final View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
@@ -78,41 +78,33 @@ public abstract class EditAuthorBaseDialogFragment
         mIsCompleteView = root.findViewById(R.id.is_complete);
         mIsCompleteView.setChecked(mIsComplete);
 
-        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                mFamilyName = mFamilyNameView.getText().toString().trim();
-                if (mFamilyName.isEmpty()) {
-                    UserMessage.showUserMessage(mFamilyNameView, R.string.warning_required_name);
-                    return;
-                }
-
-                mGivenNames = mGivenNamesView.getText().toString().trim();
-                mIsComplete = mIsCompleteView.isChecked();
-                dismiss();
-
-                if (author.getFamilyName().equals(mFamilyName)
-                        && author.getGivenNames().equals(mGivenNames)
-                        && author.isComplete() == mIsComplete) {
-                    return;
-                }
-                // Create a new Author as a holder for the changes.
-                final Author newAuthorData = new Author(mFamilyName, mGivenNames, mIsComplete);
-
-                confirmChanges(author, newAuthorData);
+        root.findViewById(R.id.confirm).setOnClickListener(v -> {
+            mFamilyName = mFamilyNameView.getText().toString().trim();
+            if (mFamilyName.isEmpty()) {
+                UserMessage.showUserMessage(mFamilyNameView, R.string.warning_required_name);
+                return;
             }
+
+            mGivenNames = mGivenNamesView.getText().toString().trim();
+            mIsComplete = mIsCompleteView.isChecked();
+            dismiss();
+
+            if (author.getFamilyName().equals(mFamilyName)
+                    && author.getGivenNames().equals(mGivenNames)
+                    && author.isComplete() == mIsComplete) {
+                return;
+            }
+            // Create a new Author as a holder for the changes.
+            final Author newAuthorData = new Author(mFamilyName, mGivenNames, mIsComplete);
+
+            confirmChanges(author, newAuthorData);
         });
 
-        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dismiss();
-            }
-        });
+        root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
         return new AlertDialog.Builder(mActivity)
                 .setView(root)
-                .setTitle(R.string.title_edit_author)
+                .setTitle(R.string.lbl_author)
                 .create();
     }
 
@@ -136,9 +128,9 @@ public abstract class EditAuthorBaseDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
-        outState.putString(UniqueId.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
-        outState.putBoolean(UniqueId.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
+        outState.putString(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
+        outState.putString(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
+        outState.putBoolean(DatabaseDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
     }
 
     @Override

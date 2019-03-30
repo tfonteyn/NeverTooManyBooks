@@ -158,21 +158,16 @@ public abstract class ManagedTask
         onTaskFinish();
 
         // Queue the 'onTaskFinished' message; this should also inform the TaskManager
-        MESSAGE_SWITCH.send(
-                mMessageSenderId,
-                new MessageSwitch.Message<ManagedTaskListener>() {
-                    @Override
-                    public boolean deliver(@NonNull final ManagedTaskListener listener) {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                            Logger.info(ManagedTask.this, "run",
-                                        "ManagedTask=" + getName() +
-                                                "|Delivering 'onTaskFinished'" +
-                                                " to listener: " + listener);
-                        }
-                        listener.onTaskFinished(ManagedTask.this);
-                        return false;
-                    }
-                }
+        MESSAGE_SWITCH.send(mMessageSenderId,
+                            listener -> {
+                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+                                    Logger.info(ManagedTask.this, "run",
+                                                "ManagedTask=" + getName(),
+                                                "Delivering 'onTaskFinished' to: " + listener);
+                                }
+                                listener.onTaskFinished(ManagedTask.this);
+                                return false;
+                            }
         );
     }
 

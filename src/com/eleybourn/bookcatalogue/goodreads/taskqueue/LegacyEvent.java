@@ -97,13 +97,8 @@ public class LegacyEvent
                                     @NonNull final DBA db) {
 
         items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
-                                        new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                QueueManager.getQueueManager()
-                                                            .deleteEvent(getId());
-                                            }
-                                        }));
+                                        () -> QueueManager.getQueueManager()
+                                                    .deleteEvent(getId())));
 
     }
 }

@@ -21,8 +21,8 @@ import java.util.List;
 import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -170,12 +170,9 @@ public abstract class SendBooksTask
          * Retry sending a book to goodreads.
          */
         @Nullable
-        static final View.OnClickListener mRetryButtonListener = new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                BookEventHolder holder = (BookEventHolder) v.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
-                holder.event.retry(v.getContext());
-            }
+        static final View.OnClickListener mRetryButtonListener = v -> {
+            BookEventHolder holder = (BookEventHolder) v.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
+            holder.event.retry(v.getContext());
         };
         private static final long serialVersionUID = 8056090158313083738L;
         private final long mBookId;
@@ -277,14 +274,10 @@ public abstract class SendBooksTask
 
             holder.buttonView.setChecked(eventsCursor.isSelected());
             holder.buttonView.setOnCheckedChangeListener(
-                    new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(@NonNull final CompoundButton buttonView,
-                                                     final boolean isChecked) {
-                            BookEventHolder holder = (BookEventHolder)
-                                    buttonView.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
-                            eventsCursor.setSelected(holder.rowId, isChecked);
-                        }
+                    (buttonView, isChecked) -> {
+                        BookEventHolder bookEventHolder = (BookEventHolder)
+                                buttonView.getTag(R.id.TAG_BOOK_EVENT_HOLDER);
+                        eventsCursor.setSelected(bookEventHolder.rowId, isChecked);
                     });
 
             // get book details
@@ -316,25 +309,18 @@ public abstract class SendBooksTask
             // EDIT BOOK
             items.add(new ContextDialogItem(
                     context.getString(R.string.menu_edit_book),
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                GrSendBookEvent event =
-                                        (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
-                                long bookId = event.getBookId();
-
-                                Intent intent = new Intent(context, EditBookActivity.class)
-                                        .putExtra(UniqueId.KEY_ID, bookId)
-                                        .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
-                                                  EditBookFragment.TAB_EDIT);
-                                context.startActivity(intent);
-                            } catch (RuntimeException ignore) {
-                                // not a book event?
-                            }
+                    () -> {
+                        try {
+                            GrSendBookEvent event = (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
+                            Intent intent = new Intent(context, EditBookActivity.class)
+                                    .putExtra(DatabaseDefinitions.KEY_ID, event.getBookId())
+                                    .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
+                                              EditBookFragment.TAB_EDIT);
+                            context.startActivity(intent);
+                        } catch (RuntimeException ignore) {
+                            // not a book event?
                         }
                     }));
-
             // ENHANCE: Reinstate goodreads search when goodreads work.editions API is available
 //            // SEARCH GOODREADS
 //            items.add(new ContextDialogItem(
@@ -352,31 +338,22 @@ public abstract class SendBooksTask
 //                    }));
 
             // DELETE EVENT
-            items.add(new ContextDialogItem(
-                    context.getString(R.string.gr_tq_menu_delete_event),
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            QueueManager.getQueueManager().deleteEvent(id);
-                        }
-                    }));
+            items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
+                                            () -> QueueManager.getQueueManager().deleteEvent(id)));
 
             // RETRY EVENT
             String isbn = db.getBookIsbn(mBookId);
             if (isbn != null && !isbn.isEmpty()) {
                 items.add(new ContextDialogItem(
                         context.getString(R.string.retry),
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    GrSendBookEvent event =
-                                            (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
-                                    event.retry(context);
-                                    QueueManager.getQueueManager().deleteEvent(id);
-                                } catch (RuntimeException ignore) {
-                                    // not a book event?
-                                }
+                        () -> {
+                            try {
+                                GrSendBookEvent event = (GrSendBookEvent)
+                                        view.getTag(R.id.TAG_EVENT);
+                                event.retry(context);
+                                QueueManager.getQueueManager().deleteEvent(id);
+                            } catch (RuntimeException ignore) {
+                                // not a book event?
                             }
                         }));
             }

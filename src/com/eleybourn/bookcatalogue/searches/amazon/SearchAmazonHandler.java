@@ -35,6 +35,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -314,9 +315,9 @@ public class SearchAmazonHandler
             // move the decimal point 'digits' up
             double price = ((double) Integer.parseInt(mCurrencyAmount)) / Math.pow(10, decDigits);
             // and format with 'digits' decimal places
-            addIfNotPresent(mBookData, UniqueId.KEY_PRICE_LISTED,
+            addIfNotPresent(mBookData, DatabaseDefinitions.KEY_PRICE_LISTED,
                             String.format("%." + decDigits + 'f', price));
-            addIfNotPresent(mBookData, UniqueId.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
+            addIfNotPresent(mBookData, DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
         } catch (NumberFormatException ignore) {
             if (BuildConfig.DEBUG) {
                 Logger.info(this, "handleListPrice",
@@ -412,31 +413,31 @@ public class SearchAmazonHandler
                 mAuthors.add(Author.fromString(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_TITLE)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_TITLE, mBuilder.toString());
+                addIfNotPresent(mBookData, DatabaseDefinitions.KEY_TITLE, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PUBLISHER)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_PUBLISHER,
+                addIfNotPresent(mBookData, DatabaseDefinitions.KEY_PUBLISHER,
                                 mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_DATE_PUBLISHED,
+                addIfNotPresent(mBookData, DatabaseDefinitions.KEY_DATE_PUBLISHED,
                                 mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PAGES)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_PAGES,
+                addIfNotPresent(mBookData, DatabaseDefinitions.KEY_PAGES,
                                 mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DESCRIPTION)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_DESCRIPTION,
+                addIfNotPresent(mBookData, DatabaseDefinitions.KEY_DESCRIPTION,
                                 mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_BINDING)) {
-                addIfNotPresent(mBookData, UniqueId.KEY_FORMAT,
+                addIfNotPresent(mBookData, DatabaseDefinitions.KEY_FORMAT,
                                 mBuilder.toString());
 
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 // the language is a 'DisplayName'
-                addIfNotPresent(mBookData, UniqueId.KEY_LANGUAGE,
+                addIfNotPresent(mBookData, DatabaseDefinitions.KEY_LANGUAGE,
                                 LocaleUtils.getISO3Language(mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
@@ -450,9 +451,9 @@ public class SearchAmazonHandler
                     || localName.equalsIgnoreCase(XML_ISBN_OLD)) {
                 // we prefer the "longest" isbn, which theoretically should be an ISBN-13
                 String tmp = mBuilder.toString();
-                String test = mBookData.getString(UniqueId.KEY_ISBN);
+                String test = mBookData.getString(DatabaseDefinitions.KEY_ISBN);
                 if (test == null || test.length() < tmp.length()) {
-                    mBookData.putString(UniqueId.KEY_ISBN, tmp);
+                    mBookData.putString(DatabaseDefinitions.KEY_ISBN, tmp);
                 }
 
             } else {

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -56,7 +57,7 @@ public class BookSearchByTextFragment
         super.onActivityCreated(savedInstanceState);
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
-        mTitleSearchText = args.getString(UniqueId.KEY_TITLE, "");
+        mTitleSearchText = args.getString(DatabaseDefinitions.KEY_TITLE, "");
 
         ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
@@ -70,12 +71,10 @@ public class BookSearchByTextFragment
 
         populateAuthorList();
 
-        view.findViewById(R.id.btn_search).setOnClickListener(new View.OnClickListener() {
-            public void onClick(@NonNull final View v) {
-                mAuthorSearchText = mAuthorView.getText().toString().trim();
-                mTitleSearchText = mTitleView.getText().toString().trim();
-                prepareSearch();
-            }
+        view.findViewById(R.id.btn_search).setOnClickListener(v -> {
+            mAuthorSearchText = mAuthorView.getText().toString().trim();
+            mTitleSearchText = mTitleView.getText().toString().trim();
+            prepareSearch();
         });
 
         // Display hint if required
@@ -192,7 +191,7 @@ public class BookSearchByTextFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        outState.putString(UniqueId.KEY_TITLE, mTitleSearchText);
+        outState.putString(DatabaseDefinitions.KEY_TITLE, mTitleSearchText);
     }
 
     /**

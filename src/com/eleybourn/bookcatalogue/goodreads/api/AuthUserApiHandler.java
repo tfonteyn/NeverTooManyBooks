@@ -30,9 +30,7 @@ import org.apache.http.client.methods.HttpPost;
 import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
-import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
 
 /**
@@ -104,20 +102,12 @@ public class AuthUserApiHandler
      */
     private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER)
-                 .setStartAction(new XmlHandler() {
-                     @Override
-                     public void process(@NonNull final ElementContext context) {
-                         mUserId = Long.parseLong(context.getAttributes().getValue("", XML_ID));
-                     }
-                 });
+                 .setStartAction(context -> mUserId
+                         = Long.parseLong(context.getAttributes().getValue("", XML_ID)));
 
         XmlFilter.buildFilter(mRootFilter, XML_GOODREADS_RESPONSE, XML_USER, XML_NAME)
-                 .setEndAction(new XmlHandler() {
-                     @Override
-                     public void process(@NonNull final ElementContext context) {
-                         mUsername = context.getBody();
-                     }
-                 });
+                 .setEndAction(context -> mUsername
+                         = context.getBody());
     }
 
     @Nullable

@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue.booklist.filters;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
@@ -49,7 +48,7 @@ public class ListOfValuesFilter<T>
 
     @Override
     @NonNull
-    public String getExpression(@Nullable final String uuid) {
+    public String getExpression() {
         return '(' + mTable.dot(mDomain) + " IN (" + mCriteria + "))";
     }
 }

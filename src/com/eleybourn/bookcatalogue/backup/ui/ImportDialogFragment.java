@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Checkable;
 import android.widget.TextView;
 
@@ -78,23 +77,15 @@ public class ImportDialogFragment
 
         View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_import_options, null);
 
-        root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                updateOptions();
-                OnImportTypeSelectionDialogResultsListener listener =
-                        (OnImportTypeSelectionDialogResultsListener) mActivity;
-                listener.onImportTypeSelectionDialogResult(mImportSettings);
-                dismiss();
-            }
+        root.findViewById(R.id.confirm).setOnClickListener(v -> {
+            updateOptions();
+            OnImportTypeSelectionDialogResultsListener listener =
+                    (OnImportTypeSelectionDialogResultsListener) mActivity;
+            listener.onImportTypeSelectionDialogResult(mImportSettings);
+            dismiss();
         });
 
-        root.findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dismiss();
-            }
-        });
+        root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
         if (!archiveHasValidDates()) {
             View radioNewAndUpdatedBooks = root.findViewById(R.id.radioNewAndUpdatedBooks);
@@ -105,8 +96,7 @@ public class ImportDialogFragment
 
         AlertDialog dialog = new AlertDialog.Builder(mActivity)
                 .setView(root)
-                .setTitle(R.string.lbl_import_from_archive)
-                .setIcon(R.drawable.ic_warning)
+                .setTitle(R.string.import_options_dialog_title)
                 .create();
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
@@ -116,13 +106,13 @@ public class ImportDialogFragment
         Dialog dialog = getDialog();
         // what to import. All three checked == ImportSettings.ALL
         //noinspection ConstantConditions
-        if (((Checkable) dialog.findViewById(R.id.books_check)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.cbx_books_csv)).isChecked()) {
             mImportSettings.what |= ImportSettings.BOOK_CSV;
         }
-        if (((Checkable) dialog.findViewById(R.id.covers_check)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.cbx_covers)).isChecked()) {
             mImportSettings.what |= ImportSettings.COVERS;
         }
-        if (((Checkable) dialog.findViewById(R.id.preferences_check)).isChecked()) {
+        if (((Checkable) dialog.findViewById(R.id.cbx_preferences)).isChecked()) {
             mImportSettings.what |= ImportSettings.PREFERENCES | ImportSettings.BOOK_LIST_STYLES;
         }
 

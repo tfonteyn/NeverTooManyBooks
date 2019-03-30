@@ -35,6 +35,7 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -197,7 +198,7 @@ public class SearchTask
      * Look for a title; if present try to get a series name from it and clean the title.
      */
     private void checkForSeriesNameInTitle() {
-        String bookTitle = mBookData.getString(UniqueId.KEY_TITLE);
+        String bookTitle = mBookData.getString(DatabaseDefinitions.KEY_TITLE);
         if (bookTitle != null) {
             SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
             if (details != null && !details.getName().isEmpty()) {
@@ -214,7 +215,7 @@ public class SearchTask
                 // remove series info from the book title.
                 bookTitle = bookTitle.substring(0, details.startChar - 1).trim();
                 // and store title back
-                mBookData.putString(UniqueId.KEY_TITLE, bookTitle);
+                mBookData.putString(DatabaseDefinitions.KEY_TITLE, bookTitle);
             }
         }
     }

@@ -21,8 +21,6 @@ package com.eleybourn.bookcatalogue.backup.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -138,34 +136,19 @@ public class BackupAndRestoreActivity
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_import_from_archive)
                 .setMessage(R.string.import_option_info_all_books)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        // User wants to import all.
-                        settings.what = ImportSettings.ALL;
-
-                        RestoreTask.start(getSupportFragmentManager(), settings);
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setNeutralButton(R.string.btn_options, (d, which) -> {
+                    // User wants to tune settings first.
+                    FragmentManager fm = getSupportFragmentManager();
+                    if (fm.findFragmentByTag(ImportDialogFragment.TAG) == null) {
+                        ImportDialogFragment.newInstance(settings)
+                                            .show(fm, ImportDialogFragment.TAG);
                     }
                 })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setNeutralButton(R.string.btn_options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        // User wants to tune settings first.
-                        FragmentManager fm = getSupportFragmentManager();
-                        if (fm.findFragmentByTag(ImportDialogFragment.TAG) == null) {
-                            ImportDialogFragment.newInstance(settings)
-                                                .show(fm, ImportDialogFragment.TAG);
-                        }
-                    }
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    // User wants to import all.
+                    settings.what = ImportSettings.ALL;
+                    RestoreTask.start(getSupportFragmentManager(), settings);
                 })
                 .create();
         dialog.show();
@@ -194,33 +177,19 @@ public class BackupAndRestoreActivity
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_backup)
                 .setMessage(R.string.export_info_backup_all)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        // User wants to backup all.
-                        settings.what = ExportSettings.ALL;
-                        BackupTask.start(getSupportFragmentManager(), settings);
+                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
+                .setNeutralButton(R.string.btn_options, (d, which) -> {
+                    // User wants to tune settings first.
+                    FragmentManager fm = getSupportFragmentManager();
+                    if (fm.findFragmentByTag(ExportDialogFragment.TAG) == null) {
+                        ExportDialogFragment.newInstance(settings)
+                                            .show(fm, ExportDialogFragment.TAG);
                     }
                 })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setNeutralButton(R.string.btn_options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        // User wants to tune settings first.
-                        FragmentManager fm = getSupportFragmentManager();
-                        if (fm.findFragmentByTag(ExportDialogFragment.TAG) == null) {
-                            ExportDialogFragment.newInstance(settings)
-                                                .show(fm, ExportDialogFragment.TAG);
-                        }
-                    }
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    // User wants to backup all.
+                    settings.what = ExportSettings.ALL;
+                    BackupTask.start(getSupportFragmentManager(), settings);
                 })
                 .create();
         dialog.show();
@@ -299,13 +268,9 @@ public class BackupAndRestoreActivity
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.lbl_import_from_archive)
                     .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull final DialogInterface dialog,
-                                            final int which) {
-                            // Just return; user may want to try again
-                            dialog.dismiss();
-                        }
+                    .setPositiveButton(android.R.string.ok, (d, which) -> {
+                        // Just return; user may want to try again
+                        d.dismiss();
                     })
                     .create();
             dialog.show();
@@ -318,30 +283,19 @@ public class BackupAndRestoreActivity
         }
         // see if there are any pre-200 preferences that need migrating.
         if ((resultSettings.what & ImportSettings.PREFERENCES) != 0) {
-            Prefs.migratePreV200preferences(
-                    getSharedPreferences(App.PREF_LEGACY_BOOK_CATALOGUE,
-                                             Context.MODE_PRIVATE).getAll()
-            );
-            // API: 24 -> deleteSharedPreferences("bookCatalogue");
-            getSharedPreferences(App.PREF_LEGACY_BOOK_CATALOGUE,
-                                     Context.MODE_PRIVATE)
-               .edit().clear().apply();
+            Prefs.migratePreV200preferences(App.PREF_LEGACY_BOOK_CATALOGUE);
         }
 
         // all done
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_import_from_archive)
                 .setMessage(R.string.progress_end_import_complete)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        dialog.dismiss();
-                        Intent data = new Intent()
-                                .putExtra(UniqueId.BKEY_IMPORT_RESULT, resultSettings.what);
-                        setResult(Activity.RESULT_OK, data);
-                        finish();
-                    }
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    d.dismiss();
+                    Intent data = new Intent()
+                            .putExtra(UniqueId.BKEY_IMPORT_RESULT, resultSettings.what);
+                    setResult(Activity.RESULT_OK, data);
+                    finish();
                 })
                 .create();
         dialog.show();
@@ -357,13 +311,9 @@ public class BackupAndRestoreActivity
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.lbl_backup)
                     .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull final DialogInterface dialog,
-                                            final int which) {
-                            // Just return; user may want to try again
-                            dialog.dismiss();
-                        }
+                    .setPositiveButton(android.R.string.ok, (d, which) -> {
+                        // Just return; user may want to try again
+                        d.dismiss();
                     })
                     .create();
             dialog.show();
@@ -379,16 +329,12 @@ public class BackupAndRestoreActivity
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.lbl_backup)
                 .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        dialog.dismiss();
-                        Intent data = new Intent()
-                                .putExtra(UniqueId.BKEY_EXPORT_RESULT, resultSettings.what);
-                        setResult(Activity.RESULT_OK, data);
-                        finish();
-                    }
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    d.dismiss();
+                    Intent data = new Intent()
+                            .putExtra(UniqueId.BKEY_EXPORT_RESULT, resultSettings.what);
+                    setResult(Activity.RESULT_OK, data);
+                    finish();
                 })
                 .create();
         dialog.show();

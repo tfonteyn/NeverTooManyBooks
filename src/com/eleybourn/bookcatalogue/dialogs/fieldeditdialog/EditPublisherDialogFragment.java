@@ -34,8 +34,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -61,7 +61,7 @@ public class EditPublisherDialogFragment
 
         EditPublisherDialogFragment frag = new EditPublisherDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(UniqueId.KEY_PUBLISHER, publisher);
+        args.putParcelable(DatabaseDefinitions.KEY_PUBLISHER, publisher);
         frag.setArguments(args);
         return frag;
     }
@@ -72,12 +72,12 @@ public class EditPublisherDialogFragment
         final Activity mActivity = requireActivity();
         mDb = new DBA(mActivity);
 
-        final Publisher publisher = requireArguments().getParcelable(UniqueId.KEY_PUBLISHER);
+        final Publisher publisher = requireArguments().getParcelable(DatabaseDefinitions.KEY_PUBLISHER);
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             mName = publisher.getName();
         } else {
-            mName = savedInstanceState.getString(UniqueId.KEY_PUBLISHER);
+            mName = savedInstanceState.getString(DatabaseDefinitions.KEY_PUBLISHER);
         }
 
         View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
@@ -90,39 +90,31 @@ public class EditPublisherDialogFragment
         mNameView.setText(mName);
         mNameView.setAdapter(mAdapter);
 
-        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                mName = mNameView.getText().toString().trim();
-                if (mName.isEmpty()) {
-                    UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
-                    return;
-                }
-                dismiss();
+        root.findViewById(R.id.confirm).setOnClickListener(v -> {
+            mName = mNameView.getText().toString().trim();
+            if (mName.isEmpty()) {
+                UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
+                return;
+            }
+            dismiss();
 
-                //noinspection ConstantConditions
-                if (publisher.getName().equals(mName)) {
-                    return;
-                }
-                mDb.updatePublisher(publisher.getName(), mName);
-                // Let the Activity know
-                if (mActivity instanceof BookChangedListener) {
-                    final BookChangedListener bcl = (BookChangedListener) mActivity;
-                    bcl.onBookChanged(0, BookChangedListener.PUBLISHER, null);
-                }
+            //noinspection ConstantConditions
+            if (publisher.getName().equals(mName)) {
+                return;
+            }
+            mDb.updatePublisher(publisher.getName(), mName);
+            // Let the Activity know
+            if (mActivity instanceof BookChangedListener) {
+                final BookChangedListener bcl = (BookChangedListener) mActivity;
+                bcl.onBookChanged(0, BookChangedListener.PUBLISHER, null);
             }
         });
 
-        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dismiss();
-            }
-        });
+        root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
         return new AlertDialog.Builder(mActivity)
                 .setView(root)
-                .setTitle(R.string.title_edit_publisher)
+                .setTitle(R.string.lbl_publisher)
                 .create();
     }
 
@@ -135,7 +127,7 @@ public class EditPublisherDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.KEY_PUBLISHER, mName);
+        outState.putString(DatabaseDefinitions.KEY_PUBLISHER, mName);
     }
 
     @Override

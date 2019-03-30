@@ -25,7 +25,7 @@ public class PIntList
      */
     protected PIntList(@NonNull final String key,
                        @NonNull final String uuid) {
-        super(key, uuid, new ArrayList<Integer>());
+        super(key, uuid, new ArrayList<>());
         mNonPersistedValue = new ArrayList<>();
     }
 

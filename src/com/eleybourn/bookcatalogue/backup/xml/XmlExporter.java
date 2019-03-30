@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -47,7 +49,6 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -76,6 +77,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
@@ -87,6 +89,8 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHO
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
 
 /**
+ * WARNING: EXPERIMENTAL
+ *
  * There are two types of XML here.
  * <p>
  * Type based, where the tag name is the type. Used by:
@@ -143,8 +147,9 @@ public class XmlExporter
      * @param settings exporting books respects {@link ExportSettings#dateFrom}
      *                 All other flags are ignored.
      */
+    @UiThread
     public XmlExporter(@NonNull final Context context,
-                       @NonNull final  ExportSettings settings) {
+                       @NonNull final ExportSettings settings) {
         mContext = context;
         mDb = new DBA(mContext);
         settings.validate();
@@ -152,16 +157,35 @@ public class XmlExporter
     }
 
     /**
-     * @param outputStream Stream for writing data
-     * @param listener     Progress and cancellation interface
+     * Fulfils the contract for {@link Exporter#doBooks(OutputStream, ExportListener)}.
+     * Not in direct use yet.
      *
-     * @return items written
-     *
-     * @throws IOException on failure
+     * {@inheritDoc}
      */
     @Override
-    public int doExport(@NonNull final OutputStream outputStream,
-                        @NonNull final ExportListener listener)
+    @WorkerThread
+    public int doBooks(@NonNull final OutputStream outputStream,
+                       @NonNull final Exporter.ExportListener listener)
+            throws IOException {
+
+        int pos = 0;
+
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(outputStream,
+                                                                            StandardCharsets.UTF_8),
+                                                     XmlUtils.BUFFER_SIZE)) {
+            out.append('<' + XmlUtils.XML_ROOT)
+               .append(XmlUtils.version(XML_EXPORTER_VERSION))
+               .append(">\n");
+            pos = doBooks(out, listener);
+            out.append("</" + XmlUtils.XML_ROOT + ">\n");
+        }
+        return pos;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    @WorkerThread
+    public int doAll(@NonNull final OutputStream outputStream,
+                     @NonNull final Exporter.ExportListener listener)
             throws IOException {
 
         int pos = 0;
@@ -176,8 +200,7 @@ public class XmlExporter
                .append(">\n");
 
             if (!listener.isCancelled()) {
-                listener.onProgress(mContext.getString(R.string.lbl_bookshelves),
-                                    pos++);
+                listener.onProgress(mContext.getString(R.string.lbl_bookshelves), pos++);
                 pos += doBookshelves(out, listener);
             }
 
@@ -204,8 +227,7 @@ public class XmlExporter
 
             if (!listener.isCancelled()
                     && (mSettings.what & ExportSettings.PREFERENCES) != 0) {
-                listener.onProgress(mContext.getString(R.string.lbl_settings),
-                                    pos++);
+                listener.onProgress(mContext.getString(R.string.lbl_settings), pos++);
                 pos += doPreferences(out, listener);
             }
 
@@ -225,7 +247,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     private int doBookshelves(@NonNull final BufferedWriter out,
-                              @NonNull final ExportListener listener)
+                              @NonNull final Exporter.ExportListener listener)
             throws IOException {
         int count = 0;
         List<Bookshelf> list = mDb.getBookshelves();
@@ -255,7 +277,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     private int doAuthors(@NonNull final BufferedWriter out,
-                          @NonNull final ExportListener listener)
+                          @NonNull final Exporter.ExportListener listener)
             throws IOException {
         int count = 0;
         out.append('<' + XmlUtils.XML_AUTHOR_LIST)
@@ -294,7 +316,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     private int doSeries(@NonNull final BufferedWriter out,
-                         @NonNull final ExportListener listener)
+                         @NonNull final Exporter.ExportListener listener)
             throws IOException {
         int count = 0;
         out.append('<' + XmlUtils.XML_SERIES_LIST)
@@ -329,8 +351,8 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
-    private int doBooks(@NonNull final BufferedWriter out,
-                        @NonNull final ExportListener listener)
+    public int doBooks(@NonNull final BufferedWriter out,
+                       @NonNull final Exporter.ExportListener listener)
             throws IOException {
         int count = 0;
         out.append('<' + XmlUtils.XML_BOOK_LIST)
@@ -365,7 +387,7 @@ public class XmlExporter
                                          bookCursorRow.getGenre()))
                    .append(XmlUtils.attr(DOM_BOOK_LANGUAGE.name,
                                          bookCursorRow.getLanguageCode()))
-                   .append(XmlUtils.attr(DOM_BOOK_ANTHOLOGY_BITMASK.name,
+                   .append(XmlUtils.attr(DOM_BOOK_TOC_BITMASK.name,
                                          bookCursorRow.getAnthologyBitMask()))
                    .append("\n")
 
@@ -451,7 +473,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     public int doStyles2(@NonNull final BufferedWriter out,
-                         @NonNull final ExportListener listener)
+                         @NonNull final Exporter.ExportListener listener)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyles.getUserStyles(mDb).values();
         if (styles.isEmpty()) {
@@ -512,7 +534,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     public int doStyles(@NonNull final BufferedWriter out,
-                        @NonNull final ExportListener listener)
+                        @NonNull final Exporter.ExportListener listener)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyles.getUserStyles(mDb).values();
         if (styles.isEmpty()) {
@@ -533,7 +555,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     public int doPreferences(@NonNull final BufferedWriter out,
-                             @NonNull final ExportListener listener)
+                             @NonNull final Exporter.ExportListener listener)
             throws IOException {
         // remove the acra settings
         Map<String, ?> all = App.getPrefs().getAll();
@@ -557,7 +579,7 @@ public class XmlExporter
      * @throws IOException on failure
      */
     public void doBackupInfoBlock(@NonNull final BufferedWriter out,
-                                  @NonNull final ExportListener listener,
+                                  @NonNull final Exporter.ExportListener listener,
                                   @NonNull final BackupInfo info)
             throws IOException {
         toXml(out, new InfoWriter(info));

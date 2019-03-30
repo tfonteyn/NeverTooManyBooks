@@ -30,13 +30,9 @@ public class BackupListerTask
     /**
      * Construct a file filter to select only directories and archive files.
      */
-    private final FileFilter mFilter = new FileFilter() {
-        @Override
-        public boolean accept(@NonNull final File pathname) {
-            return (pathname.isDirectory() && pathname.canWrite())
+    private final FileFilter mFilter = pathname ->
+            (pathname.isDirectory() && pathname.canWrite())
                     || (pathname.isFile() && BackupFileDetails.isArchive(pathname));
-        }
-    };
 
     /**
      * Constructor.

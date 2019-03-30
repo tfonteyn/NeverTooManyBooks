@@ -22,7 +22,6 @@ package com.eleybourn.bookcatalogue;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -33,9 +32,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -54,8 +51,10 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -153,17 +152,14 @@ public class EditBookTOCFragment
         mAuthorTextView.setAdapter(authorAdapter);
 
         // author to use if mSingleAuthor is set to true
-        mBookAuthor = getBookManager().getBook().getString(UniqueId.KEY_AUTHOR_FORMATTED);
+        mBookAuthor = getBookManager().getBook().getString(
+                DatabaseDefinitions.KEY_AUTHOR_FORMATTED);
 
         // used to call Search sites to populate the TOC
-        mIsbn = getBookManager().getBook().getString(UniqueId.KEY_ISBN);
+        mIsbn = getBookManager().getBook().getString(DatabaseDefinitions.KEY_ISBN);
 
         mAddButton = view.findViewById(R.id.btn_add);
-        mAddButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(@NonNull final View v) {
-                addOrUpdateEntry();
-            }
-        });
+        mAddButton.setOnClickListener(v -> addOrUpdateEntry());
     }
 
     //</editor-fold>
@@ -189,14 +185,8 @@ public class EditBookTOCFragment
         mSingleAuthor = mFields.add(R.id.same_author, Book.HAS_MULTIPLE_AUTHORS)
                                .getView();
         mSingleAuthor.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        // hide/show related field as needed
-                        mAuthorTextView.setVisibility(mSingleAuthor.isChecked() ? View.GONE
-                                                                                : View.VISIBLE);
-                    }
-                }
+                v -> mAuthorTextView.setVisibility(mSingleAuthor.isChecked() ? View.GONE
+                                                                             : View.VISIBLE)
         );
 
         /*
@@ -205,16 +195,10 @@ public class EditBookTOCFragment
         View view = requireView();
         mListView = view.findViewById(android.R.id.list);
         mListView.setOnCreateContextMenuListener(this);
-        mListView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(@NonNull final AdapterView<?> parent,
-                                    @NonNull final View view,
-                                    final int position,
-                                    final long id) {
-                TocEntry tocEntry = (TocEntry) parent.getItemAtPosition(position);
-                Logger.debug("calling editEntry from onItemClick");
-                editEntry(tocEntry, position);
-            }
+        mListView.setOnItemClickListener((parent, view1, position, id) -> {
+            TocEntry tocEntry = (TocEntry) parent.getItemAtPosition(position);
+            Logger.debug("calling editEntry from onItemClick");
+            editEntry(tocEntry, position);
         });
     }
 
@@ -299,7 +283,8 @@ public class EditBookTOCFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
-                UserMessage.showUserMessage(requireActivity(),
+                //noinspection ConstantConditions
+                UserMessage.showUserMessage(getView(),
                                             R.string.progress_msg_connecting_to_web_site);
                 new ISFDBGetEditionsTask(mIsbn, this).execute();
                 return true;
@@ -354,7 +339,7 @@ public class EditBookTOCFragment
      */
     @Override
     public void onGotISFDBEditions(@Nullable final ArrayList<String> editions) {
-        mISFDBEditionUrls = editions != null ? editions : new ArrayList<String>();
+        mISFDBEditionUrls = editions != null ? editions : new ArrayList<>();
         if (!mISFDBEditionUrls.isEmpty()) {
             new ISFDBGetBookTask(mISFDBEditionUrls, false, this).execute();
         }
@@ -387,10 +372,12 @@ public class EditBookTOCFragment
         }
 
         // update the book with the first publication date that was gathered from the TOC
-        final String bookFirstPublication = bookData.getString(UniqueId.KEY_DATE_FIRST_PUBLISHED);
+        final String bookFirstPublication = bookData.getString(
+                DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED);
         if (bookFirstPublication != null) {
-            if (getBookManager().getBook().getString(UniqueId.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
-                getBookManager().getBook().putString(UniqueId.KEY_DATE_FIRST_PUBLISHED,
+            if (getBookManager().getBook().getString(
+                    DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
+                getBookManager().getBook().putString(DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED,
                                                      bookFirstPublication);
             }
         }
@@ -409,7 +396,7 @@ public class EditBookTOCFragment
     private void commitISFDBData(final long tocBitMask,
                                  @NonNull final List<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
-            getBookManager().getBook().putLong(UniqueId.KEY_TOC_BITMASK, tocBitMask);
+            getBookManager().getBook().putLong(DatabaseDefinitions.KEY_TOC_BITMASK, tocBitMask);
             populateSingleAuthorStatus(getBookManager().getBook());
         }
 
@@ -519,9 +506,10 @@ public class EditBookTOCFragment
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
             final EditBookTOCFragment targetFragment = (EditBookTOCFragment) getTargetFragment();
+            Objects.requireNonNull(targetFragment);
             Bundle args = requireArguments();
             boolean hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
-            final long tocBitMask = args.getLong(UniqueId.KEY_TOC_BITMASK);
+            final long tocBitMask = args.getLong(DatabaseDefinitions.KEY_TOC_BITMASK);
             ArrayList<TocEntry> tocEntries =
                     args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
             boolean hasTOC = tocEntries != null && !tocEntries.isEmpty();
@@ -542,8 +530,7 @@ public class EditBookTOCFragment
             // we read the value from the attr/style in pixels
             //noinspection ConstantConditions
             content.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                                App
-                                        .getTextAppearanceSmallTextSizeInPixels(getContext()));
+                                App.getTextAppearanceSmallTextSizeInPixels(getContext()));
             //API: 23:
             //content.setTextAppearance(android.R.style.TextAppearance_Small);
             //API: 26 ?
@@ -552,40 +539,22 @@ public class EditBookTOCFragment
             final AlertDialog dialog = new AlertDialog.Builder(requireContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setView(content)
+                    .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                     .create();
 
             if (hasTOC) {
                 final List<TocEntry> finalTocEntryList = tocEntries;
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                                 new DialogInterface.OnClickListener() {
-                                     public void onClick(@NonNull final DialogInterface dialog,
-                                                         final int which) {
-                                         //noinspection ConstantConditions
-                                         targetFragment.commitISFDBData(tocBitMask,
-                                                                        finalTocEntryList);
-                                     }
-                                 });
+                                 (d, which) -> targetFragment.commitISFDBData(tocBitMask,
+                                                                              finalTocEntryList));
             }
 
-            // if we found multiple editions, allow a re-try with the next inline
+            // if we found multiple editions, allow a re-try with the next edition
             if (hasOtherEditions) {
                 dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.retry),
-                                 new DialogInterface.OnClickListener() {
-                                     public void onClick(@NonNull final DialogInterface dialog,
-                                                         final int which) {
-                                         //noinspection ConstantConditions
-                                         targetFragment.getNextEdition();
-                                     }
-                                 });
+                                 (d, which) -> targetFragment.getNextEdition());
             }
 
-            dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                             new DialogInterface.OnClickListener() {
-                                 public void onClick(@NonNull final DialogInterface dialog,
-                                                     final int which) {
-                                     dialog.dismiss();
-                                 }
-                             });
             return dialog;
         }
     }
@@ -602,8 +571,7 @@ public class EditBookTOCFragment
         }
 
         @Override
-        public void onRowClick(@NonNull final View target,
-                               @NonNull final TocEntry item,
+        public void onRowClick(@NonNull final TocEntry item,
                                final int position) {
             Logger.debug("calling editEntry from onRowClick");
             editEntry(item, position);

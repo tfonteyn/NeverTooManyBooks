@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -41,6 +42,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
@@ -52,10 +54,12 @@ import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
+import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.debug.DebugReport;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
@@ -112,10 +116,32 @@ public class App
     public static final String PREF_LEGACY_BOOK_CATALOGUE = "bookCatalogue";
     /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;
-    /** internal; check if onResume should do a 'recreate()'. */
-    private static final String PREF_RESTART_ON_RESUME = "App.RestartActivityOnResume";
-    private static final int NEEDS_RECREATE = 1;
-    private static final int IS_RECREATING = 2;
+
+    /**
+     * internal; check if an Activity should do a 'recreate()'.
+     * See {@link BaseActivity#onResume}.
+     */
+    private static final String PREF_ACTIVITY_RECREATE_STATUS = "App.RecreateActivityStatus";
+    /** Activity is in need of recreating. */
+    private static final int ACTIVITY_NEEDS_RECREATING = 1;
+    /** Checked in onResume() so not to start tasks etc. */
+    private static final int ACTIVITY_IS_RECREATING = 2;
+
+    /**
+     * NEWKIND: APP THEME.
+     * 1. add it to themes.xml
+     * 2. add it to {@link R.array#pv_ui_theme},
+     * the string-array order must match the APP_THEMES order
+     * The preferences choice will be build according to the string-array list/order.
+     */
+    private static final int DEFAULT_THEME = 0;
+    /** As defined in res/themes.xml. */
+    private static final int[] APP_THEMES = {
+            R.style.AppTheme_Dark,
+            R.style.AppTheme_Light_Blue,
+            R.style.AppTheme_Light_Red,
+            };
+
     /**
      * Give static methods access to our singleton.
      * Note: never store a context in a static, use the instance instead
@@ -123,6 +149,8 @@ public class App
     private static App mInstance;
     /** Used to sent notifications regarding tasks. */
     private static NotificationManager mNotifier;
+    /** Cache the User-specified theme currently in use. */
+    private static int mCurrentTheme;
 
     /** create a singleton. */
     @SuppressWarnings("unused")
@@ -338,24 +366,48 @@ public class App
         return Utils.toInteger(sValue);
     }
 
+    /**
+     * @return the current Theme resource id.
+     */
+    @StyleRes
+    public static int getThemeResId() {
+        return APP_THEMES[mCurrentTheme];
+    }
+
+    /**
+     * Apply the user's preferred Theme (if it has changed).
+     *
+     * @return <tt>true</tt> if the theme was changed
+     */
+    public static boolean applyTheme(@NonNull final Activity activity) {
+        int theme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+
+        if (theme != mCurrentTheme) {
+            mCurrentTheme = theme;
+            activity.setTheme(APP_THEMES[mCurrentTheme]);
+            return true;
+        }
+        return false;
+    }
+
     public static void setNeedsRecreating() {
-        getPrefs().edit().putInt(PREF_RESTART_ON_RESUME, NEEDS_RECREATE).apply();
+        getPrefs().edit().putInt(PREF_ACTIVITY_RECREATE_STATUS, ACTIVITY_NEEDS_RECREATING).apply();
     }
 
     public static boolean isInNeedOfRecreating() {
-        return getPrefs().getInt(PREF_RESTART_ON_RESUME, 0) == NEEDS_RECREATE;
+        return getPrefs().getInt(PREF_ACTIVITY_RECREATE_STATUS, 0) == ACTIVITY_NEEDS_RECREATING;
     }
 
     public static void setIsRecreating() {
-        getPrefs().edit().putInt(PREF_RESTART_ON_RESUME, IS_RECREATING).apply();
+        getPrefs().edit().putInt(PREF_ACTIVITY_RECREATE_STATUS, ACTIVITY_IS_RECREATING).apply();
     }
 
     public static boolean isRecreating() {
-        return getPrefs().getInt(PREF_RESTART_ON_RESUME, 0) == IS_RECREATING;
+        return getPrefs().getInt(PREF_ACTIVITY_RECREATE_STATUS, 0) == ACTIVITY_IS_RECREATING;
     }
 
     public static void clearRecreateFlag() {
-        getPrefs().edit().remove(PREF_RESTART_ON_RESUME).apply();
+        getPrefs().edit().remove(PREF_ACTIVITY_RECREATE_STATUS).apply();
     }
 
     /**
@@ -382,12 +434,15 @@ public class App
     public void onCreate() {
         // Get the preferred locale as soon as possible
         try {
-            LocaleUtils.init(this);
+            LocaleUtils.init();
             LocaleUtils.applyPreferred(this);
         } catch (RuntimeException e) {
             // Not much we can do...we want locale set early, but not fatal if it fails.
             Logger.error(e);
         }
+
+        // cache the preferred theme.
+        mCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
 
         // Create the notifier
         mNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

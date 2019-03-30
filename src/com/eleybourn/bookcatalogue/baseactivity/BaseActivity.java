@@ -31,7 +31,6 @@ import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.settings.SettingsActivity;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
-import com.eleybourn.bookcatalogue.utils.ThemeUtils;
 import com.google.android.material.navigation.NavigationView;
 
 /**
@@ -66,7 +65,7 @@ public abstract class BaseActivity
         // apply the user-preferred Locale to the configuration before super.onCreate
         LocaleUtils.applyPreferred(this);
         // apply the Theme before super.onCreate
-        setTheme(ThemeUtils.getThemeResId());
+        setTheme(App.getThemeResId());
 
         super.onCreate(savedInstanceState);
 
@@ -79,8 +78,8 @@ public abstract class BaseActivity
          Using a {@link NavigationView} and matching {@link Toolbar}
          see https://developer.android.com/training/implementing-navigation/nav-drawer
          */
-        setDrawerLayout((DrawerLayout) findViewById(R.id.drawer_layout));
-        setNavigationView((NavigationView) findViewById(R.id.nav_view));
+        setDrawerLayout(findViewById(R.id.drawer_layout));
+        setNavigationView(findViewById(R.id.nav_view));
 
         initToolbar();
     }
@@ -94,7 +93,7 @@ public abstract class BaseActivity
         super.onResume();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Logger.info(this, Tracker.State.Enter,
-                        "BaseActivity.onResume", LocaleUtils.toString(this));
+                        "BaseActivity.onResume", LocaleUtils.toDebugString(this));
         }
 
         if (App.isInNeedOfRecreating()) {
@@ -312,12 +311,9 @@ public abstract class BaseActivity
             StandardDialogs.showConfirmUnsavedEditsDialog(
                     this,
                     /* only runs if user clicks 'exit' */
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            setResult(Activity.RESULT_CANCELED);
-                            finish();
-                        }
+                    () -> {
+                        setResult(Activity.RESULT_CANCELED);
+                        finish();
                     });
         } else {
             setResult(Activity.RESULT_CANCELED);
@@ -341,7 +337,7 @@ public abstract class BaseActivity
         // Trigger a recreate of this activity, if the setting has changed.
         switch (key) {
             case Prefs.pk_ui_theme:
-                if (ThemeUtils.applyPreferred(this)) {
+                if (App.applyTheme(this)) {
                     recreate();
                     App.setIsRecreating();
                 }

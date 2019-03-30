@@ -156,28 +156,28 @@
 
     <!-- Preference - Booklist Filter -->
     <string-array name="pe_bob_filter_read">
-        <item>@string/all_books</item>
+        <item>@string/bookshelf_all_books</item>
         <item>Gelezen boeken</item>
         <item>Niet Gelezen boeken</item>
     </string-array>
 
     <!-- Preference - Booklist Filter -->
     <string-array name="pe_bob_filter_signed">
-        <item>@string/all_books</item>
+        <item>@string/bookshelf_all_books</item>
         <item>Gesigneerd boeken</item>
         <item>Niet Gesigneerd boeken</item>
     </string-array>
 
     <!-- Preference - Booklist Filter -->
     <string-array name="pe_bob_filter_loaned">
-        <item>@string/all_books</item>
+        <item>@string/bookshelf_all_books</item>
         <item>Uitgeleende boeken</item>
         <item>Niet Uitgeleende boeken</item>
     </string-array>
 
     <!-- Preference - Booklist Filter -->
     <string-array name="pe_bob_filter_anthology">
-        <item>@string/all_books</item>
+        <item>@string/bookshelf_all_books</item>
         <item>Bloemlezing</item>
         <item>Geen Bloemlezing</item>
     </string-array>

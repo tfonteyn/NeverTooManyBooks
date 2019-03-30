@@ -179,7 +179,8 @@ public abstract class BookSearchBaseFragment
 
         } catch (RuntimeException e) {
             Logger.error(e);
-            UserMessage.showUserMessage(mActivity, R.string.error_search_failed);
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(), R.string.error_search_failed);
             mActivity.setResult(Activity.RESULT_CANCELED);
             mActivity.finish();
         }

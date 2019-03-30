@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.goodreads.taskqueue;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -48,13 +47,7 @@ abstract class BindableItemListActivity
     /**
      * Listener to handle add/change/delete.
      */
-    protected final QueueManager.OnChangeListener mOnChangeListener =
-            new QueueManager.OnChangeListener() {
-                @Override
-                public void onChange() {
-                    refreshData();
-                }
-            };
+    protected final QueueManager.OnChangeListener mOnChangeListener = this::refreshData;
 
     /**
      * Subclass MUST implement to return the cursor that will be used to display items.
@@ -75,15 +68,7 @@ abstract class BindableItemListActivity
         mListAdapter = new BindableItemCursorAdapter(this, this, mBindableItems);
         setListAdapter(mListAdapter);
 
-        getListView().setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(@NonNull final AdapterView<?> parent,
-                                    @NonNull final View view,
-                                    final int position,
-                                    final long id) {
-                onListItemClick(parent, view, position, id);
-            }
-        });
+        getListView().setOnItemClickListener(this::onListItemClick);
     }
 
     /**

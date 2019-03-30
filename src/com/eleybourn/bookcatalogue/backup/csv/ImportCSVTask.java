@@ -26,7 +26,7 @@ public class ImportCSVTask
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_CSV_IMPORT;
     private final ImportSettings mSettings;
-    private final CsvImporter mImporter;
+    private final Importer mImporter;
     private final ProgressDialogFragment<Void> mFragment;
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
@@ -76,8 +76,8 @@ public class ImportCSVTask
 
         try (FileInputStream in = new FileInputStream(mSettings.file)) {
             //noinspection ConstantConditions
-            mImporter.doImport(in, new LocalCoverFinder(mSettings.file.getParent()),
-                               new Importer.ImportListener() {
+            mImporter.doBooks(in, new LocalCoverFinder(mSettings.file.getParent()),
+                              new Importer.ImportListener() {
 
                                    @Override
                                    public void onProgress(@NonNull final String message,

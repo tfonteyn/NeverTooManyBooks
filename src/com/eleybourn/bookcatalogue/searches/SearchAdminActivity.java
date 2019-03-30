@@ -92,36 +92,28 @@ public class SearchAdminActivity
         Button confirmBtn = findViewById(R.id.confirm);
         // indicate to the user this is the 'use' scenario (instead of 'save')
         confirmBtn.setText(R.string.btn_use);
-        confirmBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                int sites = SearchSites.Site.SEARCH_ALL;
-                for (SearchSites.Site site : list) {
-                    sites = site.isEnabled() ? sites | site.id
-                                             : sites & ~site.id;
-                }
-                Intent data = new Intent()
-                        .putExtra(RESULT_SEARCH_SITES, sites);
-                // don't commit any changes, we got data to use temporarily
-                setResult(Activity.RESULT_OK, data);
-                finish();
+        confirmBtn.setOnClickListener(v -> {
+            int sites = SearchSites.Site.SEARCH_ALL;
+            for (SearchSites.Site site : list) {
+                sites = site.isEnabled() ? sites | site.id
+                                         : sites & ~site.id;
             }
+            Intent data = new Intent()
+                    .putExtra(RESULT_SEARCH_SITES, sites);
+            // don't commit any changes, we got data to use temporarily
+            setResult(Activity.RESULT_OK, data);
+            finish();
         });
 
-        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                // cancel without checking 'dirty'... this is 'use' only.
-                finish();
-            }
-        });
+        // cancel without checking 'dirty'... this is 'use' only.
+        findViewById(R.id.cancel).setOnClickListener(v -> finish());
     }
 
     /**
      * The 'small' setup is for all tabs to show.
      */
     private void initAllTabs() {
-        setTitle(R.string.search_internet);
+        setTitle(R.string.menu_search_internet);
 
         FragmentManager fm = getSupportFragmentManager();
         // add them in order! i.e. in the order the TAB_* constants are defined.
@@ -131,38 +123,30 @@ public class SearchAdminActivity
         mAdapter.add(new FragmentHolder(fm, AdminSearchOrderFragment.TAG + TAB_COVER_ORDER,
                                         getString(R.string.lbl_cover)));
 
-        findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                if (isDirty()) {
-                    //ENHANCE: compare this approach to what is used in EditBookFragment & children.
-                    // Decide later...
+        findViewById(R.id.confirm).setOnClickListener(v -> {
+            if (isDirty()) {
+                //ENHANCE: compare this approach to what is used in EditBookFragment & children.
+                // Decide later...
 
-                    ArrayList<SearchSites.Site> list;
-                    list = ((AdminSearchOrderFragment)
-                            mAdapter.getItem(TAB_ORDER)).getList();
-                    if (list != null) {
-                        SearchSites.setSearchOrder(list);
-                    }
-
-                    list = ((AdminSearchOrderFragment)
-                            mAdapter.getItem(TAB_COVER_ORDER)).getList();
-                    if (list != null) {
-                        SearchSites.setCoverSearchOrder(list);
-                    }
+                ArrayList<SearchSites.Site> list;
+                list = ((AdminSearchOrderFragment)
+                        mAdapter.getItem(TAB_ORDER)).getList();
+                if (list != null) {
+                    SearchSites.setSearchOrder(list);
                 }
-                // no data to return
-                setResult(Activity.RESULT_OK);
-                finish();
+
+                list = ((AdminSearchOrderFragment)
+                        mAdapter.getItem(TAB_COVER_ORDER)).getList();
+                if (list != null) {
+                    SearchSites.setCoverSearchOrder(list);
+                }
             }
+            // no data to return
+            setResult(Activity.RESULT_OK);
+            finish();
         });
 
-        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                finishIfClean(isDirty());
-            }
-        });
+        findViewById(R.id.cancel).setOnClickListener(v -> finishIfClean(isDirty()));
     }
 
     protected boolean isDirty() {
@@ -209,8 +193,6 @@ public class SearchAdminActivity
     private static class FragmentHolder {
 
         @NonNull
-        final String tag;
-        @NonNull
         final String title;
         @NonNull
         Fragment fragment;
@@ -223,7 +205,6 @@ public class SearchAdminActivity
         FragmentHolder(@NonNull final FragmentManager fm,
                        @NonNull final String tag,
                        @NonNull final String title) {
-            this.tag = tag;
             this.title = title;
             //noinspection ConstantConditions
             fragment = fm.findFragmentByTag(tag);

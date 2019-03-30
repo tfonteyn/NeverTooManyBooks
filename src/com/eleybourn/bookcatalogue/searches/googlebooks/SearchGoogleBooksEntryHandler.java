@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
@@ -239,17 +240,17 @@ class SearchGoogleBooksEntryHandler
         switch (localName.toLowerCase()) {
             case XML_TITLE:
                 // there can be multiple listed, but only one 'primary'
-                addIfNotPresent(UniqueId.KEY_TITLE, mBuilder.toString());
+                addIfNotPresent(DatabaseDefinitions.KEY_TITLE, mBuilder.toString());
                 break;
 
             case XML_ISBN:
                 String tmpIsbn = mBuilder.toString();
                 if (tmpIsbn.indexOf("ISBN:") == 0) {
                     tmpIsbn = tmpIsbn.substring(5);
-                    String isbn = mBookData.getString(UniqueId.KEY_ISBN);
+                    String isbn = mBookData.getString(DatabaseDefinitions.KEY_ISBN);
                     // store the 'longest' isbn
                     if (isbn == null || tmpIsbn.length() > isbn.length()) {
-                        mBookData.putString(UniqueId.KEY_ISBN, tmpIsbn);
+                        mBookData.putString(DatabaseDefinitions.KEY_ISBN, tmpIsbn);
                     }
                 }
                 break;
@@ -258,7 +259,7 @@ class SearchGoogleBooksEntryHandler
                 // the language field can be empty, so check before.
                 String iso3code = mBuilder.toString();
                 if (!iso3code.isEmpty()) {
-                    addIfNotPresent(UniqueId.KEY_LANGUAGE, iso3code);
+                    addIfNotPresent(DatabaseDefinitions.KEY_LANGUAGE, iso3code);
                 }
                 break;
 
@@ -267,11 +268,11 @@ class SearchGoogleBooksEntryHandler
                 break;
 
             case XML_PUBLISHER:
-                addIfNotPresent(UniqueId.KEY_PUBLISHER, mBuilder.toString());
+                addIfNotPresent(DatabaseDefinitions.KEY_PUBLISHER, mBuilder.toString());
                 break;
 
             case XML_DATE_PUBLISHED:
-                addIfNotPresent(UniqueId.KEY_DATE_PUBLISHED, mBuilder.toString());
+                addIfNotPresent(DatabaseDefinitions.KEY_DATE_PUBLISHED, mBuilder.toString());
                 break;
 
             case XML_FORMAT:
@@ -283,18 +284,18 @@ class SearchGoogleBooksEntryHandler
                 String tmpFormat = mBuilder.toString();
                 int index = tmpFormat.indexOf(" pages");
                 if (index > -1) {
-                    mBookData.putString(UniqueId.KEY_PAGES,
+                    mBookData.putString(DatabaseDefinitions.KEY_PAGES,
                                         tmpFormat.substring(0, index).trim());
                 }
                 break;
 
             case XML_GENRE:
                 //ENHANCE: only the 'last' genre is used, add a 'genre' table and link up?
-                mBookData.putString(UniqueId.KEY_GENRE, mBuilder.toString());
+                mBookData.putString(DatabaseDefinitions.KEY_GENRE, mBuilder.toString());
                 break;
 
             case XML_DESCRIPTION:
-                addIfNotPresent(UniqueId.KEY_DESCRIPTION, mBuilder.toString());
+                addIfNotPresent(DatabaseDefinitions.KEY_DESCRIPTION, mBuilder.toString());
                 break;
 
             default:

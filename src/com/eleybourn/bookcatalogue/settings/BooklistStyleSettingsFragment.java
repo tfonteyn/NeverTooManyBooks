@@ -19,6 +19,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -97,7 +98,7 @@ public class BooklistStyleSettingsFragment
 
         // set the default response
         Intent data = new Intent()
-                .putExtra(UniqueId.KEY_ID, mStyle.getId())
+                .putExtra(DatabaseDefinitions.KEY_ID, mStyle.getId())
                 .putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
         activity.setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties, data);
     }
@@ -125,12 +126,9 @@ public class BooklistStyleSettingsFragment
             preference.setSummary(mStyle.getGroupListDisplayNames(getContext()));
 
             preference.getIntent().putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
-            preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(@NonNull final Preference preference) {
-                    startActivityForResult(preference.getIntent(), REQ_EDIT_GROUPS);
-                    return true;
-                }
+            preference.setOnPreferenceClickListener(preference1 -> {
+                startActivityForResult(preference1.getIntent(), REQ_EDIT_GROUPS);
+                return true;
             });
         }
     }

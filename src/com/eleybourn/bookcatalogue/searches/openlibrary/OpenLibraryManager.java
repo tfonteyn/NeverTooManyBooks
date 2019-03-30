@@ -24,6 +24,7 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -87,11 +88,6 @@ public class OpenLibraryManager
         //noinspection ConstantConditions
         return App.getPrefs().getString(PREFS_HOST_URL, "https://openlibrary.org");
     }
-
-    public static void setBaseURL(@NonNull final String url) {
-        App.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
-    }
-
 
     /**
      * https://openlibrary.org/dev/docs/api/covers
@@ -168,7 +164,7 @@ public class OpenLibraryManager
     @StringRes
     @Override
     public int getSearchingResId() {
-        return R.string.searching_openlibrary;
+        return R.string.searching_open_library;
     }
 
     /**
@@ -407,7 +403,7 @@ public class OpenLibraryManager
         // mandatory, if no title found, throw
         s = result.optString("title");
         if (!s.isEmpty()) {
-            bookData.putString(UniqueId.KEY_TITLE, s);
+            bookData.putString(DatabaseDefinitions.KEY_TITLE, s);
         } else {
             throw new JSONException("no title");
         }
@@ -431,21 +427,21 @@ public class OpenLibraryManager
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
-        bookData.putString(UniqueId.KEY_ISBN, isbn);
+        bookData.putString(DatabaseDefinitions.KEY_ISBN, isbn);
 
         // everything below is optional.
 
         // "notes" is a specific (set of) remarks on this particular edition of the book.
         s = result.optString("notes");
         if (!s.isEmpty()) {
-            bookData.putString(UniqueId.KEY_DESCRIPTION, s);
+            bookData.putString(DatabaseDefinitions.KEY_DESCRIPTION, s);
         }
 
         s = result.optString("publish_date");
         if (!s.isEmpty()) {
             Date date = DateUtils.parseDate(s);
             if (date != null) {
-                bookData.putString(UniqueId.KEY_DATE_PUBLISHED, s);
+                bookData.putString(DatabaseDefinitions.KEY_DATE_PUBLISHED, s);
             }
         }
 
@@ -455,7 +451,7 @@ public class OpenLibraryManager
 //        } else {
         i = result.optInt("number_of_pages");
         if (i > 0) {
-            bookData.putString(UniqueId.KEY_PAGES, String.valueOf(i));
+            bookData.putString(DatabaseDefinitions.KEY_PAGES, String.valueOf(i));
         }
 //        }
 
@@ -464,24 +460,24 @@ public class OpenLibraryManager
             // see if we have a better isbn.
             a = o.optJSONArray("isbn_13");
             if (a != null && a.length() > 0) {
-                bookData.putString(UniqueId.KEY_ISBN, a.getString(0));
+                bookData.putString(DatabaseDefinitions.KEY_ISBN, a.getString(0));
             } else {
                 a = o.optJSONArray("isbn_10");
                 if (a != null && a.length() > 0) {
-                    bookData.putString(UniqueId.KEY_ISBN, a.getString(0));
+                    bookData.putString(DatabaseDefinitions.KEY_ISBN, a.getString(0));
                 }
             }
             a = o.optJSONArray("openlibrary");
             if (a != null && a.length() > 0) {
-                bookData.putString(UniqueId.KEY_OPEN_LIBRARY_ID, a.getString(0));
+                bookData.putString(DatabaseDefinitions.KEY_OPEN_LIBRARY_ID, a.getString(0));
             }
             a = o.optJSONArray("librarything");
             if (a != null && a.length() > 0) {
-                bookData.putString(UniqueId.KEY_LIBRARY_THING_ID, a.getString(0));
+                bookData.putString(DatabaseDefinitions.KEY_LIBRARY_THING_ID, a.getString(0));
             }
             a = o.optJSONArray("goodreads");
             if (a != null && a.length() > 0) {
-                bookData.putString(UniqueId.KEY_BOOK_GOODREADS_ID, a.getString(0));
+                bookData.putString(DatabaseDefinitions.KEY_BOOK_GOODREADS_ID, a.getString(0));
             }
         }
 
@@ -519,7 +515,7 @@ public class OpenLibraryManager
             o = a.optJSONObject(0);
             String name = o.optString("name");
             if (!name.isEmpty()) {
-                bookData.putString(UniqueId.KEY_PUBLISHER, name);
+                bookData.putString(DatabaseDefinitions.KEY_PUBLISHER, name);
             }
         }
 

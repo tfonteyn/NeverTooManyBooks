@@ -33,6 +33,14 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * See http://en.wikipedia.org/wiki/International_Standard_Book_Number
+ * <p>
+ * ISBN stands for International Standard Book Number.
+ * Every book is assigned a unique ISBN-10 and ISBN-13 when published.
+ * <p>
+ * ASIN stands for Amazon Standard Identification Number.
+ * Every product on Amazon has its own ASIN, a unique code used to identify it.
+ * For books, the ASIN is the same as the ISBN-10 number, but for all other products a new ASIN
+ * is created when the item is uploaded to their catalogue.
  */
 public class ISBN {
 
@@ -186,7 +194,7 @@ public class ISBN {
     public static boolean matches(@Nullable final String isbn1,
                                   @Nullable final String isbn2) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(ISBN.class, "matches: " + isbn1 + " ?= " + isbn2);
+            Logger.info(ISBN.class, "matches", isbn1 + " ?= " + isbn2);
         }
         if (isbn1 == null || isbn2 == null) {
             return false;

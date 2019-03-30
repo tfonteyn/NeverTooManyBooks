@@ -13,7 +13,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
@@ -142,12 +142,12 @@ public class DBCleaner {
      * @param dryRun <tt>true</tt> to run the update.
      */
     public void bookAnthologyBitmask(final boolean dryRun) {
-        String select = "SELECT DISTINCT " + DOM_BOOK_ANTHOLOGY_BITMASK + " FROM " + TBL_BOOKS
-                + " WHERE " + DOM_BOOK_ANTHOLOGY_BITMASK + " NOT IN (0,1,3)";
+        String select = "SELECT DISTINCT " + DOM_BOOK_TOC_BITMASK + " FROM " + TBL_BOOKS
+                + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)";
         toLog(Tracker.State.Enter, select);
         if (!dryRun) {
-            String sql = "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_ANTHOLOGY_BITMASK + "=2"
-                    + " WHERE " + DOM_BOOK_ANTHOLOGY_BITMASK + " NOT IN (0,1,3)";
+            String sql = "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_TOC_BITMASK + "=2"
+                    + " WHERE " + DOM_BOOK_TOC_BITMASK + " NOT IN (0,1,3)";
             try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }

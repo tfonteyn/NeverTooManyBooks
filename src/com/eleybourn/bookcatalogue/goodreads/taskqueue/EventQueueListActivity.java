@@ -23,7 +23,6 @@ package com.eleybourn.bookcatalogue.goodreads.taskqueue;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 
@@ -71,12 +70,7 @@ public class EventQueueListActivity
 
         Button cleanupBtn = findViewById(R.id.cleanup);
         cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_events);
-        cleanupBtn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                QueueManager.getQueueManager().cleanupOldEvents();
-            }
-        });
+        cleanupBtn.setOnClickListener(v -> QueueManager.getQueueManager().cleanupOldEvents());
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(),
@@ -99,12 +93,7 @@ public class EventQueueListActivity
         // If it owns a hint, display it first
         if (event instanceof HintOwner) {
             HintManager.displayHint(getLayoutInflater(), ((HintOwner) event).getHint(),
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            doContextMenu(parent, v, event, position, id);
-                                        }
-                                    });
+                                    () -> doContextMenu(parent, v, event, position, id));
         } else {
             // Just display context menu
             doContextMenu(parent, v, event, position, id);

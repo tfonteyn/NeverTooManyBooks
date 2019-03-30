@@ -21,13 +21,11 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -43,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
@@ -91,7 +90,7 @@ public class UpdateFieldsFromInternetActivity
                     Intent data = new Intent()
                             .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
                             // 0 if we did 'all books' or the id of the (hopefully) updated book.
-                            .putExtra(UniqueId.KEY_ID, mBookId);
+                            .putExtra(DatabaseDefinitions.KEY_ID, mBookId);
                     if (mBookId == 0) {
                         // task cancelled does not mean that nothing was done.
                         // Books *will* be updated until the cancelling happened
@@ -115,10 +114,10 @@ public class UpdateFieldsFromInternetActivity
 
     private void readArgs(@NonNull final Bundle args) {
         mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
-        mBookId = args.getLong(UniqueId.KEY_ID, 0L);
+        mBookId = args.getLong(DatabaseDefinitions.KEY_ID, 0L);
         if (mBookId > 0) {
-            mAuthorFormatted = args.getString(UniqueId.KEY_AUTHOR_FORMATTED);
-            mTitle = args.getString(UniqueId.KEY_TITLE);
+            mAuthorFormatted = args.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED);
+            mTitle = args.getString(DatabaseDefinitions.KEY_TITLE);
         }
     }
 
@@ -162,64 +161,54 @@ public class UpdateFieldsFromInternetActivity
         populateFields();
 
         // start the update
-        findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                handleConfirm();
-            }
-        });
+        findViewById(R.id.confirm).setOnClickListener(v -> handleConfirm());
 
         // don't start update, just quit.
-        findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                finish();
-            }
-        });
+        findViewById(R.id.cancel).setOnClickListener(v -> finish());
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(REQUEST_BKEY_SEARCH_SITES, mSearchSites);
-        outState.putLong(UniqueId.KEY_ID, mBookId);
-        outState.putString(UniqueId.KEY_AUTHOR_FORMATTED, mAuthorFormatted);
-        outState.putString(UniqueId.KEY_TITLE, mTitle);
+        outState.putLong(DatabaseDefinitions.KEY_ID, mBookId);
+        outState.putString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED, mAuthorFormatted);
+        outState.putString(DatabaseDefinitions.KEY_TITLE, mTitle);
     }
 
     /**
      * Entries are displayed in the order they are added here.
      */
     private void initFields() {
-        addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, UniqueId.KEY_AUTHOR,
+        addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, DatabaseDefinitions.KEY_AUTHOR,
                      R.string.lbl_author, Fields.FieldUsage.Usage.AddExtra, true);
-        addIfVisible(UniqueId.KEY_TITLE,
+        addIfVisible(DatabaseDefinitions.KEY_TITLE,
                      R.string.lbl_title, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_ISBN,
+        addIfVisible(DatabaseDefinitions.KEY_ISBN,
                      R.string.lbl_isbn, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_COVER_IMAGE,
                      R.string.lbl_cover, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.BKEY_SERIES_ARRAY, UniqueId.KEY_SERIES,
+        addIfVisible(UniqueId.BKEY_SERIES_ARRAY, DatabaseDefinitions.KEY_SERIES,
                      R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
-        addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, UniqueId.KEY_TOC_BITMASK,
+        addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, DatabaseDefinitions.KEY_TOC_BITMASK,
                      R.string.lbl_table_of_content, Fields.FieldUsage.Usage.AddExtra, true);
-        addIfVisible(UniqueId.KEY_PUBLISHER,
+        addIfVisible(DatabaseDefinitions.KEY_PUBLISHER,
                      R.string.lbl_publisher, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_DATE_PUBLISHED,
+        addIfVisible(DatabaseDefinitions.KEY_DATE_PUBLISHED,
                      R.string.lbl_date_published, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_DATE_FIRST_PUBLISHED,
+        addIfVisible(DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED,
                      R.string.lbl_first_publication, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_DESCRIPTION,
+        addIfVisible(DatabaseDefinitions.KEY_DESCRIPTION,
                      R.string.lbl_description, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_PAGES,
+        addIfVisible(DatabaseDefinitions.KEY_PAGES,
                      R.string.lbl_pages, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_PRICE_LISTED,
+        addIfVisible(DatabaseDefinitions.KEY_PRICE_LISTED,
                      R.string.lbl_price_listed, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_FORMAT,
+        addIfVisible(DatabaseDefinitions.KEY_FORMAT,
                      R.string.lbl_format, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_GENRE,
+        addIfVisible(DatabaseDefinitions.KEY_GENRE,
                      R.string.lbl_genre, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.KEY_LANGUAGE,
+        addIfVisible(DatabaseDefinitions.KEY_LANGUAGE,
                      R.string.lbl_language, Fields.FieldUsage.Usage.CopyIfBlank, false);
     }
 
@@ -278,16 +267,13 @@ public class UpdateFieldsFromInternetActivity
             CompoundButton cb = row.findViewById(R.id.usage);
             cb.setChecked(usage.isSelected());
             cb.setText(usage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
-            cb.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    // ENHANCE: The check is really a FOUR-state.
-                    final CompoundButton cb = (CompoundButton) v;
-                    final Fields.FieldUsage usage = (Fields.FieldUsage) cb.getTag();
-                    usage.nextState();
-                    cb.setChecked(usage.isSelected());
-                    cb.setText(usage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
-                }
+            cb.setOnClickListener(v -> {
+                // ENHANCE: The check is really a FOUR-state.
+                final CompoundButton cb1 = (CompoundButton) v;
+                final Fields.FieldUsage fieldUsage = (Fields.FieldUsage) cb1.getTag();
+                fieldUsage.nextState();
+                cb1.setChecked(fieldUsage.isSelected());
+                cb1.setText(fieldUsage.getUsageInfo(UpdateFieldsFromInternetActivity.this));
             });
 
             cb.setTag(usage);
@@ -321,30 +307,20 @@ public class UpdateFieldsFromInternetActivity
 
             dialog.setButton(
                     AlertDialog.BUTTON_POSITIVE, getString(R.string.yes),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(@NonNull final DialogInterface dialog,
-                                            final int which) {
-                            coversWanted.usage = Fields.FieldUsage.Usage.Overwrite;
-                            startUpdate(mBookId);
-                        }
+                    (d, which) -> {
+                        coversWanted.usage = Fields.FieldUsage.Usage.Overwrite;
+                        startUpdate(mBookId);
                     });
             dialog.setButton(
                     AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                    new DialogInterface.OnClickListener() {
-                        @SuppressWarnings("EmptyMethod")
-                        public void onClick(@NonNull final DialogInterface dialog,
-                                            final int which) {
-                            //do nothing
-                        }
+                    (d, which) -> {
+                        //do nothing
                     });
             dialog.setButton(
                     AlertDialog.BUTTON_NEUTRAL, getString(R.string.no),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(@NonNull final DialogInterface dialog,
-                                            final int which) {
-                            coversWanted.usage = Fields.FieldUsage.Usage.CopyIfBlank;
-                            startUpdate(mBookId);
-                        }
+                    (d, which) -> {
+                        coversWanted.usage = Fields.FieldUsage.Usage.CopyIfBlank;
+                        startUpdate(mBookId);
                     });
             dialog.show();
         } else {

@@ -25,7 +25,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -80,7 +79,7 @@ public class GoodreadsSearchResultsActivity
         if (criteria != null && !criteria.isEmpty()) {
             doSearch(criteria);
         } else {
-            UserMessage.showUserMessage(this, R.string.please_enter_search_criteria);
+            UserMessage.showUserMessage(this, R.string.search_please_enter_criteria);
             setResult(Activity.RESULT_CANCELED);
             finish();
         }
@@ -103,10 +102,9 @@ public class GoodreadsSearchResultsActivity
                 | IOException
                 | RuntimeException e) {
             Logger.error(e, "Failed when searching Goodreads");
-            UserMessage.showUserMessage(
-                    this, getString(R.string.gr_error_while_searching) + ' '
-                            + getString(
-                            R.string.error_if_the_problem_persists));
+            String msg = getString(R.string.gr_error_while_searching)
+                    + ' ' + getString(R.string.error_if_the_problem_persists);
+            UserMessage.showUserMessage(this, msg);
             setResult(Activity.RESULT_CANCELED);
             finish();
             return;
@@ -131,10 +129,9 @@ public class GoodreadsSearchResultsActivity
      */
     private void doItemClick(@NonNull final Holder holder) {
         // TODO: Implement edition lookup - requires access to work.editions API from GR
-        Logger.debug("Not implemented: see " + holder.titleView + " by " + holder.authorView);
-        UserMessage.showUserMessage(this,
-                                    "Not implemented: see " + holder.titleView
-                                            + " by " + holder.authorView);
+        String msg = "Not implemented: see " + holder.titleView + " by " + holder.authorView;
+        Logger.debug(msg);
+        UserMessage.showUserMessage(this, msg);
         //Intent i = new Intent(this, GoodreadsW)
     }
 
@@ -196,13 +193,7 @@ public class GoodreadsSearchResultsActivity
                                             .inflate(R.layout.goodreads_work_item, parent, false);
 
                 holder = new Holder(convertView);
-                convertView.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final View v) {
-                        Holder holder = (Holder) v.getTag();
-                        doItemClick(holder);
-                    }
-                });
+                convertView.setOnClickListener(v -> doItemClick((Holder) v.getTag()));
             }
 
             synchronized (holder.coverView) {

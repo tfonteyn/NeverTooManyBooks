@@ -62,7 +62,7 @@ final class MenuHandler {
                     R.string.menu_add_book_by_isbn)
                .setIcon(R.drawable.ic_zoom_in);
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_BY_SEARCH_TEXT, Menu.NONE,
-                    R.string.search_internet)
+                    R.string.menu_search_internet)
                .setIcon(R.drawable.ic_zoom_in);
         subMenu.add(R.id.SUBMENU_BOOK_ADD, R.id.MENU_BOOK_ADD_MANUALLY, Menu.NONE,
                     R.string.menu_add_book_manually)

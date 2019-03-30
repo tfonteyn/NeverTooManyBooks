@@ -56,7 +56,7 @@ public class EditLanguageDialog
             Locale loc = new Locale(lang);
             editLang = loc.getDisplayLanguage();
         }
-        super.edit(editLang, R.layout.dialog_edit_language, R.string.title_edit_language);
+        super.edit(editLang, R.layout.dialog_edit_language, R.string.lbl_language);
     }
 
     @Override

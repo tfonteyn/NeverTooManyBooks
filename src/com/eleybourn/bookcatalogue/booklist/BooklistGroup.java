@@ -614,7 +614,7 @@ public class BooklistGroup
 
     /**
      * ENHANCE: add support for all? columns not handled yet. Status: 2019-01-06
-     * {@link DatabaseDefinitions#DOM_BOOK_ANTHOLOGY_BITMASK}
+     * {@link DatabaseDefinitions#DOM_BOOK_TOC_BITMASK}
      * {@link DatabaseDefinitions#DOM_BOOK_EDITION_BITMASK}
      * <p>
      * {@link DatabaseDefinitions#DOM_BOOK_PRICE_LISTED}

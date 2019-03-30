@@ -50,10 +50,6 @@ public final class GoogleBooksManager
         return App.getPrefs().getString(PREFS_HOST_URL, "https://books.google.com");
     }
 
-    public static void setBaseURL(@NonNull final String url) {
-        App.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
-    }
-
     /**
      * @param isbn to search for
      * @param size of image to get.

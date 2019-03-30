@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,7 +53,7 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
  * For now, only INFO, Preferences and Styles are implemented.
  */
 public class XmlImporter
-        implements Importer, Closeable {
+        implements Importer {
 
     private static final String UNABLE_TO_PROCESS_XML_ENTITY_ERROR =
             "Unable to process XML entity ";
@@ -91,14 +90,14 @@ public class XmlImporter
     }
 
     /**
-     * @param importStream Stream for reading data
-     * @param coverFinder  (Optional) object to find a file on the local device
-     * @param listener     Progress and cancellation provider
+     * Not supported here for now.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
-    public int doImport(@NonNull final InputStream importStream,
-                        @Nullable final CoverFinder coverFinder,
-                        @NonNull final ImportListener listener) {
+    public int doBooks(@NonNull final InputStream importStream,
+                       @Nullable final CoverFinder coverFinder,
+                       @NonNull final ImportListener listener) {
         throw new UnsupportedOperationException();
     }
 
@@ -206,12 +205,7 @@ public class XmlImporter
                                  id == null ? 0 : Integer.parseInt(id), name);
                      }
                  })
-                 .setEndAction(new XmlFilter.XmlHandler() {
-                     @Override
-                     public void process(@NonNull final ElementContext context) {
-                         accessor.endElement();
-                     }
-                 });
+                 .setEndAction(context -> accessor.endElement());
 
         // typed tag starts
         XmlFilter.XmlHandler startTypedTag = new XmlFilter.XmlHandler() {
@@ -329,12 +323,8 @@ public class XmlImporter
          * The exporter is generating List/Set tags with String/Int sub tags properly,
          * but importing an Element in a Collection is always done as a String in a Set (for now?)
          */
-        XmlFilter.XmlHandler startElementInCollection = new XmlFilter.XmlHandler() {
-            @Override
-            public void process(@NonNull final ElementContext context) {
+        XmlFilter.XmlHandler startElementInCollection = context ->
                 currentStringSet.add(context.getAttributes().getValue(XmlUtils.ATTR_VALUE));
-            }
-        };
 
         // Set<String>
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,

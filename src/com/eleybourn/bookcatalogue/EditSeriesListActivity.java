@@ -43,6 +43,7 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -150,12 +151,9 @@ public class EditSeriesListActivity
         StandardDialogs.showConfirmUnsavedEditsDialog(
                 this,
                 /* run when user clicks 'exit' */
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mSeriesNameView.setText("");
-                        findViewById(R.id.confirm).performClick();
-                    }
+                () -> {
+                    mSeriesNameView.setText("");
+                    findViewById(R.id.confirm).performClick();
                 });
 
         return false;
@@ -209,7 +207,7 @@ public class EditSeriesListActivity
 
         // At this point, we know the names are genuinely different and the old series is used
         // in more than one place. Ask the user if they want to make the changes globally.
-        String allBooks = getString(R.string.all_books);
+        String allBooks = getString(R.string.bookshelf_all_books);
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.confirm_apply_series_changed,
@@ -221,30 +219,24 @@ public class EditSeriesListActivity
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE,
                          getString(R.string.btn_this_book),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
+                         (d, which) -> {
+                             d.dismiss();
 
-                                 series.copyFrom(newSeries);
-                                 Series.pruneSeriesList(mList);
-                                 Utils.pruneList(mDb, mList);
-                                 onListChanged();
-                             }
+                             series.copyFrom(newSeries);
+                             Series.pruneSeriesList(mList);
+                             Utils.pruneList(mDb, mList);
+                             onListChanged();
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks,
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
+                         (d, which) -> {
+                             d.dismiss();
 
-                                 mGlobalChangeMade = mDb.globalReplaceSeries(series, newSeries);
-                                 series.copyFrom(newSeries);
-                                 Series.pruneSeriesList(mList);
-                                 Utils.pruneList(mDb, mList);
-                                 onListChanged();
-                             }
+                             mGlobalChangeMade = mDb.globalReplaceSeries(series, newSeries);
+                             series.copyFrom(newSeries);
+                             Series.pruneSeriesList(mList);
+                             Utils.pruneList(mDb, mList);
+                             onListChanged();
                          });
 
         dialog.show();
@@ -280,7 +272,7 @@ public class EditSeriesListActivity
         public static EditBookSeriesDialogFragment newInstance(@NonNull final Series series) {
             EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
             Bundle args = new Bundle();
-            args.putParcelable(UniqueId.KEY_SERIES, series);
+            args.putParcelable(DatabaseDefinitions.KEY_SERIES, series);
             frag.setArguments(args);
             return frag;
         }
@@ -290,16 +282,16 @@ public class EditSeriesListActivity
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
             mActivity = (EditSeriesListActivity) requireActivity();
 
-            final Series series = requireArguments().getParcelable(UniqueId.KEY_SERIES);
+            final Series series = requireArguments().getParcelable(DatabaseDefinitions.KEY_SERIES);
             if (savedInstanceState == null) {
                 //noinspection ConstantConditions
                 mSeriesName = series.getName();
                 mSeriesIsComplete = series.isComplete();
                 mSeriesNumber = series.getNumber();
             } else {
-                mSeriesName = savedInstanceState.getString(UniqueId.KEY_SERIES);
-                mSeriesIsComplete = savedInstanceState.getBoolean(UniqueId.KEY_SERIES_IS_COMPLETE);
-                mSeriesNumber = savedInstanceState.getString(UniqueId.KEY_SERIES_NUM);
+                mSeriesName = savedInstanceState.getString(DatabaseDefinitions.KEY_SERIES);
+                mSeriesIsComplete = savedInstanceState.getBoolean(DatabaseDefinitions.KEY_SERIES_IS_COMPLETE);
+                mSeriesNumber = savedInstanceState.getString(DatabaseDefinitions.KEY_SERIES_NUM);
             }
 
             final View root = mActivity.getLayoutInflater()
@@ -318,32 +310,24 @@ public class EditSeriesListActivity
             mNumberView = root.findViewById(R.id.series_num);
             mNumberView.setText(mSeriesNumber);
 
-            root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    mSeriesName = mNameView.getText().toString().trim();
-                    if (mSeriesName.isEmpty()) {
-                        UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
-                        return;
-                    }
-                    if (mIsCompleteView != null) {
-                        mSeriesIsComplete = mIsCompleteView.isChecked();
-                    }
-                    mSeriesNumber = mNumberView.getText().toString().trim();
-                    dismiss();
-
-                    //noinspection ConstantConditions
-                    mActivity.processChanges(series, mSeriesName, mSeriesIsComplete, mSeriesNumber);
-
+            root.findViewById(R.id.confirm).setOnClickListener(v -> {
+                mSeriesName = mNameView.getText().toString().trim();
+                if (mSeriesName.isEmpty()) {
+                    UserMessage.showUserMessage(mNameView, R.string.warning_required_name);
+                    return;
                 }
+                if (mIsCompleteView != null) {
+                    mSeriesIsComplete = mIsCompleteView.isChecked();
+                }
+                mSeriesNumber = mNumberView.getText().toString().trim();
+                dismiss();
+
+                //noinspection ConstantConditions
+                mActivity.processChanges(series, mSeriesName, mSeriesIsComplete, mSeriesNumber);
+
             });
 
-            root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    dismiss();
-                }
-            });
+            root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
             return new AlertDialog.Builder(mActivity)
                     .setView(root)
@@ -365,9 +349,9 @@ public class EditSeriesListActivity
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(UniqueId.KEY_SERIES, mSeriesName);
-            outState.putBoolean(UniqueId.KEY_SERIES_IS_COMPLETE, mSeriesIsComplete);
-            outState.putString(UniqueId.KEY_SERIES_NUM, mSeriesNumber);
+            outState.putString(DatabaseDefinitions.KEY_SERIES, mSeriesName);
+            outState.putBoolean(DatabaseDefinitions.KEY_SERIES_IS_COMPLETE, mSeriesIsComplete);
+            outState.putString(DatabaseDefinitions.KEY_SERIES_NUM, mSeriesNumber);
         }
     }
 
@@ -421,8 +405,7 @@ public class EditSeriesListActivity
          * edit the item we clicked on.
          */
         @Override
-        public void onRowClick(@NonNull final View target,
-                               @NonNull final Series item,
+        public void onRowClick(@NonNull final Series item,
                                final int position) {
             FragmentManager fm = getSupportFragmentManager();
             if (fm.findFragmentByTag(EditBookSeriesDialogFragment.TAG) == null) {

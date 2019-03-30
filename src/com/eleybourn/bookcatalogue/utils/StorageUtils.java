@@ -20,7 +20,6 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.Manifest;
-import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
@@ -293,7 +292,9 @@ public final class StorageUtils {
         for (String name : dir.list()) {
             size += purgeFile(name, reallyDelete);
         }
-        Logger.info(StorageUtils.class, "purge dir=" + dir + ", size=" + size);
+        Logger.info(StorageUtils.class, "purgeDir",
+                    "dir=" + dir,
+                    "size=" + size);
         return size;
     }
 
@@ -345,14 +346,10 @@ public final class StorageUtils {
     @NonNull
     public static List<File> findCsvFiles() {
         // Make a filter for files ending in .csv
-        FilenameFilter csvFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(@NonNull final File dir,
-                                  @NonNull final String name) {
-                final String fl = name.toLowerCase();
-                return fl.endsWith(".csv");
-                //ENHANCE: Allow for other files? Backups? || fl.endsWith(".csv.bak"));
-            }
+        FilenameFilter csvFilter = (dir, name) -> {
+            final String fl = name.toLowerCase();
+            return fl.endsWith(".csv");
+            //ENHANCE: Allow for other files? Backups? || fl.endsWith(".csv.bak"));
         };
 
         @SuppressWarnings("unused")
@@ -487,7 +484,7 @@ public final class StorageUtils {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.info(StorageUtils.class, debugInfo.toString());
+            Logger.info(StorageUtils.class, "findCsvFiles", debugInfo.toString());
         }
 
         // Sort descending based on modified date
@@ -511,7 +508,7 @@ public final class StorageUtils {
         try {
             // Get a temp file to avoid overwriting output unless copy works
             temp = File.createTempFile("tmp_is_", ".tmp", getTemp());
-            FileOutputStream tempFos = new FileOutputStream(temp);
+            OutputStream tempFos = new FileOutputStream(temp);
             // Copy from input to temp file
             byte[] buffer = new byte[65536];
             int len1;
@@ -541,8 +538,7 @@ public final class StorageUtils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                    Logger.info(StorageUtils.class,
-                                "deleteFile|file=" + file.getAbsolutePath());
+                    Logger.info(StorageUtils.class, "deleteFile", "file=" + file.getAbsolutePath());
                 }
             } catch (RuntimeException e) {
                 Logger.error(e);
@@ -560,8 +556,9 @@ public final class StorageUtils {
     public static boolean renameFile(@NonNull final File src,
                                      @NonNull final File dst) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.info(StorageUtils.class, "renameFile|src=" + src.getAbsolutePath()
-                    + "|dst=" + dst.getAbsolutePath());
+            Logger.info(StorageUtils.class, "renameFile",
+                        "src=" + src.getAbsolutePath(),
+                        "dst=" + dst.getAbsolutePath());
         }
         if (src.exists()) {
             try {
@@ -577,11 +574,9 @@ public final class StorageUtils {
     /**
      * Create a copy of the databases into the Shared Storage location.
      */
-    public static void exportDatabaseFiles(@NonNull final Context context) {
-        exportFile(DBHelper.getDatabasePath(),
-                   "DbExport.db");
-        exportFile(CoversDBA.CoversDbHelper.getDatabasePath(),
-                   "DbExport-covers.db");
+    public static void exportDatabaseFiles() {
+        exportFile(DBHelper.getDatabasePath(), "DbExport.db");
+        exportFile(CoversDBA.CoversDbHelper.getDatabasePath(), "DbExport-covers.db");
     }
 
     /**

@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.searches.librarything;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -219,37 +220,26 @@ public class LibraryThingManager
 
         dialog.setButton(
                 DialogInterface.BUTTON_POSITIVE, context.getString(R.string.btn_more_info),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        Intent intent = new Intent(context, LibraryThingAdminActivity.class);
-                        context.startActivity(intent);
-                        dialog.dismiss();
-                    }
+                (d, which) -> {
+                    Intent intent = new Intent(context, LibraryThingAdminActivity.class);
+                    context.startActivity(intent);
+                    d.dismiss();
                 });
 
         if (!required) {
             dialog.setButton(
                     DialogInterface.BUTTON_NEUTRAL,
                     context.getString(R.string.btn_disable_message),
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(@NonNull final DialogInterface dialog,
-                                            final int which) {
-                            App.getPrefs().edit().putBoolean(prefName, true).apply();
-                            dialog.dismiss();
-                        }
+                    (d, which) -> {
+                        App.getPrefs().edit().putBoolean(prefName, true).apply();
+                        d.dismiss();
                     });
         }
 
         dialog.setButton(
                 DialogInterface.BUTTON_NEGATIVE,
                 context.getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(@NonNull final DialogInterface dialog,
-                                        final int which) {
-                        dialog.dismiss();
-                    }
-                });
+                (d, which) -> d.dismiss());
 
         dialog.show();
     }
@@ -277,7 +267,7 @@ public class LibraryThingManager
         // add the original isbn, as there might be more images at the time this search is done.
         editions.add(isbn);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
-            Logger.info(LibraryThingManager.class, "searchEditions|isbn=" + isbn);
+            Logger.info(LibraryThingManager.class, "searchEditions","isbn=" + isbn);
         }
 
         // Base path for an Editions search
@@ -300,7 +290,7 @@ public class LibraryThingManager
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
-            Logger.info(LibraryThingManager.class, "searchEditions|editions=" + editions);
+            Logger.info(LibraryThingManager.class, "searchEditions","editions=" + editions);
         }
         return editions;
     }
@@ -313,7 +303,8 @@ public class LibraryThingManager
     public static boolean noKey() {
         boolean noKey = getDevKey().isEmpty();
         if (noKey) {
-            Logger.info(LibraryThingManager.class, "LibraryThing dev key not available");
+            Logger.info(LibraryThingManager.class, "noKey",
+                        "LibraryThing dev key not available");
         }
         return noKey;
     }
@@ -328,6 +319,18 @@ public class LibraryThingManager
             return key.replaceAll("[\\r\\t\\n\\s]*", "");
         }
         return "";
+    }
+
+    static void resetHints() {
+        SharedPreferences prefs = App.getPrefs();
+        SharedPreferences.Editor ed = prefs.edit();
+        for (String key : prefs.getAll().keySet()) {
+            if (key.toLowerCase()
+                   .startsWith(PREFS_HIDE_ALERT.toLowerCase())) {
+                ed.remove(key);
+            }
+        }
+        ed.apply();
     }
 
     /**

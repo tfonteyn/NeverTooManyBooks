@@ -115,7 +115,7 @@ Check 's' versus 'd'
 
     <string name="error_not_available">not available</string>
 
-    <string name="error_no_external_crop_app">Can not find image crop app</string>
+    <string name="error_no_external_crop_app">Could not find image an image-crop application</string>
     <string name="error_network_timeout">No response, please try again</string>
     <string name="error_email_failed">Sending the email failed.</string>
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
@@ -125,10 +125,15 @@ Check 's' versus 'd'
     </string>
     <!-- 'Site' authorization failed -->
     <string name="error_authorization_failed">%1$s authorization failed</string>
-
+    <!-- Users of pre-4.0.0 versions are cut-off. They need to upgrade to 4.x or 5.x first -->
+    <string name="error_database_upgrade_failed">"         Cannot upgrade from a version older than 4.0.0     "</string>
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
+    <!-- Shown in the heading of book lists. -->
+    <string name="info_displaying_n_books_in_m_entries">
+        displaying %1$d books, in %2$d entries
+    </string>
 
     <string name="info_no_books_yet">
         There are no books on this Bookshelf.
@@ -269,9 +274,7 @@ Check 's' versus 'd'
         This will completely delete the book entitled “%1$s” by %2$s.
         Are you sure you wish to proceed?
     </string>
-    <string name="confirm_merge_bookshelves">
-        The shelf you are renaming already exists. Would you like to merge them?
-    </string>
+    <string name="confirm_merge_bookshelves">"         The shelf you are renaming already exists. Would you like to merge them?     "</string>
     <string name="confirm_duplicate_book_message">
         The book you are trying to add already exists in the database,
         are you sure you want to add another copy?
@@ -339,6 +342,14 @@ Check 's' versus 'd'
     <string name="progress_end_cancelled">Cancelled</string>
     <string name="progress_end_num_books_searched">%1$d Books Searched</string>
     <string name="progress_end_cancelled_info">Cancelled - %1$s</string>
+
+    <string name="searching_amazon">Searching Amazon</string>
+    <string name="searching_google_books">Searching Google Books</string>
+    <string name="searching_library_thing">Searching LibraryThing</string>
+    <string name="searching_goodreads">Searching Goodreads</string>
+    <string name="searching_isfdb">Searching ISFDB</string>
+    <string name="searching_open_library">Searching OpenLibrary</string>
+
 
     <!-- ####################################################################################### -->
     <!-- ========== Library Thing specific ========== -->
@@ -555,10 +566,7 @@ Check 's' versus 'd'
         \nYou can also customize this menu, as well as create your own list styles, by clicking
         “Customize” at the end of the list.
     </string>
-    <string name="hint_autorotate_camera_images">
-        If you find yourself always rotating camera images in the same direction, try changing the
-        application preferences to specify a rotation to apply automatically.
-    </string>
+    <string name="hint_autorotate_camera_images">"         If you find yourself always rotating camera images in the same direction, try changing the         application preferences to specify a rotation to apply automatically.     "</string>
     <!-- Hint text displayed when user enters the book list view -->
     <string name="hint_view_only_book_details">
         When you click on an item in this list, you can now choose to go to non-editable book
@@ -596,6 +604,7 @@ Check 's' versus 'd'
     <string name="help">Help</string>
     <string name="edit">Edit</string>
     <string name="unknown">Unknown</string>
+    <string name="done">Done</string>
 
     <!-- 'try again' -->
     <string name="retry">Retry</string>
@@ -623,7 +632,7 @@ Check 's' versus 'd'
     <string name="bytes">%.0fB</string>
 
     <!-- ####################################################################################### -->
-    <!-- == Menu strings. If a 'dialog_title' is identical, we use the menu string as title == -->
+    <!-- == Menu strings. If a Dialog title is identical, we use the menu string as title == -->
     <!-- ####################################################################################### -->
 
     <string name="menu_add_book">Add Book…</string>
@@ -675,6 +684,8 @@ Check 's' versus 'd'
     <string name="menu_collapse_all">Collapse All</string>
 
     <string name="menu_search">Search…</string>
+    <string name="menu_search_internet">Search Internet</string>
+
     <string name="menu_share_this">Share</string>
     <string name="menu_sort_and_style_ellipsis">Sort &amp; Style…</string>
     <string name="menu_clear_filters">Clear Filters</string>
@@ -725,15 +736,8 @@ Check 's' versus 'd'
     <string name="title_delete_series">Delete Series</string>
     <string name="title_duplicate_book">Duplicate Book</string>
 
-    <string name="title_edit_author">Edit Author Details</string>
     <string name="title_edit_book_series">Edit Book Series</string>
     <string name="title_edit_bookshelves">Manage Bookshelves</string>
-    <string name="title_edit_series">Edit Series Details</string>
-    <string name="title_edit_publisher">Edit Publisher Details</string>
-    <string name="title_edit_language">Edit Language Details</string>
-    <string name="title_edit_location">Edit Location Details</string>
-    <string name="title_edit_genre">Edit Genre Details</string>
-    <string name="title_edit_format">Edit Format</string>
     <string name="title_edit_style_colon_name">Edit style: %1$s</string>
     <string name="title_clone_style_colon_name">Clone style: %1$s</string>
 
@@ -1061,6 +1065,11 @@ Check 's' versus 'd'
         is damaged, lost, or stolen.
     </string>
 
+    <!-- Options for what will be exported/imported with archives. -->
+    <string name="import_export_option_xml">All data in XML format</string>
+    <string name="import_export_option_xml_info">XML is export only, no import.</string>
+    <string name="import_export_option_csv">Books (CSV)</string>
+
     <!-- ####################################################################################### -->
     <!-- === Import/Export CSV file specific strings == -->
     <!-- ####################################################################################### -->
@@ -1114,97 +1123,95 @@ Check 's' versus 'd'
     <!-- ####################################################################################### -->
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
     <!-- ####################################################################################### -->
-    <string name="error_no_style_found">Could not find appropriate style</string>
-    <string name="error_starting_import_arg">There was a problem starting the import: %1$s</string>
-    <string name="error_download_thumbnail_failed">
+    <string name="X_error_no_style_found">Could not find appropriate style</string>
+    <string name="X_error_starting_import_arg">There was a problem starting the import: %1$s</string>
+    <string name="X_error_download_thumbnail_failed">
         Thumbnail Download Failed - Could not write to SDCard
     </string>
-    <string name="error_storage_cannot_write">Could not write to the SD Card</string>
-    <string name="error_file_must_contain_column">File must contain column named “%1$s”</string>
+    <string name="X_error_storage_cannot_write">Could not write to the SD Card</string>
+    <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
 
-    <string name="warning_required_series">Series field is blank</string>
-    <string name="warning_required_author">Author field is blank</string>
-    <string name="warning_cannot_edit_system">You cannot edit the system values</string>
-    <string name="warning_cover_not_found2">No image found</string>
-    <string name="warning_title_already_exists">The title already exists</string>
-    <string name="warning_invalid_isbn_x_specified_in_search">
+    <string name="X_warning_required_series">Series field is blank</string>
+    <string name="X_warning_required_author">Author field is blank</string>
+    <string name="X_warning_cannot_edit_system">You cannot edit the system values</string>
+    <string name="X_warning_cover_not_found2">No image found</string>
+    <string name="X_warning_title_already_exists">The title already exists</string>
+    <string name="X_warning_invalid_isbn_x_specified_in_search">
         Invalid ISBN “%1$s” specified in search
     </string>
-    <string name="warning_no_isbn_no_editions">
+    <string name="X_warning_no_isbn_no_editions">
         Can not get editions for a book without a valid ISBN
     </string>
 
-    <string name="info_option_not_available_until_book_saved">
+    <string name="X_info_option_not_available_until_book_saved">
         This option is not available until the book is saved
     </string>
-    <string name="info_no_bookshelves_yet">
+    <string name="X_info_no_bookshelves_yet">
         You have not created any bookshelves yet.
         Please add some using the menu at the bottom of this screen.
     </string>
 
-    <string name="menu_add_style">Add style</string>
-    <string name="menu_edit_format">Edit Format…</string>
-    <string name="menu_cover_options">Cover Options…</string>
-    <string name="menu_search_books">Search Books</string>
-    <string name="menu_preferences_booklist">Book List Preferences</string>
-    <string name="menu_preferences_other">Other Preferences</string>
-    <string name="menu_sort_by">Sort By</string>
-    <string name="menu_admin_and_prefs">Admin and Preferences</string>
+    <string name="X_menu_add_style">Add style</string>
+    <string name="X_menu_edit_format">Edit Format…</string>
+    <string name="X_menu_cover_options">Cover Options…</string>
+    <string name="X_menu_search_books">Search Books</string>
+    <string name="X_menu_preferences_booklist">Book List Preferences</string>
+    <string name="X_menu_preferences_other">Other Preferences</string>
+    <string name="X_menu_sort_by">Sort By</string>
+    <string name="X_menu_admin_and_prefs">Admin and Preferences</string>
 
-    <string name="title_search_sites">Local websites.</string>
-    <string name="title_add_style">New style</string>
-    <string name="title_cover_detail">Cover Detail</string>
-    <string name="title_export_books">
+    <string name="X_title_edit_author">Edit Author Details</string>
+    <string name="X_title_edit_series">Edit Series Details</string>
+    <string name="X_title_edit_genre">Edit Genre Details</string>
+    <string name="X_title_edit_format">Edit Format</string>
+
+    <string name="X_title_add_style">New style</string>
+    <string name="X_title_cover_detail">Cover Detail</string>
+    <string name="X_title_export_books">
         The books in your catalogue will be exported. Select on one of two options to start
         the export, or press “back” to cancel:</string>
-    <string name="title_import_books_blurb">
+    <string name="X_title_import_books_blurb">
         The books in this archive will be imported. Select one of two options to start the
         import, or press “back” to cancel:
     </string>
 
-    <string name="btn_confirm_add_bs">Add Bookshelf</string>
-    <string name="btn_confirm_save_bs">Save Bookshelf</string>
-    <string name="btn_do_not_show_again">Do not show again</string>
+    <string name="X_btn_confirm_add_bs">Add Bookshelf</string>
+    <string name="X_btn_confirm_save_bs">Save Bookshelf</string>
+    <string name="X_btn_do_not_show_again">Do not show again</string>
 
     <!-- Shown in lists. Whether a book is available to be loaned out. Should be short -->
-    <string name="lbl_loan_book_available">Available</string>
+    <string name="X_lbl_loan_book_available">Available</string>
     <!-- Shown in lists. Whether a book is loaned to someone.
     This is a little arrow pointing to the name of the person who has the book -->
-    <string name="lbl_loaned_to_short">→</string>
-    <string name="lbl_loaned_to_long">This book has been lend to:</string>
+    <string name="X_lbl_loaned_to_short">→</string>
+    <string name="X_lbl_loaned_to_long">This book has been lend to:</string>
 
-    <string name="import_export_info_book_details">The details of the books themselves</string>
-    <string name="import_export_info_preferences">Preferences and user-defined list styles</string>
-    <string name="export_info_cover_images">
+    <string name="X_import_export_info_book_details">The details of the books themselves</string>
+    <string name="X_import_export_info_preferences">Preferences and user-defined list styles</string>
+    <string name="X_export_info_cover_images">
         Cover images for all selected books. Will make the export much larger.
     </string>
-    <string name="import_error_failed_is_csv_file_location_correct">
+    <string name="X_import_error_failed_is_csv_file_location_correct">
         Import of data failed. Is the file in the correct place?
     </string>
-    <string name="export_error_csv_failed">Export failed - could not write to SD card</string>
-    <string name="gr_search_goodreads">Search Goodreads</string>
+    <string name="X_export_error_csv_failed">Export failed - could not write to SD card</string>
 
-    <string name="anthology_titles">Anthology Titles</string>
-    <string name="booklist_background_style">Book list background style</string>
-    <string name="textured_background">Textured background image</string>
-    <string name="disable_background_image">Disable background image</string>
-    <string name="plain_background_b_reduces_flicker_b">Plain background (reduces flicker)</string>
-    <string name="isbn_found">ISBN Scanned. Searching Internet.</string>
-    <string name="select_bookshelves">Select Bookshelves</string>
-    <string name="my_books">My Books</string>
-    <string name="nobody">Nobody</string>
-    <string name="loan_return_edit_book">Loan, Return or Edit Book</string>
-    <string name="search_title">Search Results</string>
-    <string name="about_lbl_version_number">Version Number:</string>
-    <string name="unrecognized_task">Unrecognized Task</string>
-    <string name="events_found">%1$d events found</string>
-    <string name="pt_bob_filter_read">Select based on “Read” status</string>
+    <string name="X_anthology_titles">Anthology Titles</string>
+    <string name="X_booklist_background_style">Book list background style</string>
+    <string name="X_textured_background">Textured background image</string>
+    <string name="X_disable_background_image">Disable background image</string>
+    <string name="X_plain_background_b_reduces_flicker_b">Plain background (reduces flicker)</string>
+    <string name="X_isbn_found">ISBN Scanned. Searching Internet.</string>
+    <string name="X_select_bookshelves">Select Bookshelves</string>
+    <string name="X_nobody">Nobody</string>
+    <string name="X_loan_return_edit_book">Loan, Return or Edit Book</string>
+    <string name="X_search_title">Search Results</string>
+    <string name="X_about_lbl_version_number">Version Number:</string>
+    <string name="X_unrecognized_task">Unrecognized Task</string>
+    <string name="X_events_found">%1$d events found</string>
+    <string name="X_pt_bob_filter_read">Select based on “Read” status</string>
 
-    <string name="hint_startup_screen">
-        This is the standard &APP_NAME; startup screen. If you prefer, you can startup directly
-        in “My Books”; the preferred startup screen can be changed in preferences.
-    </string>
-    <string name="hint_booklist_global_properties">
+    <string name="X_hint_booklist_global_properties">
         You can use this screen to set the default characteristics of all book list styles.\n
         \nMost properties can be overridden by individual styles, but the default values are
         defined here.\n\n You can change the background, change how lists are displayed at
@@ -1219,37 +1226,24 @@ Check 's' versus 'd'
     <!-- Preference VALUE -->
     <string name="use_default_setting">Use default</string>
 
-    <string name="book_details">Book details</string>
     <string name="text_and_or_isbn">Text and/or ISBN</string>
-
-    <string name="searching_amazon_books">Searching Amazon</string>
-    <string name="searching_google_books">Searching Google Books</string>
-    <string name="searching_library_thing">Searching LibraryThing</string>
-    <string name="searching_goodreads">Searching Goodreads</string>
-
-    <string name="searching_isfdb">Searching ISFDB</string>
+    <string name="search_please_enter_criteria">Please enter search criteria</string>
     <string name="search_criteria">Search Criteria</string>
-    <string name="search_internet">Search Internet</string>
-    <string name="please_enter_search_criteria">Please enter search criteria</string>
     <string name="search_isbn">ISBN Search</string>
     <string name="search_with_text">Search: %1$s</string>
     <string name="show_results">Show Results</string>
     <string name="results_found">Results Found</string>
     <string name="rebuild_fts">Rebuild FTS\n(Experimental!)</string>
 
-    <!-- was called 'not_set' but androidx preference has a bug making its own 'not_set' public -->
+    <!-- generic hint text for text input fields. -->
     <string name="field_not_set">Not Set</string>
+    <!-- generic place holder text for Book list rows -->
     <string name="field_not_set_with_brackets">(Not Set)</string>
-    <string name="and_others">et. al.</string>
 
+    <string name="and_others">et. al.</string>
     <string name="unsaved_edits_title">Unsaved Changes</string>
     <string name="cleanup_files">Cleanup Files</string>
     <string name="read_amp_unread">Read &amp; Unread</string>
-    <string name="displaying_n_books_in_m_entries">displaying %1$d books, in %2$d entries</string>
-
-    <!-- name of virtual bookshelf which displays all books; also used in list filters -->
-    <string name="all_books">All Books</string>
-    <string name="done">Done</string>
     <string name="send_mail">Send email…</string>
     <string name="title_reorder">a|A|an|An|the|The</string>
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
@@ -1257,17 +1251,11 @@ Check 's' versus 'd'
     <!-- "Usage" in Update Fields from internet:  'Skip field' versus 'copy,...' -->
     <string name="usage_skip">Skip</string>
 
-    <!-- Name of the 'Default' bookshelf, created when app first installed. Needs to be short. -->
-    <string name="initial_bookshelf">Default</string>
+    <!-- name of virtual bookshelf which displays all books; also used in list filters -->
+    <string name="bookshelf_all_books">All Books</string>
+    <!-- Name of the 'Default' bookshelf, created when app first installed. User can rename. -->
+    <string name="bookshelf_my_books">My Books</string>
 
-    <string name="import_export_xml_tables">XML</string>
-    <string name="import_export_info_xml_tables">XML</string>
     <string name="info_tap_to_edit">Tap here to edit the name</string>
-
     <string name="books_found">%1$d books found</string>
-    <string name="searching_openlibrary">Searching OpenLibrary</string>
-    <string name="error_database_upgrade_failed">
-        Cannot upgrade from a version older than 4.0.0
-    </string>
-
 </resources>

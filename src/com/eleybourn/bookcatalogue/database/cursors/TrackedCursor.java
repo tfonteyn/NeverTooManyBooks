@@ -158,14 +158,16 @@ public class TrackedCursor
             @SuppressWarnings("UnusedAssignment")
             List<TrackedCursor> cursors = getCursors();
             if (cursors == null) {
-                Logger.info(TrackedCursor.class, "No cursors");
+                Logger.info(TrackedCursor.class, "dumpCursors", "No cursors");
             } else {
                 for (TrackedCursor c : cursors) {
-                    Logger.info(TrackedCursor.class, "Cursor " + c.getCursorId());
+                    Logger.info(TrackedCursor.class, "dumpCursors",
+                                "Cursor " + c.getCursorId());
                     for (StackTraceElement s : c.getStackTrace()) {
-                        Logger.info(TrackedCursor.class,
-                                    s.getFileName() + "    Line " + s.getLineNumber()
-                                            + " Method " + s.getMethodName());
+                        Logger.info(TrackedCursor.class, "dumpCursors",
+                                    s.getFileName(),
+                                    "Line=" + s.getLineNumber(),
+                                    "Method=" + s.getMethodName());
                     }
                 }
             }

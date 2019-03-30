@@ -37,11 +37,6 @@ public class ISFDBManager
         return App.getPrefs().getString(PREFS_HOST_URL, "http://www.isfdb.org");
     }
 
-    public static void setBaseURL(@NonNull final String url) {
-        App.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
-    }
-
-
     /**
      * ENHANCE: For now, always returns the image from the first edition found.
      *

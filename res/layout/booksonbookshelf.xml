@@ -60,7 +60,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/search_text"
-            tools:text="@string/displaying_n_books_in_m_entries"
+            tools:text="@string/info_displaying_n_books_in_m_entries"
             />
 
         <TextView

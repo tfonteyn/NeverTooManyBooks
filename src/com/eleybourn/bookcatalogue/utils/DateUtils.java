@@ -34,6 +34,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.debug.Logger;
+
 /**
  * All date handling here is for UTC/sql only, hence no Locale used.
  */
@@ -121,13 +124,9 @@ public final class DateUtils {
         addParseDateFormat("dd-MM-yyyy HH:mm", false);
         addParseDateFormat("dd-MM-yyyy", false);
 
-        // "March 2009"
-        addParseDateFormat("MMM yyyy", !userSpeaksEnglish);
-        // "13 March 2009"
+        // "13 March 2009" added due to OpenLibrary
         addParseDateFormat("dd MMM yyyy", !userSpeaksEnglish);
-        // just the year
-        addParseDateFormat("yyyy", false);
-        // "January 12, 1987"
+        // "January 12, 1987" added due to OpenLibrary
         addParseDateFormat("MMM d, yyyy", !userSpeaksEnglish);
 
         // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
@@ -139,6 +138,9 @@ public final class DateUtils {
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_HH_MM_SS);
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_HH_MM);
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE);
+
+        // TOMF,TEST: PARTIAL format... "March 2009" added due to OpenLibrary
+        addParseDateFormat("MMM yyyy", !userSpeaksEnglish);
     }
 
     private DateUtils() {
@@ -174,6 +176,8 @@ public final class DateUtils {
     /**
      * Pretty format a (potentially partial) SQL date; local timezone.
      *
+     * @param dateString SQL formatted date.
+     *
      * @return human readable date string
      *
      * @throws NumberFormatException on failure to parse
@@ -182,23 +186,34 @@ public final class DateUtils {
             throws NumberFormatException {
         switch (dateString.length()) {
             case 10:
-                // YYYY-MM-DD
+                // YYYY-MM-DD, full date parsing.
                 Date date = parseDate(dateString);
                 if (date != null) {
                     return PRETTY_DATE_FORMATTER.format(date);
                 }
-                break;
-
+                // failed to parse
+                if (BuildConfig.DEBUG) {
+                    Logger.error("failed: " + dateString);
+                }
+                return dateString;
 
             case 7:
-                // YYYY-MM
+                // input: YYYY-MM,
                 int month = Integer.parseInt(dateString.substring(5));
-                // MMM YYYY
+                // just swap: MMM YYYY
                 return getMonthName(month, true) + ' ' + dateString.substring(0, 4);
-        }
 
-        // YYYY (or whatever came in)
-        return dateString;
+            case 4:
+                // YYYY
+                return dateString;
+
+            default:
+                // failed to parse
+                if (BuildConfig.DEBUG) {
+                    Logger.error("failed: " + dateString);
+                }
+                return dateString;
+        }
     }
 
     /**

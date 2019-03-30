@@ -10,9 +10,6 @@ import androidx.annotation.NonNull;
 public interface BookManager {
 
     @NonNull
-    BookManager getBookManager();
-
-    @NonNull
     Book getBook();
 
     void setBook(@NonNull Book book);

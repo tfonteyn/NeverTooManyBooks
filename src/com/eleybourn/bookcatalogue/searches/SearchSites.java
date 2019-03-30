@@ -492,10 +492,6 @@ public final class SearchSites {
             return mName;
         }
 
-        public int getId() {
-            return id;
-        }
-
         public boolean isEnabled() {
             return mEnabled;
         }

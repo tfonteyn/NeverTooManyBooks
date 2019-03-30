@@ -58,29 +58,19 @@ public final class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE,
                          activity.getString(R.string.btn_confirm_exit),
-                         new AlertDialog.OnClickListener() {
-                             @Override
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                                 if (onConfirm != null) {
-                                     onConfirm.run();
-                                 } else {
-                                     activity.setResult(Activity.RESULT_CANCELED);
-                                     activity.finish();
-                                 }
+                         (d, which) -> {
+                             d.dismiss();
+                             if (onConfirm != null) {
+                                 onConfirm.run();
+                             } else {
+                                 activity.setResult(Activity.RESULT_CANCELED);
+                                 activity.finish();
                              }
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
                          activity.getString(R.string.btn_continue_editing),
-                         new AlertDialog.OnClickListener() {
-                             @Override
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                             }
-                         });
+                         (d, which) -> d.dismiss());
 
         dialog.show();
     }
@@ -100,23 +90,15 @@ public final class StandardDialogs {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE,
                          context.getString(android.R.string.ok),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                                 db.deleteSeries(series.getId());
-                                 onDeleted.run();
-                             }
+                         (d, which) -> {
+                             d.dismiss();
+                             db.deleteSeries(series.getId());
+                             onDeleted.run();
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                          context.getString(android.R.string.cancel),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                             }
-                         });
+                         (d, which) -> d.dismiss());
 
         dialog.show();
     }
@@ -158,23 +140,15 @@ public final class StandardDialogs {
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                                 db.deleteBook(bookId);
-                                 onDeleted.run();
-                             }
+                         (d, which) -> {
+                             d.dismiss();
+                             db.deleteBook(bookId);
+                             onDeleted.run();
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                          context.getString(android.R.string.cancel),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                             }
-                         });
+                         (d, which) -> d.dismiss());
 
         dialog.show();
     }
@@ -194,20 +168,10 @@ public final class StandardDialogs {
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                          context.getString(android.R.string.ok),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 nextStep.onPositiveButton();
-                             }
-                         });
+                         (d, which) -> nextStep.onPositiveButton());
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                          context.getString(android.R.string.cancel),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 nextStep.onNegativeButton();
-                             }
-                         });
+                         (d, which) -> nextStep.onNegativeButton());
         dialog.show();
     }
 }

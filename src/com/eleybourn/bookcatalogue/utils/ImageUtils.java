@@ -32,6 +32,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.tasks.GetImageTask;
 import com.eleybourn.bookcatalogue.tasks.ImageCacheWriterTask;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
+import com.eleybourn.bookcatalogue.CoverHandler;
 
 public final class ImageUtils {
 
@@ -140,16 +141,18 @@ public final class ImageUtils {
                 (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.info(ImageUtils.class, "getImageAndPutIntoView:\n"
-                    + " filename = " + fileSpec + '\n'
-                    + "  exact       = " + exact + '\n'
-                    + "  maxWidth    = " + maxWidth + ", opt.outWidth = " + opt.outWidth
-                    + ", widthRatio   = " + widthRatio + '\n'
-                    + "  maxHeight   = " + maxHeight + ", opt.outHeight= " + opt.outHeight
-                    + ",  heightRatio = " + heightRatio + '\n'
-                    + "  ratio            = " + ratio + '\n'
-                    + "  idealSampleSize  = " + idealSampleSize + '\n'
-                    + "  samplePow2       = " + samplePow2);
+            Logger.info(ImageUtils.class, "getImageAndPutIntoView",
+                        "filename = " + fileSpec,
+                        "exact=" + exact,
+                        "maxWidth=" + maxWidth,
+                        "opt.outWidth=" + opt.outWidth,
+                        "widthRatio=" + widthRatio,
+                        "maxHeight=" + maxHeight,
+                        "opt.outHeight=" + opt.outHeight,
+                        "heightRatio=" + heightRatio,
+                        "ratio=" + ratio,
+                        "idealSampleSize =" + idealSampleSize,
+                        "samplePow2=" + samplePow2);
         }
 
         final Bitmap bm;
@@ -193,8 +196,9 @@ public final class ImageUtils {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.info(ImageUtils.class,
-                        "bm.width = " + bm.getWidth() + ", bm.height = " + bm.getHeight());
+            Logger.info(ImageUtils.class, "getImageAndPutIntoView",
+                        "bm.width=" + bm.getWidth(),
+                        "bm.height=" + bm.getHeight());
         }
 
         // Set ImageView and return bitmap
@@ -202,6 +206,33 @@ public final class ImageUtils {
             destView.setImageBitmap(bm);
         }
 
+        return bm;
+    }
+
+    /**
+     * FIXME: {@link CoverHandler#updateCoverView()} .... but auto-scaling does not work.
+     *
+     * Shrinks the image in the passed file to the specified dimensions.
+     * <p>
+     * If the view is non-null, the image is placed in the view.
+     *
+     * @param destView  The ImageView to load with the bitmap or an appropriate icon
+     * @param file      The file of the image
+     */
+    public static Bitmap getImageAndPutIntoView(@NonNull final ImageView destView,
+                                                @NonNull final File file) {
+        // Get the file, if it exists. Otherwise set 'image' (not broken) icon and exit.
+        if (!file.exists()) {
+            destView.setImageResource(R.drawable.ic_image);
+            return null;
+        }
+        Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
+        if (bm != null) {
+            destView.setImageBitmap(bm);
+            destView.requestLayout();
+        } else {
+            destView.setImageResource(R.drawable.ic_broken_image);
+        }
         return bm;
     }
 
@@ -353,8 +384,9 @@ public final class ImageUtils {
                                                       new BitmapFactory.Options());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.info(ImageUtils.class, "Array " + bytes.length + " bytes, bitmap "
-                    + bitmap.getHeight() + 'x' + bitmap.getWidth());
+            Logger.info(ImageUtils.class, "getBitmap",
+                        "Array " + bytes.length + " bytes",
+                        "bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
         }
         return bitmap;
     }
@@ -505,12 +537,7 @@ public final class ImageUtils {
             getImageAndPutIntoView(cover, mImageFile, imageSizes.large, imageSizes.large, true);
 
             cover.setAdjustViewBounds(true);
-            cover.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    dismiss();
-                }
-            });
+            cover.setOnClickListener(v -> dismiss());
 
             return new AlertDialog.Builder(requireActivity())
                     .setView(root)
@@ -540,7 +567,9 @@ public final class ImageUtils {
 
         ImageSize(@NonNull final Activity activity) {
             DisplayMetrics metrics = getDisplayMetrics(activity);
+            // ENHANCE: should use density
             int maxMetric = Math.max(metrics.widthPixels, metrics.heightPixels);
+
             small = Math.min(MAX_SIZE_SMALL, maxMetric / 3);
             standard = Math.min(MAX_SIZE_STANDARD, maxMetric * 2 / 3);
             large = Math.min(MAX_SIZE_LARGE, maxMetric);

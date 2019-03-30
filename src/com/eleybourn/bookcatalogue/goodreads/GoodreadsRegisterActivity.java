@@ -24,11 +24,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
@@ -61,21 +59,13 @@ public class GoodreadsRegisterActivity
         // GR Reg Link
         TextView register = findViewById(R.id.goodreads_url);
         register.setText(GoodreadsManager.WEBSITE);
-        register.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                String url = GoodreadsManager.WEBSITE;
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            }
+        register.setOnClickListener(v -> {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(GoodreadsManager.WEBSITE)));
         });
 
         // Auth button
-        findViewById(R.id.authorize).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                RequestAuthTask.start(getSupportFragmentManager());
-            }
-        });
+        findViewById(R.id.authorize).setOnClickListener(
+                v -> RequestAuthTask.start(getSupportFragmentManager()));
 
         // Forget credentials
         View blurb = findViewById(R.id.forget_blurb);
@@ -83,13 +73,7 @@ public class GoodreadsRegisterActivity
         if (GoodreadsManager.hasCredentials()) {
             blurb.setVisibility(View.VISIBLE);
             blurbButton.setVisibility(View.VISIBLE);
-            blurbButton.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(@NonNull final View v) {
-                    GoodreadsManager.forgetCredentials();
-                }
-            });
+            blurbButton.setOnClickListener(v -> GoodreadsManager.forgetCredentials());
         } else {
             blurb.setVisibility(View.GONE);
             blurbButton.setVisibility(View.GONE);

@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.backup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -30,23 +31,23 @@ import java.io.InputStream;
  *
  * @author pjw
  */
-public interface Importer {
+public interface Importer extends Closeable {
 
     /**
-     * Import from an InputStream. It's up to the implementation to decide what to import.
+     * Import books from an InputStream.
      *
      * @param importStream Stream for reading data
-     * @param coverFinder  (Optional) object to find a file on the local device
+     * @param coverFinder  (Optional) object to find a cover on the local device
      * @param listener     Progress and cancellation provider
      *
-     * @return number of items handled (!= imported)
+     * @return number of books handled (!= imported)
      *
      * @throws IOException on any error
      */
-    @SuppressWarnings({"UnusedReturnValue", "SameReturnValue"})
-    int doImport(@NonNull InputStream importStream,
-                 @Nullable CoverFinder coverFinder,
-                 @NonNull ImportListener listener)
+    @SuppressWarnings("UnusedReturnValue")
+    int doBooks(@NonNull InputStream importStream,
+                @Nullable CoverFinder coverFinder,
+                @NonNull ImportListener listener)
             throws IOException;
 
     /**

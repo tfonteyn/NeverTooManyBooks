@@ -6,7 +6,7 @@ GOALS:
  2. replace SimpleTask with AsyncTask executing on an Executor (multi-threaded). ==> DONE
 
  3. Removal of ManagedTask
- 4. Removal of taskqueue
+ 4. Removal of taskqueue, maybe...
  5. cropper ?
 
 ----------------------------------------------------------------------------------------------------

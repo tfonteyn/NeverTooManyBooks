@@ -464,16 +464,6 @@ public class SynchronizedDb {
     }
 
     /**
-     * Really only meant for backup purposes.
-     *
-     * @return the path to the actual database file
-     */
-    @NonNull
-    public String getPath() {
-        return mSqlDb.getPath();
-    }
-
-    /**
      * Run 'analyse' on the whole database.
      */
     public void analyze() {

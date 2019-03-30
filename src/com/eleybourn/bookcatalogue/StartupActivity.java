@@ -21,8 +21,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.Manifest;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -157,15 +155,10 @@ public class StartupActivity
             }
         }
 
-        // hack? without this, the progress dialog is not available when we pass it out first message.
-        // This basically hands control to the OS as an in-between.
+        // hack? without this, the progress dialog is not available when we pass it our first message.
+        // This basically hands control to the OS as an in-between (co-op multitasking anyone?)
         Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                startNextStage();
-            }
-        });
+        handler.post(this::startNextStage);
     }
 
     /**
@@ -237,12 +230,9 @@ public class StartupActivity
                 .create();
 
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 UpgradeMessageManager.setUpgradeAcknowledged();
-                                 startNextStage();
-                             }
+                         (d, which) -> {
+                             UpgradeMessageManager.setUpgradeAcknowledged();
+                             startNextStage();
                          });
         dialog.show();
         mUpgradeMessageShown = true;
@@ -265,27 +255,14 @@ public class StartupActivity
 
             dialog.setButton(AlertDialog.BUTTON_NEGATIVE,
                              getString(android.R.string.cancel),
-                             new DialogInterface.OnClickListener() {
-                                 public void onClick(@NonNull final DialogInterface dialog,
-                                                     final int which) {
-                                     dialog.dismiss();
-                                 }
-                             });
+                             (d, which) -> d.dismiss());
             dialog.setButton(AlertDialog.BUTTON_POSITIVE,
                              getString(android.R.string.ok),
-                             new DialogInterface.OnClickListener() {
-                                 public void onClick(@NonNull final DialogInterface dialog,
-                                                     final int which) {
-                                     mBackupRequired = true;
-                                     dialog.dismiss();
-                                 }
+                             (d, which) -> {
+                                 mBackupRequired = true;
+                                 d.dismiss();
                              });
-            dialog.setOnDismissListener(new OnDismissListener() {
-                @Override
-                public void onDismiss(@NonNull final DialogInterface dialog) {
-                    startNextStage();
-                }
-            });
+            dialog.setOnDismissListener(d -> startNextStage());
             dialog.show();
         } else {
             startNextStage();

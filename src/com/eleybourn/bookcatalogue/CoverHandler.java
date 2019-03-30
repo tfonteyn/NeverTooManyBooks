@@ -1,4 +1,4 @@
-package com.eleybourn.bookcatalogue.widgets;
+package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 
 import androidx.annotation.CallSuper;
@@ -27,12 +26,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.cropper.CropImageActivity;
 import com.eleybourn.bookcatalogue.cropper.CropImageViewTouchBase;
 import com.eleybourn.bookcatalogue.database.CoversDBA;
@@ -135,12 +132,8 @@ public class CoverHandler
             // add context menu to the cover image
             initContextMenuOnView(mCoverField.getView());
             //Allow zooming by clicking on the image
-            mCoverField.getView().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    ImageUtils.showZoomedImage(mActivity, getCoverFile());
-                }
-            });
+            mCoverField.getView().setOnClickListener(
+                    v -> ImageUtils.showZoomedImage(mActivity, getCoverFile()));
         }
     }
 
@@ -176,18 +169,14 @@ public class CoverHandler
         if (menu.size() > 0) {
             SimpleDialog.showContextMenu(
                     mActivity.getLayoutInflater(), menuInfo.title, menu,
-                    new SimpleDialog.OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull final SimpleDialog.SimpleDialogItem item) {
-                            MenuItem menuItem =
-                                    ((SimpleDialog.SimpleDialogMenuItem) item).getMenuItem();
-                            if (menuItem.hasSubMenu()) {
-                                menuInfo.title = menuItem.getTitle().toString();
-                                // recursive call for sub-menu
-                                onCreateViewContextMenu(view, menuItem.getSubMenu(), menuInfo);
-                            } else {
-                                onViewContextItemSelected(view, menuItem);
-                            }
+                    item -> {
+                        MenuItem menuItem = item.getItem();
+                        if (menuItem.hasSubMenu()) {
+                            menuInfo.title = menuItem.getTitle().toString();
+                            // recursive call for sub-menu
+                            onCreateViewContextMenu(view, menuItem.getSubMenu(), menuInfo);
+                        } else {
+                            onViewContextItemSelected(view, menuItem);
                         }
                     });
         }
@@ -248,12 +237,9 @@ public class CoverHandler
 
     @Override
     public void initContextMenuOnView(@NonNull final View view) {
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(@NonNull final View v) {
-                prepareCoverImageViewContextMenu();
-                return true;
-            }
+        view.setOnLongClickListener(v -> {
+            prepareCoverImageViewContextMenu();
+            return true;
         });
     }
 
@@ -321,8 +307,10 @@ public class CoverHandler
      * (re)load the image into the view.
      */
     public void updateCoverView() {
-        ImageUtils.getImageAndPutIntoView((ImageView) (mCoverField.getView()),
-                                          getCoverFile(), mMaxWidth, mMaxHeight, true);
+//        ImageUtils.getImageAndPutIntoView(mCoverField.getView(), getCoverFile());
+
+        ImageUtils.getImageAndPutIntoView(mCoverField.getView(), getCoverFile(),
+                                          mMaxWidth, mMaxHeight, true);
     }
 
     /**
@@ -421,7 +409,7 @@ public class CoverHandler
 
             File cameraFile = StorageUtils.getTempCoverFile(
                     "camera" + CoverHandler.mTempImageCounter);
-            FileOutputStream out;
+            OutputStream out;
             // Create a file to copy the image into
             try {
                 out = new FileOutputStream(cameraFile.getAbsoluteFile());
@@ -513,7 +501,7 @@ public class CoverHandler
                 }
 
                 /* Create a file to copy the image into */
-                FileOutputStream outFos;
+                OutputStream outFos;
                 try {
                     outFos = new FileOutputStream(file.getAbsoluteFile());
                 } catch (FileNotFoundException e) {
@@ -552,7 +540,8 @@ public class CoverHandler
      * @param imageFile to crop
      */
     private void cropCoverImageInternal(@NonNull final File imageFile) {
-        boolean cropFrameWholeImage = App.getPrefs().getBoolean(Prefs.pk_thumbnails_crop_frame_is_whole_image,
+        boolean cropFrameWholeImage = App.getPrefs().getBoolean(
+                Prefs.pk_thumbnails_crop_frame_is_whole_image,
                 false);
 
         // Get the output file spec, and make sure it does not already exist.
@@ -607,7 +596,8 @@ public class CoverHandler
 
         List<ResolveInfo> list = mActivity.getPackageManager().queryIntentActivities(intent, 0);
         if (list.isEmpty()) {
-            UserMessage.showUserMessage(mActivity, R.string.error_no_external_crop_app);
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(mFragment.getView(), R.string.error_no_external_crop_app);
         } else {
             mFragment.startActivityForResult(intent, REQ_CROP_IMAGE_EXTERNAL);
         }

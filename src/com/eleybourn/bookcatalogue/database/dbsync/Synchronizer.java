@@ -41,7 +41,7 @@ public class Synchronizer {
     private final Condition mReleased = mLock.newCondition();
     /** Collection of threads that have shared locks. */
     private final Map<Thread, Integer> mSharedOwners =
-            Collections.synchronizedMap(new HashMap<Thread, Integer>());
+            Collections.synchronizedMap(new HashMap<>());
     /** Lock used to pass back to consumers of shared locks. */
     private final SharedLock mSharedLock = new SharedLock();
     /** Lock used to pass back to consumers of exclusive locks. */

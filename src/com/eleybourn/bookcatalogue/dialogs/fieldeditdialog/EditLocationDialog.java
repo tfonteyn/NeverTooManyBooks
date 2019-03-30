@@ -39,7 +39,7 @@ public class EditLocationDialog
 
     @CallSuper
     public void edit(@NonNull final String currentText) {
-        super.edit(currentText, R.layout.dialog_edit_location, R.string.title_edit_location);
+        super.edit(currentText, R.layout.dialog_edit_location, R.string.lbl_location);
     }
 
     @Override

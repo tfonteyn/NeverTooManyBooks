@@ -32,33 +32,33 @@
         <CheckedTextView
             android:id="@+id/read"
             style="@style/read_ctv"
-            app:layout_constraintEnd_toStartOf="@id/coverImage"
-            app:layout_constraintStart_toEndOf="@id/title"
-            app:layout_constraintTop_toBottomOf="@id/loaned_to"
+            app:layout_constraintBottom_toBottomOf="@id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/title"
             tools:checked="true"
             tools:ignore="ContentDescription"
-            />
-
-        <ImageView
-            android:id="@+id/coverImage"
-            style="@style/coverImage"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/read"
-            app:layout_constraintTop_toBottomOf="@id/loaned_to"
-            tools:ignore="ContentDescription"
-            tools:padding="40dp"
-            tools:src="@drawable/ic_image"
             />
 
         <TextView
             android:id="@+id/title"
             style="@style/txt_detail_large"
             android:layout_width="0dp"
-            app:layout_constraintEnd_toStartOf="@id/read"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/read"
+            app:layout_constraintEnd_toStartOf="@id/coverImage"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:ignore="SelectableText"
             tools:text="Anna Karenina"
+            />
+
+        <ImageView
+            android:id="@+id/coverImage"
+            style="@style/coverImage"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loaned_to"
+            app:layout_constraintBottom_toTopOf="@id/header_divider"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_image"
             />
 
         <TextView
@@ -103,14 +103,24 @@
             tools:text="97834579862"
             />
 
-        <!-- not using a baseline constraint, so no invisible baseline TextView -->
+        <!-- this invisible EditText is needed to allow show/hide of pages/format
+            while maintaining the baseline -->
+        <TextView
+            android:id="@+id/lbl_pages_baseline"
+            style="@style/txt_detail_small"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+            tools:ignore="Autofill,LabelFor"
+            />
+
         <TextView
             android:id="@+id/pages"
             style="@style/txt_detail_small"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBottom_toTopOf="@id/lbl_series"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_pages_baseline"
+            app:layout_constraintEnd_toStartOf="@id/format"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             tools:ignore="SelectableText"
             tools:text="573 pages"
             />
@@ -119,11 +129,10 @@
             android:id="@+id/format"
             style="@style/txt_detail_small"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBottom_toTopOf="@id/lbl_series"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_pages_baseline"
             app:layout_constraintStart_toEndOf="@id/pages"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             tools:ignore="SelectableText"
-            tools:text="(Hardcover)"
+            tools:text="Hardcover"
             />
 
         <!-- Series -->
@@ -204,10 +213,10 @@
         <!-- Publishing - Publisher + date published -->
 
         <!-- this invisible TextView is needed to allow show/hide of publisher/date_published
-        while maintaining their baseline -->
+        while maintaining the baseline -->
         <TextView
             android:id="@+id/lbl_publisher_baseline"
-            style="@style/lbl_textField"
+            style="@style/txt_detail_medium"
             android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publishing"

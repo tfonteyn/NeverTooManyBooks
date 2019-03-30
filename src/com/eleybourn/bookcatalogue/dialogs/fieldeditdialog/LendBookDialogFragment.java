@@ -49,6 +49,7 @@ import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -78,9 +79,9 @@ public class LendBookDialogFragment
                                                      @NonNull final String title) {
         LendBookDialogFragment frag = new LendBookDialogFragment();
         Bundle args = new Bundle();
-        args.putLong(UniqueId.KEY_ID, bookId);
-        args.putLong(UniqueId.KEY_AUTHOR, authorId);
-        args.putString(UniqueId.KEY_TITLE, title);
+        args.putLong(DatabaseDefinitions.KEY_ID, bookId);
+        args.putLong(DatabaseDefinitions.KEY_AUTHOR, authorId);
+        args.putString(DatabaseDefinitions.KEY_TITLE, title);
         frag.setArguments(args);
         return frag;
     }
@@ -88,9 +89,9 @@ public class LendBookDialogFragment
     public static LendBookDialogFragment newInstance(@NonNull final Book book) {
         LendBookDialogFragment frag = new LendBookDialogFragment();
         Bundle args = new Bundle();
-        args.putLong(UniqueId.KEY_ID, book.getId());
-        args.putString(UniqueId.KEY_AUTHOR_FORMATTED, book.getPrimaryAuthor());
-        args.putString(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE));
+        args.putLong(DatabaseDefinitions.KEY_ID, book.getId());
+        args.putString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED, book.getPrimaryAuthor());
+        args.putString(DatabaseDefinitions.KEY_TITLE, book.getString(DatabaseDefinitions.KEY_TITLE));
         frag.setArguments(args);
         return frag;
     }
@@ -101,27 +102,27 @@ public class LendBookDialogFragment
         final FragmentActivity mActivity = requireActivity();
         Bundle args = requireArguments();
         mDb = new DBA(mActivity);
-        final long bookId = args.getLong(UniqueId.KEY_ID);
+        final long bookId = args.getLong(DatabaseDefinitions.KEY_ID);
 
         if (savedInstanceState == null) {
             // see if the string is there
-            mAuthorName = args.getString(UniqueId.KEY_AUTHOR_FORMATTED);
+            mAuthorName = args.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED);
             // if not, we must have the id.
             if (mAuthorName == null) {
                 //noinspection ConstantConditions
-                mAuthorName = mDb.getAuthor(args.getLong(UniqueId.KEY_AUTHOR)).getDisplayName();
+                mAuthorName = mDb.getAuthor(args.getLong(DatabaseDefinitions.KEY_AUTHOR)).getDisplayName();
             }
             mLoanee = mDb.getLoaneeByBookId(bookId);
         } else {
-            mAuthorName = savedInstanceState.getString(UniqueId.KEY_AUTHOR);
-            mLoanee = savedInstanceState.getString(UniqueId.KEY_LOANEE);
+            mAuthorName = savedInstanceState.getString(DatabaseDefinitions.KEY_AUTHOR);
+            mLoanee = savedInstanceState.getString(DatabaseDefinitions.KEY_LOANEE);
         }
 
         @SuppressLint("InflateParams")
         View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_loan, null);
 
         TextView titleView = root.findViewById(R.id.title);
-        titleView.setText(args.getString(UniqueId.KEY_TITLE));
+        titleView.setText(args.getString(DatabaseDefinitions.KEY_TITLE));
         TextView authorView = root.findViewById(R.id.author);
         authorView.setText(getString(R.string.lbl_by_author_s, mAuthorName));
 
@@ -132,49 +133,37 @@ public class LendBookDialogFragment
 
         setPhoneContactsAdapter();
 
-        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                String newName = mLoaneeView.getText().toString().trim();
-                if (newName.isEmpty()) {
-                    UserMessage.showUserMessage(mLoaneeView, R.string.warning_required_name);
-                    return;
-                }
-
-                dismiss();
-
-                // check if there was something changed at all.
-                if (newName.equals(mLoanee)) {
-                    return;
-                }
-                mLoanee = newName;
-
-                // lend book, reluctantly...
-                mDb.updateOrInsertLoan(bookId, mLoanee);
-
-                Bundle data = new Bundle();
-                data.putString(UniqueId.KEY_LOANEE, mLoanee);
-                tellCaller(bookId, data);
+        root.findViewById(R.id.confirm).setOnClickListener(v -> {
+            String newName = mLoaneeView.getText().toString().trim();
+            if (newName.isEmpty()) {
+                UserMessage.showUserMessage(mLoaneeView, R.string.warning_required_name);
+                return;
             }
+
+            dismiss();
+
+            // check if there was something changed at all.
+            if (newName.equals(mLoanee)) {
+                return;
+            }
+            mLoanee = newName;
+
+            // lend book, reluctantly...
+            mDb.updateOrInsertLoan(bookId, mLoanee);
+
+            Bundle data = new Bundle();
+            data.putString(DatabaseDefinitions.KEY_LOANEE, mLoanee);
+            tellCaller(bookId, data);
         });
 
         // the book was returned, remove the loan data
-        root.findViewById(R.id.return_book).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dismiss();
-                mDb.deleteLoan(bookId);
-
-                tellCaller(bookId, new Bundle());
-            }
+        root.findViewById(R.id.return_book).setOnClickListener(v -> {
+            dismiss();
+            mDb.deleteLoan(bookId);
+            tellCaller(bookId, new Bundle());
         });
 
-        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dismiss();
-            }
-        });
+        root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
 
         return new AlertDialog.Builder(mActivity)
                 .setView(root)
@@ -185,7 +174,7 @@ public class LendBookDialogFragment
     private void tellCaller(final long bookId,
                             @NonNull final Bundle data) {
 
-        data.putLong(UniqueId.KEY_ID, bookId);
+        data.putLong(DatabaseDefinitions.KEY_ID, bookId);
 
         // see if there was a fragment?
         if (getParentFragment() instanceof BookChangedListener) {
@@ -274,8 +263,8 @@ public class LendBookDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.KEY_AUTHOR, mAuthorName);
-        outState.putString(UniqueId.KEY_LOANEE, mLoanee);
+        outState.putString(DatabaseDefinitions.KEY_AUTHOR, mAuthorName);
+        outState.putString(DatabaseDefinitions.KEY_LOANEE, mLoanee);
     }
 
     @Override

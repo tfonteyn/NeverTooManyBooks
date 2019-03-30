@@ -22,10 +22,8 @@ package com.eleybourn.bookcatalogue.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteQuery;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
@@ -86,16 +84,8 @@ public final class CoversDBA
 
     /** Static Factory object to create the custom cursor. */
     private static final SQLiteDatabase.CursorFactory TRACKED_CURSOR_FACTORY =
-            new SQLiteDatabase.CursorFactory() {
-                @Override
-                public Cursor newCursor(
-                        @NonNull final SQLiteDatabase db,
-                        @NonNull final SQLiteCursorDriver masterQuery,
-                        @NonNull final String editTable,
-                        @NonNull final SQLiteQuery query) {
-                    return new TrackedCursor(masterQuery, editTable, query, SYNCHRONIZER);
-                }
-            };
+            (db, masterQuery, editTable, query) -> new TrackedCursor(masterQuery, editTable, query,
+                                                                     SYNCHRONIZER);
 
     /** Statement names. */
     private static final String STMT_EXISTS = "mExistsStmt";

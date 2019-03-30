@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import com.eleybourn.bookcatalogue.adapters.TOCAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
@@ -39,11 +40,14 @@ import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
+import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-import com.eleybourn.bookcatalogue.widgets.CoverHandler;
 
 /**
  * Class for representing read-only book details.
+ * <p>
+ * Keep in mind the fragment can be re-used.
+ * Do NOT assume they are empty by default when populating fields manually.
  */
 public class BookFragment
         extends BookBaseFragment
@@ -150,7 +154,7 @@ public class BookFragment
      */
     private void setDefaultActivityResult() {
         Intent data = new Intent()
-                .putExtra(UniqueId.KEY_ID, getBook().getId());
+                .putExtra(DatabaseDefinitions.KEY_ID, getBook().getId());
         mActivity.setResult(Activity.RESULT_OK, data);
     }
 
@@ -164,14 +168,14 @@ public class BookFragment
         // not added here: non-text TOC
 
         // book fields
-        mFields.add(R.id.title, UniqueId.KEY_TITLE);
-        mFields.add(R.id.isbn, UniqueId.KEY_ISBN);
-        mFields.add(R.id.description, UniqueId.KEY_DESCRIPTION)
+        mFields.add(R.id.title, DatabaseDefinitions.KEY_TITLE);
+        mFields.add(R.id.isbn, DatabaseDefinitions.KEY_ISBN);
+        mFields.add(R.id.description, DatabaseDefinitions.KEY_DESCRIPTION)
                .setShowHtml(true);
-        mFields.add(R.id.genre, UniqueId.KEY_GENRE);
-        mFields.add(R.id.language, UniqueId.KEY_LANGUAGE)
+        mFields.add(R.id.genre, DatabaseDefinitions.KEY_GENRE);
+        mFields.add(R.id.language, DatabaseDefinitions.KEY_LANGUAGE)
                .setFormatter(new Fields.LanguageFormatter());
-        mFields.add(R.id.pages, UniqueId.KEY_PAGES)
+        mFields.add(R.id.pages, DatabaseDefinitions.KEY_PAGES)
                .setFormatter(new Fields.FieldFormatter() {
                    @NonNull
                    @Override
@@ -196,21 +200,21 @@ public class BookFragment
                        throw new UnsupportedOperationException();
                    }
                });
-        mFields.add(R.id.format, UniqueId.KEY_FORMAT);
-        mFields.add(R.id.price_listed, UniqueId.KEY_PRICE_LISTED)
+        mFields.add(R.id.format, DatabaseDefinitions.KEY_FORMAT);
+        mFields.add(R.id.price_listed, DatabaseDefinitions.KEY_PRICE_LISTED)
                .setFormatter(new Fields.PriceFormatter());
-        mFields.add(R.id.first_publication, UniqueId.KEY_DATE_FIRST_PUBLISHED)
+        mFields.add(R.id.first_publication, DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED)
                .setFormatter(dateFormatter);
 
         // defined, but handled manually
-        mFields.add(R.id.author, "", UniqueId.KEY_AUTHOR);
+        mFields.add(R.id.author, "", DatabaseDefinitions.KEY_AUTHOR);
         // defined, but handled manually
-        mFields.add(R.id.series, "", UniqueId.KEY_SERIES);
+        mFields.add(R.id.series, "", DatabaseDefinitions.KEY_SERIES);
 
         // populated, but manually re-populated.
-        mFields.add(R.id.publisher, UniqueId.KEY_PUBLISHER);
+        mFields.add(R.id.publisher, DatabaseDefinitions.KEY_PUBLISHER);
         // not a field on the screen, but used in re-population of publisher.
-        mFields.add(R.id.date_published, UniqueId.KEY_DATE_PUBLISHED)
+        mFields.add(R.id.date_published, DatabaseDefinitions.KEY_DATE_PUBLISHED)
                .setFormatter(dateFormatter);
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
@@ -224,33 +228,33 @@ public class BookFragment
                                          imageSize.small, imageSize.standard);
 
         // Personal fields
-        mFields.add(R.id.date_acquired, UniqueId.KEY_DATE_ACQUIRED)
+        mFields.add(R.id.date_acquired, DatabaseDefinitions.KEY_DATE_ACQUIRED)
                .setFormatter(dateFormatter);
-        mFields.add(R.id.price_paid, UniqueId.KEY_PRICE_PAID)
+        mFields.add(R.id.price_paid, DatabaseDefinitions.KEY_PRICE_PAID)
                .setFormatter(new Fields.PriceFormatter());
         //noinspection ConstantConditions
-        mFields.add(R.id.edition, UniqueId.KEY_EDITION_BITMASK)
+        mFields.add(R.id.edition, DatabaseDefinitions.KEY_EDITION_BITMASK)
                .setFormatter(new Book.BookEditionsFormatter(getContext()));
-        mFields.add(R.id.location, UniqueId.KEY_LOCATION);
-        mFields.add(R.id.rating, UniqueId.KEY_RATING);
-        mFields.add(R.id.notes, UniqueId.KEY_NOTES)
+        mFields.add(R.id.location, DatabaseDefinitions.KEY_LOCATION);
+        mFields.add(R.id.rating, DatabaseDefinitions.KEY_RATING);
+        mFields.add(R.id.notes, DatabaseDefinitions.KEY_NOTES)
                .setShowHtml(true);
-        mFields.add(R.id.read_start, UniqueId.KEY_READ_START)
+        mFields.add(R.id.read_start, DatabaseDefinitions.KEY_READ_START)
                .setFormatter(dateFormatter);
-        mFields.add(R.id.read_end, UniqueId.KEY_READ_END)
+        mFields.add(R.id.read_end, DatabaseDefinitions.KEY_READ_END)
                .setFormatter(dateFormatter);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.read, UniqueId.KEY_READ);
+        mFields.add(R.id.read, DatabaseDefinitions.KEY_READ);
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.signed, UniqueId.KEY_SIGNED)
+        mFields.add(R.id.signed, DatabaseDefinitions.KEY_SIGNED)
                .setFormatter(new Fields.BinaryYesNoEmptyFormatter(requireContext()));
 
         // defined, but handled manually
-        mFields.add(R.id.bookshelves, "", UniqueId.KEY_BOOKSHELF);
+        mFields.add(R.id.bookshelves, "", DatabaseDefinitions.KEY_BOOKSHELF);
 
         // defined, but handled manually
-        mFields.add(R.id.loaned_to, "", UniqueId.KEY_LOANEE);
+        mFields.add(R.id.loaned_to, "", DatabaseDefinitions.KEY_LOANEE);
     }
 
     @CallSuper
@@ -284,10 +288,10 @@ public class BookFragment
         //TODO: this defeats the ease of use of the formatter... populate manually or something...
         //noinspection ConstantConditions
         ((Fields.PriceFormatter) mFields.getField(R.id.price_listed).getFormatter())
-                .setCurrencyCode(book.getString(UniqueId.KEY_PRICE_LISTED_CURRENCY));
+                .setCurrencyCode(book.getString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY));
         //noinspection ConstantConditions
         ((Fields.PriceFormatter) mFields.getField(R.id.price_paid).getFormatter())
-                .setCurrencyCode(book.getString(UniqueId.KEY_PRICE_PAID_CURRENCY));
+                .setCurrencyCode(book.getString(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY));
 
         super.onLoadFieldsFromBook(book, setAllFrom);
 
@@ -298,7 +302,7 @@ public class BookFragment
         // allow the field to known the uuid of the book, so it can load 'itself'
         mFields.getField(R.id.coverImage)
                .getView()
-               .setTag(R.id.TAG_UUID, book.get(UniqueId.KEY_BOOK_UUID));
+               .setTag(R.id.TAG_UUID, book.get(DatabaseDefinitions.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
         // handle 'text' DoNotFetch fields
@@ -325,15 +329,6 @@ public class BookFragment
             requireView().findViewById(R.id.lbl_publishing).setVisibility(View.GONE);
         }
 
-        // hide baseline view for publisher/date_published if neither visible
-        if (mFields.getField(R.id.publisher).isVisible()
-                || mFields.getField(R.id.date_published).isVisible()) {
-            // use 'invisible' as we need it as a baseline only.
-            requireView().findViewById(R.id.lbl_publisher_baseline).setVisibility(View.INVISIBLE);
-        } else {
-            requireView().findViewById(R.id.lbl_publisher_baseline).setVisibility(View.GONE);
-        }
-
         // can't use showHideFields as the field could contain "0"
         Field editionsField = mFields.getField(R.id.edition);
         if ("0".equals(editionsField.getValue().toString())) {
@@ -353,6 +348,7 @@ public class BookFragment
     /**
      * If we are passed a flat book list, get it and validate it.
      */
+    @SuppressLint("ClickableViewAccessibility")
     private void initBooklist(@Nullable final Bundle savedInstanceState) {
 
         if (getArguments() == null) {
@@ -396,14 +392,7 @@ public class BookFragment
         //ENHANCE: could probably be replaced by a ViewPager
         // finally, enable the listener for flings
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
-        requireView().setOnTouchListener(new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(@NonNull final View v,
-                                   @NonNull final MotionEvent event) {
-                return mGestureDetector.onTouchEvent(event);
-            }
-        });
+        requireView().setOnTouchListener((v, event) -> mGestureDetector.onTouchEvent(event));
     }
     //</editor-fold>
 
@@ -413,45 +402,37 @@ public class BookFragment
      * The author field is a single csv String.
      */
     private void populateAuthorListField(@NonNull final Book book) {
-        ArrayList<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        int authorsCount = authors.size();
+        Field field = mFields.getField(R.id.author);
+        ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        int authorsCount = list.size();
         boolean visible = authorsCount != 0;
         if (visible) {
-            StringBuilder builder = new StringBuilder();
-            builder.append(getString(R.string.lbl_by_author));
-            builder.append(' ');
-            for (int i = 0; i < authorsCount; i++) {
-                builder.append(authors.get(i).getDisplayName());
-                if (i != authorsCount - 1) {
-                    builder.append(", ");
-                }
-            }
-            mFields.getField(R.id.author).setValue(builder.toString());
+            field.setValue(Csv.join(", ", list, Author::getDisplayName));
+            field.getView().setVisibility(View.VISIBLE);
+        } else {
+            field.setValue("");
+            field.getView().setVisibility(View.GONE);
         }
-        requireView().findViewById(R.id.author).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
      * The series field is a single String with line-breaks between multiple series.
      */
-    void populateSeriesListField(@NonNull final Book book) {
+    private void populateSeriesListField(@NonNull final Book book) {
+        Field field = mFields.getField(R.id.series);
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         int seriesCount = list.size();
-        boolean visible = seriesCount != 0 && Fields.isVisible(UniqueId.KEY_SERIES);
+        boolean visible = seriesCount != 0 && Fields.isVisible(DatabaseDefinitions.KEY_SERIES);
         if (visible) {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < seriesCount; i++) {
-                builder.append(list.get(i).getDisplayName());
-                if (i != seriesCount - 1) {
-                    builder.append('\n');
-                }
-            }
-
-            mFields.getField(R.id.series).setValue(builder.toString());
+            field.setValue(Csv.join("\n", list, Series::getDisplayName));
+            field.getView().setVisibility(View.VISIBLE);
+        } else {
+            field.setValue("");
+            field.getView().setVisibility(View.GONE);
         }
-        View view = requireView();
-        view.findViewById(R.id.lbl_series).setVisibility(visible ? View.VISIBLE : View.GONE);
-        view.findViewById(R.id.series).setVisibility(visible ? View.VISIBLE : View.GONE);
+        // and the label
+        requireView().findViewById(R.id.lbl_series).setVisibility(
+                visible ? View.VISIBLE : View.GONE);
     }
 
 
@@ -497,8 +478,8 @@ public class BookFragment
         ArrayList<TocEntry> list = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         // only show if: field in use + it's flagged as having a toc + the toc actually has titles
-        boolean visible = Fields.isVisible(UniqueId.KEY_TOC_BITMASK)
-                && book.isBitSet(UniqueId.KEY_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS)
+        boolean visible = Fields.isVisible(DatabaseDefinitions.KEY_TOC_BITMASK)
+                && book.isBitSet(DatabaseDefinitions.KEY_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS)
                 && !list.isEmpty();
 
         View tocLabel = requireView().findViewById(R.id.lbl_toc);
@@ -510,15 +491,12 @@ public class BookFragment
                     new TOCAdapter(mActivity, R.layout.row_toc_entry_with_author, list);
             tocList.setAdapter(adapter);
 
-            tocButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    if (tocList.getVisibility() == View.VISIBLE) {
-                        tocList.setVisibility(View.GONE);
-                    } else {
-                        tocList.setVisibility(View.VISIBLE);
-                        ViewUtils.justifyListViewHeightBasedOnChildren(tocList);
-                    }
+            tocButton.setOnClickListener(v -> {
+                if (tocList.getVisibility() == View.VISIBLE) {
+                    tocList.setVisibility(View.GONE);
+                } else {
+                    tocList.setVisibility(View.VISIBLE);
+                    ViewUtils.justifyListViewHeightBasedOnChildren(tocList);
                 }
             });
         }
@@ -616,7 +594,7 @@ public class BookFragment
         menu.setGroupVisible(R.id.MENU_BOOK_READ, bookExists && !isRead);
         menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
 
-        if (Fields.isVisible(UniqueId.KEY_LOANEE)) {
+        if (Fields.isVisible(DatabaseDefinitions.KEY_LOANEE)) {
             boolean isAvailable = null == mDb.getLoaneeByBookId(getBook().getId());
             menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
             menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
@@ -638,7 +616,7 @@ public class BookFragment
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_EDIT:
                 Intent intent = new Intent(getContext(), EditBookActivity.class)
-                        .putExtra(UniqueId.KEY_ID, getBook().getId())
+                        .putExtra(DatabaseDefinitions.KEY_ID, getBook().getId())
                         .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
@@ -701,7 +679,7 @@ public class BookFragment
                               @Nullable final Bundle data) {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-                populateLoanedToField(data.getString(UniqueId.KEY_LOANEE));
+                populateLoanedToField(data.getString(DatabaseDefinitions.KEY_LOANEE));
             } else {
                 Logger.error("bookId=" + bookId + ", fieldsChanged=" + fieldsChanged);
             }
@@ -711,7 +689,7 @@ public class BookFragment
     /**
      * Listener to handle 'fling' events; we could handle others but need to be
      * careful about possible clicks and scrolling.
-     *
+     * <p>
      * ENHANCE: use ViewPager?
      */
     private class FlingHandler

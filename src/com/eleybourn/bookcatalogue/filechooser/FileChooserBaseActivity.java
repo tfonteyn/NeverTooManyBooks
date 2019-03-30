@@ -21,8 +21,6 @@ package com.eleybourn.bookcatalogue.filechooser;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import androidx.annotation.CallSuper;
@@ -95,12 +93,9 @@ public abstract class FileChooserBaseActivity
         }
 
         // Handle 'Cancel' button
-        findViewById(R.id.cancel).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-            }
+        findViewById(R.id.cancel).setOnClickListener(v -> {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
         });
 
         // Handle Open/Save button
@@ -108,21 +103,11 @@ public abstract class FileChooserBaseActivity
 
         if (mIsSave) {
             confirm.setText(R.string.btn_confirm_save);
-            confirm.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    handleSave();
-                }
-            });
+            confirm.setOnClickListener(v -> handleSave());
 
         } else {
             confirm.setText(R.string.btn_confirm_open);
-            confirm.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    handleOpen();
-                }
-            });
+            confirm.setOnClickListener(v -> handleOpen());
         }
     }
 

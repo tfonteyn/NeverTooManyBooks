@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -110,29 +111,29 @@ public class EditBookPublicationFragment
 
         // book fields
 
-        mFields.add(R.id.pages, UniqueId.KEY_PAGES);
+        mFields.add(R.id.pages, DatabaseDefinitions.KEY_PAGES);
 
-        field = mFields.add(R.id.format, UniqueId.KEY_FORMAT);
+        field = mFields.add(R.id.format, DatabaseDefinitions.KEY_FORMAT);
         initValuePicker(field, R.string.lbl_format, R.id.btn_format, getFormats());
 
-        field = mFields.add(R.id.language, UniqueId.KEY_LANGUAGE)
+        field = mFields.add(R.id.language, DatabaseDefinitions.KEY_LANGUAGE)
                        .setFormatter(new Fields.LanguageFormatter());
         initValuePicker(field, R.string.lbl_language, R.id.btn_language, getLanguages());
 
-        field = mFields.add(R.id.publisher, UniqueId.KEY_PUBLISHER);
+        field = mFields.add(R.id.publisher, DatabaseDefinitions.KEY_PUBLISHER);
         initValuePicker(field, R.string.lbl_publisher, R.id.btn_publisher, getPublishers());
 
-        field = mFields.add(R.id.date_published, UniqueId.KEY_DATE_PUBLISHED)
+        field = mFields.add(R.id.date_published, DatabaseDefinitions.KEY_DATE_PUBLISHED)
                        .setFormatter(dateFormatter);
         //noinspection ConstantConditions
         initPartialDatePicker(getTag(), field, R.string.lbl_date_published, false);
 
-        field = mFields.add(R.id.first_publication, UniqueId.KEY_DATE_FIRST_PUBLISHED)
+        field = mFields.add(R.id.first_publication, DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(getTag(), field, R.string.lbl_first_publication, false);
 
-        mFields.add(R.id.price_listed, UniqueId.KEY_PRICE_LISTED);
-        field = mFields.add(R.id.price_listed_currency, UniqueId.KEY_PRICE_LISTED_CURRENCY);
+        mFields.add(R.id.price_listed, DatabaseDefinitions.KEY_PRICE_LISTED);
+        field = mFields.add(R.id.price_listed_currency, DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_listed_currency,
                         getListPriceCurrencyCodes());
     }
@@ -235,7 +236,7 @@ public class EditBookPublicationFragment
     @NonNull
     private List<String> getListPriceCurrencyCodes() {
         if (mListPriceCurrencies == null) {
-            mListPriceCurrencies = mDb.getCurrencyCodes(UniqueId.KEY_PRICE_LISTED_CURRENCY);
+            mListPriceCurrencies = mDb.getCurrencyCodes(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY);
         }
         return mListPriceCurrencies;
     }

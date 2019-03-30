@@ -40,116 +40,88 @@ import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 public class SimpleXmlFilter {
 
     @NonNull
-    private static final XmlHandler mHandleStart = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            BuilderContext bc = (BuilderContext) context.getUserArg();
-
-            if (bc.isArray()) {
-                bc.initArray();
-            }
-            if (bc.isArrayItem()) {
-                bc.pushBundle();
-            }
-
-            if (bc.listener != null) {
-                bc.listener.onStart(bc, context);
-            }
-
-            List<AttrFilter> attrs = bc.attrs;
-            if (attrs != null) {
-                for (AttrFilter f : attrs) {
-                    final String name = f.name;
-                    final String value = context.getAttributes().getValue(name);
-                    if (value != null) {
-                        try {
-                            f.put(bc, value);
-                        } catch (RuntimeException ignore) {
-                            // Could not be parsed....just ignore
-                        }
+    private static final XmlHandler mHandleStart = context -> {
+        BuilderContext bc = (BuilderContext) context.getUserArg();
+        if (bc.isArray()) {
+            bc.initArray();
+        }
+        if (bc.isArrayItem()) {
+            bc.pushBundle();
+        }
+        if (bc.listener != null) {
+            bc.listener.onStart(bc, context);
+        }
+        List<AttrFilter> attrs = bc.attrs;
+        if (attrs != null) {
+            for (AttrFilter f : attrs) {
+                final String name = f.name;
+                final String value = context.getAttributes().getValue(name);
+                if (value != null) {
+                    try {
+                        f.put(bc, value);
+                    } catch (RuntimeException ignore) {
+                        // Could not be parsed....just ignore
                     }
                 }
             }
-
-        }
-    };
-    @NonNull
-    private static final XmlHandler mHandleFinish = new XmlHandler() {
-        @Override
-        public void process(@NonNull ElementContext context) {
-            final BuilderContext bc = (BuilderContext) context.getUserArg();
-            if (bc.finishHandler != null) {
-                bc.finishHandler.process(context);
-            }
-
-            if (bc.listener != null) {
-                bc.listener.onFinish(bc, context);
-            }
-
-            if (bc.isArrayItem()) {
-                Bundle b = bc.popBundle();
-                bc.addArrayItem(b);
-            }
-
-            if (bc.isArray()) {
-                bc.saveArray();
-            }
-
         }
     };
 
     @NonNull
-    private static final XmlHandler mTextHandler = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            final BuilderContext c = (BuilderContext) context.getUserArg();
-            c.getData().putString(c.collectField, context.getBody());
+    private static final XmlHandler mHandleFinish = context -> {
+        final BuilderContext bc = (BuilderContext) context.getUserArg();
+        if (bc.finishHandler != null) {
+            bc.finishHandler.process(context);
+        }
+        if (bc.listener != null) {
+            bc.listener.onFinish(bc, context);
+        }
+        if (bc.isArrayItem()) {
+            Bundle b = bc.popBundle();
+            bc.addArrayItem(b);
+        }
+        if (bc.isArray()) {
+            bc.saveArray();
         }
     };
 
     @NonNull
-    private static final XmlHandler mLongHandler = new XmlHandler() {
+    private static final XmlHandler mTextHandler = context -> {
+        final BuilderContext c = (BuilderContext) context.getUserArg();
+        c.getData().putString(c.collectField, context.getBody());
+    };
 
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            final BuilderContext bc = (BuilderContext) context.getUserArg();
-            final String name = bc.collectField;
-            try {
-                long l = Long.parseLong(context.getBody());
-                bc.getData().putLong(name, l);
-            } catch (NumberFormatException ignore) {
-            }
+    @NonNull
+    private static final XmlHandler mLongHandler = context -> {
+        final BuilderContext bc = (BuilderContext) context.getUserArg();
+        final String name = bc.collectField;
+        try {
+            long l = Long.parseLong(context.getBody());
+            bc.getData().putLong(name, l);
+        } catch (NumberFormatException ignore) {
         }
     };
 
     @NonNull
-    private static final XmlHandler mDoubleHandler = new XmlHandler() {
-
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            final BuilderContext bc = (BuilderContext) context.getUserArg();
-            final String name = bc.collectField;
-            try {
-                double d = Double.parseDouble(context.getBody());
-                bc.getData().putDouble(name, d);
-            } catch (NumberFormatException ignore) {
-            }
+    private static final XmlHandler mDoubleHandler = context -> {
+        final BuilderContext bc = (BuilderContext) context.getUserArg();
+        final String name = bc.collectField;
+        try {
+            double d = Double.parseDouble(context.getBody());
+            bc.getData().putDouble(name, d);
+        } catch (NumberFormatException ignore) {
         }
     };
 
     @NonNull
-    private static final XmlHandler mBooleanHandler = new XmlHandler() {
-
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            final BuilderContext bc = (BuilderContext) context.getUserArg();
-            final String name = bc.collectField;
-            try {
-                boolean b = textToBoolean(context.getBody());
-                bc.getData().putBoolean(name, b);
-            } catch (NumberFormatException ignore) {
-                // Ignore but don't add
-            }
+    private static final XmlHandler mBooleanHandler = context -> {
+        final BuilderContext bc = (BuilderContext) context.getUserArg();
+        final String name = bc.collectField;
+        try {
+            boolean b = textToBoolean(context.getBody());
+            bc.getData().putBoolean(name, b);
+        } catch (NumberFormatException ignore) {
+            // Ignore but don't add
         }
     };
 
@@ -453,11 +425,6 @@ public class SimpleXmlFilter {
         void saveArray() {
             getData().putParcelableArrayList(mArrayName, mArrayItems);
             mArrayItems = null;
-        }
-
-        @Nullable
-        public XmlFilter getFilter() {
-            return mFilter;
         }
 
         @NonNull

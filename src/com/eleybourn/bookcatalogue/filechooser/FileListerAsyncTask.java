@@ -29,14 +29,8 @@ public abstract class FileListerAsyncTask
      * Perform case-insensitive sorting using default locale.
      */
     private static final Comparator<FileDetails> FILE_DETAILS_COMPARATOR =
-            new Comparator<FileDetails>() {
-
-                public int compare(@NonNull final FileDetails o1,
-                                   @NonNull final FileDetails o2) {
-                    return o1.getFile().getName().toLowerCase()
-                             .compareTo(o2.getFile().getName().toLowerCase());
-                }
-            };
+            (o1, o2) -> o1.getFile().getName().toLowerCase()
+                     .compareTo(o2.getFile().getName().toLowerCase());
 
     @NonNull
     protected final ProgressDialogFragment<ArrayList<FileDetails>> mFragment;

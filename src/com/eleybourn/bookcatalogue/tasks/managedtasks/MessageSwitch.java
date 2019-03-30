@@ -73,7 +73,7 @@ public class MessageSwitch<T, U> {
     /** List of message sources. */
     @SuppressLint("UseSparseArrays")
     private final Map<Long, MessageSender<U>> mSenders = Collections.synchronizedMap(
-            new HashMap<Long, MessageSender<U>>());
+            new HashMap<>());
 
     /** List of all messages in the message queue, both messages and replies. */
     private final LinkedBlockingQueue<RoutingSlip> mMessageQueue = new LinkedBlockingQueue<>();
@@ -81,7 +81,7 @@ public class MessageSwitch<T, U> {
     /** List of message listener queues. */
     @SuppressLint("UseSparseArrays")
     private final Map<Long, MessageListeners> mListeners = Collections.synchronizedMap(
-            new HashMap<Long, MessageListeners>());
+            new HashMap<>());
 
     /**
      * Register a new sender and it's controller object.
@@ -137,12 +137,7 @@ public class MessageSwitch<T, U> {
                                     "|post runnable|delivering to listener: "
                                             + listener + "|msg=" + routingSlip.message.toString());
                     }
-                    HANDLER.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            routingSlip.message.deliver(listener);
-                        }
-                    });
+                    HANDLER.post(() -> routingSlip.message.deliver(listener));
                 }
             }
         }
@@ -223,13 +218,7 @@ public class MessageSwitch<T, U> {
         if (HANDLER.getLooper().getThread() == Thread.currentThread()) {
             processMessages();
         } else {
-            HANDLER.post(new Runnable() {
-                             @Override
-                             public void run() {
-                                 processMessages();
-                             }
-                         }
-            );
+            HANDLER.post(this::processMessages);
         }
     }
 

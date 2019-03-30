@@ -5,8 +5,8 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
@@ -16,9 +16,7 @@ import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
  *
  * @author Philip Warner
  */
-public class TableInfo
-        implements Iterable<ColumnInfo> {
-
+public class TableInfo {
 
     /** columns of this table. */
     @NonNull
@@ -35,8 +33,13 @@ public class TableInfo
         mColumns = describeTable(db, tableName);
     }
 
+    @NonNull
+    public Collection<ColumnInfo> getColumns() {
+        return mColumns.values();
+    }
+
     /**
-     * Get the information about a column.
+     * Get the information about a specific column.
      *
      * @param name of column
      *
@@ -49,12 +52,6 @@ public class TableInfo
             return null;
         }
         return mColumns.get(lcName);
-    }
-
-    @NonNull
-    @Override
-    public Iterator<ColumnInfo> iterator() {
-        return mColumns.values().iterator();
     }
 
     /**

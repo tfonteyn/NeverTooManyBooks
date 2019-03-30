@@ -327,7 +327,7 @@ public class ImportAllTask
 
         List<String> list = new ArrayList<>();
         addIfHasValue(list, review.getString(ListReviewsApiHandler.ReviewFields.ISBN13));
-        addIfHasValue(list, review.getString(UniqueId.KEY_ISBN));
+        addIfHasValue(list, review.getString(DatabaseDefinitions.KEY_ISBN));
         return list;
     }
 
@@ -434,7 +434,7 @@ public class ImportAllTask
             }
 
             if (bestLen > 0) {
-                bookData.putString(UniqueId.KEY_ISBN, best);
+                bookData.putString(DatabaseDefinitions.KEY_ISBN, best);
             }
         }
 
@@ -447,7 +447,7 @@ public class ImportAllTask
                                                     ReviewFields.PUB_DAY,
                                                     null);
         if (pubDate != null && !pubDate.isEmpty()) {
-            bookData.putString(UniqueId.KEY_DATE_PUBLISHED, pubDate);
+            bookData.putString(DatabaseDefinitions.KEY_DATE_PUBLISHED, pubDate);
         }
 
         /*
@@ -478,8 +478,8 @@ public class ImportAllTask
         /*
          * Cleanup the title by splitting off the Series (if present).
          */
-        if (bookData.containsKey(UniqueId.KEY_TITLE)) {
-            String bookTitle = bookData.getString(UniqueId.KEY_TITLE);
+        if (bookData.containsKey(DatabaseDefinitions.KEY_TITLE)) {
+            String bookTitle = bookData.getString(DatabaseDefinitions.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
             if (details != null && !details.getName().isEmpty()) {
                 ArrayList<Series> allSeries;
@@ -492,7 +492,7 @@ public class ImportAllTask
                 Series newSeries = new Series(details.getName());
                 newSeries.setNumber(details.getPosition());
                 allSeries.add(newSeries);
-                bookData.putString(UniqueId.KEY_TITLE,
+                bookData.putString(DatabaseDefinitions.KEY_TITLE,
                                    bookTitle.substring(0, details.startChar - 1));
 
                 Series.pruneSeriesList(allSeries);
@@ -570,8 +570,8 @@ public class ImportAllTask
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that would be ahead of the GR update date.
         String now = DateUtils.utcSqlDateTimeForToday();
-        bookData.putString(UniqueId.KEY_BOOK_GR_LAST_SYNC_DATE, now);
-        bookData.putString(UniqueId.KEY_DATE_LAST_UPDATED, now);
+        bookData.putString(DatabaseDefinitions.KEY_BOOK_GR_LAST_SYNC_DATE, now);
+        bookData.putString(DatabaseDefinitions.KEY_DATE_LAST_UPDATED, now);
 
         return bookData;
     }

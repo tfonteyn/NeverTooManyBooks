@@ -33,6 +33,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.datamanager.validators.ValidatorException;
@@ -112,58 +113,49 @@ public class EditBookNotesFragment
         Field field;
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.read, UniqueId.KEY_READ)
-               .getView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                // when user sets 'read', also set the read-end date to today (unless set before)
-                Checkable cb = (Checkable) v;
-                if (cb.isChecked()) {
-                    Field end = mFields.getField(R.id.read_end);
-                    if (end.getValue().toString().trim().isEmpty()) {
-                        end.setValue(DateUtils.localSqlDateForToday());
-                    }
-                }
-            }
-        });
+        mFields.add(R.id.read, DatabaseDefinitions.KEY_READ)
+               .getView().setOnClickListener(v -> {
+                   // when user sets 'read', also set the read-end date to today (unless set before)
+                   Checkable cb = (Checkable) v;
+                   if (cb.isChecked()) {
+                       Field end = mFields.getField(R.id.read_end);
+                       if (end.getValue().toString().trim().isEmpty()) {
+                           end.setValue(DateUtils.localSqlDateForToday());
+                       }
+                   }
+               });
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.signed, UniqueId.KEY_SIGNED);
+        mFields.add(R.id.signed, DatabaseDefinitions.KEY_SIGNED);
 
-        mFields.add(R.id.rating, UniqueId.KEY_RATING);
+        mFields.add(R.id.rating, DatabaseDefinitions.KEY_RATING);
 
-        mFields.add(R.id.notes, UniqueId.KEY_NOTES);
+        mFields.add(R.id.notes, DatabaseDefinitions.KEY_NOTES);
 
-        mFields.add(R.id.price_paid, UniqueId.KEY_PRICE_PAID);
-        field = mFields.add(R.id.price_paid_currency, UniqueId.KEY_PRICE_PAID_CURRENCY);
+        mFields.add(R.id.price_paid, DatabaseDefinitions.KEY_PRICE_PAID);
+        field = mFields.add(R.id.price_paid_currency, DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY);
         initValuePicker(field, R.string.lbl_currency, R.id.btn_price_paid_currency,
                         getPricePaidCurrencyCodes());
 
-        field = mFields.add(R.id.location, UniqueId.KEY_LOCATION);
+        field = mFields.add(R.id.location, DatabaseDefinitions.KEY_LOCATION);
         initValuePicker(field, R.string.lbl_location, R.id.btn_location, getLocations());
 
         //noinspection ConstantConditions
-        field = mFields.add(R.id.edition, UniqueId.KEY_EDITION_BITMASK)
+        field = mFields.add(R.id.edition, DatabaseDefinitions.KEY_EDITION_BITMASK)
                        .setFormatter(new Book.BookEditionsFormatter(getContext()));
         //noinspection ConstantConditions
         initCheckListEditor(getTag(), field, R.string.lbl_edition,
-                            new CheckListEditorDialogFragment.CheckListEditorListGetter<Integer>() {
-                                @NonNull
-                                @Override
-                                public ArrayList<CheckListItem<Integer>> getList() {
-                                    return getBookManager().getBook().getEditableEditionList();
-                                }
-                            });
+                            () -> getBookManager().getBook().getEditableEditionList());
 
-        field = mFields.add(R.id.date_acquired, UniqueId.KEY_DATE_ACQUIRED)
+        field = mFields.add(R.id.date_acquired, DatabaseDefinitions.KEY_DATE_ACQUIRED)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(getTag(), field, R.string.lbl_date_acquired, true);
 
-        field = mFields.add(R.id.read_start, UniqueId.KEY_READ_START)
+        field = mFields.add(R.id.read_start, DatabaseDefinitions.KEY_READ_START)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(getTag(), field, R.string.lbl_read_start, true);
 
-        field = mFields.add(R.id.read_end, UniqueId.KEY_READ_END)
+        field = mFields.add(R.id.read_end, DatabaseDefinitions.KEY_READ_END)
                        .setFormatter(dateFormatter);
         initPartialDatePicker(getTag(), field, R.string.lbl_read_end, true);
 
@@ -173,11 +165,11 @@ public class EditBookNotesFragment
             public void validate(@NonNull final Fields fields,
                                  @NonNull final Bundle values)
                     throws ValidatorException {
-                String start = values.getString(UniqueId.KEY_READ_START);
+                String start = values.getString(DatabaseDefinitions.KEY_READ_START);
                 if (start == null || start.isEmpty()) {
                     return;
                 }
-                String end = values.getString(UniqueId.KEY_READ_END);
+                String end = values.getString(DatabaseDefinitions.KEY_READ_END);
                 if (end == null || end.isEmpty()) {
                     return;
                 }
@@ -231,7 +223,7 @@ public class EditBookNotesFragment
             ArrayList<Integer> result = new Book.EditionCheckListItem().extractList(list);
             getBookManager().getBook().putEditions(result);
             mFields.getField(destinationFieldId).setValue(
-                    getBookManager().getBook().getString(UniqueId.KEY_EDITION_BITMASK));
+                    getBookManager().getBook().getString(DatabaseDefinitions.KEY_EDITION_BITMASK));
         }
     }
 
@@ -270,7 +262,7 @@ public class EditBookNotesFragment
     @NonNull
     private List<String> getPricePaidCurrencyCodes() {
         if (mPricePaidCurrencies == null) {
-            mPricePaidCurrencies = mDb.getCurrencyCodes(UniqueId.KEY_PRICE_PAID_CURRENCY);
+            mPricePaidCurrencies = mDb.getCurrencyCodes(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
         return mPricePaidCurrencies;
     }

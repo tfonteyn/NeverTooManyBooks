@@ -316,7 +316,7 @@ public class TocEntry
          * <p>
          * A more complete definition below.
          * <p>
-         * {@link DatabaseDefinitions#DOM_BOOK_ANTHOLOGY_BITMASK}
+         * {@link DatabaseDefinitions#DOM_BOOK_TOC_BITMASK}
          * <p>
          * 0%00 = contains one 'work' and is written by a single author.
          * 0%01 = multiple 'work' and is written by a single author (anthology from ONE author)
@@ -329,7 +329,7 @@ public class TocEntry
          * <p>
          * Having said all that, the 0%10 should not actually occur, as this is a simple case of
          * collaborating authors which is covered without the use of
-         * {@link DatabaseDefinitions#DOM_BOOK_ANTHOLOGY_BITMASK}
+         * {@link DatabaseDefinitions#DOM_BOOK_TOC_BITMASK}
          * <p>
          * Which of course brings it back full-circle to the original and correct meaning.
          * <p>

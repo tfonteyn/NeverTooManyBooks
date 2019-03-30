@@ -31,17 +31,9 @@ import androidx.fragment.app.FragmentTransaction;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
 
 /**
- * This class will search the internet for book details based on either
- * a manually provided ISBN, or a scanned ISBN.
- * Alternatively, it will search based on Author/Title.
- * <p>
- * ISBN stands for International Standard Book Number.
- * Every book is assigned a unique ISBN-10 and ISBN-13 when published.
- * <p>
- * ASIN stands for Amazon Standard Identification Number.
- * Every product on Amazon has its own ASIN, a unique code used to identify it.
- * For books, the ASIN is the same as the ISBN-10 number, but for all other products a new ASIN
- * is created when the item is uploaded to their catalogue.
+ * Searches the internet for book details based on:
+ * - manually provided or scanned ISBN.
+ * - Author/Title.
  */
 public class BookSearchActivity
         extends BaseActivityWithTasks {
@@ -68,7 +60,6 @@ public class BookSearchActivity
                     .add(R.id.main_fragment, frag, tag)
                     .commit();
         }
-
     }
 
     /**

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import com.eleybourn.bookcatalogue.adapters.TOCAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 
@@ -35,7 +36,7 @@ public class AuthorActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        long authorId = getIntent().getLongExtra(UniqueId.KEY_ID, 0);
+        long authorId = getIntent().getLongExtra(DatabaseDefinitions.KEY_ID, 0);
 
         mDb = new DBA(this);
         final Author author = mDb.getAuthor(authorId);

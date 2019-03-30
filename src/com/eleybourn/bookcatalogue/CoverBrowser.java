@@ -18,7 +18,7 @@
  * along with Book Catalogue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.eleybourn.bookcatalogue.widgets;
+package com.eleybourn.bookcatalogue;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -32,12 +32,10 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ViewSwitcher.ViewFactory;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -59,9 +57,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.EditorDialogFragment;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
@@ -70,6 +67,7 @@ import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.widgets.PagerLayout;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
@@ -139,7 +137,7 @@ public class CoverBrowser
         CoverBrowser frag = new CoverBrowser();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_SEARCH_SITES, searchFlags);
-        args.putString(UniqueId.KEY_ISBN, isbn);
+        args.putString(DatabaseDefinitions.KEY_ISBN, isbn);
         frag.setArguments(args);
         return frag;
     }
@@ -150,7 +148,7 @@ public class CoverBrowser
         mActivity = (BaseActivity) requireActivity();
 
         Bundle args = requireArguments();
-        mIsbn = args.getString(UniqueId.KEY_ISBN);
+        mIsbn = args.getString(DatabaseDefinitions.KEY_ISBN);
         int searchFlags = args.getInt(UniqueId.BKEY_SEARCH_SITES);
 
         // Create an object to manage the downloaded files
@@ -242,42 +240,35 @@ public class CoverBrowser
         mSwitcherMessageView.setVisibility(View.VISIBLE);
 
         // When the large image is clicked, send it back to the caller and terminate.
-        mImageSwitcherView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                String newSpec = (String) mImageSwitcherView.getTag();
-                if (newSpec != null) {
-                    Intent data = new Intent()
-                            .putExtra(UniqueId.BKEY_FILE_SPEC, newSpec);
-                    // Was a target fragment was set ?
-                    Fragment targetFragment = getTargetFragment();
-                    if (targetFragment != null) {
-                        targetFragment.onActivityResult(CoverHandler.REQ_ALT_EDITION,
-                                                        Activity.RESULT_OK, data);
-                    } else {
-                        // if not, assume the activity wants us.
-                        mActivity.onActivityResult(CoverHandler.REQ_ALT_EDITION,
-                                                   Activity.RESULT_OK, data);
-                    }
+        mImageSwitcherView.setOnClickListener(v -> {
+            String newSpec = (String) mImageSwitcherView.getTag();
+            if (newSpec != null) {
+                Intent data = new Intent()
+                        .putExtra(UniqueId.BKEY_FILE_SPEC, newSpec);
+                // Was a target fragment was set ?
+                Fragment targetFragment = getTargetFragment();
+                if (targetFragment != null) {
+                    targetFragment.onActivityResult(CoverHandler.REQ_ALT_EDITION,
+                                                    Activity.RESULT_OK, data);
+                } else {
+                    // if not, assume the activity wants us.
+                    mActivity.onActivityResult(CoverHandler.REQ_ALT_EDITION,
+                                               Activity.RESULT_OK, data);
                 }
-                dialog.dismiss();
             }
+            dialog.dismiss();
         });
 
         // Required object. Just create an ImageView
-        mImageSwitcherView.setFactory(new ViewFactory() {
-            @NonNull
-            @Override
-            public View makeView() {
-                ImageView view = new ImageView(mActivity);
-                view.setBackgroundColor(mImageBackgroundColor);
-                view.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                view.setLayoutParams(new ImageSwitcher.LayoutParams(
-                        ImageSwitcher.LayoutParams.WRAP_CONTENT,
-                        ImageSwitcher.LayoutParams.WRAP_CONTENT));
-                view.setImageResource(R.drawable.ic_image);
-                return view;
-            }
+        mImageSwitcherView.setFactory(() -> {
+            ImageView view = new ImageView(mActivity);
+            view.setBackgroundColor(mImageBackgroundColor);
+            view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            view.setLayoutParams(new ImageSwitcher.LayoutParams(
+                    ImageSwitcher.LayoutParams.WRAP_CONTENT,
+                    ImageSwitcher.LayoutParams.WRAP_CONTENT));
+            view.setImageResource(R.drawable.ic_image);
+            return view;
         });
     }
 
@@ -670,20 +661,16 @@ public class CoverBrowser
                                                   mPreviewSizeHeight, true);
             }
 
-            coverImage.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    mImageSwitcherView.setVisibility(View.GONE);
-
-                    // Show status message
-                    mSwitcherMessageView.setText(R.string.progress_msg_loading);
-                    mSwitcherMessageView.setVisibility(View.VISIBLE);
-                    // get the full size image.
-                    GetImageTask task = new GetImageTask(CoverImagePagerAdapter.this,
-                                                         mFileManager, isbn);
-                    addTask(task);
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
+            coverImage.setOnClickListener(v -> {
+                mImageSwitcherView.setVisibility(View.GONE);
+                // Show status message
+                mSwitcherMessageView.setText(R.string.progress_msg_loading);
+                mSwitcherMessageView.setVisibility(View.VISIBLE);
+                // get the full size image.
+                GetImageTask task = new GetImageTask(CoverImagePagerAdapter.this,
+                                                     mFileManager, isbn);
+                addTask(task);
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             });
             container.addView(coverImage);
             return coverImage;

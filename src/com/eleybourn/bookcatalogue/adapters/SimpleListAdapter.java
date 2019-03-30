@@ -108,12 +108,9 @@ public abstract class SimpleListAdapter<T>
         }
 
         if (holder.rowDetailsView != null) {
-            holder.rowDetailsView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    if (item != null) {
-                        onRowClick(v, item, position);
-                    }
+            holder.rowDetailsView.setOnClickListener(v -> {
+                if (item != null) {
+                    onRowClick(item, position);
                 }
             });
             //FIXME: this is forced onto the layout; caused (me) confusion as a click worked
@@ -125,12 +122,9 @@ public abstract class SimpleListAdapter<T>
         if (item != null) {
             // Try to set the DELETE handler
             if (holder.deleteButton != null) {
-                holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final View v) {
-                        remove(item);
-                        onListChanged();
-                    }
+                holder.deleteButton.setOnClickListener(v -> {
+                    remove(item);
+                    onListChanged();
                 });
             }
 
@@ -150,11 +144,9 @@ public abstract class SimpleListAdapter<T>
     /**
      * Called when an otherwise inactive part of the row is clicked.
      *
-     * @param target The view clicked
      * @param item   The object associated with this row
      */
-    protected void onRowClick(@NonNull final View target,
-                              @NonNull final T item,
+    protected void onRowClick(@NonNull final T item,
                               final int position) {
     }
 

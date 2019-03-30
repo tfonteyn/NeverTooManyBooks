@@ -29,6 +29,7 @@ import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
+//TOMF: DialogFragment?
 public final class SimpleDialog {
 
     private SimpleDialog() {
@@ -36,13 +37,21 @@ public final class SimpleDialog {
 
     /**
      * Select a custom item from a list, and call handler when/if item is selected.
+     *
+     * @param title          for the dialog
+     * @param message        optional message to display (or null for none)
+     * @param items          list to choose from
+     * @param selectedItem   pre-selected item (or null for none)
+     * @param resultListener which will receive the selected row item
+     * @param <T>            type of the actual Object that is represented by a row in the
+     *                       selection list.
      */
-    private static void selectItemDialog(@NonNull final LayoutInflater inflater,
-                                         @Nullable final String title,
-                                         @Nullable final String message,
-                                         @NonNull final List<SimpleDialogItem> items,
-                                         @Nullable final SimpleDialogItem selectedItem,
-                                         @NonNull final OnClickListener handler) {
+    private static <T> void selectItemDialog(@NonNull final LayoutInflater inflater,
+                                             @Nullable final String title,
+                                             @Nullable final String message,
+                                             @NonNull final List<SimpleDialogItem<T>> items,
+                                             @Nullable final SimpleDialogItem<T> selectedItem,
+                                             @NonNull final OnClickListener<T> resultListener) {
 
         // Build the base dialog
         final View root = inflater.inflate(R.layout.dialog_select_one_from_list, null);
@@ -61,35 +70,32 @@ public final class SimpleDialog {
             root.findViewById(R.id.messageBottomDivider).setVisibility(View.GONE);
         }
 
-        //TOMF: DialogFragment?
         final AlertDialog dialog = builder.create();
 
         // Create the listener for each item
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                SimpleDialogItem item = (SimpleDialogItem) v.getTag(R.id.TAG_DIALOG_ITEM);
-                // For a consistent UI, make sure the selector is checked as well.
-                // NOT mandatory from a functional point of view, just consistent
-                if (item != null && !(v instanceof Checkable)) {
-                    CompoundButton btn = item.getSelector(v);
-                    if (btn != null) {
-                        btn.setChecked(true);
-                        btn.invalidate();
-                    }
+        View.OnClickListener viewListener = v -> {
+            //noinspection unchecked
+            SimpleDialogItem<T> item = (SimpleDialogItem<T>) v.getTag(R.id.TAG_DIALOG_ITEM);
+            // For a consistent UI, make sure the selector is checked as well.
+            // NOT mandatory from a functional point of view, just consistent
+            if (item != null && !(v instanceof Checkable)) {
+                CompoundButton btn = item.getSelector(v);
+                if (btn != null) {
+                    btn.setChecked(true);
+                    btn.invalidate();
                 }
-                dialog.dismiss();
-                if (item != null) {
-                    handler.onClick(item);
-                }
+            }
+            dialog.dismiss();
+            if (item != null) {
+                resultListener.onClick(item);
             }
         };
 
         // Add the items to the dialog
         ViewGroup list = root.findViewById(R.id.item_list);
-        for (SimpleDialogItem item : items) {
+        for (SimpleDialogItem<T> item : items) {
             View view = item.getView(inflater);
-            view.setOnClickListener(listener);
+            view.setOnClickListener(viewListener);
 
             view.setTag(R.id.TAG_DIALOG_ITEM, item);
 
@@ -97,8 +103,8 @@ public final class SimpleDialog {
             if (buttonView != null) {
                 buttonView.setVisibility(View.VISIBLE);
                 buttonView.setTag(R.id.TAG_DIALOG_ITEM, item);
-                buttonView.setChecked(item == selectedItem);
-                buttonView.setOnClickListener(listener);
+                buttonView.setChecked(item.equals(selectedItem));
+                buttonView.setOnClickListener(viewListener);
             }
             list.addView(view);
         }
@@ -108,68 +114,74 @@ public final class SimpleDialog {
     /**
      * Present a list of files for selection.
      *
+     * @param title          for the dialog
+     * @param files          list to choose from
+     * @param resultListener which will receive the selected row item
+     *
      * @see #selectItemDialog
      */
     public static void selectFileDialog(@NonNull final LayoutInflater inflater,
                                         @Nullable final String title,
                                         @NonNull final List<File> files,
-                                        @NonNull final OnClickListener handler) {
-        List<SimpleDialogItem> items = new ArrayList<>();
+                                        @NonNull final OnClickListener<File> resultListener) {
+        List<SimpleDialogItem<File>> items = new ArrayList<>();
         for (File file : files) {
             items.add(new SimpleDialogFileItem(file));
         }
-        selectItemDialog(inflater, title, null, items, null, handler);
+        selectItemDialog(inflater, title, null, items, null, resultListener);
     }
 
     /**
      * Present a list of objects for selection.
      *
-     * @param <T> type of object
+     * @param field to get/set
+     * @param list  list to choose from
+     * @param <T>   type of the actual Object that is represented by a row in the selection list.
      *
      * @see #selectItemDialog
      */
     public static <T> void selectFieldDialog(@NonNull final LayoutInflater inflater,
                                              @Nullable final String title,
                                              @NonNull final Fields.Field field,
-                                             @NonNull final List<T> list,
-                                             @NonNull final OnClickListener handler) {
-        List<SimpleDialogItem> items = new ArrayList<>();
-        SimpleDialogItem selectedItem = null;
+                                             @NonNull final List<T> list) {
+        List<SimpleDialogItem<T>> items = new ArrayList<>();
+        SimpleDialogItem<T> selectedItem = null;
         for (T listEntry : list) {
-            SimpleDialogItem item = new SimpleDialogFieldFormattedItem(field, listEntry);
+            SimpleDialogItem<T> item = new SimpleDialogFieldFormattedItem<>(field, listEntry);
             if (listEntry.equals(field.getValue())) {
                 selectedItem = item;
             }
             items.add(item);
         }
-        selectItemDialog(inflater, title, null, items, selectedItem, handler);
+
+        OnClickListener<T> resultListener = item -> field.setValue(item.getItem().toString());
+        selectItemDialog(inflater, title, null, items, selectedItem, resultListener);
     }
 
     /**
      * Present a context {@link Menu} *with* icons.
      *
-     * @param title   for the menu header
-     * @param menu    the menu
-     * @param handler the listener to handle a menu selection.
+     * @param title          for the menu header
+     * @param menu           the menu
+     * @param resultListener which will receive the selected row item
      *
      * @see #selectItemDialog
      */
     public static void showContextMenu(@NonNull final LayoutInflater inflater,
                                        @NonNull final String title,
                                        @NonNull final Menu menu,
-                                       @NonNull final OnClickListener handler) {
-        List<SimpleDialogItem> items = new ArrayList<>();
+                                       @NonNull final OnClickListener<MenuItem> resultListener) {
+        List<SimpleDialogItem<MenuItem>> items = new ArrayList<>();
         for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            items.add(new SimpleDialogMenuItem(item));
+            items.add(new SimpleDialogMenuItem(menu.getItem(i)));
         }
-        selectItemDialog(inflater, title, null, items, null, handler);
+        selectItemDialog(inflater, title, null, items, null, resultListener);
     }
 
     /**
      * Interface for item that displays in a custom dialog list.
      */
-    public interface SimpleDialogItem {
+    public interface SimpleDialogItem<T> {
 
         @NonNull
         View getView(@NonNull LayoutInflater inflater);
@@ -177,14 +189,18 @@ public final class SimpleDialog {
         /** optional, mostly for visual effects only. */
         @Nullable
         CompoundButton getSelector(@NonNull View view);
+
+        /** @return the encapsulated item. */
+        @NonNull
+        T getItem();
     }
 
     /**
      * Interface to listen for item selection in a custom dialog list.
      */
-    public interface OnClickListener {
+    public interface OnClickListener<T> {
 
-        void onClick(@NonNull SimpleDialogItem item);
+        void onClick(@NonNull SimpleDialogItem<T> item);
     }
 
     /**
@@ -290,7 +306,7 @@ public final class SimpleDialog {
      * Present a "String+Icon" / Menu item in a list of items.
      */
     public static class SimpleDialogMenuItem
-            implements SimpleDialogItem {
+            implements SimpleDialogItem<MenuItem> {
 
         private final MenuItem mMenuItem;
 
@@ -302,7 +318,7 @@ public final class SimpleDialog {
         }
 
         @NonNull
-        public MenuItem getMenuItem() {
+        public MenuItem getItem() {
             return mMenuItem;
         }
 
@@ -311,15 +327,17 @@ public final class SimpleDialog {
         public View getView(@NonNull final LayoutInflater inflater) {
             @SuppressLint("InflateParams")
             View root = inflater.inflate(R.layout.row_simple_dialog_list_item, null);
-            TextView line = root.findViewById(R.id.name);
-            line.setText(mMenuItem.getTitle());
-            Drawable icon = mMenuItem.getIcon();
+
+            TextView name = root.findViewById(R.id.name);
+            name.setText(mMenuItem.getTitle());
+
+            // add a little arrow to indicate sub-menus.
             Drawable subMenuPointer = null;
             if (mMenuItem.hasSubMenu()) {
                 subMenuPointer = inflater.getContext()
                                          .getDrawable(R.drawable.submenu_arrow_nofocus);
             }
-            line.setCompoundDrawablesWithIntrinsicBounds(icon, null, subMenuPointer, null);
+            name.setCompoundDrawablesWithIntrinsicBounds( mMenuItem.getIcon(), null, subMenuPointer, null);
             return root;
         }
 
@@ -333,7 +351,7 @@ public final class SimpleDialog {
      * Present a File object in a list of items.
      */
     public static class SimpleDialogFileItem
-            implements SimpleDialogItem {
+            implements SimpleDialogItem<File> {
 
         @NonNull
         private final File mFile;
@@ -343,31 +361,31 @@ public final class SimpleDialog {
         }
 
         @NonNull
-        public File getFile() {
+        public File getItem() {
             return mFile;
         }
 
         /**
-         * @return a View to display the file.
+         * @return a View to display the File information.
          */
         @Override
         @NonNull
         public View getView(@NonNull final LayoutInflater inflater) {
             @SuppressLint("InflateParams")
             View root = inflater.inflate(R.layout.row_file_list_item, null);
+
             TextView name = root.findViewById(R.id.name);
             name.setText(mFile.getName());
 
-            // Set the path
-            TextView location = root.findViewById(R.id.path);
-            location.setText(mFile.getParent());
-            // Set the size
+            TextView path = root.findViewById(R.id.path);
+            path.setText(mFile.getParent());
+
             TextView size = root.findViewById(R.id.size);
             size.setText(Utils.formatFileSize(inflater.getContext(), mFile.length()));
-            // Set the last modified date
-            TextView update = root.findViewById(R.id.date);
-            update.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
-            // Return it
+
+            TextView lastModDate = root.findViewById(R.id.date);
+            lastModDate.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
+
             return root;
         }
 
@@ -382,20 +400,33 @@ public final class SimpleDialog {
      * Present a Field value in a list of items.
      * <p>
      * Uses the {@link Fields.FieldFormatter}, if the Field has one.
+     *
+     * @param <FVT> Field Value Type
      */
-    private static class SimpleDialogFieldFormattedItem
-            implements SimpleDialogItem {
+    private static class SimpleDialogFieldFormattedItem<FVT>
+            implements SimpleDialogItem<FVT> {
 
         @NonNull
         private final Fields.Field mField;
 
         @NonNull
-        private final Object mRawValue;
+        private final FVT mValue;
 
+        /**
+         * Constructor.
+         *
+         * @param field to use
+         * @param value to get/set
+         */
         SimpleDialogFieldFormattedItem(@NonNull final Fields.Field field,
-                                       @NonNull final Object value) {
+                                       @NonNull final FVT value) {
             mField = field;
-            mRawValue = value;
+            mValue = value;
+        }
+
+        @NonNull
+        public FVT getItem() {
+            return mValue;
         }
 
         /**
@@ -406,8 +437,10 @@ public final class SimpleDialog {
         public View getView(@NonNull final LayoutInflater inflater) {
             @SuppressLint("InflateParams")
             View root = inflater.inflate(R.layout.row_simple_dialog_list_item, null);
+
             TextView name = root.findViewById(R.id.name);
-            name.setText(mField.format(mRawValue.toString()));
+            name.setText(mField.format(mValue.toString()));
+
             return root;
         }
 

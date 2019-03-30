@@ -20,7 +20,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -102,28 +101,17 @@ public class ProgressDialogFragment<Results>
         mTask = task;
     }
 
-    /**
-     * @return the task, or null if not task.
-     */
-    @Nullable
-    public AsyncTask<Void, Object, Results> getTask() {
-        return mTask;
-    }
-
     @Override
     public void onAttach(@NonNull final Context context) {
+        Tracker.enterOnAttach(this);
         super.onAttach(context);
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, "onAttach", "");
-        }
+        Tracker.exitOnAttach(this);
     }
 
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, Tracker.State.Enter,"onCreate", "");
-        }
+        Tracker.enterOnCreate(this, savedInstanceState);
         super.onCreate(savedInstanceState);
 
         // Control whether a fragment instance is retained across Activity
@@ -131,20 +119,17 @@ public class ProgressDialogFragment<Results>
         // VERY IMPORTANT. We do not want this destroyed as our task would get killed!
         setRetainInstance(true);
 
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, Tracker.State.Exit,"onCreate", "");
-        }
+        Tracker.exitOnCreate(this);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, Tracker.State.Enter,"onCreateDialog", "");
-        }
+        Tracker.enterOnCreateDialog(this, savedInstanceState);
+
         @SuppressLint("InflateParams")
         View root = requireActivity().getLayoutInflater()
-                                     .inflate(R.layout.fragment_task_progress, null);
+                                     .inflate(R.layout.dialog_task_progress, null);
         mProgressBar = root.findViewById(R.id.progressBar);
         mMessageView = root.findViewById(R.id.message);
 
@@ -180,25 +165,17 @@ public class ProgressDialogFragment<Results>
         //ENHANCE: this is really needed, as it would be to easy to cancel. But we SHOULD add a specific cancel-button!
         dialog.setCanceledOnTouchOutside(false);
 
-        if (BuildConfig.DEBUG) {
-            Logger.info(this, Tracker.State.Exit,"onCreateDialog", "");
-        }
+        Tracker.exitOnCreateDialog(this);
         return dialog;
-    }
-
-    public void setTitle(@StringRes final int titleId) {
-        if (getDialog() != null) {
-            getDialog().setTitle(titleId);
-        }
     }
 
     /**
      * FIXME: horrible clutch....
-     *
+     * <p>
      * Accessing the Fragment.getContext() "to early" will return a null.
      * I've seen (2019-03-26) using identical code, in the same identical place
      * succeed and fail. I presume due to internal timing.
-     *
+     * <p>
      * So this is a FIXME HORRIBLE CLUTCH...  but it's 'good enough' for now.
      * The alternative is to go back to using the AppContext as before, but needs
      * more investigating first.
@@ -212,7 +189,7 @@ public class ProgressDialogFragment<Results>
     }
 
     /**
-     * DEBUG
+     * DEBUG wrapper
      *
      * @return context, can be null
      */
@@ -223,7 +200,7 @@ public class ProgressDialogFragment<Results>
         if (context == null) {
             Logger.error("getContext() was NULL");
         } else {
-            Logger.info(this,"getContext()", context.toString());
+            Logger.info(this, "getContext()", context.toString());
         }
         return context;
     }

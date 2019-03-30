@@ -23,6 +23,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -42,7 +44,6 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
@@ -71,6 +72,7 @@ import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_BITMASK;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
 import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
@@ -117,7 +119,7 @@ public class CsvExporter
      */
     @SuppressWarnings("NonConstantFieldWithUpperCaseName")
     private final String EXPORT_FIELD_HEADERS =
-            '"' + DOM_PK_ID.name + "\","
+            "\"" + DOM_PK_ID + "\","
                     + '"' + CSV_COLUMN_AUTHORS + "\","
                     + '"' + DOM_TITLE + "\","
                     + '"' + DOM_BOOK_ISBN + "\","
@@ -138,7 +140,7 @@ public class CsvExporter
                     + '"' + DOM_BOOK_PRICE_PAID_CURRENCY + "\","
                     + '"' + DOM_BOOK_DATE_ACQUIRED + "\","
 
-                    + '"' + DOM_BOOK_ANTHOLOGY_BITMASK + "\","
+                    + '"' + DOM_BOOK_TOC_BITMASK + "\","
                     + '"' + DOM_BOOK_LOCATION + "\","
                     + '"' + DOM_BOOK_READ_START + "\","
                     + '"' + DOM_BOOK_READ_END + "\","
@@ -168,6 +170,7 @@ public class CsvExporter
      *                 Other flags are ignored, as this method only
      *                 handles {@link ExportSettings#BOOK_CSV} anyhow.
      */
+    @UiThread
     public CsvExporter(@NonNull final Context context,
                        @NonNull final ExportSettings settings) {
         mContext = context;
@@ -176,24 +179,29 @@ public class CsvExporter
         settings.validate();
     }
 
-    @Override
-    public int doExport(@NonNull final OutputStream outputStream,
-                        @NonNull final ExportListener listener)
-            throws IOException {
+    /**
+     * At the end of a successful export, rename the temp file to {@link #EXPORT_FILE_NAME}.
+     *
+     * @param tempFile to rename
+     */
+    static void renameFiles(@NonNull final File tempFile) {
+        File fLast = StorageUtils.getFile(String.format(EXPORT_CSV_FILES_PATTERN, COPIES));
+        StorageUtils.deleteFile(fLast);
 
-        return doBooks(outputStream, listener);
+        for (int i = COPIES - 1; i > 0; i--) {
+            final File fCurr = StorageUtils.getFile(String.format(EXPORT_CSV_FILES_PATTERN, i));
+            StorageUtils.renameFile(fCurr, fLast);
+            fLast = fCurr;
+        }
+        final File export = StorageUtils.getFile(EXPORT_FILE_NAME);
+        StorageUtils.renameFile(export, fLast);
+        StorageUtils.renameFile(tempFile, export);
     }
 
-    /**
-     * @param outputStream Stream for writing data
-     * @param listener     Progress and cancellation interface
-     *
-     * @return <tt>true</tt> on success
-     *
-     * @throws IOException on any error
-     */
+    @Override
+    @WorkerThread
     public int doBooks(@NonNull final OutputStream outputStream,
-                       @NonNull final ExportListener listener)
+                       @NonNull final Exporter.ExportListener listener)
             throws IOException {
         final String UNKNOWN = mContext.getString(R.string.unknown);
         final String AUTHOR = mContext.getString(R.string.lbl_author);
@@ -222,7 +230,7 @@ public class CsvExporter
 
             while (bookCursor.moveToNext() && !listener.isCancelled()) {
                 numberOfBooksExported++;
-                long bookId = bookCursor.getLong(bookCursor.getColumnIndexOrThrow(DOM_PK_ID.name));
+                long bookId = bookCursor.getId();
 
                 String authorStringList = StringList.getAuthorCoder()
                                                     .encode(mDb.getAuthorsByBookId(bookId));
@@ -316,25 +324,6 @@ public class CsvExporter
             mDb.close();
         }
         return numberOfBooksExported;
-    }
-
-    /**
-     * At the end of a successful export, rename the temp file to {@link #EXPORT_FILE_NAME}.
-     *
-     * @param tempFile to rename
-     */
-    void renameFiles(@NonNull final File tempFile) {
-        File fLast = StorageUtils.getFile(String.format(EXPORT_CSV_FILES_PATTERN, COPIES));
-        StorageUtils.deleteFile(fLast);
-
-        for (int i = COPIES - 1; i > 0; i--) {
-            final File fCurr = StorageUtils.getFile(String.format(EXPORT_CSV_FILES_PATTERN, i));
-            StorageUtils.renameFile(fCurr, fLast);
-            fLast = fCurr;
-        }
-        final File export = StorageUtils.getFile(EXPORT_FILE_NAME);
-        StorageUtils.renameFile(export, fLast);
-        StorageUtils.renameFile(tempFile, export);
     }
 
     @NonNull

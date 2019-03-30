@@ -22,8 +22,4 @@ public class AuthorizationException
                                   @NonNull final Throwable inner) {
         super(App.getResString(R.string.error_authorization_failed, site), inner);
     }
-
-    public AuthorizationException(final String message) {
-        super(message);
-    }
 }

@@ -42,6 +42,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -91,29 +92,23 @@ public class EditBookshelfListActivity
      */
     @Override
     public void initContextMenuOnListView() {
-        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(@NonNull final AdapterView<?> parent,
-                                           @NonNull final View view,
-                                           final int position,
-                                           final long id) {
-                String menuTitle = mList.get(position).getName();
+        getListView().setOnItemLongClickListener((parent, view, position, id) -> {
+            String menuTitle = mList.get(position).getName();
 
-                // legal trick to get an instance of Menu.
-                mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
-                // custom menuInfo
-                SimpleDialog.ContextMenuInfo menuInfo =
-                        new SimpleDialog.ContextMenuInfo(menuTitle, position);
-                // populate the menu
-                mListViewContextMenu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit_bookshelf)
-                                    .setIcon(R.drawable.ic_edit);
-                mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0,
-                                         R.string.menu_delete_bookshelf)
-                                    .setIcon(R.drawable.ic_delete);
-                // display
-                onCreateListViewContextMenu(view, mListViewContextMenu, menuInfo);
-                return true;
-            }
+            // legal trick to get an instance of Menu.
+            mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
+            // custom menuInfo
+            SimpleDialog.ContextMenuInfo menuInfo =
+                    new SimpleDialog.ContextMenuInfo(menuTitle, position);
+            // populate the menu
+            mListViewContextMenu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit_bookshelf)
+                                .setIcon(R.drawable.ic_edit);
+            mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0,
+                                     R.string.menu_delete_bookshelf)
+                                .setIcon(R.drawable.ic_delete);
+            // display
+            onCreateListViewContextMenu(view, mListViewContextMenu, menuInfo);
+            return true;
         });
     }
 
@@ -207,7 +202,7 @@ public class EditBookshelfListActivity
                                    final int booksMoved) {
         populateList();
         Intent data = new Intent()
-                .putExtra(UniqueId.KEY_ID, bookshelfId);
+                .putExtra(DatabaseDefinitions.KEY_ID, bookshelfId);
         setResult(Activity.RESULT_OK, data);
     }
 }

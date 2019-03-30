@@ -35,6 +35,7 @@
         <item name="android:layout_marginTop">@dimen/margin_div</item>
         <item name="android:layout_marginBottom">@dimen/margin_div</item>
         <item name="android:background">?android:attr/dividerHorizontal</item>
+        <!--<item name="android:background">?android:attr/listDivider</item>-->
     </style>
 
     <!-- *************************************************************************************** -->
@@ -344,7 +345,8 @@
     <style name="nav_view">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">?android:attr/colorBackgroundFloating</item>
+        <!--TEST: this attribute reference does an RTE when run on API 22. -->
+        <!--<item name="android:background">?android:attr/colorBackgroundFloating</item>-->
         <item name="android:layout_gravity">start</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
@@ -377,6 +379,13 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
+    <!-- 'plus' and 'minus' buttons on the PartialDatePicker dialog.-->
+    <style name="partial_date_picker_buttons">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
     <!-- CheckedTextView for 'read' status of a book -->
     <style name="read_ctv">
         <item name="android:layout_width">wrap_content</item>
@@ -406,6 +415,9 @@
     <!-- Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
     <style name="titleTextEntry" parent="@style/base_localeTextEntry" />
 
+    <!-- The book format field. -->
+    <style name="bookFormatTextEntry" parent="@style/base_localeTextEntry" />
+
     <!-- The language field. -->
     <style name="languageTextEntry" parent="@style/base_localeTextEntry" />
 
@@ -414,8 +426,6 @@
         <item name="android:inputType">numberDecimal</item>
     </style>
 
-    <!-- The book format field. -->
-    <style name="bookFormatTextEntry" parent="@style/base_localeTextEntry" />
 
     <!-- *************************************************************************************** -->
     <!-- -->

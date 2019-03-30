@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.goodreads.taskqueue;
 
-import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
@@ -58,15 +57,8 @@ public final class TasksCursor
         implements BindableItemCursor {
 
     /** Static Factory object to create the custom cursor. */
-    private static final CursorFactory CURSOR_FACTORY = new CursorFactory() {
-        @Override
-        public Cursor newCursor(@NonNull final SQLiteDatabase db,
-                                @NonNull final SQLiteCursorDriver masterQuery,
-                                @NonNull final String editTable,
-                                @NonNull final SQLiteQuery query) {
-            return new TasksCursor(masterQuery, editTable, query);
-        }
-    };
+    private static final CursorFactory CURSOR_FACTORY = (db, masterQuery, editTable, query) ->
+            new TasksCursor(masterQuery, editTable, query);
 
     private static final String ALL_TASKS_QUERY = "SELECT *, "
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e"

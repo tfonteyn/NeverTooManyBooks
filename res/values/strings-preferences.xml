@@ -245,28 +245,28 @@
 
 
     <string-array name="pe_bob_filter_read">
-        <item>@string/all_books</item>
+        <item>@string/bookshelf_all_books</item>
         <item>Read books</item>
         <item>Unread books</item>
     </string-array>
 
     <!-- Preference - Booklist Filter -->
     <string-array name="pe_bob_filter_signed">
-        <item>@string/all_books</item>
+        <item>@string/bookshelf_all_books</item>
         <item>Signed books</item>
         <item>Unsigned books</item>
     </string-array>
 
     <!-- Preference - Booklist Filter -->
     <string-array name="pe_bob_filter_loaned">
-        <item>@string/all_books</item>
+        <item>@string/bookshelf_all_books</item>
         <item>Loaned books</item>
         <item>Available books</item>
     </string-array>
 
     <!-- Preference - Booklist Filter -->
     <string-array name="pe_bob_filter_anthology">
-        <item>@string/all_books</item>
+        <item>@string/bookshelf_all_books</item>
         <item>Anthology books</item>
         <item>Non-Anthology books</item>
     </string-array>

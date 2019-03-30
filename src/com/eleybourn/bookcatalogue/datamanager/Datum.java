@@ -280,7 +280,7 @@ public class Datum {
      * @param data    Parent DataManager
      * @param rawData Raw data bundle
      *
-     * @return The object data
+     * @return The object data, or null when not present
      */
     @Nullable
     public Object get(@NonNull final DataManager data,

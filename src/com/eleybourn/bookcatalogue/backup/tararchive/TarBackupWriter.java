@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
@@ -62,7 +63,7 @@ public class TarBackupWriter
         super(context);
         mContainer = container;
         // Open the archive for writing
-        FileOutputStream out = new FileOutputStream(container.getFile());
+        OutputStream out = new FileOutputStream(container.getFile());
         mOutput = new TarArchiveOutputStream(out);
     }
 

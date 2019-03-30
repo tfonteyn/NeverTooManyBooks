@@ -161,16 +161,13 @@ public class AdminSearchOrderFragment
             nameView = rowView.findViewById(R.id.name);
             checkableView = rowView.findViewById(R.id.TLV_ROW_CHECKABLE);
             // Set the click listener for the 'enable' site checkable
-            checkableView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    Holder h = (Holder) v.getTag();
-                    h.site.setEnabled(!h.site.isEnabled());
-                    h.checkableView.setChecked(h.site.isEnabled());
-                    // no need to update the list, item itself is updated
-                    //onListChanged();
-                    mIsDirty = true;
-                }
+            checkableView.setOnClickListener(v -> {
+                Holder h = (Holder) v.getTag();
+                h.site.setEnabled(!h.site.isEnabled());
+                h.checkableView.setChecked(h.site.isEnabled());
+                // no need to update the list, item itself is updated
+                //onListChanged();
+                mIsDirty = true;
             });
 
             rowView.setTag(this);

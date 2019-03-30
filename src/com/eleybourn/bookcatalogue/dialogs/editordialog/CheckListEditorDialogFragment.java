@@ -102,8 +102,6 @@ public class CheckListEditorDialogFragment<T>
         if (mTitleId != 0) {
             editor.setTitle(mTitleId);
         }
-        editor.createContentList();
-
         return editor;
     }
 
@@ -111,7 +109,7 @@ public class CheckListEditorDialogFragment<T>
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-            outState.putParcelableArrayList(BKEY_CHECK_LIST, mList);
+        outState.putParcelableArrayList(BKEY_CHECK_LIST, mList);
     }
 
     /**
@@ -144,12 +142,8 @@ public class CheckListEditorDialogFragment<T>
     /**
      * The custom dialog.
      */
-    public class CheckListEditorDialog
-            extends AlertDialog
-            implements CompoundButton.OnCheckedChangeListener {
-
-        /** body of the dialog. */
-        private final ViewGroup mContent;
+    private class CheckListEditorDialog
+            extends AlertDialog {
 
         /**
          * Constructor.
@@ -159,59 +153,30 @@ public class CheckListEditorDialogFragment<T>
         CheckListEditorDialog(@NonNull final Context context) {
             super(context);
 
-            // Get the layout
             View root = getLayoutInflater().inflate(R.layout.dialog_edit_base, null);
             setView(root);
 
-            // get the content view
-            mContent = root.findViewById(R.id.content);
+            // Takes the list of items and create a list of checkboxes in the display.
+            ViewGroup body = root.findViewById(R.id.content);
+            for (final CheckListItem item : mList) {
+                CompoundButton buttonView = new CheckBox(context);
+                buttonView.setChecked(item.isChecked());
+                buttonView.setText(item.getLabel(context));
+                buttonView.setOnCheckedChangeListener(
+                        (buttonView1, isChecked) -> item.setChecked(isChecked));
+                body.addView(buttonView);
+            }
 
             // Handle OK
             root.findViewById(R.id.confirm).setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull final View v) {
-                            dismiss();
-                            getFragmentListener().onCheckListEditorSave(mDestinationFieldId, mList);
-                        }
+                    v -> {
+                        dismiss();
+                        getFragmentListener().onCheckListEditorSave(mDestinationFieldId, mList);
                     }
             );
 
             // Handle Cancel
-            root.findViewById(R.id.cancel).setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull final View v) {
-                            dismiss();
-                        }
-                    }
-            );
-        }
-
-        /** Takes the list of items and create a list of checkboxes in the display. */
-        void createContentList() {
-            for (CheckListItem item : mList) {
-                CompoundButton buttonView = new CheckBox(getContext());
-                buttonView.setChecked(item.isChecked());
-                buttonView.setText(item.getLabel(getContext()));
-                buttonView.setOnCheckedChangeListener(this);
-                // the button holds the item itself for easy updating.
-                buttonView.setTag(R.id.TAG_DIALOG_ITEM, item);
-                mContent.addView(buttonView);
-            }
-        }
-
-        /**
-         * Called when the user changes a checkbox and updated the list.
-         *
-         * @param buttonView – The compound button view whose state has changed.
-         * @param isChecked  – The new checked state of buttonView.
-         */
-        @Override
-        public void onCheckedChanged(final CompoundButton buttonView,
-                                     final boolean isChecked) {
-            CheckListItem item = (CheckListItem) buttonView.getTag(R.id.TAG_DIALOG_ITEM);
-            item.setChecked(isChecked);
+            root.findViewById(R.id.cancel).setOnClickListener(v -> dismiss());
         }
     }
 }

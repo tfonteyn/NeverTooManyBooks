@@ -156,12 +156,7 @@ public class Bookshelf
      */
     @NonNull
     public static String toDisplayString(@NonNull final List<Bookshelf> list) {
-        return Csv.toDisplayString(list, new Csv.Formatter<Bookshelf>() {
-            @Override
-            public String format(@NonNull final Bookshelf element) {
-                return element.getName();
-            }
-        });
+        return Csv.toDisplayString(list, Bookshelf::getName);
     }
 
     /**
@@ -195,7 +190,7 @@ public class Bookshelf
      */
     public static Bookshelf getDefaultBookshelf(@NonNull final DBA db) {
         return new Bookshelf(DEFAULT_ID,
-                             db.getContext().getString(R.string.initial_bookshelf),
+                             db.getContext().getString(R.string.bookshelf_my_books),
                              BooklistStyles.getDefaultStyle(db).getId());
     }
 
@@ -208,7 +203,7 @@ public class Bookshelf
      */
     public static Bookshelf getAllBooksBookshelf(@NonNull final DBA db) {
         return new Bookshelf(ALL_BOOKS,
-                             db.getContext().getString(R.string.all_books),
+                             db.getContext().getString(R.string.bookshelf_all_books),
                              BooklistStyles.getDefaultStyle(db).getId());
     }
 
@@ -231,11 +226,6 @@ public class Bookshelf
     public String getName() {
         return mName;
     }
-
-    public void setName(@NonNull final String name) {
-        mName = name;
-    }
-
 
     /**
      * Set the style for this bookshelf. The style will also be set as the global default.

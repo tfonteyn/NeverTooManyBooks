@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.datamanager.accessors;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Datum;
@@ -68,8 +69,10 @@ public interface DataAccessor {
      * @param dataManager the parent collection
      * @param rawData     the bundle into which the value should be stored
      * @param datum       info about the data we're handling
+     *
+     * @return the raw value, or null if not present
      */
-    @NonNull
+    @Nullable
     Object get(@NonNull DataManager dataManager,
                @NonNull Bundle rawData,
                @NonNull Datum datum);

@@ -37,7 +37,7 @@ public class TableDefinition
 
     /** List of index definitions for this table. */
     private final Map<String, IndexDefinition> mIndexes =
-            Collections.synchronizedMap(new HashMap<String, IndexDefinition>());
+            Collections.synchronizedMap(new HashMap<>());
 
     /** List of domains in this table. */
     @NonNull
@@ -48,18 +48,18 @@ public class TableDefinition
 
     /** Used for checking if a domain NAME has already been added. */
     private final Map<String, DomainDefinition> mDomainNameCheck =
-            Collections.synchronizedMap(new HashMap<String, DomainDefinition>());
+            Collections.synchronizedMap(new HashMap<>());
 
     /** List of domains forming primary key. */
     private final List<DomainDefinition> mPrimaryKey = new ArrayList<>();
 
     /** List of parent tables (tables referred to by foreign keys on this table). */
     private final Map<TableDefinition, FkReference> mParents =
-            Collections.synchronizedMap(new HashMap<TableDefinition, FkReference>());
+            Collections.synchronizedMap(new HashMap<>());
 
     /** List of child tables (tables referring to by foreign keys to this table). */
     private final Map<TableDefinition, FkReference> mChildren =
-            Collections.synchronizedMap(new HashMap<TableDefinition, FkReference>());
+            Collections.synchronizedMap(new HashMap<>());
 
     /** Table name. */
     private String mName;
@@ -116,7 +116,7 @@ public class TableDefinition
     private static void drop(@NonNull final SynchronizedDb db,
                              @NonNull final String name) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
-            Logger.info(TableDefinition.class, "Dropping TABLE " + name);
+            Logger.info(TableDefinition.class, "drop","TABLE:" + name);
         }
         db.execSQL("DROP TABLE IF EXISTS " + name);
     }
@@ -548,6 +548,23 @@ public class TableDefinition
     /**
      * Add an index to this table.
      *
+     * @param domain  domain to name the index.
+     *                The full name will become: tableName_IXi_{domain.name}
+     * @param unique  FLag indicating index is UNIQUE
+     * @param domains List of domains index
+     *
+     * @return TableDefinition (for chaining)
+     */
+    @NonNull
+    public TableDefinition addIndex(@NonNull final DomainDefinition domain,
+                                    final boolean unique,
+                                    @NonNull final DomainDefinition... domains) {
+        return addIndex(domain.name, unique, Arrays.asList(domains));
+    }
+
+    /**
+     * Add an index to this table.
+     *
      * @param localName unique name, local for this table, to give this index. Alphanumeric Only.
      *                  The full name will become: tableName_IXi_localName
      * @param unique    FLag indicating index is UNIQUE
@@ -659,14 +676,11 @@ public class TableDefinition
      */
     @NonNull
     public String csvColumns(final boolean withAS) {
-        return Csv.join(",", mDomains, new Csv.Formatter<DomainDefinition>() {
-            @Override
-            public String format(@NonNull final DomainDefinition element) {
-                if (withAS) {
-                    return dotAs(element);
-                } else {
-                    return dot(element);
-                }
+        return Csv.join(",", mDomains, element -> {
+            if (withAS) {
+                return dotAs(element);
+            } else {
+                return dot(element);
             }
         });
     }
@@ -686,14 +700,11 @@ public class TableDefinition
     @NonNull
     public String csvColumns(final boolean withAS,
                              @NonNull final DomainDefinition... domains) {
-        return Csv.join(",", Arrays.asList(domains), new Csv.Formatter<DomainDefinition>() {
-            @Override
-            public String format(@NonNull final DomainDefinition element) {
-                if (withAS) {
-                    return dotAs(element);
-                } else {
-                    return dot(element);
-                }
+        return Csv.join(",", Arrays.asList(domains), element -> {
+            if (withAS) {
+                return dotAs(element);
+            } else {
+                return dot(element);
             }
         });
     }
@@ -740,12 +751,7 @@ public class TableDefinition
     @NonNull
     public String getUpdate(@NonNull final DomainDefinition... domains) {
         return "UPDATE " + mName + " SET " +
-                Csv.join(",", Arrays.asList(domains), new Csv.Formatter<DomainDefinition>() {
-                    @Override
-                    public String format(@NonNull final DomainDefinition element) {
-                        return element + "=?";
-                    }
-                });
+                Csv.join(",", Arrays.asList(domains), element -> element + "=?");
     }
 
 
@@ -804,12 +810,7 @@ public class TableDefinition
         // add foreign key TABLE constraints if allowed/needed.
         if (withTableReferences && !mParents.isEmpty()) {
             sql.append("\n,")
-               .append(Csv.join("\n,", mParents.values(), new Csv.Formatter<FkReference>() {
-                   @Override
-                   public String format(@NonNull final FkReference element) {
-                       return element.def();
-                   }
-               }));
+               .append(Csv.join("\n,", mParents.values(), FkReference::def));
         }
 
         // end of column/constraint list

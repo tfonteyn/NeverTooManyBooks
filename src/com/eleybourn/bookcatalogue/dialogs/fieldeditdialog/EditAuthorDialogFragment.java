@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.EditAuthorListActivity;
-import com.eleybourn.bookcatalogue.UniqueId;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 
 /**
@@ -48,7 +48,7 @@ public class EditAuthorDialogFragment
     public static EditAuthorDialogFragment newInstance(@NonNull final Author author) {
         EditAuthorDialogFragment frag = new EditAuthorDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(UniqueId.KEY_AUTHOR, author);
+        args.putParcelable(DatabaseDefinitions.KEY_AUTHOR, author);
         frag.setArguments(args);
         return frag;
     }

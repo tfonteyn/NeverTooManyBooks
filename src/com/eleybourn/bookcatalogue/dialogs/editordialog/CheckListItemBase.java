@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * The main reason that you need to extend this is because each type of encapsulated item
  * will have its own way of storing a label (to display next to the checkbox).
- * Using .toString is not really a nice solution, hence... extends this class
+ * Using .toString() is not really a nice solution, hence... extends this class
  * and implement: String {@link CheckListItem#getLabel}
  *
  * @param <T> type of encapsulated item

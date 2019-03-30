@@ -24,17 +24,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -72,7 +70,7 @@ public class GoodreadsSearchCriteriaActivity
         mCriteriaView = findViewById(R.id.search_text);
 
         // Look for a book ID
-        long bookId = getIntent().getLongExtra(UniqueId.KEY_ID, 0);
+        long bookId = getIntent().getLongExtra(DatabaseDefinitions.KEY_ID, 0);
         // If we have a book, fill in criteria AND try a search
         if (bookId != 0) {
             // Initial value; try to build from passed book, if available.
@@ -110,12 +108,7 @@ public class GoodreadsSearchCriteriaActivity
             findViewById(R.id.original_details).setVisibility(View.GONE);
         }
 
-        findViewById(R.id.btn_search).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                doSearch();
-            }
-        });
+        findViewById(R.id.btn_search).setOnClickListener(v -> doSearch());
     }
 
     /**
@@ -124,7 +117,7 @@ public class GoodreadsSearchCriteriaActivity
     private void doSearch() {
         String criteria = mCriteriaView.getText().toString().trim();
         if (criteria.isEmpty()) {
-            UserMessage.showUserMessage(this, R.string.please_enter_search_criteria);
+            UserMessage.showUserMessage(this, R.string.search_please_enter_criteria);
             return;
         }
 

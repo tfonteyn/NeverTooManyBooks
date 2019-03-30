@@ -26,12 +26,9 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
@@ -79,20 +76,10 @@ public class About
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         view = findViewById(R.id.contact1);
-        view.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                sendContactEmail(R.string.email_contact1);
-            }
-        });
+        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact1));
 
         view = findViewById(R.id.contact2);
-        view.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                sendContactEmail(R.string.email_contact2);
-            }
-        });
+        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact2));
 
         /* URL as-is for reference
 

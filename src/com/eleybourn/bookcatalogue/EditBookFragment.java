@@ -43,8 +43,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
+import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.AlertDialogListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -162,7 +164,7 @@ public class EditBookFragment
                 break;
 
             case TAB_EDIT_ANTHOLOGY:
-                if (Fields.isVisible(UniqueId.KEY_TOC_BITMASK)) {
+                if (Fields.isVisible(DatabaseDefinitions.KEY_TOC_BITMASK)) {
                     showTab = tabWanted;
                 }
                 break;
@@ -180,7 +182,7 @@ public class EditBookFragment
                                              getString(R.string.lbl_publication)));
         mPagerAdapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
                                              getString(R.string.tab_lbl_notes)));
-        if (Fields.isVisible(UniqueId.KEY_TOC_BITMASK)) {
+        if (Fields.isVisible(DatabaseDefinitions.KEY_TOC_BITMASK)) {
             mPagerAdapter.add(new FragmentHolder(fm, EditBookTOCFragment.TAG,
                                                  getString(R.string.tab_lbl_content)));
         }
@@ -197,36 +199,28 @@ public class EditBookFragment
         confirmButton.setText(isExistingBook ? R.string.btn_confirm_save_book
                                              : R.string.btn_confirm_add_book);
 
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(@NonNull final View v) {
-                doSave(new AlertDialogListener() {
-                    @Override
-                    public void onPositiveButton() {
-                        saveBook();
-                        Intent data = new Intent()
-                                .putExtra(UniqueId.KEY_ID, getBook().getId());
-                        mActivity.setResult(Activity.RESULT_OK, data);
-                        mActivity.finish();
-                    }
-
-                    @Override
-                    public void onNeutralButton() {
-                        // Remain editing
-                    }
-
-                    @Override
-                    public void onNegativeButton() {
-                        doCancel();
-                    }
-                });
+        confirmButton.setOnClickListener(v -> doSave(new AlertDialogListener() {
+            @Override
+            public void onPositiveButton() {
+                saveBook();
+                Intent data = new Intent()
+                        .putExtra(DatabaseDefinitions.KEY_ID, getBook().getId());
+                mActivity.setResult(Activity.RESULT_OK, data);
+                mActivity.finish();
             }
-        });
 
-        requireView().findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            public void onClick(@NonNull final View v) {
+            @Override
+            public void onNeutralButton() {
+                // Remain editing
+            }
+
+            @Override
+            public void onNegativeButton() {
                 doCancel();
             }
-        });
+        }));
+
+        requireView().findViewById(R.id.cancel).setOnClickListener(v -> doCancel());
     }
 
 //</editor-fold>
@@ -295,16 +289,19 @@ public class EditBookFragment
         // }
         // However, there is some data that we really do require...
         if (book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
-            UserMessage.showUserMessage(mActivity, R.string.warning_required_author_long);
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(), R.string.warning_required_author_long);
             return;
         }
-        if (!book.containsKey(UniqueId.KEY_TITLE) || book.getString(UniqueId.KEY_TITLE).isEmpty()) {
-            UserMessage.showUserMessage(mActivity, R.string.warning_required_title);
+        if (!book.containsKey(DatabaseDefinitions.KEY_TITLE) || book.getString(
+                DatabaseDefinitions.KEY_TITLE).isEmpty()) {
+            //noinspection ConstantConditions
+            UserMessage.showUserMessage(getView(), R.string.warning_required_title);
             return;
         }
 
         if (book.getId() == 0) {
-            String isbn = book.getString(UniqueId.KEY_ISBN);
+            String isbn = book.getString(DatabaseDefinitions.KEY_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty() && ((mDb.getBookIdFromIsbn(isbn, true) > 0))) {
                 StandardDialogs.confirmSaveDuplicateBook(requireContext(), nextStep);
@@ -326,7 +323,7 @@ public class EditBookFragment
         StorageUtils.deleteTempCoverFile();
 
         Intent data = new Intent()
-                .putExtra(UniqueId.KEY_ID, getBook().getId());
+                .putExtra(DatabaseDefinitions.KEY_ID, getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.
         mActivity.setResult(Activity.RESULT_OK, data);
         mActivity.finishIfClean(isDirty());
@@ -337,6 +334,9 @@ public class EditBookFragment
      */
     private void saveBook() {
         Book book = getBook();
+
+        Logger.info(this,"saveBook", book.getRawData());
+
         if (book.getId() == 0) {
             long id = mDb.insertBook(book);
             if (id > 0) {
@@ -395,8 +395,6 @@ public class EditBookFragment
     private static class FragmentHolder {
 
         @NonNull
-        final String tag;
-        @NonNull
         final String title;
         @NonNull
         Fragment fragment;
@@ -409,7 +407,6 @@ public class EditBookFragment
         FragmentHolder(@NonNull final FragmentManager fm,
                        @NonNull final String tag,
                        @NonNull final String title) {
-            this.tag = tag;
             this.title = title;
 
             //noinspection ConstantConditions

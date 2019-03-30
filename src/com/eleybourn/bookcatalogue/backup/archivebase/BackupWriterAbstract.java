@@ -24,12 +24,14 @@ import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -62,14 +64,14 @@ public abstract class BackupWriterAbstract
     private final Context mContext;
     @NonNull
     private final DBA mDb;
-
+    private final Exporter mExporter;
     private ExportSettings mSettings;
-
     private BackupWriter.BackupWriterListener mProgressListener;
 
     protected BackupWriterAbstract(@NonNull final Context context) {
         mContext = context;
         mDb = new DBA(mContext);
+        mExporter = new CsvExporter(mContext, mSettings);
     }
 
     /**
@@ -79,6 +81,7 @@ public abstract class BackupWriterAbstract
      * @param listener to send progress updates to
      */
     @Override
+    @WorkerThread
     public void backup(@NonNull final ExportSettings settings,
                        @NonNull final BackupWriter.BackupWriterListener listener)
             throws IOException {
@@ -97,16 +100,14 @@ public abstract class BackupWriterAbstract
         infoValues.hasStyles = (mSettings.what & ExportSettings.BOOK_LIST_STYLES) != 0;
         infoValues.hasPrefs = (mSettings.what & ExportSettings.PREFERENCES) != 0;
 
-
         try {
             // If we are doing books, generate the CSV file, and set the number
             if ((mSettings.what & ExportSettings.BOOK_CSV) != 0) {
                 // Get a temp file and set for delete
                 tempBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
                 tempBookCsvFile.deleteOnExit();
-                try (FileOutputStream output = new FileOutputStream(tempBookCsvFile)) {
-                    CsvExporter exporter = new CsvExporter(mContext, mSettings);
-                    infoValues.bookCount = exporter.doBooks(output, new ForwardingListener());
+                try (OutputStream output = new FileOutputStream(tempBookCsvFile)) {
+                    infoValues.bookCount = mExporter.doBooks(output, new ForwardingListener());
                 }
             }
 
@@ -189,9 +190,9 @@ public abstract class BackupWriterAbstract
         final File tempXmlBackupFile = File.createTempFile("tmp_xml_", ".tmp");
         tempXmlBackupFile.deleteOnExit();
 
-        try (FileOutputStream output = new FileOutputStream(tempXmlBackupFile)) {
+        try (OutputStream output = new FileOutputStream(tempXmlBackupFile)) {
             XmlExporter exporter = new XmlExporter(mContext, mSettings);
-            exporter.doExport(output, new ForwardingListener());
+            exporter.doAll(output, new ForwardingListener());
             putXmlData(tempXmlBackupFile);
         } finally {
             StorageUtils.deleteFile(tempXmlBackupFile);
@@ -230,7 +231,6 @@ public abstract class BackupWriterAbstract
             mProgressListener.onProgressStep(null, 1);
         }
     }
-
 
     /**
      * Write each cover file corresponding to a book to the archive.
@@ -299,8 +299,7 @@ public abstract class BackupWriterAbstract
     }
 
     /**
-     * Listener for the '{@link com.eleybourn.bookcatalogue.backup.Exporter#doExport} method
-     * that just passes on the progress to our own listener.
+     * Listener that just passes on the progress to our own listener.
      * <p>
      * It basically translates between 'delta' and 'absolute' positions for the progress counter
      */

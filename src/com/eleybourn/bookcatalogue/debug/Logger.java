@@ -40,25 +40,40 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
- * Non-error messages easier to find in the logfile.
- * They always start with either:
+ * All message start with either:
  * DEBUG:
  * INFO:
+ * ERROR:
  * <p>
- * error methods will always print a stacktrace (even if you do not pass in an exception)
+ * Info messages are console only.
  * <p>
- * * ALWAYS call the 'info' methods like this:
- * *         if (BuildConfig.DEBUG) {
- * *             Logger.info(...);
- * *         }
+ * ALWAYS call the 'info' methods like this:
+ * * if (BuildConfig.DEBUG) {
+ * *     Logger.info(...);
+ * * }
+ * <p>
+ * Error and debug go to the log and the console.
+ * Error and debug will always print a stacktrace (even if you do not pass in an exception).
+ * Debug should not be used except when a known issue needs tracing.
  */
 public final class Logger {
 
+    /** prefix for console logging. */
     private static final String LOG_TAG = "BC_Logger";
+
     @SuppressLint("SimpleDateFormat")
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private Logger() {
+    }
+
+    /**
+     * For static callers
+     */
+    public static void info(@NonNull final Class clazz,
+                            @NonNull final String methodName,
+                            @NonNull final Object... params) {
+        Log.w(LOG_TAG, buildInfoMessage(clazz, Tracker.State.Running, methodName, concat(params)));
     }
 
     /**
@@ -67,51 +82,39 @@ public final class Logger {
     public static void info(@NonNull final Object object,
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
-        Log.w(LOG_TAG, buildInfoMessage(object, Tracker.State.Running, methodName, concat(params)));
+        Log.w(LOG_TAG, buildInfoMessage(object.getClass(), Tracker.State.Running, methodName,
+                                        concat(params)));
     }
 
     /**
-     * For tracking enter/exit of methods, with optional parameter dump.
+     * For tracking enter/exit of methods.
      */
     public static void info(@NonNull final Object object,
                             @NonNull final Tracker.State state,
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
-        Log.w(LOG_TAG, buildInfoMessage(object, state, methodName, concat(params)));
+        Log.w(LOG_TAG, buildInfoMessage(object.getClass(), state, methodName, concat(params)));
     }
 
-    /**
-     * For static callers
-     */
-    public static void info(@NonNull final Class clazz,
-                            @Nullable final String message) {
-        Log.w(LOG_TAG, "INFO|" + clazz.getCanonicalName() + '|' + message);
-    }
 
     private static String concat(@NonNull final Object[] params) {
-        StringBuilder message = new StringBuilder("|");
+        StringBuilder message = new StringBuilder();
         for (Object parameter : params) {
-            message.append(parameter).append(',');
+            message.append(parameter).append('|');
         }
         message.append('.');
         return message.toString();
     }
 
-    private static String buildInfoMessage(@NonNull final Object object,
+    private static String buildInfoMessage(@NonNull final Class clazz,
                                            @NonNull final Tracker.State state,
                                            @NonNull final String methodName,
                                            @Nullable final String message) {
-        Class clazz = object.getClass();
-        StringBuilder msg = new StringBuilder("INFO|");
-        msg.append(clazz.isAnonymousClass() ? "AnonymousClass" : clazz.getCanonicalName());
-        msg.append('|');
-        msg.append(state);
-        msg.append('|');
-        if (!methodName.isEmpty()) {
-            msg.append(methodName).append('|');
-        }
-        msg.append(message);
-        return msg.toString();
+        return "INFO"
+                + '|' + (clazz.isAnonymousClass() ? "AnonymousClass" : clazz.getCanonicalName())
+                + '|' + state
+                + '|' + methodName
+                + '|' + message;
     }
 
     /* ****************************************************************************************** */
@@ -154,7 +157,7 @@ public final class Logger {
     public static void error(@Nullable final Exception e,
                              @NonNull final String message) {
         String result = buildErrorMessage(e, message);
-        // only place where we should write to the logfile.
+        // only place where we should unconditionally write to the logfile.
         writeToLog(result);
         // for convenience also send to console during development
         if (/* always log */ BuildConfig.DEBUG) {
@@ -166,7 +169,6 @@ public final class Logger {
                                             @NonNull final String message) {
 
         StringBuilder msg = new StringBuilder("ERROR|");
-        String now = DATE_FORMAT.format(new Date());
         String exMsg;
         StringWriter stacktrace = new StringWriter();
         try (PrintWriter pw = new PrintWriter(stacktrace)) {
@@ -179,6 +181,7 @@ public final class Logger {
         }
 
         if (!(e instanceof DebugStackTrace)) {
+            String now = DATE_FORMAT.format(new Date());
             msg.append("An Exception/Error Occurred @ ").append(now).append('\n')
                .append(exMsg)
                .append("In Phone ").append(Build.MODEL)

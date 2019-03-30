@@ -260,17 +260,14 @@ public class FileChooserFragment
             //noinspection ConstantConditions
             item.onGetView(convertView, getContext());
 
-            convertView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    if (item.getFile().isDirectory()) {
-                        // go into the directory selected
-                        mRootPath = item.getFile();
-                        tellActivityPathChanged();
-                    } else {
-                        // Put the name of the file into the filename field when clicked.
-                        mFilenameView.setText(item.getFile().getName());
-                    }
+            convertView.setOnClickListener(v -> {
+                if (item.getFile().isDirectory()) {
+                    // go into the directory selected
+                    mRootPath = item.getFile();
+                    tellActivityPathChanged();
+                } else {
+                    // Put the name of the file into the filename field when clicked.
+                    mFilenameView.setText(item.getFile().getName());
                 }
             });
             return convertView;

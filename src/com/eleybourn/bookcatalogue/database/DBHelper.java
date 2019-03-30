@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.database;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -169,22 +168,22 @@ public class DBHelper
      * destination that are not in the source will be defaulted or set to NULL if no default
      * is defined.
      *
-     * @param sdb      the database
-     * @param from     from table
-     * @param to       to table
-     * @param toRemove (optional) List of fields to be removed from the source table
-     *                 (skipped in copy)
+     * @param sdb         the database
+     * @param source      from table
+     * @param destination to table
+     * @param toRemove    (optional) List of fields to be removed from the source table
+     *                    (skipped in copy)
      */
     static void copyTableSafely(@NonNull final SynchronizedDb sdb,
-                                @SuppressWarnings("SameParameterValue") @NonNull final String from,
-                                @NonNull final String to,
+                                @SuppressWarnings("SameParameterValue") @NonNull final String source,
+                                @NonNull final String destination,
                                 @NonNull final String... toRemove) {
         // Get the source info
-        TableInfo src = new TableInfo(sdb, from);
+        TableInfo sourceTable = new TableInfo(sdb, source);
         // Build the column list
         StringBuilder cols = new StringBuilder();
         boolean first = true;
-        for (ColumnInfo ci : src) {
+        for (ColumnInfo ci : sourceTable.getColumns()) {
             boolean isNeeded = true;
             for (String s : toRemove) {
                 if (s.equalsIgnoreCase(ci.name)) {
@@ -202,7 +201,7 @@ public class DBHelper
             }
         }
         String colList = cols.toString();
-        String sql = "INSERT INTO " + to + '(' + colList + ") SELECT " + colList + " FROM " + from;
+        String sql = "INSERT INTO " + destination + '(' + colList + ") SELECT " + colList + " FROM " + source;
         try (SynchronizedStatement stmt = sdb.compileStatement(sql)) {
             stmt.executeInsert();
         }
@@ -249,7 +248,7 @@ public class DBHelper
                 // oops... after inserting '-1' our debug logging will claim that insert failed.
                 if (BuildConfig.DEBUG) {
                     if (id == -1) {
-                        Logger.info(BooklistStyles.class,
+                        Logger.info(BooklistStyles.class, "prepareStylesTable",
                                     "Ignore the debug message about inserting -1 here...");
                     }
                 }
@@ -263,6 +262,7 @@ public class DBHelper
      *
      * @param db The database to be created
      */
+    @SuppressWarnings("unused")
     @Override
     @CallSuper
     public void onCreate(@NonNull final SQLiteDatabase db) {
@@ -297,7 +297,7 @@ public class DBHelper
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ')'
                                  + " VALUES ('"
-                                 + App.getResString(R.string.initial_bookshelf)
+                                 + App.getResString(R.string.bookshelf_my_books)
                                  + "')");
 
         // insert the builtin style id's so foreign key rules are possible.
@@ -586,6 +586,7 @@ public class DBHelper
      *
      * @see #DATABASE_VERSION
      */
+    @SuppressWarnings("unused")
     @Override
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
@@ -627,16 +628,7 @@ public class DBHelper
                                      + File.separator + "tmp_images"));
 
             // migrate old properties.
-            Prefs.migratePreV200preferences(
-                    App.getAppContext()
-                       .getSharedPreferences(App.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE)
-                       .getAll());
-
-            // API: 24 -> App.getAppContext()
-            //                  .deleteSharedPreferences(Prefs.PREF_LEGACY_BOOK_CATALOGUE);
-            App.getAppContext()
-               .getSharedPreferences(App.PREF_LEGACY_BOOK_CATALOGUE, Context.MODE_PRIVATE)
-               .edit().clear().apply();
+            Prefs.migratePreV200preferences(App.PREF_LEGACY_BOOK_CATALOGUE);
 
             // this trigger was replaced.
             syncedDb.execSQL("DROP TRIGGER IF EXISTS books_tg_reset_goodreads");

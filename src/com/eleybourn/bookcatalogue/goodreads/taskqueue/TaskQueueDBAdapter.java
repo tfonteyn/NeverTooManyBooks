@@ -22,10 +22,8 @@ package com.eleybourn.bookcatalogue.goodreads.taskqueue;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
@@ -77,16 +75,8 @@ class TaskQueueDBAdapter {
     /** List of statements build by this adapter so that they can be removed on close. */
     private final List<SQLiteStatement> mStatements = new ArrayList<>();
     /** Static Factory object to create the custom cursor. */
-    private final CursorFactory mEventsCursorFactory = new CursorFactory() {
-        @Override
-        public Cursor newCursor(
-                @NonNull final SQLiteDatabase db,
-                @NonNull final SQLiteCursorDriver masterQuery,
-                @NonNull final String editTable,
-                @NonNull final SQLiteQuery query) {
-            return new EventsCursor(masterQuery, editTable, query);
-        }
-    };
+    private final CursorFactory mEventsCursorFactory = (db, masterQuery, editTable, query) ->
+            new EventsCursor(masterQuery, editTable, query);
     private SQLiteStatement mCheckTaskExistsStmt;
 
     /**

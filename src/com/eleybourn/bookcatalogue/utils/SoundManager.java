@@ -37,12 +37,7 @@ public final class SoundManager {
             MediaPlayer player = new MediaPlayer();
             player.setAudioStreamType(AudioManager.STREAM_MUSIC);
             // When the beep has finished playing, rewind to queue up another one.
-            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(@NonNull final MediaPlayer mp) {
-                    mp.release();
-                }
-            });
+            player.setOnCompletionListener(MediaPlayer::release);
             player.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());
             file.close();
             player.setVolume(0.2f, 0.2f);

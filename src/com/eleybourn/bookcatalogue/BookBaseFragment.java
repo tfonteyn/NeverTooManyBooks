@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -50,6 +51,7 @@ import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.DataViewer;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
@@ -90,7 +92,7 @@ public abstract class BookBaseFragment
         if (actionBar != null) {
             if (book.getId() > 0) {
                 // an existing book
-                actionBar.setTitle(book.getString(UniqueId.KEY_TITLE));
+                actionBar.setTitle(book.getString(DatabaseDefinitions.KEY_TITLE));
                 actionBar.setSubtitle(book.getAuthorTextShort(mActivity));
             } else {
                 // new book
@@ -139,7 +141,7 @@ public abstract class BookBaseFragment
                 book = new Book(bookData);
             } else {
                 // otherwise, try to load from the database. If that fails, it's a new book.
-                long bookId = args.getLong(UniqueId.KEY_ID, 0);
+                long bookId = args.getLong(DatabaseDefinitions.KEY_ID, 0);
                 book = new Book(bookId, mDb);
             }
             getBookManager().setBook(book);
@@ -246,7 +248,7 @@ public abstract class BookBaseFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         if (this instanceof BookManager) {
-            outState.putLong(UniqueId.KEY_ID, getBookManager().getBook().getId());
+            outState.putLong(DatabaseDefinitions.KEY_ID, getBookManager().getBook().getId());
             outState.putBundle(UniqueId.BKEY_BOOK_DATA, getBookManager().getBook().getRawData());
         }
     }
@@ -288,7 +290,7 @@ public abstract class BookBaseFragment
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
             .setIcon(R.drawable.ic_share);
 
-        if (Fields.isVisible(UniqueId.KEY_LOANEE)) {
+        if (Fields.isVisible(DatabaseDefinitions.KEY_LOANEE)) {
             menu.add(R.id.MENU_BOOK_EDIT_LOAN,
                      R.id.MENU_BOOK_EDIT_LOAN, 0, R.string.menu_loan_lend_book);
             menu.add(R.id.MENU_BOOK_LOAN_RETURNED,
@@ -313,7 +315,7 @@ public abstract class BookBaseFragment
         boolean bookExists = book.getId() != 0;
         menu.setGroupVisible(R.id.MENU_GROUP_BOOK, bookExists);
 
-        if (Fields.isVisible(UniqueId.KEY_LOANEE)) {
+        if (Fields.isVisible(DatabaseDefinitions.KEY_LOANEE)) {
             boolean isAvailable = mDb.getLoaneeByBookId(book.getId()) == null;
             menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
             menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
@@ -336,12 +338,9 @@ public abstract class BookBaseFragment
 
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_DELETE:
-                StandardDialogs.deleteBookAlert(mActivity, mDb, book.getId(), new Runnable() {
-                    @Override
-                    public void run() {
-                        mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
-                        mActivity.finish();
-                    }
+                StandardDialogs.deleteBookAlert(mActivity, mDb, book.getId(), () -> {
+                    mActivity.setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+                    mActivity.finish();
                 });
                 return true;
 
@@ -354,10 +353,11 @@ public abstract class BookBaseFragment
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
                 Intent intentUpdateFields =
                         new Intent(mActivity, UpdateFieldsFromInternetActivity.class)
-                                .putExtra(UniqueId.KEY_ID, book.getId())
-                                .putExtra(UniqueId.KEY_TITLE, book.getString(UniqueId.KEY_TITLE))
-                                .putExtra(UniqueId.KEY_AUTHOR_FORMATTED,
-                                          book.getString(UniqueId.KEY_AUTHOR_FORMATTED));
+                                .putExtra(DatabaseDefinitions.KEY_ID, book.getId())
+                                .putExtra(DatabaseDefinitions.KEY_TITLE, book.getString(
+                                        DatabaseDefinitions.KEY_TITLE))
+                                .putExtra(DatabaseDefinitions.KEY_AUTHOR_FORMATTED,
+                                          book.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED));
                 startActivityForResult(intentUpdateFields, REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET);
                 return true;
 
@@ -405,25 +405,14 @@ public abstract class BookBaseFragment
         mFields.setAdapter(field.id, adapter);
 
         // Get the drop-down button for the list and setup dialog
-        requireView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                SimpleDialog.selectFieldDialog(
-                        mActivity.getLayoutInflater(),
-                        getString(dialogTitleId), field, list,
-                        new SimpleDialog.OnClickListener() {
-                            @Override
-                            public void onClick(@NonNull final SimpleDialog.SimpleDialogItem item) {
-                                field.setValue(item.toString());
-                            }
-                        });
-            }
-        });
+        requireView().findViewById(fieldButtonId).setOnClickListener(
+                v -> SimpleDialog.selectFieldDialog(mActivity.getLayoutInflater(),
+                                                    getString(dialogTitleId), field, list));
     }
 
     /**
      * bind a field (button) to bring up a text editor in an overlapping dialog.
-     *
+     * <p>
      * TODO: no in use right now (remove?) / cancel/ok buttons are hidden by soft keyboard.
      *
      * @param callerTag     the fragment class that is calling the editor
@@ -443,15 +432,12 @@ public abstract class BookBaseFragment
             return;
         }
 
-        requireView().findViewById(fieldButtonId).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                FragmentManager fm = requireFragmentManager();
-                if (fm.findFragmentByTag(TextFieldEditorDialogFragment.TAG) == null) {
-                    TextFieldEditorDialogFragment
-                            .newInstance(callerTag, field, dialogTitleId, multiLine)
-                            .show(fm, TextFieldEditorDialogFragment.TAG);
-                }
+        requireView().findViewById(fieldButtonId).setOnClickListener(v -> {
+            FragmentManager fm = requireFragmentManager();
+            if (fm.findFragmentByTag(TextFieldEditorDialogFragment.TAG) == null) {
+                TextFieldEditorDialogFragment
+                        .newInstance(callerTag, field, dialogTitleId, multiLine)
+                        .show(fm, TextFieldEditorDialogFragment.TAG);
             }
         });
     }
@@ -471,14 +457,12 @@ public abstract class BookBaseFragment
             return;
         }
 
-        field.getView().setOnClickListener(new View.OnClickListener() {
-            public void onClick(@NonNull final View v) {
-                FragmentManager fm = requireFragmentManager();
-                if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
-                    PartialDatePickerDialogFragment
-                            .newInstance(callerTag, field, dialogTitleId, todayIfNone)
-                            .show(fm, PartialDatePickerDialogFragment.TAG);
-                }
+        field.getView().setOnClickListener(v -> {
+            FragmentManager fm = requireFragmentManager();
+            if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
+                PartialDatePickerDialogFragment
+                        .newInstance(callerTag, field, dialogTitleId, todayIfNone)
+                        .show(fm, PartialDatePickerDialogFragment.TAG);
             }
         });
     }
@@ -499,15 +483,12 @@ public abstract class BookBaseFragment
             return;
         }
 
-        field.getView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                FragmentManager fm = requireFragmentManager();
-                if (fm.findFragmentByTag(CheckListEditorDialogFragment.TAG) == null) {
-                    CheckListEditorDialogFragment
-                            .newInstance(callerTag, field, dialogTitleId, listGetter)
-                            .show(fm, CheckListEditorDialogFragment.TAG);
-                }
+        field.getView().setOnClickListener(v -> {
+            FragmentManager fm = requireFragmentManager();
+            if (fm.findFragmentByTag(CheckListEditorDialogFragment.TAG) == null) {
+                CheckListEditorDialogFragment
+                        .newInstance(callerTag, field, dialogTitleId, listGetter)
+                        .show(fm, CheckListEditorDialogFragment.TAG);
             }
         });
     }
@@ -526,7 +507,7 @@ public abstract class BookBaseFragment
             case REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    long bookId = data.getLongExtra(UniqueId.KEY_ID, 0);
+                    long bookId = data.getLongExtra(DatabaseDefinitions.KEY_ID, 0);
                     if (bookId > 0) {
                         // replace current book with the updated one,
                         // ENHANCE: merge if in edit mode.
@@ -574,59 +555,65 @@ public abstract class BookBaseFragment
         mFields.resetVisibility();
 
         // actual book
-        showHideField(hideIfEmpty, R.id.coverImage);
-        showHideField(hideIfEmpty, R.id.isbn, R.id.lbl_isbn);
-        showHideField(hideIfEmpty, R.id.description, R.id.lbl_description);
-        showHideField(hideIfEmpty, R.id.pages, R.id.lbl_pages);
-        showHideField(hideIfEmpty, R.id.format, R.id.lbl_format);
-        showHideField(hideIfEmpty, R.id.genre, R.id.lbl_genre);
-        showHideField(hideIfEmpty, R.id.language, R.id.lbl_language);
-//        showHideField(hideIfEmpty, R.id.toc, R.id.row_toc);
+        showHide(hideIfEmpty, R.id.coverImage);
+        showHide(hideIfEmpty, R.id.isbn, R.id.lbl_isbn);
+        showHide(hideIfEmpty, R.id.description, R.id.lbl_description);
 
-        // publishing related fields. lbl_publisher_baseline requires special handling
-        // as it depends on BOTH publisher and date_published.
-        showHideField(hideIfEmpty, R.id.publisher);
-        showHideField(hideIfEmpty, R.id.date_published);
-        showHideField(hideIfEmpty, R.id.first_publication, R.id.lbl_first_publication);
-        showHideField(hideIfEmpty, R.id.price_listed, R.id.price_listed_currency,
-                      R.id.lbl_price_listed);
+        showHide(hideIfEmpty, R.id.pages, R.id.lbl_pages);
+        showHide(hideIfEmpty, R.id.format, R.id.lbl_format);
+        showHideBaseLine(R.id.lbl_pages_baseline, R.id.pages, R.id.format);
+
+        showHide(hideIfEmpty, R.id.genre, R.id.lbl_genre);
+        showHide(hideIfEmpty, R.id.language, R.id.lbl_language);
+        showHide(hideIfEmpty, R.id.first_publication, R.id.lbl_first_publication);
+//        showHide(hideIfEmpty, R.id.toc, R.id.row_toc);
+
+        showHide(hideIfEmpty, R.id.publisher);
+        showHide(hideIfEmpty, R.id.date_published);
+        showHideBaseLine(R.id.lbl_publisher_baseline, R.id.publisher, R.id.date_published);
+
+        showHide(hideIfEmpty, R.id.price_listed, R.id.price_listed_currency, R.id.lbl_price_listed);
+        showHideBaseLine(R.id.lbl_price_listed_baseline, R.id.price_listed);
 
         // personal fields
-        showHideField(hideIfEmpty, R.id.bookshelves, R.id.name, R.id.lbl_bookshelves);
-//        showHideField(hideIfEmpty, R.id.read, R.id.lbl_read);
+        showHide(hideIfEmpty, R.id.bookshelves, R.id.name, R.id.lbl_bookshelves);
+//        showHide(hideIfEmpty, R.id.read, R.id.lbl_read);
 
-        showHideField(hideIfEmpty, R.id.edition, R.id.lbl_edition);
-        showHideField(hideIfEmpty, R.id.notes);
-        showHideField(hideIfEmpty, R.id.location, R.id.lbl_location, R.id.lbl_location_long);
-        showHideField(hideIfEmpty, R.id.date_acquired, R.id.lbl_date_acquired);
-        showHideField(hideIfEmpty, R.id.price_paid, R.id.price_paid_currency, R.id.lbl_price_paid);
-        showHideField(hideIfEmpty, R.id.read_start, R.id.lbl_read_start);
-        showHideField(hideIfEmpty, R.id.read_end, R.id.lbl_read_end);
-        showHideField(hideIfEmpty, R.id.signed, R.id.lbl_signed);
-        showHideField(hideIfEmpty, R.id.rating, R.id.lbl_rating);
+        showHide(hideIfEmpty, R.id.edition, R.id.lbl_edition);
+        showHide(hideIfEmpty, R.id.notes);
+        showHide(hideIfEmpty, R.id.location, R.id.lbl_location, R.id.lbl_location_long);
+        showHide(hideIfEmpty, R.id.date_acquired, R.id.lbl_date_acquired);
+
+        showHide(hideIfEmpty, R.id.price_paid, R.id.price_paid_currency, R.id.lbl_price_paid);
+        showHideBaseLine(R.id.lbl_price_paid_baseline, R.id.price_paid);
+
+        showHide(hideIfEmpty, R.id.read_start, R.id.lbl_read_start);
+        showHide(hideIfEmpty, R.id.read_end, R.id.lbl_read_end);
+        showHide(hideIfEmpty, R.id.signed, R.id.lbl_signed);
+        showHide(hideIfEmpty, R.id.rating, R.id.lbl_rating);
 
         // other
-        showHideField(hideIfEmpty, R.id.loaned_to);
+        showHide(hideIfEmpty, R.id.loaned_to);
 
         //NEWKIND: new fields
     }
 
     /**
      * Text fields:
-     * Hide text field if it does not have any useful data.
+     * Hide text field (View.GONE) if it does not have any useful data.
      * Don't show a field if it is already hidden (assumed by user preference)
      * <p>
      * ImageView:
-     * use the visibility status of the ImageView itself to show/hide the relatedFields
+     * use the visibility status of the ImageView itself for the relatedFields
      *
      * @param hideIfEmpty   hide if empty
      * @param fieldId       layout resource id of the field
      * @param relatedFields list of fields whose visibility will also be set based
      *                      on the first field
      */
-    private void showHideField(final boolean hideIfEmpty,
-                               @IdRes final int fieldId,
-                               @NonNull @IdRes final int... relatedFields) {
+    private void showHide(final boolean hideIfEmpty,
+                          @IdRes final int fieldId,
+                          @NonNull @IdRes final int... relatedFields) {
         final View view = requireView().findViewById(fieldId);
         if (view != null) {
             int visibility = view.getVisibility();
@@ -641,12 +628,42 @@ public abstract class BookBaseFragment
                 }
             }
 
-            // Set the related views
-            for (int relatedFieldId : relatedFields) {
-                View rv = requireView().findViewById(relatedFieldId);
-                if (rv != null) {
-                    rv.setVisibility(visibility);
+            setVisibility(visibility, relatedFields);
+        }
+    }
+
+    /**
+     * If any field of 'fields' is VISIBLE, set the baseline field to INVISIBLE.
+     * If all are GONE, set baseline to GONE as well.
+     *
+     * @param baselineFieldId field to set
+     * @param fields          to test
+     */
+    private void showHideBaseLine(@IdRes final int baselineFieldId,
+                                  @NonNull @IdRes final int... fields) {
+        final View baselineField = requireView().findViewById(baselineFieldId);
+        if (baselineField != null) {
+            boolean isGone = true;
+            for (int fieldId : fields) {
+                View field = requireView().findViewById(fieldId);
+                if (field != null) {
+                    // all fields must be gone to result into isGone==true
+                    isGone = isGone && (field.getVisibility() == View.GONE);
                 }
+            }
+            baselineField.setVisibility(isGone ? View.GONE : View.INVISIBLE);
+        }
+    }
+
+    /**
+     * Set the visibility for a list of fields.
+     */
+    private void setVisibility(final int visibility,
+                               @NonNull @IdRes final int... fields) {
+        for (int fieldId : fields) {
+            View field = requireView().findViewById(fieldId);
+            if (field != null) {
+                field.setVisibility(visibility);
             }
         }
     }
@@ -845,7 +862,7 @@ public abstract class BookBaseFragment
                 s = s.substring(0, Math.min(s.length(), 20));
                 sb.append(s);
             } else {
-                Logger.info(BookBaseFragment.class, sb.toString());
+                Logger.info(BookBaseFragment.class, "debugDumpViewTree", sb.toString());
             }
             if (view instanceof ViewGroup) {
                 ViewGroup g = (ViewGroup) view;

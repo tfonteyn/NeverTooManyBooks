@@ -412,7 +412,7 @@ public class BooklistStyle
 
         mFilterAnthology = new BooleanFilter(Prefs.pk_bob_filter_anthology, mUuid,
                                              DatabaseDefinitions.TBL_BOOKS,
-                                             DatabaseDefinitions.DOM_BOOK_ANTHOLOGY_BITMASK);
+                                             DatabaseDefinitions.DOM_BOOK_TOC_BITMASK);
         mFilters.put(mFilterAnthology.getKey(), mFilterAnthology);
 
         mFilterLoaned = new BooleanFilter(Prefs.pk_bob_filter_loaned, mUuid,
@@ -716,6 +716,7 @@ public class BooklistStyle
     /**
      * Passed a template style, copy the group structure to this style.
      */
+    @SuppressWarnings("unused")
     public void setGroups(@NonNull final BooklistStyle source) {
 
         // Save the current groups
@@ -770,12 +771,7 @@ public class BooklistStyle
      */
     @NonNull
     public String getGroupListDisplayNames(@NonNull final Context context) {
-        return Csv.toDisplayString(mStyleGroups.getGroups(), new Csv.Formatter<BooklistGroup>() {
-            @Override
-            public String format(@NonNull final BooklistGroup element) {
-                return element.getName(context);
-            }
-        });
+        return Csv.toDisplayString(mStyleGroups.getGroups(), element -> element.getName(context));
     }
 
     /**

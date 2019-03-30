@@ -323,7 +323,7 @@ public class BooksMultiTypeListHandler
                 menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_NOTES, 0, R.string.menu_edit_book_notes)
                     .setIcon(R.drawable.ic_note);
 
-                if (Fields.isVisible(UniqueId.KEY_LOANEE)) {
+                if (Fields.isVisible(DatabaseDefinitions.KEY_LOANEE)) {
                     boolean isAvailable = null == mDb.getLoaneeByBookId(row.getBookId());
                     if (isAvailable) {
                         menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT_LOAN, 0,
@@ -466,14 +466,14 @@ public class BooksMultiTypeListHandler
 
             case R.id.MENU_BOOK_EDIT: {
                 Intent intent = new Intent(activity, EditBookActivity.class)
-                        .putExtra(UniqueId.KEY_ID, bookId)
+                        .putExtra(DatabaseDefinitions.KEY_ID, bookId)
                         .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_EDIT);
                 return true;
             }
             case R.id.MENU_BOOK_EDIT_NOTES: {
                 Intent intent = new Intent(activity, EditBookActivity.class)
-                        .putExtra(UniqueId.KEY_ID, bookId)
+                        .putExtra(DatabaseDefinitions.KEY_ID, bookId)
                         .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
                                   EditBookFragment.TAB_EDIT_NOTES);
                 activity.startActivityForResult(intent, BooksOnBookshelf.REQ_BOOK_EDIT);
@@ -540,7 +540,7 @@ public class BooksMultiTypeListHandler
 
             case R.id.MENU_AUTHOR_DETAILS: {
                 Intent intent = new Intent(activity, AuthorActivity.class)
-                        .putExtra(UniqueId.KEY_ID, row.getAuthorId());
+                        .putExtra(DatabaseDefinitions.KEY_ID, row.getAuthorId());
                 activity.startActivity(intent);
                 return true;
             }
@@ -879,7 +879,7 @@ public class BooksMultiTypeListHandler
     /**
      * Implementation of general code used by Booklist holders.
      */
-    abstract static class RowViewHolder
+    private abstract static class RowViewHolder
             extends MultiTypeHolder<BooklistCursorRow> {
 
         /** Absolute position of this row. */
@@ -915,7 +915,7 @@ public class BooksMultiTypeListHandler
      * If the user does not want to see an extra, it must be disabled in the style as well.
      * ENHANCE: have the style use the visibility prefs as 'extra' visibility defaults.
      */
-    public static class BookHolder
+    private static class BookHolder
             extends RowViewHolder {
 
         private final DBA mDb;
@@ -1034,14 +1034,14 @@ public class BooksMultiTypeListHandler
             title.setText(row.getTitle());
 
             // Read
-            if (Fields.isVisible(UniqueId.KEY_READ)) {
+            if (Fields.isVisible(DatabaseDefinitions.KEY_READ)) {
                 read.setChecked(row.isRead());
                 // for some not understood reason, setting the padding in xml did not work.
                 read.setPadding(0, 0, 0, 0);
             }
 
             // Series number
-            if (Fields.isVisible(UniqueId.KEY_SERIES) && row.hasSeriesNumber()) {
+            if (Fields.isVisible(DatabaseDefinitions.KEY_SERIES) && row.hasSeriesNumber()) {
                 String number = row.getSeriesNumber();
                 if (number != null && !number.isEmpty()) {
                     // Display it in one of the views, based on the size of the text.
@@ -1076,13 +1076,10 @@ public class BooksMultiTypeListHandler
                                                   BooklistBuilder.imagesAreCached(),
                                                   BooklistBuilder.imagesAreGeneratedInBackground());
                 //Allow zooming by clicking on the image
-                coverView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull final View v) {
-                        FragmentActivity activity = (FragmentActivity) v.getContext();
-                        String uuid = (String) v.getTag(R.id.TAG_UUID);
-                        ImageUtils.showZoomedImage(activity, StorageUtils.getCoverFile(uuid));
-                    }
+                coverView.setOnClickListener(v -> {
+                    FragmentActivity activity = (FragmentActivity) v.getContext();
+                    String uuid = (String) v.getTag(R.id.TAG_UUID);
+                    ImageUtils.showZoomedImage(activity, StorageUtils.getCoverFile(uuid));
                 });
             }
 
@@ -1124,7 +1121,10 @@ public class BooksMultiTypeListHandler
         @SuppressWarnings("NullableProblems")
         @NonNull
         private View mRowDetailsView;
-        /** (optional) Pointer to the constraint group that controls visibility of all widgets. */
+        /**
+         * (optional) Pointer to the constraint group that controls visibility of all widgets
+         * inside a ViewGroup. Used with ConstraintLayout only.
+         */
         @Nullable
         private View mVisibilityControlView;
 
@@ -1224,7 +1224,7 @@ public class BooksMultiTypeListHandler
     /**
      * Holder for a row that displays a 'rating'.
      */
-    public static class RatingHolder
+    private static class RatingHolder
             extends GenericStringHolder {
 
         /**
@@ -1263,7 +1263,7 @@ public class BooksMultiTypeListHandler
     /**
      * Holder for a row that displays a 'language'.
      */
-    public static class LanguageHolder
+    private static class LanguageHolder
             extends GenericStringHolder {
 
         /**
@@ -1293,7 +1293,7 @@ public class BooksMultiTypeListHandler
     /**
      * Holder for a row that displays a 'read/unread' (as text) status.
      */
-    public static class ReadUnreadHolder
+    private static class ReadUnreadHolder
             extends GenericStringHolder {
 
         /**
@@ -1324,7 +1324,7 @@ public class BooksMultiTypeListHandler
      * Holder for a row that displays a 'month'.
      * This code turns a month number into a locale-based month name.
      */
-    public static class MonthHolder
+    private static class MonthHolder
             extends GenericStringHolder {
 
         /**
@@ -1362,7 +1362,7 @@ public class BooksMultiTypeListHandler
     /**
      * Holder for a row that displays a generic string, but with a 'lock' icon at the 'end'.
      */
-    public static class CheckableStringHolder
+    private static class CheckableStringHolder
             extends GenericStringHolder {
 
         /** Index of related boolean column. */

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorBaseDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -153,7 +154,7 @@ public class EditAuthorListActivity
 
         // When we get here, we know the names are genuinely different and the old author
         // is used in more than one place. Ask the user if they want to make the changes globally.
-        String allBooks = getString(R.string.all_books);
+        String allBooks = getString(R.string.bookshelf_all_books);
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.confirm_apply_author_changed,
@@ -180,15 +181,12 @@ public class EditAuthorListActivity
          * - add new author to book
          */
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.btn_this_book),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
+                         (d, which) -> {
+                             d.dismiss();
 
-                                 author.copyFrom(newAuthorData);
-                                 Utils.pruneList(mDb, mList);
-                                 onListChanged();
-                             }
+                             author.copyFrom(newAuthorData);
+                             Utils.pruneList(mDb, mList);
+                             onListChanged();
                          });
 
         /*
@@ -215,17 +213,14 @@ public class EditAuthorListActivity
          * TODO: speculate if this can be simplified.
          */
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, allBooks,
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
+                         (d, which) -> {
+                             d.dismiss();
 
-                                 mGlobalChangeMade = mDb.globalReplaceAuthor(author, newAuthorData);
+                             mGlobalChangeMade = mDb.globalReplaceAuthor(author, newAuthorData);
 
-                                 author.copyFrom(newAuthorData);
-                                 Utils.pruneList(mDb, mList);
-                                 onListChanged();
-                             }
+                             author.copyFrom(newAuthorData);
+                             Utils.pruneList(mDb, mList);
+                             onListChanged();
                          });
 
         dialog.show();
@@ -252,12 +247,9 @@ public class EditAuthorListActivity
         StandardDialogs.showConfirmUnsavedEditsDialog(
                 this,
                 /* run when user clicks 'exit' */
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        view.setText("");
-                        findViewById(R.id.confirm).performClick();
-                    }
+                () -> {
+                    view.setText("");
+                    findViewById(R.id.confirm).performClick();
                 });
         return false;
     }
@@ -287,7 +279,7 @@ public class EditAuthorListActivity
         public static EditBookAuthorDialogFragment newInstance(@NonNull final Author author) {
             EditBookAuthorDialogFragment frag = new EditBookAuthorDialogFragment();
             Bundle args = new Bundle();
-            args.putParcelable(UniqueId.KEY_AUTHOR, author);
+            args.putParcelable(DatabaseDefinitions.KEY_AUTHOR, author);
             frag.setArguments(args);
             return frag;
         }
@@ -354,8 +346,7 @@ public class EditAuthorListActivity
          * edit the item we clicked on.
          */
         @Override
-        protected void onRowClick(@NonNull final View target,
-                                  @NonNull final Author item,
+        protected void onRowClick(@NonNull final Author item,
                                   final int position) {
             FragmentManager fm = getSupportFragmentManager();
             if (fm.findFragmentByTag(EditBookAuthorDialogFragment.TAG) == null) {

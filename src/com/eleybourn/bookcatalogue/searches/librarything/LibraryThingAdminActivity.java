@@ -21,12 +21,9 @@
 package com.eleybourn.bookcatalogue.searches.librarything;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
@@ -57,6 +54,8 @@ public class LibraryThingAdminActivity
         extends BaseActivity
         implements ProgressDialogFragment.OnTaskFinishedListener {
 
+    private EditText mDevKeyView;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_admin_librarything;
@@ -69,59 +68,34 @@ public class LibraryThingAdminActivity
         setTitle(R.string.library_thing);
 
         // LT Registration Link.
-        findViewById(R.id.register_url).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW,
-                                           Uri.parse(LibraryThingManager.getBaseURL() + '/'));
-                startActivity(intent);
-            }
+        findViewById(R.id.register_url).setOnClickListener(v -> {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                                     Uri.parse(LibraryThingManager.getBaseURL() + '/')));
         });
 
         // DevKey Link.
-        findViewById(R.id.dev_key_url).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                        LibraryThingManager.getBaseURL() + "/services/keys.php"));
-                startActivity(intent);
-            }
+        findViewById(R.id.dev_key_url).setOnClickListener(v -> {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                    LibraryThingManager.getBaseURL() + "/services/keys.php")));
         });
 
-        EditText devKeyView = findViewById(R.id.dev_key);
+        mDevKeyView = findViewById(R.id.dev_key);
         String key = App.getPrefs().getString(LibraryThingManager.PREFS_DEV_KEY, "");
-        devKeyView.setText(key);
+        mDevKeyView.setText(key);
 
-        findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                EditText devKeyView = findViewById(R.id.dev_key);
-                String devKey = devKeyView.getText().toString().trim();
-                App.getPrefs()
-                   .edit()
-                   .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
-                   .apply();
+        findViewById(R.id.confirm).setOnClickListener(v -> {
+            String devKey = mDevKeyView.getText().toString().trim();
+            App.getPrefs()
+               .edit()
+               .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
+               .apply();
 
-                if (!devKey.isEmpty()) {
-                    ValidateKey.start(getSupportFragmentManager());
-                }
+            if (!devKey.isEmpty()) {
+                ValidateKey.start(getSupportFragmentManager());
             }
         });
 
-        findViewById(R.id.reset_messages).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                SharedPreferences prefs = App.getPrefs();
-                SharedPreferences.Editor ed = prefs.edit();
-                for (String key : prefs.getAll().keySet()) {
-                    if (key.toLowerCase()
-                           .startsWith(LibraryThingManager.PREFS_HIDE_ALERT.toLowerCase())) {
-                        ed.remove(key);
-                    }
-                }
-                ed.apply();
-            }
-        });
+        findViewById(R.id.reset_messages).setOnClickListener(v -> LibraryThingManager.resetHints());
     }
 
     @Override

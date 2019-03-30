@@ -82,33 +82,25 @@ public abstract class EditStringBaseDialog {
                 .setTitle(title)
                 .create();
 
-        root.findViewById(R.id.confirm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                String newText = editView.getText().toString().trim();
-                if (newText.isEmpty()) {
-                    UserMessage.showUserMessage(editView, R.string.warning_required_name);
-                    return;
-                }
-                dialog.dismiss();
-                // if there are no differences, just bail out.
-                if (newText.equals(currentText)) {
-                    return;
-                }
-                // ask child class to save
-                saveChanges(currentText, newText);
-                if (mOnChanged != null) {
-                    mOnChanged.run();
-                }
+        root.findViewById(R.id.confirm).setOnClickListener(v -> {
+            String newText = editView.getText().toString().trim();
+            if (newText.isEmpty()) {
+                UserMessage.showUserMessage(editView, R.string.warning_required_name);
+                return;
+            }
+            dialog.dismiss();
+            // if there are no differences, just bail out.
+            if (newText.equals(currentText)) {
+                return;
+            }
+            // ask child class to save
+            saveChanges(currentText, newText);
+            if (mOnChanged != null) {
+                mOnChanged.run();
             }
         });
 
-        root.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                dialog.dismiss();
-            }
-        });
+        root.findViewById(R.id.cancel).setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
 

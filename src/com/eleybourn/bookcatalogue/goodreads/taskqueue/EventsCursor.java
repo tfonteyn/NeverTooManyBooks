@@ -53,7 +53,7 @@ public class EventsCursor
 
     @SuppressLint("UseSparseArrays")
     private final Map<Long, Boolean> mSelections =
-            Collections.synchronizedMap(new HashMap<Long, Boolean>());
+            Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Constructor, based on SQLiteCursor constructor.

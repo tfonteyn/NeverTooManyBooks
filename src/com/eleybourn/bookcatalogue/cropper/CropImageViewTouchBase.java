@@ -215,11 +215,7 @@ public abstract class CropImageViewTouchBase
         final int viewWidth = getWidth();
 
         if (viewWidth <= 0) {
-            mOnLayoutRunnable = new Runnable() {
-                public void run() {
-                    setImageRotateBitmapResetBase(bitmap, resetSupp);
-                }
-            };
+            mOnLayoutRunnable = () -> setImageRotateBitmapResetBase(bitmap, resetSupp);
             return;
         }
 

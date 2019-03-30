@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 
@@ -62,12 +61,7 @@ public class TaskQueueListActivity
 
         Button cleanupBtn = findViewById(R.id.cleanup);
         cleanupBtn.setText(R.string.gr_tq_btn_cleanup_old_tasks);
-        cleanupBtn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                QueueManager.getQueueManager().cleanupOldTasks();
-            }
-        });
+        cleanupBtn.setOnClickListener(v -> QueueManager.getQueueManager().cleanupOldTasks());
 
         if (savedInstanceState == null) {
             HintManager.displayHint(getLayoutInflater(), R.string.hint_background_tasks, null);
@@ -85,14 +79,11 @@ public class TaskQueueListActivity
         List<ContextDialogItem> items = new ArrayList<>();
         items.add(new ContextDialogItem(
                 getString(R.string.gr_tq_show_events_ellipsis),
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent(TaskQueueListActivity.this,
-                                                   EventQueueListActivity.class)
-                                .putExtra(EventQueueListActivity.REQUEST_BKEY_TASK_ID, id);
-                        startActivity(intent);
-                    }
+                () -> {
+                    Intent intent = new Intent(TaskQueueListActivity.this,
+                                               EventQueueListActivity.class)
+                            .putExtra(EventQueueListActivity.REQUEST_BKEY_TASK_ID, id);
+                    startActivity(intent);
                 }));
 
         Task task = (Task) v.getTag(R.id.TAG_TASK);

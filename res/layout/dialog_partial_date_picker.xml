@@ -1,78 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/dialogFrame"
-    android:layout_gravity="center_horizontal"
     >
 
     <LinearLayout
         android:id="@+id/dateSelector"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
         android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         >
 
         <!-- the order of the 3 columns will be changed dynamically depending on the Locale -->
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/yearSelector"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_height="match_parent"
             >
 
             <TextView
                 android:id="@+id/lbl_year"
                 style="@style/lbl_textField"
                 android:text="@string/lbl_year"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 />
 
             <Button
-                android:id="@+id/plus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/plusYear"
+                style="@style/partial_date_picker_buttons"
                 android:text="+"
+                app:layout_constraintStart_toStartOf="@id/lbl_year"
+                app:layout_constraintTop_toBottomOf="@id/lbl_year"
                 tools:ignore="HardcodedText"
                 />
 
             <EditText
                 android:id="@+id/year"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:ems="4"
                 android:hint="@string/lbl_year"
                 android:inputType="number"
+                app:layout_constraintBottom_toTopOf="@id/minusYear"
+                app:layout_constraintEnd_toEndOf="@id/plusYear"
+                app:layout_constraintTop_toBottomOf="@id/plusYear"
+                app:layout_constraintVertical_weight="1"
                 tools:ignore="Autofill,LabelFor"
+                tools:text="1984"
                 />
 
             <Button
-                android:id="@+id/minus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/minusYear"
+                style="@style/partial_date_picker_buttons"
                 android:text="-"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/lbl_year"
                 tools:ignore="HardcodedText"
                 />
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/monthSelector"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="fill_vertical|fill"
-            android:orientation="vertical"
             >
 
             <TextView
                 android:id="@+id/lbl_month"
                 style="@style/lbl_textField"
                 android:text="@string/lbl_month"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 />
 
             <Button
                 android:id="@+id/plusMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/partial_date_picker_buttons"
                 android:text="+"
+                app:layout_constraintStart_toStartOf="@id/lbl_month"
+                app:layout_constraintTop_toBottomOf="@id/lbl_month"
                 tools:ignore="HardcodedText"
                 />
 
@@ -80,36 +92,43 @@
                 android:id="@+id/month"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_weight="1"
+                android:dropDownWidth="80dp"
+                app:layout_constraintBottom_toTopOf="@id/minusMonth"
+                app:layout_constraintEnd_toEndOf="@id/plusMonth"
+                app:layout_constraintTop_toBottomOf="@id/plusMonth"
+                app:layout_constraintVertical_weight="1"
                 />
 
             <Button
                 android:id="@+id/minusMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/partial_date_picker_buttons"
                 android:text="-"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/lbl_month"
                 tools:ignore="HardcodedText"
                 />
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/daySelector"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             >
 
             <TextView
                 android:id="@+id/lbl_day"
                 style="@style/lbl_textField"
                 android:text="@string/lbl_day"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 />
 
             <Button
                 android:id="@+id/plusDay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/partial_date_picker_buttons"
                 android:text="+"
+                app:layout_constraintStart_toStartOf="@id/lbl_day"
+                app:layout_constraintTop_toBottomOf="@id/lbl_day"
                 tools:ignore="HardcodedText"
                 />
 
@@ -117,23 +136,31 @@
                 android:id="@+id/day"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_weight="1"
+                android:dropDownWidth="80dp"
+                app:layout_constraintBottom_toTopOf="@id/minusDay"
+                app:layout_constraintEnd_toEndOf="@id/plusDay"
+                app:layout_constraintTop_toBottomOf="@id/plusDay"
+                app:layout_constraintVertical_weight="1"
                 />
 
             <Button
                 android:id="@+id/minusDay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/partial_date_picker_buttons"
                 android:text="-"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/lbl_day"
                 tools:ignore="HardcodedText"
                 />
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
     <include
         android:id="@+id/buttonbar_cancel_ok"
         layout="@layout/inc_buttonbar_cancel_ok"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/dateSelector"
+        app:layout_constraintStart_toStartOf="@id/dateSelector"
+        app:layout_constraintEnd_toEndOf="@id/dateSelector"
         />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

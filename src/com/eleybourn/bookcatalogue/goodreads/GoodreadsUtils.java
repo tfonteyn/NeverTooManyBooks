@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.view.View;
-import android.view.View.OnClickListener;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -82,38 +81,25 @@ public final class GoodreadsUtils {
         View view;
         /* Goodreads SYNC Link */
         view = root.findViewById(R.id.lbl_sync_with_goodreads);
-        view.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                importAll(activity, true);
-                dialog.dismiss();
-            }
+        view.setOnClickListener(v -> {
+            importAll(activity, true);
+            dialog.dismiss();
         });
-
 
         /* Goodreads IMPORT Link */
         view = root.findViewById(R.id.lbl_import_all_from_goodreads);
-        view.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                importAll(activity, false);
-                dialog.dismiss();
-            }
+        view.setOnClickListener(v -> {
+            importAll(activity, false);
+            dialog.dismiss();
         });
-
 
         /* Goodreads EXPORT Link */
         view = root.findViewById(R.id.lbl_send_books_to_goodreads);
-        view.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                sendBooks(activity);
-                dialog.dismiss();
-            }
+        view.setOnClickListener(v -> {
+            sendBooks(activity);
+            dialog.dismiss();
         });
-
     }
-
 
     /**
      * Ask the user which books to send, then send them.
@@ -201,32 +187,21 @@ public final class GoodreadsUtils {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE,
                          activity.getString(
                                  R.string.gr_btn_send_updated),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                                 sendAllBooks(activity, true);
-                             }
+                         (d, which) -> {
+                             d.dismiss();
+                             sendAllBooks(activity, true);
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
                          activity.getString(R.string.gr_btn_send_all),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                                 sendAllBooks(activity, false);
-                             }
+                         (d, which) -> {
+                             d.dismiss();
+                             sendAllBooks(activity, false);
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                          activity.getString(android.R.string.cancel),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                             }
-                         });
+                         (d, which) -> d.dismiss());
 
         dialog.show();
     }
@@ -277,7 +252,8 @@ public final class GoodreadsUtils {
                         }
                         //noinspection ConstantConditions
                         QueueManager.getQueueManager().enqueueTask(
-                                new SendAllBooksTask(mFragment.getContextWithHorribleClutch(), updatesOnly),
+                                new SendAllBooksTask(mFragment.getContextWithHorribleClutch(),
+                                                     updatesOnly),
                                 QueueManager.Q_MAIN);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
@@ -347,8 +323,9 @@ public final class GoodreadsUtils {
                     if (msg == 0) {
                         //noinspection ConstantConditions
                         QueueManager.getQueueManager()
-                                    .enqueueTask(new SendOneBookTask(mFragment.getContextWithHorribleClutch(),bookId),
-                                                                   QueueManager.Q_SMALL_JOBS);
+                                    .enqueueTask(new SendOneBookTask(
+                                                         mFragment.getContextWithHorribleClutch(), bookId),
+                                                 QueueManager.Q_SMALL_JOBS);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
                     return msg;
@@ -416,7 +393,8 @@ public final class GoodreadsUtils {
 
                         //noinspection ConstantConditions
                         QueueManager.getQueueManager()
-                                    .enqueueTask(new ImportAllTask(mFragment.getContextWithHorribleClutch(), isSync),
+                                    .enqueueTask(new ImportAllTask(
+                                                         mFragment.getContextWithHorribleClutch(), isSync),
                                                  QueueManager.Q_MAIN);
                         return R.string.gr_tq_task_has_been_queued_in_background;
                     }
@@ -525,34 +503,22 @@ public final class GoodreadsUtils {
                 .create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(android.R.string.ok),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                                 RequestAuthTask.start(activity.getSupportFragmentManager());
-                             }
+                         (d, which) -> {
+                             d.dismiss();
+                             RequestAuthTask.start(activity.getSupportFragmentManager());
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
                          activity.getString(R.string.btn_tell_me_more),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                                 Intent intent = new Intent(activity,
-                                                            GoodreadsRegisterActivity.class);
-                                 activity.startActivity(intent);
-                             }
+                         (d, which) -> {
+                             d.dismiss();
+                             Intent intent = new Intent(activity, GoodreadsRegisterActivity.class);
+                             activity.startActivity(intent);
                          });
 
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                          activity.getString(android.R.string.cancel),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 dialog.dismiss();
-                             }
-                         });
+                         (d, which) -> d.dismiss());
 
         dialog.show();
     }

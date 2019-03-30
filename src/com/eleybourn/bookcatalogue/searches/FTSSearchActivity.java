@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.searches;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -29,10 +30,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -50,6 +47,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
@@ -126,10 +124,11 @@ public class FTSSearchActivity
 
     private void readArgs(@NonNull final Bundle args) {
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-        mTitleSearchText = args.getString(UniqueId.KEY_TITLE);
+        mTitleSearchText = args.getString(DatabaseDefinitions.KEY_TITLE);
         mGenericSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -162,13 +161,9 @@ public class FTSSearchActivity
         mBooksFound = findViewById(R.id.books_found);
 
         // Detect when user touches something, just so we know they are 'busy'.
-        findViewById(R.id.root).setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(@NonNull final View v,
-                                   @NonNull final MotionEvent event) {
-                userIsActive(false);
-                return false;
-            }
+        findViewById(R.id.root).setOnTouchListener((v, event) -> {
+            userIsActive(false);
+            return false;
         });
 
         // If the user changes any text, it's not idle
@@ -177,14 +172,11 @@ public class FTSSearchActivity
         mCSearchView.addTextChangedListener(mTextWatcher);
 
         // Handle the 'Search' button.
-        findViewById(R.id.btn_search).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(@NonNull final View v) {
-                Intent data = new Intent()
-                        .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
-                setResult(Activity.RESULT_OK, data);
-                finish();
-            }
+        findViewById(R.id.btn_search).setOnClickListener(v -> {
+            Intent data = new Intent()
+                    .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
+            setResult(Activity.RESULT_OK, data);
+            finish();
         });
 
         // Note: Timer will be started in OnResume().
@@ -249,12 +241,7 @@ public class FTSSearchActivity
         final String message = (tmpMsg != null) ? tmpMsg : "";
 
         // Update the UI in main thread.
-        mSCHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mBooksFound.setText(message);
-            }
-        });
+        mSCHandler.post(() -> mBooksFound.setText(message));
     }
 
     /**
@@ -304,7 +291,7 @@ public class FTSSearchActivity
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        outState.putString(UniqueId.KEY_TITLE, mTitleSearchText);
+        outState.putString(DatabaseDefinitions.KEY_TITLE, mTitleSearchText);
         outState.putString(UniqueId.BKEY_SEARCH_TEXT, mGenericSearchText);
     }
 

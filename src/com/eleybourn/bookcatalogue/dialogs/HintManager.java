@@ -25,7 +25,6 @@ import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -236,25 +235,19 @@ public final class HintManager {
                     .setTitle(R.string.hint)
                     .create();
 
-            root.findViewById(R.id.confirm).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(@NonNull final View v) {
-                    dialog.dismiss();
-                    if (postRun != null) {
-                        postRun.run();
-                    }
+            root.findViewById(R.id.confirm).setOnClickListener(v -> {
+                dialog.dismiss();
+                if (postRun != null) {
+                    postRun.run();
                 }
             });
 
             root.findViewById(R.id.hint_do_not_show_again).setOnClickListener(
-                    new OnClickListener() {
-                        @Override
-                        public void onClick(@NonNull final View v) {
-                            dialog.dismiss();
-                            setVisibility(false);
-                            if (postRun != null) {
-                                postRun.run();
-                            }
+                    v -> {
+                        dialog.dismiss();
+                        setVisibility(false);
+                        if (postRun != null) {
+                            postRun.run();
                         }
                     });
             dialog.show();

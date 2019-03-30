@@ -21,7 +21,6 @@
 package com.eleybourn.bookcatalogue.goodreads.taskqueue;
 
 import android.content.Context;
-import android.content.DialogInterface;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -65,12 +64,8 @@ public class ContextDialogItem
             final AlertDialog dialog = new AlertDialog.Builder(context)
                     .setTitle(R.string.title_select_an_action)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setItems(itemArray, new DialogInterface.OnClickListener() {
-                        public void onClick(@NonNull final DialogInterface dialog,
-                                            final int which) {
-                            itemArray[which].mHandler.run();
-                        }
-                    }).create();
+                    .setItems(itemArray,
+                              (d, which) -> itemArray[which].mHandler.run()).create();
 
             dialog.show();
         }

@@ -7,6 +7,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.SAXException;
+
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -14,15 +23,6 @@ import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
-
-import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 /**
  * Early 2019, I got this error:
@@ -60,10 +60,6 @@ public final class AmazonManager
         return App.getPrefs().getString(PREFS_HOST_URL, "https://www.amazon.com");
     }
 
-    public static void setBaseURL(@NonNull final String url) {
-        App.getPrefs().edit().putString(PREFS_HOST_URL, url).apply();
-    }
-
     @Override
     @WorkerThread
     public boolean isAvailable() {
@@ -83,7 +79,7 @@ public final class AmazonManager
     @StringRes
     @Override
     public int getSearchingResId() {
-        return R.string.searching_amazon_books;
+        return R.string.searching_amazon;
     }
 
     /**

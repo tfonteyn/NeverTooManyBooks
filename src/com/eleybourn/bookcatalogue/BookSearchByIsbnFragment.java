@@ -1,7 +1,6 @@
 package com.eleybourn.bookcatalogue;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -21,6 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.Objects;
 
+import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
@@ -125,7 +125,7 @@ public class BookSearchByIsbnFragment
         super.onActivityCreated(savedInstanceState);
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mIsbnSearchText = args.getString(UniqueId.KEY_ISBN, "");
+        mIsbnSearchText = args.getString(DatabaseDefinitions.KEY_ISBN, "");
 
         if (savedInstanceState != null) {
             mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED, false);
@@ -189,36 +189,12 @@ public class BookSearchByIsbnFragment
         initKeypadButton(R.id.isbn_9, "9");
         initKeypadButton(R.id.isbn_X, "X");
 
+        root.findViewById(R.id.isbn_del).setOnClickListener(v -> handleDeleteButton());
 
-        root.findViewById(R.id.isbn_del).setOnClickListener(new View.OnClickListener() {
-            public void onClick(@NonNull final View v) {
-                try {
-                    //noinspection ConstantConditions
-                    int start = mIsbnView.getSelectionStart();
-                    int end = mIsbnView.getSelectionEnd();
-                    if (start < end) {
-                        // We have a selection. Delete it.
-                        mIsbnView.getText().replace(start, end, "");
-                        mIsbnView.setSelection(start, start);
-                    } else {
-                        // Delete char before cursor
-                        if (start > 0) {
-                            mIsbnView.getText().replace(start - 1, start, "");
-                            mIsbnView.setSelection(start - 1, start - 1);
-                        }
-                    }
-                } catch (StringIndexOutOfBoundsException ignore) {
-                    //do nothing - empty string
-                }
-            }
-        });
-
-        root.findViewById(R.id.btn_search).setOnClickListener(new View.OnClickListener() {
-            public void onClick(@NonNull final View v) {
-                //noinspection ConstantConditions
-                mIsbnSearchText = mIsbnView.getText().toString().trim();
-                prepareSearch();
-            }
+        root.findViewById(R.id.btn_search).setOnClickListener(v -> {
+            //noinspection ConstantConditions
+            mIsbnSearchText = mIsbnView.getText().toString().trim();
+            prepareSearch();
         });
 
         if (!mIsbnSearchText.isEmpty()) {
@@ -229,32 +205,51 @@ public class BookSearchByIsbnFragment
         }
     }
 
+    private void handleDeleteButton() {
+        try {
+            //noinspection ConstantConditions
+            int start = mIsbnView.getSelectionStart();
+            int end = mIsbnView.getSelectionEnd();
+            if (start < end) {
+                // We have a selection. Delete it.
+                mIsbnView.getText().replace(start, end, "");
+                mIsbnView.setSelection(start, start);
+            } else {
+                // Delete char before cursor
+                if (start > 0) {
+                    mIsbnView.getText().replace(start - 1, start, "");
+                    mIsbnView.setSelection(start - 1, start - 1);
+                }
+            }
+        } catch (StringIndexOutOfBoundsException ignore) {
+            //do nothing - empty string
+        }
+    }
+
     /**
      * Setup the 'Allow ASIN' button.
      */
     private void initAsin() {
         //noinspection ConstantConditions
-        mAllowAsinCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(@NonNull final CompoundButton buttonView,
-                                         final boolean isChecked) {
-                if (isChecked) {
-                    // over-optimisation... asin is used less then ISBN
-                    DigitsKeyListener asinListener = DigitsKeyListener.getInstance(ASIN_DIGITS);
-                    //noinspection ConstantConditions
-                    mIsbnView.setKeyListener(asinListener);
-                } else {
-                    //noinspection ConstantConditions
-                    mIsbnView.setKeyListener(ISBN_LISTENER);
-                    // remove invalid digits
-                    String txt = mIsbnView.getText().toString();
-                    mIsbnView.setText(txt.replaceAll(ISBN_REGEX, ""));
-                }
+        mAllowAsinCb.setOnCheckedChangeListener((v, isChecked) -> handleAsinClick(isChecked));
+    }
 
-                mIsbnView.setInputType(
-                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-            }
-        });
+    private void handleAsinClick(final boolean isChecked) {
+        if (isChecked) {
+            // over-optimisation... asin is used less then ISBN
+            DigitsKeyListener asinListener = DigitsKeyListener.getInstance(ASIN_DIGITS);
+            //noinspection ConstantConditions
+            mIsbnView.setKeyListener(asinListener);
+        } else {
+            //noinspection ConstantConditions
+            mIsbnView.setKeyListener(ISBN_LISTENER);
+            // remove invalid digits
+            String txt = mIsbnView.getText().toString();
+            mIsbnView.setText(txt.replaceAll(ISBN_REGEX, ""));
+        }
+
+        mIsbnView.setInputType(
+                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
     }
 
     /**
@@ -265,11 +260,7 @@ public class BookSearchByIsbnFragment
      */
     private void initKeypadButton(@IdRes final int id,
                                   @NonNull final String text) {
-        requireView().findViewById(id).setOnClickListener(new View.OnClickListener() {
-            public void onClick(@NonNull final View v) {
-                handleIsbnKey(text);
-            }
-        });
+        requireView().findViewById(id).setOnClickListener(v -> handleIsbnKey(text));
     }
 
     /**
@@ -351,36 +342,25 @@ public class BookSearchByIsbnFragment
 
         // User wants to add regardless
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.btn_confirm_add),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 startSearch();
-                             }
-                         });
+                         (d, which) -> startSearch());
 
         // User wants to review the existing book
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit_book),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                         .putExtra(UniqueId.KEY_ID, existingId)
-                                         .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
-                                                   EditBookFragment.TAB_EDIT);
-                                 startActivityForResult(intent, REQ_BOOK_EDIT);
-                             }
+                         (d, which) -> {
+                             Intent intent = new Intent(getContext(), EditBookActivity.class)
+                                     .putExtra(DatabaseDefinitions.KEY_ID, existingId)
+                                     .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
+                                               EditBookFragment.TAB_EDIT);
+                             startActivityForResult(intent, REQ_BOOK_EDIT);
                          });
 
         // User aborts this isbn
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(@NonNull final DialogInterface dialog,
-                                                 final int which) {
-                                 // reset the now-discarded details
-                                 mIsbnSearchText = "";
-                                 if (mScanMode) {
-                                     startScannerActivity();
-                                 }
+                         (d, which) -> {
+                             // reset the now-discarded details
+                             mIsbnSearchText = "";
+                             if (mScanMode) {
+                                 startScannerActivity();
                              }
                          });
         dialog.show();
@@ -471,7 +451,7 @@ public class BookSearchByIsbnFragment
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.KEY_ISBN, mIsbnSearchText);
+        outState.putString(DatabaseDefinitions.KEY_ISBN, mIsbnSearchText);
         outState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
     }
 

@@ -9,33 +9,44 @@
     <View style="@style/div_horizontal" />
 
     <CheckBox
-        android:id="@+id/xml_tables_check"
-        style="@style/row_option_checkable"
-        android:checked="false"
-        android:text="@string/import_export_xml_tables"
-        android:visibility="gone"
-        tools:visibility="visible"
-        />
-
-    <CheckBox
-        android:id="@+id/books_check"
+        android:id="@+id/cbx_books_csv"
         style="@style/row_option_checkable"
         android:checked="true"
-        android:text="@string/book_details"
+        android:text="@string/import_export_option_csv"
         />
 
     <CheckBox
-        android:id="@+id/covers_check"
+        android:id="@+id/cbx_covers"
         style="@style/row_option_checkable"
         android:checked="true"
         android:text="@string/lbl_cover_images"
         />
 
     <CheckBox
-        android:id="@+id/preferences_check"
+        android:id="@+id/cbx_preferences"
         style="@style/row_option_checkable"
         android:checked="true"
         android:text="@string/lbl_settings"
+        />
+
+    <CheckBox
+        android:id="@+id/cbx_xml_tables"
+        style="@style/row_option_checkable"
+        android:checked="false"
+        android:text="@string/import_export_option_xml"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <TextView
+        android:id="@+id/cbx_xml_tables_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_marginStart="30dp"
+        android:text="@string/import_export_option_xml_info"
+        android:visibility="gone"
+        tools:visibility="visible"
         />
 
     <View style="@style/div_horizontal" />
