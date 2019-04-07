@@ -12,6 +12,8 @@
     <string name="pg_general">Algemeen</string>
     <!-- Preference GROUP -->
     <string name="pg_ui">Gebruikersinterface</string>
+    <string name="pt_ui_field_visibility">Zichtbaarheid velden beheren</string>
+
     <!-- Preference GROUP -->
     <string name="pg_thumbnails">Miniaturen</string>
     <!-- Preference GROUP -->
@@ -55,6 +57,7 @@
 
     <!-- Preference - Preferred interface Locale -->
     <string name="pt_ui_language">Interface taal</string>
+    <string name="pt_ui_system_locale">Systeem taal</string>
 
     <!-- Preference - Degrees by which to rotate camera images automatically -->
     <string name="pt_thumbnails_rotate_auto">Camera-opnames automatisch draaien</string>
@@ -113,6 +116,9 @@
     <string name="pe_bob_thumbnails_cache_resized_stored">Cache herschaalde miniaturen (gebruikt meer opslagruimte, scrollen van de lijst gaat sneller)</string>
 
     <!-- ========== Book list style preferences ========== -->
+
+    <!-- Preference - Show this style in the 'preferred styles' list/menu -->
+    <string name="pt_bob_preferred_style">Voorkeursstijlen</string>
 
     <!-- Preference - Use scaled text and images -->
     <string name="pt_bob_item_size">Grootte van boekenlijst elementen</string>

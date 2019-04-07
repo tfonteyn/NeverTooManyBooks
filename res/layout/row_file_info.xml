@@ -14,10 +14,10 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:padding="@dimen/border"
+        android:src="@drawable/ic_business_center"
         app:layout_constraintEnd_toStartOf="@id/filename"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_business_center"
         tools:ignore="ContentDescription"
         />
 

@@ -25,14 +25,6 @@ function checkTempTableUsage {
   fi
 }
 
-
-# make sure table create statements are the current ones (i.e. not versions)
-grep -i -e "DATABASE_CREATE.*_v" src/com/eleybourn/bookcatalogue/database/CatalogueDBHelper.java
-if [ $? == 0 ]; then
-  echo "src/com/eleybourn/bookcatalogue/booklist/FlattenedBooklist.java contains versioned create table statements, aborting"
-  exit 1
-fi
-
 MF=AndroidManifest.xml
 echo "Cleaning $MF"
 if [ ! -f $MF ]; then

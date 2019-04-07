@@ -78,74 +78,74 @@ import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_AUTHOR_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ACQUIRED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_EDITION_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PAGES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FIRST_PUBLICATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_STYLE_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_TOC_ENTRY_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FTS_AUTHOR_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_DOCID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKLIST_STYLES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS_FTS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_AUTHOR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_LOANEE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_SERIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_TOC_ENTRIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_ENTRIES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_AUTHOR_POSITION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_EDITION_BITMASK;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GENRE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_ISBN;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_ISFDB_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LIBRARY_THING_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOANEE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NOTES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PAGES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_PAID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_PAID_CURRENCY;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_RATING;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_END;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_START;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_POSITION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FIRST_PUBLICATION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_STYLE_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_TOC_ENTRY_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FTS_AUTHOR_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_UUID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKLIST_STYLES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS_FTS;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_LOANEE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_SERIES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
  * Book Catalogue database access helper class.
@@ -984,15 +984,15 @@ public class DBA
                                 @NonNull final Book book) {
 
         // Handle AUTHOR. When is this needed? Legacy archive import ?
-        if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FORMATTED)
-                || book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
+        if (book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)
+                || book.containsKey(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
             preprocessLegacyAuthor(book);
         }
 
         // Handle TITLE; but only for new books
-        if (isNew && book.containsKey(DatabaseDefinitions.KEY_TITLE)) {
-            String cleanTitle = preprocessTitle(book.getString(DatabaseDefinitions.KEY_TITLE));
-            book.putString(DatabaseDefinitions.KEY_TITLE, cleanTitle);
+        if (isNew && book.containsKey(DBDefinitions.KEY_TITLE)) {
+            String cleanTitle = preprocessTitle(book.getString(DBDefinitions.KEY_TITLE));
+            book.putString(DBDefinitions.KEY_TITLE, cleanTitle);
         }
 
         // Handle ANTHOLOGY_BITMASK only, no handling of actual titles here
@@ -1003,28 +1003,28 @@ public class DBA
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
                 type |= TocEntry.Type.MULTIPLE_AUTHORS;
             }
-            book.putLong(DatabaseDefinitions.KEY_TOC_BITMASK, type);
+            book.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }
 
         //ENHANCE: handle price fields for legacy embedded currencies.
         // Perhaps moving those to currency fields ?
 
         // Handle currencies making sure they are uppercase
-        if (book.containsKey(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
-            book.putString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                           book.getString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY).toUpperCase());
+        if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {
+            book.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                           book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY).toUpperCase());
         }
-        if (book.containsKey(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY)) {
-            book.putString(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY,
-                           book.getString(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY).toUpperCase());
+        if (book.containsKey(DBDefinitions.KEY_PRICE_PAID_CURRENCY)) {
+            book.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
+                           book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY).toUpperCase());
         }
 
         // Handle Language field. Try to only store ISO3 code.
-        if (book.containsKey(DatabaseDefinitions.KEY_LANGUAGE)) {
-            String lang = book.getString(DatabaseDefinitions.KEY_LANGUAGE);
+        if (book.containsKey(DBDefinitions.KEY_LANGUAGE)) {
+            String lang = book.getString(DBDefinitions.KEY_LANGUAGE);
             if (lang.length() > 3) {
                 // translate to iso3 code, or if that fails, stores the original
-                book.putString(DatabaseDefinitions.KEY_LANGUAGE, LocaleUtils.getISO3Language(lang));
+                book.putString(DBDefinitions.KEY_LANGUAGE, LocaleUtils.getISO3Language(lang));
             }
         }
 
@@ -1033,28 +1033,28 @@ public class DBA
         for (String name : new String[]{
                 //ENHANCE: can we automate this list ? maybe by looping over the table def. ?
                 // Basically we want "NOT NULL fields which have STRING default.
-                DatabaseDefinitions.KEY_ISBN,
-                DatabaseDefinitions.KEY_PUBLISHER,
-                DatabaseDefinitions.KEY_DATE_PUBLISHED,
-                DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED,
+                DBDefinitions.KEY_ISBN,
+                DBDefinitions.KEY_PUBLISHER,
+                DBDefinitions.KEY_DATE_PUBLISHED,
+                DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
 
-                DatabaseDefinitions.KEY_PRICE_LISTED,
-                DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                DatabaseDefinitions.KEY_PRICE_PAID,
-                DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY,
-                DatabaseDefinitions.KEY_DATE_ACQUIRED,
+                DBDefinitions.KEY_PRICE_LISTED,
+                DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                DBDefinitions.KEY_PRICE_PAID,
+                DBDefinitions.KEY_PRICE_PAID_CURRENCY,
+                DBDefinitions.KEY_DATE_ACQUIRED,
 
-                DatabaseDefinitions.KEY_FORMAT,
-                DatabaseDefinitions.KEY_GENRE,
-                DatabaseDefinitions.KEY_LANGUAGE,
-                DatabaseDefinitions.KEY_LOCATION,
-                DatabaseDefinitions.KEY_PAGES,
+                DBDefinitions.KEY_FORMAT,
+                DBDefinitions.KEY_GENRE,
+                DBDefinitions.KEY_LANGUAGE,
+                DBDefinitions.KEY_LOCATION,
+                DBDefinitions.KEY_PAGES,
 
-                DatabaseDefinitions.KEY_READ_START,
-                DatabaseDefinitions.KEY_READ_END,
+                DBDefinitions.KEY_READ_START,
+                DBDefinitions.KEY_READ_END,
 
-                DatabaseDefinitions.KEY_DESCRIPTION,
-                DatabaseDefinitions.KEY_NOTES,
+                DBDefinitions.KEY_DESCRIPTION,
+                DBDefinitions.KEY_NOTES,
                 }) {
             if (book.containsKey(name)) {
                 if (book.get(name) == null) {
@@ -1071,18 +1071,18 @@ public class DBA
         // list correct/complete on 2019-03-27.
         for (String name : new String[]{
                 // auto-generated
-                DatabaseDefinitions.KEY_BOOK_UUID,
+                DBDefinitions.KEY_BOOK_UUID,
                 // number
-                DatabaseDefinitions.KEY_EDITION_BITMASK,
-                DatabaseDefinitions.KEY_TOC_BITMASK,
-                DatabaseDefinitions.KEY_RATING,
+                DBDefinitions.KEY_EDITION_BITMASK,
+                DBDefinitions.KEY_TOC_BITMASK,
+                DBDefinitions.KEY_RATING,
                 // boolean
-                DatabaseDefinitions.KEY_SIGNED,
-                DatabaseDefinitions.KEY_READ,
+                DBDefinitions.KEY_SIGNED,
+                DBDefinitions.KEY_READ,
                 // dates with defaults
-                DatabaseDefinitions.KEY_BOOK_GR_LAST_SYNC_DATE,
-                DatabaseDefinitions.KEY_DATE_ADDED,
-                DatabaseDefinitions.KEY_DATE_LAST_UPDATED,
+                DBDefinitions.KEY_BOOK_GR_LAST_SYNC_DATE,
+                DBDefinitions.KEY_DATE_ADDED,
+                DBDefinitions.KEY_DATE_LAST_UPDATED,
                 }) {
             if (book.containsKey(name)) {
                 Object o = book.get(name);
@@ -1100,9 +1100,9 @@ public class DBA
 
         // If present, get the author ID from the author name
         // (it may have changed with a name change)
-        if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FORMATTED)) {
+        if (book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
 
-            Author author = Author.fromString(book.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED));
+            Author author = Author.fromString(book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
             if (author.fixupId(this) == 0) {
                 if (BuildConfig.DEBUG) {
                     Logger.info(this, "preprocessBook",
@@ -1111,13 +1111,13 @@ public class DBA
                 }
                 insertAuthor(author);
             }
-            book.putLong(DatabaseDefinitions.KEY_AUTHOR, author.getId());
+            book.putLong(DBDefinitions.KEY_AUTHOR, author.getId());
 
-        } else if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
-            String family = book.getString(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME);
+        } else if (book.containsKey(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
+            String family = book.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
             String given;
-            if (book.containsKey(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES)) {
-                given = book.getString(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES);
+            if (book.containsKey(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)) {
+                given = book.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
             } else {
                 given = "";
             }
@@ -1131,7 +1131,7 @@ public class DBA
                 }
                 insertAuthor(author);
             }
-            book.putLong(DatabaseDefinitions.KEY_AUTHOR, author.getId());
+            book.putLong(DBDefinitions.KEY_AUTHOR, author.getId());
         }
     }
 
@@ -1376,8 +1376,8 @@ public class DBA
              * KEY_RATING, KEY_LOCATION
              * KEY_READ, KEY_READ_START, KEY_READ_END
              */
-            if (!book.containsKey(DatabaseDefinitions.KEY_DATE_ADDED)) {
-                book.putString(DatabaseDefinitions.KEY_DATE_ADDED, DateUtils.utcSqlDateTimeForToday());
+            if (!book.containsKey(DBDefinitions.KEY_DATE_ADDED)) {
+                book.putString(DBDefinitions.KEY_DATE_ADDED, DateUtils.utcSqlDateTimeForToday());
             }
 
             // Make sure we have an author
@@ -1410,7 +1410,7 @@ public class DBA
             }
 
             // set the new id on the Book itself
-            book.putLong(DatabaseDefinitions.KEY_ID, newBookId);
+            book.putLong(DBDefinitions.KEY_ID, newBookId);
             // and return it
             return newBookId;
 
@@ -1480,7 +1480,7 @@ public class DBA
                 mSyncedDb.setTransactionSuccessful();
             }
             // make sure the Book has the correct id.
-            book.putLong(DatabaseDefinitions.KEY_ID, bookId);
+            book.putLong(DBDefinitions.KEY_ID, bookId);
 
             return rowsAffected;
         } catch (RuntimeException e) {
@@ -1526,8 +1526,8 @@ public class DBA
             updateOrInsertTOC(bookId, list);
         }
 
-        if (book.containsKey(DatabaseDefinitions.KEY_LOANEE)
-                && !book.getString(DatabaseDefinitions.KEY_LOANEE).isEmpty()) {
+        if (book.containsKey(DBDefinitions.KEY_LOANEE)
+                && !book.getString(DBDefinitions.KEY_LOANEE).isEmpty()) {
             updateOrInsertLoan(bookId, book.getString(DOM_BOOK_LOANEE.name));
         }
     }
@@ -1597,9 +1597,9 @@ public class DBA
     /**
      * Create the link between {@link Book} and {@link Series}.
      * <p>
-     * {@link DatabaseDefinitions#TBL_BOOK_SERIES}
+     * {@link DBDefinitions#TBL_BOOK_SERIES}
      * <p>
-     * Note that {@link DatabaseDefinitions#DOM_BOOK_SERIES_POSITION} is a simple incrementing
+     * Note that {@link DBDefinitions#DOM_BOOK_SERIES_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
      * @param bookId the book which
@@ -1779,9 +1779,9 @@ public class DBA
     /**
      * Create the link between {@link Book} and {@link Author}.
      * <p>
-     * {@link DatabaseDefinitions#TBL_BOOK_AUTHOR}
+     * {@link DBDefinitions#TBL_BOOK_AUTHOR}
      * <p>
-     * Note that {@link DatabaseDefinitions#DOM_BOOK_AUTHOR_POSITION} is a simple incrementing
+     * Note that {@link DBDefinitions#DOM_BOOK_AUTHOR_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
      * @param bookId the book which
@@ -1864,9 +1864,9 @@ public class DBA
     /**
      * Create the link between {@link Book} and {@link Bookshelf}.
      * <p>
-     * {@link DatabaseDefinitions#TBL_BOOK_BOOKSHELF}
+     * {@link DBDefinitions#TBL_BOOK_BOOKSHELF}
      * <p>
-     * Note that {@link DatabaseDefinitions#DOM_BOOK_SERIES_POSITION} is a simple incrementing
+     * Note that {@link DBDefinitions#DOM_BOOK_SERIES_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
      * @param bookId the book which
@@ -2350,7 +2350,7 @@ public class DBA
     public BookCursor fetchBooksForFieldUpdate(@NonNull final String whereClause) {
         // the order by is used to be able to restart the update.
         String sql = getAllBooksSql(whereClause)
-                + " ORDER BY " + DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID);
+                + " ORDER BY " + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID);
 
         return (BookCursor) mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                           sql, null, "");
@@ -2709,7 +2709,7 @@ public class DBA
     @NonNull
     public ArrayList<String> getCurrencyCodes(@NonNull final String type) {
         String column;
-        if (DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY.equals(type)) {
+        if (DBDefinitions.KEY_PRICE_LISTED_CURRENCY.equals(type)) {
             column = DOM_BOOK_PRICE_LISTED_CURRENCY.name;
 //        } else if (UniqueId.KEY_PRICE_PAID_CURRENCY.equals(type)) {
         } else {
@@ -2799,10 +2799,10 @@ public class DBA
      * @return The list; expanded full displayName's in the current Locale
      */
     @NonNull
-    public ArrayList<String> getLanguages() {
+    public ArrayList<String> getLanguages(@NonNull final Context context) {
         ArrayList<String> names = new ArrayList<>();
         for (String code : getLanguageCodes()) {
-            names.add(LocaleUtils.getDisplayName(code));
+            names.add(LocaleUtils.getDisplayName(context, code));
         }
 
         return names;
@@ -3389,7 +3389,7 @@ public class DBA
                                 Logger.error("unknown storage class for " + columnInfo.toString());
                                 break;
                         }
-                    } catch (@NonNull final NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         cv.put(columnInfo.name, entry.toString());
                     }
                 }
@@ -3881,12 +3881,12 @@ public class DBA
                         + " THEN Coalesce(s." + DOM_SERIES_FORMATTED + ",'')"
                         + " ELSE "
                         + DOM_SERIES_FORMATTED
-                        + "||' " + App.getResString(R.string.and_others) + '\''
+                        + "||' " + App.getAppContext().getString(R.string.and_others) + '\''
                         + " END"
                         + " AS " + DOM_SERIES_FORMATTED;
 
         /**
-         * Columns from {@link DatabaseDefinitions#TBL_BOOKS} we need to send a Book to Goodreads.
+         * Columns from {@link DBDefinitions#TBL_BOOKS} we need to send a Book to Goodreads.
          * <p>
          * See {@link GoodreadsManager#sendOneBook(DBA, BookCursorRow)}
          * -> notes column disabled for now.

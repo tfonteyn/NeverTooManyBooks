@@ -58,7 +58,9 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class GoodreadsSearchResultsActivity
         extends BaseListActivity {
 
-    public static final String BKEY_SEARCH_CRITERIA = "criteria";
+    private static final String TAG = GoodreadsSearchResultsActivity.class.getSimpleName();
+
+    public static final String BKEY_SEARCH_CRITERIA = TAG + ":criteria";
 
     @Override
     protected int getLayoutId() {

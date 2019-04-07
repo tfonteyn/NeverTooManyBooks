@@ -53,6 +53,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -68,11 +69,11 @@ public class PartialDatePickerDialogFragment
     public static final String TAG = PartialDatePickerDialogFragment.class.getSimpleName();
 
     /** a standard sql style date string, must be correct. */
-    private static final String BKEY_DATE = "date";
+    private static final String BKEY_DATE = TAG + ":date";
     /** or the date split into components, which can partial. */
-    private static final String BKEY_YEAR = "year";
-    private static final String BKEY_MONTH = "month";
-    private static final String BKEY_DAY = "day";
+    private static final String BKEY_YEAR = TAG + ":year";
+    private static final String BKEY_MONTH = TAG + ":month";
+    private static final String BKEY_DAY = TAG + ":day";
 
     /** Currently displayed; null if empty/invalid. */
     @Nullable
@@ -159,7 +160,7 @@ public class PartialDatePickerDialogFragment
                 mMonth--;
             }
 
-            Calendar cal = Calendar.getInstance();
+            Calendar cal = Calendar.getInstance(LocaleUtils.getSystemLocale());
             if (mYear == null) {
                 mYear = cal.get(Calendar.YEAR);
                 mMonth = cal.get(Calendar.MONTH);

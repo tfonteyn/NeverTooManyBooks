@@ -42,6 +42,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 
@@ -49,7 +50,7 @@ import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -61,7 +62,7 @@ public class LendBookDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = LendBookDialogFragment.class.getSimpleName();
+    private static final String TAG = LendBookDialogFragment.class.getSimpleName();
 
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
@@ -74,24 +75,62 @@ public class LendBookDialogFragment
     private String mAuthorName;
     private String mLoanee;
 
+    /**
+     * (syntax sugar for newInstance)
+     */
+    public static void show(@NonNull final FragmentManager fm,
+                            final long bookId,
+                            final long authorId,
+                            @NonNull final String title) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            newInstance(bookId, authorId, title).show(fm, TAG);
+        }
+    }
+
+    /**
+     * (syntax sugar for newInstance)
+     */
+    public static void show(@NonNull final FragmentManager fm,
+                            @NonNull final Book book) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            newInstance(book).show(fm, TAG);
+        }
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param bookId   to lend
+     * @param authorId informational display only
+     * @param title    informational display only
+     *
+     * @return the instance
+     */
     public static LendBookDialogFragment newInstance(final long bookId,
                                                      final long authorId,
                                                      @NonNull final String title) {
         LendBookDialogFragment frag = new LendBookDialogFragment();
         Bundle args = new Bundle();
-        args.putLong(DatabaseDefinitions.KEY_ID, bookId);
-        args.putLong(DatabaseDefinitions.KEY_AUTHOR, authorId);
-        args.putString(DatabaseDefinitions.KEY_TITLE, title);
+        args.putLong(DBDefinitions.KEY_ID, bookId);
+        args.putLong(DBDefinitions.KEY_AUTHOR, authorId);
+        args.putString(DBDefinitions.KEY_TITLE, title);
         frag.setArguments(args);
         return frag;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param book   to lend
+     *
+     * @return the instance
+     */
     public static LendBookDialogFragment newInstance(@NonNull final Book book) {
         LendBookDialogFragment frag = new LendBookDialogFragment();
         Bundle args = new Bundle();
-        args.putLong(DatabaseDefinitions.KEY_ID, book.getId());
-        args.putString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED, book.getPrimaryAuthor());
-        args.putString(DatabaseDefinitions.KEY_TITLE, book.getString(DatabaseDefinitions.KEY_TITLE));
+        args.putLong(DBDefinitions.KEY_ID, book.getId());
+        args.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, book.getPrimaryAuthor());
+        args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));
         frag.setArguments(args);
         return frag;
     }
@@ -102,27 +141,28 @@ public class LendBookDialogFragment
         final FragmentActivity mActivity = requireActivity();
         Bundle args = requireArguments();
         mDb = new DBA(mActivity);
-        final long bookId = args.getLong(DatabaseDefinitions.KEY_ID);
+        final long bookId = args.getLong(DBDefinitions.KEY_ID);
 
         if (savedInstanceState == null) {
             // see if the string is there
-            mAuthorName = args.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED);
+            mAuthorName = args.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
             // if not, we must have the id.
             if (mAuthorName == null) {
                 //noinspection ConstantConditions
-                mAuthorName = mDb.getAuthor(args.getLong(DatabaseDefinitions.KEY_AUTHOR)).getDisplayName();
+                mAuthorName = mDb.getAuthor(
+                        args.getLong(DBDefinitions.KEY_AUTHOR)).getDisplayName();
             }
             mLoanee = mDb.getLoaneeByBookId(bookId);
         } else {
-            mAuthorName = savedInstanceState.getString(DatabaseDefinitions.KEY_AUTHOR);
-            mLoanee = savedInstanceState.getString(DatabaseDefinitions.KEY_LOANEE);
+            mAuthorName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR);
+            mLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
         }
 
         @SuppressLint("InflateParams")
         View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_loan, null);
 
         TextView titleView = root.findViewById(R.id.title);
-        titleView.setText(args.getString(DatabaseDefinitions.KEY_TITLE));
+        titleView.setText(args.getString(DBDefinitions.KEY_TITLE));
         TextView authorView = root.findViewById(R.id.author);
         authorView.setText(getString(R.string.lbl_by_author_s, mAuthorName));
 
@@ -152,7 +192,7 @@ public class LendBookDialogFragment
             mDb.updateOrInsertLoan(bookId, mLoanee);
 
             Bundle data = new Bundle();
-            data.putString(DatabaseDefinitions.KEY_LOANEE, mLoanee);
+            data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
             tellCaller(bookId, data);
         });
 
@@ -174,7 +214,7 @@ public class LendBookDialogFragment
     private void tellCaller(final long bookId,
                             @NonNull final Bundle data) {
 
-        data.putLong(DatabaseDefinitions.KEY_ID, bookId);
+        data.putLong(DBDefinitions.KEY_ID, bookId);
 
         // see if there was a fragment?
         if (getParentFragment() instanceof BookChangedListener) {
@@ -255,16 +295,18 @@ public class LendBookDialogFragment
                 break;
         }
     }
+
     @Override
     public void onPause() {
         mLoanee = mLoaneeView.getText().toString().trim();
         super.onPause();
     }
+
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DatabaseDefinitions.KEY_AUTHOR, mAuthorName);
-        outState.putString(DatabaseDefinitions.KEY_LOANEE, mLoanee);
+        outState.putString(DBDefinitions.KEY_AUTHOR, mAuthorName);
+        outState.putString(DBDefinitions.KEY_LOANEE, mLoanee);
     }
 
     @Override

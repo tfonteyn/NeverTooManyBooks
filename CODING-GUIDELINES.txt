@@ -2,24 +2,11 @@ Original guidelines for the project:
 
 https://github.com/eleybourn/Book-Catalogue/wiki/Developer-Notes-Suggestions-Guidelines
 
-Small notes in addition:
+Small notes in addition (with a pinch of salt... as I change my own mind from time to time)
 
 * trimming
   Wherever a View is READ as a String, a trim should be done
        view.getText().toString().trim();
-   2018-10-01 ok
-
-  Datum
-  2018-10-01 ok
-
-  ArrayUtils
-  2018-10-01 ok
-
-  Fields
-  2018-10-01 ok
-
-  getSharedPreferences strings
-  not checked yet.
 
   The database (checked with v82) will/can contain untrimmed strings.
   Best to add .trim() to al locations where a getString is done.
@@ -49,6 +36,7 @@ Small notes in addition:
 
 * pedantic but I hope polite request:
   Single character variables names are best left to BASIC style from the 1980's
+  (Android itself uses a lot of 'v' ... so who am I to talk...)
 
 * TODO tags used; always followed with a colon
   - TODO:

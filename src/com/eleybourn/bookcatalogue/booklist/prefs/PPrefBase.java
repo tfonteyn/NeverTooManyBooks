@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
  * Base class for a generic Preference.
@@ -46,6 +47,10 @@ public abstract class PPrefBase<T>
         mKey = key;
         mUuid = uuid;
         mDefaultValue = defaultValue;
+
+        if (uuid == null) {
+            Logger.debug("uuid was NULL for key=" + key);
+        }
     }
 
     @NonNull

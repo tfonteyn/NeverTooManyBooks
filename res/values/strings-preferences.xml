@@ -12,6 +12,8 @@
     <string name="pg_general">General</string>
     <!-- Preference Category -->
     <string name="pg_ui">User Interface</string>
+    <string name="pt_ui_field_visibility">Field Visibility</string>
+
     <!-- Preference Category -->
     <string name="pg_thumbnails">Thumbnails</string>
     <!-- Preference Category -->
@@ -184,8 +186,6 @@
         Cache resized thumbnails (uses more storage, lists will scroll faster)</string>
 
     <!-- ========== Book list style preferences ========== -->
-
-
 
     <!-- Preference - Show this style in the 'preferred styles' list/menu -->
     <string name="pt_bob_preferred_style">Preferred</string>

@@ -42,7 +42,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -327,7 +327,7 @@ public class ImportAllTask
 
         List<String> list = new ArrayList<>();
         addIfHasValue(list, review.getString(ListReviewsApiHandler.ReviewFields.ISBN13));
-        addIfHasValue(list, review.getString(DatabaseDefinitions.KEY_ISBN));
+        addIfHasValue(list, review.getString(DBDefinitions.KEY_ISBN));
         return list;
     }
 
@@ -402,7 +402,7 @@ public class ImportAllTask
         addStringIfNonBlank(review, ReviewFields.DBA_TITLE,
                             bookData, ReviewFields.DBA_TITLE);
         addLongIfPresent(review, ReviewFields.GR_BOOK_ID,
-                         bookData, DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
+                         bookData, DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID.name);
         addLongIfPresent(review, ReviewFields.DBA_PAGES,
                          bookData, ReviewFields.DBA_PAGES);
         addDateIfValid(review, ReviewFields.DBA_READ_START,
@@ -434,7 +434,7 @@ public class ImportAllTask
             }
 
             if (bestLen > 0) {
-                bookData.putString(DatabaseDefinitions.KEY_ISBN, best);
+                bookData.putString(DBDefinitions.KEY_ISBN, best);
             }
         }
 
@@ -447,7 +447,7 @@ public class ImportAllTask
                                                     ReviewFields.PUB_DAY,
                                                     null);
         if (pubDate != null && !pubDate.isEmpty()) {
-            bookData.putString(DatabaseDefinitions.KEY_DATE_PUBLISHED, pubDate);
+            bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate);
         }
 
         /*
@@ -478,8 +478,8 @@ public class ImportAllTask
         /*
          * Cleanup the title by splitting off the Series (if present).
          */
-        if (bookData.containsKey(DatabaseDefinitions.KEY_TITLE)) {
-            String bookTitle = bookData.getString(DatabaseDefinitions.KEY_TITLE);
+        if (bookData.containsKey(DBDefinitions.KEY_TITLE)) {
+            String bookTitle = bookData.getString(DBDefinitions.KEY_TITLE);
             Series.SeriesDetails details = Series.findSeriesFromBookTitle(bookTitle);
             if (details != null && !details.getName().isEmpty()) {
                 ArrayList<Series> allSeries;
@@ -492,7 +492,7 @@ public class ImportAllTask
                 Series newSeries = new Series(details.getName());
                 newSeries.setNumber(details.getPosition());
                 allSeries.add(newSeries);
-                bookData.putString(DatabaseDefinitions.KEY_TITLE,
+                bookData.putString(DBDefinitions.KEY_TITLE,
                                    bookTitle.substring(0, details.startChar - 1));
 
                 Series.pruneSeriesList(allSeries);
@@ -542,7 +542,7 @@ public class ImportAllTask
         if (bookCursorRow == null) {
             // Use the GR added date for new books
             addStringIfNonBlank(review, ReviewFields.ADDED,
-                                bookData, DatabaseDefinitions.DOM_BOOK_DATE_ADDED.name);
+                                bookData, DBDefinitions.DOM_BOOK_DATE_ADDED.name);
 
             // fetch thumbnail
             String thumbnail;
@@ -570,8 +570,8 @@ public class ImportAllTask
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that would be ahead of the GR update date.
         String now = DateUtils.utcSqlDateTimeForToday();
-        bookData.putString(DatabaseDefinitions.KEY_BOOK_GR_LAST_SYNC_DATE, now);
-        bookData.putString(DatabaseDefinitions.KEY_DATE_LAST_UPDATED, now);
+        bookData.putString(DBDefinitions.KEY_BOOK_GR_LAST_SYNC_DATE, now);
+        bookData.putString(DBDefinitions.KEY_DATE_LAST_UPDATED, now);
 
         return bookData;
     }

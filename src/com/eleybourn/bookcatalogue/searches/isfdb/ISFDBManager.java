@@ -71,7 +71,8 @@ public class ISFDBManager
 
     @Override
     public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
-        return false;
+        // support 1 size only
+        return SearchSites.ImageSizes.LARGE.equals(size);
     }
 
     @StringRes

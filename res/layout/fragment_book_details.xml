@@ -29,12 +29,13 @@
             tools:visibility="visible"
             />
 
-        <CheckedTextView
+        <CheckBox
             android:id="@+id/read"
-            style="@style/read_ctv"
-            app:layout_constraintBottom_toBottomOf="@id/title"
+            style="@style/read_only_cbx"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            app:layout_constraintBaseline_toBaselineOf="@id/title"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/title"
             tools:checked="true"
             tools:ignore="ContentDescription"
             />
@@ -53,10 +54,10 @@
         <ImageView
             android:id="@+id/coverImage"
             style="@style/coverImage"
-
+            app:layout_constraintBottom_toTopOf="@id/toc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
-            app:layout_constraintBottom_toTopOf="@id/header_divider"
+            app:layout_constraintVertical_bias="0.0"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_image"
             />
@@ -103,22 +104,19 @@
             tools:text="97834579862"
             />
 
-        <!-- this invisible EditText is needed to allow show/hide of pages/format
-            while maintaining the baseline -->
-        <TextView
+        <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
+        <View
             android:id="@+id/lbl_pages_baseline"
-            style="@style/txt_detail_small"
-            android:visibility="invisible"
+            style="@style/baseline_lbl_textField_small"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-            tools:ignore="Autofill,LabelFor"
             />
 
         <TextView
             android:id="@+id/pages"
             style="@style/txt_detail_small"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_pages_baseline"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_pages_baseline"
             app:layout_constraintEnd_toStartOf="@id/format"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="SelectableText"
@@ -129,7 +127,7 @@
             android:id="@+id/format"
             style="@style/txt_detail_small"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_pages_baseline"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_pages_baseline"
             app:layout_constraintStart_toEndOf="@id/pages"
             tools:ignore="SelectableText"
             tools:text="Hardcover"
@@ -141,7 +139,7 @@
             style="@style/lbl_textField"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pages"
+            app:layout_constraintTop_toBottomOf="@id/lbl_pages_baseline"
             />
 
         <TextView
@@ -149,7 +147,8 @@
             style="@style/txt_detail_medium"
             android:layout_width="0dp"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintEnd_toStartOf="@+id/coverImage"
+            app:layout_constraintEnd_toStartOf="@id/coverImage"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             tools:ignore="SelectableText"
@@ -184,6 +183,8 @@
             />
 
         <!-- don't set padding on the toc. The toc height is calculated as needed.
+        There will be no (nested) scrolling, as the calculated height wil make the full list
+        visible. User can flick the button to 'open'close' the list.
         Note the id is not "android:id/list".
         -->
         <ListView
@@ -212,22 +213,19 @@
 
         <!-- Publishing - Publisher + date published -->
 
-        <!-- this invisible TextView is needed to allow show/hide of publisher/date_published
-        while maintaining the baseline -->
-        <TextView
+        <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
+        <View
             android:id="@+id/lbl_publisher_baseline"
-            style="@style/txt_detail_medium"
-            android:visibility="invisible"
+            style="@style/baseline_lbl_textField_medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publishing"
-            tools:ignore="SelectableText"
             />
 
         <TextView
             android:id="@+id/publisher"
             style="@style/txt_detail_medium"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_publisher_baseline"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_publisher_baseline"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="SelectableText"
             tools:text="Publisher name"
@@ -237,7 +235,8 @@
             android:id="@+id/date_published"
             style="@style/txt_detail_small"
             android:layout_marginStart="@dimen/border_double"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_publisher_baseline"
+            app:layout_constraintBaseline_toBaselineOf="@id/publisher"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_publisher_baseline"
             app:layout_constraintStart_toEndOf="@id/publisher"
             tools:ignore="SelectableText"
             tools:text="25 Jan 2012"
@@ -523,7 +522,7 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_location_long"
             />
 
-        <!-- reminder: textIsSelectable etc won't work here, as its done in code -->
+        <!-- reminder: textIsSelectable etc won't work here, as it's done in code -->
         <TextView
             android:id="@+id/description"
             android:layout_width="0dp"

@@ -36,7 +36,6 @@ import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
 import com.eleybourn.bookcatalogue.goodreads.GoodreadsWork;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
@@ -198,123 +197,66 @@ public class SearchBooksApiHandler
     /**
      * At the START of a "work" tag, we create a new work.
      */
-    private final XmlHandler mHandleWorkStart = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mCurrentWork = new GoodreadsWork();
-        }
-    };
+    private final XmlHandler mHandleWorkStart = context -> mCurrentWork = new GoodreadsWork();
     /**
      * At the END of a "work" tag, we add it to list and reset the pointer.
      */
-    private final XmlHandler mHandleWorkEnd = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            //mCurrentWork.requestImage();
-            mWorks.add(mCurrentWork);
-            mCurrentWork = null;
+    private final XmlHandler mHandleWorkEnd = context -> {
+        //mCurrentWork.requestImage();
+        mWorks.add(mCurrentWork);
+        mCurrentWork = null;
+    };
+    private final XmlHandler mHandleWorkId =
+            context -> mCurrentWork.workId = Long.parseLong(context.getBody());
+    private final XmlHandler mHandlePubDay = context -> {
+        try {
+            mCurrentWork.pubDay = Long.parseLong(context.getBody());
+        } catch (NumberFormatException ignored) {
         }
     };
-    private final XmlHandler mHandleWorkId = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mCurrentWork.workId = Long.parseLong(context.getBody());
+    private final XmlHandler mHandlePubMonth = context -> {
+        try {
+            mCurrentWork.pubMonth = Long.parseLong(context.getBody());
+        } catch (NumberFormatException ignored) {
         }
     };
-    private final XmlHandler mHandlePubDay = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            try {
-                mCurrentWork.pubDay = Long.parseLong(context.getBody());
-            } catch (NumberFormatException ignored) {
-            }
+    private final XmlHandler mHandlePubYear = context -> {
+        try {
+            mCurrentWork.pubYear = Long.parseLong(context.getBody());
+        } catch (NumberFormatException ignored) {
         }
     };
-    private final XmlHandler mHandlePubMonth = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            try {
-                mCurrentWork.pubMonth = Long.parseLong(context.getBody());
-            } catch (NumberFormatException ignored) {
-            }
-        }
-    };
-    private final XmlHandler mHandlePubYear = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            try {
-                mCurrentWork.pubYear = Long.parseLong(context.getBody());
-            } catch (NumberFormatException ignored) {
-            }
-        }
-    };
-    private final XmlHandler mHandleBookId = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mCurrentWork.bookId = Long.parseLong(context.getBody());
-        }
-    };
-    private final XmlHandler mHandleBookTitle = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mCurrentWork.title = context.getBody();
-        }
-    };
-    private final XmlHandler mHandleAuthorId = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mCurrentWork.authorId = Long.parseLong(context.getBody());
-        }
-    };
-    private final XmlHandler mHandleAuthorName = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mCurrentWork.authorName = context.getBody();
-        }
-    };
-    private final XmlHandler mHandleImageUrl = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mCurrentWork.imageUrl = context.getBody();
-        }
-    };
-    private final XmlHandler mHandleSmallImageUrl = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mCurrentWork.smallImageUrl = context.getBody();
-        }
-    };
+    private final XmlHandler mHandleBookId =
+            context -> mCurrentWork.bookId = Long.parseLong(context.getBody());
+    private final XmlHandler mHandleBookTitle =
+            context -> mCurrentWork.title = context.getBody();
+    private final XmlHandler mHandleAuthorId =
+            context -> mCurrentWork.authorId = Long.parseLong(context.getBody());
+    private final XmlHandler mHandleAuthorName =
+            context -> mCurrentWork.authorName = context.getBody();
+    private final XmlHandler mHandleImageUrl =
+            context -> mCurrentWork.imageUrl = context.getBody();
+    private final XmlHandler mHandleSmallImageUrl =
+            context -> mCurrentWork.smallImageUrl = context.getBody();
+
     /**
      * Starting result # (for multi-page result sets). We don't use it (yet).
      */
     private Long mResultsStart;
-    private final XmlHandler mHandleResultsStart = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mResultsStart = Long.parseLong(context.getBody());
-        }
-    };
+    private final XmlHandler mHandleResultsStart =
+            context -> mResultsStart = Long.parseLong(context.getBody());
     /**
      * Ending result # (for multi-page result sets). We don't use it (yet).
      */
     private Long mResultsEnd;
-    private final XmlHandler mHandleResultsEnd = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mResultsEnd = Long.parseLong(context.getBody());
-        }
-    };
+    private final XmlHandler mHandleResultsEnd =
+            context -> mResultsEnd = Long.parseLong(context.getBody());
     /**
      * Total results available, as opposed to number returned on first page.
      */
     private Long mTotalResults;
-    private final XmlHandler mHandleTotalResults = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            mTotalResults = Long.parseLong(context.getBody());
-        }
-    };
-
+    private final XmlHandler mHandleTotalResults =
+            context -> mTotalResults = Long.parseLong(context.getBody());
 
     /**
      * Constructor.
@@ -327,7 +269,13 @@ public class SearchBooksApiHandler
     /**
      * Perform a search and handle the results.
      *
+     * @param query A GoodReads compatible query string ('q' parameter)
+     *
      * @return the array of GoodreadsWork objects.
+     *
+     * @throws IOException            on failure
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  at GoodReads
      */
     @NonNull
     public List<GoodreadsWork> search(@NonNull final String query)

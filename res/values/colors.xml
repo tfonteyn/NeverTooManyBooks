@@ -6,8 +6,6 @@
     <color name="CropHighlightView_outlinePaint_circle">#d500f9</color>
     <color name="CropHighlightView_outlinePaint_rectangle">#fb8c00</color>
 
-    <color name="CoverBrowser_background">#FF000000</color>
-
     <!-- Material Design - Color Palette -->
     <!-- Date: 1/15/2015 -->
     <!-- http://www.google.com/design/spec/style/color.html#color-color-palette -->

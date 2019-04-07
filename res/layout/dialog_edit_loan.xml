@@ -38,8 +38,6 @@
     <AutoCompleteTextView
         android:id="@+id/loaned_to"
         style="@style/personalNameTextEntry"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:completionThreshold="2"
         android:hint="@string/menu_loan_lend_book"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,7 +53,7 @@
         android:layout_height="wrap_content"
         android:text="@android:string/cancel"
         app:layout_constraintBaseline_toBaselineOf="@id/confirm"
-        app:layout_constraintEnd_toStartOf="@+id/return_book"
+        app:layout_constraintEnd_toStartOf="@id/return_book"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"

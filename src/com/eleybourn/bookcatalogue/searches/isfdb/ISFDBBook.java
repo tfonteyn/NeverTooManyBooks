@@ -20,10 +20,11 @@ import java.util.regex.Pattern;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Format;
@@ -35,9 +36,6 @@ import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 public class ISFDBBook
         extends AbstractBase {
-
-    /** ArrayList<String> with edition url's. */
-    public static final String BKEY_EDITION_LIST = "edition_url_list";
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_ISFDB";
@@ -232,13 +230,13 @@ public class ISFDBBook
 
                 if ("Publication:".equalsIgnoreCase(fieldName)) {
                     mTitle = li.childNode(1).toString().trim();
-                    bookData.putString(DatabaseDefinitions.KEY_TITLE, mTitle);
+                    bookData.putString(DBDefinitions.KEY_TITLE, mTitle);
 
                     // publication record.
                     tmp = li.childNode(2).childNode(1).toString().trim();
                     try {
                         long record = Long.parseLong(tmp);
-                        bookData.putLong(DatabaseDefinitions.KEY_ISFDB_ID, record);
+                        bookData.putLong(DBDefinitions.KEY_ISFDB_ID, record);
                     } catch (NumberFormatException ignore) {
                     }
                 } else if ("Author:".equalsIgnoreCase(fieldName)
@@ -260,14 +258,14 @@ public class ISFDBBook
                     // and we're paranoid...
                     Date d = DateUtils.parseDate(tmp);
                     if (d != null) {
-                        bookData.putString(DatabaseDefinitions.KEY_DATE_PUBLISHED,
+                        bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
                                            DateUtils.utcSqlDate(d));
                     }
 
                 } else if ("ISBN:".equalsIgnoreCase(fieldName)) {
                     // always use the first one, as that will be the one used at publication
                     tmp = li.childNode(1).toString().trim();
-                    bookData.putString(DatabaseDefinitions.KEY_ISBN, digits(tmp));
+                    bookData.putString(DBDefinitions.KEY_ISBN, digits(tmp));
 
                     tmp = li.childNode(2).childNode(0).toString().trim();
                     bookData.putString(ISFDB_BKEY_ISBN_2, digits(tmp));
@@ -278,7 +276,7 @@ public class ISFDBBook
                     //bookData.putString(ISFDB_BKEY_PUBLISHER_ID, String.valueOf(stripNumber(tmp)));
 
                     tmp = li.childNode(3).childNode(0).toString().trim();
-                    bookData.putString(DatabaseDefinitions.KEY_PUBLISHER, tmp);
+                    bookData.putString(DBDefinitions.KEY_PUBLISHER, tmp);
 
                 } else if ("Pub. Series:".equalsIgnoreCase(fieldName)) {
                     Elements as = li.select("a");
@@ -295,8 +293,8 @@ public class ISFDBBook
                     // split on first digit, but leave it in the second part
                     String[] data = tmp.split("(?=\\d)", 2);
                     if (data.length == 1) {
-                        bookData.putString(DatabaseDefinitions.KEY_PRICE_LISTED, tmp);
-                        bookData.putString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY, "");
+                        bookData.putString(DBDefinitions.KEY_PRICE_LISTED, tmp);
+                        bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, "");
                         // I don't think the Shilling/Pence from the UK ever had an
                         // international code.
 //                        if (tmp.contains("/")) {
@@ -313,38 +311,40 @@ public class ISFDBBook
                             Float price = Float.parseFloat(data[1]);
                             String priceStr = String.format("%." + decDigits + 'f', price);
 
-                            bookData.putString(DatabaseDefinitions.KEY_PRICE_LISTED, priceStr);
+                            bookData.putString(DBDefinitions.KEY_PRICE_LISTED, priceStr);
                             // re-get the code just in case ISFDB/Utils uses a recognised but
                             // non-standard one
-                            bookData.putString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                            bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                                                currency.getCurrencyCode());
 
                         } catch (NumberFormatException e) {
-                            bookData.putString(DatabaseDefinitions.KEY_PRICE_LISTED, data[1]);
-                            bookData.putString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                            bookData.putString(DBDefinitions.KEY_PRICE_LISTED, data[1]);
+                            bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
                                                currencyCode);
                         }
                     }
 
                 } else if ("Pages:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(2).toString().trim();
-                    bookData.putString(DatabaseDefinitions.KEY_PAGES, tmp);
+                    bookData.putString(DBDefinitions.KEY_PAGES, tmp);
 
                 } else if ("Format:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(3).childNode(0).toString().trim();
-                    bookData.putString(DatabaseDefinitions.KEY_FORMAT, Format.map(tmp));
+                    bookData.putString(DBDefinitions.KEY_FORMAT,
+                                       // it would be really hard, maybe impossible to get a proper context here.
+                                       Format.map(App.getAppContext(), tmp));
 
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(2).toString().trim();
                     bookData.putString(ISFDB_BKEY_BOOK_TYPE, tmp);
                     Integer type = TYPE_MAP.get(tmp);
                     if (type != null) {
-                        bookData.putLong(DatabaseDefinitions.KEY_TOC_BITMASK, type);
+                        bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
                     }
 
                 } else if ("Notes:".equalsIgnoreCase(fieldName)) {
                     tmp = li.childNode(1).childNode(1).toString().trim();
-                    bookData.putString(DatabaseDefinitions.KEY_DESCRIPTION, tmp);
+                    bookData.putString(DBDefinitions.KEY_DESCRIPTION, tmp);
 
 
 //                } else if ("Cover:".equalsIgnoreCase(fieldName)) {
@@ -382,7 +382,7 @@ public class ISFDBBook
         // ISFDB does not offer the books language on the main page (although they store
         // it in their database).
         // Default to a localised 'English" as ISFDB is after all (I presume) 95% english
-        bookData.putString(DatabaseDefinitions.KEY_LANGUAGE, Locale.ENGLISH.getISO3Language());
+        bookData.putString(DBDefinitions.KEY_LANGUAGE, Locale.ENGLISH.getISO3Language());
 
         // store accumulated ArrayList's
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
@@ -403,7 +403,7 @@ public class ISFDBBook
             if (TocEntry.hasMultipleAuthors(toc)) {
                 type |= TocEntry.Type.MULTIPLE_AUTHORS;
             }
-            bookData.putLong(DatabaseDefinitions.KEY_TOC_BITMASK, type);
+            bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }
 
         // try to deduce the first publication date
@@ -412,12 +412,13 @@ public class ISFDBBook
             // then this will have the first publication year for sure
             String d = digits(toc.get(0).getFirstPublication());
             if (d != null && !d.isEmpty()) {
-                bookData.putString(DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED, d);
+                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED, d);
             }
         } else if (toc.size() > 1) {
             // we gamble and take what we found in the content
             if (mFirstPublication != null) {
-                bookData.putString(DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED, digits(mFirstPublication));
+                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
+                                   digits(mFirstPublication));
             } // else take the book pub date ... but that might be wrong....
         }
 

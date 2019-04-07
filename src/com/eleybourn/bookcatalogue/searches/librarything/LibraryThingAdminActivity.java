@@ -68,16 +68,15 @@ public class LibraryThingAdminActivity
         setTitle(R.string.library_thing);
 
         // LT Registration Link.
-        findViewById(R.id.register_url).setOnClickListener(v -> {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                                     Uri.parse(LibraryThingManager.getBaseURL() + '/')));
-        });
+        findViewById(R.id.register_url).setOnClickListener(
+                v -> startActivity(new Intent(Intent.ACTION_VIEW,
+                                              Uri.parse(LibraryThingManager.getBaseURL() + '/'))));
 
         // DevKey Link.
-        findViewById(R.id.dev_key_url).setOnClickListener(v -> {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                    LibraryThingManager.getBaseURL() + "/services/keys.php")));
-        });
+        findViewById(R.id.dev_key_url).setOnClickListener(
+                v -> startActivity(new Intent(Intent.ACTION_VIEW,
+                                              Uri.parse(LibraryThingManager.getBaseURL()
+                                                                + "/services/keys.php"))));
 
         mDevKeyView = findViewById(R.id.dev_key);
         String key = App.getPrefs().getString(LibraryThingManager.PREFS_DEV_KEY, "");

@@ -33,10 +33,12 @@ import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Base class for tasks. This builds and populates simple View objects to display the task.
@@ -96,6 +98,8 @@ public abstract class GoodreadsTask
         TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_TASK_HOLDER);
         TasksCursor tasksCursor = (TasksCursor) cursor;
 
+        Locale locale = LocaleUtils.from(context);
+
         // Update task info binding
         holder.description.setText(getDescription(context));
         String statusCode = tasksCursor.getStatusCode().toUpperCase();
@@ -113,7 +117,7 @@ public abstract class GoodreadsTask
                 break;
             case STATUS_QUEUED:
                 statusText = context.getString(R.string.gr_tq_queued);
-                String date = DateUtils.toPrettyDateTime(tasksCursor.getRetryDate());
+                String date = DateUtils.toPrettyDateTime(locale, tasksCursor.getRetryDate());
                 holder.retry_info.setText(context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
                                                             getRetries(), getRetryLimit(), date));
                 holder.retry_info.setVisibility(View.VISIBLE);
@@ -138,7 +142,7 @@ public abstract class GoodreadsTask
             holder.error.setVisibility(View.GONE);
         }
         //"Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
-        String date = DateUtils.toPrettyDateTime(tasksCursor.getQueuedDate());
+        String date = DateUtils.toPrettyDateTime(locale, tasksCursor.getQueuedDate());
         holder.job_info.setText(context.getString(R.string.gr_tq_generic_task_info, getId(), date));
     }
 

@@ -17,13 +17,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="name,div_bottom"
+        app:constraint_referenced_ids="name"
         />
 
+    <!-- Small text, but with padding so user can still select it -->
     <TextView
         android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:padding="@dimen/border"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textIsSelectable="false"
         android:textStyle="bold"
@@ -32,15 +34,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:drawableEnd="@drawable/ic_lock"
         tools:text="third level"
-        />
-
-    <View
-        android:id="@+id/div_bottom"
-        style="@style/div_horizontal"
-        android:layout_width="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/name"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

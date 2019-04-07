@@ -13,7 +13,6 @@
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_delete"
         tools:ignore="ContentDescription"
         />
 
@@ -61,7 +60,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_drag_handle"
         tools:ignore="ContentDescription"
         />
 

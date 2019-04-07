@@ -13,13 +13,13 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_BITMASK;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 
 /**
  * Intention is to create cleanup routines for some columns/tables

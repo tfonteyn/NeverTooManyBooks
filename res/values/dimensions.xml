@@ -5,5 +5,19 @@
     <dimen name="border_triple">15dp</dimen>
     <dimen name="border_quad">20dp</dimen>
 
+    <dimen name="editCheckboxMargin">20dp</dimen>
+
+    <!-- dividers -->
     <dimen name="margin_div">2dp</dimen>
+
+    <!-- equivalent size from ?android:attr/textAppearanceSmall -->
+    <dimen name="text_size_small">14sp</dimen>
+    <!-- equivalent size from ?android:attr/textAppearanceMedium -->
+    <dimen name="text_size_medium">18sp</dimen>
+    <!-- equivalent size from ?android:attr/textAppearanceLarge -->
+    <dimen name="text_size_large">22sp</dimen>
+
+    <!-- default and full height of a button with the standard text size inside -->
+    <dimen name="button_height">48dp</dimen>
+
 </resources>

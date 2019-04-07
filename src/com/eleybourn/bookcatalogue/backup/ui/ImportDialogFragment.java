@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -30,12 +31,21 @@ public class ImportDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = ImportDialogFragment.class.getSimpleName();
+    private static final String TAG = ImportDialogFragment.class.getSimpleName();
 
     private ImportSettings mImportSettings;
 
     private FragmentActivity mActivity;
 
+    /**
+     * (syntax sugar for newInstance)
+     */
+    public static void show(@NonNull final FragmentManager fm,
+                            @NonNull final ImportSettings settings) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            newInstance(settings).show(fm, TAG);
+        }
+    }
     /**
      * Constructor.
      *

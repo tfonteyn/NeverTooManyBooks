@@ -34,7 +34,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.widgets.FastScroller;
+import com.eleybourn.bookcatalogue.widgets.FastScrollListView;
 
 /**
  * Cursor adapter for flattened multi-typed ListViews.
@@ -47,7 +47,7 @@ import com.eleybourn.bookcatalogue.widgets.FastScroller;
  */
 public class MultiTypeListCursorAdapter
         extends CursorAdapter
-        implements FastScroller.SectionIndexerV2 {
+        implements FastScrollListView.FastScroller.SectionIndexerV2 {
 
     @NonNull
     private final LayoutInflater mInflater;
@@ -122,7 +122,7 @@ public class MultiTypeListCursorAdapter
     }
 
     /**
-     * this method gets called by {@link FastScroller}.
+     * this method gets called by {@link FastScrollListView.FastScroller}.
      * <p>
      * actual text coming from {@link MultiTypeListHandler#getSectionText(Cursor)}}.
      */

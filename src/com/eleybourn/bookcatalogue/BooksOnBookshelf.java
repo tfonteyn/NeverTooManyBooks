@@ -73,7 +73,7 @@ import com.eleybourn.bookcatalogue.booklist.BooklistPseudoCursor;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.TrackedCursor;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
@@ -106,14 +106,7 @@ public class BooksOnBookshelf
     public static final String PREF_BOB_TOP_ROW_OFFSET = "BooksOnBookshelf.TopRowOffset";
 
     /** Activity Request Code. */
-    static final int REQ_BOOK_EDIT = 1;
-    /** Activity Request Code. */
-    static final int REQ_BOOK_SEARCH = 2;
-
-    /** Activity Request Code. */
-    private static final int REQ_BOOK_VIEW = 0;
-    /** Activity Request Code. */
-    private static final int REQ_ADVANCED_LOCAL_SEARCH = 10;
+    private static final int REQ_ADVANCED_LOCAL_SEARCH = 11;
 
     /** Holder for all (semi)supported search criteria. See class for more info. */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
@@ -301,6 +294,8 @@ public class BooksOnBookshelf
 
     /**
      * Save position when paused.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -366,17 +361,17 @@ public class BooksOnBookshelf
 
                     Intent intent = new Intent(BooksOnBookshelf.this,
                                                BookDetailsActivity.class)
-                            .putExtra(DatabaseDefinitions.KEY_ID, bookId)
+                            .putExtra(DBDefinitions.KEY_ID, bookId)
                             .putExtra(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST, listTable)
                             .putExtra(BookFragment.REQUEST_BKEY_FLAT_BOOKLIST_POSITION, position);
-                    startActivityForResult(intent, REQ_BOOK_VIEW);
+                    startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
 
                 } else {
                     Intent intent = new Intent(BooksOnBookshelf.this,
                                                EditBookActivity.class)
-                            .putExtra(DatabaseDefinitions.KEY_ID, bookId)
+                            .putExtra(DBDefinitions.KEY_ID, bookId)
                             .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
-                    startActivityForResult(intent, REQ_BOOK_EDIT);
+                    startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 }
                 break;
 
@@ -433,14 +428,6 @@ public class BooksOnBookshelf
                                                   BooksOnBookshelf.this);
     }
 
-    /**
-     * @param menu The options menu in which you place your items.
-     *
-     * @return super.onCreateOptionsMenu(menu);
-     *
-     * @see #onPrepareOptionsMenu
-     * @see #onOptionsItemSelected
-     */
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
@@ -472,13 +459,6 @@ public class BooksOnBookshelf
         return super.onCreateOptionsMenu(menu);
     }
 
-    /**
-     * This will be called when a menu item is selected.
-     *
-     * @param item The item selected
-     *
-     * @return <tt>true</tt> if handled
-     */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -583,8 +563,8 @@ public class BooksOnBookshelf
         mCurrentPositionedBookId = 0;
 
         switch (requestCode) {
-            case REQ_BOOK_VIEW:
-            case REQ_BOOK_EDIT:
+            case UniqueId.REQ_BOOK_VIEW:
+            case UniqueId.REQ_BOOK_EDIT:
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING:
                         // handle re-positioning better
@@ -594,7 +574,7 @@ public class BooksOnBookshelf
 
                     case Activity.RESULT_OK:
                         Objects.requireNonNull(data);
-                        long newId = data.getLongExtra(DatabaseDefinitions.KEY_ID, 0);
+                        long newId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                         if (newId != 0) {
                             mCurrentPositionedBookId = newId;
                         }
@@ -610,12 +590,12 @@ public class BooksOnBookshelf
                 }
                 break;
 
-            case REQ_BOOK_SEARCH:
+            case UniqueId.REQ_BOOK_SEARCH:
                 if (resultCode == Activity.RESULT_OK) {
                     /* don't enforce having an id. We might not have found or added anything.
                      * but if we do, the data will be what EditBookActivity returns. */
                     if (data != null) {
-                        long newId = data.getLongExtra(DatabaseDefinitions.KEY_ID, 0);
+                        long newId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                         if (newId != 0) {
                             mCurrentPositionedBookId = newId;
                         }
@@ -643,7 +623,7 @@ public class BooksOnBookshelf
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     // the last edited/inserted shelf
-                    long bookshelfId = data.getLongExtra(DatabaseDefinitions.KEY_ID, 0);
+                    long bookshelfId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                     mCurrentBookshelf = mDb.getBookshelf(bookshelfId);
 
                     // bookshelves modified, update everything
@@ -688,12 +668,12 @@ public class BooksOnBookshelf
             case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES: {
                 switch (resultCode) {
                     case UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING:
-                    case UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStyles:
+                    case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES:
                         // no data
                         mDoFullRebuild = true;
                         break;
 
-                    case UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties:
+                    case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE:
                         Objects.requireNonNull(data);
                         BooklistStyle style =
                                 data.getParcelableExtra(
@@ -715,10 +695,6 @@ public class BooksOnBookshelf
                 }
                 break;
             }
-
-            case UniqueId.REQ_NAV_PANEL_SETTINGS:
-                App.setNeedsRecreating();
-                return;
 
             default:
                 super.onActivityResult(requestCode, resultCode, data);
@@ -847,8 +823,9 @@ public class BooksOnBookshelf
         if ((showHeaderFlags & BooklistStyle.SUMMARY_SHOW_COUNT) != 0) {
             if (mUniqueBooks != mTotalBooks) {
                 bookCounts.setText(getString(R.string.brackets,
-                                             getString(R.string.info_displaying_n_books_in_m_entries,
-                                                       mUniqueBooks, mTotalBooks)));
+                                             getString(
+                                                     R.string.info_displaying_n_books_in_m_entries,
+                                                     mUniqueBooks, mTotalBooks)));
             } else {
                 bookCounts.setText(getString(R.string.brackets,
                                              getResources().getQuantityString(
@@ -1003,7 +980,7 @@ public class BooksOnBookshelf
     private void initBookshelfSpinner() {
         mBookshelfSpinner = findViewById(R.id.bookshelf_name);
         // create, but do not populate here.
-        mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.spinner_bookshelf);
+        mBookshelfAdapter = new ArrayAdapter<>(this, R.layout.booksonbookshelf_bookshelf_spinner);
         mBookshelfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfAdapter);
 
@@ -1161,12 +1138,12 @@ public class BooksOnBookshelf
         // get a new builder and add the required extra domains
         BooklistBuilder builder = new BooklistBuilder(this, mCurrentBookshelf.getStyle(mDb));
 
-        builder.requireDomain(DatabaseDefinitions.DOM_TITLE,
-                              DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_TITLE),
+        builder.requireDomain(DBDefinitions.DOM_TITLE,
+                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
                               true);
 
-        builder.requireDomain(DatabaseDefinitions.DOM_BOOK_READ,
-                              DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_BOOK_READ),
+        builder.requireDomain(DBDefinitions.DOM_BOOK_READ,
+                              DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
                               false);
 
         return builder;
@@ -1245,7 +1222,7 @@ public class BooksOnBookshelf
         /** Fragment manager tag. */
         public static final String TAG = SortMenuFragment.class.getSimpleName();
 
-        private static final String BKEY_SHOW_ALL = "showAll";
+        private static final String BKEY_SHOW_ALL = TAG + ":showAll";
 
         private boolean mShowAll;
         private long mCurrentStyleId;
@@ -1751,14 +1728,14 @@ public class BooksOnBookshelf
             if (bundle.containsKey(UniqueId.BKEY_SEARCH_AUTHOR)) {
                 author = bundle.getString(UniqueId.BKEY_SEARCH_AUTHOR);
             }
-            if (bundle.containsKey(DatabaseDefinitions.KEY_TITLE)) {
-                title = bundle.getString(DatabaseDefinitions.KEY_TITLE);
+            if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
+                title = bundle.getString(DBDefinitions.KEY_TITLE);
             }
-            if (bundle.containsKey(DatabaseDefinitions.KEY_SERIES)) {
-                series = bundle.getString(DatabaseDefinitions.KEY_SERIES);
+            if (bundle.containsKey(DBDefinitions.KEY_SERIES)) {
+                series = bundle.getString(DBDefinitions.KEY_SERIES);
             }
-            if (bundle.containsKey(DatabaseDefinitions.KEY_LOANEE)) {
-                loanee = bundle.getString(DatabaseDefinitions.KEY_LOANEE);
+            if (bundle.containsKey(DBDefinitions.KEY_LOANEE)) {
+                loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
             }
             if (bundle.containsKey(UniqueId.BKEY_ID_LIST)) {
                 bookList = bundle.getIntegerArrayList(UniqueId.BKEY_ID_LIST);
@@ -1771,9 +1748,9 @@ public class BooksOnBookshelf
         void to(@NonNull final Intent intent) {
             intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, text)
                   .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, author)
-                  .putExtra(DatabaseDefinitions.KEY_TITLE, title)
-                  .putExtra(DatabaseDefinitions.KEY_SERIES, series)
-                  .putExtra(DatabaseDefinitions.KEY_LOANEE, loanee)
+                  .putExtra(DBDefinitions.KEY_TITLE, title)
+                  .putExtra(DBDefinitions.KEY_SERIES, series)
+                  .putExtra(DBDefinitions.KEY_LOANEE, loanee)
                   .putExtra(UniqueId.BKEY_ID_LIST, bookList);
         }
 
@@ -1783,9 +1760,9 @@ public class BooksOnBookshelf
         void to(final Bundle outState) {
             outState.putString(UniqueId.BKEY_SEARCH_TEXT, text);
             outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, author);
-            outState.putString(DatabaseDefinitions.KEY_TITLE, title);
-            outState.putString(DatabaseDefinitions.KEY_SERIES, series);
-            outState.putString(DatabaseDefinitions.KEY_LOANEE, loanee);
+            outState.putString(DBDefinitions.KEY_TITLE, title);
+            outState.putString(DBDefinitions.KEY_SERIES, series);
+            outState.putString(DBDefinitions.KEY_LOANEE, loanee);
             outState.putIntegerArrayList(UniqueId.BKEY_ID_LIST, bookList);
         }
 
@@ -1800,7 +1777,8 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Hold the current row details to be shown when scrolling.
+     * Hold the current row details to be shown at the top of the list (just below the
+     * bookshelf spinner) when scrolling.
      * <p>
      * the API of this class accepts level in the range of 1..2
      */

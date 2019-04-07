@@ -26,16 +26,16 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.eleybourn.bookcatalogue.App;
-import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.utils.Prefs;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.DBA;
+import com.eleybourn.bookcatalogue.utils.Prefs;
 
 /**
  * Collection of system-defined and user-defined Book List styles.
@@ -55,10 +55,11 @@ public final class BooklistStyles {
 
     /** default style when none is set yet -1 -> R.string.style_builtin_author_series. */
     @StringRes
-    public static final long DEFAULT_STYLE = -1;
+    public static final long DEFAULT_STYLE_ID = -1;
     // NEWKIND: BooklistStyle. Make sure to update the max id when adding a style!
     // and make sure a row is added to the database styles table.
     public static final int BUILTIN_MAX_ID = -19;
+
     private static final int BUILTIN_AUTHOR_THEN_SERIES = -1;
     private static final int BUILTIN_UNREAD_AUTHOR_THEN_SERIES = -2;
     private static final int BUILTIN_COMPACT = -3;
@@ -79,6 +80,16 @@ public final class BooklistStyles {
     private static final int BUILTIN_BOOKSHELF = -18;
     private static final int BUILTIN_DATE_LAST_UPDATE = -19;
 
+    /**
+     * Hardcoded initial/default style. Avoids having the create the full set of styles just
+     * to load the default one.
+     */
+    public static final BooklistStyle DEFAULT_STYLE =
+            new BooklistStyle(BUILTIN_AUTHOR_THEN_SERIES,
+                              R.string.style_builtin_author_series,
+                              BooklistGroup.RowKind.AUTHOR,
+                              BooklistGroup.RowKind.SERIES);
+
     private BooklistStyles() {
     }
 
@@ -91,11 +102,15 @@ public final class BooklistStyles {
      */
     public static BooklistStyle getDefaultStyle(@NonNull final DBA db) {
         // read the global user default, or if not present the hardcoded default.
-        long id = App.getPrefs().getLong(PREF_BL_STYLE_CURRENT_DEFAULT, DEFAULT_STYLE);
-        // now check that the style really/still exists!
+        long id = App.getPrefs().getLong(PREF_BL_STYLE_CURRENT_DEFAULT, DEFAULT_STYLE_ID);
+        if (id == DEFAULT_STYLE_ID) {
+            return DEFAULT_STYLE;
+        }
+
+        // check that the style really/still exists!
         BooklistStyle style = getStyles(db, true).get(id);
         if (style == null) {
-            return getBuiltinStyles().get(DEFAULT_STYLE);
+            return DEFAULT_STYLE;
         }
         return style;
     }
@@ -137,11 +152,7 @@ public final class BooklistStyles {
         BooklistStyle style;
 
         // Author/Series
-        style = new BooklistStyle(BUILTIN_AUTHOR_THEN_SERIES,
-                                  R.string.style_builtin_author_series,
-                                  BooklistGroup.RowKind.AUTHOR,
-                                  BooklistGroup.RowKind.SERIES);
-        builtinStyles.put(style.getId(), style);
+        builtinStyles.put(DEFAULT_STYLE.getId(), DEFAULT_STYLE);
 
         // Unread
         style = new BooklistStyle(BUILTIN_UNREAD_AUTHOR_THEN_SERIES,
@@ -156,7 +167,7 @@ public final class BooklistStyles {
                                   R.string.style_builtin_compact,
                                   BooklistGroup.RowKind.AUTHOR);
         builtinStyles.put(style.getId(), style);
-        style.setScaleSize(BooklistStyle.SCALE_SIZE_SMALLER);
+        style.setScale(BooklistStyle.SCALE_SIZE_SMALLER);
         style.setShowThumbnails(false);
 
         // Title
@@ -460,7 +471,7 @@ public final class BooklistStyles {
             }
         }
         // not found...
-        return DEFAULT_STYLE;
+        return DEFAULT_STYLE_ID;
     }
 
 }

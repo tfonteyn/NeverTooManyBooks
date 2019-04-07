@@ -19,9 +19,9 @@ import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_STYLE_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_STYLE_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 
 /**
  * Represents a Bookshelf.
@@ -80,6 +80,16 @@ public class Bookshelf
                      final long styleId) {
         mName = name.trim();
         mStyleId = styleId;
+    }
+
+    /**
+     * Constructor without ID.
+     */
+    public Bookshelf(@NonNull final String name,
+                     @NonNull final BooklistStyle style) {
+        mName = name.trim();
+        mCachedStyle = style;
+        mStyleId = style.getId();
     }
 
     /**

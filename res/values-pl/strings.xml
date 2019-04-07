@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?><!--
- define entities that can be used inside of other string (not possible with standard Android resources
- e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
+ define entities that can be used inside of other string (not possible with standard Android
+ resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
-    <!-- ========== not in use ========== -->
-
-
-    <!-- ========== in use ========== -->
-
     <string name="title_add_book">Dodaj książkę</string>
     <string name="menu_add_book">Dodaj książkę…</string>
     <string name="menu_delete_book">Usuń książkę</string>
@@ -31,7 +26,7 @@
     <string name="X_info_no_bookshelves_yet">Nie utworzyłeś jeszcze żadnej półki. Dodaj jakąś przy pomocy menu na dole ekranu.</string>
     <string name="menu_add_bookshelf">Utwórz półkę</string>
     <string name="X_btn_confirm_add_bs">Dodaj półkę</string>
-    <string name="menu_edit_bookshelves">Zarządzaj półkami</string>
+    <string name="menu_bookshelves">Półkami…</string>
     <string name="X_btn_confirm_save_bs">Zapisz półkę</string>
     <string name="menu_delete_bookshelf">Usuń półkę</string>
     <string name="warning_cannot_delete_1st_bs">Nie można usunąć pierwszej półki</string>
@@ -56,7 +51,6 @@
     <string name="menu_administration">Administracja</string>
     <string name="info_install_scanner">Do skanowania kodów kreskowych ISBN musisz zainstalować program Zxing Barcode Scanner. Naciśnij OK by to zrobić, lub Anuluj by zrezygnować z instalacji.</string>
     <string name="title_install_scan">Zainstaluj Barcode Scanner</string>
-    <string name="X_about_lbl_version_number">Wersja programu:</string>
     <string name="about_donate">Jeśli chciałbyś wesprzeć rozwój programu, zrób to poprzez mój Amazon Wishlist lub PayPal. Będąc obywatelem Australii nie mam póki co możliwości opublikowania &quot;płatnej&quot; wersji. :-) </string>
     <string name="about_lbl_upgrade">Od ostatniej aktualizacji</string>
     <string name="menu_edit_book">Edytuj książkę</string>
@@ -85,7 +79,7 @@
     <string name="error_search_exception">Wyszukiwanie nie powiodło się: %1$s: %2$s</string>
     <string name="menu_delete">Usuń okładkę</string>
     <string name="help">Pomoc</string>
-    <string name="menu_manage_fields">Dostosuj widoczność pól</string>
+    <string name="pt_ui_field_visibility">Dostosuj widoczność pól</string>
     <string name="info_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="X_anthology_titles">Tytuły antologii</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
@@ -121,7 +115,7 @@
     <string name="field_not_set">Nie wybrany(a)</string>
     <string name="X_menu_search_books">Przeszukaj książki</string>
     <string name="hint_book_search_by_text">Dodawanie wg ISBN jest zalecane - bardziej dokładne niż wg autora i tytułu. W niektórych książkach kod kreskowy znajdziesz wewnątrz okładki. \n\n</string>
-    <string name="about_help_click_here">Kliknij tu by wejść do pomocy online</string>
+    <string name="about_help_tap_here">Kliknij tu by wejść do pomocy online</string>
     <string name="vldt_unable_to_get_value">Nie mogę pobrać wartości dla \‘%1$s\’</string>
     <string name="vldt_integer_expected">Oczekiwana wartość całkowita dla \‘%1$s\’</string>
     <string name="vldt_real_expected">Oczekiwana wartość liczbowa dla \‘%1$s\’</string>
@@ -152,8 +146,6 @@
     <string name="X_warning_required_author">Pole autor jest puste</string>
     <string name="warning_series_already_in_list">Seria (tom) jest na liście</string>
     <string name="X_warning_required_series">Pole serii(tomu) jest puste</string>
-    <string name="X_export_error_csv_failed">Eksport nie powiódł się - nie mogę zapisać na karcie SD</string>
-    <string name="X_error_download_thumbnail_failed">Pobranie okładki nie powiodło się - nie mogę zapisać na karcie SD</string>
     <string name="progress_msg_skip_title">Pomiń - %1$s</string>
     <string name="progress_end_num_books_searched">%1$d książek przeszukano</string>
     <string name="progress_end_cancelled_info">Przerwano - %1$s</string>
@@ -185,8 +177,8 @@
     <string name="confirm_really_delete_book">Zamierzasz usunąć książkę o tytule \‘%1$s\’ autora %2$s. Czy chcesz kontynuować?</string>
     <string name="warning_editions_require_isbn">Pobieranie innych wydań wymaga ISBN</string>
     <string name="warning_no_editions">Brak wydań</string>
-    <string name="title_finding_editions">Szukanie wydań…</string>
-    <string name="info_click_on_thumb">Kliknij na obrazku by go powiększyć</string>
+    <string name="progress_msg_finding_editions">Szukanie wydań…</string>
+    <string name="info_tap_on_thumb">Kliknij na obrazku by go powiększyć</string>
     <string name="progress_msg_loading">Pobieram…</string>
     <string name="warning_cover_not_found">Zdjęcie nie znalezione</string>
     <string name="warning_select_min_1_field">Wybierz przynajmniej jedno pole do zaktualizowania</string>
@@ -217,7 +209,6 @@
     <string name="debug_subject">Zbieranie informacji o problemach technicznych</string>
     <string name="debug_body">Poświęć chwilę na krótki opis problemu, z którym się zetknąłeś.</string>
     <string name="menu_duplicate_book">Duplikuj książkę</string>
-    <string name="X_warning_cannot_edit_system">Nie możesz edytować danych systemowych</string>
     <string name="lt_incorrect_key">Weryfikacja klucza deweloperskiego LibraryThing się nie powiodła - jest niepoprawny lub nie masz połączenia z siecią</string>
     <string name="lt_correct_key">Twój klucz deweloperski LibraryThing jest poprawny.</string>
     <string name="lbl_x_pages">%1$d stron</string>
@@ -225,7 +216,6 @@
     <string name="lbl_location_long">Lokalizacja książki</string>
     <string name="lbl_publication">Publikacja</string>
     <string name="pg_general">Ogólne</string>
-    <string name="progress_msg_cleaning_database">Czyszczenie bazy danych…</string>
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_comma_b">%1$s, %2$s</string>
@@ -235,7 +225,7 @@
     <string name="lbl_update_year">Zaktualizuj rok</string>
     <string name="lbl_update_month">Zaktualizuj miesiąc</string>
     <string name="lbl_update_day">Dzień aktualizacji</string>
-    <string name="lbl_unread">"Nepřečtený "</string>
+    <string name="lbl_unread">Nepřečtený</string>
     <string name="X_lbl_loan_book_available">Dostępny</string>
     <string name="X_menu_add_style">Dodaj styl</string>
     <string name="lbl_credentials">Kwalifikacje</string>
@@ -244,7 +234,7 @@
     <string name="lbl_books">Książki</string>
     <string name="menu_loan_return_book">Pożyczona książka powraca</string>
     <string name="lbl_loaned">W wypożyczeniu</string>
-    <string name="progress_msg_saving_image">Zapisywanie obrazu …</string>
+    <string name="progress_msg_saving_image">Zapisywanie obrazu…</string>
     <string name="error_google_play_missing">Google Play / Market nie jest zainstalowany</string>
     <string name="lbl_settings">Preferencje</string>
     <string name="lbl_signed">Podpisany</string>
@@ -261,5 +251,16 @@
     <string name="searching_goodreads">Przeszukiwanie Goodreads</string>
     <string name="searching_isfdb">Przeszukiwanie ISFDB</string>
     <string name="searching_open_library">Przeszukiwanie OpenLibrary</string>
+    <string name="progress_msg_optimizing">Optymalizacja bazy danych</string>
+    <string name="progress_msg_searching">Badawczy…</string>
+    <string name="progress_msg_reading_directory">Czytanie folderów…</string>
+    <string name="progress_msg_rebuilding_search_index">Przebudowywanie indeksu wyszukiwania…</string>
+    <string name="btn_merge">Łączyć</string>
+    <string name="book_format_audiobook">Książka audio</string>
+    <string name="menu_author_details">Wszystkie prace tego autora</string>
+    <string name="lbl_styles">Style</string>
+    <string name="lbl_style">Styl</string>
+    <string name="progress_msg_process_booklist_style">Style listy książek…</string>
+    <string name="lbl_search_site_order">Zamówienie</string>
 
 </resources>

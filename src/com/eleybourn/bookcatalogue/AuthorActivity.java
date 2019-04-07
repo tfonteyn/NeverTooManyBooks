@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import com.eleybourn.bookcatalogue.adapters.TOCAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 
@@ -36,7 +36,7 @@ public class AuthorActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        long authorId = getIntent().getLongExtra(DatabaseDefinitions.KEY_ID, 0);
+        long authorId = getIntent().getLongExtra(DBDefinitions.KEY_ID, 0);
 
         mDb = new DBA(this);
         final Author author = mDb.getAuthor(authorId);
@@ -53,11 +53,7 @@ public class AuthorActivity
     /**
      * User tapped on an entry; get the book(s) for that entry and display.
      *
-     * @param parent   The AdapterView where the click happened.
-     * @param view     The view within the AdapterView that was clicked (this
-     *                 will be a view provided by the adapter)
-     * @param position The position of the view in the adapter.
-     * @param id       The row id of the item that was clicked.
+     * {@inheritDoc}
      */
     @Override
     public void onItemClick(@NonNull final AdapterView<?> parent,

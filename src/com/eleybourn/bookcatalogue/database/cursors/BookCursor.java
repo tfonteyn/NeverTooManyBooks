@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 
 import com.eleybourn.bookcatalogue.database.ColumnNotPresentException;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer;
 
 /**
@@ -77,9 +77,9 @@ public class BookCursor
      */
     public final long getId() {
         if (mIdCol < 0) {
-            mIdCol = getColumnIndex(DatabaseDefinitions.DOM_PK_ID.name);
+            mIdCol = getColumnIndex(DBDefinitions.DOM_PK_ID.name);
             if (mIdCol < 0) {
-                throw new ColumnNotPresentException(DatabaseDefinitions.DOM_PK_ID.name);
+                throw new ColumnNotPresentException(DBDefinitions.DOM_PK_ID.name);
             }
         }
         return getLong(mIdCol);

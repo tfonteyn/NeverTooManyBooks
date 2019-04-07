@@ -32,12 +32,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.EditSeriesListActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -50,7 +52,8 @@ public class EditSeriesDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
+    private static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
+
     private DBA mDb;
 
     private AutoCompleteTextView mNameView;
@@ -60,12 +63,22 @@ public class EditSeriesDialogFragment
     private boolean mIsComplete;
 
     /**
+     * (syntax sugar for newInstance)
+     */
+    public static void show(@NonNull final FragmentManager fm,
+                            @NonNull final Series series) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            newInstance(series).show(fm, TAG);
+        }
+    }
+
+    /**
      * Constructor.
      */
     public static EditSeriesDialogFragment newInstance(@NonNull final Series series) {
         EditSeriesDialogFragment frag = new EditSeriesDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(DatabaseDefinitions.KEY_SERIES, series);
+        args.putParcelable(DBDefinitions.KEY_SERIES, series);
         frag.setArguments(args);
         return frag;
     }
@@ -76,14 +89,14 @@ public class EditSeriesDialogFragment
         final Activity mActivity = requireActivity();
         mDb = new DBA(mActivity);
 
-        final Series series = requireArguments().getParcelable(DatabaseDefinitions.KEY_SERIES);
+        final Series series = requireArguments().getParcelable(DBDefinitions.KEY_SERIES);
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             mName = series.getName();
             mIsComplete = series.isComplete();
         } else {
-            mName = savedInstanceState.getString(DatabaseDefinitions.KEY_SERIES);
-            mIsComplete = savedInstanceState.getBoolean(DatabaseDefinitions.KEY_SERIES_IS_COMPLETE);
+            mName = savedInstanceState.getString(DBDefinitions.KEY_SERIES);
+            mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
         }
 
         View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_series, null);
@@ -142,8 +155,8 @@ public class EditSeriesDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DatabaseDefinitions.KEY_SERIES, mName);
-        outState.putBoolean(DatabaseDefinitions.KEY_SERIES_IS_COMPLETE, mIsComplete);
+        outState.putString(DBDefinitions.KEY_SERIES, mName);
+        outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mIsComplete);
     }
 
     @Override

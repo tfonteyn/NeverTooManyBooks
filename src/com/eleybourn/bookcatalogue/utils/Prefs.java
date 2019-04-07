@@ -87,7 +87,7 @@ public final class Prefs {
      * DEBUG method.
      */
     public static void dumpPreferences(@Nullable final String uuid) {
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Map<String, ?> map = uuid != null ? App.getPrefs(uuid).getAll()
                                               : App.getPrefs().getAll();
             List<String> keyList = new ArrayList<>(map.keySet());
@@ -125,6 +125,8 @@ public final class Prefs {
 
         // write to default prefs
         SharedPreferences.Editor ed = App.getPrefs().edit();
+
+        String styleName;
 
         // note that strings could be empty. Check if needed
         for (String key : oldMap.keySet()) {
@@ -297,9 +299,9 @@ public final class Prefs {
 
                     case "BooksOnBookshelf.LIST_STYLE":
                         String e = (String) oldValue;
+                        styleName = e.substring(0, e.length() - 2);
                         ed.putLong(BooklistStyles.PREF_BL_STYLE_CURRENT_DEFAULT,
-                                   BooklistStyles.getStyleId(context,
-                                                             e.substring(0, e.length() - 2)));
+                                   BooklistStyles.getStyleId(context, styleName));
                         break;
 
                     case "BooklistStyles.Menu.Items":
@@ -307,8 +309,8 @@ public final class Prefs {
                         Set<Long> styleIds = new LinkedHashSet<>();
                         String[] styles = ((String) oldValue).split(",");
                         for (String style : styles) {
-                            styleIds.add(BooklistStyles.getStyleId(context, style.substring(0,
-                                                                                            style.length() - 2)));
+                            styleName = style.substring(0, style.length() - 2);
+                            styleIds.add(BooklistStyles.getStyleId(context, styleName));
                         }
                         ed.putString(BooklistStyles.PREF_BL_PREFERRED_STYLES,
                                      Csv.join(",", styleIds));

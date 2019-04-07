@@ -15,7 +15,7 @@ import java.util.Set;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -665,7 +665,7 @@ public class TableDefinition
      * <p>
      * format: [alias].[domain-1], ..., [alias].[domain-n]
      * <p>
-     * Keep in mind that not all tables are fully registered in {@link DatabaseDefinitions}
+     * Keep in mind that not all tables are fully registered in {@link DBDefinitions}
      * Add domains there when needed. Eventually the lists will get complete.
      *
      * @param withAS set to <tt>true</tt> if you need 'AS domain-x' added.
@@ -978,7 +978,7 @@ public class TableDefinition
         @NonNull
         String getPredicate() {
             List<DomainDefinition> pk = mParent.getPrimaryKey();
-            if (/* always debug */ BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always debug */) {
                 if (pk.isEmpty()) {
                     throw new IllegalStateException("no primary key on table: " + mParent);
                 }

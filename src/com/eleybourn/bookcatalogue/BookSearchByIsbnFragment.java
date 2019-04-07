@@ -20,7 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.Objects;
 
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.scanner.Scanner;
@@ -70,11 +70,10 @@ public class BookSearchByIsbnFragment
     /** Fragment manager tag. */
     public static final String TAG = BookSearchByIsbnFragment.class.getSimpleName();
     /** option to start in scan mode (versus manual entry). */
-    public static final String BKEY_IS_SCAN_MODE = "isScanMode";
+    public static final String BKEY_IS_SCAN_MODE = TAG + ":isScanMode";
 
-    private static final String BKEY_SCANNER_STARTED = "ScannerStarted";
+    private static final String BKEY_SCANNER_STARTED = TAG + ":ScannerStarted";
 
-    //super: static final int REQ_BOOK_EDIT = 1_000;
     private static final int REQ_IMAGE_FROM_SCANNER = 0;
 
     /** all digits allowed in ASIN strings. */
@@ -125,7 +124,7 @@ public class BookSearchByIsbnFragment
         super.onActivityCreated(savedInstanceState);
 
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
-        mIsbnSearchText = args.getString(DatabaseDefinitions.KEY_ISBN, "");
+        mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 
         if (savedInstanceState != null) {
             mScannerStarted = savedInstanceState.getBoolean(BKEY_SCANNER_STARTED, false);
@@ -348,10 +347,10 @@ public class BookSearchByIsbnFragment
         dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.menu_edit_book),
                          (d, which) -> {
                              Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                     .putExtra(DatabaseDefinitions.KEY_ID, existingId)
+                                     .putExtra(DBDefinitions.KEY_ID, existingId)
                                      .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
                                                EditBookFragment.TAB_EDIT);
-                             startActivityForResult(intent, REQ_BOOK_EDIT);
+                             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                          });
 
         // User aborts this isbn
@@ -406,7 +405,7 @@ public class BookSearchByIsbnFragment
                          .sendHeaderUpdate(R.string.progress_msg_adding_book);
                 Intent intent = new Intent(mActivity, EditBookActivity.class)
                         .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                startActivityForResult(intent, REQ_BOOK_EDIT);
+                startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
 
                 // Clear the data entry fields ready for the next one (mScanMode has no view)
                 if (mIsbnView != null) {
@@ -451,7 +450,7 @@ public class BookSearchByIsbnFragment
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DatabaseDefinitions.KEY_ISBN, mIsbnSearchText);
+        outState.putString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
         outState.putBoolean(BKEY_SCANNER_STARTED, mScannerStarted);
     }
 

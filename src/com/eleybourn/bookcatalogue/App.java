@@ -47,6 +47,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
 
+import java.util.Locale;
 import java.util.Set;
 
 import org.acra.ACRA;
@@ -134,7 +135,7 @@ public class App
      * the string-array order must match the APP_THEMES order
      * The preferences choice will be build according to the string-array list/order.
      */
-    private static final int DEFAULT_THEME = 0;
+    private static final int DEFAULT_THEME = 1;
     /** As defined in res/themes.xml. */
     private static final int[] APP_THEMES = {
             R.style.AppTheme_Dark,
@@ -158,6 +159,14 @@ public class App
         mInstance = this;
     }
 
+    /**
+     *
+     * WARNING: try not to use this to get resource strings!
+     * Doing so can return inconsistent translations.
+     * Only use when you're absolutely sure there is no other option.
+     *
+     * @return Application Context.
+     */
     @NonNull
     public static Context getAppContext() {
         return mInstance.getApplicationContext();
@@ -187,7 +196,7 @@ public class App
     public static PackageInfo getPackageInfo(final int flags) {
         PackageInfo packageInfo = null;
         try {
-            Context context = getAppContext();
+            Context context = mInstance.getApplicationContext();
             // Get app info from the manifest
             PackageManager manager = context.getPackageManager();
             packageInfo = manager.getPackageInfo(context.getPackageName(), flags);
@@ -293,21 +302,6 @@ public class App
     }
 
     /**
-     * TOMF: this is a bad idea. When finally fixing the switch of Locale,
-     * it became clear that not all strings got updated. Usage has been made minimal.
-     *
-     * @param stringId Resource ID
-     * @param objects  optional arguments for the resource string
-     *
-     * @return Localized resource string
-     */
-    @NonNull
-    public static String getResString(@StringRes final int stringId,
-                                      @Nullable final Object... objects) {
-        return mInstance.getApplicationContext().getString(stringId, objects).trim();
-    }
-
-    /**
      * @return the global SharedPreference
      */
     @NonNull
@@ -322,6 +316,7 @@ public class App
      */
     @NonNull
     public static SharedPreferences getPrefs(@NonNull final String uuid) {
+
         return mInstance.getApplicationContext().getSharedPreferences(uuid, MODE_PRIVATE);
     }
 
@@ -433,13 +428,7 @@ public class App
     @CallSuper
     public void onCreate() {
         // Get the preferred locale as soon as possible
-        try {
-            LocaleUtils.init();
-            LocaleUtils.applyPreferred(this);
-        } catch (RuntimeException e) {
-            // Not much we can do...we want locale set early, but not fatal if it fails.
-            Logger.error(e);
-        }
+        setSystemLocale();
 
         // cache the preferred theme.
         mCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
@@ -450,6 +439,16 @@ public class App
         super.onCreate();
     }
 
+    private void setSystemLocale() {
+        try {
+            LocaleUtils.init(Locale.getDefault());
+            LocaleUtils.applyPreferred(this);
+        } catch (RuntimeException e) {
+            // Not much we can do...we want locale set early, but not fatal if it fails.
+            Logger.error(e);
+        }
+    }
+
     /**
      * Ensure to re-apply our internal user-preferred Locale to the Application (this) object.
      *
@@ -458,8 +457,8 @@ public class App
     @Override
     @CallSuper
     public void onConfigurationChanged(@NonNull final Configuration newConfig) {
-        // apply to the Application object (this class)
-        LocaleUtils.applyPreferred(this);
+        // same as in onCreate
+        setSystemLocale();
 
         // override in the new config
         newConfig.setLocale(LocaleUtils.getPreferredLocal());

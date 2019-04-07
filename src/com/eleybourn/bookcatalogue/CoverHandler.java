@@ -18,6 +18,7 @@ import android.widget.PopupMenu;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -25,6 +26,7 @@ import androidx.fragment.app.FragmentManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -42,11 +44,13 @@ import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.entities.BookManager;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.searches.librarything.LibraryThingManager;
+import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
+import com.eleybourn.bookcatalogue.utils.ZoomedImageDialogFragment;
 
 /**
  * Handler for a displayed Cover ImageView element.
@@ -66,19 +70,6 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class CoverHandler
         implements SimpleDialog.ViewContextMenu {
 
-    /**
-     * request code: use with {@link CoverBrowser#setTargetFragment(Fragment, int)}
-     * and in {@link #onActivityResult(int, int, Intent)}.
-     */
-    static final int REQ_ALT_EDITION = 0;
-    /** request code: use internal routines for cropping images. */
-    private static final int REQ_CROP_IMAGE_INTERNAL = 1;
-    /** request code: start an intent for an external application to do the cropping. */
-    private static final int REQ_CROP_IMAGE_EXTERNAL = 2;
-    /** request code: start an intent to get an image from the Camera. */
-    private static final int REQ_ACTION_IMAGE_CAPTURE = 3;
-    /** request code: start an intent to get an image from the an app that provides content. */
-    private static final int REQ_ACTION_GET_CONTENT = 4;
     /** Counter used to prevent images being reused accidentally. */
     private static int mTempImageCounter;
 
@@ -133,7 +124,8 @@ public class CoverHandler
             initContextMenuOnView(mCoverField.getView());
             //Allow zooming by clicking on the image
             mCoverField.getView().setOnClickListener(
-                    v -> ImageUtils.showZoomedImage(mActivity, getCoverFile()));
+                    v -> ZoomedImageDialogFragment.show(mActivity.getSupportFragmentManager(),
+                                                        getCoverFile()));
         }
     }
 
@@ -307,10 +299,7 @@ public class CoverHandler
      * (re)load the image into the view.
      */
     public void updateCoverView() {
-//        ImageUtils.getImageAndPutIntoView(mCoverField.getView(), getCoverFile());
-
-        ImageUtils.getImageAndPutIntoView(mCoverField.getView(), getCoverFile(),
-                                          mMaxWidth, mMaxHeight, true);
+        ImageUtils.setImageView(mCoverField.getView(), getCoverFile(), mMaxWidth, mMaxHeight, true);
     }
 
     /**
@@ -349,6 +338,7 @@ public class CoverHandler
      * and present to the user to choose one.
      */
     private void addCoverFromAlternativeEditions() {
+        // this is essential, as we only get alternative editions from LibraryThing for now.
         if (LibraryThingManager.noKey()) {
             LibraryThingManager.needLibraryThingAlert(mActivity, true, "cover_browser");
             return;
@@ -366,7 +356,7 @@ public class CoverHandler
             }
             // allow a callback when the user clicks on the image they want to use.
             // at least we don't need to travel round to the Activity this way.
-            mCoverBrowserFragment.setTargetFragment(mFragment, REQ_ALT_EDITION);
+            mCoverBrowserFragment.setTargetFragment(mFragment, UniqueId.REQ_ALT_EDITION);
         } else {
             UserMessage.showUserMessage(mIsbnField.getView(),
                                         R.string.warning_editions_require_isbn);
@@ -390,7 +380,7 @@ public class CoverHandler
         StorageUtils.deleteFile(f);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
     */
-        mFragment.startActivityForResult(intent, REQ_ACTION_IMAGE_CAPTURE);
+        mFragment.startActivityForResult(intent, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
     }
 
     /**
@@ -437,7 +427,7 @@ public class CoverHandler
                 .setType("image/*");
         mFragment.startActivityForResult(
                 Intent.createChooser(intent, mActivity.getString(R.string.title_select_image)),
-                REQ_ACTION_GET_CONTENT);
+                UniqueId.REQ_ACTION_GET_CONTENT);
     }
 
     /**
@@ -478,41 +468,51 @@ public class CoverHandler
      * @param angle rotate by the specified amount
      */
     private void rotateImage(final long angle) {
-        // before rotation, make the image bigger, so we don't loose details.
-        int imageSize = ImageUtils.getImageSizes(mActivity).large * 2;
+
+        File file = getCoverFile();
+        if (!file.exists()) {
+            return;
+        }
+
+        // We load the file and first scale it to twice the display size.
+        // Keep in mind this means it could be up- or downscaled from the original !
+        int imageSize = ImageUtils.getDisplaySizes(mActivity).large * 2;
 
         // we'll try it twice with a gc in between
         int attempts = 2;
         while (true) {
             try {
-                File file = getCoverFile();
-                Bitmap bitmap = ImageUtils.getImage(file, imageSize, imageSize, true);
-                if (bitmap == null) {
+                Bitmap bm = ImageUtils.createScaledBitmap(file.getPath(), imageSize, imageSize,
+                                                          true);
+                if (bm == null) {
                     return;
                 }
 
                 Matrix matrix = new Matrix();
                 matrix.postRotate(angle);
-                Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                                                           bitmap.getWidth(), bitmap.getHeight(),
+                Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0,
+                                                           bm.getWidth(), bm.getHeight(),
                                                            matrix, true);
-                if (rotatedBitmap != bitmap) {
-                    bitmap.recycle();
+                // if rotation worked, clean up the old one right now to save memory.
+                if (rotatedBitmap != bm) {
+                    bm.recycle();
                 }
 
-                /* Create a file to copy the image into */
-                OutputStream outFos;
-                try {
-                    outFos = new FileOutputStream(file.getAbsoluteFile());
-                } catch (FileNotFoundException e) {
+                // Write back to the file
+                try (OutputStream out = new FileOutputStream(file.getAbsoluteFile())) {
+                    rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+
+                } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
                     Logger.error(e);
                     return;
+                } finally {
+                    rotatedBitmap.recycle();
                 }
-                rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outFos);
-                rotatedBitmap.recycle();
+
                 // put the new image on screen.
                 updateCoverView();
                 return;
+
             } catch (OutOfMemoryError e) {
                 attempts--;
                 if (attempts > 1) {
@@ -549,28 +549,41 @@ public class CoverHandler
         StorageUtils.deleteFile(cropped);
 
         Intent intent = new Intent(mActivity, CropImageActivity.class)
-                .putExtra(CropImageActivity.REQUEST_KEY_IMAGE_ABSOLUTE_PATH,
+                .putExtra(CropImageActivity.BKEY_IMAGE_ABSOLUTE_PATH,
                           imageFile.getAbsolutePath())
-                .putExtra(CropImageActivity.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH,
+                .putExtra(CropImageActivity.BKEY_OUTPUT_ABSOLUTE_PATH,
                           cropped.getAbsolutePath())
-                .putExtra(CropImageActivity.REQUEST_KEY_SCALE, true)
-                .putExtra(CropImageActivity.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
+                .putExtra(CropImageActivity.BKEY_SCALE, true)
+                .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, cropFrameWholeImage);
 
-        mFragment.startActivityForResult(intent, REQ_CROP_IMAGE_INTERNAL);
+        mFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_INTERNAL);
     }
 
     /**
      * Crop the image using the standard crop action intent (the device may not support it).
+     * FIXME: Mr. Internet says that "com.android.camera.action.CROP" is from Android 1.x/2.x and should not be used today.
      * <p>
      * Code using hardcoded string on purpose as they are part of the Intent api.
      *
      * @param imageFile to crop
      */
     private void cropCoverImageExternal(@NonNull final File imageFile) {
+
+        Uri inputURI = FileProvider.getUriForFile(mActivity,
+                                                  GenericFileProvider.AUTHORITY,
+                                                  imageFile);
+        File cropped = getCroppedTempCoverFile();
+        // make sure any left-over file is removed.
+        StorageUtils.deleteFile(cropped);
+        Uri outputURI = Uri.fromFile(cropped);
+//                FileProvider.getUriForFile(mActivity,
+//                                                   GenericFileProvider.AUTHORITY,
+//                                                   cropped);
+
         //call the standard crop action intent (the device may not support it)
         Intent intent = new Intent("com.android.camera.action.CROP")
                 // image Uri and type
-                .setDataAndType(Uri.fromFile(new File(imageFile.getAbsolutePath())), "image/*")
+                .setDataAndType(inputURI, "image/*")
                 // not interested in faces
                 .putExtra("noFaceDetection", true)
                 // <tt>true</tt> to return a Bitmap,
@@ -590,16 +603,14 @@ public class CoverHandler
 //            intent.putExtra("outputY", 256);
 
         // Save output image in uri
-        File cropped = getCroppedTempCoverFile();
-        StorageUtils.deleteFile(cropped);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(cropped.getAbsolutePath())));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, outputURI);
 
         List<ResolveInfo> list = mActivity.getPackageManager().queryIntentActivities(intent, 0);
         if (list.isEmpty()) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(mFragment.getView(), R.string.error_no_external_crop_app);
         } else {
-            mFragment.startActivityForResult(intent, REQ_CROP_IMAGE_EXTERNAL);
+            mFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_EXTERNAL);
         }
 
     }
@@ -672,15 +683,15 @@ public class CoverHandler
                                     final int resultCode,
                                     @Nullable final Intent data) {
         switch (requestCode) {
-            // coming back CoverBrowser with the selected image.
-            case REQ_ALT_EDITION:
+            // coming back from CoverBrowser with the selected image.
+            case UniqueId.REQ_ALT_EDITION:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     onImageSelected(data.getStringExtra(UniqueId.BKEY_FILE_SPEC));
                 }
                 return true;
 
-            case REQ_ACTION_IMAGE_CAPTURE:
+            case UniqueId.REQ_ACTION_IMAGE_CAPTURE:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
 
@@ -690,15 +701,15 @@ public class CoverHandler
                 }
                 return true;
 
-            case REQ_ACTION_GET_CONTENT:
+            case UniqueId.REQ_ACTION_GET_CONTENT:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
                     addCoverFromGallery(data);
                 }
                 return true;
 
-            case REQ_CROP_IMAGE_INTERNAL:
-            case REQ_CROP_IMAGE_EXTERNAL:
+            case UniqueId.REQ_CROP_IMAGE_INTERNAL:
+            case UniqueId.REQ_CROP_IMAGE_EXTERNAL:
                 if (resultCode == Activity.RESULT_OK) {
                     File cropped = getCroppedTempCoverFile();
                     if (cropped.exists()) {
@@ -708,12 +719,13 @@ public class CoverHandler
                         updateCoverView();
                     } else {
                         Logger.info(this, Tracker.State.Running,
-                                    "onActivityResult", requestCode,
-                                    resultCode, "result OK, but no image file");
+                                    "onActivityResult",
+                                    requestCode, resultCode, "RESULT_OK, but no image file?");
                     }
                 } else {
                     Logger.info(this, Tracker.State.Running,
-                                "onActivityResult", requestCode, resultCode, "bad result");
+                                "onActivityResult",
+                                requestCode, resultCode, "FAILED");
                     StorageUtils.deleteFile(getCroppedTempCoverFile());
                 }
                 return true;

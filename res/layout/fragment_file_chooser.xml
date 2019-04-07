@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fslv="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,7 +21,7 @@
         app:layout_constraintEnd_toStartOf="@id/path"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_folder_open"
+        android:src="@drawable/ic_folder_open"
         />
 
     <TextView
@@ -48,10 +49,7 @@
         app:layout_constraintTop_toBottomOf="@id/btn_path_up"
         />
 
-    <!-- a ListView is probably good enough. I guess it needed to be 'fast' when all covers
-    were residing in the root directory. -->
-    <!--<com.eleybourn.bookcatalogue.widgets.FastScrollListView-->
-    <ListView
+    <com.eleybourn.bookcatalogue.widgets.FastScrollListView
         android:id="@android:id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -60,10 +58,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_divider"
+        fslv:scrollHandle="@drawable/scrollbar_handle_accelerated_anim2"
+        fslv:overlay="@drawable/fast_scroller_overlay"
+        fslv:textColor="?android:attr/textColorPrimary"
         >
 
         <requestFocus />
-    </ListView>
+    </com.eleybourn.bookcatalogue.widgets.FastScrollListView>
 
     <View
         android:id="@+id/footer_divider"

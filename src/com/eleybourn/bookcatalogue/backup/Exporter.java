@@ -42,7 +42,7 @@ public interface Exporter {
      *
      * @return number of books exported
      *
-     * @throws IOException on any error
+     * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
     @WorkerThread

@@ -47,7 +47,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
 /**
@@ -124,7 +124,7 @@ public class FTSSearchActivity
 
     private void readArgs(@NonNull final Bundle args) {
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-        mTitleSearchText = args.getString(DatabaseDefinitions.KEY_TITLE);
+        mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE);
         mGenericSearchText = args.getString(UniqueId.BKEY_SEARCH_TEXT);
     }
 
@@ -173,8 +173,7 @@ public class FTSSearchActivity
 
         // Handle the 'Search' button.
         findViewById(R.id.btn_search).setOnClickListener(v -> {
-            Intent data = new Intent()
-                    .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
+            Intent data = new Intent().putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
             setResult(Activity.RESULT_OK, data);
             finish();
         });
@@ -191,6 +190,7 @@ public class FTSSearchActivity
     }
 
     @Override
+    @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_REBUILD_FTS:
@@ -213,7 +213,10 @@ public class FTSSearchActivity
         mGenericSearchText = mCSearchView.getText().toString().trim();
 
         // Save time to log how long query takes.
-        long t0 = System.currentTimeMillis();
+        long t0;
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            t0 = System.currentTimeMillis();
+        }
 
         // Get the cursor
         String tmpMsg = null;
@@ -225,8 +228,7 @@ public class FTSSearchActivity
                 tmpMsg = getString(R.string.books_found, cursor.getCount());
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    t0 = System.currentTimeMillis() - t0;
-                    tmpMsg += "\n in " + t0 + "ms)";
+                    tmpMsg += "\n in " + (System.currentTimeMillis() - t0) + "ms)";
                 }
                 mBookIdsFound = new ArrayList<>();
                 while (cursor.moveToNext()) {
@@ -291,7 +293,7 @@ public class FTSSearchActivity
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        outState.putString(DatabaseDefinitions.KEY_TITLE, mTitleSearchText);
+        outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
         outState.putString(UniqueId.BKEY_SEARCH_TEXT, mGenericSearchText);
     }
 

@@ -12,6 +12,8 @@
     <string name="pg_general">Allgemein</string>
     <!-- Preference GROUP -->
     <string name="pg_ui">Benutzeroberfläche</string>
+    <string name="pt_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
+
     <!-- Preference GROUP -->
     <string name="pg_thumbnails">Cover-Bilder</string>
     <!-- Preference GROUP -->
@@ -55,6 +57,7 @@
 
     <!-- Preference - Preferred interface Locale -->
     <string name="pt_ui_language">Bevorzugte Bediensprache</string>
+    <string name="pt_ui_system_locale">System Locale</string>
 
     <!-- Preference - Degrees by which to rotate camera images automatically -->
     <string name="pt_thumbnails_rotate_auto">Bilder von der Kamera automatisch rotieren</string>
@@ -113,6 +116,9 @@
     <string name="pe_bob_thumbnails_cache_resized_stored">Cover-Bilder zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
 
     <!-- ========== Book list style preferences ========== -->
+
+    <!-- Preference - Show this style in the 'preferred styles' list/menu -->
+    <string name="pt_bob_preferred_style">Bevorzugt</string>
 
     <!-- Preference - Use scaled text and images -->
     <string name="pt_bob_item_size">Größe der Einträge in der Bücherliste</string>

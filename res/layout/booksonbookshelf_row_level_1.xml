@@ -17,9 +17,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="name,div_bottom"
+        app:constraint_referenced_ids="name"
         />
 
+    <!-- Large text -->
     <TextView
         android:id="@+id/name"
         android:layout_width="0dp"
@@ -32,15 +33,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:drawableEnd="@drawable/ic_lock"
         tools:text="Expandable top level"
-        />
-
-    <View
-        android:id="@+id/div_bottom"
-        style="@style/div_horizontal"
-        android:layout_width="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/name"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

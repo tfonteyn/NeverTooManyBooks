@@ -77,39 +77,4 @@ public interface MultiTypeListHandler {
      * @return text to display
      */
     String[] getSectionText(@NonNull Cursor cursor);
-
-    /**
-     * Abstract base class for 'holder' objects in a multi-type list view.
-     *
-     * @param <T> Row context passed to each method. Typically a {@link BookCursorRowBase}.
-     *            Could be a cursor or any other object capable of representing the data
-     *            in the current row.
-     *
-     * @author Philip Warner
-     */
-    abstract class MultiTypeHolder<T> {
-
-        /**
-         * Setup a new holder for row type based on the passed rowContext. This holder will be
-         * associated with a reusable view that will always be used for rows of the current
-         * kind. We avoid having to call findViewById() by doing it once at creation time.
-         */
-        public abstract void map(@NonNull T row,
-                                 @NonNull View convertView);
-
-        /**
-         * Use the passed rowContext to fill in the actual details for the current row.
-         */
-        public abstract void set(@NonNull T row,
-                                 @NonNull View view);
-
-        /**
-         * Use the passed rowContext to determine the kind of View that is required.
-         *
-         * @return a new view.
-         */
-        public abstract View createView(@NonNull T row,
-                                        @NonNull LayoutInflater inflater,
-                                        @NonNull ViewGroup parent);
-    }
 }

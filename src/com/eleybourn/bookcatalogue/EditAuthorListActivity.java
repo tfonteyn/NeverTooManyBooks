@@ -39,7 +39,7 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditAuthorBaseDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -279,7 +279,7 @@ public class EditAuthorListActivity
         public static EditBookAuthorDialogFragment newInstance(@NonNull final Author author) {
             EditBookAuthorDialogFragment frag = new EditBookAuthorDialogFragment();
             Bundle args = new Bundle();
-            args.putParcelable(DatabaseDefinitions.KEY_AUTHOR, author);
+            args.putParcelable(DBDefinitions.KEY_AUTHOR, author);
             frag.setArguments(args);
             return frag;
         }

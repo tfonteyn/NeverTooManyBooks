@@ -72,8 +72,7 @@ public class Pic2ShopScanner
         if (isFreeScannerAppInstalled(activity)) {
             intent = new Intent(Free.ACTION);
         } else {
-            intent = new Intent(Pro.ACTION)
-                    .putExtra(Pro.FORMATS, Pro.BARCODE_TYPES);
+            intent = new Intent(Pro.ACTION).putExtra(Pro.FORMATS, Pro.BARCODE_TYPES);
         }
         activity.startActivityForResult(intent, requestCode);
     }

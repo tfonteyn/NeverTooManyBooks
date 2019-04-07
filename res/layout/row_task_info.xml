@@ -28,7 +28,7 @@
 
     <LinearLayout
         android:id="@+id/file_content"
-        android:layout_width="0dip"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:gravity="top"
@@ -101,7 +101,7 @@
 
             <TextView
                 android:id="@+id/job_info"
-                android:layout_width="0dip"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:textAppearance="?android:attr/textAppearanceSmall"

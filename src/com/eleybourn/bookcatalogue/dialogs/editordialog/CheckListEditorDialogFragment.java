@@ -54,7 +54,7 @@ public class CheckListEditorDialogFragment<T>
     public static final String TAG = CheckListEditorDialogFragment.class.getSimpleName();
 
     /** Argument. */
-    private static final String BKEY_CHECK_LIST = "list";
+    private static final String BKEY_CHECK_LIST = TAG + ":list";
 
     /** The list of items to display. Object + checkbox. */
     private ArrayList<CheckListItem<T>> mList;
@@ -163,7 +163,7 @@ public class CheckListEditorDialogFragment<T>
                 buttonView.setChecked(item.isChecked());
                 buttonView.setText(item.getLabel(context));
                 buttonView.setOnCheckedChangeListener(
-                        (buttonView1, isChecked) -> item.setChecked(isChecked));
+                        (v, isChecked) -> item.setChecked(isChecked));
                 body.addView(buttonView);
             }
 

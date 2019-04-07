@@ -12,7 +12,8 @@
     <ImageView
         android:id="@+id/coverImage"
         style="@style/coverImage"
-        app:layout_constraintEnd_toStartOf="@id/series_num_long"
+        android:layout_width="0dp"
+        android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
@@ -103,9 +104,9 @@
         tools:text="@string/lbl_location"
         />
 
-    <CheckedTextView
+    <CheckBox
         android:id="@+id/read"
-        style="@style/read_ctv"
+        style="@style/read_only_cbx"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintTop_toTopOf="parent"

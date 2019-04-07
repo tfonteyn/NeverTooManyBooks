@@ -31,12 +31,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Publisher;
+import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -48,11 +50,21 @@ public class EditPublisherDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditPublisherDialogFragment.class.getSimpleName();
+    private static final String TAG = EditPublisherDialogFragment.class.getSimpleName();
     private DBA mDb;
     private String mName;
 
     private AutoCompleteTextView mNameView;
+
+    /**
+     * (syntax sugar for newInstance)
+     */
+    public static void show(@NonNull final FragmentManager fm,
+                            @NonNull final Publisher publisher) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            newInstance(publisher).show(fm, TAG);
+        }
+    }
 
     /**
      * Constructor.
@@ -61,7 +73,7 @@ public class EditPublisherDialogFragment
 
         EditPublisherDialogFragment frag = new EditPublisherDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(DatabaseDefinitions.KEY_PUBLISHER, publisher);
+        args.putParcelable(DBDefinitions.KEY_PUBLISHER, publisher);
         frag.setArguments(args);
         return frag;
     }
@@ -72,12 +84,12 @@ public class EditPublisherDialogFragment
         final Activity mActivity = requireActivity();
         mDb = new DBA(mActivity);
 
-        final Publisher publisher = requireArguments().getParcelable(DatabaseDefinitions.KEY_PUBLISHER);
+        final Publisher publisher = requireArguments().getParcelable(DBDefinitions.KEY_PUBLISHER);
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             mName = publisher.getName();
         } else {
-            mName = savedInstanceState.getString(DatabaseDefinitions.KEY_PUBLISHER);
+            mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER);
         }
 
         View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_publisher, null);
@@ -127,7 +139,7 @@ public class EditPublisherDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DatabaseDefinitions.KEY_PUBLISHER, mName);
+        outState.putString(DBDefinitions.KEY_PUBLISHER, mName);
     }
 
     @Override

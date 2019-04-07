@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -25,10 +26,21 @@ public class ExportDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = ExportDialogFragment.class.getSimpleName();
+    private static final String TAG = ExportDialogFragment.class.getSimpleName();
+
     private ExportSettings mExportSettings;
 
     private FragmentActivity mActivity;
+
+    /**
+     * (syntax sugar for newInstance)
+     */
+    public static void show(@NonNull final FragmentManager fm,
+                            @NonNull final ExportSettings settings) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            newInstance(settings).show(fm, TAG);
+        }
+    }
 
     /**
      * Constructor.

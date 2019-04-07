@@ -1,3 +1,21 @@
+BUG:
+switching Locale is STILL not done...
+- BoB -> settings -> switch locale -> back to BoB
+--> nav panel ok
+--> option menu ok
+--> spinner ok
+--> booklist: 'month' in a date is WRONG
+
+Bottomline.. relying on Locale.getDefault / setDefault is NOT a good idea!
+https://stackoverflow.com/questions/10657747/why-does-android-have-its-own-way-to-get-the-current-locale
+https://developer.android.com/guide/topics/resources/localization.html
+
+current locale is used when:
+- locale (e.g. getDisplayX)
+- currencies
+- dates
+- formatters in Fields
+
 TODO: New anthology stuff:
  * to think about:
  * - when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding to new books / wish list?
@@ -23,17 +41,23 @@ TOMF: research 'local' search. The code has some stuff enabled, but not tested. 
 
 ENHANCE: XML Exporter / Importer
  * pro: easier / (sort of) foolproof / FLEXIBLE!
- * con: fools / fields will be bigger due to labels/tags / not easy to get 'others' to create import files
+ * con: fools / fields will be bigger due to labels/tags
+        not easy to get 'others' to create import files
+        importing id's is dangerous
+
+
 
 TODO: remove the Apache http client; it's removed from API: 23. Seems to be a requirement for Signpost?
 Signpost claims that the native android HttpURLConnection is buggy... and suggest to always use apache on android
 https://github.com/mttkay/signpost
 
-Issues checked: 812 down to 677 (inc)
+Issues checked: 813 down to 677 (inc)
 
 New fields:
+ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/813 - detailed authorship and original title/language
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/753 - Add Edition[done], Print[done], and condition[TODO] (book / dustcover)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/799 - original title (for translations, so also original language)
+==> superseded by 813
 
 Make some behavior optional:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/561 - Make title/series mangling optional
@@ -46,6 +70,7 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/542 - Feature reques
 
 Searches
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/67  - https://openlibrary.org/developers/api
+==> see notes in com.eleybourn.bookcatalogue.searches.openlibrary/OpenLibraryManager.java
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/546 - Worldcat support
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/348 - ISSN (serials)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/723 - add book by search: allow publisher + present list of finds instead of using first found.
@@ -57,7 +82,7 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/806 - same as 723
 Bugs:
 FIXME: https://github.com/eleybourn/Book-Catalogue/issues/740 - Date prompt appears to be UCT, not local time
 FIXME: https://github.com/eleybourn/Book-Catalogue/issues/809 - same as 740
---> set phone to EST, play with date published. Reproduced.
+==> set phone to EST, play with date published. Reproduced.
 
 TEST:
 - csv export/import with the new coders.
@@ -99,4 +124,4 @@ https://github.com/eleybourn/Book-Catalogue/issues/113 - Add a 'Date Bought' Fie
 
 Rejected:
 https://github.com/eleybourn/Book-Catalogue/issues/481 - field for the number of a limited series
--> use notes field (I tried keeping track of my own limited editions... a waste of time IMHO)
+==> use notes field (I tried keeping track of my own limited editions... a waste of time IMHO)

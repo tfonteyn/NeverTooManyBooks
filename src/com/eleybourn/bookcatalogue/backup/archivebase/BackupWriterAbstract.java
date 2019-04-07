@@ -47,7 +47,7 @@ import com.eleybourn.bookcatalogue.backup.xml.XmlUtils;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -249,7 +249,7 @@ public abstract class BackupWriterAbstract
         int skipped = 0;
 
         try (Cursor cursor = mDb.fetchBookUuidList()) {
-            final int uuidCol = cursor.getColumnIndex(DatabaseDefinitions.DOM_BOOK_UUID.name);
+            final int uuidCol = cursor.getColumnIndex(DBDefinitions.DOM_BOOK_UUID.name);
             while (cursor.moveToNext() && !mProgressListener.isCancelled()) {
                 String uuid = cursor.getString(uuidCol);
                 File cover = StorageUtils.getCoverFile(uuid);

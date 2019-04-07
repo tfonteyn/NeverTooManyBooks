@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivityWithTasks;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.searches.SearchAdminActivity;
@@ -90,7 +90,7 @@ public class UpdateFieldsFromInternetActivity
                     Intent data = new Intent()
                             .putExtra(UniqueId.BKEY_CANCELED, task.isCancelled())
                             // 0 if we did 'all books' or the id of the (hopefully) updated book.
-                            .putExtra(DatabaseDefinitions.KEY_ID, mBookId);
+                            .putExtra(DBDefinitions.KEY_ID, mBookId);
                     if (mBookId == 0) {
                         // task cancelled does not mean that nothing was done.
                         // Books *will* be updated until the cancelling happened
@@ -114,10 +114,10 @@ public class UpdateFieldsFromInternetActivity
 
     private void readArgs(@NonNull final Bundle args) {
         mSearchSites = args.getInt(REQUEST_BKEY_SEARCH_SITES, SearchSites.Site.SEARCH_ALL);
-        mBookId = args.getLong(DatabaseDefinitions.KEY_ID, 0L);
+        mBookId = args.getLong(DBDefinitions.KEY_ID, 0L);
         if (mBookId > 0) {
-            mAuthorFormatted = args.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED);
-            mTitle = args.getString(DatabaseDefinitions.KEY_TITLE);
+            mAuthorFormatted = args.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+            mTitle = args.getString(DBDefinitions.KEY_TITLE);
         }
     }
 
@@ -171,44 +171,44 @@ public class UpdateFieldsFromInternetActivity
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(REQUEST_BKEY_SEARCH_SITES, mSearchSites);
-        outState.putLong(DatabaseDefinitions.KEY_ID, mBookId);
-        outState.putString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED, mAuthorFormatted);
-        outState.putString(DatabaseDefinitions.KEY_TITLE, mTitle);
+        outState.putLong(DBDefinitions.KEY_ID, mBookId);
+        outState.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, mAuthorFormatted);
+        outState.putString(DBDefinitions.KEY_TITLE, mTitle);
     }
 
     /**
      * Entries are displayed in the order they are added here.
      */
     private void initFields() {
-        addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, DatabaseDefinitions.KEY_AUTHOR,
+        addIfVisible(UniqueId.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_AUTHOR,
                      R.string.lbl_author, Fields.FieldUsage.Usage.AddExtra, true);
-        addIfVisible(DatabaseDefinitions.KEY_TITLE,
+        addIfVisible(DBDefinitions.KEY_TITLE,
                      R.string.lbl_title, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DatabaseDefinitions.KEY_ISBN,
+        addIfVisible(DBDefinitions.KEY_ISBN,
                      R.string.lbl_isbn, Fields.FieldUsage.Usage.CopyIfBlank, false);
         addIfVisible(UniqueId.BKEY_COVER_IMAGE,
                      R.string.lbl_cover, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(UniqueId.BKEY_SERIES_ARRAY, DatabaseDefinitions.KEY_SERIES,
+        addIfVisible(UniqueId.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES,
                      R.string.lbl_series, Fields.FieldUsage.Usage.AddExtra, true);
-        addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, DatabaseDefinitions.KEY_TOC_BITMASK,
+        addIfVisible(UniqueId.BKEY_TOC_ENTRY_ARRAY, DBDefinitions.KEY_TOC_BITMASK,
                      R.string.lbl_table_of_content, Fields.FieldUsage.Usage.AddExtra, true);
-        addIfVisible(DatabaseDefinitions.KEY_PUBLISHER,
+        addIfVisible(DBDefinitions.KEY_PUBLISHER,
                      R.string.lbl_publisher, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DatabaseDefinitions.KEY_DATE_PUBLISHED,
+        addIfVisible(DBDefinitions.KEY_DATE_PUBLISHED,
                      R.string.lbl_date_published, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED,
+        addIfVisible(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
                      R.string.lbl_first_publication, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DatabaseDefinitions.KEY_DESCRIPTION,
+        addIfVisible(DBDefinitions.KEY_DESCRIPTION,
                      R.string.lbl_description, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DatabaseDefinitions.KEY_PAGES,
+        addIfVisible(DBDefinitions.KEY_PAGES,
                      R.string.lbl_pages, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DatabaseDefinitions.KEY_PRICE_LISTED,
+        addIfVisible(DBDefinitions.KEY_PRICE_LISTED,
                      R.string.lbl_price_listed, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DatabaseDefinitions.KEY_FORMAT,
+        addIfVisible(DBDefinitions.KEY_FORMAT,
                      R.string.lbl_format, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DatabaseDefinitions.KEY_GENRE,
+        addIfVisible(DBDefinitions.KEY_GENRE,
                      R.string.lbl_genre, Fields.FieldUsage.Usage.CopyIfBlank, false);
-        addIfVisible(DatabaseDefinitions.KEY_LANGUAGE,
+        addIfVisible(DBDefinitions.KEY_LANGUAGE,
                      R.string.lbl_language, Fields.FieldUsage.Usage.CopyIfBlank, false);
     }
 
@@ -328,14 +328,6 @@ public class UpdateFieldsFromInternetActivity
         }
     }
 
-    /**
-     * @param menu The options menu in which you place your items.
-     *
-     * @return super.onCreateOptionsMenu(menu);
-     *
-     * @see #onPrepareOptionsMenu
-     * @see #onOptionsItemSelected
-     */
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {

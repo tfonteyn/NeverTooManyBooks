@@ -29,7 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
+import android.widget.CompoundButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -186,7 +186,7 @@ public class PreferredStylesActivity
      */
     private void editStyle(@NonNull final BooklistStyle style) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Logger.info(this, Tracker.State.Enter,"editStyle", style.toString());
+            Logger.info(this, Tracker.State.Enter, "editStyle", style.toString());
         }
         Intent intent = new Intent(this, SettingsActivity.class)
                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BooklistStyleSettingsFragment.TAG)
@@ -200,7 +200,7 @@ public class PreferredStylesActivity
         // we save the order after each change.
         BooklistStyles.savePreferredStyleMenuOrder(mList);
         // and make sure the results flags up we changed something.
-        setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistPreferredStyles);
+        setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES);
     }
 
     @Override
@@ -212,14 +212,13 @@ public class PreferredStylesActivity
         switch (requestCode) {
             case REQ_EDIT_STYLE: {
                 switch (resultCode) {
-                    case UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties: {
+                    case UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE: {
                         Objects.requireNonNull(data);
                         BooklistStyle style = data.getParcelableExtra(
                                 BooklistStyleSettingsFragment.REQUEST_BKEY_STYLE);
                         handleStyleChange(style);
                         // need to send up the chain as-is
-                        setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties,
-                                  data);
+                        setResult(resultCode, data);
                         break;
                     }
                     default:
@@ -300,7 +299,7 @@ public class PreferredStylesActivity
     private static class Holder {
 
         @NonNull
-        final CheckedTextView checkableView;
+        final CompoundButton checkableView;
         @NonNull
         final TextView nameView;
         @NonNull
@@ -335,7 +334,6 @@ public class PreferredStylesActivity
                 holder = new Holder(convertView);
                 holder.checkableView.setTag(holder);
 
-                // Handle clicks on the CheckedTextView
                 holder.checkableView.setOnClickListener(v -> {
                     Holder h = (Holder) v.getTag();
                     boolean newStatus = !h.style.isPreferred();

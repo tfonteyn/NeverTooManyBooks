@@ -12,6 +12,8 @@
     <string name="pg_general">Основные</string>
     <!-- Preference GROUP -->
     <string name="pg_ui">Пользовательский интерфейс</string>
+    <string name="pt_ui_field_visibility">Видимость полей</string>
+
     <!-- Preference GROUP -->
     <string name="pg_thumbnails">Миниатюры</string>
     <!-- Preference GROUP -->
@@ -55,6 +57,7 @@
 
     <!-- Preference - Preferred interface Locale -->
     <string name="pt_ui_language">Предпочтительный язык</string>
+    <string name="pt_ui_system_locale">Локаль системы</string>
 
     <!-- Preference - Degrees by which to rotate camera images automatically -->
     <string name="pt_thumbnails_rotate_auto">Автоматически поворачивать фото, полученное камерой</string>
@@ -114,6 +117,9 @@
 
 
     <!-- ========== Book list style preferences ========== -->
+
+    <!-- Preference - Show this style in the 'preferred styles' list/menu -->
+    <string name="pt_bob_preferred_style">преимущественный</string>
 
     <!-- Preference - Use scaled text and images -->
     <string name="pt_bob_item_size">Размер элемента списка книг</string>

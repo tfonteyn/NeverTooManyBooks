@@ -12,6 +12,8 @@
     <string name="pg_general">Général</string>
     <!-- Preference GROUP -->
     <string name="pg_ui">Interface utilisateur</string>
+    <string name="pt_ui_field_visibility">Gérer la visibilité des champs</string>
+
     <!-- Preference GROUP -->
     <string name="pg_thumbnails">Miniatures</string>
     <!-- Preference GROUP -->
@@ -55,6 +57,7 @@
 
     <!-- Preference - Preferred interface Locale -->
     <string name="pt_ui_language">Langue préférée</string>
+    <string name="pt_ui_system_locale">Paramètres de langue du système</string>
 
     <!-- Preference - Degrees by which to rotate camera images automatically -->
     <string name="pt_thumbnails_rotate_auto">Rotation automatique des photos</string>
@@ -113,6 +116,9 @@
     <string name="pe_bob_thumbnails_cache_resized_stored">Mettre les miniatures en cache (plus d\'espace nécessaire, défilement des listes plus rapide)</string>
 
     <!-- ========== Book list style preferences ========== -->
+
+    <!-- Preference - Show this style in the 'preferred styles' list/menu -->
+    <string name="pt_bob_preferred_style">Préféré</string>
 
     <!-- Preference - Use scaled text and images -->
     <string name="pt_bob_item_size">Taille des éléments de liste de livres</string>

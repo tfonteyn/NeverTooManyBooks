@@ -39,10 +39,10 @@ import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_NAME;
 
 /**
  * Class to hold book-related series data.

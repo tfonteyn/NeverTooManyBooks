@@ -33,53 +33,53 @@ import com.eleybourn.bookcatalogue.utils.SerializationUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.UpgradeMessageManager;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FAMILY_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DATE_PUBLISHED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_DESCRIPTION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISBN;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_ISFDB_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LIBRARY_THING_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_NOTES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_END;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_READ_START;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SIGNED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOKSHELF_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_TOC_ENTRY_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_LAST_UPDATE_DATE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_DOCID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_PK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_AUTHORS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKLIST_STYLES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS_FTS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_AUTHOR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_LIST_NODE_SETTINGS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_LOANEE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_SERIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOK_TOC_ENTRIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_SERIES;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_TOC_ENTRIES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_DESCRIPTION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GENRE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_ISBN;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_ISFDB_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LIBRARY_THING_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_NOTES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PRICE_LISTED_CURRENCY;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_END;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_READ_START;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SIGNED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_TOC_ENTRY_POSITION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOKSHELF_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_TOC_ENTRY_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_UUID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKLIST_STYLES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS_FTS;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_AUTHOR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_LIST_NODE_SETTINGS;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_LOANEE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_SERIES;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 
 /**
@@ -297,7 +297,7 @@ public class DBHelper
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF + " (" + DOM_BOOKSHELF + ')'
                                  + " VALUES ('"
-                                 + App.getResString(R.string.bookshelf_my_books)
+                                 + App.getAppContext().getString(R.string.bookshelf_my_books)
                                  + "')");
 
         // insert the builtin style id's so foreign key rules are possible.
@@ -550,7 +550,7 @@ public class DBHelper
             // clean slate
             IndexDefinition.dropAllIndexes(syncedDb);
             // recreate the ones that are defined with the TableDefinition's
-            for (TableDefinition table : DatabaseDefinitions.ALL_TABLES.values()) {
+            for (TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
                 table.createIndices(syncedDb);
             }
         }
@@ -638,7 +638,7 @@ public class DBHelper
 
             // these two are due to a remark in the CSV exporter that (at one time?)
             // the author name and title could be bad
-            final String UNKNOWN = App.getResString(R.string.unknown);
+            final String UNKNOWN = App.getAppContext().getString(R.string.unknown);
             db.execSQL("UPDATE " + TBL_AUTHORS
                                + " SET " + DOM_AUTHOR_FAMILY_NAME + "='" + UNKNOWN + '\''
                                + " WHERE " + DOM_AUTHOR_FAMILY_NAME + "=''"

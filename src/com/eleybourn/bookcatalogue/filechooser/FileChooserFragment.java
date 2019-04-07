@@ -59,8 +59,8 @@ public class FileChooserFragment
     /** Fragment manager tag. */
     public static final String TAG = FileChooserFragment.class.getSimpleName();
 
-    private static final String BKEY_ROOT_PATH = "rootPath";
-    private static final String BKEY_LIST = "list";
+    private static final String BKEY_ROOT_PATH = TAG + ":rootPath";
+    private static final String BKEY_LIST = TAG + ":list";
 
     private File mRootPath;
     private final OnClickListener onPathUpClickListener = new OnClickListener() {

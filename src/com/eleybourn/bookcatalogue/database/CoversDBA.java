@@ -26,11 +26,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.widget.ImageView;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -47,7 +48,6 @@ import com.eleybourn.bookcatalogue.database.definitions.ColumnInfo;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.tasks.GetImageTask;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -172,7 +172,7 @@ public final class CoversDBA
         }
 
         int noi = INSTANCE_COUNTER.incrementAndGet();
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Logger.info(mInstance, "getInstance", "instances created: " + noi);
         }
         return mInstance;
@@ -223,9 +223,7 @@ public final class CoversDBA
      * Generic function to close the database.
      * It does not 'close' the database in the literal sense, but
      * performs a cleanup by closing all open statements when there are no instances left.
-     * <p>
-     * So it should really be called cleanup()
-     * But it allows us to use try-with-resources.
+     * (So it should really be called cleanup(); But it allows us to use try-with-resources.)
      * <p>
      * Consequently, there is no need to 'open' anything before running further operations.
      */
@@ -234,8 +232,9 @@ public final class CoversDBA
         // must be in a synchronized, as we use noi twice.
         synchronized (INSTANCE_COUNTER) {
             int noi = INSTANCE_COUNTER.decrementAndGet();
-            if (/* always debug */BuildConfig.DEBUG) {
-                Logger.info(this, "close", "instances left: " + INSTANCE_COUNTER);
+            if (BuildConfig.DEBUG /* always debug */) {
+                Logger.info(this, "close",
+                            "instances left: " + INSTANCE_COUNTER);
             }
 
             if (noi == 0) {
@@ -247,26 +246,26 @@ public final class CoversDBA
     }
 
     /**
-     * Called in the UI thread, will return a cached image OR NULL.
+     * Get a cached image.
      *
-     * @param originalFile File representing original image file
-     * @param uuid         used to construct the cacheId
-     * @param maxWidth     used to construct the cacheId
-     * @param maxHeight    used to construct the cacheId
+     * @param uuid      of the image
+     * @param maxWidth  used to construct the cacheId
+     * @param maxHeight used to construct the cacheId
      *
      * @return Bitmap (if cached) or null (if not cached)
      */
     @Nullable
-    public Bitmap getImage(@NonNull final File originalFile,
-                           @NonNull final String uuid,
+    @AnyThread
+    public Bitmap getImage(@NonNull final String uuid,
                            final int maxWidth,
                            final int maxHeight) {
         if (mSyncedDb == null) {
             return null;
         }
 
+        File file = StorageUtils.getCoverFile(uuid);
         String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
-        String dateStr = DateUtils.utcSqlDateTime(new Date(originalFile.lastModified()));
+        String dateStr = DateUtils.utcSqlDateTime(new Date(file.lastModified()));
 
         try (Cursor cursor = mSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{cacheId, dateStr})) {
             if (cursor.moveToFirst()) {
@@ -285,41 +284,10 @@ public final class CoversDBA
     }
 
     /**
-     * Called in the UI thread, will return a cached image OR NULL.
-     * and (if found) put it in the view.
-     *
-     * @param uuid      for the image
-     * @param maxWidth  used to construct the cacheId
-     * @param maxHeight used to construct the cacheId
-     * @param destView  View to populate if non-null
-     *
-     * @return Bitmap (if cached) or null (if not cached)
-     */
-    @Nullable
-    public Bitmap getImageAndPutIntoView(@NonNull final String uuid,
-                                         final int maxWidth,
-                                         final int maxHeight,
-                                         @NonNull final ImageView destView) {
-
-        Bitmap bitmap = getImage(StorageUtils.getCoverFile(uuid), uuid, maxWidth, maxHeight);
-        if (bitmap != null) {
-            //
-            // Remove any tasks that may be getting the image because they may overwrite
-            // anything we do.
-            // Remember: the view may have been re-purposed and have a different associated
-            // task which must be removed from the view and removed from the queue.
-            //
-            GetImageTask.clearOldTaskFromView(destView);
-
-            destView.setImageBitmap(bitmap);
-        }
-        return bitmap;
-    }
-
-    /**
      * Save the passed bitmap to a 'file' in the covers database.
      * Compresses to IMAGE_QUALITY_PERCENTAGE first.
      */
+    @WorkerThread
     public void saveFile(@NonNull final Bitmap bitmap,
                          @NonNull final String filename) {
         if (mSyncedDb == null) {
@@ -393,7 +361,7 @@ public final class CoversDBA
     /**
      * Singleton SQLiteOpenHelper for the covers database.
      */
-    public static class CoversDbHelper
+    public static final class CoversDbHelper
             extends SQLiteOpenHelper {
 
         private static CoversDbHelper mInstance;

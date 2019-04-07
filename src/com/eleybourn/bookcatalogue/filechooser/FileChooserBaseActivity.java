@@ -51,8 +51,10 @@ public abstract class FileChooserBaseActivity
         FileListerAsyncTask.FileListerListener,
         OnPathChangedListener {
 
+    private static final String TAG = FileChooserBaseActivity.class.getSimpleName();
+
     /** Key for member of EXTRAS that specifies the mode of operation of this dialog. */
-    public static final String BKEY_MODE = "mode";
+    public static final String BKEY_MODE = TAG + ":mode";
     public static final int MODE_SAVE = 0;
     public static final int MODE_OPEN = 1;
 

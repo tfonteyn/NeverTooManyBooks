@@ -102,6 +102,24 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="@string/pg_thumbnails"
+        android:title="@string/pg_thumbnails">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_image"
+            android:key="BookList.Style.Show.Thumbnails"
+            android:title="@string/pt_bob_thumbnails_show" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_photo_size_select_large"
+            android:key="BookList.Style.Show.LargeThumbnails"
+            android:title="@string/pt_bob_thumbnails_show_large" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="@string/lbl_author"
         android:title="@string/lbl_author">
 
@@ -119,24 +137,6 @@
         android:visibility="gone"
         android:key="@string/lbl_series"
         android:title="@string/lbl_series">
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="@string/pg_thumbnails"
-        android:title="@string/pg_thumbnails">
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_image"
-            android:key="BookList.Style.Show.Thumbnails"
-            android:title="@string/pt_bob_thumbnails_show" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_photo_size_select_large"
-            android:key="BookList.Style.Show.LargeThumbnails"
-            android:title="@string/pt_bob_thumbnails_show_large" />
 
     </PreferenceCategory>
 

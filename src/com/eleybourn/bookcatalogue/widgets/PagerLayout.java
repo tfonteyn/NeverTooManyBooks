@@ -68,15 +68,9 @@ public class PagerLayout
     private void init() {
         //Disable clipping of children so non-selected pages are visible
         setClipChildren(false);
-
-        //RELEASE: Child clipping doesn't work with hardware acceleration in Android 3.x/4.x
-        // => is this still relevant ? or just remove this comment ?
-        //You need to set this value here if using hardware acceleration in an
-        // application targeted at these releases.
-
-        //setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
+    /** {@inheritDoc}. */
     @Override
     @CallSuper
     protected void onFinishInflate() {
@@ -93,6 +87,7 @@ public class PagerLayout
         return mPager;
     }
 
+    /** {@inheritDoc}. */
     @Override
     protected void onSizeChanged(final int w,
                                  final int h,
@@ -102,6 +97,7 @@ public class PagerLayout
         mCenter.y = h / 2;
     }
 
+    /** {@inheritDoc}. */
     @Override
     public boolean onTouchEvent(@NonNull final MotionEvent event) {
         //We capture any touches not already handled by the ViewPager
@@ -117,6 +113,7 @@ public class PagerLayout
         return mPager.dispatchTouchEvent(event);
     }
 
+    /** {@inheritDoc}. */
     @Override
     public void onPageScrolled(final int position,
                                final float positionOffset,
@@ -128,10 +125,12 @@ public class PagerLayout
         }
     }
 
+    /** {@inheritDoc}. */
     @Override
     public void onPageSelected(final int position) {
     }
 
+    /** {@inheritDoc}. */
     @Override
     public void onPageScrollStateChanged(final int state) {
         mNeedsRedraw = (state != ViewPager.SCROLL_STATE_IDLE);

@@ -4,6 +4,7 @@ import com.eleybourn.bookcatalogue.backup.ExportSettings;
 import com.eleybourn.bookcatalogue.backup.ImportSettings;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.entities.Book;
+import com.eleybourn.bookcatalogue.settings.BooklistStyleSettingsFragment;
 import com.eleybourn.bookcatalogue.settings.PreferredStylesActivity;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
@@ -12,37 +13,67 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  */
 public final class UniqueId {
 
-    /** Activity Request Code. */
-    public static final int REQ_NAV_PANEL_EDIT_PREFERRED_STYLES = 1_001;
-    /** Activity Request Code. */
-    public static final int REQ_NAV_PANEL_ADMIN = 1_002;
-    /** Activity Request Code. */
-    public static final int REQ_NAV_PANEL_SETTINGS = 1_003;
-    /** Activity Request Code. */
-    public static final int REQ_NAV_PANEL_EDIT_BOOKSHELVES = 1_004;
 
-    /** Activity Request Code. */
-    @SuppressWarnings("WeakerAccess")
-    public static final int REQ_BOOK_EDIT = 2_000;
-    /** Activity Request Code. */
-    @SuppressWarnings("WeakerAccess")
-    public static final int REQ_BOOK_DUPLICATE = 2_001;
+    /** request code: navigation panel. */
+    public static final int REQ_NAV_PANEL_EDIT_BOOKSHELVES = 1_001;
+    /** request code: navigation panel. */
+    public static final int REQ_NAV_PANEL_EDIT_PREFERRED_STYLES = 1_002;
+    /** request code: navigation panel. */
+    public static final int REQ_NAV_PANEL_ADMIN = 1_003;
+    /** request code: navigation panel. */
+    public static final int REQ_NAV_PANEL_SETTINGS = 1_004;
 
-    /** Activity Request Code. */
+
+    /** request code: open the book view screen. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_BOOK_VIEW = 2_001;
+    /** request code: open the book edit screen. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_BOOK_EDIT = 2_002;
+    /** request code: open the book edit screen with a new, duplicate, book. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_BOOK_DUPLICATE = 2_003;
+    /** request code: open the book 'update-from-internet' screen. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET = 2_004;
+    /** request code: open the book internet-search screen. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_BOOK_SEARCH = 2_101;
+
+
+    /** request code: ask the CoverBrowser to get an alternative edition cover. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_ALT_EDITION = 3_001;
+    /** request code: use internal routines for cropping images. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_CROP_IMAGE_INTERNAL = 3_002;
+    /** request code: start an intent for an external application to do the cropping. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_CROP_IMAGE_EXTERNAL = 3_003;
+    /** request code: start an intent to get an image from the Camera. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_ACTION_IMAGE_CAPTURE = 3_004;
+    /** request code: start an intent to get an image from the an app that provides content. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int REQ_ACTION_GET_CONTENT = 3_005;
+
+
+    /** request code: system request to ask the user for permissions. */
     @SuppressWarnings("WeakerAccess")
     public static final int REQ_ANDROID_PERMISSIONS = 9_000;
 
-    /** generic delete. */
-    public static final int ACTIVITY_RESULT_DELETED_SOMETHING = 10_001;
-    /** {@link PreferredStylesActivity} need distinct code as it can trickle up. */
-    public static final int ACTIVITY_RESULT_OK_BooklistPreferredStyles = 10_101;
-    /** need distinct code as it can trickle up. */
-    public static final int ACTIVITY_RESULT_OK_BooklistStyleProperties = 10_102;
 
-    /** result code from an Activity received in onActivityResult
-     * indicating we should restart.
-     */
-    public static final int ACTIVITY_RESULT_RESTART_ON_RESUME = 10_200;
+    /** The activity changed something that warrants a recreation of the caller to be needed. */
+    public static final int ACTIVITY_RESULT_RECREATE_NEEDED = 10_000;
+
+    /** The activity deleted something. */
+    public static final int ACTIVITY_RESULT_DELETED_SOMETHING = 10_001;
+
+    /** {@link PreferredStylesActivity}. The preferred styles were modified somehow. */
+    public static final int ACTIVITY_RESULT_MODIFIED_BOOKLIST_PREFERRED_STYLES = 10_101;
+
+    /** {@link BooklistStyleSettingsFragment}. A style was modified. */
+    public static final int ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE = 10_102;
 
     /**
      * Bundle keys for ParcelableArrayList<Entity>.

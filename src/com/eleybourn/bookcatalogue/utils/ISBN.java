@@ -130,7 +130,7 @@ public class ISBN {
                 return;
             }
         } catch (NumberFormatException e) {
-            if (/* always debug */ BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always debug */) {
                 Logger.error(e);
             }
         }
@@ -142,7 +142,7 @@ public class ISBN {
                 mDigits = digits;
             }
         } catch (NumberFormatException e) {
-            if (/* always debug */ BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always debug */) {
                 Logger.error(e);
             }
         }

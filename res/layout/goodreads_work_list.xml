@@ -30,8 +30,6 @@
                     <EditText
                         android:id="@+id/author"
                         style="@style/personalNameTextEntry"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
                         android:layout_weight="1"
                         android:hint="@string/author"
                         android:inputType="textCapWords"
@@ -54,8 +52,6 @@
                     <EditText
                         android:id="@+id/title"
                         style="@style/titleTextEntry"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
                         android:layout_weight="1"
                         android:hint="@string/title"
                         android:inputType="textCapWords"
@@ -78,8 +74,6 @@
                     <EditText
                         android:id="@+id/isbn"
                         style="@style/simpleTextEntry"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
                         android:layout_weight="1"
                         android:hint="@string/isbn"
                         android:inputType="textCapWords"

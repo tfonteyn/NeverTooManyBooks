@@ -16,7 +16,6 @@
         <EditText
             android:id="@+id/isbn"
             style="@style/isbnEntry"
-            android:hint="@string/lbl_isbn"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -153,11 +152,11 @@
         <ImageButton
             android:id="@+id/isbn_del"
             style="@style/isbnSearchKey"
+            android:src="@drawable/ic_backspace"
             app:layout_constraintBottom_toBottomOf="@id/isbn_X"
             app:layout_constraintEnd_toEndOf="@id/isbn_9"
             app:layout_constraintStart_toStartOf="@id/isbn_9"
             app:layout_constraintTop_toBottomOf="@id/isbn_9"
-            app:srcCompat="@drawable/ic_backspace"
             tools:ignore="ContentDescription"
             />
 

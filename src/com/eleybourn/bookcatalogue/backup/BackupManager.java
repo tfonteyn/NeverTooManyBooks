@@ -55,7 +55,7 @@ public final class BackupManager {
      *
      * @return a new reader or null when not a valid archive
      *
-     * @throws IOException (inaccessible, invalid or other errors)
+     * @throws IOException on failure
      */
     @Nullable
     public static BackupReader readFrom(@NonNull final Context context,

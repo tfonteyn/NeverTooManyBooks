@@ -21,12 +21,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 //TOMF: DialogFragment?
@@ -383,8 +385,9 @@ public final class SimpleDialog {
             TextView size = root.findViewById(R.id.size);
             size.setText(Utils.formatFileSize(inflater.getContext(), mFile.length()));
 
+            Locale locale = LocaleUtils.from(inflater.getContext());
             TextView lastModDate = root.findViewById(R.id.date);
-            lastModDate.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
+            lastModDate.setText(DateUtils.toPrettyDateTime(locale, new Date(mFile.lastModified())));
 
             return root;
         }

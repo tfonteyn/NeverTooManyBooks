@@ -27,7 +27,7 @@
         android:label="@string/app_name"
         android:logo="@drawable/bc_launcher4"
         android:supportsRtl="false"
-        android:theme="@style/AppTheme.Dark">
+        android:theme="@style/AppTheme.Light.Blue">
 
         <!-- application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
@@ -105,10 +105,10 @@
         <activity android:name=".AdminActivity" />
         <activity android:name=".settings.SettingsActivity" />
 
-        <!-- AdminActivity: Manage Bookshelves -->
+        <!-- Manage Bookshelves -->
         <activity android:name=".EditBookshelfListActivity" />
 
-        <!-- AdminActivity: Edit book list styles -->
+        <!-- Edit the user preferred book list styles -->
         <activity android:name=".settings.PreferredStylesActivity" />
         <activity
             android:name=".booklist.EditBooklistStyleGroupsActivity" >
@@ -119,13 +119,13 @@
             </intent-filter>
         </activity>
 
-        <!-- AdminActivity: Data Import/Export -->
+        <!-- Data Import/Export -->
         <activity android:name=".backup.ui.BackupAndRestoreActivity" />
 
-        <!-- AdminActivity: Update Fields -->
+        <!-- Update book Fields from the internet -->
         <activity android:name=".UpdateFieldsFromInternetActivity" />
 
-        <!-- AdminActivity: Credentials Goodreads -->
+        <!-- Credentials Goodreads -->
         <activity android:name=".goodreads.GoodreadsRegisterActivity" >
             <intent-filter>
                 <action android:name="goodreads.credentials.EDIT" />
@@ -134,7 +134,7 @@
             </intent-filter>
         </activity>
 
-        <!-- AdminActivity: Credentials LibraryThing -->
+        <!-- Credentials LibraryThing -->
         <activity android:name=".searches.librarything.LibraryThingAdminActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
             <intent-filter>
@@ -144,11 +144,11 @@
             </intent-filter>
         </activity>
 
-        <!-- AdminActivity: Goodreads background tasks & events -->
+        <!-- Goodreads background tasks & events -->
         <activity android:name=".goodreads.taskqueue.TaskQueueListActivity" />
         <activity android:name=".goodreads.taskqueue.EventQueueListActivity" />
 
-        <!-- AdminActivity: Search Sites configuration -->
+        <!-- Search Sites configuration -->
         <activity
             android:name=".searches.SearchAdminActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">

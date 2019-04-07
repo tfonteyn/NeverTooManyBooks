@@ -3,11 +3,9 @@ package com.eleybourn.bookcatalogue;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -32,12 +30,13 @@ public abstract class BookSearchBaseFragment
         extends Fragment
         implements SearchCoordinator.SearchCoordinatorListener {
 
-    static final int REQ_BOOK_EDIT = 1_000;
+    /** tag. */
+    public static final String TAG = BookSearchBaseFragment.class.getSimpleName();
 
     /** stores an active search id, or 0 when none active. */
-    private static final String BKEY_SEARCH_MANAGER_ID = "SearchManagerId";
+    private static final String BKEY_SEARCH_MANAGER_ID = TAG + ":SearchManagerId";
     /** the last book data (intent) we got from a successful EditBook. */
-    private static final String BKEY_LAST_BOOK_INTENT = "LastBookIntent";
+    private static final String BKEY_LAST_BOOK_INTENT = TAG + ":LastBookIntent";
     /** activity request code. */
     private static final int REQ_PREFERRED_SEARCH_SITES = 10;
 
@@ -54,23 +53,6 @@ public abstract class BookSearchBaseFragment
     /** sites to search on. Can be overridden by the user (option menu). */
     private int mSearchSites = SearchSites.Site.SEARCH_ALL;
 
-    /**
-     * Called to do initial creation of a fragment.  This is called after
-     * {@link #onAttach(Activity)} and before
-     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * <p>
-     * Note that this can be called while the fragment's activity is
-     * still in the process of being created.  As such, you can not rely
-     * on things like the activity's content view hierarchy being initialized
-     * at this point.  If you want to do work once the activity itself is
-     * created, see {@link #onActivityCreated(Bundle)}.
-     *
-     * <p>Any restored child fragments will be created before the base
-     * <code>Fragment.onCreate</code> method returns.</p>
-     *
-     * @param savedInstanceState If the fragment is being re-created from
-     *                           a previous saved state, this is the state.
-     */
     @Override
     @CallSuper
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -100,12 +82,6 @@ public abstract class BookSearchBaseFragment
         }
     }
 
-    /**
-     * @param menu The options menu in which you place your items.
-     *
-     * @see #onPrepareOptionsMenu
-     * @see #onOptionsItemSelected
-     */
     @Override
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
@@ -118,6 +94,7 @@ public abstract class BookSearchBaseFragment
     }
 
     @Override
+    @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES:
@@ -134,6 +111,8 @@ public abstract class BookSearchBaseFragment
 
     /**
      * (re)connect with the {@link SearchCoordinator} by starting to listen to its messages.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -159,10 +138,10 @@ public abstract class BookSearchBaseFragment
                         @NonNull final String isbnSearchText) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, Tracker.State.Enter,"startSearch",
+            Logger.info(this, Tracker.State.Enter, "startSearch",
                         "isbn=" + isbnSearchText,
-                                 "author=" + authorSearchText,
-                                 "title=" + titleSearchText);
+                        "author=" + authorSearchText,
+                        "title=" + titleSearchText);
         }
 
         try {
@@ -189,6 +168,8 @@ public abstract class BookSearchBaseFragment
 
     /**
      * Cut us loose from the {@link SearchCoordinator} by stopping listening to its messages.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -224,7 +205,7 @@ public abstract class BookSearchBaseFragment
                 }
                 break;
 
-            case REQ_BOOK_EDIT:
+            case UniqueId.REQ_BOOK_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
                     // Created a book; save the intent
                     mLastBookData = data;

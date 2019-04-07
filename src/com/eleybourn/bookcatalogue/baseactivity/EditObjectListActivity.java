@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.widgets.TouchListView;
 
 /**
@@ -86,8 +86,11 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         extends BaseListActivity
         implements TouchListView.OnDropListener {
 
+    /** tag. */
+    public static final String TAG = EditObjectListActivity.class.getSimpleName();
+
     /** if there was no key passed in, use this one for the savedInstance and return value */
-    private static final String BKEY_LIST = "tmpList";
+    private static final String BKEY_LIST = TAG + ":tmpList";
 
     /** The key to use in the Bundle to get the array. */
     @Nullable
@@ -103,8 +106,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
     private final OnClickListener mSaveListener = new OnClickListener() {
         @Override
         public void onClick(@NonNull final View v) {
-            Intent data = new Intent()
-                    .putExtra(mBKey != null ? mBKey : BKEY_LIST, mList);
+            Intent data = new Intent().putExtra(mBKey != null ? mBKey : BKEY_LIST, mList);
             if (onSave(data)) {
                 finish();
             }
@@ -136,8 +138,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         // Look for id and title
         Bundle args = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
         if (args != null) {
-            mRowId = args.getLong(DatabaseDefinitions.KEY_ID);
-            mBookTitle = args.getString(DatabaseDefinitions.KEY_TITLE);
+            mRowId = args.getLong(DBDefinitions.KEY_ID);
+            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
         }
 
         // see getList for full details as to where we "get" the list from
@@ -363,7 +365,7 @@ public abstract class EditObjectListActivity<T extends Parcelable>
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(mBKey != null ? mBKey : BKEY_LIST, mList);
-        outState.putLong(DatabaseDefinitions.KEY_ID, mRowId);
-        outState.putString(DatabaseDefinitions.KEY_TITLE, mBookTitle);
+        outState.putLong(DBDefinitions.KEY_ID, mRowId);
+        outState.putString(DBDefinitions.KEY_TITLE, mBookTitle);
     }
 }

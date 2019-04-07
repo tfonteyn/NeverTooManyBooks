@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    style="@style/dialogFrame"
+    android:background="@android:color/transparent"
     >
 
-    <com.eleybourn.bookcatalogue.widgets.PagerLayout
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/gallery"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        >
-
-        <!-- layout_width/layout_height is controlled from CoverBrowser.java, changing it here has no effect -->
-        <androidx.viewpager.widget.ViewPager
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-    </com.eleybourn.bookcatalogue.widgets.PagerLayout>
+        tools:layout_height="100dp"
+        />
 
     <TextView
-        android:id="@+id/switcherStatus"
+        android:id="@+id/statusMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,11 +33,15 @@
         android:id="@+id/switcher"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:background="@drawable/border"
+        android:padding="@dimen/border"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/switcherStatus"
+        app:layout_constraintTop_toBottomOf="@id/statusMessage"
+        tools:background="@color/green_500"
+        tools:layout_height="340dp"
+        tools:layout_width="222dp"
         tools:visibility="visible"
         />
 

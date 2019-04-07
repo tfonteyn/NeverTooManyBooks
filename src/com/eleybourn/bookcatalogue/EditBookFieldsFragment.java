@@ -37,7 +37,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListEditorDialogFragment;
@@ -121,38 +121,38 @@ public class EditBookFieldsFragment
 
         // book fields
 
-        mFields.add(R.id.title, DatabaseDefinitions.KEY_TITLE);
-        mFields.add(R.id.isbn, DatabaseDefinitions.KEY_ISBN);
-        mFields.add(R.id.description, DatabaseDefinitions.KEY_DESCRIPTION);
+        mFields.add(R.id.title, DBDefinitions.KEY_TITLE);
+        mFields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
+        mFields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION);
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
 //        field = mFields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
         field = mFields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
-        ImageUtils.ImageSize imageSize = ImageUtils.getImageSizes(requireActivity());
+        ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(requireActivity());
 //        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
 //        iva.setMaxSize( imageSize.small, imageSize.small);
         mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
                                          mFields.getField(R.id.isbn), field,
-                                         imageSize.small, imageSize.small);
+                                         displaySizes.small, displaySizes.small);
 
         // defined, but handled manually
-        mFields.add(R.id.author, "", DatabaseDefinitions.KEY_AUTHOR)
+        mFields.add(R.id.author, "", DBDefinitions.KEY_AUTHOR)
                .getView().setOnClickListener(
                 v -> {
                     String title = mFields.getField(R.id.title).getValue().toString().trim();
                     ArrayList<Author> list =
-                            getBookManager().getBook().getParcelableArrayList(
-                                    UniqueId.BKEY_AUTHOR_ARRAY);
+                            getBookManager().getBook()
+                                            .getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
                     Intent intent = new Intent(requireActivity(), EditAuthorListActivity.class)
-                            .putExtra(DatabaseDefinitions.KEY_ID, getBookManager().getBook().getId())
-                            .putExtra(DatabaseDefinitions.KEY_TITLE, title)
+                            .putExtra(DBDefinitions.KEY_ID, getBookManager().getBook().getId())
+                            .putExtra(DBDefinitions.KEY_TITLE, title)
                             .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, list);
                     startActivityForResult(intent, REQ_EDIT_AUTHORS);
                 });
 
         // defined, but handled manually
-        mFields.add(R.id.series, "", DatabaseDefinitions.KEY_SERIES)
+        mFields.add(R.id.series, "", DBDefinitions.KEY_SERIES)
                .getView().setOnClickListener(
                 v -> {
                     String title = mFields.getField(R.id.title).getValue().toString().trim();
@@ -161,20 +161,20 @@ public class EditBookFieldsFragment
                                     UniqueId.BKEY_SERIES_ARRAY);
 
                     Intent intent = new Intent(requireActivity(), EditSeriesListActivity.class)
-                            .putExtra(DatabaseDefinitions.KEY_ID, getBookManager().getBook().getId())
-                            .putExtra(DatabaseDefinitions.KEY_TITLE, title)
+                            .putExtra(DBDefinitions.KEY_ID, getBookManager().getBook().getId())
+                            .putExtra(DBDefinitions.KEY_TITLE, title)
                             .putExtra(UniqueId.BKEY_SERIES_ARRAY, list);
                     startActivityForResult(intent, REQ_EDIT_SERIES);
                 });
 
-        field = mFields.add(R.id.genre, DatabaseDefinitions.KEY_GENRE);
+        field = mFields.add(R.id.genre, DBDefinitions.KEY_GENRE);
         initValuePicker(field, R.string.lbl_genre, R.id.btn_genre, getGenres());
 
         // Personal fields
 
         // defined, but handled manually (reminder: storing the list back into the book
         // is handled by onCheckListEditorSave)
-        field = mFields.add(R.id.bookshelves, "", DatabaseDefinitions.KEY_BOOKSHELF);
+        field = mFields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
         //noinspection ConstantConditions
         initCheckListEditor(getTag(), field, R.string.lbl_bookshelves_long,
                             () -> getBookManager().getBook().getEditableBookshelvesList(mDb));
@@ -197,7 +197,7 @@ public class EditBookFieldsFragment
         // allow the field to known the uuid of the book, so it can load 'itself'
         mFields.getField(R.id.coverImage)
                .getView()
-               .setTag(R.id.TAG_UUID, book.get(DatabaseDefinitions.KEY_BOOK_UUID));
+               .setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
         // Restore default visibility
@@ -310,11 +310,6 @@ public class EditBookFieldsFragment
 
     //<editor-fold desc="Menu handlers">
 
-    /**
-     * @see #setHasOptionsMenu
-     * @see #onPrepareOptionsMenu
-     * @see #onOptionsItemSelected
-     */
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
@@ -326,13 +321,6 @@ public class EditBookFieldsFragment
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    /**
-     * Called when a menu item is selected.
-     *
-     * @param item The item selected
-     *
-     * @return <tt>true</tt> if handled
-     */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -352,6 +340,7 @@ public class EditBookFieldsFragment
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Field editors callbacks">
+
     @Override
     public void onCheckListEditorSave(final int destinationFieldId,
                                       @NonNull final List<CheckListItem<Bookshelf>> list) {

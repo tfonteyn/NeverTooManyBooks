@@ -23,8 +23,6 @@
     <EditText
         android:id="@+id/title"
         style="@style/titleTextEntry"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_margin="@dimen/border_double"
         android:hint="@string/lbl_title"
         android:textAppearance="?android:attr/textAppearanceLarge"

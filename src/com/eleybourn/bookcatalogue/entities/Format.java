@@ -1,26 +1,28 @@
 package com.eleybourn.bookcatalogue.entities;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 
 /**
  * System wide book format representation.
  * <p>
  * ENHANCE: make a separate table for the format.
  * <p>
- * {@link com.eleybourn.bookcatalogue.database.DatabaseDefinitions#DOM_BOOK_FORMAT}
+ * {@link DBDefinitions#DOM_BOOK_FORMAT}
  */
 public final class Format {
 
     /** map to translate site book format' terminology with our own. */
     private static final Map<String, Integer> MAPPER = new HashMap<>();
 
-    // use lowercase keys!
+    // use all lowercase keys!
     static {
         MAPPER.put("pb", R.string.book_format_paperback);
         MAPPER.put("tp", R.string.book_format_trade_paperback);
@@ -38,13 +40,15 @@ public final class Format {
     /**
      * Tries to map website terminology to our own localised.
      *
-     * @param source string to map
+     * @param context caller context
+     * @param source  string to map
      *
      * @return localized equivalent, or the source if no mapping exists.
      */
-    public static String map(@NonNull final String source) {
+    public static String map(@NonNull final Context context,
+                             @NonNull final String source) {
         Integer resId = MAPPER.get(source.toLowerCase());
-        return resId != null ? App.getResString(resId)
+        return resId != null ? context.getString(resId)
                              : source;
     }
 }

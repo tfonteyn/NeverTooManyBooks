@@ -33,7 +33,6 @@ import android.widget.PopupMenu;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 
@@ -42,7 +41,7 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyles;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditBookshelfDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
@@ -141,14 +140,6 @@ public class EditBookshelfListActivity
         }
     }
 
-    /**
-     * @param menu The options menu in which you place your items.
-     *
-     * @return super.onCreateOptionsMenu(menu);
-     *
-     * @see #onPrepareOptionsMenu
-     * @see #onOptionsItemSelected
-     */
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
@@ -190,19 +181,15 @@ public class EditBookshelfListActivity
      * @param bookshelf to edit
      */
     private void doEditDialog(@NonNull final Bookshelf bookshelf) {
-        FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(EditBookshelfDialogFragment.TAG) == null) {
-            EditBookshelfDialogFragment.newInstance(bookshelf)
-                                       .show(fm, EditBookshelfDialogFragment.TAG);
-        }
+        EditBookshelfDialogFragment.show(getSupportFragmentManager(), bookshelf);
+
     }
 
     @Override
     public void onBookshelfChanged(final long bookshelfId,
                                    final int booksMoved) {
         populateList();
-        Intent data = new Intent()
-                .putExtra(DatabaseDefinitions.KEY_ID, bookshelfId);
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, bookshelfId);
         setResult(Activity.RESULT_OK, data);
     }
 }

@@ -53,7 +53,7 @@ public final class Tracker {
                                      @Nullable final Bundle savedInstanceState) {
         createEvent(a, State.Enter, "onCreate");
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
             Logger.info(a, State.Enter, "onCreate",
                         "savedInstanceState=" + savedInstanceState);
 
@@ -76,7 +76,7 @@ public final class Tracker {
                                            @Nullable final Bundle savedInstanceState) {
         createEvent(a, State.Enter, "onCreateDialog");
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
             Logger.info(a, State.Enter, "onCreateDialog",
                         "savedInstanceState=" + savedInstanceState);
             dumpExtras(a, "onCreateDialog");
@@ -112,7 +112,7 @@ public final class Tracker {
                                               @Nullable final Bundle savedInstanceState) {
         createEvent(fragment, State.Enter, "onActivityCreated");
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
             Logger.info(fragment, State.Enter, "onActivityCreated",
                         "savedInstanceState=" + savedInstanceState);
             @SuppressWarnings("UnusedAssignment")
@@ -129,7 +129,7 @@ public final class Tracker {
 
     public static void exitOnActivityCreated(@NonNull final Object a) {
         createEvent(a, State.Exit, "onActivityCreated");
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
             Logger.info(a, State.Exit, "onActivityCreated");
         }
     }
@@ -159,7 +159,7 @@ public final class Tracker {
     public static void enterOnSaveInstanceState(@NonNull final Object a,
                                                 @NonNull final Bundle outState) {
         createEvent(a, State.Enter, "onSaveInstanceState");
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
             Logger.info(a, State.Enter, "onSaveInstanceState",
                         "outState=" + outState);
         }
@@ -168,7 +168,7 @@ public final class Tracker {
     public static void exitOnSaveInstanceState(@NonNull final Object a,
                                                @NonNull final Bundle outState) {
         createEvent(a, State.Exit, "onSaveInstanceState");
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.INSTANCE_STATE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
             Logger.info(a, State.Exit, "onSaveInstanceState",
                         "outState=" + outState);
         }
@@ -212,56 +212,56 @@ public final class Tracker {
 
     public static void enterOnAttach(@NonNull final Object a) {
         createEvent(a, State.Enter, "onAttach");
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Logger.info(a, State.Enter, "onAttach");
         }
     }
 
     public static void exitOnAttach(@NonNull final Object a) {
         createEvent(a, State.Exit, "onAttach");
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Logger.info(a, State.Exit, "onAttach");
         }
     }
 
     public static void enterOnDestroy(@NonNull final Object a) {
         createEvent(a, State.Enter, "onDestroy");
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Logger.info(a, State.Enter, "onDestroy");
         }
     }
 
     public static void exitOnDestroy(@NonNull final Object a) {
         createEvent(a, State.Exit, "onDestroy");
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Logger.info(a, State.Exit, "onDestroy");
         }
     }
 
     public static void enterOnPause(@NonNull final Object a) {
         createEvent(a, State.Enter, "onPause");
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Logger.info(a, State.Enter, "onPause");
         }
     }
 
     public static void exitOnPause(@NonNull final Object a) {
         createEvent(a, State.Exit, "onPause");
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Logger.info(a, State.Exit, "onPause");
         }
     }
 
     public static void enterOnResume(@NonNull final Object a) {
         createEvent(a, State.Enter, "onResume");
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Logger.info(a, State.Enter, "onResume");
         }
     }
 
     public static void exitOnResume(@NonNull final Object a) {
         createEvent(a, State.Exit, "onResume");
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Logger.info(a, State.Exit, "onResume");
         }
     }

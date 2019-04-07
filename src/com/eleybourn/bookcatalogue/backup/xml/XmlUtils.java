@@ -129,7 +129,7 @@ public final class XmlUtils {
      * @return The encoded data
      */
     @NonNull
-    private static String encode(@Nullable final String data) {
+    private static String encodeString(@Nullable final String data) {
         try {
             if (data == null || data.trim().isEmpty() || "null".equalsIgnoreCase(data)) {
                 return "";
@@ -182,14 +182,14 @@ public final class XmlUtils {
     }
 
     /**
-     * counterpart of {@link #encode}
+     * counterpart of {@link #encodeString}
      * <p>
-     * see {@link #encode(String)} : only String 'value' tags need decoding.
+     * see {@link #encodeString(String)} : only String 'value' tags need decoding.
      * <p>
      * decode the bare essentials only. To decode all possible entities we could add the Apache
      * 'lang' library I suppose.... maybe some day.
      */
-    public static String decode(@Nullable final String data) {
+    public static String decodeString(@Nullable final String data) {
         if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
             return "";
         }
@@ -227,7 +227,7 @@ public final class XmlUtils {
 
     /** the value of the individual item of the "thing". */
     static String value(@NonNull final String value) {
-        return ' ' + ATTR_VALUE + "=\"" + encode(value) + '"';
+        return ' ' + ATTR_VALUE + "=\"" + encodeString(value) + '"';
     }
 
     static String size(final long size) {
@@ -254,7 +254,7 @@ public final class XmlUtils {
      */
     static String attr(@NonNull final String attr,
                        @NonNull final String value) {
-        return ' ' + attr + "=\"" + encode(value) + '"';
+        return ' ' + attr + "=\"" + encodeString(value) + '"';
     }
 
     /* ****************************************************************************************** */
@@ -271,7 +271,7 @@ public final class XmlUtils {
         if (value instanceof String) {
             // strings are encoded
             return '<' + tag + (name != null ? name(name) : "")
-                    + value(encode(String.valueOf(value))) + "/>\n";
+                    + value(encodeString(String.valueOf(value))) + "/>\n";
         } else {
             // non-strings as-is; for boolean this means: true,false
             return typedTag(name, value);

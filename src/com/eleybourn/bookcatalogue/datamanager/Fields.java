@@ -212,14 +212,14 @@ public class Fields {
             msg += ". Fields is NULL.";
         } else {
             msg += ". Fields is valid.";
-            FieldsContext context = fields.getFieldContext();
-            msg += ". Context is " + context.getClass().getCanonicalName() + '.';
-            Object ownerContext = context.dbgGetOwnerContext();
+            FieldsContext fieldContext = fields.getFieldContext();
+            msg += ". Context is " + fieldContext.getClass().getCanonicalName() + '.';
+            Object ownerClass = fieldContext.dbgGetOwnerClass();
             msg += ". Owner is ";
-            if (ownerContext == null) {
+            if (ownerClass == null) {
                 msg += "NULL.";
             } else {
-                msg += ownerContext.getClass().getCanonicalName() + " (" + ownerContext + ')';
+                msg += ownerClass.getClass().getCanonicalName() + " (" + ownerClass + ')';
             }
         }
         throw new IllegalStateException("Unable to get associated View object\n" + msg);
@@ -389,9 +389,9 @@ public class Fields {
      * Reset all field visibility based on user preferences.
      */
     @SuppressWarnings("WeakerAccess")
-    public void resetVisibility() {
+    public void setVisibility() {
         for (Field field : mAllFields) {
-            field.resetVisibility();
+            field.setVisibility();
         }
     }
 
@@ -696,7 +696,15 @@ public class Fields {
 
         /** DEBUG only. */
         @Nullable
-        Object dbgGetOwnerContext();
+        Object dbgGetOwnerClass();
+
+        /**
+         * Get the context from the host object. Can be null if the host has gone.
+         *
+         * @return context, or null.
+         */
+        @Nullable
+        Context getContext();
 
         @Nullable
         View findViewById(@IdRes int id);
@@ -970,22 +978,20 @@ public class Fields {
          */
         public void set(@NonNull final Field field,
                         @Nullable final String value) {
-            ImageView view = field.getView();
-
-            StorageUtils.getTempCoverFile();
+            ImageView imageView = field.getView();
 
             if (value != null) {
-                File image;
+                File imageFile;
                 if (value.isEmpty()) {
-                    image = StorageUtils.getTempCoverFile();
+                    imageFile = StorageUtils.getTempCoverFile();
                 } else {
                     // We store the uuid as a tag on the view.
-                    view.setTag(R.id.TAG_UUID, value);
-                    image = StorageUtils.getCoverFile(value);
+                    imageView.setTag(R.id.TAG_UUID, value);
+                    imageFile = StorageUtils.getCoverFile(value);
                 }
-                ImageUtils.getImageAndPutIntoView(view, image, mMaxWidth, mMaxHeight, true);
+                ImageUtils.setImageView(imageView, imageFile, mMaxWidth, mMaxHeight, true);
             } else {
-                view.setImageResource(R.drawable.ic_image);
+                imageView.setImageResource(R.drawable.ic_broken_image);
             }
         }
 
@@ -1124,6 +1130,7 @@ public class Fields {
      * Formatter for date fields.
      * <p>
      * Can be shared among multiple fields.
+     * Uses the context/locale from the field itself.
      */
     public static class DateFieldFormatter
             implements FieldFormatter {
@@ -1137,7 +1144,8 @@ public class Fields {
             if (source == null || source.isEmpty()) {
                 return "";
             }
-            return DateUtils.toPrettyDate(source);
+
+            return DateUtils.toPrettyDate(field.getLocale(), source);
         }
 
         /**
@@ -1207,6 +1215,8 @@ public class Fields {
     /**
      * Formatter for price fields.
      * <p>
+     * Uses the context/locale from the field itself.
+     * <p>
      * Does not support {@link FieldFormatter#extract}
      */
     public static class PriceFormatter
@@ -1218,6 +1228,7 @@ public class Fields {
         /**
          * Can't/shouldn't pass the code into the constructor as it may change.
          * So must call this before displaying.
+         * TODO: this defeats the ease of use of the formatter... populate manually or something...
          *
          * @param currencyCode to use (if any)
          */
@@ -1246,7 +1257,8 @@ public class Fields {
 
             try {
                 Float price = Float.parseFloat(source);
-                final NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
+                final NumberFormat currencyInstance = NumberFormat.getCurrencyInstance(
+                        field.getLocale());
                 currencyInstance.setCurrency(Currency.getInstance(mCurrencyCode));
                 return currencyInstance.format(price);
 
@@ -1267,24 +1279,11 @@ public class Fields {
     /**
      * Formatter for language fields.
      * <p>
-     * The format implementation is fairly simplistic.
-     * If the database column contains a standard ISO language code, then 'format'
-     * will return a current Locale based display name of that language.
-     * Otherwise, we just use the source String
-     * <p>
-     * The extract implementation will attempt to convert the value string to an ISO language code.
-     * <p>
-     * Note: the use of extract is not actually needed, as the insert of the book into
-     * the database checks the ISO3 code. But at least this class works "correct".
+     * Uses the context from the Field to determine the output Locale.
      */
     public static class LanguageFormatter
             implements FieldFormatter {
 
-        /**
-         * If the source is a valid Locale language code, returns the full display
-         * name of that language in the currently active locale.
-         * Otherwise, simply return the source string itself.
-         */
         @NonNull
         public String format(@NonNull final Field field,
                              @Nullable final String source) {
@@ -1292,11 +1291,7 @@ public class Fields {
                 return "";
             }
 
-            Locale locale = new Locale(source);
-            if (LocaleUtils.isValid(locale)) {
-                return locale.getDisplayLanguage();
-            }
-            return source;
+            return LocaleUtils.getDisplayName(field.getLocale(), source);
         }
 
         @NonNull
@@ -1410,7 +1405,13 @@ public class Fields {
 
         @Override
         @Nullable
-        public Object dbgGetOwnerContext() {
+        public Object dbgGetOwnerClass() {
+            return mActivity.get();
+        }
+
+        @Override
+        @Nullable
+        public Context getContext() {
             return mActivity.get();
         }
 
@@ -1418,7 +1419,7 @@ public class Fields {
         @Nullable
         public View findViewById(@IdRes final int id) {
             if (mActivity.get() == null) {
-                if (/* always debug */ BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG /* always debug */) {
                     Logger.debug("Activity is NULL");
                 }
                 return null;
@@ -1440,22 +1441,29 @@ public class Fields {
 
         @Override
         @Nullable
-        public Object dbgGetOwnerContext() {
+        public Object dbgGetOwnerClass() {
             return mFragment.get();
+        }
+
+        @Override
+        @Nullable
+        public Context getContext() {
+            Fragment frag = mFragment.get();
+            return frag != null ? frag.getContext() : null;
         }
 
         @Override
         @Nullable
         public View findViewById(@IdRes final int id) {
             if (mFragment.get() == null) {
-                if (/* always debug */ BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG /* always debug */) {
                     Logger.debug("Fragment is NULL");
                 }
                 return null;
             }
             final View view = mFragment.get().getView();
             if (view == null) {
-                if (/* always debug */ BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG /* always debug */) {
                     Logger.debug("View is NULL");
                 }
                 return null;
@@ -1697,7 +1705,7 @@ public class Fields {
         /**
          * Reset one fields visibility based on user preferences.
          */
-        private void resetVisibility() {
+        private void setVisibility() {
             // Lookup the view
             final View view = mFields.get().getFieldContext().findViewById(id);
             if (view != null) {
@@ -1736,7 +1744,7 @@ public class Fields {
         }
 
         /**
-         * Get the view associated with this Field, if available.
+         * Get the view associated with this Field.
          *
          * @return Resulting View
          *
@@ -1752,6 +1760,19 @@ public class Fields {
                 throw new NullPointerException("view is NULL");
             }
             return view;
+        }
+
+        /**
+         * syntax sugar.
+         *
+         * @return the Locale of the fields' context.
+         *
+         * @throws NullPointerException if the host object is not found, which should never happen
+         */
+        @NonNull
+        public Locale getLocale() {
+            //noinspection ConstantConditions
+            return mFields.get().getFieldContext().getContext().getResources().getConfiguration().locale;
         }
 
         /**

@@ -55,7 +55,7 @@ import com.eleybourn.bookcatalogue.booklist.prefs.PInteger;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
 import com.eleybourn.bookcatalogue.booklist.prefs.PString;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
@@ -83,7 +83,7 @@ import com.eleybourn.bookcatalogue.utils.Prefs;
  * <p>
  * 1. add it to {@link BooklistGroup.RowKind} and update ROW_KIND_MAX
  * <p>
- * 2. if necessary add new domain to {@link DatabaseDefinitions }
+ * 2. if necessary add new domain to {@link DBDefinitions }
  * <p>
  * 3. modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains
  * <p>
@@ -152,8 +152,6 @@ public class BooklistStyle
     @SuppressWarnings("WeakerAccess")
     public static final int SCALE_SIZE_LARGER = 3;
 
-    /** version field used in serialized data reading from file, see {@link #readObject}. */
-    static final long realSerialVersion = 5;
     /**
      * Unique name. This is a stored in our preference file (with the same name)
      * and is used for backup/restore purposes as the 'id'.
@@ -226,6 +224,7 @@ public class BooklistStyle
      * ==1 being 'normal' size
      */
     private transient PInteger mScaleSize;
+
     /**
      * Show list header info.
      * <p>
@@ -237,6 +236,7 @@ public class BooklistStyle
     /** Extra details to show on book rows. */
     private transient PBoolean mExtraShowThumbnails;
     private transient PBoolean mExtraLargeThumbnails;
+
     private transient PBoolean mExtraShowBookshelves;
     private transient PBoolean mExtraShowLocation;
     private transient PBoolean mExtraShowAuthor;
@@ -401,23 +401,23 @@ public class BooklistStyle
         mFilters = new LinkedHashMap<>();
 
         mFilterRead = new BooleanFilter(Prefs.pk_bob_filter_read, mUuid,
-                                        DatabaseDefinitions.TBL_BOOKS,
-                                        DatabaseDefinitions.DOM_BOOK_READ);
+                                        DBDefinitions.TBL_BOOKS,
+                                        DBDefinitions.DOM_BOOK_READ);
         mFilters.put(mFilterRead.getKey(), mFilterRead);
 
         mFilterSigned = new BooleanFilter(Prefs.pk_bob_filter_signed, mUuid,
-                                          DatabaseDefinitions.TBL_BOOKS,
-                                          DatabaseDefinitions.DOM_BOOK_SIGNED);
+                                          DBDefinitions.TBL_BOOKS,
+                                          DBDefinitions.DOM_BOOK_SIGNED);
         mFilters.put(mFilterSigned.getKey(), mFilterSigned);
 
         mFilterAnthology = new BooleanFilter(Prefs.pk_bob_filter_anthology, mUuid,
-                                             DatabaseDefinitions.TBL_BOOKS,
-                                             DatabaseDefinitions.DOM_BOOK_TOC_BITMASK);
+                                             DBDefinitions.TBL_BOOKS,
+                                             DBDefinitions.DOM_BOOK_TOC_BITMASK);
         mFilters.put(mFilterAnthology.getKey(), mFilterAnthology);
 
         mFilterLoaned = new BooleanFilter(Prefs.pk_bob_filter_loaned, mUuid,
-                                          DatabaseDefinitions.TBL_BOOKS,
-                                          DatabaseDefinitions.DOM_BOOK_LOANEE);
+                                          DBDefinitions.TBL_BOOKS,
+                                          DBDefinitions.DOM_BOOK_LOANEE);
         mFilters.put(mFilterLoaned.getKey(), mFilterLoaned);
     }
 
@@ -608,7 +608,10 @@ public class BooklistStyle
         }
     }
 
-    public float getScaleSize() {
+    /**
+     * @return scaling factor to apply if needed.
+     */
+    public float getScale() {
         switch (mScaleSize.get()) {
             case SCALE_SIZE_NORMAL:
                 return 1.0f;
@@ -625,14 +628,17 @@ public class BooklistStyle
      * Used by built-in styles only.
      */
     @SuppressWarnings("SameParameterValue")
-    void setScaleSize(@IntRange(from = SCALE_SIZE_NORMAL, to = SCALE_SIZE_LARGER) final int size) {
+    void setScale(@IntRange(from = SCALE_SIZE_NORMAL, to = SCALE_SIZE_LARGER) final int size) {
         mScaleSize.set(size);
     }
 
     /**
-     * @return the maximum size to be used for images, or zero if none should be shown.
+     * Note that 60 as a base is a good size for scaling.
+     *
+     * @return the scaled maximum size (height/width) to be used for images
+     * or zero if covers should not be shown.
      */
-    public int getImageMaxSize(@NonNull final Context context) {
+    public int getScaledCoverImageMaxSize(@NonNull final Context context) {
         if (mExtraShowThumbnails.isFalse()) {
             return 0;
         }
@@ -643,6 +649,8 @@ public class BooklistStyle
         } else {
             maxSize = 60;
         }
+
+        maxSize *= getScale();
 
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         maxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, maxSize, metrics));
@@ -822,14 +830,15 @@ public class BooklistStyle
     }
 
     /**
+     * Pre-v200 Legacy support for reading serialized styles from archives and database upgrade.
+     *
      * Custom serialization support. The signature of this method should never be changed.
-     * Still used for reading from archives and during a database upgrade.
      *
      * @see Serializable
      */
     private void readObject(@NonNull final ObjectInputStream in)
             throws IOException, ClassNotFoundException {
-        // pre-v5 we did not have a UUID, create one so the prefs file will be written.
+        // pre-v200 we did not have a UUID, create one so the prefs file will be written.
         mUuid = createUniqueName();
         initPrefs();
 
@@ -846,9 +855,10 @@ public class BooklistStyle
 
 
         SharedPreferences.Editor ed = App.getPrefs(mUuid).edit();
-        mExtraShowThumbnails.set(ed, (Boolean) object);
 
+        mExtraShowThumbnails.set(ed, (Boolean) object);
         mExtraLargeThumbnails.set(ed, (Boolean) in.readObject());
+
         mExtraShowBookshelves.set(ed, (Boolean) in.readObject());
         mExtraShowLocation.set(ed, (Boolean) in.readObject());
         mExtraShowPublisher.set(ed, (Boolean) in.readObject());
@@ -902,7 +912,7 @@ public class BooklistStyle
             }
         }
 
-        // base class de-serialized the groups, convert them
+        // base class de-serialized the groups to legacy format, convert them to current format.
         for (BooklistGroup group : mGroups) {
             group.setUuid(mUuid);
             mStyleGroups.add(group);

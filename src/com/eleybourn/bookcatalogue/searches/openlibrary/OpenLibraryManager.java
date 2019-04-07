@@ -22,9 +22,10 @@ import org.json.JSONObject;
 
 import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -46,7 +47,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * - allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
  * <p>
  * - response format: jscmd=data:
- * Does not return all the info that is (known!) to be present.
+ * Does not return all the info that is known to be present. (use the website itself to look up an isbn)
  * Example: "physical_format": "Paperback" is NOT part of the response.
  * <p>
  * - response format: jscmd=detail:
@@ -59,6 +60,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * - "data" does not contain all information that the site has.
  * - "details" seems, by their own admission, not to be stable yet.
  * - both: dates are not structured, but {@link DateUtils#parseDate(String)} can work around that.
+ * - last update dates on the website & api docs are sometimes from years ago. Is this still developed ?
  * <p>
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
  */
@@ -158,6 +160,7 @@ public class OpenLibraryManager
 
     @Override
     public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
+        // all sizes
         return true;
     }
 
@@ -371,7 +374,7 @@ public class OpenLibraryManager
     private Bundle handleResponse(final JSONObject jsonObject,
                                   final boolean fetchThumbnail)
             throws JSONException {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY_SEARCH) {
             // dump it
             Logger.info(this, Tracker.State.Enter,
                         "handleResponse", jsonObject.toString(2));
@@ -403,7 +406,7 @@ public class OpenLibraryManager
         // mandatory, if no title found, throw
         s = result.optString("title");
         if (!s.isEmpty()) {
-            bookData.putString(DatabaseDefinitions.KEY_TITLE, s);
+            bookData.putString(DBDefinitions.KEY_TITLE, s);
         } else {
             throw new JSONException("no title");
         }
@@ -427,21 +430,21 @@ public class OpenLibraryManager
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
-        bookData.putString(DatabaseDefinitions.KEY_ISBN, isbn);
+        bookData.putString(DBDefinitions.KEY_ISBN, isbn);
 
         // everything below is optional.
 
         // "notes" is a specific (set of) remarks on this particular edition of the book.
         s = result.optString("notes");
         if (!s.isEmpty()) {
-            bookData.putString(DatabaseDefinitions.KEY_DESCRIPTION, s);
+            bookData.putString(DBDefinitions.KEY_DESCRIPTION, s);
         }
 
         s = result.optString("publish_date");
         if (!s.isEmpty()) {
             Date date = DateUtils.parseDate(s);
             if (date != null) {
-                bookData.putString(DatabaseDefinitions.KEY_DATE_PUBLISHED, s);
+                bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, s);
             }
         }
 
@@ -451,7 +454,7 @@ public class OpenLibraryManager
 //        } else {
         i = result.optInt("number_of_pages");
         if (i > 0) {
-            bookData.putString(DatabaseDefinitions.KEY_PAGES, String.valueOf(i));
+            bookData.putString(DBDefinitions.KEY_PAGES, String.valueOf(i));
         }
 //        }
 
@@ -460,24 +463,24 @@ public class OpenLibraryManager
             // see if we have a better isbn.
             a = o.optJSONArray("isbn_13");
             if (a != null && a.length() > 0) {
-                bookData.putString(DatabaseDefinitions.KEY_ISBN, a.getString(0));
+                bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
             } else {
                 a = o.optJSONArray("isbn_10");
                 if (a != null && a.length() > 0) {
-                    bookData.putString(DatabaseDefinitions.KEY_ISBN, a.getString(0));
+                    bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
                 }
             }
             a = o.optJSONArray("openlibrary");
             if (a != null && a.length() > 0) {
-                bookData.putString(DatabaseDefinitions.KEY_OPEN_LIBRARY_ID, a.getString(0));
+                bookData.putString(DBDefinitions.KEY_OPEN_LIBRARY_ID, a.getString(0));
             }
             a = o.optJSONArray("librarything");
             if (a != null && a.length() > 0) {
-                bookData.putString(DatabaseDefinitions.KEY_LIBRARY_THING_ID, a.getString(0));
+                bookData.putString(DBDefinitions.KEY_LIBRARY_THING_ID, a.getString(0));
             }
             a = o.optJSONArray("goodreads");
             if (a != null && a.length() > 0) {
-                bookData.putString(DatabaseDefinitions.KEY_BOOK_GOODREADS_ID, a.getString(0));
+                bookData.putString(DBDefinitions.KEY_BOOK_GOODREADS_ID, a.getString(0));
             }
         }
 
@@ -515,7 +518,7 @@ public class OpenLibraryManager
             o = a.optJSONObject(0);
             String name = o.optString("name");
             if (!name.isEmpty()) {
-                bookData.putString(DatabaseDefinitions.KEY_PUBLISHER, name);
+                bookData.putString(DBDefinitions.KEY_PUBLISHER, name);
             }
         }
 
@@ -533,7 +536,7 @@ public class OpenLibraryManager
         }
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY_SEARCH) {
             Logger.info(this, Tracker.State.Exit, "handleBook", bookData.toString());
         }
         return bookData;

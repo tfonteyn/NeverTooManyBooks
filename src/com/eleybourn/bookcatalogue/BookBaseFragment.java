@@ -29,7 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.Checkable;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -51,7 +51,7 @@ import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.DataViewer;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
@@ -79,7 +79,6 @@ public abstract class BookBaseFragment
         extends Fragment
         implements DataViewer {
 
-    private static final int REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET = 100;
     /** Database instance. */
     protected DBA mDb;
     /** */
@@ -92,7 +91,7 @@ public abstract class BookBaseFragment
         if (actionBar != null) {
             if (book.getId() > 0) {
                 // an existing book
-                actionBar.setTitle(book.getString(DatabaseDefinitions.KEY_TITLE));
+                actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
                 actionBar.setSubtitle(book.getAuthorTextShort(mActivity));
             } else {
                 // new book
@@ -108,6 +107,7 @@ public abstract class BookBaseFragment
      * @return the BookManager which is (should be) the only way to get/set Book properties.
      */
     protected abstract BookManager getBookManager();
+
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment startup">
@@ -123,6 +123,8 @@ public abstract class BookBaseFragment
 
     /**
      * If the child class is a {@link BookManager} then load the {@link Book}.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -141,7 +143,7 @@ public abstract class BookBaseFragment
                 book = new Book(bookData);
             } else {
                 // otherwise, try to load from the database. If that fails, it's a new book.
-                long bookId = args.getLong(DatabaseDefinitions.KEY_ID, 0);
+                long bookId = args.getLong(DBDefinitions.KEY_ID, 0);
                 book = new Book(bookId, mDb);
             }
             getBookManager().setBook(book);
@@ -167,6 +169,8 @@ public abstract class BookBaseFragment
 
     /**
      * Trigger the Fragment to load it's Fields from the Book.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -243,12 +247,11 @@ public abstract class BookBaseFragment
 
     //<editor-fold desc="Fragment shutdown">
 
-
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         if (this instanceof BookManager) {
-            outState.putLong(DatabaseDefinitions.KEY_ID, getBookManager().getBook().getId());
+            outState.putLong(DBDefinitions.KEY_ID, getBookManager().getBook().getId());
             outState.putBundle(UniqueId.BKEY_BOOK_DATA, getBookManager().getBook().getRawData());
         }
     }
@@ -268,11 +271,6 @@ public abstract class BookBaseFragment
 
     //<editor-fold desc="Menu handlers">
 
-    /**
-     * @see #setHasOptionsMenu
-     * @see #onPrepareOptionsMenu
-     * @see #onOptionsItemSelected
-     */
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
@@ -290,7 +288,7 @@ public abstract class BookBaseFragment
         menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_SHARE, 0, R.string.menu_share_this)
             .setIcon(R.drawable.ic_share);
 
-        if (Fields.isVisible(DatabaseDefinitions.KEY_LOANEE)) {
+        if (Fields.isVisible(DBDefinitions.KEY_LOANEE)) {
             menu.add(R.id.MENU_BOOK_EDIT_LOAN,
                      R.id.MENU_BOOK_EDIT_LOAN, 0, R.string.menu_loan_lend_book);
             menu.add(R.id.MENU_BOOK_LOAN_RETURNED,
@@ -303,9 +301,8 @@ public abstract class BookBaseFragment
 
     /**
      * Set visibility of menu items as appropriate.
-     *
-     * @see #setHasOptionsMenu
-     * @see #onCreateOptionsMenu
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
@@ -315,7 +312,7 @@ public abstract class BookBaseFragment
         boolean bookExists = book.getId() != 0;
         menu.setGroupVisible(R.id.MENU_GROUP_BOOK, bookExists);
 
-        if (Fields.isVisible(DatabaseDefinitions.KEY_LOANEE)) {
+        if (Fields.isVisible(DBDefinitions.KEY_LOANEE)) {
             boolean isAvailable = mDb.getLoaneeByBookId(book.getId()) == null;
             menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
             menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
@@ -324,13 +321,6 @@ public abstract class BookBaseFragment
         MenuHandler.prepareAmazonSearchSubMenu(menu, book);
     }
 
-    /**
-     * Called when a menu item is selected.
-     *
-     * @param item The item selected
-     *
-     * @return <tt>true</tt> if handled
-     */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -353,12 +343,13 @@ public abstract class BookBaseFragment
             case R.id.MENU_BOOK_UPDATE_FROM_INTERNET:
                 Intent intentUpdateFields =
                         new Intent(mActivity, UpdateFieldsFromInternetActivity.class)
-                                .putExtra(DatabaseDefinitions.KEY_ID, book.getId())
-                                .putExtra(DatabaseDefinitions.KEY_TITLE, book.getString(
-                                        DatabaseDefinitions.KEY_TITLE))
-                                .putExtra(DatabaseDefinitions.KEY_AUTHOR_FORMATTED,
-                                          book.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED));
-                startActivityForResult(intentUpdateFields, REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET);
+                                .putExtra(DBDefinitions.KEY_ID, book.getId())
+                                .putExtra(DBDefinitions.KEY_TITLE,
+                                          book.getString(DBDefinitions.KEY_TITLE))
+                                .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
+                                          book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                startActivityForResult(intentUpdateFields,
+                                       UniqueId.REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET);
                 return true;
 
             case R.id.MENU_SHARE:
@@ -504,10 +495,10 @@ public abstract class BookBaseFragment
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
         switch (requestCode) {
-            case REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET:
+            case UniqueId.REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    long bookId = data.getLongExtra(DatabaseDefinitions.KEY_ID, 0);
+                    long bookId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                     if (bookId > 0) {
                         // replace current book with the updated one,
                         // ENHANCE: merge if in edit mode.
@@ -547,12 +538,12 @@ public abstract class BookBaseFragment
      * <p>
      * Special fields not checked here:
      * - toc
-     * - read status
+     * - edition
      *
      * @param hideIfEmpty set to <tt>true</tt> when displaying; <tt>false</tt> when editing.
      */
     void showHideFields(final boolean hideIfEmpty) {
-        mFields.resetVisibility();
+        mFields.setVisibility();
 
         // actual book
         showHide(hideIfEmpty, R.id.coverImage);
@@ -561,7 +552,8 @@ public abstract class BookBaseFragment
 
         showHide(hideIfEmpty, R.id.pages, R.id.lbl_pages);
         showHide(hideIfEmpty, R.id.format, R.id.lbl_format);
-        showHideBaseLine(R.id.lbl_pages_baseline, R.id.pages, R.id.format);
+        // Hide the baseline if both fields are gone.
+        setVisibilityGoneOr(R.id.lbl_pages_baseline, View.INVISIBLE, R.id.pages, R.id.format);
 
         showHide(hideIfEmpty, R.id.genre, R.id.lbl_genre);
         showHide(hideIfEmpty, R.id.language, R.id.lbl_language);
@@ -570,29 +562,45 @@ public abstract class BookBaseFragment
 
         showHide(hideIfEmpty, R.id.publisher);
         showHide(hideIfEmpty, R.id.date_published);
-        showHideBaseLine(R.id.lbl_publisher_baseline, R.id.publisher, R.id.date_published);
+        // Hide the baseline if both fields are gone.
+        setVisibilityGoneOr(R.id.lbl_publisher_baseline, View.INVISIBLE,
+                            R.id.publisher, R.id.date_published);
+
+        // Hide the label if none of the publishing fields are shown.
+        setVisibilityGoneOr(R.id.lbl_publishing, View.VISIBLE,
+                            R.id.publisher, R.id.date_published,
+                            R.id.price_listed, R.id.first_publication);
 
         showHide(hideIfEmpty, R.id.price_listed, R.id.price_listed_currency, R.id.lbl_price_listed);
-        showHideBaseLine(R.id.lbl_price_listed_baseline, R.id.price_listed);
+        // Hide the baseline if price listed fields are gone.
+        setVisibilityGoneOr(R.id.lbl_price_listed_baseline, View.INVISIBLE, R.id.price_listed);
 
         // personal fields
         showHide(hideIfEmpty, R.id.bookshelves, R.id.name, R.id.lbl_bookshelves);
-//        showHide(hideIfEmpty, R.id.read, R.id.lbl_read);
+        showHide(hideIfEmpty, R.id.read);
 
-        showHide(hideIfEmpty, R.id.edition, R.id.lbl_edition);
+        //showHide(hideIfEmpty, R.id.edition, R.id.lbl_edition);
+
         showHide(hideIfEmpty, R.id.notes);
         showHide(hideIfEmpty, R.id.location, R.id.lbl_location, R.id.lbl_location_long);
         showHide(hideIfEmpty, R.id.date_acquired, R.id.lbl_date_acquired);
 
         showHide(hideIfEmpty, R.id.price_paid, R.id.price_paid_currency, R.id.lbl_price_paid);
-        showHideBaseLine(R.id.lbl_price_paid_baseline, R.id.price_paid);
+        // Hide the baseline if both price paid fields are gone.
+        setVisibilityGoneOr(R.id.lbl_price_paid_baseline, View.INVISIBLE, R.id.price_paid);
 
         showHide(hideIfEmpty, R.id.read_start, R.id.lbl_read_start);
         showHide(hideIfEmpty, R.id.read_end, R.id.lbl_read_end);
+        // Hide the baseline if both fields are gone.
+        setVisibilityGoneOr(R.id.lbl_read_start_end_baseline, View.INVISIBLE,
+                            R.id.lbl_read_start, R.id.lbl_read_end);
+        // Hide the baseline if both fields are gone.
+        setVisibilityGoneOr(R.id.read_start_end_baseline, View.INVISIBLE,
+                            R.id.lbl_read_start_end_baseline);
+
         showHide(hideIfEmpty, R.id.signed, R.id.lbl_signed);
         showHide(hideIfEmpty, R.id.rating, R.id.lbl_rating);
 
-        // other
         showHide(hideIfEmpty, R.id.loaned_to);
 
         //NEWKIND: new fields
@@ -620,7 +628,13 @@ public abstract class BookBaseFragment
             if (hideIfEmpty) {
                 if (visibility != View.GONE) {
                     // Determine if we should hide it
-                    if (!(view instanceof ImageView)) {
+                    if (view instanceof Checkable) {
+                        visibility = ((Checkable) view).isChecked() ? View.VISIBLE : View.GONE;
+                        view.setVisibility(visibility);
+                    } else if (view instanceof ImageView) {
+                        // skip.
+                    } else {
+                        // all other fields.
                         final String value = mFields.getField(fieldId).getValue().toString().trim();
                         visibility = !value.isEmpty() ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
@@ -633,26 +647,37 @@ public abstract class BookBaseFragment
     }
 
     /**
-     * If any field of 'fields' is VISIBLE, set the baseline field to INVISIBLE.
-     * If all are GONE, set baseline to GONE as well.
+     * If all 'fields' are View.GONE, set 'fieldToSet' to View.GONE as well.
+     * Otherwise, set 'fieldToSet' to the desired visibility.
      *
-     * @param baselineFieldId field to set
-     * @param fields          to test
+     * @param fieldToSet field to set
+     * @param visibility to use for the fieldToSet
+     * @param fields     to test
      */
-    private void showHideBaseLine(@IdRes final int baselineFieldId,
-                                  @NonNull @IdRes final int... fields) {
-        final View baselineField = requireView().findViewById(baselineFieldId);
+    private void setVisibilityGoneOr(@IdRes final int fieldToSet,
+                                     final int visibility,
+                                     @NonNull @IdRes final int... fields) {
+        final View baselineField = requireView().findViewById(fieldToSet);
         if (baselineField != null) {
-            boolean isGone = true;
-            for (int fieldId : fields) {
-                View field = requireView().findViewById(fieldId);
-                if (field != null) {
-                    // all fields must be gone to result into isGone==true
-                    isGone = isGone && (field.getVisibility() == View.GONE);
-                }
-            }
-            baselineField.setVisibility(isGone ? View.GONE : View.INVISIBLE);
+            baselineField.setVisibility(allFieldsAreGone(fields) ? View.GONE : visibility);
         }
+    }
+
+    /**
+     * @param fields to check
+     *
+     * @return <tt>true</tt> if all fields have visibility == View.GONE
+     */
+    private boolean allFieldsAreGone(@IdRes @NonNull final int[] fields) {
+        boolean isGone = true;
+        for (int fieldId : fields) {
+            View field = requireView().findViewById(fieldId);
+            if (field != null) {
+                // all fields must be gone to result into isGone==true
+                isGone = isGone && (field.getVisibility() == View.GONE);
+            }
+        }
+        return isGone;
     }
 
     /**
@@ -679,7 +704,7 @@ public abstract class BookBaseFragment
          * <p>
          * Does nothing if the adapter is null, or if the view is not visible.
          */
-        static void justifyListViewHeightBasedOnChildren(@NonNull final ListView listView) {
+        static void adjustListViewHeightBasedOnChildren(@NonNull final ListView listView) {
             ListAdapter adapter = listView.getAdapter();
             if (adapter == null || listView.getVisibility() != View.VISIBLE) {
                 return;

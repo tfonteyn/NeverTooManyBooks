@@ -5,10 +5,8 @@ import android.database.sqlite.SQLiteDoneException;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.BuildConfig;
-import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.SqlStatementManager;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
@@ -63,14 +61,11 @@ public class FlattenedBooklist
      */
     public FlattenedBooklist(@NonNull final DBA db,
                              @NonNull final String tableName) {
-        TableDefinition flat = DatabaseDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
+        TableDefinition flat = DBDefinitions.TBL_ROW_NAVIGATOR_FLATTENED.clone();
         flat.setName(tableName);
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TEMP_TABLES_ARE_STANDARD) {
-            flat.setType(TableTypes.Standard);
-        } else {
-            //RELEASE Make sure is TEMPORARY
-            flat.setType(TableTypes.Temporary);
-        }
+        //RELEASE Make sure is TEMPORARY
+        flat.setType(TableTypes.Temporary);
+
         init(db.getUnderlyingDatabase(), flat);
     }
 
@@ -133,12 +128,12 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_NEXT);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "|| '/' || "
-                    + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID)
+                    + mTable.dot(DBDefinitions.DOM_PK_ID) + "|| '/' || "
+                    + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + ">?"
-                    + " AND " + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
-                    + " ORDER BY " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " ASC LIMIT 1";
+                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + ">?"
+                    + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
+                    + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " ASC LIMIT 1";
             stmt = mStatements.add(STMT_NEXT, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -160,12 +155,12 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_PREV);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "|| '/' || "
-                    + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID)
+                    + mTable.dot(DBDefinitions.DOM_PK_ID) + "|| '/' || "
+                    + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "<?"
-                    + " AND " + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
-                    + " ORDER BY " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + " DESC LIMIT 1";
+                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<?"
+                    + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID) + "<>Coalesce(?,-1)"
+                    + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " DESC LIMIT 1";
             stmt = mStatements.add(STMT_PREV, sql);
         }
         stmt.bindLong(1, mPosition);
@@ -189,10 +184,10 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_MOVE);
         if (stmt == null) {
             String sql = "SELECT "
-                    + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "|| '/' || "
-                    + mTable.dot(DatabaseDefinitions.DOM_FK_BOOK_ID)
+                    + mTable.dot(DBDefinitions.DOM_PK_ID) + "|| '/' || "
+                    + mTable.dot(DBDefinitions.DOM_FK_BOOK_ID)
                     + " FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "=?";
+                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "=?";
             stmt = mStatements.add(STMT_MOVE, sql);
         }
         stmt.bindLong(1, position);
@@ -250,7 +245,7 @@ public class FlattenedBooklist
         SynchronizedStatement stmt = mStatements.get(STMT_POSITION);
         if (stmt == null) {
             String sql = "SELECT COUNT(*) FROM " + mTable.ref()
-                    + " WHERE " + mTable.dot(DatabaseDefinitions.DOM_PK_ID) + "<=?";
+                    + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<=?";
             stmt = mStatements.add(STMT_POSITION, sql);
         }
         stmt.bindLong(1, mPosition);

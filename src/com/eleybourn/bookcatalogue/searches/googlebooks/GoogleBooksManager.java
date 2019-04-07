@@ -9,6 +9,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
@@ -78,7 +79,8 @@ public final class GoogleBooksManager
 
     @Override
     public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
-        return false;
+        // support 1 size only
+        return SearchSites.ImageSizes.LARGE.equals(size);
     }
 
     @StringRes
@@ -149,7 +151,9 @@ public final class GoogleBooksManager
             }
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | ParseException | SAXException e) {
-            Logger.error(e);
+            if (BuildConfig.DEBUG /* always log */) {
+                Logger.debug(e);
+            }
         }
 
         return bookData;

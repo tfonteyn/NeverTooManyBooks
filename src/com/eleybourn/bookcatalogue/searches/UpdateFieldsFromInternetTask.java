@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.UpdateFieldsFromInternetActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -185,7 +185,7 @@ public class UpdateFieldsFromInternetTask
     public void setBookId(final long bookId) {
         //TODO: not really happy exposing the DOM's here, but it will do for now.
         // Ideally the sql behind this becomes static and uses binds
-        mBookWhereClause = DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID)
+        mBookWhereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
                 + '=' + bookId;
     }
 
@@ -200,7 +200,7 @@ public class UpdateFieldsFromInternetTask
     public void setBookId(@NonNull final List<Long> idList) {
         //TODO: not really happy exposing the DOM's here, but it will do for now.
         // Ideally the sql behind this becomes static and uses binds
-        mBookWhereClause = DatabaseDefinitions.TBL_BOOKS.dot(DatabaseDefinitions.DOM_PK_ID)
+        mBookWhereClause = DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID)
                 + " IN (" + Csv.join(",", idList) + ')';
     }
 
@@ -227,7 +227,7 @@ public class UpdateFieldsFromInternetTask
                 // Get the book ID
                 mCurrentBookId = books.getId();
                 // Get the book UUID
-                mCurrentUuid = mOriginalBookData.getString(DatabaseDefinitions.KEY_BOOK_UUID);
+                mCurrentUuid = mOriginalBookData.getString(DBDefinitions.KEY_BOOK_UUID);
 
                 // Get the array data about the book
                 mOriginalBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
@@ -241,9 +241,9 @@ public class UpdateFieldsFromInternetTask
 
                 // Make sure the searchable fields are not NULL
                 // (legacy data, and possibly set to null when adding new book)
-                String isbn = mOriginalBookData.getString(DatabaseDefinitions.KEY_ISBN, "");
-                String author = mOriginalBookData.getString(DatabaseDefinitions.KEY_AUTHOR_FORMATTED, "");
-                String title = mOriginalBookData.getString(DatabaseDefinitions.KEY_TITLE, "");
+                String isbn = mOriginalBookData.getString(DBDefinitions.KEY_ISBN, "");
+                String author = mOriginalBookData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED, "");
+                String title = mOriginalBookData.getString(DBDefinitions.KEY_TITLE, "");
 
                 // Check which fields this book needs.
                 mCurrentBookFieldUsages = getCurrentBookFieldUsages(mFields);

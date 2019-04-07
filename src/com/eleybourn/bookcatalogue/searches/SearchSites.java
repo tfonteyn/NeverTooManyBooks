@@ -44,8 +44,12 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  */
 public final class SearchSites {
 
+    /** tag. */
+    public static final String TAG = SearchSites.class.getSimpleName();
+
     /** */
-    static final String BKEY_SEARCH_SITES = "searchSitesList";
+    static final String BKEY_SEARCH_SITES = TAG + ":searchSitesList";
+
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "SearchManager.";
 
@@ -78,9 +82,9 @@ public final class SearchSites {
         SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, 4, 4));
 
         // bottom of the list, and disabled by default
-        Site op_site = new Site(Site.SEARCH_OPEN_LIBRARY, 5, 5);
-        op_site.setEnabled(false);
-        SEARCH_ORDER_DEFAULTS.add(op_site);
+        Site openlibrary_site = new Site(Site.SEARCH_OPEN_LIBRARY, 5, 5);
+        openlibrary_site.setEnabled(false);
+        SEARCH_ORDER_DEFAULTS.add(openlibrary_site);
 
         /* ************************************************************************************** */
         /*
@@ -91,7 +95,11 @@ public final class SearchSites {
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, "cover", 2));
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_GOODREADS, "cover", 3));
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_AMAZON, "cover", 4));
-        COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_OPEN_LIBRARY, "cover", 5));
+
+        // bottom of the list, and disabled by default
+        openlibrary_site = new Site(Site.SEARCH_OPEN_LIBRARY, "cover", 5);
+        openlibrary_site.setEnabled(false);
+        COVER_SEARCH_ORDER_DEFAULTS.add(openlibrary_site);
 
         /* ************************************************************************************** */
 
@@ -268,6 +276,19 @@ public final class SearchSites {
         boolean isIsbnOnly();
 
         /**
+         * Warning: the use of this method should be limited to places
+         * where we search for multiple sizes!
+         * <p>
+         * Do NOT use this check if you just do a single search for some size.
+         * <p>
+         * TODO: the above warning could be phrased better...
+         * try again:
+         * CoverBrowser loops through all sizes
+         * --> must use this method check to avoid calling sites to many times.
+         * Other places, where just a single image is fetched, don't use this method.
+         * <p>
+         * Would it be better if this method was more "siteSupportsMultipleSizes()" ?
+         *
          * @param size the image size we want to check support on.
          *
          * @return <tt>true</tt> if the site supports the passed image size
@@ -514,6 +535,19 @@ public final class SearchSites {
 
         public void setReliability(final int reliability) {
             mReliability = reliability;
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "Site{"
+                    + "id=" + id
+                    + ", mName=`" + mName + '`'
+                    + ", mEnabled=" + mEnabled
+                    + ", mPriority=" + mPriority
+                    + ", mReliability=" + mReliability
+                    + ", mSearchSiteManager=" + mSearchSiteManager
+                    + '}';
         }
     }
 }

@@ -73,19 +73,21 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class CropImageActivity
         extends CropMonitoredActivity {
 
-    public static final String REQUEST_KEY_SCALE = "scale";
-    public static final String BKEY_DATA = "data";
-    public static final String REQUEST_KEY_IMAGE_ABSOLUTE_PATH = "image-path";
-    public static final String REQUEST_KEY_OUTPUT_ABSOLUTE_PATH = "output";
-    public static final String REQUEST_KEY_WHOLE_IMAGE = "whole-image";
-    private static final String BKEY_OUTPUT_X = "outputX";
-    private static final String BKEY_OUTPUT_Y = "outputY";
-    private static final String BKEY_SCALE_UP_IF_NEEDED = "scaleUpIfNeeded";
-    private static final String BKEY_ASPECT_X = "aspectX";
-    private static final String BKEY_ASPECT_Y = "aspectY";
-    private static final String BKEY_RETURN_DATA = "return-data";
-    private static final String BKEY_CIRCLE_CROP = "circleCrop";
-    private static final String REQUEST_KEY_NO_FACE_DETECTION = "noFaceDetection";
+    public static final String TAG = CropImageActivity.class.getSimpleName();
+
+    public static final String BKEY_SCALE = TAG + ":scale";
+    public static final String BKEY_DATA = TAG + ":data";
+    public static final String BKEY_IMAGE_ABSOLUTE_PATH = TAG + ":image-path";
+    public static final String BKEY_OUTPUT_ABSOLUTE_PATH = TAG + ":output";
+    public static final String BKEY_WHOLE_IMAGE = TAG + ":whole-image";
+    private static final String BKEY_OUTPUT_X = TAG + ":outputX";
+    private static final String BKEY_OUTPUT_Y = TAG + ":outputY";
+    private static final String BKEY_SCALE_UP_IF_NEEDED = TAG + ":scaleUpIfNeeded";
+    private static final String BKEY_ASPECT_X = TAG + ":aspectX";
+    private static final String BKEY_ASPECT_Y = TAG + ":aspectY";
+    private static final String BKEY_RETURN_DATA = TAG + ":return-data";
+    private static final String BKEY_CIRCLE_CROP = TAG + ":circleCrop";
+    private static final String BKEY_NO_FACE_DETECTION = TAG + ":noFaceDetection";
 
     /** used to calculate free space on Shared Storage, 400kb per picture is a GUESS. */
     private static final long ESTIMATED_PICTURE_SIZE = 400_000L;
@@ -268,11 +270,11 @@ public class CropImageActivity
     /**
      * create activity.
      * <p>
-     * intent.putExtra(CropIImage.REQUEST_KEY_SCALE, true);
-     * intent.putExtra(CropIImage.REQUEST_KEY_NO_FACE_DETECTION, true);
-     * intent.putExtra(CropIImage.REQUEST_KEY_WHOLE_IMAGE, cropFrameWholeImage);
-     * intent.putExtra(CropIImage.REQUEST_KEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
-     * intent.putExtra(CropIImage.REQUEST_KEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
+     * intent.putExtra(CropIImage.BKEY_SCALE, true);
+     * intent.putExtra(CropIImage.BKEY_NO_FACE_DETECTION, true);
+     * intent.putExtra(CropIImage.BKEY_WHOLE_IMAGE, cropFrameWholeImage);
+     * intent.putExtra(CropIImage.BKEY_IMAGE_ABSOLUTE_PATH, thumbFile.getAbsolutePath());
+     * intent.putExtra(CropIImage.BKEY_OUTPUT_ABSOLUTE_PATH, cropped.getAbsolutePath());
      */
     @Override
     @CallSuper
@@ -294,25 +296,25 @@ public class CropImageActivity
                 mOptionAspectY = 1;
             }
 
-            String imagePath = extras.getString(REQUEST_KEY_IMAGE_ABSOLUTE_PATH);
+            String imagePath = extras.getString(BKEY_IMAGE_ABSOLUTE_PATH);
             Objects.requireNonNull(imagePath);
             mBitmap = getBitmap(imagePath);
 
             // Use the "output" parameter if present, otherwise overwrite existing file
-            String imgUri = extras.getString(REQUEST_KEY_OUTPUT_ABSOLUTE_PATH);
+            String imgUri = extras.getString(BKEY_OUTPUT_ABSOLUTE_PATH);
             if (imgUri == null) {
                 imgUri = imagePath;
             }
-            mOptionSaveUri = getImageUri(imgUri);
+            mOptionSaveUri = Uri.fromFile(new File(imgUri));
 
             mOptionAspectX = extras.getInt(BKEY_ASPECT_X);
             mOptionAspectY = extras.getInt(BKEY_ASPECT_Y);
             mOptionOutputX = extras.getInt(BKEY_OUTPUT_X);
             mOptionOutputY = extras.getInt(BKEY_OUTPUT_Y);
-            mOptionScale = extras.getBoolean(REQUEST_KEY_SCALE, true);
+            mOptionScale = extras.getBoolean(BKEY_SCALE, true);
             mOptionScaleUp = extras.getBoolean(BKEY_SCALE_UP_IF_NEEDED, true);
-            mOptionCropWholeImage = extras.getBoolean(REQUEST_KEY_WHOLE_IMAGE, false);
-            mOptionNoFaceDetection = extras.getBoolean(REQUEST_KEY_NO_FACE_DETECTION, true);
+            mOptionCropWholeImage = extras.getBoolean(BKEY_WHOLE_IMAGE, false);
+            mOptionNoFaceDetection = extras.getBoolean(BKEY_NO_FACE_DETECTION, true);
         }
 
         if (mBitmap != null) {
@@ -333,14 +335,9 @@ public class CropImageActivity
         }
     }
 
-    @NonNull
-    private Uri getImageUri(@NonNull final String path) {
-        return Uri.fromFile(new File(path));
-    }
-
     @Nullable
     private Bitmap getBitmap(@NonNull final String path) {
-        Uri uri = getImageUri(path);
+        Uri uri = Uri.fromFile(new File(path));
         InputStream in;
         try {
             in = getContentResolver().openInputStream(uri);
@@ -480,8 +477,7 @@ public class CropImageActivity
 
             Bundle resultExtras = new Bundle();
             resultExtras.putParcelable(BKEY_DATA, croppedImage);
-            Intent data = new Intent("inline-data")
-                    .putExtras(resultExtras);
+            Intent data = new Intent("inline-data").putExtras(resultExtras);
             setResult(Activity.RESULT_OK, data);
             finish();
         } else {
@@ -498,8 +494,7 @@ public class CropImageActivity
             // we were not asked to save anything, but we're ok with that
             setResult(Activity.RESULT_OK);
         } else {
-            Intent intent = new Intent(mOptionSaveUri.toString())
-                    .putExtras(extras);
+            Intent intent = new Intent(mOptionSaveUri.toString()).putExtras(extras);
             try (OutputStream outputStream = getContentResolver().openOutputStream(
                     mOptionSaveUri)) {
                 if (outputStream != null) {
@@ -508,7 +503,7 @@ public class CropImageActivity
                 // we saved the image
                 setResult(Activity.RESULT_OK, intent);
 
-            } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
                 Logger.error(e);
                 setResult(Activity.RESULT_CANCELED);
             }

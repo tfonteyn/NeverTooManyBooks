@@ -19,7 +19,7 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -98,9 +98,9 @@ public class BooklistStyleSettingsFragment
 
         // set the default response
         Intent data = new Intent()
-                .putExtra(DatabaseDefinitions.KEY_ID, mStyle.getId())
+                .putExtra(DBDefinitions.KEY_ID, mStyle.getId())
                 .putExtra(REQUEST_BKEY_STYLE, (Parcelable) mStyle);
-        activity.setResult(UniqueId.ACTIVITY_RESULT_OK_BooklistStyleProperties, data);
+        activity.setResult(UniqueId.ACTIVITY_RESULT_MODIFIED_BOOKLIST_STYLE, data);
     }
 
     /**

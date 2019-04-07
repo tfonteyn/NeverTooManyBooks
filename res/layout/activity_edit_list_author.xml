@@ -31,8 +31,6 @@
     <AutoCompleteTextView
         android:id="@+id/author"
         style="@style/personalNameTextEntry"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/border"
         android:completionThreshold="2"
         android:hint="@string/lbl_author"

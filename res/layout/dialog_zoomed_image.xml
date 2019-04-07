@@ -4,4 +4,5 @@
     android:id="@+id/coverImage"
     style="@style/zoomedCoverImage"
     tools:ignore="ContentDescription"
+    tools:src="@drawable/testcover"
     />

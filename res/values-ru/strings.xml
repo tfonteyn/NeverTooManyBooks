@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?><!--
- define entities that can be used inside of other string (not possible with standard Android resources
- e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
+ define entities that can be used inside of other string (not possible with standard Android
+ resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
-
-    <!-- ========== not in use ========== -->
-
-
-    <!-- ========== in use ========== -->
-
     <string name="title_add_book">Добавить книгу</string>
     <string name="menu_add_book">Добавить книгу…</string>
     <string name="menu_delete_book">Удалить книгу</string>
@@ -32,7 +26,7 @@
     <string name="X_info_no_bookshelves_yet">Вы не создали ни одной полки. Пожалуйста, добавьте полку, используя меню в нижней части этого экрана.</string>
     <string name="menu_add_bookshelf">Создать полку</string>
     <string name="X_btn_confirm_add_bs">Добавить полку</string>
-    <string name="menu_edit_bookshelves">Полки</string>
+    <string name="menu_bookshelves">Полки…</string>
     <string name="X_btn_confirm_save_bs">Сохранить полку</string>
     <string name="menu_delete_bookshelf">Удалить полку</string>
     <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку</string>
@@ -56,7 +50,6 @@
     <string name="menu_administration">Настройки</string>
     <string name="info_install_scanner">Чтобы определить ваши книги по ISBN штрих-коду, вы должны установить приложение Google Goggles или zxing.</string>
     <string name="title_install_scan">Установить сканер штрих-кодов</string>
-    <string name="X_about_lbl_version_number">Номер версии:</string>
     <string name="about_donate">Если Вы хотите поддержать разработку этого приложения, пожалуйста сделайте пожертвование или через Amazon Wishlist или через PayPal кнопкой внизу. Я не могу опубликовать &quot;платную&quot; версию приложения в Австралии. :-) </string>
     <string name="about_lbl_upgrade">После Вашего последнего обновления</string>
     <string name="menu_edit_book">Редактировать книгу</string>
@@ -85,7 +78,6 @@
     <string name="error_search_exception">Поиск во время %1$s: %2$s не удался</string>
     <string name="menu_delete">Удалить миниатюру</string>
     <string name="help">Помощь</string>
-    <string name="menu_manage_fields">Видимость полей</string>
     <string name="info_manage_fields">Выбранные поля видны на экранах добавления/редактирования книги. Невыбранные поля скрыты.</string>
     <string name="X_anthology_titles">Названия антологий</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
@@ -121,7 +113,7 @@
     <string name="field_not_set">Не установлено</string>
     <string name="X_menu_search_books">Искать книги</string>
     <string name="hint_book_search_by_text">Добавление книг по ISBN гораздо более точное, чем добавление по автору и названию и в большинстве случаев является предпочтительным. Имейте в виду, что иногда правильный штрих-код находится внутри книги. \n\n</string>
-    <string name="about_help_click_here">Пожалуйста, нажмите здесь, чтобы получить справочную информацию в интернете</string>
+    <string name="about_help_tap_here">Пожалуйста, нажмите здесь, чтобы получить справочную информацию в интернете</string>
     <string name="vldt_unable_to_get_value">Невозможно получить значение для: \‘%1$s\’</string>
     <string name="vldt_integer_expected">Введите целое значение: \‘%1$s\’</string>
     <string name="vldt_real_expected">Введите действительное число: \‘%1$s\’</string>
@@ -152,8 +144,6 @@
     <string name="X_warning_required_author">Не заполнено поле Автор</string>
     <string name="warning_series_already_in_list">Серия уже есть в списке</string>
     <string name="X_warning_required_series">Не заполнено поле Серия</string>
-    <string name="X_export_error_csv_failed">Экспорт не удался. Не могу записать на SD-карту</string>
-    <string name="X_error_download_thumbnail_failed">Загрузка миниатюр не удалась. Запись на SD-карту невозможна</string>
     <string name="progress_msg_skip_title">Пропустить - %1$s</string>
     <string name="progress_end_num_books_searched">%1$d книг искалось</string>
     <string name="progress_end_cancelled_info">Отменено - %1$s</string>
@@ -185,8 +175,8 @@
     <string name="confirm_really_delete_book">Книга с названием \‘%1$s\’ будет полностью удалена %2$s. Вы уверены?</string>
     <string name="warning_editions_require_isbn">Для получения других изданий требуется ISBN</string>
     <string name="warning_no_editions">Другие издания не доступны</string>
-    <string name="title_finding_editions">Поиск изданий…</string>
-    <string name="info_click_on_thumb">Щёлкните по миниатюре для просмотра большого изображения</string>
+    <string name="progress_msg_finding_editions">Поиск изданий…</string>
+    <string name="info_tap_on_thumb">Щёлкните по миниатюре для просмотра большого изображения</string>
     <string name="progress_msg_loading">Загрузка…</string>
     <string name="warning_cover_not_found">Изображение не найдено</string>
     <string name="warning_select_min_1_field">Выберите хотя бы одно поле для обновления</string>
@@ -217,7 +207,6 @@
     <string name="debug_subject">Собрана отладочная информация</string>
     <string name="debug_body">Пожалуйста, кратко опишите обнаруженную ошибку.</string>
     <string name="menu_duplicate_book">Дублирующаяся книга</string>
-    <string name="X_warning_cannot_edit_system">Вы не можете редактировать системные параметры.</string>
     <string name="lt_incorrect_key">Ваш ключ разработчика LibraryThing не действителен или не возможно установить соединение, чтобы его проверить.</string>
     <string name="lt_correct_key">Ваш ключ разработика LibraryThing действителен.</string>
     <string name="error_no_internet_connection">Интернет соединение отсутствует.</string>
@@ -230,7 +219,6 @@
     <string name="gr_tq_menu_delete_task">Удалить задачу</string>
     <string name="bookshelf_my_books">Мои книги</string>
     <string name="X_loan_return_edit_book">Одолжить, Вернуть или Редактировать книгу</string>
-    <string name="X_menu_admin_and_prefs">Администрирование и Настройки</string>
     <string name="gr_menu_send_to_goodreads">Послать на Goodreads</string>
     <string name="gr_auth_blurb_part1">
         Goodreads это сайт, чья основная миссия это “помогать людям находить и делиться книгами, которые они любят”.
@@ -248,7 +236,6 @@
     <string name="gr_title_auth_access">Авторизация</string>
     <string name="gr_auth_access_already_auth">Кажется, вы уже авторизованы. Все функции Goodreads уже должны быть доступны</string>
     <string name="gr_access_error">Возникли проблемы с соединением во время доступа к Goodreads. Пожалуйста, проверьте работает ли сайт Goodreads и если проблема останется сообщите в поддержку</string>
-    <string name="X_menu_preferences_other">Другие настройки</string>
     <string name="gr_tq_menu_background_tasks">Фоновые задачи</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Очистить старые задачи</string>
     <string name="gr_tq_btn_cleanup_old_events">Очистить старые события</string>
@@ -280,8 +267,8 @@
     <string name="x_of_y">%1$d из %2$d</string>
     <string name="gr_send_book_to_goodreads">Отправить книгу %1$d на Goodreads</string>
     <string name="erase_cover_cache">Очистить кэш обложек</string>
-    <string name="acra_resToastText">&APP_NAME; завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку.</string>
-    <string name="acra_resNotifTickerText">&APP_NAME; завершилось с ошибкой</string>
+    <string name="acra_resToastText">&APP_NAME;" завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку."</string>
+    <string name="acra_resNotifTickerText">&APP_NAME;" завершилось с ошибкой"</string>
     <string name="acra_resNotifTitle">Ошибка &APP_NAME;</string>
     <string name="acra_resNotifText">Пожайлуйста, нажмите сюда для подробностей</string>
     <string name="acra_resDialogTitle">Ошибка &APP_NAME;</string>
@@ -309,11 +296,11 @@
     <string name="lbl_data_import_export">Импорт/Экспорт данных</string>
     <string name="X_unrecognized_task">Неопознаная задача</string>
     <string name="progress_msg_rebuilding_search_index">Перестроение индексов поиска…</string>
-    <string name="progress_msg_optimizing_databases">Оптимизация баз данных…</string>
+    <string name="progress_msg_optimizing">Оптимизация баз данных…</string>
     <string name="progress_msg_starting_up">Запуск…</string>
     <string name="lbl_application_startup">Запуск &APP_NAME;</string>
     <string name="searching_goodreads">Поиск Goodreads</string>
-    <string name="menu_edit_booklist_styles">Редактировать стили списков книг</string>
+    <string name="menu_booklist_styles">Cтили списка книг…</string>
     <string name="menu_show_more_ellipsis">Показать больше…</string>
     <string name="menu_show_fewer_ellipsis">Показать меньше…</string>
     <string name="menu_customize_ellipsis">Настроить…</string>
@@ -343,9 +330,6 @@
     <string name="X_title_add_style">Новый стиль</string>
     <string name="X_pt_bob_filter_read">Выбор основан на статусе \‘Прочитана\’</string>
     <string name="title_select_style">Выбрать стиль</string>
-    <string name="X_booklist_background_style">Стиль фона списка книг</string>
-    <string name="X_textured_background">Картинка фона</string>
-    <string name="X_plain_background_b_reduces_flicker_b">Ровный фон (уменьшает мерцание)</string>
     <string name="warning_required_field_x">%1$s должен быть не пустым</string>
     <string name="edit">Редактировать</string>
     <string name="lbl_settings">Настройки</string>
@@ -433,7 +417,6 @@
     <string name="warning_required_name">Имя не может быть пустым</string>
     <string name="progress_msg_export_starting">Начало экспорта…</string>
     <string name="menu_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
-    <string name="X_disable_background_image">Отключить фоновый рисунок</string>
     <string name="info_displaying_n_books_in_m_entries">отображается %1$d книг, в %2$d элементах</string>
     <string name="X_lbl_loan_book_available">Доступно</string>
 
@@ -574,7 +557,7 @@
         <item quantity="other">%1$s звезд</item>
     </plurals>
 
-    <string name="progress_msg_searching_directory">Просмотр папки…</string>
+    <string name="progress_msg_reading_directory">Просмотр папки…</string>
 
     <string name="menu_amazon_books_in_series">Книги в этой серии</string>
     <string name="menu_amazon_books_by_author">Книги этого автора</string>
@@ -598,7 +581,6 @@
     <string name="lbl_update_month">Месяц обновления</string>
     <string name="lbl_update_day">День обновленияy</string>
 
-    <string name="pt_ui_system_locale">Локаль системы</string>
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_comma_b">%1$s, %2$s</string>
@@ -610,5 +592,68 @@
     <string name="lbl_is_complete">Завершено</string>
     <string name="searching_isfdb">Поиск в ISFDB</string>
     <string name="searching_open_library">Поиск в OpenLibrary</string>
+    <string name="btn_merge">сливаться</string>
+    <string name="error_network_timeout">Нет ответа, пожалуйста, попробуйте еще раз</string>
+    <string name="error_not_available">недоступен</string>
+    <string name="error_storage_no_access">Невозможно получить доступ к SD-карте</string>
+    <string name="error_storage_no_space_left">Недостаточно места на SD-карте</string>
+    <string name="error_storage_not_available">SD-карта недоступна</string>
+    <string name="import_options_dialog_title">Выберите, что будет импортировано.</string>
+    <string name="import_export_option_xml">Все данные в формате XML</string>
+    <string name="info_tap_to_edit">Нажмите здесь, чтобы изменить имя.</string>
+    <string name="btn_use">использование</string>
+    <string name="confirm_merge_bookshelves">Книжная полка, которую вы переименовываете, уже существует. Вы хотите объединить их?</string>
+    <string name="warning_required_title_and_author">Название и / или автор отсутствует.</string>
+    <string name="warning_required_at_least_one">Хотя бы одно поле не должно быть пустым.</string>
+    <string name="tab_lbl_notes">заметки</string>
+    <string name="style_builtin_acquired_date">приобретенный</string>
+    <string name="warning_thing_already_exists">%1$s уже существует</string>
+    <string name="usage_skip">Пропускать</string>
+    <string name="search_with_text">ищи: %1$s</string>
+    <string name="menu_clear_filters">Сбросить фильтры</string>
+    <string name="lbl_currency">валюта</string>
+    <string name="btn_options">опции</string>
+    <string name="done">сделанный</string>
+    <string name="error_database_upgrade_failed">Невозможно обновить версию старше 4.0.0</string>
+    <string name="books_found">%1$s книги найдено</string>
+    <string name="error_email_failed">Не удалось отправить электронное письмо.</string>
+    <string name="error_search_configuration">Ошибка конфигурации. Пожалуйста, откройте страницу администратора и проверьте настройки поиска.</string>
+    <string name="lbl_date_acquired">Дата покупки</string>
+    <string name="lbl_date_acquired_day">День куплен</string>
+    <string name="lbl_date_acquired_month">Месяц купил</string>
+    <string name="lbl_date_acquired_year">Год покупки</string>
+    <string name="lbl_edition">Издание</string>
+    <string name="lbl_first_publication">первая публикация</string>
+    <string name="lbl_first_publication_month">первый месяц публикации</string>
+    <string name="lbl_first_publication_year">первый год публикации</string>
+    <string name="lbl_price_paid">Цена оплачена</string>
+    <string name="lbl_lending">кредитование</string>
+    <string name="lbl_cover">обложка</string>
+    <string name="lbl_covers">обложки</string>
+    <string name="lbl_table_of_content">оглавление</string>
+    <string name="tab_lbl_content">оглавление</string>
+    <string name="progress_msg_process_cover">обложки…</string>
+    <string name="progress_msg_process_preferences">предпочтения…</string>
+    <string name="progress_msg_please_wait">подождите пожалуйста…</string>
+    <string name="menu_internet_update_fields">обновить поля</string>
+    <string name="lbl_edition_limited">ограниченный выпуск</string>
+    <string name="lbl_edition_first_edition">первое издание</string>
+    <string name="lbl_edition_book_club">Книжный клуб Издание</string>
+    <string name="book_format_hardcover">Твердая обложка</string>
+    <string name="book_format_paperback">книга в мягкой обложке</string>
+    <string name="book_format_ebook">электронная книга</string>
+    <string name="book_format_audiobook">Аудиокнига</string>
+    <string name="menu_set_complete">Отметка завершена</string>
+    <string name="menu_set_incomplete">Отметить не полностью</string>
+    <string name="menu_set_read">Марк читать</string>
+    <string name="menu_set_unread">Марк не читается</string>
+    <string name="lbl_signed">подписанный</string>
+    <string name="gr_tq_generic_task_info">Идентификатор задачи %1$d поставлен в очередь на %2$s</string>
+    <string name="info_share_book_im_reading">Я читаю “%1$s” %2$s %3$s %4$s</string>
+    <string name="menu_author_details">Все работы этого автора</string>
+    <string name="lbl_style">стиль</string>
+    <string name="lbl_styles">стили</string>
+    <string name="progress_msg_process_booklist_style">Стили списков книг…</string>
+    <string name="lbl_search_site_order">порядок</string>
 
 </resources>

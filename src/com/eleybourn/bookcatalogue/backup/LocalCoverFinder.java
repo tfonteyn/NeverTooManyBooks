@@ -59,7 +59,7 @@ public class LocalCoverFinder
      * @param srcId        used to find a cover file
      * @param uuidFromBook of the book
      *
-     * @throws IOException on any failure
+     * @throws IOException on failure
      */
     @Override
     public void copyOrRenameCoverFile(final long srcId,
@@ -97,7 +97,7 @@ public class LocalCoverFinder
      *
      * @param uuidFromFile used to find a cover file; uuid must be valid. No checks are made.
      *
-     * @throws IOException on any failure
+     * @throws IOException on failure
      */
     @Override
     public void copyOrRenameCoverFile(@NonNull final String uuidFromFile)

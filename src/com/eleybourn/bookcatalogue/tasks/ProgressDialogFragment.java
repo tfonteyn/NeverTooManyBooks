@@ -37,11 +37,11 @@ public class ProgressDialogFragment<Results>
     /** Fragment manager tag used if no custom tag is needed. */
     public static final String TAG = ProgressDialogFragment.class.getSimpleName();
 
-    private static final String BKEY_DIALOG_IS_INDETERMINATE = "isIndeterminate";
-    private static final String BKEY_MAX = "max";
-    private static final String BKEY_CURRENT_MESSAGE = "message";
-    private static final String BKEY_CURRENT_VALUE = "current";
-    private static final String BKEY_WAS_CANCELLED = "mWasCancelled";
+    private static final String BKEY_DIALOG_IS_INDETERMINATE = TAG + ":isIndeterminate";
+    private static final String BKEY_MAX = TAG + ":max";
+    private static final String BKEY_CURRENT_MESSAGE = TAG + ":message";
+    private static final String BKEY_CURRENT_VALUE = TAG + ":current";
+    private static final String BKEY_WAS_CANCELLED = TAG + ":mWasCancelled";
 
     @Nullable
     private ProgressBar mProgressBar;

@@ -27,54 +27,68 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="5"
-            tools:rating="5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_rating"
+            tools:rating="5"
             />
 
         <CheckBox
             android:id="@+id/read"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            style="@style/editCheckbox"
             android:text="@string/lbl_is_read"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating"
+            tools:checked="true"
+            />
+
+        <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
+        <View
+            android:id="@+id/lbl_read_start_end_baseline"
+            style="@style/baseline_lbl_textField_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/read"
             />
 
         <TextView
             android:id="@+id/lbl_read_start"
             style="@style/lbl_editField"
-            android:text="@string/lbl_read_start"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/read"
-            />
-
-        <Button
-            android:id="@+id/read_start"
-            style="@style/buttonDataEntry"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_read_start"
+            android:text="@string/lbl_read_start"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_read_start_end_baseline"
+            app:layout_constraintStart_toStartOf="@id/read_start"
             />
 
         <TextView
             android:id="@+id/lbl_read_end"
             style="@style/lbl_editField"
+            android:layout_width="0dp"
             android:text="@string/lbl_read_end"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_read_start_end_baseline"
+            app:layout_constraintStart_toStartOf="@id/read_end"
+            />
+
+        <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
+        <View
+            android:id="@+id/read_start_end_baseline"
+            style="@style/baseline_buttons"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/read_start"
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_start_end_baseline"
+            />
+
+        <Button
+            android:id="@+id/read_start"
+            style="@style/buttonDataEntry"
+            app:layout_constraintBottom_toBottomOf="@id/read_start_end_baseline"
+            app:layout_constraintEnd_toStartOf="@id/read_end"
+            app:layout_constraintStart_toStartOf="parent"
             />
 
         <Button
             android:id="@+id/read_end"
             style="@style/buttonDataEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/read_start_end_baseline"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_read_end"
+            app:layout_constraintStart_toEndOf="@id/read_start"
             />
 
         <TextView
@@ -83,14 +97,12 @@
             android:labelFor="@id/location"
             android:text="@string/lbl_location_long"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/read_end"
+            app:layout_constraintTop_toBottomOf="@id/read_start_end_baseline"
             />
 
         <AutoCompleteTextView
             android:id="@+id/location"
             style="@style/simpleTextEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:completionThreshold="2"
             android:inputType="textCapSentences"
             app:layout_constraintEnd_toStartOf="@id/btn_location"
@@ -100,14 +112,11 @@
 
         <ImageButton
             android:id="@+id/btn_location"
-            style="@style/itemEditButton"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            style="@style/dropDownMenuButton"
             app:layout_constraintBottom_toBottomOf="@id/location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/location"
             app:layout_constraintTop_toTopOf="@id/location"
-            app:srcCompat="@drawable/ic_arrow_drop_down"
             tools:ignore="ContentDescription"
             />
 
@@ -122,8 +131,6 @@
         <Button
             android:id="@+id/date_acquired"
             style="@style/buttonDataEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
@@ -138,23 +145,18 @@
             app:layout_constraintTop_toBottomOf="@id/date_acquired"
             />
 
-        <!-- this invisible EditText is needed to allow show/hide of price_paid
-            while maintaining the baseline -->
-        <EditText
+        <!-- This invisible View is needed to allow individual show/hide while maintaining the baseline -->
+        <View
             android:id="@+id/lbl_price_paid_baseline"
-            style="@style/priceTextEntry"
-            android:visibility="invisible"
+            style="@style/baseline_EditText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
-            tools:ignore="Autofill,LabelFor"
             />
 
         <EditText
             android:id="@+id/price_paid"
             style="@style/priceTextEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid_baseline"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_price_paid_baseline"
             app:layout_constraintEnd_toStartOf="@id/price_paid_currency"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="Autofill"
@@ -164,7 +166,7 @@
         <AutoCompleteTextView
             android:id="@+id/price_paid_currency"
             style="@style/currencyTextEntry"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid_baseline"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_price_paid_baseline"
             app:layout_constraintEnd_toStartOf="@id/btn_price_paid_currency"
             app:layout_constraintStart_toEndOf="@id/price_paid"
             tools:ignore="Autofill,LabelFor"
@@ -172,14 +174,11 @@
 
         <ImageButton
             android:id="@+id/btn_price_paid_currency"
-            style="@style/itemEditButton"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@id/price_paid_currency"
+            style="@style/dropDownMenuButton"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_price_paid_baseline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/price_paid_currency"
             app:layout_constraintTop_toTopOf="@id/price_paid_currency"
-            app:srcCompat="@drawable/ic_arrow_drop_down"
             tools:ignore="ContentDescription"
             />
 
@@ -194,8 +193,6 @@
         <Button
             android:id="@+id/edition"
             style="@style/buttonDataEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_edition"
@@ -203,11 +200,11 @@
 
         <CheckBox
             android:id="@+id/signed"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            style="@style/editCheckbox"
             android:text="@string/lbl_is_signed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edition"
+            tools:checked="true"
             />
 
         <View
@@ -230,8 +227,6 @@
         <EditText
             android:id="@+id/notes"
             style="@style/multiLineTextEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"

@@ -53,20 +53,20 @@ import com.eleybourn.bookcatalogue.R;
  * <p>
  * Customizable attributes:
  * <pre>
- *     {@code
- *         <declare-styleable name="TouchListView">
- *         <attr name="normal_height" format="dimension" />
- *         <attr name="expanded_height" format="dimension" />
- *         <attr name="grabber" format="reference" />
- *         <attr name="dnd_background" format="color" />
- *         <attr name="remove_mode">
- *             <enum name="none" value="-1" />
- *             <enum name="fling" value="0" />
- *             <enum name="slideRight" value="1" />
- *             <enum name="slideLeft" value="2" />
- *         </attr>
- *     </declare-styleable>
- *     }
+ *      {@code
+ *      <declare-styleable name="TouchListView">
+ *          <attr name="normal_height" format="dimension" />
+ *          <attr name="expanded_height" format="dimension" />
+ *          <attr name="grabber" format="reference" />
+ *          <attr name="dnd_background" format="color" />
+ *          <attr name="remove_mode">
+ *              <enum name="none" value="-1" />
+ *              <enum name="fling" value="0" />
+ *              <enum name="slideRight" value="1" />
+ *              <enum name="slideLeft" value="2" />
+ *          </attr>
+ *      </declare-styleable>
+ *      }
  * </pre>
  * <p>
  * normal_height:
@@ -161,15 +161,41 @@ public class TouchListView
     private Integer mSavedHeight;
 
     /**
-     * Constructor.
+     * Constructor used when instantiating Views programmatically.
+     *
+     * @param context The Context the view is running in, through which it can
+     *                access the current theme, resources, etc.
+     */
+    public TouchListView(@NonNull final Context context) {
+        this(context, null);
+    }
+
+    /**
+     * Constructor used by the LayoutInflater.
      *
      * @param context The Context the view is running in, through which it can
      *                access the current theme, resources, etc.
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
     public TouchListView(@NonNull final Context context,
-                         @NonNull final AttributeSet attrs) {
-        this(context, attrs, 0);
+                         @Nullable final AttributeSet attrs) {
+        this(context, attrs, android.R.attr.listViewStyle);
+    }
+
+    /**
+     * Constructor used by the LayoutInflater if there was a 'style' attribute.
+     *
+     * @param context      The Context the view is running in, through which it can
+     *                     access the current theme, resources, etc.
+     * @param attrs        The attributes of the XML tag that is inflating the view.
+     * @param defStyleAttr An attribute in the current theme that contains a
+     *                     reference to a style resource that supplies default values for
+     *                     the view. Can be 0 to not look for defaults.
+     */
+    public TouchListView(@NonNull final Context context,
+                         @Nullable final AttributeSet attrs,
+                         final int defStyleAttr) {
+        this(context, attrs, defStyleAttr, 0);
     }
 
     /**
@@ -181,28 +207,34 @@ public class TouchListView
      * @param defStyleAttr An attribute in the current theme that contains a
      *                     reference to a style resource that supplies default values for
      *                     the view. Can be 0 to not look for defaults.
+     * @param defStyleRes  A resource identifier of a style resource that
+     *                     supplies default values for the view, used only if
+     *                     defStyleAttr is 0 or can not be found in the theme. Can be 0
+     *                     to not look for defaults.
      */
     public TouchListView(@NonNull final Context context,
-                         @NonNull final AttributeSet attrs,
-                         final int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+                         @Nullable final AttributeSet attrs,
+                         final int defStyleAttr,
+                         final int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
 
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
-        TypedArray typedArray = getContext()
-                .obtainStyledAttributes(attrs, R.styleable.TouchListView, 0, 0);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TouchListView,
+                                                      defStyleAttr, defStyleRes);
 
-        mGrabberId = typedArray.getResourceId(R.styleable.TouchListView_grabber, -1);
-        mRemoveMode = typedArray.getInt(R.styleable.TouchListView_remove_mode, MODE_NOT_SET);
-        mItemHeight = typedArray.getDimensionPixelSize(R.styleable.TouchListView_normal_height, 0);
+        mGrabberId = a.getResourceId(R.styleable.TouchListView_grabber, -1);
+        mRemoveMode = a.getInt(R.styleable.TouchListView_remove_mode, MODE_NOT_SET);
+        mItemHeight = a.getDimensionPixelSize(R.styleable.TouchListView_normal_height, 0);
         //mItemHeightExpanded = typedArray
         //     .getDimensionPixelSize(R.styleable.TouchListView_expanded_height, mItemHeight);
-        mDndBackgroundColor = typedArray.getColor(R.styleable.TouchListView_dnd_background,
-                                                  Color.TRANSPARENT);
+        mDndBackgroundColor = a.getColor(R.styleable.TouchListView_dnd_background,
+                                         Color.TRANSPARENT);
 
-        typedArray.recycle();
+        a.recycle();
     }
 
+    /** {@inheritDoc}. */
     @Override
     public final void addHeaderView(@NonNull final View v,
                                     @NonNull final Object data,
@@ -210,11 +242,13 @@ public class TouchListView
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc}. */
     @Override
     public final void addHeaderView(@NonNull final View v) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc}. */
     @Override
     public final void addFooterView(@NonNull final View v,
                                     @NonNull final Object data,
@@ -224,6 +258,7 @@ public class TouchListView
         }
     }
 
+    /** {@inheritDoc}. */
     @Override
     public final void addFooterView(@NonNull final View v) {
         if (mRemoveMode == SLIDE_LEFT || mRemoveMode == SLIDE_RIGHT) {
@@ -233,6 +268,9 @@ public class TouchListView
 
     /**
      * React to touch events.
+     * <p>
+     * <p>
+     * {@inheritDoc}.
      */
     @Override
     @CallSuper
@@ -322,6 +360,7 @@ public class TouchListView
         return super.onInterceptTouchEvent(ev);
     }
 
+    /** {@inheritDoc}. */
     @SuppressLint("ClickableViewAccessibility")
     @Override
     @CallSuper

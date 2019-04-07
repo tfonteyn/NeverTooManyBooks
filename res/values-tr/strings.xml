@@ -1,15 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><!--
  define entities that can be used inside of other string (not possible with standard Android
- resources e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
+ resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
+
 <resources>
-
-    <!-- ========== not in use ========== -->
-
-
-    <!-- ========== in use ========== -->
-
     <string name="title_add_book">Kitap ekle</string>
     <string name="menu_add_book">Kitap ekle…</string>
     <string name="menu_delete_book">Kitap sil</string>
@@ -31,7 +26,7 @@
     <string name="X_info_no_bookshelves_yet">Henüz hiçbir kitaplık oluşturmadınız. Ekranın alt kısmındaki bölümü kullanarak yeni kitaplık oluşturun.</string>
     <string name="menu_add_bookshelf">Kitaplık oluştur</string>
     <string name="X_btn_confirm_add_bs">Kitaplık ekle</string>
-    <string name="menu_edit_bookshelves">Kitaplıkları yönet</string>
+    <string name="menu_bookshelves">Kitaplıkları…</string>
     <string name="X_btn_confirm_save_bs">Kitaplığı kaydet</string>
     <string name="menu_delete_bookshelf">Kitaplığı sil</string>
     <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor</string>
@@ -55,7 +50,6 @@
     <string name="menu_administration">Ayarlar</string>
     <string name="info_install_scanner">ISBN barkodu ile kitap taramak için Zxing barkod tarayıcısı uygulamasını yüklemelisiniz. Yüklemek için Tamam\'a, atlamak için Vazgeç\'e basın.</string>
     <string name="title_install_scan">Barkod Tarayıcıyı yükleyin</string>
-    <string name="X_about_lbl_version_number">Sürüm numarası</string>
     <string name="about_donate">Eğer uygulamanın geliştirilmesini desteklemek isterseniz aşağıdaki Amazon Wishlist veya Paypal düğmelerini kullanarak bağışta bulunabilirsiniz. Kişi Avustralya\'da olunca &quot;ücretli&quot; bir sürüm yayınlayamıyor haliyle. :-) </string>
     <string name="about_lbl_upgrade">Son güncellemenizden beri</string>
     <string name="menu_edit_book">Kitap düzenle</string>
@@ -84,7 +78,6 @@
     <string name="error_search_exception">%1$s sırasında arama başarısız oldu: %2$s</string>
     <string name="menu_delete">Küçük resmi sil</string>
     <string name="help">Yardım</string>
-    <string name="menu_manage_fields">Alan görünürlüğünü yönet</string>
     <string name="info_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="X_anthology_titles">Seçmeler</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
@@ -118,7 +111,7 @@
     <string name="field_not_set">Ayarlı değil</string>
     <string name="X_menu_search_books">Kiatp ara</string>
     <string name="hint_book_search_by_text">Kitapları ISBN ile eklemek kitap adı veya yazar adı ile eklemekten çok daha doğru sonuç verir ve genelde yeğlenir. Unutmayın ki doğru barkodu ön kapağın iç kısmında da bulabilirsiniz\n\n</string>
-    <string name="about_help_click_here">Çevrimiçi yardım sayfalarına erişmek için lütfen dokunun</string>
+    <string name="about_help_tap_here">Çevrimiçi yardım sayfalarına erişmek için lütfen dokunun</string>
     <string name="vldt_unable_to_get_value">\‘%1$s\’ için değer alınamıyor</string>
     <string name="vldt_integer_expected">\‘%1$s\’ için bir tamsayı değeri gerekli</string>
     <string name="vldt_real_expected">\‘%1$s\’ için bir gerçek sayı gerekli</string>
@@ -149,8 +142,6 @@
     <string name="X_warning_required_author">Yazar alanı boş</string>
     <string name="warning_series_already_in_list">Seri zaten ekli</string>
     <string name="X_warning_required_series">Seri alanı boş</string>
-    <string name="X_export_error_csv_failed">Dışa aktarma başarısız - SD karta yazılamadı</string>
-    <string name="X_error_download_thumbnail_failed">Ufak resim indirmesi başarısız - SD karta yazılamadı</string>
     <string name="progress_msg_skip_title">Atla - %1$s</string>
     <string name="progress_end_num_books_searched">%1$d kitap arandı</string>
     <string name="progress_end_cancelled_info">İptal edildi - %1$s</string>
@@ -182,8 +173,8 @@
     <string name="confirm_really_delete_book">Bu işlem bu kitabı tümüyle silecektir: \‘%1$s\’ - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="warning_editions_require_isbn">Diğer sürümlere ulaşmak bir ISBN gerektirir</string>
     <string name="warning_no_editions">Başka sürüm bulunamadı</string>
-    <string name="title_finding_editions">Sürümler bulunuyor…</string>
-    <string name="info_click_on_thumb">Daha büyük görüntülemek için küçük resme dokunun</string>
+    <string name="progress_msg_finding_editions">Sürümler bulunuyor…</string>
+    <string name="info_tap_on_thumb">Daha büyük görüntülemek için küçük resme dokunun</string>
     <string name="progress_msg_loading">Yükleniyor…</string>
     <string name="warning_cover_not_found">Görsel bulunamadı</string>
     <string name="warning_select_min_1_field">Güncellemek için en azından bir alan seçin</string>
@@ -214,7 +205,6 @@
     <string name="debug_subject">Hata ayıklama bilgisi alındı</string>
     <string name="debug_body">Lütfen yaşamakta olduğunuz sorunu kısaca anlatınız.</string>
     <string name="menu_duplicate_book">Kitabı kopyala</string>
-    <string name="X_warning_cannot_edit_system">Sistem değerlerini düzenleyemezsiniz</string>
     <string name="lt_incorrect_key">Ya LibraryThing geliştirici anahtarınız yanlış ya da biz doğrulama için ağa bağlanamadık.</string>
     <string name="lt_correct_key">LibraryThing geliştirici anahtarınız geçerli.</string>
     <string name="error_no_internet_connection">Ağ bağlantısı yok.</string>
@@ -227,7 +217,6 @@
     <string name="gr_tq_menu_delete_task">Görevi sil</string>
     <string name="bookshelf_my_books">Kitaplarım</string>
     <string name="X_loan_return_edit_book">Ödünç ver, geri al veya kitabı düzenle</string>
-    <string name="X_menu_admin_and_prefs">Yönetim ve Seçenekler</string>
     <string name="gr_menu_send_to_goodreads">Goodreads\'e gönder</string>
     <string name="gr_auth_blurb_part1">
         Goodreads, ağ sayfasında belirtildiği üzere ereği \“kişilerin sevdiği kitapları bulmasına
@@ -248,7 +237,6 @@
     <string name="gr_title_auth_access">Erişime izin ver</string>
     <string name="gr_auth_access_already_auth">Bu uygulamayı zaten önceden yetkilendirmişsiniz. Tüm Goodreads işlevleri halihazırda kullanılabilir olmalı</string>
     <string name="gr_access_error">Goodreads\'e erişmeye çalışırken bir ağ sorunu oluştu. Lütfen Goodreads ağ sayfasının çalışıyor olduğundan emin olun, sorun sürerse lütfen destek bölümü ile iletişime geçin.</string>
-    <string name="X_menu_preferences_other">Diğer seçenekler</string>
     <string name="gr_tq_menu_background_tasks">Ardalan görevleri</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Eski görevleri temizle</string>
     <string name="gr_tq_btn_cleanup_old_events">Eski olayları temizle</string>
@@ -309,11 +297,11 @@
     <string name="lbl_data_import_export">Veri içe/dışa aktarma</string>
     <string name="X_unrecognized_task">Tanımlanamayan görev</string>
     <string name="progress_msg_rebuilding_search_index">Arama dizini yeniden oluşturuluyor…</string>
-    <string name="progress_msg_optimizing_databases">Veritabanları eniyileniyor…</string>
+    <string name="progress_msg_optimizing">Veritabanları eniyileniyor…</string>
     <string name="progress_msg_starting_up">Başlatılıyor…</string>
     <string name="lbl_application_startup">&APP_NAME; başlangıç</string>
     <string name="searching_goodreads">Goodreads\'te aranıyor</string>
-    <string name="menu_edit_booklist_styles">Kitap dizelgesi biçemlerini düzenle</string>
+    <string name="menu_booklist_styles">Kitap listesi stilleri…</string>
     <string name="menu_show_more_ellipsis">Daha fazla göster…</string>
     <string name="menu_show_fewer_ellipsis">Daha az göster…</string>
     <string name="menu_customize_ellipsis">Kişiselleştir…</string>
@@ -358,9 +346,6 @@
     <string name="X_title_add_style">Yeni biçem</string>
     <string name="X_pt_bob_filter_read">\‘Okunma\’ durumuna göre seç</string>
     <string name="title_select_style">Biçem seç</string>
-    <string name="X_booklist_background_style">Kitap dizelgesi ardalan biçemi</string>
-    <string name="X_textured_background">Dokulu ardalan resmi</string>
-    <string name="X_plain_background_b_reduces_flicker_b">Düz ardalan (titremeyi azaltır)</string>
     <string name="warning_required_field_x">%1$s boş olamaz</string>
     <string name="edit">Düzenle</string>
     <string name="lbl_settings">Yeğlenenler</string>
@@ -450,7 +435,6 @@
     <string name="warning_required_name">Ad kısmı boş olamaz</string>
     <string name="progress_msg_export_starting">Dışa aktarma başlıyor…</string>
     <string name="menu_sort_and_style_ellipsis">Sıralama &amp; biçemi…</string>
-    <string name="X_disable_background_image">Ardalan resmini kapat</string>
     <string name="info_displaying_n_books_in_m_entries">%2$d giride %1$d kitap görüntüleniyor</string>
     <string name="X_lbl_loan_book_available">Uygun</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s geçerli birISBN değil</string>
@@ -554,7 +538,7 @@
     <!-- Displayed when a file/save dialog results in selecting a directory file -->
     <string name="warning_select_a_non_directory">Bir dizin değil de bir dosya seçmeniz gerek</string>
 
-    <!-- Displayed in Admin menu advanced options (top make a copy of the internal database on the sdcard -->
+    <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
     <string name="menu_copy_database">Veritabanını eşlemle (teknik destek için)</string>
 
     <!-- Displayed when an archive operation fails -->
@@ -647,7 +631,7 @@
         <item quantity="other">%1$s yıldız</item>
     </plurals>
 
-    <string name="progress_msg_searching_directory">Dizin aranıyor…</string>
+    <string name="progress_msg_reading_directory">Dizin aranıyor…</string>
 
     <!-- Menu item -->
     <string name="menu_amazon_books_in_series">Bu dizideki kitaplar</string>
@@ -694,5 +678,12 @@
     <string name="lbl_is_complete">Tamamlandı</string>
     <string name="searching_isfdb">ISFDB aranıyor</string>
     <string name="searching_open_library">OpenLibrary aranıyor</string>
+    <string name="btn_merge">Birleşmek</string>
+    <string name="book_format_audiobook">Sesli kitap</string>
+    <string name="menu_author_details">Bu yazarın tüm eserleri</string>
+    <string name="lbl_styles">Stilleri</string>
+    <string name="lbl_style">Stil</string>
+    <string name="progress_msg_process_booklist_style">Kitap Listesi Stilleri…</string>
+    <string name="lbl_search_site_order">Sekans</string>
 
 </resources>

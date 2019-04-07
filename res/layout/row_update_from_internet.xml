@@ -8,8 +8,8 @@
     android:layout_margin="@dimen/margin_div"
     >
 
-    <!-- tools:text fields are set to the longest string used (hum, at least in english)
-         which gave the 4/6 weight ratio -->
+    <!-- tools:text fields are set to the longest string used which gave the 4/6 weight ratio
+        Russian is the only exception where the second column can be split in two lines -->
     <TextView
         android:id="@+id/field"
         style="@style/lbl_textField"

@@ -14,7 +14,6 @@ TODO: uniform quotes in all string:
 “%1$s”
 « %1$s »
 
-Check 's' versus 'd'
 -->
 <resources>
 
@@ -36,7 +35,7 @@ Check 's' versus 'd'
         Please take the time to briefly describe the problem you are experiencing.
     </string>
     <string name="debug_send_info_text">
-        Click on the button below to gather information about any recent crashes or other
+        Tap on the button below to gather information about any recent crashes or other
         errors and send it to one of our developers. This will create a backup copy of your
         entire database as well as any log files. If you do not wish to send any of these files,
         delete it from the mail attachments before sending.
@@ -55,7 +54,7 @@ Check 's' versus 'd'
     </string>
     <string name="acra_resNotifTickerText">&APP_NAME; has crashed</string>
     <string name="acra_resNotifTitle">&APP_NAME; Crash</string>
-    <string name="acra_resNotifText">Please click here for details</string>
+    <string name="acra_resNotifText">Please tap here for details</string>
 
     <string name="acra_resDialogCommentPrompt">Your comments (or just leave blank):</string>
     <string name="acra_resDialogOkToast">Thank you!</string>
@@ -115,18 +114,21 @@ Check 's' versus 'd'
 
     <string name="error_not_available">not available</string>
 
-    <string name="error_no_external_crop_app">Could not find image an image-crop application</string>
+    <string name="error_no_external_crop_app">
+        Could not find image an image-crop application
+    </string>
     <string name="error_network_timeout">No response, please try again</string>
-    <string name="error_email_failed">Sending the email failed.</string>
+    <string name="error_email_failed">Failed to send the email.</string>
     <string name="error_google_play_missing">Google Play/Market is not installed</string>
     <string name="error_search_configuration">
-        Search configuration error.
-        Please open the Admin page and check your Search Site preferences.
+        Configuration error. Please open the Settings page and check your Search Site preferences.
     </string>
     <!-- 'Site' authorization failed -->
     <string name="error_authorization_failed">%1$s authorization failed</string>
-    <!-- Users of pre-4.0.0 versions are cut-off. They need to upgrade to 4.x or 5.x first -->
-    <string name="error_database_upgrade_failed">"         Cannot upgrade from a version older than 4.0.0     "</string>
+    <!-- Users of versions older than 4.0.0 need to upgrade to 5.x first -->
+    <string name="error_database_upgrade_failed">
+        Cannot upgrade from a version older than 4.0.0
+    </string>
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
@@ -150,13 +152,13 @@ Check 's' versus 'd'
     <string name="info_cleanup_files_text">
         Purgeable files currently use %1$s on the SD card. Log files and other data are saved
         on the SD card at each upgrade, when you backup the database, or when the application
-        crashes. Click the button below to purge these files from your SD card. If you have
+        crashes. Tap the button below to purge these files from your SD card. If you have
         been experiencing crashing or other errors, please consider using the
         “Send Information” button first.
     </string>
 
     <string name="info_share_book_im_reading">I\'m reading “%1$s” by %2$s %3$s %4$s</string>
-    <string name="info_click_on_thumb">Click on a thumbnail to display a larger image</string>
+    <string name="info_tap_on_thumb">Tap on a thumbnail to display a larger image</string>
     <string name="info_manage_fields">
         Selected fields are visible in the add/edit book screens. Unselected fields are hidden.
     </string>
@@ -274,7 +276,9 @@ Check 's' versus 'd'
         This will completely delete the book entitled “%1$s” by %2$s.
         Are you sure you wish to proceed?
     </string>
-    <string name="confirm_merge_bookshelves">"         The shelf you are renaming already exists. Would you like to merge them?     "</string>
+    <string name="confirm_merge_bookshelves">
+        The shelf you are renaming already exists. Would you like to merge them?
+    </string>
     <string name="confirm_duplicate_book_message">
         The book you are trying to add already exists in the database,
         are you sure you want to add another copy?
@@ -299,20 +303,24 @@ Check 's' versus 'd'
 
     <string name="progress_msg_please_wait">Please wait…</string>
 
-    <!-- Shown in progress dialog when an import starts -->
-    <string name="progress_msg_backing_up">Backing up…</string>
-    <!-- Shown in progress dialog when an import starts -->
-    <string name="progress_msg_importing">Importing…</string>
+    <!-- During startup. -->
+    <string name="progress_msg_starting_up">Starting up…</string>
     <string name="progress_msg_upgrading">Upgrading…</string>
-    <string name="progress_msg_export_starting">Export starting…</string>
     <string name="progress_msg_rebuilding_search_index">Rebuilding Search Index…</string>
-    <string name="progress_msg_optimizing_databases">Optimizing databases…</string>
+    <string name="progress_msg_optimizing">Optimizing…</string>
+
+    <!-- When an import starts -->
+    <string name="progress_msg_backing_up">Backing up…</string>
+    <string name="progress_msg_importing">Importing…</string>
+
+    <!-- When an export starts -->
+    <string name="progress_msg_export_starting">Export starting…</string>
+
     <string name="progress_msg_loading">Loading…</string>
     <string name="progress_msg_starting_search">Starting Search…</string>
-    <string name="progress_msg_starting_up">Starting up…</string>
     <string name="progress_msg_searching">Searching…</string>
     <string name="progress_msg_adding_book">Adding book…</string>
-    <string name="progress_msg_searching_directory">Searching directory…</string>
+    <string name="progress_msg_reading_directory">Reading folder…</string>
     <string name="progress_msg_cancelling">Cancelling…</string>
     <string name="progress_msg_getting_books">Getting books…</string>
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
@@ -322,9 +330,8 @@ Check 's' versus 'd'
     <string name="progress_msg_process_preferences">Preferences…</string>
     <string name="progress_msg_process_booklist_style">Booklist Styles…</string>
 
-    <!-- msg at startup while doing mass conversion from Language names to ISO3 codes -->
-    <string name="progress_msg_updating_languages">Updating languages…</string>
-    <string name="progress_msg_cleaning_database">Cleaning Database…</string>
+    <!-- displayed while searching for alternative editions of the book, to get cover images. -->
+    <string name="progress_msg_finding_editions">Finding Editions…</string>
 
     <string name="progress_msg_skip_title">Skipping “%1$s”</string>
     <!-- Part of the progress message displayed when importing books -->
@@ -401,7 +408,7 @@ Check 's' versus 'd'
         It will take you to a web page where you will need to login to Goodreads and authorize
         this application. We will never see your password, and you can disable access via the
         Goodreads website. Due to the vagaries of the web, you may end up on a blank web page.
-        Just click the back button to return here!
+        Just tap the back button to return here!
     </string>
     <string name="gr_auth_blurb_part3">
         But remember…there is no need to do any of this: &APP_NAME; works just fine without it!
@@ -524,7 +531,7 @@ Check 's' versus 'd'
         \nA “tick” indicates the style will be shown in the list, “un-tick” to hide it and vice
         versa.\n\nIf no styles are ticked, then all styles will be shown.\n
         \nYou can re-order the hierarchy by dragging the icon at the extreme right of each row
-        up or down.\n\nLong-clicking anywhere else in a row will allow you to edit or clone the
+        up or down.\n\nLong-pressing anywhere else in a row will allow you to edit or clone the
         details of a specific style.\n
         If you cloned a style, and changed your mind, you will need to delete it yourself.
     </string>
@@ -554,27 +561,30 @@ Check 's' versus 'd'
     </string>
     <string name="hint_background_tasks">
         From here you can see the currently running tasks as well as previous tasks that have
-        completed with errors or other notable events. Clicking on a task will allow you to see
+        completed with errors or other notable events. Tapping on a task will allow you to see
         the events associated with that task as well as delete the task (and related events).
     </string>
     <string name="hint_background_task_events">
-        From here you can see the events associated with a background task. Clicking on a event
+        From here you can see the events associated with a background task. Tapping on a event
         will allow you to perform a variety of actions appropriate for that event.
     </string>
     <string name="hint_booklist_style_menu">
         This menu allows you to select the style of the list.\n
-        \nYou can also customize this menu, as well as create your own list styles, by clicking
+        \nYou can also customize this menu, as well as create your own list styles, by tapping
         “Customize” at the end of the list.
     </string>
-    <string name="hint_autorotate_camera_images">"         If you find yourself always rotating camera images in the same direction, try changing the         application preferences to specify a rotation to apply automatically.     "</string>
+    <string name="hint_autorotate_camera_images">
+        If you find yourself always rotating camera images in the same direction,
+        try changing the application preferences to specify a rotation to apply automatically.
+    </string>
     <!-- Hint text displayed when user enters the book list view -->
     <string name="hint_view_only_book_details">
-        When you click on an item in this list, you can now choose to go to non-editable book
-        details view. See Preferences for the relevant setting.
+        When you tap on an item in this list, you can now choose to go to non-editable book
+        details view. See Settings for the relevant switch.
     </string>
     <!-- Hint text displayed when user enters the 'read-only' book view -->
     <string name="hint_view_only_help">
-        This is the non-editable book details screen; you can fling/swipe left or right to navigate
+        This is the non-editable book details screen; you can swipe left or right to navigate
         to other books, and you can edit the book via the options menu using the menu button or
         overflow menu icon.
     </string>
@@ -661,12 +671,12 @@ Check 's' versus 'd'
     <string name="menu_edit_book">Edit Book</string>
     <string name="menu_edit_book_notes">My Comments</string>
     <string name="menu_edit_booklist_style">Edit style</string>
-    <string name="menu_edit_booklist_styles">Edit book list styles</string>
+    <string name="menu_booklist_styles">Booklist styles…</string>
     <string name="menu_edit_bookshelf">Edit Bookshelf</string>
 
     <string name="menu_edit_author">Edit Author…</string>
     <string name="menu_edit_series">Edit Series…</string>
-    <string name="menu_edit_bookshelves">Manage Bookshelves…</string>
+    <string name="menu_bookshelves">Bookshelves…</string>
 
     <string name="menu_cover_crop">Crop</string>
     <string name="menu_cover_replace">Replace…</string>
@@ -678,7 +688,7 @@ Check 's' versus 'd'
     <string name="menu_cover_rotate_ccw">Anti-Clockwise</string>
     <string name="menu_cover_rotate_180">180 deg</string>
 
-    <string name="menu_author_details">Author details</string>
+    <string name="menu_author_details">All works by this author</string>
 
     <string name="menu_expand_all">Expand All</string>
     <string name="menu_collapse_all">Collapse All</string>
@@ -703,8 +713,6 @@ Check 's' versus 'd'
     <string name="menu_administration">Admin</string>
     <string name="menu_administration_long">Administration Functions</string>
 
-    <!-- Admin GROUP General -->
-    <string name="menu_manage_fields">Field Visibility</string>
     <!-- Admin GROUP -->
     <string name="lbl_data_import_export">Data Import/Export</string>
     <!-- Admin -->
@@ -715,8 +723,6 @@ Check 's' versus 'd'
     <string name="lbl_export_to_csv">Export to CSV File</string>
     <!-- Admin import books -->
     <string name="lbl_import_from_csv">Import from CSV File</string>
-
-    <!-- Admin GROUP -->
 
     <!-- Admin advanced - clear the cached images -->
     <string name="erase_cover_cache">Erase cover cache</string>
@@ -740,8 +746,6 @@ Check 's' versus 'd'
     <string name="title_edit_bookshelves">Manage Bookshelves</string>
     <string name="title_edit_style_colon_name">Edit style: %1$s</string>
     <string name="title_clone_style_colon_name">Clone style: %1$s</string>
-
-    <string name="title_finding_editions">Finding Editions…</string>
 
     <string name="title_import_book_data">Import Books</string>
     <string name="title_install_scan">Install Barcode Scanner</string>
@@ -847,7 +851,9 @@ Check 's' versus 'd'
 
     <!-- non-database field labels, like choices on a dialog box -->
     <string name="lbl_allow_asin">Allow ASIN</string>
-    <string name="lbl_toc_same_author">All stories in this anthology are by the same author</string>
+
+    <!-- checkbox for the TOC edit screen. Should fit on a single line -->
+    <string name="lbl_toc_same_author">All entries are by the same author</string>
 
     <!-- Book edition -->
     <string name="lbl_edition">Edition</string>
@@ -868,7 +874,7 @@ Check 's' versus 'd'
     <string name="lbl_settings">Settings</string>
     <string name="lbl_preferred_styles">Preferred styles</string>
     <string name="lbl_search_sites">Search Sites</string>
-    <string name="lbl_search_site_order">Search Order</string>
+    <string name="lbl_search_site_order">Order</string>
 
     <!-- grouping headings in book lists -->
     <string name="lbl_read">Read</string>
@@ -995,7 +1001,7 @@ Check 's' versus 'd'
     <string name="about_dash_or_dash">- Or -</string>
     <string name="about_donate_paypal">PayPal Donation</string>
 
-    <string name="about_help_click_here">Please click here to access the online help pages</string>
+    <string name="about_help_tap_here">Please tap here to access the online help pages</string>
     <string name="about_send_info">Send Information</string>
 
     <!-- ####################################################################################### -->
@@ -1125,24 +1131,19 @@ Check 's' versus 'd'
     <!-- ####################################################################################### -->
     <string name="X_error_no_style_found">Could not find appropriate style</string>
     <string name="X_error_starting_import_arg">There was a problem starting the import: %1$s</string>
-    <string name="X_error_download_thumbnail_failed">
-        Thumbnail Download Failed - Could not write to SDCard
-    </string>
-    <string name="X_error_storage_cannot_write">Could not write to the SD Card</string>
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
 
     <string name="X_warning_required_series">Series field is blank</string>
     <string name="X_warning_required_author">Author field is blank</string>
-    <string name="X_warning_cannot_edit_system">You cannot edit the system values</string>
     <string name="X_warning_cover_not_found2">No image found</string>
     <string name="X_warning_title_already_exists">The title already exists</string>
     <string name="X_warning_invalid_isbn_x_specified_in_search">
         Invalid ISBN “%1$s” specified in search
     </string>
+
     <string name="X_warning_no_isbn_no_editions">
         Can not get editions for a book without a valid ISBN
     </string>
-
     <string name="X_info_option_not_available_until_book_saved">
         This option is not available until the book is saved
     </string>
@@ -1156,13 +1157,10 @@ Check 's' versus 'd'
     <string name="X_menu_cover_options">Cover Options…</string>
     <string name="X_menu_search_books">Search Books</string>
     <string name="X_menu_preferences_booklist">Book List Preferences</string>
-    <string name="X_menu_preferences_other">Other Preferences</string>
     <string name="X_menu_sort_by">Sort By</string>
-    <string name="X_menu_admin_and_prefs">Admin and Preferences</string>
 
     <string name="X_title_edit_author">Edit Author Details</string>
     <string name="X_title_edit_series">Edit Series Details</string>
-    <string name="X_title_edit_genre">Edit Genre Details</string>
     <string name="X_title_edit_format">Edit Format</string>
 
     <string name="X_title_add_style">New style</string>
@@ -1194,19 +1192,13 @@ Check 's' versus 'd'
     <string name="X_import_error_failed_is_csv_file_location_correct">
         Import of data failed. Is the file in the correct place?
     </string>
-    <string name="X_export_error_csv_failed">Export failed - could not write to SD card</string>
 
     <string name="X_anthology_titles">Anthology Titles</string>
-    <string name="X_booklist_background_style">Book list background style</string>
-    <string name="X_textured_background">Textured background image</string>
-    <string name="X_disable_background_image">Disable background image</string>
-    <string name="X_plain_background_b_reduces_flicker_b">Plain background (reduces flicker)</string>
     <string name="X_isbn_found">ISBN Scanned. Searching Internet.</string>
     <string name="X_select_bookshelves">Select Bookshelves</string>
     <string name="X_nobody">Nobody</string>
     <string name="X_loan_return_edit_book">Loan, Return or Edit Book</string>
     <string name="X_search_title">Search Results</string>
-    <string name="X_about_lbl_version_number">Version Number:</string>
     <string name="X_unrecognized_task">Unrecognized Task</string>
     <string name="X_events_found">%1$d events found</string>
     <string name="X_pt_bob_filter_read">Select based on “Read” status</string>

@@ -23,10 +23,11 @@ package com.eleybourn.bookcatalogue.dialogs.fieldeditdialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.BookChangedListener;
 import com.eleybourn.bookcatalogue.EditAuthorListActivity;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 
 /**
@@ -41,6 +42,16 @@ public class EditAuthorDialogFragment
     public static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
 
     /**
+     * (syntax sugar for newInstance)
+     */
+    public static void show(@NonNull final FragmentManager fm,
+                            @NonNull final Author author) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            newInstance(author).show(fm, TAG);
+        }
+    }
+
+    /**
      * Constructor.
      *
      * @param author to edit.
@@ -48,7 +59,7 @@ public class EditAuthorDialogFragment
     public static EditAuthorDialogFragment newInstance(@NonNull final Author author) {
         EditAuthorDialogFragment frag = new EditAuthorDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(DatabaseDefinitions.KEY_AUTHOR, author);
+        args.putParcelable(DBDefinitions.KEY_AUTHOR, author);
         frag.setArguments(args);
         return frag;
     }

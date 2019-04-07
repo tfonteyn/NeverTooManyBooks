@@ -9,8 +9,6 @@
     <AutoCompleteTextView
         android:id="@+id/name"
         style="@style/bookFormatTextEntry"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:completionThreshold="2"
         android:hint="@string/lbl_format"
         app:layout_constraintEnd_toEndOf="parent"

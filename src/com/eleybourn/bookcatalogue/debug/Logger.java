@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.debug;
 
-import android.annotation.SuppressLint;
 import android.os.Build;
 import android.util.Log;
 
@@ -37,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -61,8 +61,8 @@ public final class Logger {
     /** prefix for console logging. */
     private static final String LOG_TAG = "BC_Logger";
 
-    @SuppressLint("SimpleDateFormat")
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final DateFormat DATE_FORMAT =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", LocaleUtils.getSystemLocale());
 
     private Logger() {
     }
@@ -120,12 +120,18 @@ public final class Logger {
     /* ****************************************************************************************** */
 
     public static void debug(@NonNull final String message) {
-        if (/* always log */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always log */) {
             Log.e(LOG_TAG, buildErrorMessage(new DebugStackTrace(), message)
                     .replaceFirst("ERROR", "DEBUG"));
         }
     }
 
+    public static void debug(@NonNull final Exception e) {
+        if (BuildConfig.DEBUG /* always log */) {
+            Log.e(LOG_TAG, buildErrorMessage(e, "")
+                    .replaceFirst("ERROR", "DEBUG"));
+        }
+    }
     /* ****************************************************************************************** */
 
     public static void error(@NonNull final String message) {

@@ -15,8 +15,8 @@ import com.eleybourn.bookcatalogue.database.dbsync.TransactionException;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 import static com.eleybourn.bookcatalogue.database.DBA.COLLATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_UUID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.TBL_BOOKS;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_UUID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * Moved all upgrade specific definitions/methods from {@link DBHelper} here.

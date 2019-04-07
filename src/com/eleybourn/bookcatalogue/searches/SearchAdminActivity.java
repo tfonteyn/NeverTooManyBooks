@@ -98,8 +98,7 @@ public class SearchAdminActivity
                 sites = site.isEnabled() ? sites | site.id
                                          : sites & ~site.id;
             }
-            Intent data = new Intent()
-                    .putExtra(RESULT_SEARCH_SITES, sites);
+            Intent data = new Intent().putExtra(RESULT_SEARCH_SITES, sites);
             // don't commit any changes, we got data to use temporarily
             setResult(Activity.RESULT_OK, data);
             finish();

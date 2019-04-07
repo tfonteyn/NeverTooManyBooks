@@ -40,7 +40,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
  *
  * @author Philip Warner
  */
-public final class DatabaseDefinitions {
+public final class DBDefinitions {
 
     /**
      * A collection of all tables used to be able to rebuild indexes etc...,
@@ -147,7 +147,7 @@ public final class DatabaseDefinitions {
      */
     public static final DomainDefinition DOM_FK_STYLE_ID =
             new DomainDefinition("style", ColumnInfo.TYPE_INTEGER, true)
-                    .setDefault(BooklistStyles.DEFAULT_STYLE)
+                    .setDefault(BooklistStyles.DEFAULT_STYLE_ID)
                     .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE");
 
     /* ========================================================================================== */
@@ -822,6 +822,6 @@ public final class DatabaseDefinitions {
                                  DOM_BOOK_ISBN);
     }
 
-    private DatabaseDefinitions() {
+    private DBDefinitions() {
     }
 }

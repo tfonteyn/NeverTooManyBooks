@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?><!--
- define entities that can be used inside of other string (not possible with standard Android resources
- e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
+ define entities that can be used inside of other string (not possible with standard Android
+ resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
-
-    <!-- ========== not in use ========== -->
-
-
-    <!-- ========== in use ========== -->
-
     <string name="title_add_book">Προσθήκη Βιβλίου</string>
     <string name="menu_add_book">Προσθήκη Βιβλίου…</string>
     <string name="menu_delete_book">Διαγραφή Βιβλίου</string>
@@ -32,7 +26,7 @@
     <string name="X_info_no_bookshelves_yet">Δεν έχετε δημιουργήσει ακόμα ράφια. Παρακαλούμε προσθέστε μερικά με το μενού στο κάτω μέρος της οθόνης.</string>
     <string name="menu_add_bookshelf">Δημιουργία Ραφιού</string>
     <string name="X_btn_confirm_add_bs">Προσθήκη Ραφιού</string>
-    <string name="menu_edit_bookshelves">Διαχείρηση Ραφιών</string>
+    <string name="menu_bookshelves">βιβλία Ράφια…</string>
     <string name="X_btn_confirm_save_bs">Αποθήκευση Ραφιού</string>
     <string name="menu_delete_bookshelf">Διαγραφή Ραφιού</string>
     <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
@@ -57,7 +51,6 @@
     <string name="menu_administration">Διαχειριστής</string>
     <string name="info_install_scanner">Για να σκανάρετε τα βιβλία σας μέσω ISBN barcode, θα πρέπει να εγκαταστήσετε κάποια απο τίς εφαρμογές Zxing, pic2shop or Google Googles για σάρωση barcode.</string>
     <string name="title_install_scan">Εγκατάσταση σαρωτή barcode</string>
-    <string name="X_about_lbl_version_number">Αριθμός έκδοσης:</string>
     <string name="about_donate">Εαν θέλετε να στηρίξετε την αναπτυξη της εφαρμογής, παρακαλούμε δωρήστε μέ το my Amazon Wishlist ή το paypal κουμπί παρακάτω. Το να βρίσκεσαι στην Αυστραλία σημαίνει ότι δεν μπορεί να εκδοθεί &quot;πληρωμένη&quot; έκδοση. :-) </string>
     <string name="about_lbl_upgrade">Από την τελευταία σας αναβάθμιση.</string>
     <string name="menu_edit_book">Επεξεργασία βιβλίου</string>
@@ -86,7 +79,6 @@
     <string name="error_search_exception">Αναζήτηση απέτυχε όταν %1$s: %2$s</string>
     <string name="menu_delete">Διαγραφή μικρογραφίας</string>
     <string name="help">Βοήθεια</string>
-    <string name="menu_manage_fields">Διαχείρηση ορατότητας πεδίου</string>
     <string name="info_manage_fields">Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου. Τα μη επιλεγμένα πεδία είναι κρυφά.</string>
     <string name="X_anthology_titles">Τίτλοι Ανθολογιών</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
@@ -122,7 +114,7 @@
     <string name="field_not_set">Μη ορισμένο</string>
     <string name="X_menu_search_books">Αναζήτηση βιβλίων</string>
     <string name="hint_book_search_by_text">Η προσθήκη βιβλίων με ISBN είναι πολύ πιο ακριβής από την προσθήκη με συγγραφέα και τίτλο και γενικά είναι η προτεινομενη μέθοδος. Παρακαλούμε να θυμάστε ότι μερικές φορές το σωστό barcode βρίσκεται στην εσωτερική πλευρά του εξωφύλλου. \n\n</string>
-    <string name="about_help_click_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>
+    <string name="about_help_tap_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>
     <string name="vldt_unable_to_get_value">Δεν βρέθηκε τιμή για \‘%1$s\’</string>
     <string name="vldt_integer_expected">Αναμένεται ακέραια τιμή για \‘%1$s\’</string>
     <string name="vldt_real_expected">Αναμένεται ένας πραγματικός αριθμός για \‘%1$s\’</string>
@@ -153,8 +145,6 @@
     <string name="X_warning_required_author">Το πεδίο συγγραφέας είναι κενό</string>
     <string name="warning_series_already_in_list">Η σειρά βρίσκεται ήδη στη λίστα</string>
     <string name="X_warning_required_series">Το πεδίο σειρά είναι κενό</string>
-    <string name="X_export_error_csv_failed">Η εξαγωγή απέτυχε - Δεν μπόρεσε να γίνει εγγραφή στην SD card</string>
-    <string name="X_error_download_thumbnail_failed">Το κατέβασμα της μικρογραφίας απέτυχε - Δεν μπόρεσε να γίνει εγγραφή στην SD card</string>
     <string name="progress_msg_skip_title">Παράβλεψη - %1$s</string>
     <string name="progress_end_num_books_searched">%1$d Βιβλία αναζητήθηκαν</string>
     <string name="progress_end_cancelled_info">Ακυρώθηκαν - %1$s</string>
@@ -186,8 +176,8 @@
     <string name="confirm_really_delete_book">Θα διαγραφεί ολοκληρωτικά το βίβλιο με τίτλο \‘%1$s\’ από %2$s. Είστε σίγουροι ότι επιθυμείτε να συνεχίσετε;</string>
     <string name="warning_editions_require_isbn">Η ανάκτηση άλλων εκδόσεων απαιτεί ISBN</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
-    <string name="title_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
-    <string name="info_click_on_thumb">Πατήστε σε μια μικρογραφία για να εμφανιστεί μεγαλύτερη εικόνα.</string>
+    <string name="progress_msg_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
+    <string name="info_tap_on_thumb">Πατήστε σε μια μικρογραφία για να εμφανιστεί μεγαλύτερη εικόνα.</string>
     <string name="progress_msg_loading">Φορτώνει…</string>
     <string name="warning_cover_not_found">Εικόνα δεν βρέθηκε</string>
     <string name="warning_select_min_1_field">Επιλέξτε τουυλάχιστον ένα πεδία για ενημέρωση</string>
@@ -218,7 +208,6 @@
     <string name="debug_subject">Συλλέχθησαν πληροφορίες debugging</string>
     <string name="debug_body">Παρακαλούμε περιγράψτε συνοπτικά το πρόβλημα που αντιμετωπίζετε.</string>
     <string name="menu_duplicate_book">Αντιγραφή Βιβλίου(Διπλότυπο)</string>
-    <string name="X_warning_cannot_edit_system">Δεν μπορείτε να επεξεργαστείτε τις τιμές συστήματος.</string>
     <string name="lt_incorrect_key">Το κλειδί developer από το LibraryThing είναι λάθος, ή δεν ήταν εφικτή η σύνδεση στο δίκτυο για επαλήθευση.</string>
     <string name="lt_correct_key">Το κλειδί developer από το LibraryThing είναι έγκυρο.</string>
     <string name="error_no_internet_connection">Δεν υπάρχει διαθέσιμη σύνδεση internet.</string>
@@ -232,7 +221,6 @@
 
     <string name="bookshelf_my_books">Τα βιβλία μου</string>
     <string name="X_loan_return_edit_book">Δανεισμός, Επιστροφή ή Επεξεργασία Βιβλίου</string>
-    <string name="X_menu_admin_and_prefs">Διαχείριση και προτιμήσεις</string>
     <string name="gr_menu_send_to_goodreads">Αποστολή στο Goodreads</string>
     <string name="gr_auth_blurb_part1">
         Το Goodreads είναι μια ιστοσελίδα με αποστολή «να βοηθήσει τους ανθρώπους να βρουν και να μοιραστούν τα βιβλία που αγαπούν».
@@ -252,7 +240,6 @@
     <string name="gr_title_auth_access">Έγκριση Πρόσβασης</string>
     <string name="gr_auth_access_already_auth">Φαίνεται σαν να έχει ήδη εγκριθεί αυτή η εφαρμογή. Όλες οι λειτουργίες από το Goodreads θα πρέπει να είναι ήδη διαθέσιμες</string>
     <string name="gr_access_error">Υπήρξε πρόβλημα σύνδεσης κατά την πρόσβαση στο Goodreads. Παρακαλούμε ελέγξτε εαν υπάρχει σύνδεση στο διαδίκτυα και η ιστοσελίδα Goodreads λειτουργεί. Αν το πρόβλημα συνεχίζεται επικοινωνήστε με την υποστήριξη</string>
-    <string name="X_menu_preferences_other">Άλλες Προτιμήσεις</string>
     <string name="gr_tq_menu_background_tasks">Εργασίες Παρασκηνίου</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Εκκαθάριση παλιών εργασιών</string>
     <string name="gr_tq_btn_cleanup_old_events">Εκκαθάριση παλιών events</string>
@@ -313,11 +300,11 @@
     <string name="lbl_data_import_export">Εισαγωγή/Εξαγωγή Δεδομένων</string>
     <string name="X_unrecognized_task">Μη αναγνωρίσιμη Εργασία</string>
     <string name="progress_msg_rebuilding_search_index">Ανακατασκευή Ευρετηρίου Αναζήτησης…</string>
-    <string name="progress_msg_optimizing_databases">Βελτιστοποίηση βάσεων δεδομένων…</string>
+    <string name="progress_msg_optimizing">Βελτιστοποίηση βάσεων δεδομένων…</string>
     <string name="progress_msg_starting_up">Εκκίνηση…</string>
     <string name="lbl_application_startup">Εκκίνηση &APP_NAME;</string>
  <string name="searching_goodreads">Αναζήτηση στο Goodreads</string>
-    <string name="menu_edit_booklist_styles">Επεξεργασία στυλ λίστας βιβλίων</string>
+    <string name="menu_booklist_styles">Στυλ λίστας βιβλίων…</string>
     <string name="menu_show_more_ellipsis">Εμφάνιση περισσότερων…</string>
     <string name="menu_show_fewer_ellipsis">Εμφάνιση λιγότερων…</string>
     <string name="menu_customize_ellipsis">Προσαρμογή…</string>
@@ -362,9 +349,6 @@
     <string name="X_title_add_style">Νέο στυλ</string>
     <string name="X_pt_bob_filter_read">Επιλογή με βάση την κατάσταση του πεδίου \‘Αναγνωσμένο\’</string>
     <string name="title_select_style">Επιλογή Στυλ</string>
-    <string name="X_booklist_background_style">Στυλ φόντου λίστας βιβλίων</string>
-    <string name="X_textured_background">Εικόνα φόντου</string>
-    <string name="X_plain_background_b_reduces_flicker_b">Απλό φόντο (μείωση τρεμοπαίγματος)</string>
     <string name="warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="edit">Επεξεργασία</string>
     <string name="lbl_settings">Επιλογές</string>
@@ -454,7 +438,6 @@
     <string name="warning_required_name">Το όνομα δε μπορεί να είναι κενό</string>
     <string name="progress_msg_export_starting">Εκκίνηση εξαγωγής…</string>
     <string name="menu_sort_and_style_ellipsis">Ταξινόμηση &amp; Στυλ…</string>
-    <string name="X_disable_background_image">Απενεργοποίηση εικόνων παρασκηνίου</string>
     <string name="info_displaying_n_books_in_m_entries">εμφανίζονται %1$d βιβλία, σε %2$d καταχωρήσεις</string>
     <string name="X_lbl_loan_book_available">Διαθέσιμο</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s δεν είναι έγκυρος κωδικός ISBN</string>
@@ -558,7 +541,7 @@
     <!-- Displayed when a file/save dialog results in selecting a directory file -->
     <string name="warning_select_a_non_directory">Παρακαλούμε επιλέξτε ένα αρχείο που δεν είναι κατάλογος</string>
 
-    <!-- Displayed in Admin menu advanced options (top make a copy of the internal database on the sdcard -->
+    <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
     <string name="menu_copy_database">Αντιγραφή Βάσης Δεδομένων (για τεχνική υποστήριξη)</string>
 
     <!-- Displayed when an archive operation fails -->
@@ -641,7 +624,7 @@
         <item quantity="other">%1$s αστέρια</item>
     </plurals>
 
-    <string name="progress_msg_searching_directory">Γίνεται αναζήτηση στον κατάλογο…</string>
+    <string name="progress_msg_reading_directory">Γίνεται αναζήτηση στον κατάλογο…</string>
 
     <!-- Menu item -->
     <string name="menu_amazon_books_in_series">Βιβλία σε αυτή τη σειρά</string>
@@ -675,12 +658,18 @@
     <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Βιβλία</string>
-    <string name="X_title_edit_genre">Επεξεργασία λεπτομερειών για το είδος</string>
     <string name="menu_loan_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
     <string name="progress_msg_saving_image">Αποθήκευση της εικόνας…</string>
     <string name="error_google_play_missing">Το Google Play / Market δεν είναι εγκατεστημένο</string>
     <string name="lbl_is_complete">Ολοκληρώθηκε</string>
     <string name="searching_isfdb">Αναζήτηση στο ISFDB</string>
     <string name="searching_open_library">Αναζήτηση στο OpenLibrary</string>
+    <string name="btn_merge">Συγχώνευση</string>
+    <string name="book_format_audiobook">Ακουστικό βιβλίο</string>
+    <string name="menu_author_details">Όλα τα έργα αυτού του συγγραφέα</string>
+    <string name="lbl_style">Στυλ</string>
+    <string name="lbl_styles">στυλ</string>
+    <string name="progress_msg_process_booklist_style">Στυλ βιβλίου…</string>
+    <string name="lbl_search_site_order">Αλληλουχία</string>
 
 </resources>

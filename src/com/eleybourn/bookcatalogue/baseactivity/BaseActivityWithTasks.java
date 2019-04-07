@@ -65,7 +65,10 @@ public abstract class BaseActivityWithTasks
         extends BaseActivity
         implements ProgressDialogFragment.OnProgressCancelledListener {
 
-    private static final String BKEY_TASK_MANAGER_ID = "TaskManagerId";
+    private static final String TAG = BaseActivityWithTasks.class.getSimpleName();
+
+    private static final String BKEY_TASK_MANAGER_ID = TAG + ":TaskManagerId";
+
     /** ID of associated TaskManager. */
     private long mTaskManagerId;
     /** Progress Dialog for this activity. */

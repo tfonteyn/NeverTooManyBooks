@@ -16,11 +16,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo;
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 /**
@@ -126,6 +128,7 @@ public class BackupFileDetails
             sizeView.setText(Utils.formatFileSize(context, mFile.length()));
 
             Resources res = context.getResources();
+            Locale locale = LocaleUtils.from(context);
             if (mInfo != null) {
                 List<String> args = new ArrayList<>();
                 if (mInfo.hasBookCount()) {
@@ -153,11 +156,11 @@ public class BackupFileDetails
 
                 Date creationDate = mInfo.getCreationDate();
                 if (creationDate != null) {
-                    dateView.setText(DateUtils.toPrettyDateTime(creationDate));
+                    dateView.setText(DateUtils.toPrettyDateTime(locale, creationDate));
                 }
                 fileContentView.setVisibility(View.VISIBLE);
             } else {
-                dateView.setText(DateUtils.toPrettyDateTime(new Date(mFile.lastModified())));
+                dateView.setText(DateUtils.toPrettyDateTime(locale, new Date(mFile.lastModified())));
                 fileContentView.setVisibility(View.GONE);
             }
         }

@@ -16,14 +16,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintTop_toTopOf="parent"
+        tools:checked="true"
         />
 
     <TextView
         android:id="@+id/title"
+        style="@style/txt_detail_medium"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textIsSelectable="true"
         android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@id/checked"
         app:layout_constraintEnd_toStartOf="@id/retry"
@@ -31,18 +30,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="I, Robot"
+        tools:ignore="SelectableText"
         />
 
     <TextView
         android:id="@+id/author"
+        style="@style/txt_detail_medium"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textIsSelectable="true"
         app:layout_constraintEnd_toStartOf="@id/retry"
         app:layout_constraintStart_toEndOf="@id/checked"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:text="Asimov, Isaac"
+        tools:ignore="SelectableText"
         />
 
     <TextView
@@ -58,14 +57,13 @@
 
     <TextView
         android:id="@+id/date"
+        style="@style/txt_detail_small"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textIsSelectable="true"
         app:layout_constraintEnd_toStartOf="@id/retry"
         app:layout_constraintStart_toEndOf="@id/checked"
         app:layout_constraintTop_toBottomOf="@id/error"
         tools:text="July 20, 2012 17:45:32 GMT"
+        tools:ignore="SelectableText"
         />
 
     <Button

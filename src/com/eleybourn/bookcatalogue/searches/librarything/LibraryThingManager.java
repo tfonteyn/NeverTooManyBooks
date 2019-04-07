@@ -35,7 +35,6 @@ import androidx.appcompat.app.AlertDialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -51,8 +50,8 @@ import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
-import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.ISBN;
+import com.eleybourn.bookcatalogue.utils.ImageUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
@@ -254,10 +253,10 @@ public class LibraryThingManager
      * @return a list of isbn's of alternative editions of our original isbn
      */
     @NonNull
-    public static List<String> searchEditions(@NonNull final String isbn) {
+    public static ArrayList<String> searchEditions(@NonNull final String isbn) {
 
         // the resulting data we'll return
-        List<String> editions = new ArrayList<>();
+        ArrayList<String> editions = new ArrayList<>();
 
         // sanity check
         if (!ISBN.isValid(isbn)) {
@@ -267,7 +266,7 @@ public class LibraryThingManager
         // add the original isbn, as there might be more images at the time this search is done.
         editions.add(isbn);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
-            Logger.info(LibraryThingManager.class, "searchEditions","isbn=" + isbn);
+            Logger.info(LibraryThingManager.class, "searchEditions", "isbn=" + isbn);
         }
 
         // Base path for an Editions search
@@ -286,11 +285,13 @@ public class LibraryThingManager
             parser.parse(con.inputStream, handler);
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            Logger.error(e);
+            if (BuildConfig.DEBUG /* always log */) {
+                Logger.debug(e);
+            }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
-            Logger.info(LibraryThingManager.class, "searchEditions","editions=" + editions);
+            Logger.info(LibraryThingManager.class, "searchEditions", "editions=" + editions);
         }
         return editions;
     }
@@ -378,9 +379,8 @@ public class LibraryThingManager
         waitUntilRequestAllowed();
 
         // Fetch, then save it with a suffix
-        String fileSpec = ImageUtils.saveImage(
-                String.format(BASE_URL_COVERS, getDevKey(), sizeParam, isbn),
-                FILENAME_SUFFIX + '_' + isbn + '_' + size);
+        String url = String.format(BASE_URL_COVERS, getDevKey(), sizeParam, isbn);
+        String fileSpec = ImageUtils.saveImage(url, FILENAME_SUFFIX + '_' + isbn + '_' + size);
         if (fileSpec != null) {
             return new File(fileSpec);
         }
@@ -396,7 +396,7 @@ public class LibraryThingManager
      * @param title          unused
      * @param fetchThumbnail Set to <tt>true</tt> if we want to get a thumbnail
      *
-     * @throws IOException on failure to search
+     * @throws IOException on failure
      */
     @NonNull
     @Override
@@ -430,7 +430,9 @@ public class LibraryThingManager
             parser.parse(con.inputStream, handler);
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | SAXException e) {
-            Logger.error(e);
+            if (BuildConfig.DEBUG /* always log */) {
+                Logger.debug(e);
+            }
         }
 
         if (fetchThumbnail) {
@@ -468,6 +470,7 @@ public class LibraryThingManager
 
     @Override
     public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
+        // all sizes
         return true;
     }
 

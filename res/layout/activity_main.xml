@@ -10,7 +10,7 @@
     android:orientation="vertical"
     >
 
-    <!-- Your small content view (in the FrameLayout) must be enclosed by this LinearLayout
+    <!-- Your small content view (in the FrameLayout) must be enclosed by this Layout
          or else it will overflow the toolbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_frame"

@@ -32,7 +32,7 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
@@ -70,7 +70,7 @@ public class GoodreadsSearchCriteriaActivity
         mCriteriaView = findViewById(R.id.search_text);
 
         // Look for a book ID
-        long bookId = getIntent().getLongExtra(DatabaseDefinitions.KEY_ID, 0);
+        long bookId = getIntent().getLongExtra(DBDefinitions.KEY_ID, 0);
         // If we have a book, fill in criteria AND try a search
         if (bookId != 0) {
             // Initial value; try to build from passed book, if available.

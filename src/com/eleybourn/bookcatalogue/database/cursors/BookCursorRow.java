@@ -24,10 +24,10 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOANEE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_FORMATTED;
 
 /**
  * Convenience class to avoid having to write the same code in more than one place. This

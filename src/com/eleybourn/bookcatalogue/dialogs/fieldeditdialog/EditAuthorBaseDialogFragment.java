@@ -17,7 +17,7 @@ import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -45,16 +45,16 @@ public abstract class EditAuthorBaseDialogFragment
         mActivity = requireActivity();
         mDb = new DBA(mActivity);
 
-        final Author author = requireArguments().getParcelable(DatabaseDefinitions.KEY_AUTHOR);
+        final Author author = requireArguments().getParcelable(DBDefinitions.KEY_AUTHOR);
         Objects.requireNonNull(author);
         if (savedInstanceState == null) {
             mFamilyName = author.getFamilyName();
             mGivenNames = author.getGivenNames();
             mIsComplete = author.isComplete();
         } else {
-            mFamilyName = savedInstanceState.getString(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME);
-            mGivenNames = savedInstanceState.getString(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-            mIsComplete = savedInstanceState.getBoolean(DatabaseDefinitions.KEY_AUTHOR_IS_COMPLETE);
+            mFamilyName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+            mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
+            mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
         }
 
         final View root = mActivity.getLayoutInflater().inflate(R.layout.dialog_edit_author, null);
@@ -128,9 +128,9 @@ public abstract class EditAuthorBaseDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DatabaseDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
-        outState.putString(DatabaseDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
-        outState.putBoolean(DatabaseDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
+        outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
+        outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
+        outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
     }
 
     @Override

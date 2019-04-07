@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.tasks;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
@@ -80,16 +81,17 @@ public class GetImageTask
     @UiThread
     private GetImageTask(@NonNull final String uuid,
                          @NonNull final ImageView imageView,
-                         final int maxWidth,
-                         final int maxHeight,
+                         final int width,
+                         final int height,
                          final boolean cacheWasChecked) {
+
         clearOldTaskFromView(imageView);
         mView = new WeakReference<>(imageView);
         mCacheWasChecked = cacheWasChecked;
 
         mUuid = uuid;
-        mWidth = maxWidth;
-        mHeight = maxHeight;
+        mWidth = width;
+        mHeight = height;
 
         // Clear current image
         imageView.setImageBitmap(null);
@@ -107,11 +109,11 @@ public class GetImageTask
      * currently running.
      */
     @UiThread
-    public static void newInstanceAndStart(@NonNull final String uuid,
-                                           @NonNull final ImageView imageView,
-                                           final int maxWidth,
-                                           final int maxHeight,
-                                           final boolean cacheWasChecked) {
+    public static void createAndStart(@NonNull final String uuid,
+                                      @NonNull final ImageView imageView,
+                                      final int maxWidth,
+                                      final int maxHeight,
+                                      final boolean cacheWasChecked) {
         new GetImageTask(uuid, imageView, maxWidth, maxHeight, cacheWasChecked)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -121,9 +123,7 @@ public class GetImageTask
     }
 
     /**
-     * Remove any record of a prior thumbnail task from a View object.
-     * <p>
-     * Used internally and from Utils.getImageAndPutIntoView to ensure that nothing
+     * Remove any record of a prior thumbnail task from a View object to ensure that nothing
      * overwrites the view.
      */
     public static void clearOldTaskFromView(@NonNull final ImageView imageView) {
@@ -141,12 +141,8 @@ public class GetImageTask
         cleanup();
     }
 
-    /**
-     * Do the image manipulation.
-     * <p>
-     * TODO: getImageAndPutIntoView is an expensive operation. Make sure its still needed.
-     */
     @Override
+    @Nullable
     @WorkerThread
     protected Void doInBackground(final Void... params) {
         RUNNING_TASKS.incrementAndGet();
@@ -167,21 +163,21 @@ public class GetImageTask
 
             // try cache
             if (!mCacheWasChecked) {
-                File originalFile = StorageUtils.getCoverFile(mUuid);
                 try (CoversDBA coversDBAdapter = CoversDBA.getInstance()) {
-                    mBitmap = coversDBAdapter.getImage(originalFile, mUuid, mWidth, mHeight);
+                    mBitmap = coversDBAdapter.getImage(mUuid, mWidth, mHeight);
                 }
                 mWasInCache = (mBitmap != null);
             }
 
+            // Make sure the view is still ... bla bla as above
             if (isCancelled() || !this.equals(view.getTag(R.id.TAG_GET_THUMBNAIL_TASK))) {
                 return null;
             }
 
             // wasn't in cache, try file system.
             if (mBitmap == null) {
-                mBitmap = ImageUtils.getImage(mUuid, mWidth, mHeight, true,
-                                              false, false);
+                String fileSpec = StorageUtils.getCoverFile(mUuid).getPath();
+                mBitmap = BitmapFactory.decodeFile(fileSpec, null);
             }
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
@@ -209,10 +205,10 @@ public class GetImageTask
 
         // Get the view we are targeting and make sure it is valid
         ImageView imageView = mView.get();
-        // Make sure the view is still associated with this task.
-        // We don't want to overwrite the wrong image in a recycled view.
-        final boolean viewIsValid = (imageView != null
-                && this.equals(imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK)));
+
+        // Make sure the view is still ... bla bla as above
+        final boolean viewIsValid = imageView != null
+                && this.equals(imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK));
 
         // Clear the view tag
         if (viewIsValid) {
@@ -224,20 +220,20 @@ public class GetImageTask
                 // Queue the image to be written to the cache. Do it in a separate queue to avoid
                 // delays in displaying image and to avoid contention -- the cache queue only has
                 // one thread.
-                // Tell the cache write it can be recycled if we don't have a valid view.
+                // Tell the cache writer it can be recycled if we don't have a valid view.
                 ImageCacheWriterTask.writeToCache(mUuid, mWidth, mHeight, mBitmap, !viewIsValid);
             }
+
+            // and finally, set the view.
             if (viewIsValid) {
-                //LayoutParams lp = new LayoutParams(mBitmap.getWidth(), mBitmap.getHeight());
-                //view.setLayoutParams(lp);
-                imageView.setImageBitmap(mBitmap);
+                ImageUtils.setImageView(imageView, mBitmap, mWidth, mHeight, true);
             } else {
                 mBitmap.recycle();
                 mBitmap = null;
             }
         } else {
             if (imageView != null) {
-                imageView.setImageResource(R.drawable.ic_image);
+                imageView.setImageResource(R.drawable.ic_broken_image);
             }
         }
 

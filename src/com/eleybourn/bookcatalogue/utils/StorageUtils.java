@@ -600,7 +600,7 @@ public final class StorageUtils {
     }
 
     /**
-     * @throws IOException upon failure
+     * @throws IOException on failure
      */
     public static void copyFile(@NonNull final File source,
                                 @NonNull final File destination)
@@ -615,7 +615,7 @@ public final class StorageUtils {
      * @param bufferSize  the read buffer
      * @param destination destination file, will be properly closed.
      *
-     * @throws IOException at failures
+     * @throws IOException on failure
      */
     public static void copyFile(@NonNull final InputStream is,
                                 final int bufferSize,

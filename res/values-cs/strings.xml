@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><!--
- define entities that can be used inside of other string (not possible with standard Android resources
- e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
+ define entities that can be used inside of other string (not possible with standard Android
+ resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
@@ -26,7 +26,7 @@
     <string name="X_info_no_bookshelves_yet">Zatím nemáte vytvořenou žádnou knihovnu. Pro její vytvoření použijte menu ve spodní části obrazovky.</string>
     <string name="menu_add_bookshelf">Vytvořit knihovnu</string>
     <string name="X_btn_confirm_add_bs">Přidat knihovnu</string>
-    <string name="menu_edit_bookshelves">Spravovat knihovny</string>
+    <string name="menu_bookshelves">Knihovny…</string>
     <string name="X_btn_confirm_save_bs">Uložit knihovnu</string>
     <string name="menu_delete_bookshelf">Smazat knihovnu</string>
     <string name="warning_cannot_delete_1st_bs">Nelze smazat defaultní knihovnu.</string>
@@ -51,7 +51,6 @@
     <string name="menu_administration">Admin</string>
     <string name="info_install_scanner">Aby bylo možné přečíst čárový kód je nutné, aby ve Vašem telefonu byla nainstalována aplikace Google Goggles nebo zxing barcode scanner.</string>
     <string name="title_install_scan">Instalovat čtečku čárových kódů</string>
-    <string name="X_about_lbl_version_number">Číslo verze:</string>
     <string name="about_donate">Pokud chcete podpořit vývoj této aplikace, učiňte tak prosím prostřednictvím mého Amazon Wishlistu nebo přes paypal tlačítko níže. Vzhledem k tomu, že jsem z Austrálie, tak nemohu nabízet &quot;placenou&quot; verzi. :-) </string>
     <string name="about_lbl_upgrade">Od Vaší poslední aktualizace</string>
     <string name="menu_edit_book">Upravit knihu</string>
@@ -80,7 +79,6 @@
     <string name="error_search_exception">Hledání selhalo %1$s: %2$s</string>
     <string name="menu_delete">Smazat náhled</string>
     <string name="help">Nápověda</string>
-    <string name="menu_manage_fields">Spravovat viditelnost jednotlivých polí</string>
     <string name="info_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="X_anthology_titles">Antologické tituly</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
@@ -116,7 +114,7 @@
     <string name="field_not_set">Nenastaveno</string>
     <string name="X_menu_search_books">Hledat knihy</string>
     <string name="hint_book_search_by_text">Přidání knihy podle ISBN kódu je přesnější než její přidání podle názvu a autora - proto tento postup doporučujeme. Pamatujte, že správný kód můžete ve většině případů nalézt přímo na obalu knihy. \n\n</string>
-    <string name="about_help_click_here">Klikněte zde pro přístup k online nápovědě</string>
+    <string name="about_help_tap_here">Klikněte zde pro přístup k online nápovědě</string>
     <string name="vldt_unable_to_get_value">Neznámá hodnota pro \‘%1$s\’</string>
     <string name="vldt_integer_expected">Očekávána číselná hodnota pro \‘%1$s\’</string>
     <string name="vldt_real_expected">Očekáváno reálné číslo pro \‘%1$s\’</string>
@@ -147,8 +145,6 @@
     <string name="X_warning_required_author">Pole pro autora je prázdné</string>
     <string name="warning_series_already_in_list">Série je již v seznamu</string>
     <string name="X_warning_required_series">Pole pro sérii je prázdné</string>
-    <string name="X_export_error_csv_failed">Exportování selhalo - nelze zapisovat na SD kartu</string>
-    <string name="X_error_download_thumbnail_failed">Stahování náhledu selhalo - nelze zapisovat na SD kartu</string>
     <string name="progress_msg_skip_title">Vynechat - %1$s</string>
     <string name="progress_end_num_books_searched">%1$d knih nalezeno</string>
     <string name="progress_end_cancelled_info">Zrušeno - %1$s</string>
@@ -180,8 +176,8 @@
     <string name="confirm_really_delete_book">Tímto kompletně odstraníte knihu \‘%1$s\’ od %2$s. Určitě chcete pokračovat?</string>
     <string name="warning_editions_require_isbn">Pro získání dalších edicí je vyžadován ISBN kód</string>
     <string name="warning_no_editions">Žádné edice nejsou dostupné</string>
-    <string name="title_finding_editions">Hledání edicí…</string>
-    <string name="info_click_on_thumb">Pro zobrazení většího obrázku klikněte na náhled</string>
+    <string name="progress_msg_finding_editions">Hledání edicí…</string>
+    <string name="info_tap_on_thumb">Pro zobrazení většího obrázku klikněte na náhled</string>
     <string name="progress_msg_loading">Načítání…</string>
     <string name="warning_cover_not_found">Obrázek nebyl nalezen</string>
     <string name="warning_select_min_1_field">Zvolte alespoň jedno pole k aktualizaci</string>
@@ -212,7 +208,6 @@
     <string name="debug_subject">Shromáždit informace o debugování</string>
     <string name="debug_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
     <string name="menu_duplicate_book">Duplicitní kniha</string>
-    <string name="X_warning_cannot_edit_system">Nemůžete upravovat systémové hodnoty</string>
     <string name="lt_incorrect_key">Váš vývojářský klíč LibraryThing je neplatný, nebo není k dispozici připojení k internetu nutné k jeho ověření.</string>
     <string name="lt_correct_key">Váš vývojářský klíč LibraryThing je platný.</string>
     <string name="error_no_internet_connection">Připojení k internetu není k dispozici.</string>
@@ -223,7 +218,6 @@
     <string name="retry">Opakovat</string>
     <string name="bookshelf_my_books">Moje knihy</string>
     <string name="X_loan_return_edit_book">Půjčit, vrátit nebo upravit knihu</string>
-    <string name="X_menu_admin_and_prefs">Administrace a možnosti</string>
     <string name="gr_menu_send_to_goodreads">Poslat do Goodreads</string>
     <string name="gr_auth_blurb_part1">
         Goodreads je internetová síť, jejímž hlavním cílem je “pomoci lidem najít a sdílet knihy, které milují”.
@@ -243,7 +237,6 @@
     <string name="gr_title_auth_access">Autorizovat přístup</string>
     <string name="gr_auth_access_already_auth">Vypadá to, že aplikace již byla autorizována. Všechny funkce z Goodreads by již měly být dostupné</string>
     <string name="gr_access_error">Během autorizace aplikace došlo k problému s internetovým připojením. Zkontrolujte prosím přístup ke stránkám Goodreads a pokud problémy přetrvají, kontaktujte správce.</string>
-    <string name="X_menu_preferences_other">Další možnosti</string>
     <string name="gr_tq_menu_background_tasks">Úlohy na pozadí</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Smazat staré úlohy</string>
     <string name="gr_tq_btn_cleanup_old_events">Smazat staré události</string>
@@ -302,11 +295,11 @@
     <string name="lbl_data_import_export">Import/Export dat</string>
     <string name="X_unrecognized_task">Nerozpoznaná úloha</string>
     <string name="progress_msg_rebuilding_search_index">Obnovování indexu pro vyhledávání…</string>
-    <string name="progress_msg_optimizing_databases">Optimalizování databáze…</string>
+    <string name="progress_msg_optimizing">Optimalizování databáze…</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
     <string name="lbl_application_startup">&APP_NAME; spuštěn</string>
     <string name="searching_goodreads">Vyhledávám na Goodreads</string>
-    <string name="menu_edit_booklist_styles">Spravovat styly pro seznam knih</string>
+    <string name="menu_booklist_styles">Styly pro seznam knih…</string>
     <string name="menu_show_more_ellipsis">Zobrazit vše…</string>
     <string name="menu_show_fewer_ellipsis">Zobrazit méně…</string>
     <string name="menu_customize_ellipsis">Přizpůsobit…</string>
@@ -349,9 +342,6 @@
     <string name="X_title_add_style">Nový styl</string>
     <string name="X_pt_bob_filter_read">Výběr založený na statusu \‘Přečtení\’</string>
     <string name="title_select_style">Zvolit styl</string>
-    <string name="X_booklist_background_style">Styl pozadí seznamu knih</string>
-    <string name="X_textured_background">Obrázek na pozadí</string>
-    <string name="X_plain_background_b_reduces_flicker_b">Jednobarevné pozadí (redukuje blikání)</string>
     <string name="warning_required_field_x">%1$s nemůže být prázdné</string>
     <string name="edit">Upravit</string>
     <string name="lbl_settings">Nastavení</string>
@@ -449,7 +439,6 @@
     <string name="X_lbl_loan_book_available">Dostupný</string>
     <string name="menu_edit">Upravit…</string>
     <string name="lbl_books">Knihy</string>
-    <string name="X_title_edit_genre">Upravit podrobnosti o žánru</string>
     <string name="menu_loan_return_book">Vypůjčená kniha je zpět</string>
     <string name="progress_msg_saving_image">Uložení obrázku…</string>
     <string name="error_google_play_missing">Google Play / Market není nainstalován</string>
@@ -457,4 +446,13 @@
     <string name="lbl_is_complete">Je kompletní</string>
     <string name="searching_isfdb">Vyhledávám na ISFDB</string>
     <string name="searching_open_library">Vyhledávám na OpenLibrary</string>
+    <string name="progress_msg_searching">Vyhledávání…</string>
+    <string name="progress_msg_reading_directory">Čtení složek…</string>
+    <string name="btn_merge">Spojit</string>
+    <string name="book_format_audiobook">Audio kniha</string>
+    <string name="menu_author_details">Všechna díla tohoto autora</string>
+    <string name="lbl_style">Styl</string>
+    <string name="lbl_styles">Styly</string>
+    <string name="progress_msg_process_booklist_style">Styly seznamu…</string>
+    <string name="lbl_search_site_order">Objednávka</string>
 </resources>

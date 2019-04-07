@@ -22,7 +22,7 @@ import com.eleybourn.bookcatalogue.EditBookActivity;
 import com.eleybourn.bookcatalogue.EditBookFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -36,6 +36,7 @@ import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
@@ -267,7 +268,8 @@ public abstract class SendBooksTask
             holder.authorView.setText(context.getString(R.string.lbl_by_author_s, author));
             holder.errorView.setText(getDescription());
 
-            String date = DateUtils.toPrettyDateTime(eventsCursor.getEventDate());
+            String date = DateUtils.toPrettyDateTime(LocaleUtils.from(context),
+                                                     eventsCursor.getEventDate());
             holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 
             holder.retryView.setVisibility(View.GONE);
@@ -313,7 +315,7 @@ public abstract class SendBooksTask
                         try {
                             GrSendBookEvent event = (GrSendBookEvent) view.getTag(R.id.TAG_EVENT);
                             Intent intent = new Intent(context, EditBookActivity.class)
-                                    .putExtra(DatabaseDefinitions.KEY_ID, event.getBookId())
+                                    .putExtra(DBDefinitions.KEY_ID, event.getBookId())
                                     .putExtra(EditBookFragment.REQUEST_BKEY_TAB,
                                               EditBookFragment.TAB_EDIT);
                             context.startActivity(intent);

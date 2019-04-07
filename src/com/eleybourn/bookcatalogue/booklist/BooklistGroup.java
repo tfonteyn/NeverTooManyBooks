@@ -46,41 +46,41 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.prefs.PBoolean;
 import com.eleybourn.bookcatalogue.booklist.prefs.PPref;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 import com.eleybourn.bookcatalogue.utils.UniqueMap;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_FORMATTED;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOKSHELF;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_FORMAT;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_GENRE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LANGUAGE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOANEE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_LOCATION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_PUBLISHER;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_RATING;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ACQUIRED_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_ADDED_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_FIRST_PUBLICATION_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_FIRST_PUBLICATION_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_LAST_UPDATE_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_PUBLISHED_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_READ_YEAR;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_DAY;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_DATE_UPDATE_MONTH;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_READ_STATUS;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_TITLE_LETTER;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_FORMAT;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_GENRE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LANGUAGE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOANEE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_LOCATION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_PUBLISHER;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_RATING;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ACQUIRED_DAY;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ACQUIRED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ACQUIRED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ADDED_DAY;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ADDED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_ADDED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION_MONTH;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION_YEAR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_LAST_UPDATE_YEAR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_PUBLISHED_MONTH;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_PUBLISHED_YEAR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_READ_DAY;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_READ_MONTH;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_READ_YEAR;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_UPDATE_DAY;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_UPDATE_MONTH;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_READ_STATUS;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_LETTER;
 
 /**
  * Class representing a single level in the booklist hierarchy.
@@ -264,18 +264,8 @@ public class BooklistGroup
     }
 
     /**
-     * Custom serialization support. The signature of this method should never be changed.
-     * <p>
-     * If we ever need to write objects here, don't forget to add a version field as first one.
+     * Pre-v200 Legacy support for reading serialized styles from archives and database upgrade.
      *
-     * @see Serializable
-     */
-    private void writeObject(@NonNull final ObjectOutputStream out)
-            throws IOException {
-        out.defaultWriteObject();
-    }
-
-    /**
      * Custom serialization support. The signature of this method should never be changed.
      *
      * @see Serializable
@@ -410,23 +400,8 @@ public class BooklistGroup
         }
 
         /**
-         * Custom serialization support. The signature of this method should never be changed.
+         * Pre-v200 Legacy support for reading serialized styles from archives and database upgrade.
          *
-         * @see Serializable
-         */
-        private void writeObject(@NonNull final ObjectOutputStream out)
-                throws IOException {
-            super.writeObject(out);
-            // version must use writeObject
-            out.writeObject(BooklistStyle.realSerialVersion);
-
-            out.writeObject(mAllSeries.get());
-        }
-
-        /**
-         * We need to set the name resource ID for the properties since these may
-         * change across versions.
-         * <p>
          * Custom serialization support. The signature of this method should never be changed.
          *
          * @see Serializable
@@ -434,14 +409,6 @@ public class BooklistGroup
         private void readObject(@NonNull final ObjectInputStream in)
                 throws IOException, ClassNotFoundException {
             super.readObject(in);
-
-            Object object = in.readObject();
-            if (object == null || object instanceof Boolean) {
-                // pre v5.
-                mAllSeries.set((Boolean) object);
-                return;
-            }
-            //long version = (Long)object;
             mAllSeries.set((Boolean) in.readObject());
         }
     }
@@ -573,24 +540,8 @@ public class BooklistGroup
         }
 
         /**
-         * Custom serialization support. The signature of this method should never be changed.
+         * Pre-v200 Legacy support for reading serialized styles from archives and database upgrade.
          *
-         * @see Serializable
-         */
-        private void writeObject(@NonNull final ObjectOutputStream out)
-                throws IOException {
-            super.writeObject(out);
-            // version must use writeObject to be compat with original code
-            out.writeObject(BooklistStyle.realSerialVersion);
-
-            out.writeObject(mAllAuthors.get());
-            out.writeObject(mGivenNameFirst.get());
-        }
-
-        /**
-         * We need to set the name resource ID for the properties since these
-         * may change across versions.
-         * <p>
          * Custom serialization support. The signature of this method should never be changed.
          *
          * @see Serializable
@@ -599,14 +550,6 @@ public class BooklistGroup
                 throws IOException, ClassNotFoundException {
             super.readObject(in);
 
-            Object object = in.readObject();
-            if (object == null || object instanceof Boolean) {
-                // pre v5.
-                mAllAuthors.set((Boolean) object);
-                mGivenNameFirst.set((Boolean) in.readObject());
-                return;
-            }
-            long version = (Long) object;
             mAllAuthors.set((Boolean) in.readObject());
             mGivenNameFirst.set((Boolean) in.readObject());
         }
@@ -614,13 +557,13 @@ public class BooklistGroup
 
     /**
      * ENHANCE: add support for all? columns not handled yet. Status: 2019-01-06
-     * {@link DatabaseDefinitions#DOM_BOOK_TOC_BITMASK}
-     * {@link DatabaseDefinitions#DOM_BOOK_EDITION_BITMASK}
+     * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
+     * {@link DBDefinitions#DOM_BOOK_EDITION_BITMASK}
      * <p>
-     * {@link DatabaseDefinitions#DOM_BOOK_PRICE_LISTED}
-     * {@link DatabaseDefinitions#DOM_BOOK_PRICE_LISTED_CURRENCY}
-     * {@link DatabaseDefinitions#DOM_BOOK_PRICE_PAID}
-     * {@link DatabaseDefinitions#DOM_BOOK_PRICE_PAID_CURRENCY}
+     * {@link DBDefinitions#DOM_BOOK_PRICE_LISTED}
+     * {@link DBDefinitions#DOM_BOOK_PRICE_LISTED_CURRENCY}
+     * {@link DBDefinitions#DOM_BOOK_PRICE_PAID}
+     * {@link DBDefinitions#DOM_BOOK_PRICE_PAID_CURRENCY}
      * <p>
      * <p>
      * Get a RowKind with the static method: {@link #get(int kind)}.

@@ -75,19 +75,27 @@ public final class NetworkUtils {
 
     /**
      * Low level check if a url is reachable.
+     * <p>
+     * url format: "http://some.site.com" or "https://secure.site.com"
+     * Any path after the hostname will be ignored.
+     * If a port is specified.. it's ignored. Only ports 80/443 are used.
      *
-     * @param site url to check, format: "http://some.site.com" or "https://secure.site.com"
-     *             Any path after the hostname will be ignored.
+     * FIXME: this fails if there is a DNS redirect ? using a dumb check on google DNS only for now.
+     *
+     * @param site url to check,
      *
      * @return <tt>true</tt> on success.
      */
     @WorkerThread
     public static boolean isAlive(@NonNull final String site) {
 
-        String url = site.toLowerCase();
-        int port = url.startsWith("https://") ? 443 : 80;
-        String host = url.toLowerCase().split("//")[1].split("/")[0];
-        return isAlive(host, port);
+//        String url = site.toLowerCase();
+//        int port = url.startsWith("https://") ? 443 : 80;
+//        String host = url.toLowerCase().split("//")[1].split("/")[0];
+//        return isAlive(host, port);
+
+        // test internet access instead
+        return isGoogleAlive();
     }
 
     /**
@@ -103,7 +111,10 @@ public final class NetworkUtils {
     public static boolean isAlive(@NonNull final String host,
                                   final int port) {
         try {
-            long t = System.currentTimeMillis();
+            long t;
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+                t = System.currentTimeMillis();
+            }
             Socket sock = new Socket();
             sock.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_MS);
             sock.close();

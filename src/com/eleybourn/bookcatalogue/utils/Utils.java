@@ -20,6 +20,7 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -32,6 +33,7 @@ import androidx.annotation.NonNull;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.R;
@@ -40,7 +42,7 @@ import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Series;
 
 /**
- * Left over utilities.
+ * Left-over methods...
  */
 public final class Utils {
 

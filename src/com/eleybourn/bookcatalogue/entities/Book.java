@@ -43,7 +43,7 @@ import java.util.Map;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
@@ -68,39 +68,37 @@ public class Book
         extends DataManager {
 
     /**
-     * Key for accessor to the underlying {@link DatabaseDefinitions#KEY_READ}.
+     * Key for accessor to the underlying {@link DBDefinitions#KEY_READ}.
      * Type: Boolean
      */
     public static final String IS_READ = "+IsRead";
 
     /**
-     * Key for accessor to the underlying {@link DatabaseDefinitions#KEY_SIGNED}.
+     * Key for accessor to the underlying {@link DBDefinitions#KEY_SIGNED}.
      * Type: Boolean
      */
     public static final String IS_SIGNED = "+IsSigned";
 
     /**
-     * Key for accessor to the underlying {@link DatabaseDefinitions#KEY_TOC_BITMASK}.
+     * Key for accessor to the underlying {@link DBDefinitions#KEY_TOC_BITMASK}.
      * Type: Boolean
      * true: anthology by one or more authors
      */
     public static final String HAS_MULTIPLE_WORKS = "+HasMultiWorks";
 
     /**
-     * Key for accessor to the underlying {@link DatabaseDefinitions#KEY_TOC_BITMASK}.
+     * Key for accessor to the underlying {@link DBDefinitions#KEY_TOC_BITMASK}.
      * Type: Boolean
      * true: anthology by multiple authors
      */
     public static final String HAS_MULTIPLE_AUTHORS = "+HasMultiAuthors";
-
-    /** mapping the edition bit to a resource string for displaying. */
-    @SuppressLint("UseSparseArrays")
-    private static final Map<Integer, Integer> EDITIONS = new HashMap<>();
-
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
+    /** mapping the edition bit to a resource string for displaying. */
+    @SuppressLint("UseSparseArrays")
+    private static final Map<Integer, Integer> EDITIONS = new HashMap<>();
 
     /*
      * {@link DatabaseDefinitions#DOM_BOOK_EDITION_BITMASK}.
@@ -114,7 +112,6 @@ public class Book
      * NEWKIND: edition
      */
     //private static final int EDITION_NOTHING_SPECIAL = 0;
-
     /** first edition ever of this work/content/story. */
     private static final int EDITION_FIRST = 1;
     /** First printing of 'this' edition. */
@@ -182,7 +179,7 @@ public class Book
         // load from database
         Book book = new Book(bookId, db);
         book.putBoolean(Book.IS_READ, isRead);
-        book.putString(DatabaseDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
+        book.putString(DBDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
         return db.updateBook(bookId, book, 0) == 1;
     }
 
@@ -191,11 +188,11 @@ public class Book
      * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
      */
     public Intent getShareBookIntent(@NonNull final Activity activity) {
-        String title = getString(DatabaseDefinitions.KEY_TITLE);
-        double rating = getDouble(DatabaseDefinitions.KEY_RATING);
-        String author = getString(DatabaseDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
-        String series = getString(DatabaseDefinitions.DOM_SERIES_FORMATTED.name);
-        String uuid = getString(DatabaseDefinitions.KEY_BOOK_UUID);
+        String title = getString(DBDefinitions.KEY_TITLE);
+        double rating = getDouble(DBDefinitions.KEY_RATING);
+        String author = getString(DBDefinitions.DOM_AUTHOR_FORMATTED_GIVEN_FIRST.name);
+        String series = getString(DBDefinitions.DOM_SERIES_FORMATTED.name);
+        String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
 
         if (!series.isEmpty()) {
             series = " (" + series.replace("#", "%23 ") + ')';
@@ -258,10 +255,10 @@ public class Book
 //        DOM_LAST_UPDATE_DATE
 //        DOM_BOOK_GOODREADS_LAST_SYNC_DATE
 
-        bookData.putString(DatabaseDefinitions.KEY_TITLE,
-                           getString(DatabaseDefinitions.KEY_TITLE));
-        bookData.putString(DatabaseDefinitions.KEY_ISBN,
-                           getString(DatabaseDefinitions.KEY_ISBN));
+        bookData.putString(DBDefinitions.KEY_TITLE,
+                           getString(DBDefinitions.KEY_TITLE));
+        bookData.putString(DBDefinitions.KEY_ISBN,
+                           getString(DBDefinitions.KEY_ISBN));
 
         bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
                                         getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY));
@@ -271,61 +268,61 @@ public class Book
                                         getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY));
 
         // publication data
-        bookData.putString(DatabaseDefinitions.KEY_PUBLISHER,
-                           getString(DatabaseDefinitions.KEY_PUBLISHER));
-        bookData.putLong(DatabaseDefinitions.KEY_TOC_BITMASK,
-                         getLong(DatabaseDefinitions.KEY_TOC_BITMASK));
-        bookData.putString(DatabaseDefinitions.KEY_DATE_PUBLISHED,
-                           getString(DatabaseDefinitions.KEY_DATE_PUBLISHED));
-        bookData.putString(DatabaseDefinitions.KEY_PRICE_LISTED,
-                           getString(DatabaseDefinitions.KEY_PRICE_LISTED));
-        bookData.putString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                           getString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY));
-        bookData.putString(DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED,
-                           getString(DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED));
-        bookData.putString(DatabaseDefinitions.KEY_FORMAT,
-                           getString(DatabaseDefinitions.KEY_FORMAT));
-        bookData.putString(DatabaseDefinitions.KEY_GENRE,
-                           getString(DatabaseDefinitions.KEY_GENRE));
-        bookData.putString(DatabaseDefinitions.KEY_LANGUAGE,
-                           getString(DatabaseDefinitions.KEY_LANGUAGE));
-        bookData.putString(DatabaseDefinitions.KEY_PAGES,
-                           getString(DatabaseDefinitions.KEY_PAGES));
+        bookData.putString(DBDefinitions.KEY_PUBLISHER,
+                           getString(DBDefinitions.KEY_PUBLISHER));
+        bookData.putLong(DBDefinitions.KEY_TOC_BITMASK,
+                         getLong(DBDefinitions.KEY_TOC_BITMASK));
+        bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
+                           getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        bookData.putString(DBDefinitions.KEY_PRICE_LISTED,
+                           getString(DBDefinitions.KEY_PRICE_LISTED));
+        bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                           getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+        bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
+                           getString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED));
+        bookData.putString(DBDefinitions.KEY_FORMAT,
+                           getString(DBDefinitions.KEY_FORMAT));
+        bookData.putString(DBDefinitions.KEY_GENRE,
+                           getString(DBDefinitions.KEY_GENRE));
+        bookData.putString(DBDefinitions.KEY_LANGUAGE,
+                           getString(DBDefinitions.KEY_LANGUAGE));
+        bookData.putString(DBDefinitions.KEY_PAGES,
+                           getString(DBDefinitions.KEY_PAGES));
         // common blurb
-        bookData.putString(DatabaseDefinitions.KEY_DESCRIPTION,
-                           getString(DatabaseDefinitions.KEY_DESCRIPTION));
+        bookData.putString(DBDefinitions.KEY_DESCRIPTION,
+                           getString(DBDefinitions.KEY_DESCRIPTION));
 
         // partially edition info, partially use-owned info.
-        bookData.putLong(DatabaseDefinitions.KEY_EDITION_BITMASK,
-                         getLong(DatabaseDefinitions.KEY_EDITION_BITMASK));
+        bookData.putLong(DBDefinitions.KEY_EDITION_BITMASK,
+                         getLong(DBDefinitions.KEY_EDITION_BITMASK));
 
         // user data
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(DatabaseDefinitions.KEY_SIGNED,
-                         getLong(DatabaseDefinitions.KEY_SIGNED));
+        bookData.putLong(DBDefinitions.KEY_SIGNED,
+                         getLong(DBDefinitions.KEY_SIGNED));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(DatabaseDefinitions.KEY_READ,
-                         getLong(DatabaseDefinitions.KEY_READ));
+        bookData.putLong(DBDefinitions.KEY_READ,
+                         getLong(DBDefinitions.KEY_READ));
 
-        bookData.putDouble(DatabaseDefinitions.KEY_RATING,
-                           getDouble(DatabaseDefinitions.KEY_RATING));
+        bookData.putDouble(DBDefinitions.KEY_RATING,
+                           getDouble(DBDefinitions.KEY_RATING));
 
-        bookData.putString(DatabaseDefinitions.KEY_NOTES,
-                           getString(DatabaseDefinitions.KEY_NOTES));
-        bookData.putString(DatabaseDefinitions.KEY_LOCATION,
-                           getString(DatabaseDefinitions.KEY_LOCATION));
-        bookData.putString(DatabaseDefinitions.KEY_READ_START,
-                           getString(DatabaseDefinitions.KEY_READ_START));
-        bookData.putString(DatabaseDefinitions.KEY_READ_END,
-                           getString(DatabaseDefinitions.KEY_READ_END));
-        bookData.putString(DatabaseDefinitions.KEY_DATE_ACQUIRED,
-                           getString(DatabaseDefinitions.KEY_DATE_ACQUIRED));
-        bookData.putString(DatabaseDefinitions.KEY_PRICE_PAID,
-                           getString(DatabaseDefinitions.KEY_PRICE_PAID));
-        bookData.putString(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY,
-                           getString(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY));
+        bookData.putString(DBDefinitions.KEY_NOTES,
+                           getString(DBDefinitions.KEY_NOTES));
+        bookData.putString(DBDefinitions.KEY_LOCATION,
+                           getString(DBDefinitions.KEY_LOCATION));
+        bookData.putString(DBDefinitions.KEY_READ_START,
+                           getString(DBDefinitions.KEY_READ_START));
+        bookData.putString(DBDefinitions.KEY_READ_END,
+                           getString(DBDefinitions.KEY_READ_END));
+        bookData.putString(DBDefinitions.KEY_DATE_ACQUIRED,
+                           getString(DBDefinitions.KEY_DATE_ACQUIRED));
+        bookData.putString(DBDefinitions.KEY_PRICE_PAID,
+                           getString(DBDefinitions.KEY_PRICE_PAID));
+        bookData.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
+                           getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
 
         return bookData;
     }
@@ -343,15 +340,15 @@ public class Book
                            final boolean isRead) {
         // allow for rollback.
         boolean prevRead = getBoolean(Book.IS_READ);
-        String prevReadEnd = getString(DatabaseDefinitions.KEY_READ_END);
+        String prevReadEnd = getString(DBDefinitions.KEY_READ_END);
 
         putBoolean(Book.IS_READ, isRead);
-        putString(DatabaseDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
+        putString(DBDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
 
         if (db.updateBook(getId(), this, 0) != 1) {
             //rollback
             putBoolean(Book.IS_READ, prevRead);
-            putString(DatabaseDefinitions.KEY_READ_END, prevReadEnd);
+            putString(DBDefinitions.KEY_READ_END, prevReadEnd);
             return false;
         }
         return true;
@@ -373,7 +370,7 @@ public class Book
      * @return the book id.
      */
     public long getId() {
-        return getLong(DatabaseDefinitions.KEY_ID);
+        return getLong(DBDefinitions.KEY_ID);
     }
 
     /**
@@ -439,7 +436,7 @@ public class Book
             //noinspection ConstantConditions
             list.add(new EditionCheckListItem(
                     edition, EDITIONS.get(edition),
-                    (edition & getLong(DatabaseDefinitions.KEY_EDITION_BITMASK)) != 0));
+                    (edition & getLong(DBDefinitions.KEY_EDITION_BITMASK)) != 0));
         }
         return list;
     }
@@ -452,7 +449,7 @@ public class Book
         for (Integer bit : result) {
             bitmask += bit;
         }
-        putLong(DatabaseDefinitions.KEY_EDITION_BITMASK, bitmask);
+        putLong(DBDefinitions.KEY_EDITION_BITMASK, bitmask);
     }
 
     /**
@@ -545,29 +542,29 @@ public class Book
      * ENHANCE: add (partial) date validators ? any other validators needed ?
      */
     private void initValidatorsAndAccessors() {
-        addValidator(DatabaseDefinitions.KEY_TITLE, NON_BLANK_VALIDATOR);
-        addValidator(DatabaseDefinitions.KEY_PAGES, BLANK_OR_INTEGER_VALIDATOR);
+        addValidator(DBDefinitions.KEY_TITLE, NON_BLANK_VALIDATOR);
+        addValidator(DBDefinitions.KEY_PAGES, BLANK_OR_INTEGER_VALIDATOR);
 
-        addValidator(DatabaseDefinitions.KEY_TOC_BITMASK, INTEGER_VALIDATOR);
-        addValidator(DatabaseDefinitions.KEY_EDITION_BITMASK, INTEGER_VALIDATOR);
+        addValidator(DBDefinitions.KEY_TOC_BITMASK, INTEGER_VALIDATOR);
+        addValidator(DBDefinitions.KEY_EDITION_BITMASK, INTEGER_VALIDATOR);
 
-        addValidator(DatabaseDefinitions.KEY_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR);
-        addValidator(DatabaseDefinitions.KEY_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR);
+        addValidator(DBDefinitions.KEY_PRICE_LISTED, BLANK_OR_FLOAT_VALIDATOR);
+        addValidator(DBDefinitions.KEY_PRICE_PAID, BLANK_OR_FLOAT_VALIDATOR);
 
-
-        /* Booleans are stored as Long (0,1) */
-        addAccessor(IS_READ, new BooleanDataAccessor(DatabaseDefinitions.KEY_READ));
 
         /* Booleans are stored as Long (0,1) */
-        addAccessor(IS_SIGNED, new BooleanDataAccessor(DatabaseDefinitions.KEY_SIGNED));
+        addAccessor(IS_READ, new BooleanDataAccessor(DBDefinitions.KEY_READ));
+
+        /* Booleans are stored as Long (0,1) */
+        addAccessor(IS_SIGNED, new BooleanDataAccessor(DBDefinitions.KEY_SIGNED));
 
         /* set/reset the single bit TocEntry.Type.MULTIPLE_WORKS in the bitmask. */
         addAccessor(HAS_MULTIPLE_WORKS,
-                    new BitmaskDataAccessor(DatabaseDefinitions.KEY_TOC_BITMASK,
+                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
                                             TocEntry.Type.MULTIPLE_WORKS));
         /* set/reset the single bit TocEntry.Type.MULTIPLE_AUTHORS in the bitmask. */
         addAccessor(HAS_MULTIPLE_AUTHORS,
-                    new BitmaskDataAccessor(DatabaseDefinitions.KEY_TOC_BITMASK,
+                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK,
                                             TocEntry.Type.MULTIPLE_AUTHORS));
     }
 
@@ -727,17 +724,6 @@ public class Book
             implements Fields.FieldFormatter {
 
         @NonNull
-        private final Context mContext;
-
-        /**
-         * @param context the caller context for resource
-         */
-        @SuppressWarnings("WeakerAccess")
-        public BookEditionsFormatter(@NonNull final Context context) {
-            mContext = context;
-        }
-
-        @NonNull
         @Override
         public String format(@NonNull final Fields.Field field,
                              @Nullable final String source) {
@@ -751,12 +737,12 @@ public class Book
             } catch (NumberFormatException ignore) {
                 return source;
             }
+            Context context = field.getView().getContext();
             List<String> list = new ArrayList<>();
             for (Integer edition : EDITIONS.keySet()) {
                 if ((edition & bitmask) != 0) {
-                    @SuppressWarnings("ConstantConditions")
-                    int resId = EDITIONS.get(edition);
-                    list.add(mContext.getString(resId));
+                    //noinspection ConstantConditions
+                    list.add(context.getString(EDITIONS.get(edition)));
                 }
             }
             return Csv.toDisplayString(list, null);

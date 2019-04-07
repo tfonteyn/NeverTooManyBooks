@@ -110,16 +110,16 @@ class CropHighlightView {
         mMode = ModifyMode.None;
 
         // ApplicationContext so the Theme gets picked up
-        Resources resources = App.getAppContext().getResources();
+//        Resources res = App.getAppContext().getResources();
+        Resources res = mImageView.getResources();
 
-        mResizeDrawableWidth = resources.getDrawable(R.drawable.ic_adjust);
-        mResizeDrawableHeight = resources.getDrawable(R.drawable.ic_adjust);
-        mResizeDrawableDiagonal = resources.getDrawable(R.drawable.ic_crop);
+        mResizeDrawableWidth = res.getDrawable(R.drawable.ic_adjust);
+        mResizeDrawableHeight = res.getDrawable(R.drawable.ic_adjust);
+        mResizeDrawableDiagonal = res.getDrawable(R.drawable.ic_crop);
 
-        mOutlinePaintNoFocus = resources.getColor(R.color.CropHighlightView_outlinePaint_noFocus);
-        mOutlinePaintCircle = resources.getColor(R.color.CropHighlightView_outlinePaint_circle);
-        mOutlinePaintRectangle =
-                resources.getColor(R.color.CropHighlightView_outlinePaint_rectangle);
+        mOutlinePaintNoFocus = res.getColor(R.color.CropHighlightView_outlinePaint_noFocus);
+        mOutlinePaintCircle = res.getColor(R.color.CropHighlightView_outlinePaint_circle);
+        mOutlinePaintRectangle = res.getColor(R.color.CropHighlightView_outlinePaint_rectangle);
     }
 
     boolean hasFocus() {

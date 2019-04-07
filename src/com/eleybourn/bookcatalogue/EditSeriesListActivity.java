@@ -43,7 +43,7 @@ import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.EditObjectListActivity;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.dialogs.fieldeditdialog.EditSeriesDialogFragment;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -97,11 +97,6 @@ public class EditSeriesListActivity
         mSeriesNumberView = findViewById(R.id.series_num);
     }
 
-    /**
-     * The user entered new data in the edit field and clicked 'save'.
-     *
-     * @param target The view that was clicked ('add' button).
-     */
     @Override
     protected void onAdd(@NonNull final View target) {
         String title = mSeriesNameView.getText().toString().trim();
@@ -118,7 +113,8 @@ public class EditSeriesListActivity
         // and check it's not already in the list.
         for (Series series : mList) {
             if (series.equals(newSeries)) {
-                UserMessage.showUserMessage(mSeriesNameView, R.string.warning_series_already_in_list);
+                UserMessage.showUserMessage(mSeriesNameView,
+                                            R.string.warning_series_already_in_list);
                 return;
             }
         }
@@ -250,7 +246,7 @@ public class EditSeriesListActivity
             extends DialogFragment {
 
         /** Fragment manager tag. */
-        public static final String TAG = EditBookSeriesDialogFragment.class.getSimpleName();
+        private static final String TAG = EditBookSeriesDialogFragment.class.getSimpleName();
 
         private EditSeriesListActivity mActivity;
 
@@ -263,6 +259,16 @@ public class EditSeriesListActivity
         private String mSeriesNumber;
 
         /**
+         * (syntax sugar for newInstance)
+         */
+        public static void show(@NonNull final FragmentManager fm,
+                                @NonNull final Series series) {
+            if (fm.findFragmentByTag(TAG) == null) {
+                newInstance(series).show(fm, TAG);
+            }
+        }
+
+        /**
          * Constructor.
          *
          * @param series to edit
@@ -272,7 +278,7 @@ public class EditSeriesListActivity
         public static EditBookSeriesDialogFragment newInstance(@NonNull final Series series) {
             EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
             Bundle args = new Bundle();
-            args.putParcelable(DatabaseDefinitions.KEY_SERIES, series);
+            args.putParcelable(DBDefinitions.KEY_SERIES, series);
             frag.setArguments(args);
             return frag;
         }
@@ -282,16 +288,17 @@ public class EditSeriesListActivity
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
             mActivity = (EditSeriesListActivity) requireActivity();
 
-            final Series series = requireArguments().getParcelable(DatabaseDefinitions.KEY_SERIES);
+            final Series series = requireArguments().getParcelable(DBDefinitions.KEY_SERIES);
             if (savedInstanceState == null) {
                 //noinspection ConstantConditions
                 mSeriesName = series.getName();
                 mSeriesIsComplete = series.isComplete();
                 mSeriesNumber = series.getNumber();
             } else {
-                mSeriesName = savedInstanceState.getString(DatabaseDefinitions.KEY_SERIES);
-                mSeriesIsComplete = savedInstanceState.getBoolean(DatabaseDefinitions.KEY_SERIES_IS_COMPLETE);
-                mSeriesNumber = savedInstanceState.getString(DatabaseDefinitions.KEY_SERIES_NUM);
+                mSeriesName = savedInstanceState.getString(DBDefinitions.KEY_SERIES);
+                mSeriesIsComplete = savedInstanceState.getBoolean(
+                        DBDefinitions.KEY_SERIES_IS_COMPLETE);
+                mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_SERIES_NUM);
             }
 
             final View root = mActivity.getLayoutInflater()
@@ -349,9 +356,9 @@ public class EditSeriesListActivity
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(DatabaseDefinitions.KEY_SERIES, mSeriesName);
-            outState.putBoolean(DatabaseDefinitions.KEY_SERIES_IS_COMPLETE, mSeriesIsComplete);
-            outState.putString(DatabaseDefinitions.KEY_SERIES_NUM, mSeriesNumber);
+            outState.putString(DBDefinitions.KEY_SERIES, mSeriesName);
+            outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mSeriesIsComplete);
+            outState.putString(DBDefinitions.KEY_SERIES_NUM, mSeriesNumber);
         }
     }
 
@@ -407,11 +414,8 @@ public class EditSeriesListActivity
         @Override
         public void onRowClick(@NonNull final Series item,
                                final int position) {
-            FragmentManager fm = getSupportFragmentManager();
-            if (fm.findFragmentByTag(EditBookSeriesDialogFragment.TAG) == null) {
-                EditBookSeriesDialogFragment.newInstance(item)
-                                            .show(fm, EditBookSeriesDialogFragment.TAG);
-            }
+
+            EditBookSeriesDialogFragment.show(getSupportFragmentManager(), item);
         }
 
         /**

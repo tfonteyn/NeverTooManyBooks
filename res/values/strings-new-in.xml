@@ -4,12 +4,13 @@
     <string name="new_in_600"><![CDATA[
         <p><b>New in 6.0.0</b>\n
             * Modernisation to Android 5.0 bringing lots of new UI goodies.\n
+            * Updated & added more translations (some languages still require work.)
             * Cover thumbnails and log files moved to dedicated sub folders.\n
-            * Configurable websites search order.\n
+            * Configurable search-websites.\n
             * New Search website: ISFDB.\n
             * Better Anthology support (Edit/View/cross-book) and morphed into “Table of Content” or “TOC”\n
             * TOC auto populated (ISFDB site only!).\n
-            * Language field wil show the translated name for the current locale.\n
+            * Language field shows the translated name in the current locale.\n
             * Books & Anthology/TOC titles now have a “first published” field.\n
             * Books Editions (1st, book-club, etc).\n
             * Book paid price.\n
@@ -19,10 +20,11 @@
             * Export of all tables can also be done in XML (no import yet).\n
             * Better support for rotating the screen.\n
             * LibraryThing & ISFDB local id for future usage.\n
-            * Database upgrades only supported from the earliest version 4.0.0.\n
-            * Removed the old “Classic” view (sorry).\n
+            * Removed: Database upgrades only supported from the earliest version 4.0.0.\n
+            * Removed: The old “Classic” view is gone.\n
         </p>]]>
     </string>
+
     <string name="new_in_522"><![CDATA[
         <p><b>New in 5.2.2</b>\n
             * Bug fixes\n

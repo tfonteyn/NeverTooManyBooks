@@ -28,8 +28,8 @@
 
         <PreferenceScreen
             android:icon="@drawable/ic_visibility"
-            android:key="@string/menu_manage_fields"
-            android:title="@string/menu_manage_fields">
+            android:key="@string/pt_ui_field_visibility"
+            android:title="@string/pt_ui_field_visibility">
             <!-- NEWKIND: new fields visibility. Third part of the key name **MUST** be equal to the DOM column name. -->
             <SwitchPreference
                 android:defaultValue="true"

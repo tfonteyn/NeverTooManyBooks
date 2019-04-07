@@ -514,7 +514,7 @@ public class GoodreadsManager
             parser.parse(is, requestHandler);
 
             // only catch exceptions related to the parsing, others will be caught by the caller.
-        } catch (@NonNull ParserConfigurationException | SAXException e) {
+        } catch (ParserConfigurationException | SAXException e) {
             Logger.error(e);
         }
     }
@@ -874,7 +874,9 @@ public class GoodreadsManager
     @WorkerThread
     public File getCoverImage(@NonNull final String isbn,
                               @Nullable final SearchSites.ImageSizes size) {
-
+        if (!hasValidCredentials()) {
+            return null;
+        }
         return SearchSites.getCoverImageFallback(this, isbn);
     }
 
@@ -952,7 +954,8 @@ public class GoodreadsManager
 
     @Override
     public boolean supportsImageSize(@NonNull final SearchSites.ImageSizes size) {
-        return false;
+        // support 1 size only
+        return SearchSites.ImageSizes.LARGE.equals(size);
     }
 
     @StringRes

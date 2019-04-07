@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
@@ -110,14 +110,15 @@ public class EditBookTOCFragment
 
     /* ------------------------------------------------------------------------------------------ */
 
-    //<editor-fold desc="Fragment startup">
-
-    /* ------------------------------------------------------------------------------------------ */
     @Override
     @NonNull
     protected BookManager getBookManager() {
         return ((EditBookFragment) requireParentFragment()).getBookManager();
     }
+
+    /* ------------------------------------------------------------------------------------------ */
+
+    //<editor-fold desc="Fragment startup">
 
     @Override
     @Nullable
@@ -153,10 +154,10 @@ public class EditBookTOCFragment
 
         // author to use if mSingleAuthor is set to true
         mBookAuthor = getBookManager().getBook().getString(
-                DatabaseDefinitions.KEY_AUTHOR_FORMATTED);
+                DBDefinitions.KEY_AUTHOR_FORMATTED);
 
         // used to call Search sites to populate the TOC
-        mIsbn = getBookManager().getBook().getString(DatabaseDefinitions.KEY_ISBN);
+        mIsbn = getBookManager().getBook().getString(DBDefinitions.KEY_ISBN);
 
         mAddButton = view.findViewById(R.id.btn_add);
         mAddButton.setOnClickListener(v -> addOrUpdateEntry());
@@ -247,7 +248,6 @@ public class EditBookTOCFragment
     //<editor-fold desc="Fragment shutdown">
 
     @Override
-    @CallSuper
     protected void onSaveFieldsToBook(@NonNull final Book book) {
         Tracker.enterOnSaveFieldsToBook(this, book.getId());
         super.onSaveFieldsToBook(book);
@@ -271,13 +271,6 @@ public class EditBookTOCFragment
         // don't call super. We don't want the clutter in this tab.
     }
 
-    /**
-     * Called when a menu item is selected.
-     *
-     * @param item The item selected
-     *
-     * @return <tt>true</tt> if handled
-     */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -373,21 +366,17 @@ public class EditBookTOCFragment
 
         // update the book with the first publication date that was gathered from the TOC
         final String bookFirstPublication = bookData.getString(
-                DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED);
+                DBDefinitions.KEY_DATE_FIRST_PUBLISHED);
         if (bookFirstPublication != null) {
             if (getBookManager().getBook().getString(
-                    DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
-                getBookManager().getBook().putString(DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED,
+                    DBDefinitions.KEY_DATE_FIRST_PUBLISHED).isEmpty()) {
+                getBookManager().getBook().putString(DBDefinitions.KEY_DATE_FIRST_PUBLISHED,
                                                      bookFirstPublication);
             }
         }
 
         // finally the TOC itself; not saved here but only put on display for the user to approve
-        FragmentManager fm = requireFragmentManager();
-        if (fm.findFragmentByTag(ConfirmTOC.TAG) == null) {
-            ConfirmTOC.newInstance(this, bookData, mISFDBEditionUrls.size() > 1)
-                      .show(fm, ConfirmTOC.TAG);
-        }
+        ConfirmTOC.show(this, bookData, mISFDBEditionUrls.size() > 1);
     }
 
     /**
@@ -396,7 +385,7 @@ public class EditBookTOCFragment
     private void commitISFDBData(final long tocBitMask,
                                  @NonNull final List<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
-            getBookManager().getBook().putLong(DatabaseDefinitions.KEY_TOC_BITMASK, tocBitMask);
+            getBookManager().getBook().putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
             populateSingleAuthorStatus(getBookManager().getBook());
         }
 
@@ -484,8 +473,21 @@ public class EditBookTOCFragment
             extends DialogFragment {
 
         /** Fragment manager tag. */
-        public static final String TAG = ConfirmTOC.class.getSimpleName();
-        private static final String BKEY_HAS_OTHER_EDITIONS = "hasOtherEditions";
+        private static final String TAG = ConfirmTOC.class.getSimpleName();
+
+        private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
+
+        /**
+         * (syntax sugar for newInstance)
+         */
+        public static void show(@NonNull final Fragment target,
+                                @NonNull final Bundle bookData,
+                                final boolean hasOtherEditions) {
+            FragmentManager fm = target.requireFragmentManager();
+            if (fm.findFragmentByTag(TAG) == null) {
+                newInstance(target, bookData, hasOtherEditions).show(fm, TAG);
+            }
+        }
 
         /**
          * Constructor.
@@ -509,7 +511,7 @@ public class EditBookTOCFragment
             Objects.requireNonNull(targetFragment);
             Bundle args = requireArguments();
             boolean hasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
-            final long tocBitMask = args.getLong(DatabaseDefinitions.KEY_TOC_BITMASK);
+            final long tocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
             ArrayList<TocEntry> tocEntries =
                     args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
             boolean hasTOC = tocEntries != null && !tocEntries.isEmpty();

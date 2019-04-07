@@ -42,7 +42,7 @@ public interface Importer extends Closeable {
      *
      * @return number of books handled (!= imported)
      *
-     * @throws IOException on any error
+     * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
     int doBooks(@NonNull InputStream importStream,

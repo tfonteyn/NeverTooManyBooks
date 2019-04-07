@@ -20,12 +20,14 @@
 
 package com.eleybourn.bookcatalogue.database.cursors;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
@@ -37,16 +39,16 @@ import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_AUTHOR_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_ABSOLUTE_POSITION;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_NODE_LEVEL;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BL_NODE_ROW_KIND;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_BOOK_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_AUTHOR_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_BOOK_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_FK_SERIES_ID;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DatabaseDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_ABSOLUTE_POSITION;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_LEVEL;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BL_NODE_ROW_KIND;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_NUM;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_NAME;
 
 /**
  * CursorRow object for the BooklistCursor.
@@ -61,14 +63,9 @@ public class BooklistCursorRow
     /** Underlying builder object. */
     @NonNull
     private final BooklistBuilder mBuilder;
-    /** Max size of thumbnails based on preferences at object creation time. */
-    private final int mMaxThumbnailWidth;
-    /** Max size of thumbnails based on preferences at object creation time. */
-    private final int mMaxThumbnailHeight;
 
     /** level text. Uses a dynamically set domain. */
     private final int[] mLevelCol = {-2, -2};
-
 
     /**
      * Constructor.
@@ -93,28 +90,12 @@ public class BooklistCursorRow
                            DOM_BL_ABSOLUTE_POSITION,
                            DOM_BL_NODE_ROW_KIND,
                            DOM_BL_NODE_LEVEL);
-
-
-        // Get thumbnail size
-        int maxSize = mBuilder.getStyle().getImageMaxSize(builder.getContext());
-
-        mMaxThumbnailWidth = maxSize;
-        mMaxThumbnailHeight = maxSize;
     }
 
     @NonNull
     public BooklistStyle getStyle() {
         return mBuilder.getStyle();
     }
-
-    public int getMaxThumbnailHeight() {
-        return mMaxThumbnailHeight;
-    }
-
-    public int getMaxThumbnailWidth() {
-        return mMaxThumbnailWidth;
-    }
-
 
     public long getBookId() {
         return mMapper.getLong(DOM_FK_BOOK_ID);
@@ -226,15 +207,18 @@ public class BooklistCursorRow
             return null;
         }
 
+        Context context = mBuilder.getContext();
+        Locale locale = LocaleUtils.from(context);
+
         int index = level - 1;
 
         switch (mBuilder.getStyle().getGroupKindAt(index)) {
             case BooklistGroup.RowKind.READ_STATUS:
                 switch (s) {
                     case "0":
-                        return mBuilder.getContext().getString(R.string.lbl_unread);
+                        return context.getString(R.string.lbl_unread);
                     case "1":
-                        return mBuilder.getContext().getString(R.string.lbl_read);
+                        return context.getString(R.string.lbl_read);
                     default:
                         Logger.info(this, "formatRowGroup",
                                     "Unknown read status=" + s);
@@ -243,7 +227,7 @@ public class BooklistCursorRow
                 return s;
 
             case BooklistGroup.RowKind.LANGUAGE:
-                LocaleUtils.getDisplayName(s);
+                LocaleUtils.getDisplayName(locale, s);
                 break;
 
             case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
@@ -253,10 +237,9 @@ public class BooklistCursorRow
             case BooklistGroup.RowKind.DATE_READ_MONTH:
                 try {
                     int i = Integer.parseInt(s);
-                    // If valid, get the name
+                    // If valid, get the short name
                     if (i > 0 && i <= 12) {
-                        // Create static formatter if necessary
-                        return DateUtils.getMonthName(i);
+                        return DateUtils.getMonthName(locale, i, false);
                     }
                 } catch (NumberFormatException ignored) {
                 }
@@ -267,8 +250,7 @@ public class BooklistCursorRow
                     int i = Integer.parseInt(s);
                     // If valid, get the name
                     if (i >= 0 && i <= Book.RATING_STARS) {
-                        Resources r = mBuilder.getContext().getResources();
-                        return r.getQuantityString(R.plurals.n_stars, i, i);
+                        return context.getResources().getQuantityString(R.plurals.n_stars, i, i);
                     }
                 } catch (NumberFormatException ignored) {
                 }

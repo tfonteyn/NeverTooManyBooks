@@ -12,6 +12,8 @@
     <string name="pg_general">Γενικά</string>
     <!-- Preference GROUP -->
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
+    <string name="pt_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
+
     <!-- Preference GROUP -->
     <string name="pg_thumbnails">Μικρογραφίες</string>
     <!-- Preference GROUP -->

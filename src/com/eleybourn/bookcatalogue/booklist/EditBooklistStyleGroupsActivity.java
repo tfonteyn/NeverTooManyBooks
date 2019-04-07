@@ -28,7 +28,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -226,7 +226,7 @@ public class EditBooklistStyleGroupsActivity
     private static class Holder {
 
         @NonNull
-        final CheckedTextView checkableView;
+        final CompoundButton checkableView;
         @NonNull
         final TextView nameView;
         GroupWrapper groupWrapper;
@@ -255,7 +255,6 @@ public class EditBooklistStyleGroupsActivity
                 holder = new Holder(convertView);
                 holder.checkableView.setTag(holder);
 
-                // Handle a click on the CheckedTextView
                 holder.checkableView.setOnClickListener(v -> {
                     Holder h = (Holder) v.getTag();
                     boolean newStatus = !h.groupWrapper.present;

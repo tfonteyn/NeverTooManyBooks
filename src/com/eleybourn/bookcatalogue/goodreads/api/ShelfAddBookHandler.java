@@ -35,7 +35,6 @@ import org.apache.http.message.BasicNameValuePair;
 import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
-import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 import com.eleybourn.bookcatalogue.utils.xml.XmlResponseParser;
@@ -73,13 +72,10 @@ public class ShelfAddBookHandler
         extends ApiHandler {
 
     private long mReviewId;
-    private final XmlHandler mHandleReviewId = new XmlHandler() {
-        @Override
-        public void process(@NonNull final ElementContext context) {
-            try {
-                mReviewId = Long.parseLong(context.getBody());
-            } catch (NumberFormatException ignore) {
-            }
+    private final XmlHandler mHandleReviewId = context -> {
+        try {
+            mReviewId = Long.parseLong(context.getBody());
+        } catch (NumberFormatException ignore) {
         }
     };
 
@@ -94,7 +90,14 @@ public class ShelfAddBookHandler
     /**
      * Add the passed book to the passed shelf.
      *
+     * @param shelfName GoodReads shelf name
+     * @param grBookId  GoodReads book id
+     *
      * @return reviewId
+     *
+     * @throws IOException            on failure
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  at GoodReads
      */
     public long add(@NonNull final String shelfName,
                     final long grBookId)
@@ -107,6 +110,13 @@ public class ShelfAddBookHandler
 
     /**
      * Remove the passed book from the passed shelf.
+     *
+     * @param shelfName GoodReads shelf name
+     * @param grBookId  GoodReads book id
+     *
+     * @throws IOException            on failure
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  at GoodReads
      */
     public void remove(@NonNull final String shelfName,
                        final long grBookId)
@@ -120,7 +130,15 @@ public class ShelfAddBookHandler
     /**
      * Do the main work; same API call for add & remove.
      *
+     * @param shelfName GoodReads shelf name
+     * @param grBookId  GoodReads book id
+     * @param isRemove  <tt>true</tt> for 'remove', <tt>false</tt> for 'add'
+     *
      * @return reviewId
+     *
+     * @throws IOException            on failure
+     * @throws AuthorizationException with GoodReads
+     * @throws BookNotFoundException  at GoodReads
      */
     private long doCall(@NonNull final String shelfName,
                         final long grBookId,

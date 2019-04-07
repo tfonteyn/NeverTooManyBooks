@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -164,7 +164,7 @@ public class EditBookFragment
                 break;
 
             case TAB_EDIT_ANTHOLOGY:
-                if (Fields.isVisible(DatabaseDefinitions.KEY_TOC_BITMASK)) {
+                if (Fields.isVisible(DBDefinitions.KEY_TOC_BITMASK)) {
                     showTab = tabWanted;
                 }
                 break;
@@ -182,7 +182,7 @@ public class EditBookFragment
                                              getString(R.string.lbl_publication)));
         mPagerAdapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
                                              getString(R.string.tab_lbl_notes)));
-        if (Fields.isVisible(DatabaseDefinitions.KEY_TOC_BITMASK)) {
+        if (Fields.isVisible(DBDefinitions.KEY_TOC_BITMASK)) {
             mPagerAdapter.add(new FragmentHolder(fm, EditBookTOCFragment.TAG,
                                                  getString(R.string.tab_lbl_content)));
         }
@@ -203,8 +203,7 @@ public class EditBookFragment
             @Override
             public void onPositiveButton() {
                 saveBook();
-                Intent data = new Intent()
-                        .putExtra(DatabaseDefinitions.KEY_ID, getBook().getId());
+                Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, getBook().getId());
                 mActivity.setResult(Activity.RESULT_OK, data);
                 mActivity.finish();
             }
@@ -223,18 +222,11 @@ public class EditBookFragment
         requireView().findViewById(R.id.cancel).setOnClickListener(v -> doCancel());
     }
 
-//</editor-fold>
+    //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Fragment shutdown">
-
-
-//    @Override
-//    @CallSuper
-//    protected void onSaveFieldsToBook(@NonNull final Book book) {
-//        super.onSaveFieldsToBook(book);
-//    }
 
     /**
      * the only thing on this level is the TAB we're on.
@@ -293,15 +285,15 @@ public class EditBookFragment
             UserMessage.showUserMessage(getView(), R.string.warning_required_author_long);
             return;
         }
-        if (!book.containsKey(DatabaseDefinitions.KEY_TITLE) || book.getString(
-                DatabaseDefinitions.KEY_TITLE).isEmpty()) {
+        if (!book.containsKey(DBDefinitions.KEY_TITLE) || book.getString(
+                DBDefinitions.KEY_TITLE).isEmpty()) {
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.warning_required_title);
             return;
         }
 
         if (book.getId() == 0) {
-            String isbn = book.getString(DatabaseDefinitions.KEY_ISBN);
+            String isbn = book.getString(DBDefinitions.KEY_ISBN);
             /* Check if the book currently exists */
             if (!isbn.isEmpty() && ((mDb.getBookIdFromIsbn(isbn, true) > 0))) {
                 StandardDialogs.confirmSaveDuplicateBook(requireContext(), nextStep);
@@ -322,8 +314,7 @@ public class EditBookFragment
         // delete any leftover temporary thumbnails
         StorageUtils.deleteTempCoverFile();
 
-        Intent data = new Intent()
-                .putExtra(DatabaseDefinitions.KEY_ID, getBook().getId());
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, getBook().getId());
         //ENHANCE: global changes not detected, so assume they happened.
         mActivity.setResult(Activity.RESULT_OK, data);
         mActivity.finishIfClean(isDirty());
@@ -335,7 +326,7 @@ public class EditBookFragment
     private void saveBook() {
         Book book = getBook();
 
-        Logger.info(this,"saveBook", book.getRawData());
+        Logger.info(this, "saveBook", book.getRawData());
 
         if (book.getId() == 0) {
             long id = mDb.insertBook(book);

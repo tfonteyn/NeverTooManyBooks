@@ -123,9 +123,7 @@ public class SynchronizedDb {
                     //}
 
                 }
-            } catch (@NonNull final NoSuchFieldException
-                    | IllegalAccessException
-                    | IllegalArgumentException e) {
+            } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
                 Logger.error(e);
             }
         }
@@ -406,7 +404,7 @@ public class SynchronizedDb {
      */
     public void execSQL(@NonNull final String sql) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXEC_SQL) {
-            Logger.info(this, Tracker.State.Enter,"execSQL", sql);
+            Logger.info(this, Tracker.State.Enter, "execSQL", sql);
         }
 
         try {

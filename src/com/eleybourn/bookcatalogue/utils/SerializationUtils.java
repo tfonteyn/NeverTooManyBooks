@@ -76,7 +76,7 @@ public final class SerializationUtils {
             throws DeserializationException {
         try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(o))) {
             return (T) in.readObject();
-        } catch (@NonNull ClassCastException | ClassNotFoundException | IOException e) {
+        } catch (ClassCastException | ClassNotFoundException | IOException e) {
             throw new DeserializationException(e);
         }
     }

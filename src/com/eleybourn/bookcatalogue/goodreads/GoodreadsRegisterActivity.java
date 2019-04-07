@@ -59,9 +59,7 @@ public class GoodreadsRegisterActivity
         // GR Reg Link
         TextView register = findViewById(R.id.goodreads_url);
         register.setText(GoodreadsManager.WEBSITE);
-        register.setOnClickListener(v -> {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(GoodreadsManager.WEBSITE)));
-        });
+        register.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(GoodreadsManager.WEBSITE))));
 
         // Auth button
         findViewById(R.id.authorize).setOnClickListener(

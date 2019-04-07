@@ -453,7 +453,7 @@ public class DataManager {
     @SuppressWarnings("WeakerAccess")
     public void putSerializable(@NonNull final String key,
                                 @NonNull final Serializable value) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             Logger.debug("putSerializable, key=" + key
                                  + ", type=" + value.getClass().getCanonicalName());
         }

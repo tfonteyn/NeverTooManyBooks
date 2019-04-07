@@ -32,11 +32,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
+import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -51,9 +53,9 @@ public class EditBookshelfDialogFragment
         extends DialogFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = EditBookshelfDialogFragment.class.getSimpleName();
+    private static final String TAG = EditBookshelfDialogFragment.class.getSimpleName();
 
-    private static final String BKEY_BOOKSHELF = "bs";
+    private static final String BKEY_BOOKSHELF = TAG + ":bs";
     private Activity mActivity;
     private DBA mDb;
     private Bookshelf mBookshelf;
@@ -61,6 +63,16 @@ public class EditBookshelfDialogFragment
     private EditText mNameView;
 
     private String mName;
+
+    /**
+     * (syntax sugar for newInstance)
+     */
+    public static void show(@NonNull final FragmentManager fm,
+                            @NonNull final Bookshelf bookshelf) {
+        if (fm.findFragmentByTag(TAG) == null) {
+            newInstance(bookshelf).show(fm, TAG);
+        }
+    }
 
     /**
      */
@@ -81,7 +93,7 @@ public class EditBookshelfDialogFragment
             //noinspection ConstantConditions
             mName = mBookshelf.getName();
         } else {
-            mName = savedInstanceState.getString(DatabaseDefinitions.KEY_BOOKSHELF);
+            mName = savedInstanceState.getString(DBDefinitions.KEY_BOOKSHELF);
         }
 
         mDb = new DBA(mActivity);
@@ -154,7 +166,7 @@ public class EditBookshelfDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DatabaseDefinitions.KEY_BOOKSHELF, mName);
+        outState.putString(DBDefinitions.KEY_BOOKSHELF, mName);
     }
 
     /**

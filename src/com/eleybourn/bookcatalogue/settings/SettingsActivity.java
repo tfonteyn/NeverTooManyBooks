@@ -29,6 +29,7 @@ public class SettingsActivity
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(R.string.lbl_settings);
 
         Bundle extras = getIntent().getExtras();
 

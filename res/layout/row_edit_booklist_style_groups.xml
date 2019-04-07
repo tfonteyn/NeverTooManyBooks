@@ -7,9 +7,9 @@
     style="@style/row_in_ListView"
     >
 
-    <CheckedTextView
+    <CheckBox
         android:id="@id/TLV_ROW_CHECKABLE"
-        style="@style/tlv_checkable_button"
+        style="@style/tlv_cbx"
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -54,7 +54,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/TLV_ROW_DETAILS"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_drag_handle"
         tools:ignore="ContentDescription"
         />
 

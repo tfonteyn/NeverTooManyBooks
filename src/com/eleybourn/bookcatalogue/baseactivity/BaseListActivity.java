@@ -152,14 +152,10 @@ public abstract class BaseListActivity
 
     /**
      * Listen for clicks on items in our list.
-     * <p>
      * {@link #onContentChanged} enables 'this' as the listener for our ListView
-     *
-     * @param parent   The AdapterView where the click happened.
-     * @param view     The view within the AdapterView that was clicked (this
-     *                 will be a view provided by the adapter)
-     * @param position The position of the view in the adapter.
-     * @param id       The row id of the item that was clicked.
+     * <p>
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     public void onItemClick(@NonNull final AdapterView<?> parent,
@@ -264,7 +260,7 @@ public abstract class BaseListActivity
         if (menu.size() > 0) {
 
             SimpleDialog.OnClickListener<MenuItem> handler = item -> {
-                MenuItem menuItem =item.getItem();
+                MenuItem menuItem = item.getItem();
                 if (menuItem.hasSubMenu()) {
                     // bring up sub-menu
                     menuInfo.title = menuItem.getTitle().toString();

@@ -55,7 +55,7 @@ public class SynchronizedStatement
         // this is not a debug flag, but used to get a shared versus exclusive lock
         mIsReadOnly = sql.trim().toUpperCase().startsWith("SELECT");
 
-        if (/* always debug */ BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always debug */) {
             mIsCount = sql.trim().toUpperCase().startsWith("SELECT COUNT(");
         }
     }
@@ -83,7 +83,7 @@ public class SynchronizedStatement
     public void bindString(final int index,
                            @Nullable final String value) {
         if (value == null) {
-            if (/* always print debug */ BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always debug */) {
                 Logger.debug("binding NULL");
             }
             mStatement.bindNull(index);
@@ -238,7 +238,7 @@ public class SynchronizedStatement
         try {
             return mStatement.simpleQueryForString();
         } catch (SQLiteDoneException e) {
-            if (/* always print debug */ BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always print debug */ ) {
                 Logger.info(this, "simpleQueryForStringOrNull", mStatement.toString());
                 Logger.info(this, "simpleQueryForStringOrNull", "NULL");
             }
@@ -288,7 +288,7 @@ public class SynchronizedStatement
         Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
         try {
             int rowsAffected = mStatement.executeUpdateDelete();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_ROWS_AFFECTED) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE_UPDATE_DELETE) {
                 Logger.info(this, "executeUpdateDelete", mStatement.toString());
                 Logger.info(this, "executeUpdateDelete", "rowsAffected=" + rowsAffected);
             }

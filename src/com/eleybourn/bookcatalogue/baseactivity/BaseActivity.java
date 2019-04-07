@@ -106,6 +106,8 @@ public abstract class BaseActivity
 
         } else if (App.isRecreating()) {
             App.clearRecreateFlag();
+            //TOMF: destroy fragments and recreate them to!! (or force them to reload resources at least)
+
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
                 Logger.info(this, Tracker.State.Exit,
                             "BaseActivity.onResume", "isRecreating");
@@ -215,13 +217,6 @@ public abstract class BaseActivity
         mDrawerLayout = drawerLayout;
     }
 
-    /**
-     * Called when a menu item is selected.
-     *
-     * @param item selected
-     *
-     * @return <tt>true</tt> if handled
-     */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
@@ -251,10 +246,22 @@ public abstract class BaseActivity
                                  @Nullable final Intent data) {
         Tracker.enterOnActivityResult(this, requestCode, resultCode, data);
 
-        // some activities MIGHT support the navigation panel, but are not (always)
-        // reacting to results, or need to react. Some debug/reminder logging here
+        // generic actions & logging. Anything specific should be done in a child class.
         switch (requestCode) {
 
+            case UniqueId.REQ_NAV_PANEL_SETTINGS:
+                if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
+                    Logger.info(this, "onActivityResult",
+                                "REQ_NAV_PANEL_SETTINGS");
+                }
+                switch (resultCode) {
+                    case UniqueId.ACTIVITY_RESULT_RECREATE_NEEDED:
+                        App.setNeedsRecreating();
+                        break;
+                }
+                 return;
+
+            // logging only
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.info(this, "onActivityResult",
@@ -262,6 +269,7 @@ public abstract class BaseActivity
                 }
                 return;
 
+            // logging only
             case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.info(this, "onActivityResult",
@@ -269,6 +277,7 @@ public abstract class BaseActivity
                 }
                 return;
 
+            // logging only
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Logger.info(this, "onActivityResult",
@@ -276,13 +285,8 @@ public abstract class BaseActivity
                 }
                 return;
 
-            case UniqueId.REQ_NAV_PANEL_SETTINGS:
-                if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
-                    Logger.info(this, "onActivityResult",
-                                "REQ_NAV_PANEL_SETTINGS");
-                }
-                return;
 
+            // logging only
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     // lowest level of our Activities, see if we missed anything

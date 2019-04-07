@@ -113,7 +113,7 @@ public class BackupAndRestoreActivity
         FragmentManager fm = context.getSupportFragmentManager();
         if (fm.findFragmentByTag(BackupListerTask.TAG) == null) {
             ProgressDialogFragment<ArrayList<FileChooserFragment.FileDetails>> frag =
-                    ProgressDialogFragment.newInstance(R.string.progress_msg_searching_directory,
+                    ProgressDialogFragment.newInstance(R.string.progress_msg_reading_directory,
                                                        true, 0);
             BackupListerTask task = new BackupListerTask(frag, root);
             frag.setTask(R.id.TASK_ID_FILE_LISTER, task);
@@ -137,14 +137,8 @@ public class BackupAndRestoreActivity
                 .setTitle(R.string.lbl_import_from_archive)
                 .setMessage(R.string.import_option_info_all_books)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setNeutralButton(R.string.btn_options, (d, which) -> {
-                    // User wants to tune settings first.
-                    FragmentManager fm = getSupportFragmentManager();
-                    if (fm.findFragmentByTag(ImportDialogFragment.TAG) == null) {
-                        ImportDialogFragment.newInstance(settings)
-                                            .show(fm, ImportDialogFragment.TAG);
-                    }
-                })
+                .setNeutralButton(R.string.btn_options, (d, which) ->
+                        ImportDialogFragment.show(getSupportFragmentManager(), settings))
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     // User wants to import all.
                     settings.what = ImportSettings.ALL;
@@ -178,14 +172,8 @@ public class BackupAndRestoreActivity
                 .setTitle(R.string.lbl_backup)
                 .setMessage(R.string.export_info_backup_all)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setNeutralButton(R.string.btn_options, (d, which) -> {
-                    // User wants to tune settings first.
-                    FragmentManager fm = getSupportFragmentManager();
-                    if (fm.findFragmentByTag(ExportDialogFragment.TAG) == null) {
-                        ExportDialogFragment.newInstance(settings)
-                                            .show(fm, ExportDialogFragment.TAG);
-                    }
-                })
+                .setNeutralButton(R.string.btn_options, (d, which) ->
+                        ExportDialogFragment.show(getSupportFragmentManager(), settings))
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     // User wants to backup all.
                     settings.what = ExportSettings.ALL;
@@ -268,10 +256,7 @@ public class BackupAndRestoreActivity
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.lbl_import_from_archive)
                     .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, which) -> {
-                        // Just return; user may want to try again
-                        d.dismiss();
-                    })
+                    .setPositiveButton(android.R.string.ok, (d, which) -> d.dismiss())
                     .create();
             dialog.show();
             return;
@@ -311,10 +296,7 @@ public class BackupAndRestoreActivity
             final AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle(R.string.lbl_backup)
                     .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, which) -> {
-                        // Just return; user may want to try again
-                        d.dismiss();
-                    })
+                    .setPositiveButton(android.R.string.ok, (d, which) -> d.dismiss())
                     .create();
             dialog.show();
             return;

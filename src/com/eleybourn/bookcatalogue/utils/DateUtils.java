@@ -31,91 +31,77 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.debug.Logger;
 
-/**
- * All date handling here is for UTC/sql only, hence no Locale used.
- */
-@SuppressLint("SimpleDateFormat")
 public final class DateUtils {
 
-    /**
-     * Used for formatting *non-user* dates for SQL.
-     */
-    private static final TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
-    /**
-     * Date formatter for {@link #toPrettyDate}.
-     * only used to display dates in the local timezone.
-     */
-    private static final DateFormat PRETTY_DATE_FORMATTER =
-            DateFormat.getDateInstance(java.text.DateFormat.MEDIUM);
-    /**
-     * Date formatter for {@link #toPrettyDateTime(Date)}.
-     * only used to display dates in the local timezone.
-     */
-    private static final DateFormat PRETTY_DATETIME_FORMATTER =
-            DateFormat.getDateTimeInstance();
+    /* ----------------------------- FORMATTING ------------------------------------------------- */
+
+    /** Month full names cache for each Locale. */
+    private static final Map<String, String[]> MONTH_LONG_NAMES = new HashMap<>();
+    /** Month abbreviated names cache for each Locale. */
+    private static final Map<String, String[]> MONTH_SHORT_NAMES = new HashMap<>();
 
     /**
-     * SQL Date formatter, Locale timezone. Used for *user* dates (read-end etc).
+     * SQL Date formatter, System Locale.
+     * Used for *non-user* dates (date published etc).
      */
-    private static final SimpleDateFormat LOCAL_SQL_DATE =
-            new SimpleDateFormat("yyyy-MM-dd");
-    /**
-     * SQL Date formatter, UTC. Used for *non-user* dates (date published etc).
-     */
-    private static final SimpleDateFormat UTC_SQL_DATE =
-            new SimpleDateFormat("yyyy-MM-dd");
-    /**
-     * SQL Datetime (with seconds) formatter, UTC. Used for *non-user* dates (date published etc).
-     */
-    private static final SimpleDateFormat UTC_SQL_DATE_HH_MM_SS =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    /**
-     * SQL Datetime (no seconds) formatter, UTC. Used for *non-user* dates (date published etc).
-     */
-    private static final SimpleDateFormat UTC_SQL_DATE_HH_MM =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static final SimpleDateFormat LOCAL_SQL_DATE;
 
+    /**
+     * SQL Date formatter, UTC.
+     * Used for *non-user* dates (date published etc).
+     */
+    private static final SimpleDateFormat UTC_SQL_DATE;
+
+    /**
+     * SQL Datetime (no seconds) formatter, UTC.
+     * Used for *non-user* dates (date published etc).
+     */
+    private static final SimpleDateFormat UTC_SQL_DATE_HH_MM;
+
+    /**
+     * SQL Datetime (with seconds) formatter, UTC.
+     * Used for *non-user* dates (date published etc).
+     */
+    private static final SimpleDateFormat UTC_SQL_DATE_HH_MM_SS;
+
+
+    /* ------------------------------ PARSING --------------------------------------------------- */
 
     /** List of formats we'll use to parse dates. */
     private static final ArrayList<SimpleDateFormat> PARSE_DATE_FORMATS = new ArrayList<>();
-    /** Calendar to construct dates from month numbers. */
-    private static Calendar mCalendar;
-    /** Formatter for month names given dates. */
-    private static SimpleDateFormat mMonthNameFormatter;
-    private static SimpleDateFormat mMonthShortNameFormatter;
 
     static {
-        // set desired timezones
-        PRETTY_DATE_FORMATTER.setTimeZone(Calendar.getInstance().getTimeZone());
-        PRETTY_DATETIME_FORMATTER.setTimeZone(Calendar.getInstance().getTimeZone());
+        // Used for formatting *user* dates, in the locale timezone, for SQL. e.g. date read...
+        LOCAL_SQL_DATE =
+                new SimpleDateFormat("yyyy-MM-dd", LocaleUtils.getSystemLocale());
 
-        LOCAL_SQL_DATE.setTimeZone(Calendar.getInstance().getTimeZone());
-
+        // Used for formatting *non-user* dates for SQL. e.g. publication dates...
+        TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
+        UTC_SQL_DATE_HH_MM_SS =
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", LocaleUtils.getSystemLocale());
         UTC_SQL_DATE_HH_MM_SS.setTimeZone(TZ_UTC);
+        UTC_SQL_DATE_HH_MM =
+                new SimpleDateFormat("yyyy-MM-dd HH:mm", LocaleUtils.getSystemLocale());
         UTC_SQL_DATE_HH_MM.setTimeZone(TZ_UTC);
+        UTC_SQL_DATE =
+                new SimpleDateFormat("yyyy-MM-dd", LocaleUtils.getSystemLocale());
         UTC_SQL_DATE.setTimeZone(TZ_UTC);
+    }
+
+    static {
 
         // create the parser list. These will be tried IN THE ORDER DEFINED HERE.
-        // the reasoning is (I think...) that only english speaking countries
-        // even consider using Month first formatting.
-        final boolean userSpeaksEnglish = Locale.getDefault()
-                                                .getISO3Language()
-                                                .equals(Locale.ENGLISH.getISO3Language());
 
-        addParseDateFormat("dd-MMM-yyyy HH:mm:ss", !userSpeaksEnglish);
-        addParseDateFormat("dd-MMM-yyyy HH:mm", !userSpeaksEnglish);
-        addParseDateFormat("dd-MMM-yyyy", !userSpeaksEnglish);
-
-        addParseDateFormat("dd-MMM-yy HH:mm:ss", !userSpeaksEnglish);
-        addParseDateFormat("dd-MMM-yy HH:mm", !userSpeaksEnglish);
-        addParseDateFormat("dd-MMM-yy", !userSpeaksEnglish);
-
+        // pure numerical formats
         addParseDateFormat("MM-dd-yyyy HH:mm:ss", false);
         addParseDateFormat("MM-dd-yyyy HH:mm", false);
         addParseDateFormat("MM-dd-yyyy", false);
@@ -124,137 +110,59 @@ public final class DateUtils {
         addParseDateFormat("dd-MM-yyyy HH:mm", false);
         addParseDateFormat("dd-MM-yyyy", false);
 
-        // "13 March 2009" added due to OpenLibrary
-        addParseDateFormat("dd MMM yyyy", !userSpeaksEnglish);
-        // "January 12, 1987" added due to OpenLibrary
-        addParseDateFormat("MMM d, yyyy", !userSpeaksEnglish);
-
-        // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
-        addParseDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", !userSpeaksEnglish);
-        addParseDateFormat("EEE MMM dd HH:mm ZZZZ yyyy", !userSpeaksEnglish);
-        addParseDateFormat("EEE MMM dd ZZZZ yyyy", !userSpeaksEnglish);
-
-        // SQL date formats (UTC bases, not dependent on locale)
+        // SQL date formats, pure numerical
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_HH_MM_SS);
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE_HH_MM);
         PARSE_DATE_FORMATS.add(UTC_SQL_DATE);
 
+
+        // add english if the user's System Locale is not English.
+        // This is done because internet sites we search are english.
+        final boolean addEnglish = !Objects.equals(Locale.ENGLISH.getISO3Language(),
+                                                   LocaleUtils.getSystemLocale().getISO3Language());
+        //TOMF: these are created at startup, so do not support switching Locale on the fly!
+        // the month is (localized) text, or english
+        addParseDateFormat("dd-MMM-yyyy HH:mm:ss", addEnglish);
+        addParseDateFormat("dd-MMM-yyyy HH:mm", addEnglish);
+        addParseDateFormat("dd-MMM-yyyy", addEnglish);
+
+        addParseDateFormat("dd-MMM-yy HH:mm:ss", addEnglish);
+        addParseDateFormat("dd-MMM-yy HH:mm", addEnglish);
+        addParseDateFormat("dd-MMM-yy", addEnglish);
+
+        // "13 March 2009" added due to OpenLibrary
+        addParseDateFormat("dd MMM yyyy", addEnglish);
+        // "January 12, 1987" added due to OpenLibrary
+        addParseDateFormat("MMM d, yyyy", addEnglish);
+
+        // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
+        addParseDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", addEnglish);
+        addParseDateFormat("EEE MMM dd HH:mm ZZZZ yyyy", addEnglish);
+        addParseDateFormat("EEE MMM dd ZZZZ yyyy", addEnglish);
+
         // TOMF,TEST: PARTIAL format... "March 2009" added due to OpenLibrary
-        addParseDateFormat("MMM yyyy", !userSpeaksEnglish);
+        addParseDateFormat("MMM yyyy", addEnglish);
     }
+
+    /* ------------------------------------------------------------------------------------------ */
 
     private DateUtils() {
     }
 
     /**
-     * Add a format to the parser list.
+     * Add a format to the parser list. It's always added in the System Locale format,
+     * and optionally in English.
      *
-     * @param format      date format to add
-     * @param needEnglish if set, also add the localized english version
+     * @param format     date format to add
+     * @param addEnglish if set, also add the localized english version
      */
     private static void addParseDateFormat(@NonNull final String format,
-                                           final boolean needEnglish) {
-        PARSE_DATE_FORMATS.add(new SimpleDateFormat(format));
-        if (needEnglish) {
+                                           final boolean addEnglish) {
+        PARSE_DATE_FORMATS.add(new SimpleDateFormat(format, LocaleUtils.getSystemLocale()));
+        if (addEnglish) {
             PARSE_DATE_FORMATS.add(new SimpleDateFormat(format, Locale.ENGLISH));
         }
     }
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    /**
-     * Get today's date for the Locale timezone.
-     * Should be used for dates related to the user
-     */
-    @NonNull
-    public static String localSqlDateForToday() {
-        return LOCAL_SQL_DATE.format(Calendar.getInstance().getTime());
-    }
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    /**
-     * Pretty format a (potentially partial) SQL date; local timezone.
-     *
-     * @param dateString SQL formatted date.
-     *
-     * @return human readable date string
-     *
-     * @throws NumberFormatException on failure to parse
-     */
-    public static String toPrettyDate(@NonNull final String dateString)
-            throws NumberFormatException {
-        switch (dateString.length()) {
-            case 10:
-                // YYYY-MM-DD, full date parsing.
-                Date date = parseDate(dateString);
-                if (date != null) {
-                    return PRETTY_DATE_FORMATTER.format(date);
-                }
-                // failed to parse
-                if (BuildConfig.DEBUG) {
-                    Logger.error("failed: " + dateString);
-                }
-                return dateString;
-
-            case 7:
-                // input: YYYY-MM,
-                int month = Integer.parseInt(dateString.substring(5));
-                // just swap: MMM YYYY
-                return getMonthName(month, true) + ' ' + dateString.substring(0, 4);
-
-            case 4:
-                // YYYY
-                return dateString;
-
-            default:
-                // failed to parse
-                if (BuildConfig.DEBUG) {
-                    Logger.error("failed: " + dateString);
-                }
-                return dateString;
-        }
-    }
-
-    /**
-     * Pretty format a datetime; local timezone.
-     */
-    @NonNull
-    public static String toPrettyDateTime(@NonNull final Date date) {
-        return PRETTY_DATETIME_FORMATTER.format(date);
-    }
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    /**
-     * Convert a Date to a UTC based SQL date-string.
-     *
-     * @return SQL date-string
-     */
-    @NonNull
-    public static String utcSqlDate(@NonNull final Date date) {
-        return UTC_SQL_DATE.format(date);
-    }
-
-    /**
-     * Convert a Date to a UTC based SQL datetime-string.
-     *
-     * @return SQL datetime-string
-     */
-    @NonNull
-    public static String utcSqlDateTime(@NonNull final Date date) {
-        return UTC_SQL_DATE_HH_MM_SS.format(date);
-    }
-
-    /**
-     * @return today's date for the UTC timezone.
-     */
-    @NonNull
-    public static String utcSqlDateTimeForToday() {
-        return UTC_SQL_DATE_HH_MM_SS.format(Calendar.getInstance().getTime());
-    }
-
-    /* ------------------------------------------------------------------------------------------ */
 
     /**
      * Attempt to parse a date string based on a range of possible formats.
@@ -299,9 +207,17 @@ public final class DateUtils {
             }
         }
 
-        // All SDFs failed, try locale-specific...
+        // try Default Locale.
         try {
             DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+            df.setLenient(lenient);
+            return df.parse(dateString);
+        } catch (ParseException ignore) {
+        }
+
+        // try System Locale.
+        try {
+            DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, LocaleUtils.getSystemLocale());
             df.setLenient(lenient);
             return df.parse(dateString);
         } catch (ParseException ignore) {
@@ -309,39 +225,149 @@ public final class DateUtils {
         return null;
     }
 
-    @NonNull
-    public static String getMonthName(@IntRange(from = 1, to = 12) final int month) {
-        return getMonthName(month, false);
+    /**
+     * Pretty format a (potentially partial) SQL date;  Locale based.
+     *
+     * @param locale     to use
+     * @param dateString SQL formatted date.
+     *
+     * @return human readable date string
+     *
+     * @throws NumberFormatException on failure to parse
+     */
+    public static String toPrettyDate(@NonNull final Locale locale,
+                                      @NonNull final String dateString)
+            throws NumberFormatException {
+        switch (dateString.length()) {
+            case 10:
+                // YYYY-MM-DD, full date parsing.
+                Date date = parseDate(dateString);
+                if (date != null) {
+                    return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date);
+                }
+                // failed to parse
+                if (BuildConfig.DEBUG) {
+                    Logger.error("failed: " + dateString);
+                }
+                return dateString;
+
+            case 7:
+                // input: YYYY-MM, at least we presume it is... maybe add a sanity check ?
+                int month = Integer.parseInt(dateString.substring(5));
+                // just swap: MMM YYYY
+                return getMonthName(locale, month, true) + ' ' + dateString.substring(0, 4);
+
+            case 4:
+                // YYYY, at least we presume it is... maybe add a sanity check ?
+                return dateString;
+
+            default:
+                // failed to parse
+                if (BuildConfig.DEBUG) {
+                    Logger.error("failed: " + dateString);
+                }
+                return dateString;
+        }
     }
 
     /**
-     * @param month 1-12 based month number
+     * Pretty format a datetime; Locale based.
+     *
+     * @param locale to use
+     * @param date   to format
+     */
+    @NonNull
+    public static String toPrettyDateTime(@NonNull final Locale locale,
+                                          @NonNull final Date date) {
+        return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,
+                                              locale).format(date);
+    }
+
+    /**
+     * Get today's date.
+     * Should be used for dates directly related to the user (date acquired, date read, etc...)
+     *
+     * @return SQL datetime-string, for the System Locale.
+     */
+    @NonNull
+    public static String localSqlDateForToday() {
+        Calendar calendar = Calendar.getInstance(LocaleUtils.getSystemLocale());
+        return LOCAL_SQL_DATE.format(calendar.getTime());
+    }
+
+    /**
+     * Convert a Date to a UTC based SQL datetime-string.
+     *
+     * @return SQL datetime-string, for the UTC timezone.
+     */
+    @NonNull
+    public static String utcSqlDateTime(@NonNull final Date date) {
+        return UTC_SQL_DATE_HH_MM_SS.format(date);
+    }
+
+    /**
+     * @return today's SQL datetime-string, for the UTC timezone.
+     */
+    @NonNull
+    public static String utcSqlDateTimeForToday() {
+        return UTC_SQL_DATE_HH_MM_SS.format(
+                Calendar.getInstance(LocaleUtils.getSystemLocale()).getTime());
+    }
+
+    /**
+     * Convert a Date to a UTC based SQL date-string.
+     *
+     * @return SQL date-string, for the UTC timezone.
+     */
+    @NonNull
+    public static String utcSqlDate(@NonNull final Date date) {
+        return UTC_SQL_DATE.format(date);
+    }
+
+    /**
+     * @param locale    to use
+     * @param month     1-12 based month number
+     * @param shortName <tt>true</tt> to get the abbreviated name instead of the full name.
      *
      * @return localised name of Month
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
-    public static String getMonthName(@IntRange(from = 1, to = 12) final int month,
+    public static String getMonthName(@NonNull final Locale locale,
+                                      @IntRange(from = 1, to = 12) final int month,
                                       final boolean shortName) {
-        if (mMonthNameFormatter == null) {
-            mMonthNameFormatter = new SimpleDateFormat("MMMM");
-            mMonthShortNameFormatter = new SimpleDateFormat("MMM");
+
+        String iso3 = locale.getISO3Language();
+        String[] longNames = MONTH_LONG_NAMES.get(iso3);
+        String[] shortNames = MONTH_SHORT_NAMES.get(iso3);
+
+        if (longNames == null) {
+            // Build the cache for this locale.
+            Calendar calendar = Calendar.getInstance(locale);
+            SimpleDateFormat longNameFormatter = new SimpleDateFormat("MMMM", locale);
+            SimpleDateFormat shortNameFormatter = new SimpleDateFormat("MMM", locale);
+
+            longNames = new String[12];
+            shortNames = new String[12];
+            for (int m = 0; m < 12; m++) {
+                calendar.set(Calendar.MONTH, m);
+                longNames[m] = longNameFormatter.format(calendar.getTime());
+                shortNames[m] = shortNameFormatter.format(calendar.getTime());
+            }
+            MONTH_LONG_NAMES.put(iso3, longNames);
+            MONTH_SHORT_NAMES.put(iso3, shortNames);
         }
-        // Create static calendar if necessary
-        if (mCalendar == null) {
-            mCalendar = Calendar.getInstance();
-        }
-        // Assumes months are integers and in sequence...which everyone seems to assume
-        mCalendar.set(Calendar.MONTH, month - 1 + Calendar.JANUARY);
+
         if (shortName) {
-            return mMonthShortNameFormatter.format(mCalendar.getTime());
+            //noinspection ConstantConditions
+            return shortNames[month - 1];
         } else {
-            return mMonthNameFormatter.format(mCalendar.getTime());
+            return longNames[month - 1];
         }
     }
 
     /**
      * Passed date components build a (partial) SQL format date string.
+     * Locale independent.
      *
      * @return Formatted date, eg. '2011-11-01' or '2011-11'
      */

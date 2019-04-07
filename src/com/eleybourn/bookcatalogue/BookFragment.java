@@ -13,20 +13,18 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 
 import com.eleybourn.bookcatalogue.adapters.TOCAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataManager;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.datamanager.Fields.Field;
@@ -100,6 +98,7 @@ public class BookFragment
      *
      * @return <tt>false</tt>
      */
+    @Override
     public boolean isDirty() {
         return false;
     }
@@ -109,6 +108,7 @@ public class BookFragment
      *
      * @param isDirty ignored.
      */
+    @Override
     public void setDirty(final boolean isDirty) {
         // ignore
     }
@@ -153,8 +153,7 @@ public class BookFragment
      * Set the current visible book id int the result code.
      */
     private void setDefaultActivityResult() {
-        Intent data = new Intent()
-                .putExtra(DatabaseDefinitions.KEY_ID, getBook().getId());
+        Intent data = new Intent().putExtra(DBDefinitions.KEY_ID, getBook().getId());
         mActivity.setResult(Activity.RESULT_OK, data);
     }
 
@@ -168,14 +167,14 @@ public class BookFragment
         // not added here: non-text TOC
 
         // book fields
-        mFields.add(R.id.title, DatabaseDefinitions.KEY_TITLE);
-        mFields.add(R.id.isbn, DatabaseDefinitions.KEY_ISBN);
-        mFields.add(R.id.description, DatabaseDefinitions.KEY_DESCRIPTION)
+        mFields.add(R.id.title, DBDefinitions.KEY_TITLE);
+        mFields.add(R.id.isbn, DBDefinitions.KEY_ISBN);
+        mFields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION)
                .setShowHtml(true);
-        mFields.add(R.id.genre, DatabaseDefinitions.KEY_GENRE);
-        mFields.add(R.id.language, DatabaseDefinitions.KEY_LANGUAGE)
+        mFields.add(R.id.genre, DBDefinitions.KEY_GENRE);
+        mFields.add(R.id.language, DBDefinitions.KEY_LANGUAGE)
                .setFormatter(new Fields.LanguageFormatter());
-        mFields.add(R.id.pages, DatabaseDefinitions.KEY_PAGES)
+        mFields.add(R.id.pages, DBDefinitions.KEY_PAGES)
                .setFormatter(new Fields.FieldFormatter() {
                    @NonNull
                    @Override
@@ -200,61 +199,60 @@ public class BookFragment
                        throw new UnsupportedOperationException();
                    }
                });
-        mFields.add(R.id.format, DatabaseDefinitions.KEY_FORMAT);
-        mFields.add(R.id.price_listed, DatabaseDefinitions.KEY_PRICE_LISTED)
+        mFields.add(R.id.format, DBDefinitions.KEY_FORMAT);
+        mFields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED)
                .setFormatter(new Fields.PriceFormatter());
-        mFields.add(R.id.first_publication, DatabaseDefinitions.KEY_DATE_FIRST_PUBLISHED)
+        mFields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLISHED)
                .setFormatter(dateFormatter);
 
         // defined, but handled manually
-        mFields.add(R.id.author, "", DatabaseDefinitions.KEY_AUTHOR);
+        mFields.add(R.id.author, "", DBDefinitions.KEY_AUTHOR);
         // defined, but handled manually
-        mFields.add(R.id.series, "", DatabaseDefinitions.KEY_SERIES);
+        mFields.add(R.id.series, "", DBDefinitions.KEY_SERIES);
 
         // populated, but manually re-populated.
-        mFields.add(R.id.publisher, DatabaseDefinitions.KEY_PUBLISHER);
+        mFields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER);
         // not a field on the screen, but used in re-population of publisher.
-        mFields.add(R.id.date_published, DatabaseDefinitions.KEY_DATE_PUBLISHED)
+        mFields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED)
                .setFormatter(dateFormatter);
 
         // ENHANCE: {@link Fields.ImageViewAccessor}
 //        Field field = mFields.add(R.id.coverImage, UniqueId.KEY_BOOK_UUID, UniqueId.BKEY_COVER_IMAGE);
         Field field = mFields.add(R.id.coverImage, "", UniqueId.BKEY_COVER_IMAGE);
-        ImageUtils.ImageSize imageSize = ImageUtils.getImageSizes(mActivity);
+        ImageUtils.DisplaySizes displaySizes = ImageUtils.getDisplaySizes(mActivity);
 //        Fields.ImageViewAccessor iva = field.getFieldDataAccessor();
-//        iva.setMaxSize(imageSize.small, imageSize.standard);
+//        iva.setMaxSize(imageSize.standard, imageSize.standard);
         mCoverHandler = new CoverHandler(this, mDb, getBookManager(),
                                          mFields.getField(R.id.isbn), field,
-                                         imageSize.small, imageSize.standard);
+                                         displaySizes.standard, displaySizes.standard);
 
         // Personal fields
-        mFields.add(R.id.date_acquired, DatabaseDefinitions.KEY_DATE_ACQUIRED)
+        mFields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED)
                .setFormatter(dateFormatter);
-        mFields.add(R.id.price_paid, DatabaseDefinitions.KEY_PRICE_PAID)
+        mFields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID)
                .setFormatter(new Fields.PriceFormatter());
-        //noinspection ConstantConditions
-        mFields.add(R.id.edition, DatabaseDefinitions.KEY_EDITION_BITMASK)
-               .setFormatter(new Book.BookEditionsFormatter(getContext()));
-        mFields.add(R.id.location, DatabaseDefinitions.KEY_LOCATION);
-        mFields.add(R.id.rating, DatabaseDefinitions.KEY_RATING);
-        mFields.add(R.id.notes, DatabaseDefinitions.KEY_NOTES)
+        mFields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK)
+               .setFormatter(new Book.BookEditionsFormatter());
+        mFields.add(R.id.location, DBDefinitions.KEY_LOCATION);
+        mFields.add(R.id.rating, DBDefinitions.KEY_RATING);
+        mFields.add(R.id.notes, DBDefinitions.KEY_NOTES)
                .setShowHtml(true);
-        mFields.add(R.id.read_start, DatabaseDefinitions.KEY_READ_START)
+        mFields.add(R.id.read_start, DBDefinitions.KEY_READ_START)
                .setFormatter(dateFormatter);
-        mFields.add(R.id.read_end, DatabaseDefinitions.KEY_READ_END)
+        mFields.add(R.id.read_end, DBDefinitions.KEY_READ_END)
                .setFormatter(dateFormatter);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.read, DatabaseDefinitions.KEY_READ);
+        mFields.add(R.id.read, DBDefinitions.KEY_READ);
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        mFields.add(R.id.signed, DatabaseDefinitions.KEY_SIGNED)
+        mFields.add(R.id.signed, DBDefinitions.KEY_SIGNED)
                .setFormatter(new Fields.BinaryYesNoEmptyFormatter(requireContext()));
 
         // defined, but handled manually
-        mFields.add(R.id.bookshelves, "", DatabaseDefinitions.KEY_BOOKSHELF);
+        mFields.add(R.id.bookshelves, "", DBDefinitions.KEY_BOOKSHELF);
 
         // defined, but handled manually
-        mFields.add(R.id.loaned_to, "", DatabaseDefinitions.KEY_LOANEE);
+        mFields.add(R.id.loaned_to, "", DBDefinitions.KEY_LOANEE);
     }
 
     @CallSuper
@@ -288,10 +286,10 @@ public class BookFragment
         //TODO: this defeats the ease of use of the formatter... populate manually or something...
         //noinspection ConstantConditions
         ((Fields.PriceFormatter) mFields.getField(R.id.price_listed).getFormatter())
-                .setCurrencyCode(book.getString(DatabaseDefinitions.KEY_PRICE_LISTED_CURRENCY));
+                .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
         //noinspection ConstantConditions
         ((Fields.PriceFormatter) mFields.getField(R.id.price_paid).getFormatter())
-                .setCurrencyCode(book.getString(DatabaseDefinitions.KEY_PRICE_PAID_CURRENCY));
+                .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
 
         super.onLoadFieldsFromBook(book, setAllFrom);
 
@@ -302,7 +300,7 @@ public class BookFragment
         // allow the field to known the uuid of the book, so it can load 'itself'
         mFields.getField(R.id.coverImage)
                .getView()
-               .setTag(R.id.TAG_UUID, book.get(DatabaseDefinitions.KEY_BOOK_UUID));
+               .setTag(R.id.TAG_UUID, book.get(DBDefinitions.KEY_BOOK_UUID));
         mCoverHandler.updateCoverView();
 
         // handle 'text' DoNotFetch fields
@@ -313,23 +311,10 @@ public class BookFragment
         // handle non-text fields
         populateTOC(book);
 
-        // hide unwanted and empty text fields
+        // hide unwanted and empty fields
         showHideFields(true);
 
-        // non-text fields:
-
-        // hide publishing header if no fields populated.
-        if (mFields.getField(R.id.publisher).isVisible()
-                || mFields.getField(R.id.date_published).isVisible()
-                || mFields.getField(R.id.price_listed).isVisible()
-                || mFields.getField(R.id.first_publication).isVisible()) {
-
-            requireView().findViewById(R.id.lbl_publishing).setVisibility(View.VISIBLE);
-        } else {
-            requireView().findViewById(R.id.lbl_publishing).setVisibility(View.GONE);
-        }
-
-        // can't use showHideFields as the field could contain "0"
+        // can't use showHideFields as the field could contain "0" (as a String)
         Field editionsField = mFields.getField(R.id.edition);
         if ("0".equals(editionsField.getValue().toString())) {
             requireView().findViewById(R.id.lbl_edition).setVisibility(View.GONE);
@@ -422,7 +407,8 @@ public class BookFragment
         Field field = mFields.getField(R.id.series);
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         int seriesCount = list.size();
-        boolean visible = seriesCount != 0 && Fields.isVisible(DatabaseDefinitions.KEY_SERIES);
+
+        boolean visible = seriesCount != 0 && Fields.isVisible(DBDefinitions.KEY_SERIES);
         if (visible) {
             field.setValue(Csv.join("\n", list, Series::getDisplayName));
             field.getView().setVisibility(View.VISIBLE);
@@ -431,8 +417,8 @@ public class BookFragment
             field.getView().setVisibility(View.GONE);
         }
         // and the label
-        requireView().findViewById(R.id.lbl_series).setVisibility(
-                visible ? View.VISIBLE : View.GONE);
+        requireView().findViewById(R.id.lbl_series)
+                     .setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
 
@@ -475,28 +461,27 @@ public class BookFragment
      */
     private void populateTOC(@NonNull final Book book) {
         //ENHANCE: add to mFields?
-        ArrayList<TocEntry> list = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        ArrayList<TocEntry> tocList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         // only show if: field in use + it's flagged as having a toc + the toc actually has titles
-        boolean visible = Fields.isVisible(DatabaseDefinitions.KEY_TOC_BITMASK)
-                && book.isBitSet(DatabaseDefinitions.KEY_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS)
-                && !list.isEmpty();
+        boolean visible = Fields.isVisible(DBDefinitions.KEY_TOC_BITMASK)
+                && book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS)
+                && !tocList.isEmpty();
 
         View tocLabel = requireView().findViewById(R.id.lbl_toc);
         View tocButton = requireView().findViewById(R.id.toc_button);
-        final ListView tocList = requireView().findViewById(R.id.toc);
 
         if (visible) {
-            ArrayAdapter<TocEntry> adapter =
-                    new TOCAdapter(mActivity, R.layout.row_toc_entry_with_author, list);
-            tocList.setAdapter(adapter);
+            ListView tocView = requireView().findViewById(R.id.toc);
+            tocView.setAdapter(
+                    new TOCAdapter(mActivity, R.layout.row_toc_entry_with_author, tocList));
 
             tocButton.setOnClickListener(v -> {
-                if (tocList.getVisibility() == View.VISIBLE) {
-                    tocList.setVisibility(View.GONE);
+                if (tocView.getVisibility() == View.VISIBLE) {
+                    tocView.setVisibility(View.GONE);
                 } else {
-                    tocList.setVisibility(View.VISIBLE);
-                    ViewUtils.justifyListViewHeightBasedOnChildren(tocList);
+                    tocView.setVisibility(View.VISIBLE);
+                    ViewUtils.adjustListViewHeightBasedOnChildren(tocView);
                 }
             });
         }
@@ -516,6 +501,8 @@ public class BookFragment
      * This is an ESSENTIAL step; for some reason, in Android 2.1 if these statements are not
      * cleaned up, then the underlying SQLiteDatabase gets double-dereference'd, resulting in
      * the database being closed by the deeply dodgy auto-close code in Android.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
     @CallSuper
@@ -550,6 +537,7 @@ public class BookFragment
     /* ------------------------------------------------------------------------------------------ */
 
     //<editor-fold desc="Menu handlers">
+
     @Override
     @CallSuper
     public boolean onContextItemSelected(@NonNull final MenuItem item) {
@@ -564,11 +552,6 @@ public class BookFragment
         }
     }
 
-    /**
-     * @see #setHasOptionsMenu
-     * @see #onPrepareOptionsMenu
-     * @see #onOptionsItemSelected
-     */
     @Override
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
@@ -594,7 +577,7 @@ public class BookFragment
         menu.setGroupVisible(R.id.MENU_BOOK_READ, bookExists && !isRead);
         menu.setGroupVisible(R.id.MENU_BOOK_UNREAD, bookExists && isRead);
 
-        if (Fields.isVisible(DatabaseDefinitions.KEY_LOANEE)) {
+        if (Fields.isVisible(DBDefinitions.KEY_LOANEE)) {
             boolean isAvailable = null == mDb.getLoaneeByBookId(getBook().getId());
             menu.setGroupVisible(R.id.MENU_BOOK_EDIT_LOAN, bookExists && isAvailable);
             menu.setGroupVisible(R.id.MENU_BOOK_LOAN_RETURNED, bookExists && !isAvailable);
@@ -603,20 +586,13 @@ public class BookFragment
         super.onPrepareOptionsMenu(menu);
     }
 
-    /**
-     * Called when a menu item is selected.
-     *
-     * @param item The item selected
-     *
-     * @return <tt>true</tt> if handled
-     */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_EDIT:
                 Intent intent = new Intent(getContext(), EditBookActivity.class)
-                        .putExtra(DatabaseDefinitions.KEY_ID, getBook().getId())
+                        .putExtra(DBDefinitions.KEY_ID, getBook().getId())
                         .putExtra(EditBookFragment.REQUEST_BKEY_TAB, EditBookFragment.TAB_EDIT);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                 return true;
@@ -631,11 +607,7 @@ public class BookFragment
                 return true;
 
             case R.id.MENU_BOOK_EDIT_LOAN:
-                FragmentManager fm = requireFragmentManager();
-                if (fm.findFragmentByTag(LendBookDialogFragment.TAG) == null) {
-                    LendBookDialogFragment.newInstance(getBook())
-                                          .show(fm, LendBookDialogFragment.TAG);
-                }
+                LendBookDialogFragment.show(requireFragmentManager(), getBook());
                 return true;
 
             case R.id.MENU_BOOK_LOAN_RETURNED:
@@ -679,7 +651,7 @@ public class BookFragment
                               @Nullable final Bundle data) {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-                populateLoanedToField(data.getString(DatabaseDefinitions.KEY_LOANEE));
+                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
             } else {
                 Logger.error("bookId=" + bookId + ", fieldsChanged=" + fieldsChanged);
             }

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
@@ -57,7 +57,7 @@ public class BookSearchByTextFragment
         super.onActivityCreated(savedInstanceState);
         Bundle args = savedInstanceState == null ? requireArguments() : savedInstanceState;
         mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
-        mTitleSearchText = args.getString(DatabaseDefinitions.KEY_TITLE, "");
+        mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
 
         ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
@@ -145,7 +145,7 @@ public class BookSearchByTextFragment
                 mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_adding_book);
                 Intent intent = new Intent(getContext(), EditBookActivity.class)
                         .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-                startActivityForResult(intent, REQ_BOOK_EDIT);
+                startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
 
                 // Clear the data entry fields ready for the next one
                 mAuthorView.setText("");
@@ -191,7 +191,7 @@ public class BookSearchByTextFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
-        outState.putString(DatabaseDefinitions.KEY_TITLE, mTitleSearchText);
+        outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
     }
 
     /**

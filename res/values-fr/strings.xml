@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?><!--
- define entities that can be used inside of other string (not possible with standard Android resources
- e.g. the entities file define app_name; use it in another string with:  &APP_NAME;
+ define entities that can be used inside of other string (not possible with standard Android
+ resources e.g. the entities file define APP_NAME; use it in another string with:  &APP_NAME;
  cannot put these into an external file: https://issuetracker.google.com/issues/68434088 -->
 <!DOCTYPE resources [<!ENTITY APP_NAME "NeverToManyBooks">]>
 
 <resources>
-    <!-- ========== not in use ========== -->
-
-    <!-- ========== in use ========== -->
-
     <string name="about_lbl_contacts">Contact:</string>
     <string name="lbl_series">Série</string>
     <string name="lbl_series_num">No</string>
@@ -36,7 +32,7 @@
     <string name="X_info_no_bookshelves_yet">Vous n\'avez pas encore créé de bibliothèque. Veuillez en ajouter une par le menu en bas de cet écran.</string>
     <string name="menu_add_bookshelf">Créer une bibliothèque</string>
     <string name="X_btn_confirm_add_bs">Ajouter une bibliothèque</string>
-    <string name="menu_edit_bookshelves">Gérer les bibliothèques</string>
+    <string name="menu_bookshelves">Bibliothèques…</string>
     <string name="X_btn_confirm_save_bs">Sauvegarder la bibliothèque</string>
     <string name="menu_delete_bookshelf">Supprimer la bibliothèque</string>
     <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque</string>
@@ -62,7 +58,6 @@
     <string name="menu_administration_long">Administration</string>
     <string name="menu_administration">Admin</string>
     <string name="title_install_scan">Installer le scanner de code barre</string>
-    <string name="X_about_lbl_version_number">Numéro de version :</string>
     <string name="about_donate">
         Si vous souhaitez supporter le développement de cette application, les donations sont
         possibles par Amazon Wishlist ou par le bouton Paypal ci-dessous. Je suis en Australie,
@@ -101,7 +96,6 @@
     <string name="error_search_exception">Recherche en échec pendant %1$s : %2$s</string>
     <string name="menu_delete">Supprimer la vignette</string>
     <string name="help">Aide</string>
-    <string name="menu_manage_fields">Gérer la visibilité des champs</string>
     <string name="info_manage_fields">Les champs sélectionnés sont visibles dans les écrans d\‘ajout et d\’édition des livres. Les champs non sélectionnés sont cachés.</string>
     <string name="X_anthology_titles">Titres de l\'anthologie</string>
     <string name="about_donate_amazon">Idées cadeaux Amazon</string>
@@ -141,7 +135,7 @@
         préférable. Rappelez-vous qu\'il est parfois possible de trouver le bon code barre
         à l\'intérieur de la couverture.\n\n
     </string>
-    <string name="about_help_click_here">Veuillez cliquer ici pour accéder à l\'aide en ligne.</string>
+    <string name="about_help_tap_here">Veuillez cliquer ici pour accéder à l\'aide en ligne.</string>
     <string name="vldt_unable_to_get_value">Impossible d\'obtenir la valeur de ‘%1$s’</string>
     <string name="vldt_integer_expected">Valeur entière attendue pour ‘%1$s’</string>
     <string name="vldt_real_expected">Valeur décimale attendue pour ‘%1$s’</string>
@@ -172,8 +166,6 @@
     <string name="X_warning_required_author">Le champ « auteur » est vide</string>
     <string name="warning_series_already_in_list">La série est déjà dans la liste</string>
     <string name="X_warning_required_series">Le champ « série » est vide</string>
-    <string name="X_export_error_csv_failed">Export en échec : impossible d\'écrire sur la carte SD</string>
-    <string name="X_error_download_thumbnail_failed">Téléchargement de miniature en échec : impossible d\'écrire sur la carte SD</string>
     <string name="progress_msg_skip_title">Passer - %1$s</string>
     <string name="progress_end_num_books_searched">%1$d livres recherchés</string>
     <string name="progress_end_cancelled_info">Annulé - %1$s</string>
@@ -219,8 +211,8 @@
     </string>
     <string name="warning_editions_require_isbn">Retrouver les autres éditions nécessite un ISBN</string>
     <string name="warning_no_editions">Aucune édition disponible</string>
-    <string name="title_finding_editions">Éditions en cours de recherche…</string>
-    <string name="info_click_on_thumb">Cliquez sur une vignette pour afficher une image plus grande</string>
+    <string name="progress_msg_finding_editions">Éditions en cours de recherche…</string>
+    <string name="info_tap_on_thumb">Cliquez sur une vignette pour afficher une image plus grande</string>
     <string name="progress_msg_loading">Chargement…</string>
     <string name="warning_cover_not_found">Image non trouvée</string>
     <string name="warning_select_min_1_field">Choisissez au moins un champ à mettre à jour</string>
@@ -284,7 +276,6 @@
     <string name="debug_subject">Collecte des informations de débogage en cours</string>
     <string name="debug_body">Merci de prendre le temps de décrire brièvement le problème que vous rencontrez.</string>
     <string name="menu_duplicate_book">Livre en double</string>
-    <string name="X_warning_cannot_edit_system">Vous ne pouvez pas modifier les valeurs du système</string>
     <string name="error_no_internet_connection">Pas de connexion Internet disponible.</string>
     <string name="menu_share_this">Partager</string>
     <string name="export_csv_email">Souhaitez-vous envoyer cet export par courriel ?</string>
@@ -294,7 +285,6 @@
     <string name="gr_tq_menu_delete_task">Supprimer la tâche</string>
     <string name="bookshelf_my_books">Mes livres</string>
     <string name="X_loan_return_edit_book">Prêter, retourner ou modifier le livre</string>
-    <string name="X_menu_admin_and_prefs">Administration et préférences</string>
     <string name="gr_menu_send_to_goodreads">Envoyer à Goodreads</string>
     <string name="gr_auth_blurb_part1">
         Goodreads est un site qui s\'est donné pour mission « d\'aider les gens à trouver et à partager les livres qu\'ils aiment ».
@@ -320,7 +310,6 @@
     <string name="gr_title_auth_access">Autoriser l\'accès</string>
     <string name="gr_auth_access_already_auth">Il semble que vous avez déjà autorisé cette application. Toutes les fonctionnalités Goodreads devraient être déjà disponibles.</string>
     <string name="gr_access_error">Problème réseau lors de l\'accès à Goodreads : vérifiez que le site Goodreads est disponible et si le problème persiste, prenez contact avec le support.</string>
-    <string name="X_menu_preferences_other">Autres préférences</string>
     <string name="gr_tq_menu_background_tasks">Tâches en arrière plan</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Nettoyer les anciennes tâches</string>
     <string name="gr_tq_btn_cleanup_old_events">Nettoyer les anciens événements</string>
@@ -383,11 +372,11 @@
     <string name="lbl_data_import_export">Import ou export de données</string>
     <string name="X_unrecognized_task">Tâche non reconnue</string>
     <string name="progress_msg_rebuilding_search_index">Construction de l\'index de recherche en cours…</string>
-    <string name="progress_msg_optimizing_databases">Optimisation de bases de données en cours…</string>
+    <string name="progress_msg_optimizing">Optimisation de bases de données en cours…</string>
     <string name="progress_msg_starting_up">Démarrage…</string>
     <string name="lbl_application_startup">Démarrage de &APP_NAME;</string>
     <string name="searching_goodreads">Recherche en cours sur Goodreads</string>
-    <string name="menu_edit_booklist_styles">Modifier les styles de liste de livres</string>
+    <string name="menu_booklist_styles">Styles de liste de livres…</string>
     <string name="menu_show_more_ellipsis">Montrer plus…</string>
     <string name="menu_show_fewer_ellipsis">Montrer moins…</string>
     <string name="menu_customize_ellipsis">Personnaliser…</string>
@@ -438,9 +427,6 @@
     <string name="X_title_add_style">Nouveau style</string>
     <string name="X_pt_bob_filter_read">Sélectionner en utilisant le statut « lu »</string>
     <string name="title_select_style">Sélectionner un style</string>
-    <string name="X_booklist_background_style">Style d\'arrière plan de la liste de livres</string>
-    <string name="X_textured_background">Image d\'arrière plan</string>
-    <string name="X_plain_background_b_reduces_flicker_b">Arrière plan uni (réduit le clignotement)</string>
     <string name="warning_required_field_x">%1$s ne doit pas être vide</string>
     <string name="edit">Modifier</string>
     <string name="lbl_settings">Préférences</string>
@@ -541,7 +527,6 @@
     <string name="warning_required_name">Le nom ne peut pas être vide</string>
     <string name="progress_msg_export_starting">Démarrage de l\'export…</string>
     <string name="menu_sort_and_style_ellipsis">Tri &amp; style…</string>
-    <string name="X_disable_background_image">Désactiver l\'image d\'arrière plan</string>
     <string name="info_displaying_n_books_in_m_entries">Affichage de %1$d livres, parmi %2$d entrées</string>
     <string name="X_lbl_loan_book_available">Disponible</string>
 
@@ -639,7 +624,7 @@
     <string name="warning_select_an_existing_file">Veuillez choisir un fichier existant</string>
     <!-- Displayed when a file/save dialog results in selecting a directory file -->
     <string name="warning_select_a_non_directory">Veuillez choisir un fichier et non un répertoire</string>
-    <!-- Displayed in Admin menu advanced options (top make a copy of the internal database on the sdcard -->
+    <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
     <string name="menu_copy_database">Copie de la base de données (support tech.)</string>
 
     <!-- Displayed when an archive operation fails -->
@@ -730,7 +715,7 @@
         <item quantity="other">%1$s étoiles</item>
     </plurals>
 
-    <string name="progress_msg_searching_directory">Recherche dans le répertoire …</string>
+    <string name="progress_msg_reading_directory">Recherche dans le répertoire …</string>
 
     <!-- Menu item -->
     <string name="menu_amazon_books_in_series">Livres dans cette série</string>
@@ -765,8 +750,6 @@
         vous pouvez installer le lecteur de codes barre Zxing ou pic2shop.
     </string>
 
-    <string name="pt_ui_system_locale">Paramètres de langue du système</string>
-
     <!-- Credits in the 'about' dialog -->
     <string name="about_translators">
         &APP_NAME; est le résultat de l\'effort de beaucoup de
@@ -799,9 +782,9 @@
     <string name="send_mail">Envoyer un email…</string>
     <string name="menu_set_incomplete">Marquer comme incomplet</string>
     <string name="menu_set_complete">Marquer comme complet</string>
-    <string name="error_search_configuration">Erreur de configuration Web. Ouvrez la page Admin et vérifiez les paramètres des pages de recherche.</string>
+    <string name="error_search_configuration">Erreur de configuration. Ouvrez votre Préférences et vérifiez les paramètres des pages de recherche.</string>
     <string name="lbl_search_sites">Sites de recherche</string>
-    <string name="lbl_search_site_order">Ordre</string>
+    <string name="lbl_search_site_order">l\' Ordre</string>
     <string name="search_with_text">Recherche: %1$s</string>
     <string name="btn_options">Options</string>
     <string name="lbl_price_paid">Payé</string>
@@ -819,8 +802,6 @@
     <string name="progress_msg_process_preferences">Préférences…</string>
     <string name="progress_msg_process_cover">Couvertures…</string>
     <string name="warning_required_at_least_one">Au moins un champ ne doit pas être vide</string>
-    <string name="progress_msg_cleaning_database">Nettoyage de la base de données…</string>
-    <string name="progress_msg_updating_languages">Mise à jour des langues…</string>
     <string name="menu_internet_update_fields">Mise à jour des champs</string>
     <string name="progress_msg_process_booklist_style">Styles de la liste de lecture…</string>
     <string name="usage_skip">Omettre</string>
@@ -828,9 +809,7 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
-    <string name="pt_bob_preferred_style">Préféré</string>
     <string name="lbl_books">Livres</string>
-    <string name="X_title_edit_genre">Modifier les détails du genre</string>
     <string name="menu_loan_return_book">Le livre emprunté est de retour</string>
     <string name="error_google_play_missing">Google Play / Market n\'est pas installé</string>
     <string name="lbl_style">Style</string>
@@ -845,7 +824,7 @@
     <string name="import_export_option_xml">Toutes les données au format XML</string>
     <string name="lbl_lending">Prêt</string>
     <string name="menu_clear_filters">Effacer les filtres</string>
-    <string name="menu_author_details">Détails de l\'auteur</string>
+    <string name="menu_author_details">Toutes les œuvres de cet auteur</string>
     <string name="lbl_styles">Les styles</string>
     <string name="book_format_paperback">Livre de poche</string>
     <string name="book_format_hardcover">Relié</string>
@@ -861,7 +840,6 @@
     <string name="books_found">%1$d livres trouvés</string>
     <string name="gr_tq_events_recorded">(%1$d événements enregistrés)</string>
     <string name="gr_tq_generic_task_info">ID de tâche %1$d, en file d\'attente à %2$s</string>
-    <string name="X_error_storage_cannot_write">Impossible d\'écrire sur la carte SD</string>
     <string name="X_events_found">%1$d événements trouvés</string>
     <string name="book_format_digest">Résumé</string>
 </resources>

@@ -55,6 +55,7 @@
 
     <!-- Preference - Preferred interface Locale -->
     <string name="pt_ui_language">Dil</string>
+    <string name="pt_ui_field_visibility">Alan görünürlüğünü yönet</string>
 
     <!-- Preference - Degrees by which to rotate camera images automatically -->
     <string name="pt_thumbnails_rotate_auto">Kamera resimlerini özdevinimli olarak döndür</string>

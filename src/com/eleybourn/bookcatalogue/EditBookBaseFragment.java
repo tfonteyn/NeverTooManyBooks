@@ -96,6 +96,7 @@ public abstract class EditBookBaseFragment
      *
      * @param book field content will be copied to this object
      */
+    @CallSuper
     protected void onSaveFieldsToBook(@NonNull final Book book) {
         Tracker.enterOnSaveFieldsToBook(this, book.getId());
         mFields.putAllInto(book);

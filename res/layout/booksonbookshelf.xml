@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Use DrawerLayout as root container for activity -->
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fslv="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
@@ -99,7 +100,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header_divider"
-            />
+            fslv:scrollHandle="@drawable/scrollbar_handle_accelerated_anim2"
+            fslv:overlay="@drawable/fast_scroller_overlay"
+            fslv:textColor="?android:attr/textColorPrimary"
+            >
+        <requestFocus />
+        </com.eleybourn.bookcatalogue.widgets.FastScrollListView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

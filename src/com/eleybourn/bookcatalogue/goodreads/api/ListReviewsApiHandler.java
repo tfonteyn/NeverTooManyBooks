@@ -20,7 +20,6 @@
 
 package com.eleybourn.bookcatalogue.goodreads.api;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -35,12 +34,13 @@ import org.apache.http.client.methods.HttpGet;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.database.DatabaseDefinitions;
+import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.goodreads.BookNotFoundException;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.xml.ElementContext;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter;
 import com.eleybourn.bookcatalogue.utils.xml.SimpleXmlFilter.BuilderContext;
@@ -241,9 +241,9 @@ public class ListReviewsApiHandler
         extends ApiHandler {
 
     /** Date format used for parsing 'last_update_date'. */
-    @SuppressLint("SimpleDateFormat")
     private static final SimpleDateFormat UPDATE_DATE_FMT
-            = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy");
+            = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy",
+                                   LocaleUtils.getSystemLocale());
 
     /**
      * Listener to handle the contents of the date_updated field. We only
@@ -442,16 +442,18 @@ public class ListReviewsApiHandler
                 .done();
     }
 
-    private void date2Sql(@NonNull final Bundle b,
+    private void date2Sql(@NonNull final Bundle bundle,
                           @NonNull final String key) {
 
-        if (b.containsKey(key)) {
-            String date = b.getString(key);
+        if (bundle.containsKey(key)) {
+            String dateString = bundle.getString(key);
             try {
-                Date d = UPDATE_DATE_FMT.parse(date);
-                b.putString(key, DateUtils.utcSqlDateTime(d));
+                Date date = UPDATE_DATE_FMT.parse(dateString);
+                if (date != null) {
+                    bundle.putString(key, DateUtils.utcSqlDateTime(date));
+                }
             } catch (ParseException e) {
-                b.remove(key);
+                bundle.remove(key);
             }
         }
     }
@@ -486,17 +488,17 @@ public class ListReviewsApiHandler
         public static final String SHELVES = "__shelves";
         public static final String AUTHOR_NAME_GF = "__author_name";
 
-        public static final String DBA_PAGES = DatabaseDefinitions.DOM_BOOK_PAGES.name;
-        public static final String DBA_ISBN = DatabaseDefinitions.DOM_BOOK_ISBN.name;
-        public static final String DBA_TITLE = DatabaseDefinitions.DOM_TITLE.name;
-        public static final String DBA_NOTES = DatabaseDefinitions.DOM_BOOK_NOTES.name;
-        public static final String DBA_FORMAT = DatabaseDefinitions.DOM_BOOK_FORMAT.name;
-        public static final String DBA_PUBLISHER = DatabaseDefinitions.DOM_BOOK_PUBLISHER.name;
-        public static final String DBA_DESCRIPTION = DatabaseDefinitions.DOM_BOOK_DESCRIPTION.name;
-        public static final String DBA_AUTHOR_ID = DatabaseDefinitions.DOM_FK_AUTHOR_ID.name;
-        public static final String DBA_RATING = DatabaseDefinitions.DOM_BOOK_RATING.name;
-        public static final String DBA_READ_START = DatabaseDefinitions.DOM_BOOK_READ_START.name;
-        public static final String DBA_READ_END = DatabaseDefinitions.DOM_BOOK_READ_END.name;
+        public static final String DBA_PAGES = DBDefinitions.DOM_BOOK_PAGES.name;
+        public static final String DBA_ISBN = DBDefinitions.DOM_BOOK_ISBN.name;
+        public static final String DBA_TITLE = DBDefinitions.DOM_TITLE.name;
+        public static final String DBA_NOTES = DBDefinitions.DOM_BOOK_NOTES.name;
+        public static final String DBA_FORMAT = DBDefinitions.DOM_BOOK_FORMAT.name;
+        public static final String DBA_PUBLISHER = DBDefinitions.DOM_BOOK_PUBLISHER.name;
+        public static final String DBA_DESCRIPTION = DBDefinitions.DOM_BOOK_DESCRIPTION.name;
+        public static final String DBA_AUTHOR_ID = DBDefinitions.DOM_FK_AUTHOR_ID.name;
+        public static final String DBA_RATING = DBDefinitions.DOM_BOOK_RATING.name;
+        public static final String DBA_READ_START = DBDefinitions.DOM_BOOK_READ_START.name;
+        public static final String DBA_READ_END = DBDefinitions.DOM_BOOK_READ_END.name;
 
         private ReviewFields() {
         }

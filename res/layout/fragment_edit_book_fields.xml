@@ -38,8 +38,6 @@
         <Button
             android:id="@+id/author"
             style="@style/buttonDataEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
@@ -60,8 +58,6 @@
         <EditText
             android:id="@+id/title"
             style="@style/titleTextEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
@@ -81,8 +77,6 @@
         <EditText
             android:id="@+id/isbn"
             style="@style/simpleTextEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:inputType="textCapCharacters|textNoSuggestions"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -102,8 +96,6 @@
         <Button
             android:id="@+id/series"
             style="@style/buttonDataEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
@@ -120,8 +112,6 @@
         <Button
             android:id="@+id/bookshelves"
             style="@style/buttonDataEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
@@ -139,8 +129,6 @@
         <AutoCompleteTextView
             android:id="@+id/genre"
             style="@style/simpleTextEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:completionThreshold="2"
             app:layout_constraintEnd_toStartOf="@id/btn_genre"
             app:layout_constraintStart_toStartOf="parent"
@@ -149,14 +137,11 @@
 
         <ImageButton
             android:id="@+id/btn_genre"
-            style="@style/itemEditButton"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            style="@style/dropDownMenuButton"
             app:layout_constraintBottom_toBottomOf="@id/genre"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/genre"
             app:layout_constraintTop_toTopOf="@id/genre"
-            app:srcCompat="@drawable/ic_arrow_drop_down"
             tools:ignore="ContentDescription"
             />
 
@@ -180,8 +165,6 @@
         <EditText
             android:id="@+id/description"
             style="@style/multiLineTextEntry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:hint="@string/field_not_set"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

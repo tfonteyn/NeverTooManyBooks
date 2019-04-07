@@ -15,9 +15,11 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="IntListPreference">
-        <attr name="android:entries" />
-        <attr name="android:entryValues" />
+    <declare-styleable name="FastScrollListView">
+        <attr name="scrollHandle" format="reference" />
+        <attr name="overlay" format="reference" />
+        <!-- Default: android:attr/textColorPrimary -->
+        <attr name="textColor" format="color" />
     </declare-styleable>
 
     <!-- ripped from:

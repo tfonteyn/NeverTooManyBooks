@@ -11,29 +11,27 @@
 
     <CheckBox
         android:id="@+id/is_anthology"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/editCheckbox"
         android:text="@string/lbl_is_anthology"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:checked="true"
         />
 
     <CheckBox
         android:id="@+id/same_author"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/editCheckbox"
         android:text="@string/lbl_toc_same_author"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/is_anthology"
+        tools:checked="true"
         />
 
     <AutoCompleteTextView
         android:id="@+id/author"
         style="@style/personalNameTextEntry"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:hint="@string/lbl_author"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,8 +41,6 @@
     <EditText
         android:id="@+id/title"
         style="@style/titleTextEntry"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:hint="@string/lbl_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

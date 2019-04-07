@@ -15,11 +15,13 @@ public class AuthorizationException
     private static final long serialVersionUID = 1029975248988349668L;
 
     public AuthorizationException(@StringRes final int site) {
-        super(App.getResString(R.string.error_authorization_failed, site), null);
+        super(App.getAppContext().getString(R.string.error_authorization_failed,
+                                            App.getAppContext().getString(site)), null);
     }
 
     public AuthorizationException(@StringRes final int site,
                                   @NonNull final Throwable inner) {
-        super(App.getResString(R.string.error_authorization_failed, site), inner);
+        super(App.getAppContext().getString(R.string.error_authorization_failed,
+                                            App.getAppContext().getString(site)), inner);
     }
 }

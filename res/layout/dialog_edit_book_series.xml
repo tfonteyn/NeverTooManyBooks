@@ -9,8 +9,6 @@
     <AutoCompleteTextView
         android:id="@+id/series"
         style="@style/titleTextEntry"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:completionThreshold="2"
         android:hint="@string/lbl_series"
         app:layout_constraintEnd_toStartOf="@id/series_num"
@@ -22,15 +20,12 @@
     <EditText
         android:id="@+id/series_num"
         style="@style/seriesNumberEntry"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/lbl_series_num"
         app:layout_constraintBaseline_toBaselineOf="@id/series"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@id/series"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="Autofill"
+        tools:ignore="Autofill,LabelFor"
         />
 
     <include

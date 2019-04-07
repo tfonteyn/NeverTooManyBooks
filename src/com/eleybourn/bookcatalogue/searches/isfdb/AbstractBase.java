@@ -70,7 +70,7 @@ abstract class AbstractBase {
                  * @throws UnsupportedMimeTypeException if the response mime type is not
                  * supported and those errors are not ignored
                  * @throws java.net.SocketTimeoutException if the connection times out
-                 * @throws IOException on error
+                 * @throws IOException on failure
                  */
                 mDoc = con.get();
 

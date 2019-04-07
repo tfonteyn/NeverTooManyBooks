@@ -61,9 +61,9 @@ public class TextFieldEditorDialogFragment
     public static final String TAG = TextFieldEditorDialogFragment.class.getSimpleName();
 
     /** Argument: Dialog text/message. */
-    private static final String BKEY_TEXT = "text";
+    private static final String BKEY_TEXT = TAG + ":text";
     /** Argument: allow multiline text. */
-    private static final String BKEY_MULTI_LINE = "multiLine";
+    private static final String BKEY_MULTI_LINE = TAG + ":multiLine";
 
     /** Currently displayed; null if empty/invalid. */
     @Nullable

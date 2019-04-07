@@ -55,7 +55,7 @@ public class Help
 
         TextView view = findViewById(R.id.help_page);
         view.setText(Utils.linkifyHtml(
-                getString(R.string.url_help, getString(R.string.about_help_click_here))));
+                getString(R.string.url_help, getString(R.string.about_help_tap_here))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         findViewById(R.id.send_info).setOnClickListener(v -> DebugReport.sendDebugInfo(Help.this));

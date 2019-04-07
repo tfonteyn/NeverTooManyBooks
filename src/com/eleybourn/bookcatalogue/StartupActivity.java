@@ -86,7 +86,7 @@ public class StartupActivity
     private static final int PROMPT_WAIT_BACKUP = 5;
     /** Number of app startup's between displaying the Amazon hint. */
     private static final int PROMPT_WAIT_AMAZON = 7;
-
+    private static final Handler HANDLER = new Handler();
     /** Indicates the upgrade message has been shown. */
     private static boolean mUpgradeMessageShown;
     /** Flag indicating Amazon hint should be shown. */
@@ -155,53 +155,59 @@ public class StartupActivity
             }
         }
 
-        // hack? without this, the progress dialog is not available when we pass it our first message.
-        // This basically hands control to the OS as an in-between (co-op multitasking anyone?)
-        Handler handler = new Handler();
-        handler.post(this::startNextStage);
+        startNextStage();
     }
 
     /**
-     * determines the order of startup stages.
+     * Startup stages.
      */
     private void startNextStage() {
-        // onCreate being stage 0
-        mStartupStage++;
-        Logger.info(this, "startNextStage", "stage=" + mStartupStage);
+        // Using post guarantees the progress dialog is fully available before it is used.
+        // Consistency... so using for all stages.
+        HANDLER.post(new Runnable() {
+            @Override
+            public void run() {
+                // onCreate being stage 0
+                mStartupStage++;
+                Logger.info(this, "startNextStage", "stage=" + mStartupStage);
 
-        switch (mStartupStage) {
-            case 1:
-                // create the singleton QueueManager
-                QueueManager.init();
+                switch (mStartupStage) {
+                    case 1:
+                        // create the singleton QueueManager
+                        QueueManager.init();
+                        // Create a progress dialog for (potential) use by the tasks
+                        openProgressDialog();
+                        startNextStage();
+                        break;
 
-                // Create a progress dialog for (potential) use by the tasks
-                openProgressDialog();
+                    case 2:
+                        openDBA();
+                        startTasks();
+                        break;
 
-                openDBA();
-                startTasks();
-                break;
+                    case 3:
+                        // tasks are done.
+                        closeDBA();
+                        // Get rid of the progress dialog
+                        closeProgressDialog();
 
-            case 2:
-                // tasks are done.
-                closeDBA();
-                // Get rid of the progress dialog
-                closeProgressDialog();
+                        // actual next step:
+                        checkForUpgrades();
+                        break;
 
-                // actual next step:
-                checkForUpgrades();
-                break;
+                    case 4:
+                        backupRequired();
+                        break;
 
-            case 3:
-                backupRequired();
-                break;
+                    case 5:
+                        gotoMainScreen();
+                        break;
 
-            case 4:
-                gotoMainScreen();
-                break;
-
-            default:
-                throw new IllegalStateException();
-        }
+                    default:
+                        throw new IllegalStateException();
+                }
+            }
+        });
     }
 
 
@@ -295,7 +301,7 @@ public class StartupActivity
         if (mProgressDialog == null) {
             mProgressDialog = ProgressDialogFragment
                     .newInstance(R.string.lbl_application_startup, true, 0);
-            mProgressDialog.showNow(getSupportFragmentManager(), TAG);
+            mProgressDialog.show(getSupportFragmentManager(), TAG);
         }
     }
 
@@ -400,24 +406,6 @@ public class StartupActivity
         }
     }
 
-    /**
-     * Callback for the result from requesting permissions. This method
-     * is invoked for every call on {@link #requestPermissions(String[], int)}.
-     * <p>
-     * <strong>Note:</strong> It is possible that the permissions request interaction
-     * with the user is interrupted. In this case you will receive empty permissions
-     * and results arrays which should be treated as a cancellation.
-     * </p>
-     *
-     * @param requestCode  The request code passed in {@link #requestPermissions(String[], int)}.
-     * @param permissions  The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions which is either
-     *                     {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}.
-     *                     Never null.
-     *
-     * @see #requestPermissions(String[], int)
-     */
     @Override
     @PermissionChecker.PermissionResult
     public void onRequestPermissionsResult(final int requestCode,
@@ -558,7 +546,7 @@ public class StartupActivity
 
         @Override
         protected Void doInBackground(final Void... params) {
-            publishProgress(R.string.progress_msg_updating_languages);
+            publishProgress(R.string.progress_msg_optimizing);
             LocaleUtils.createLanguageMappingCache();
             return null;
         }
@@ -589,7 +577,7 @@ public class StartupActivity
         @WorkerThread
         @Override
         protected Void doInBackground(final Void... params) {
-            publishProgress(R.string.progress_msg_cleaning_database);
+            publishProgress(R.string.progress_msg_optimizing);
             DBCleaner cleaner = new DBCleaner(mDb);
 
             // do a mass update of any languages not yet converted to ISO3 codes
@@ -665,12 +653,12 @@ public class StartupActivity
 
         @Override
         protected Void doInBackground(final Void... params) {
-            publishProgress(R.string.progress_msg_optimizing_databases);
+            publishProgress(R.string.progress_msg_optimizing);
 
             mDb.analyze();
             // small hack to make sure we always update the triggers.
             // Makes creating/modifying triggers MUCH easier.
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always log */) {
                 mDb.recreateTriggers();
             }
 

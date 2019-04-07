@@ -61,13 +61,14 @@ public abstract class BaseSettingsFragment
             for (String s : msp.getValues()) {
                 int index = msp.findIndexOfValue(s);
                 if (index == -1) {
+                    // Leaving for now as this re-surfaces sometimes after a careless dev. change.
                     Logger.debug("MultiSelectListPreference:"
                                          + "\n s=" + s
                                          + "\n key=" + msp.getKey()
-                                         + "\n entries=" + Csv.join(",",
-                                                                    Arrays.asList(msp.getEntries()))
-                                         + "\n entryValues=" + Csv.join(",", Arrays.asList(
-                            msp.getEntryValues()))
+                                         + "\n entries="
+                                         + Csv.join(",", Arrays.asList(msp.getEntries()))
+                                         + "\n entryValues="
+                                         + Csv.join(",", Arrays.asList(msp.getEntryValues()))
                                          + "\n values=" + msp.getValues()
 
                     );
