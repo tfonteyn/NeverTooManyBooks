@@ -110,7 +110,7 @@ public class LibraryThingAdminActivity
     private static class ValidateKey
             extends AsyncTask<Void, Object, Integer> {
 
-        /** Fragment manager tag. */
+        /** Fragment manager t. */
         private static final String TAG = ValidateKey.class.getSimpleName();
 
         /** Generic identifier. */

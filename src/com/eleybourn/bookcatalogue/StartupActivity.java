@@ -56,7 +56,6 @@ import com.eleybourn.bookcatalogue.database.DBCleaner;
 import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.database.UpgradeDatabase;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -80,21 +79,23 @@ public class StartupActivity
     public static final String PREF_STARTUP_COUNT = "Startup.StartCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     public static final String PREFS_STARTUP_COUNTDOWN = "Startup.StartCountdown";
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = StartupActivity.class.getSimpleName();
     /** Number of app startup's between offers to backup. */
     private static final int PROMPT_WAIT_BACKUP = 5;
     /** Number of app startup's between displaying the Amazon hint. */
     private static final int PROMPT_WAIT_AMAZON = 7;
+
+
     private static final Handler HANDLER = new Handler();
     /** Indicates the upgrade message has been shown. */
-    private static boolean mUpgradeMessageShown;
+    private static boolean sUpgradeMessageShown;
     /** Flag indicating Amazon hint should be shown. */
-    private static boolean mShowAmazonHint;
+    private static boolean sShowAmazonHint;
     /** Flag to ensure tasks are only ever started once (at real startup). */
-    private static boolean mStartupTasksShouldBeStarted = true;
+    private static boolean sStartupTasksShouldBeStarted = true;
     /** Self reference for use by tasks and during upgrades. */
-    private static WeakReference<StartupActivity> mStartupActivity;
+    private static WeakReference<StartupActivity> sStartupActivity;
     /** TaskId holder. Added when started. Removed when stopped. */
     private final Set<Integer> mAllTasks = new HashSet<>();
     /** Progress Dialog for startup tasks. */
@@ -114,11 +115,11 @@ public class StartupActivity
      */
     @Nullable
     public static StartupActivity getActiveActivity() {
-        return mStartupActivity != null ? mStartupActivity.get() : null;
+        return sStartupActivity != null ? sStartupActivity.get() : null;
     }
 
     public static boolean showAmazonHint() {
-        return mShowAmazonHint;
+        return sShowAmazonHint;
     }
 
     @Override
@@ -169,7 +170,9 @@ public class StartupActivity
             public void run() {
                 // onCreate being stage 0
                 mStartupStage++;
-                Logger.info(this, "startNextStage", "stage=" + mStartupStage);
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this,"startNextStage", "stage=" + mStartupStage);
+                }
 
                 switch (mStartupStage) {
                     case 1:
@@ -204,21 +207,20 @@ public class StartupActivity
                         break;
 
                     default:
-                        throw new IllegalStateException();
+                        throw new IllegalStateException("stage=" + mStartupStage);
                 }
             }
         });
     }
-
 
     /**
      * Called in UI thread after last startup task completes, or if there are no tasks to queue.
      */
     private void checkForUpgrades() {
         // Remove the weak reference. Only used by db onUpgrade.
-        mStartupActivity.clear();
+        sStartupActivity.clear();
         // Display upgrade message if necessary, otherwise go on to next stage
-        if (mUpgradeMessageShown) {
+        if (sUpgradeMessageShown) {
             startNextStage();
             return;
         }
@@ -241,7 +243,7 @@ public class StartupActivity
                              startNextStage();
                          });
         dialog.show();
-        mUpgradeMessageShown = true;
+        sUpgradeMessageShown = true;
     }
 
     /**
@@ -307,6 +309,8 @@ public class StartupActivity
 
     /**
      * Update the progress dialog, if it has not been dismissed.
+     *
+     * @param stringId string to display
      */
     public void updateProgress(@StringRes final int stringId) {
         String message = getString(stringId);
@@ -319,7 +323,7 @@ public class StartupActivity
             try {
                 mProgressDialog.setMessage(message);
             } catch (RuntimeException e) {
-                Logger.error(e);
+                Logger.error(this, e);
             }
         }
     }
@@ -356,7 +360,7 @@ public class StartupActivity
         ed.putInt(PREF_STARTUP_COUNT, startCount);
         ed.apply();
 
-        mShowAmazonHint = (startCount % PROMPT_WAIT_AMAZON) == 0;
+        sShowAmazonHint = (startCount % PROMPT_WAIT_AMAZON) == 0;
         return opened == 0;
     }
 
@@ -374,7 +378,9 @@ public class StartupActivity
                     this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     UniqueId.REQ_ANDROID_PERMISSIONS);
-            Logger.info(this, Tracker.State.Exit, "initStorage", "false");
+            if (BuildConfig.DEBUG) {
+                Logger.debugExit(this, "initStorage", "false");
+            }
             return false;
         }
 
@@ -382,8 +388,9 @@ public class StartupActivity
         if (msgId != 0) {
             UserMessage.showUserMessage(this, msgId);
         }
-
-        Logger.info(this, Tracker.State.Exit, "initStorage", "true");
+        if (BuildConfig.DEBUG) {
+            Logger.debugExit(this, "initStorage", "true");
+        }
 
         return true;
     }
@@ -392,7 +399,9 @@ public class StartupActivity
         try {
             mDb = new DBA(this);
         } catch (DBHelper.UpgradeException e) {
-            Logger.info(this, "openDBA", e.getLocalizedMessage());
+            if (BuildConfig.DEBUG) {
+                Logger.warn(this,"openDBA", e.getLocalizedMessage());
+            }
             App.showNotification(this, R.string.error_unknown,
                                  getString(e.messageId));
             finish();
@@ -429,7 +438,7 @@ public class StartupActivity
                 break;
 
             default:
-                Logger.error("unknown requestCode=" + requestCode);
+                Logger.warnWithStackTrace(this, "unknown requestCode=" + requestCode);
                 break;
         }
     }
@@ -438,8 +447,8 @@ public class StartupActivity
      * We use the standard AsyncTask execute, so tasks are run serially.
      */
     private void startTasks() {
-        if (mStartupTasksShouldBeStarted) {
-            mStartupActivity = new WeakReference<>(this);
+        if (sStartupTasksShouldBeStarted) {
+            sStartupActivity = new WeakReference<>(this);
             //noinspection ConstantConditions
             mProgressDialog.setMessage(getString(R.string.progress_msg_starting_up));
 
@@ -464,7 +473,7 @@ public class StartupActivity
             // Remove old logs
             Logger.clearLog();
             // Clear the flag
-            mStartupTasksShouldBeStarted = false;
+            sStartupTasksShouldBeStarted = false;
 
             // ENHANCE: add checks for new Events/crashes
         }

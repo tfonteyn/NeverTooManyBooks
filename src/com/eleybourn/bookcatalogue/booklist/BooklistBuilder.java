@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -56,8 +55,8 @@ import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.database.definitions.DomainDefinition;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.Prefs;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
@@ -103,7 +102,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LOANED_TO_S
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKS;
@@ -287,8 +286,8 @@ public class BooklistBuilder
     public BooklistBuilder(@NonNull final Context context,
                            @NonNull final BooklistStyle style) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-            Logger.info(this, Tracker.State.Enter, "BooklistBuilder",
-                        "instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet());
+            Logger.debugEnter(this, "BooklistBuilder",
+                              "instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet());
         }
         // Allocate ID
         mBooklistBuilderId = ID_COUNTER.incrementAndGet();
@@ -415,7 +414,7 @@ public class BooklistBuilder
         mNavTable.create(mSyncedDb, true, false);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-            Logger.info(this, "rebuild", "mBaseBuildStmt|" + mBaseBuildStmt.toString() + '\n');
+            Logger.debug(this,"rebuild", "mBaseBuildStmt|" + mBaseBuildStmt.toString() + '\n');
         }
 
         // Build base data
@@ -424,7 +423,7 @@ public class BooklistBuilder
         // Rebuild all the rest
         for (SynchronizedStatement stmt : mLevelBuildStmts) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-                Logger.info(this, "rebuild", "mLevelBuildStmts|" + stmt.toString() + '\n');
+                Logger.debug(this,"rebuild", "mLevelBuildStmts|" + stmt.toString() + '\n');
             }
             stmt.execute();
         }
@@ -575,6 +574,7 @@ public class BooklistBuilder
      * Set the filter for only books with named title with added wildcards.
      * <p>
      * An empty filter will silently be rejected.
+     * TOMF: lowercase ? locale ?
      *
      * @param filter the title to limit the search for.
      */
@@ -593,7 +593,7 @@ public class BooklistBuilder
      */
     public void setFilterOnSeriesName(@Nullable final String filter) {
         if (isNonBlank(filter)) {
-            mFilters.add(new WildcardFilter(TBL_SERIES, DOM_SERIES_NAME, filter));
+            mFilters.add(new WildcardFilter(TBL_SERIES, DOM_SERIES_TITLE, filter));
         }
     }
 
@@ -618,8 +618,8 @@ public class BooklistBuilder
         if (isNonBlank(filter)) {
             // Cleanup searchText
             // Because FTS does not understand locales in all android up to 4.2,
-            // we do case folding here using the default locale.
-            final String cleanCriteria = filter.toLowerCase(Locale.getDefault());
+            // we do case folding here using the user preferred locale.
+            final String cleanCriteria = filter.toLowerCase(LocaleUtils.getPreferredLocal());
 
             mFilters.add(() -> '(' + TBL_BOOKS.dot(DOM_PK_ID)
                     + " IN (SELECT " + DOM_PK_DOCID + " FROM " + TBL_BOOKS_FTS
@@ -651,11 +651,13 @@ public class BooklistBuilder
      */
     public void build(final int preferredState,
                       final long previouslySelectedBookId) {
-        Logger.info(this, Tracker.State.Enter, "build", mBooklistBuilderId);
+        if (BuildConfig.DEBUG) {
+            Logger.debugEnter(this, "build", mBooklistBuilderId);
+        }
 
         try {
             @SuppressWarnings("UnusedAssignment")
-            final long t0 = System.currentTimeMillis();
+            final long t0 = System.nanoTime();
 
             // create the mListTable/mNavTable fresh.
             buildTableDefinitions();
@@ -692,7 +694,7 @@ public class BooklistBuilder
                                            ? SummaryBuilder.FLAG_SORT_DESCENDING : 0;
 
             @SuppressWarnings("UnusedAssignment")
-            final long t1_basic_setup_done = System.currentTimeMillis();
+            final long t1_basic_setup_done = System.nanoTime();
 
             final BuildInfoHolder buildInfoHolder = new BuildInfoHolder();
 
@@ -707,7 +709,7 @@ public class BooklistBuilder
             }
 
             @SuppressWarnings("UnusedAssignment")
-            final long t2_groups_processed = System.currentTimeMillis();
+            final long t2_groups_processed = System.nanoTime();
 
             // Now we know if we have a Bookshelf group, add the Filter on it if we want one.
             if (mFilterOnBookshelfId > 0) {
@@ -749,7 +751,7 @@ public class BooklistBuilder
             }
 
             @SuppressWarnings("UnusedAssignment")
-            final long t3 = System.currentTimeMillis();
+            final long t3 = System.nanoTime();
 
             ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -769,18 +771,18 @@ public class BooklistBuilder
                                                                     .getCompoundKey());
 
             @SuppressWarnings("UnusedAssignment")
-            final long t4_buildSqlComponents = System.currentTimeMillis();
+            final long t4_buildSqlComponents = System.nanoTime();
             // Build the join tables
             sqlCmp.join = buildJoin(buildInfoHolder);
 
             @SuppressWarnings("UnusedAssignment")
-            final long t5_build_join = System.currentTimeMillis();
+            final long t5_build_join = System.nanoTime();
 
             // Build the 'where' clause
             sqlCmp.where = buildWhereClause();
 
             @SuppressWarnings("UnusedAssignment")
-            final long t6_build_where = System.currentTimeMillis();
+            final long t6_build_where = System.nanoTime();
 
             // Check if the collation we use is case sensitive.
             boolean collationIsCs = mSyncedDb.isCollationCaseSensitive();
@@ -801,7 +803,7 @@ public class BooklistBuilder
 //            }
 
             @SuppressWarnings("UnusedAssignment")
-            final long t7_sortColumns_processed = System.currentTimeMillis();
+            final long t7_sortColumns_processed = System.nanoTime();
 
             // We are good to go.
 
@@ -837,18 +839,18 @@ public class BooklistBuilder
                 }
 
                 @SuppressWarnings("UnusedAssignment")
-                final long t8_BaseBuild_executed = System.currentTimeMillis();
+                final long t8_BaseBuild_executed = System.nanoTime();
 
                 mSyncedDb.analyze(mListTable);
 
                 @SuppressWarnings("UnusedAssignment")
-                final long t9_table_optimized = System.currentTimeMillis();
+                final long t9_table_optimized = System.nanoTime();
 
                 // build the lookup aka navigation table
                 populateNavigationTable(sqlCmp, preferredState, listMode);
 
                 @SuppressWarnings("UnusedAssignment")
-                final long t10_nav_table_build = System.currentTimeMillis();
+                final long t10_nav_table_build = System.nanoTime();
 
                 // Create index on nav table
                 SynchronizedStatement ixStmt1 =
@@ -860,14 +862,15 @@ public class BooklistBuilder
                                                 + ',' + DOM_BL_ROOT_KEY + ')');
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-                    Logger.info(this, "build", "add|" + STMT_NAV_IX_1
-                            + '|' + ixStmt1.toString());
+                    Logger.debug(this,
+                          "build", "add|" + STMT_NAV_IX_1
+                                  + '|' + ixStmt1.toString());
                 }
                 mLevelBuildStmts.add(ixStmt1);
                 ixStmt1.execute();
 
                 @SuppressWarnings("UnusedAssignment")
-                final long t11_nav_table_index_IX1_created = System.currentTimeMillis();
+                final long t11_nav_table_index_IX1_created = System.nanoTime();
 
                 // Essential for main query! If not present, will make getCount() take
                 // ages because main query is a cross with no index.
@@ -878,50 +881,37 @@ public class BooklistBuilder
                                                 + '(' + DOM_BL_REAL_ROW_ID + ')');
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-                    Logger.info(this, "build", "add|" + STMT_NAV_IX_2
-                            + '|' + ixStmt2.toString());
+                    Logger.debug(this,
+                          "build", "add|" + STMT_NAV_IX_2
+                                  + '|' + ixStmt2.toString());
                 }
                 mLevelBuildStmts.add(ixStmt2);
                 ixStmt2.execute();
 
 
                 @SuppressWarnings("UnusedAssignment")
-                final long t12_nav_table_index_IX2_created = System.currentTimeMillis();
+                final long t12_nav_table_index_IX2_created = System.nanoTime();
                 mSyncedDb.analyze(mNavTable);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    Logger.info(this, "build",
-                                "T01: " + (t1_basic_setup_done - t0));
-                    Logger.info(this, "build",
-                                "T02: " + (t2_groups_processed - t1_basic_setup_done));
-                    Logger.info(this, "build",
-                                "T03: " + (t3 - t2_groups_processed));
-                    Logger.info(this, "build",
-                                "T04: " + (t4_buildSqlComponents - t3));
-                    Logger.info(this, "build",
-                                "T05: " + (t5_build_join - t4_buildSqlComponents));
-                    Logger.info(this, "build",
-                                "T06: " + (t6_build_where - t5_build_join));
-                    Logger.info(this, "build",
-                                "T07: " + (t7_sortColumns_processed - t6_build_where));
-                    Logger.info(this, "build",
-                                "T08: " + (t8_BaseBuild_executed - t7_sortColumns_processed));
-                    Logger.info(this, "build",
-                                "T09: " + (t9_table_optimized - t8_BaseBuild_executed));
-                    Logger.info(this, "build",
-                                "T10: " + (t10_nav_table_build - t9_table_optimized));
-                    Logger.info(this, "build",
-                                "T11: " + (t11_nav_table_index_IX1_created - t10_nav_table_build));
-                    Logger.info(this, "build",
-                                "T12: " + (t12_nav_table_index_IX2_created
-                                        - t11_nav_table_index_IX1_created));
-                    Logger.info(this, "build",
-                                "T13: " + (System.currentTimeMillis()
-                                        - t12_nav_table_index_IX2_created));
-                    Logger.info(this, "build",
-                                "============================");
-                    Logger.info(this, "build",
-                                "Total time: " + (System.currentTimeMillis() - t0));
+                    Logger.debug(this,"build",
+                                   "\nT01: " + (t1_basic_setup_done - t0),
+                                   "\nT02: " + (t2_groups_processed - t1_basic_setup_done),
+                                   "\nT03: " + (t3 - t2_groups_processed),
+                                   "\nT04: " + (t4_buildSqlComponents - t3),
+                                   "\nT05: " + (t5_build_join - t4_buildSqlComponents),
+                                   "\nT06: " + (t6_build_where - t5_build_join),
+                                   "\nT07: " + (t7_sortColumns_processed - t6_build_where),
+                                   "\nT08: " + (t8_BaseBuild_executed - t7_sortColumns_processed),
+                                   "\nT09: " + (t9_table_optimized - t8_BaseBuild_executed),
+                                   "\nT10: " + (t10_nav_table_build - t9_table_optimized),
+                                   "\nT11: " + (t11_nav_table_index_IX1_created - t10_nav_table_build),
+                                   "\nT12: " + (t12_nav_table_index_IX2_created
+                                           - t11_nav_table_index_IX1_created),
+                                   "\nT13: " + (System.nanoTime()
+                                           - t12_nav_table_index_IX2_created),
+                                   "\n============================",
+                                   "\nTotal time: " + (System.nanoTime() - t0) + "nano");
                 }
                 mSyncedDb.setTransactionSuccessful();
 
@@ -933,7 +923,9 @@ public class BooklistBuilder
 
             }
         } finally {
-            Logger.info(this, Tracker.State.Exit, "build", mBooklistBuilderId);
+            if (BuildConfig.DEBUG) {
+                Logger.debugExit(this, "build", mBooklistBuilderId);
+            }
         }
     }
 
@@ -991,8 +983,9 @@ public class BooklistBuilder
         SynchronizedStatement navStmt = mStatements.add(STMT_NAV_TABLE_INSERT, insSql);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-            Logger.info(this, "populateNavigationTable", "add|" + STMT_NAV_TABLE_INSERT
-                    + '|' + navStmt.toString());
+            Logger.debug(this,
+                  "populateNavigationTable", "add|" + STMT_NAV_TABLE_INSERT
+                          + '|' + navStmt.toString());
         }
         mLevelBuildStmts.add(navStmt);
 
@@ -1093,7 +1086,7 @@ public class BooklistBuilder
                                           final boolean collationIsCs) {
 
         final long[] t_style = new long[mStyle.groupCount() + 1];
-        t_style[0] = System.currentTimeMillis();
+        t_style[0] = System.nanoTime();
 
         // Without triggers we just get the base rows and add summary later
         mBaseBuildStmt = mStatements.add(STMT_BASE_BUILD,
@@ -1138,12 +1131,13 @@ public class BooklistBuilder
             // Save, compile and run this statement
             SynchronizedStatement stmt = mStatements.add("Level" + i, summarySql);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-                Logger.info(this, "baseBuildWithoutTriggers",
-                            "add|" + "Level" + i + '|' + stmt.toString());
+                Logger.debug(this,
+                      "baseBuildWithoutTriggers",
+                               "add|" + "Level" + i + '|' + stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.executeInsert();
-            t_style[timer++] = System.currentTimeMillis();
+            t_style[timer++] = System.nanoTime();
         }
 
         // Build an index if it will help sorting but *If* collation is case-sensitive,
@@ -1179,8 +1173,9 @@ public class BooklistBuilder
 //                    + ',' + DOM_BL_ROOT_KEY + ')';
             SynchronizedStatement stmt = mStatements.add(STMT_IX_1, ix1Sql);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-                Logger.info(this, "baseBuildWithoutTriggers",
-                            "add|" + STMT_IX_1 + '|' + stmt.toString());
+                Logger.debug(this,
+                      "baseBuildWithoutTriggers",
+                               "add|" + STMT_IX_1 + '|' + stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.execute();
@@ -1192,8 +1187,9 @@ public class BooklistBuilder
                     int i = 0; i < mStyle.groupCount();
                 //noinspection UnusedAssignment
                     i++) {
-                Logger.info(this, "baseBuildWithoutTriggers",
-                            "t_style[" + i + "]: " + (t_style[i] - t_style[i - 1]));
+                Logger.debug(this,
+                      "baseBuildWithoutTriggers",
+                               "t_style[" + i + "]: " + (t_style[i] - t_style[i - 1]));
             }
         }
     }
@@ -1252,8 +1248,8 @@ public class BooklistBuilder
                 buildInfoHolder.seriesGroup = (BooklistGroup.BooklistSeriesGroup) booklistGroup;
 
                 // Group and sort by name
-                summary.addDomain(DOM_SERIES_NAME,
-                                  TBL_SERIES.dot(DOM_SERIES_NAME),
+                summary.addDomain(DOM_SERIES_TITLE,
+                                  TBL_SERIES.dot(DOM_SERIES_TITLE),
                                   SummaryBuilder.FLAG_GROUPED + SummaryBuilder.FLAG_SORTED);
 
                 // Group by ID (we want the ID available and there is a *chance* two
@@ -1713,8 +1709,9 @@ public class BooklistBuilder
             SynchronizedStatement stmt = mStatements.add(tgName, tgSql);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-                Logger.info(this, "makeNestedTriggers",
-                            "add|" + tgName + '|' + stmt.toString());
+                Logger.debug(this,
+                      "makeNestedTriggers",
+                               "add|" + tgName + '|' + stmt.toString());
             }
             mLevelBuildStmts.add(stmt);
             stmt.execute();
@@ -1735,9 +1732,9 @@ public class BooklistBuilder
 
         SynchronizedStatement stmt = mStatements.add(currentValueTriggerName, tgSql);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-            Logger.info(this, "makeNestedTriggers",
-                        "add|" + currentValueTriggerName
-                                + '|' + stmt.toString());
+            Logger.debug(this,
+                  "makeNestedTriggers",
+                           "add", currentValueTriggerName, stmt);
         }
         mLevelBuildStmts.add(stmt);
         stmt.execute();
@@ -1888,8 +1885,9 @@ public class BooklistBuilder
                 mStatements.add(tgForwardName, oneBigTrigger.toString());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER_REBUILD) {
-            Logger.info(this, "makeSingleTrigger",
-                        "add|" + tgForwardName + '|' + stmt.toString());
+            Logger.debug(this,
+                  "makeSingleTrigger",
+                           "add", tgForwardName, stmt);
         }
         mLevelBuildStmts.add(stmt);
         stmt.execute();
@@ -2136,16 +2134,16 @@ public class BooklistBuilder
     private int pseudoCount(@NonNull final String name,
                             @NonNull final String countSql) {
         @SuppressWarnings("UnusedAssignment")
-        final long t0 = System.currentTimeMillis();
+        final long t0 = System.nanoTime();
         int count;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(countSql)) {
             count = (int) stmt.count();
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.info(this, "pseudoCount",
-                        name + '=' + count + " completed in "
-                                + (System.currentTimeMillis() - t0) + "ms");
+            Logger.debug(this,"pseudoCount",
+                           name + '=' + count + " completed in "
+                                   + (System.nanoTime() - t0) + "nano");
         }
         return count;
     }
@@ -2246,7 +2244,7 @@ public class BooklistBuilder
             }
 
             @SuppressWarnings("UnusedAssignment")
-            final long t0 = System.currentTimeMillis();
+            final long t0 = System.nanoTime();
             if (expand) {
                 String sql = "UPDATE " + mNavTable + " SET "
                         + DOM_BL_NODE_EXPANDED + "=1,"
@@ -2273,7 +2271,9 @@ public class BooklistBuilder
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Logger.info(this, "expandAll", (System.currentTimeMillis() - t0) + "ms");
+                Logger.debug(this,
+                      "expandAll",
+                               (System.nanoTime() - t0) + "nano");
             }
 
             if (txLock != null) {
@@ -2409,10 +2409,11 @@ public class BooklistBuilder
     private void cleanup(final boolean isFinalize) {
         if (!mStatements.isEmpty()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
-                Logger.info(this, "cleanup",
-                            "Finalizing with active mStatements (this is not an error): ");
+                Logger.debug(this,
+                      "cleanup",
+                               "Finalizing with active mStatements (this is not an warnWithStackTrace): ");
                 for (String name : mStatements.getNames()) {
-                    Logger.info(this, "cleanup", name);
+                    Logger.debug(this,"cleanup", name);
                 }
             }
 
@@ -2421,28 +2422,30 @@ public class BooklistBuilder
 
         if (mNavTable != null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
-                Logger.info(this, "cleanup",
-                            "Finalizing with mNavTable (this is not an error)");
+                Logger.debug(this,
+                      "cleanup",
+                               "Finalizing with mNavTable (this is not an warnWithStackTrace)");
             }
 
             try {
                 mNavTable.clear();
                 mNavTable.drop(mSyncedDb);
             } catch (RuntimeException e) {
-                Logger.error(e);
+                Logger.error(this, e);
             }
         }
         if (mListTable != null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER && isFinalize) {
-                Logger.info(this, "cleanup",
-                            "Finalizing with mListTable (this is not an error)");
+                Logger.debug(this,
+                      "cleanup",
+                               "Finalizing with mListTable (this is not an warnWithStackTrace)");
             }
 
             try {
                 mListTable.clear();
                 mListTable.drop(mSyncedDb);
             } catch (RuntimeException e) {
-                Logger.error(e);
+                Logger.error(this, e);
             }
         }
 
@@ -2451,8 +2454,9 @@ public class BooklistBuilder
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             if (!mDebugReferenceDecremented) {
                 // Only de-reference once!
-                Logger.info(this, "cleanup",
-                            "instances left: " + DEBUG_INSTANCE_COUNTER.decrementAndGet());
+                Logger.debug(this,
+                      "cleanup",
+                               "instances left: " + DEBUG_INSTANCE_COUNTER.decrementAndGet());
             }
             mDebugReferenceDecremented = true;
         }
@@ -2504,12 +2508,10 @@ public class BooklistBuilder
                             || (mode == PREF_MODE_NESTED_TRIGGERS);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.info(this, "CompatibilityMode",
-                            "listMode          : " + mode);
-                Logger.info(this, "CompatibilityMode",
-                            "useTriggers       : " + useTriggers);
-                Logger.info(this, "CompatibilityMode",
-                            "nestedTriggers    : " + nestedTriggers);
+                Logger.debug(this,"CompatibilityMode",
+                               "\nlistMode          : " + mode,
+                               "\nuseTriggers       : " + useTriggers,
+                               "\nnestedTriggers    : " + nestedTriggers);
             }
         }
 
@@ -2730,18 +2732,17 @@ public class BooklistBuilder
          */
         void recreateTable() {
             @SuppressWarnings("UnusedAssignment")
-            final long t0 = System.currentTimeMillis();
+            final long t0 = System.nanoTime();
             mListTable.drop(mSyncedDb);
             @SuppressWarnings("UnusedAssignment")
-            final long t1 = System.currentTimeMillis();
+            final long t1 = System.nanoTime();
             //has to be withConstraints==false
             mListTable.create(mSyncedDb, false);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Logger.info(this, "recreateTable",
-                            "Drop   = " + (t1 - t0));
-                Logger.info(this, "recreateTable",
-                            "Create = " + (System.currentTimeMillis() - t1));
+                Logger.debug(this,"recreateTable",
+                               "Drop   = " + (t1 - t0) + "nano",
+                               "Create = " + (System.nanoTime() - t1) + "nano");
             }
         }
 
@@ -2841,7 +2842,7 @@ public class BooklistBuilder
 //  public BooklistCursor build(long previouslySelectedBookId, String bookshelf,
 //                              String authorWhere, String bookWhere,
 //                              String loaned_to, String seriesName, String searchText) {
-//      final long t0 = System.currentTimeMillis();
+//      final long t0 = System.nanoTime();
 //      SummaryBuilder summary = new SummaryBuilder();
 //      // Add the minimum required domains
 //
@@ -2857,7 +2858,7 @@ public class BooklistBuilder
 //      BooklistAuthorLevel authorLevel = null;
 //      boolean hasLevelLOANED = false;
 //		
-//      final long t0a = System.currentTimeMillis();
+//      final long t0a = System.nanoTime();
 //	
 //      for (BooklistLevel l : mLevels) {
 //          //
@@ -2871,9 +2872,9 @@ public class BooklistBuilder
 //			switch (l.kind) {
 //			
 //			case RowKind.SERIES:
-//				l.displayDomain = DOM_SERIES_NAME;
+//				l.displayDomain = DOM_SERIES_TITLE;
 //				seriesLevel = (BooklistSeriesLevel) l; // getLevel(RowKind.SERIES);
-//				summary.addDomain(DOM_SERIES_NAME, TBL_SERIES.dot(DOM_SERIES_NAME), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
+//				summary.addDomain(DOM_SERIES_TITLE, TBL_SERIES.dot(DOM_SERIES_TITLE), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_SORTED);
 //				summary.addDomain(DOM_FK_SERIES_ID, TBL_BOOK_SERIES.dot(DOM_FK_SERIES_ID), SummaryBuilder.FLAG_GROUPED | SummaryBuilder.FLAG_KEY);
 //				summary.addDomain(DOM_BOOK_SERIES_NUM, TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM), SummaryBuilder.FLAG_NONE);
 //				summary.addDomain(DOM_BOOK_SERIES_POSITION, TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION), SummaryBuilder.FLAG_NONE);
@@ -2948,7 +2949,7 @@ public class BooklistBuilder
 //			// down each level so that the top has fewest groups and the bottom level has groups for all levels.
 //			l.groupDomains = (ArrayList<DomainDefinition>) summary.cloneGroups();
 //		}
-//		final long t0b = System.currentTimeMillis();
+//		final long t0b = System.nanoTime();
 //
 //		if (previouslySelectedBookId != 0) {
 //			summary.addDomain(DOM_BL_SELECTED, TBL_BOOKS.dot(DOM_PK_ID) + " = " + previouslySelectedBookId, SummaryBuilder.FLAG_NONE);
@@ -2964,7 +2965,7 @@ public class BooklistBuilder
 //				flags = SummaryBuilder.FLAG_NONE;
 //			summary.addDomain(info.domain, info.sourceExpression, flags);
 //		}
-//		final long t0c = System.currentTimeMillis();
+//		final long t0c = System.nanoTime();
 //
 //		//
 //		// Build the initial insert statement: 'insert into <tbl> (col-list) select (expr-list) from'.
@@ -2979,7 +2980,7 @@ public class BooklistBuilder
 //		//
 //		String sql = summary.buildBaseInsert(mLevels.get(0).getCompoundKey());
 //
-//		final long t0d = System.currentTimeMillis();
+//		final long t0d = System.nanoTime();
 //
 //		JoinContext join;
 //
@@ -3036,7 +3037,7 @@ public class BooklistBuilder
 //		//
 //		// Now build the 'where' clause.
 //		//
-//		final long t0e = System.currentTimeMillis();
+//		final long t0e = System.nanoTime();
 //		String where = "";
 //
 //		if (!bookshelf.equals("")) {
@@ -3064,7 +3065,7 @@ public class BooklistBuilder
 //		if (!seriesName.equals("")) {
 //			if (!where.equals(""))
 //				where += " and ";
-//			where += "(" + TBL_SERIES.dot(DOM_SERIES_NAME) + " = '" + encodeString(seriesName) + "')";
+//			where += "(" + TBL_SERIES.dot(DOM_SERIES_TITLE) + " = '" + encodeString(seriesName) + "')";
 //		}
 //		if(!searchText.equals("")) {
 //			if (!where.equals(""))
@@ -3076,7 +3077,7 @@ public class BooklistBuilder
 //		if (!where.equals(""))
 //			sql += " where " + where.toString();
 //
-//		final long t1 = System.currentTimeMillis();
+//		final long t1 = System.nanoTime();
 //
 //		{
 //			final ArrayList<DomainDefinition> sort = summary.getExtraSort();
@@ -3209,7 +3210,7 @@ public class BooklistBuilder
 //			tgSql += "		" + s + ";\n";			
 //		}
 //
-//		tgSql += "\n	" + fullIns + ") " + vals + ");\n";
+//		tgSql += "\n	" + fullIns + ") " + values + ");\n";
 //		tgSql += "	End";
 //		
 //		SQLiteStatement tgStmt = mStatements.add(tgName, tgSql);
@@ -3218,9 +3219,9 @@ public class BooklistBuilder
 //		*/
 //
 //		// We are good to go.
-//		final long t1a = System.currentTimeMillis();
+//		final long t1a = System.nanoTime();
 //		mSyncedDb.beginTransaction();
-//		long t1b = System.currentTimeMillis();
+//		long t1b = System.nanoTime();
 //		try {
 //			// Build the lowest level summary using our initial insert statement
 //			//mBaseBuildStmt = mStatements.add("mBaseBuild", sql + ") zzz Order by " + mGroupColumnList);
@@ -3242,12 +3243,12 @@ public class BooklistBuilder
 //			 Insert into mListTable (level, kind, root_key, <cols>) values (new.level-1, new.<cols>)
 //			 Where not exists
 //			 */
-//			long t1c = System.currentTimeMillis();
+//			long t1c = System.nanoTime();
 //			//mSyncedDb.execSQL(ix3cSql);
-//			long t1d = System.currentTimeMillis();
+//			long t1d = System.nanoTime();
 //			//mSyncedDb.analyze(mListTable);
 //			
-//			long t2 = System.currentTimeMillis();
+//			long t2 = System.nanoTime();
 //
 //			// Now build each summary level query based on the prior level.
 //			// We build and run from the bottom up.
@@ -3281,20 +3282,20 @@ public class BooklistBuilder
 //				SQLiteStatement stmt = mStatements.add("L" + i, sql);
 //				mLevelBuildStmts.add(stmt);
 //				stmt.execute();
-//				t2a[pos++] = System.currentTimeMillis();
+//				t2a[pos++] = System.nanoTime();
 //			}
 //			*/
 //
 //			String ix1Sql = "Create Index " + mListTable + "_IX1 on " + mListTable + "(" + mSortColumnList + ")";
 //
 //			SQLiteStatement stmt;
-//			long t3 = System.currentTimeMillis();
+//			long t3 = System.nanoTime();
 //			stmt = mStatements.add("ix1", ix1Sql);
 //			mLevelBuildStmts.add(stmt);
 //			stmt.execute();
-//			long t3a = System.currentTimeMillis();
+//			long t3a = System.nanoTime();
 //			mSyncedDb.analyze(mListTable);
-//			long t3b = System.currentTimeMillis();
+//			long t3b = System.nanoTime();
 //			
 //			// Now build a lookup table to match row sort position to row ID. This is used to match a specific
 //			// book (or other row in result set) to a position directly.
@@ -3314,39 +3315,39 @@ public class BooklistBuilder
 //			mLevelBuildStmts.add(stmt);
 //			stmt.execute();
 //
-//			long t4 = System.currentTimeMillis();
+//			long t4 = System.nanoTime();
 //			mSyncedDb.execSQL("Create Index " + mNavTable + "_IX1" + " On " + mNavTable + "(" + DOM_BL_NODE_LEVEL + "," + DOM_BL_NODE_EXPANDED + "," + DOM_BL_ROOT_KEY + ")");
-//			long t4a = System.currentTimeMillis();
+//			long t4a = System.nanoTime();
 //			// Essential for main query! If not present, will make getCount() take ages because main query is a cross with no index.
 //			mSyncedDb.execSQL("Create Unique Index " + mNavTable + "_IX2" + " On " + mNavTable + "(" + DOM_BL_REAL_ROW_ID + ")");
-//			long t4b = System.currentTimeMillis();
+//			long t4b = System.nanoTime();
 //			mSyncedDb.analyze(mNavTable);
-//			long t4c = System.currentTimeMillis();
+//			long t4c = System.nanoTime();
 //			
 //			/*
 //			// Create Index book_list_tmp_row_pos_1_ix2 on book_list_tmp_row_pos_1(level, expanded, root_key);
-//			long t5 = System.currentTimeMillis();
+//			long t5 = System.nanoTime();
 //			sql = "UPDATE " + navName + " SET expanded = 1 WHERE level=1 AND " +
 //					"exists(SELECT _id FROM " + TBL_BOOK_LIST_NODE_SETTINGS + " x2 WHERE x2.kind=" + mLevels.get(0).kind + " and x2.root_key = " + navName + ".root_key)";
 //			mSyncedDb.execSQL(sql);
-//			long t6 = System.currentTimeMillis();
+//			long t6 = System.nanoTime();
 //			sql = "Update " + navName + " set visible = 1, expanded = 1 where level > 1 and " +
 //					"exists(Select _id From " + navName + " x2 Where x2.level = 1 and x2.root_key = " + navName + ".root_key and x2.expanded=1)";
 //			mSyncedDb.execSQL(sql);
-//			long t7 = System.currentTimeMillis();
+//			long t7 = System.nanoTime();
 //			sql = "Update " + navName + " set visible = 1 where level = 1";
 //			mSyncedDb.execSQL(sql);
 //			*/
 //
-//			long t8 = System.currentTimeMillis();
+//			long t8 = System.nanoTime();
 //			//stmt = makeStatement(ix1Sql);
 //			//mLevelBuildStmts.add(stmt);
 //			//stmt.execute();
-//			long t9 = System.currentTimeMillis();
+//			long t9 = System.nanoTime();
 //			//mSyncedDb.execSQL(ix2Sql);
-//			long t10 = System.currentTimeMillis();
+//			long t10 = System.nanoTime();
 //			//mSyncedDb.analyze(mTableName);
-//			long t11 = System.currentTimeMillis();
+//			long t11 = System.nanoTime();
 //			
 //			Logger.info("T0a: " + (t0a-t0));
 //			Logger.info("T0b: " + (t0b-t0a));

@@ -147,16 +147,16 @@ public class App
      * Give static methods access to our singleton.
      * Note: never store a context in a static, use the instance instead
      */
-    private static App mInstance;
+    private static App sInstance;
     /** Used to sent notifications regarding tasks. */
-    private static NotificationManager mNotifier;
+    private static NotificationManager sNotifier;
     /** Cache the User-specified theme currently in use. */
-    private static int mCurrentTheme;
+    private static int sCurrentTheme;
 
     /** create a singleton. */
     @SuppressWarnings("unused")
     public App() {
-        mInstance = this;
+        sInstance = this;
     }
 
     /**
@@ -169,7 +169,7 @@ public class App
      */
     @NonNull
     public static Context getAppContext() {
-        return mInstance.getApplicationContext();
+        return sInstance.getApplicationContext();
     }
 
     /**
@@ -188,7 +188,7 @@ public class App
 
     /** @return the name of this application's package. */
     public static String getAppPackageName() {
-        return mInstance.getApplicationContext().getPackageName();
+        return sInstance.getApplicationContext().getPackageName();
     }
 
     /** @return A PackageInfo object containing information about the package. */
@@ -196,12 +196,12 @@ public class App
     public static PackageInfo getPackageInfo(final int flags) {
         PackageInfo packageInfo = null;
         try {
-            Context context = mInstance.getApplicationContext();
+            Context context = sInstance.getApplicationContext();
             // Get app info from the manifest
             PackageManager manager = context.getPackageManager();
             packageInfo = manager.getPackageInfo(context.getPackageName(), flags);
-        } catch (PackageManager.NameNotFoundException e) {
-            Logger.error(e, "Failed to get package version code?");
+        } catch (PackageManager.NameNotFoundException ignore) {
+
         }
         return packageInfo;
     }
@@ -229,7 +229,7 @@ public class App
                 .setContentIntent(pendingIntent)
                 .build();
 
-        mNotifier.notify(NOTIFICATION_ID, notification);
+        sNotifier.notify(NOTIFICATION_ID, notification);
     }
 
     /**
@@ -259,7 +259,7 @@ public class App
      */
     @SuppressWarnings("unused")
     public static int getAttr(@AttrRes final int attr) {
-        return getAttr(mInstance.getApplicationContext().getTheme(), attr);
+        return getAttr(sInstance.getApplicationContext().getTheme(), attr);
     }
 
     /**
@@ -286,13 +286,12 @@ public class App
     public static String getManifestString(@Nullable final String name) {
         ApplicationInfo ai;
         try {
-            ai = mInstance.getApplicationContext()
+            ai = sInstance.getApplicationContext()
                           .getPackageManager()
-                          .getApplicationInfo(mInstance.getPackageName(),
+                          .getApplicationInfo(sInstance.getPackageName(),
                                               PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
-            Logger.error(e);
-            throw new IllegalStateException();
+            throw new IllegalStateException(e);
         }
         String result = ai.metaData.getString(name);
         if (result == null) {
@@ -306,7 +305,7 @@ public class App
      */
     @NonNull
     public static SharedPreferences getPrefs() {
-        return PreferenceManager.getDefaultSharedPreferences(mInstance.getApplicationContext());
+        return PreferenceManager.getDefaultSharedPreferences(sInstance.getApplicationContext());
     }
 
     /**
@@ -317,7 +316,7 @@ public class App
     @NonNull
     public static SharedPreferences getPrefs(@NonNull final String uuid) {
 
-        return mInstance.getApplicationContext().getSharedPreferences(uuid, MODE_PRIVATE);
+        return sInstance.getApplicationContext().getSharedPreferences(uuid, MODE_PRIVATE);
     }
 
     /**
@@ -366,7 +365,7 @@ public class App
      */
     @StyleRes
     public static int getThemeResId() {
-        return APP_THEMES[mCurrentTheme];
+        return APP_THEMES[sCurrentTheme];
     }
 
     /**
@@ -377,9 +376,9 @@ public class App
     public static boolean applyTheme(@NonNull final Activity activity) {
         int theme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
 
-        if (theme != mCurrentTheme) {
-            mCurrentTheme = theme;
-            activity.setTheme(APP_THEMES[mCurrentTheme]);
+        if (theme != sCurrentTheme) {
+            sCurrentTheme = theme;
+            activity.setTheme(APP_THEMES[sCurrentTheme]);
             return true;
         }
         return false;
@@ -431,10 +430,10 @@ public class App
         setSystemLocale();
 
         // cache the preferred theme.
-        mCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+        sCurrentTheme = App.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
 
         // Create the notifier
-        mNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        sNotifier = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         super.onCreate();
     }
@@ -445,7 +444,7 @@ public class App
             LocaleUtils.applyPreferred(this);
         } catch (RuntimeException e) {
             // Not much we can do...we want locale set early, but not fatal if it fails.
-            Logger.error(e);
+            Logger.error(this, e);
         }
     }
 
@@ -467,8 +466,9 @@ public class App
 
         if (BuildConfig.DEBUG) {
             //API 24: newConfig.getLocales().get(0)
-            Logger.info(this, "onConfigurationChanged",
-                        "" + newConfig.locale);
+            Logger.debug(this,
+                  "onConfigurationChanged",
+                           "" + newConfig.locale);
         }
 
     }

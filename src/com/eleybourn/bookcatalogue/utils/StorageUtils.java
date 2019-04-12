@@ -68,7 +68,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * <p>
  * For the sake of clarity (confusion?) we'll call it "Shared Storage" only.
  * <p>
- * TODO: user message talk about "SD Card"
+ * TODO: user messages talk about "SD Card"
  * FIXME: implement the sample code for 'watching'  Environment.getExternalStorageDirectory()
  * and/or isExternalStorageRemovable()
  *
@@ -96,7 +96,7 @@ public final class StorageUtils {
     /** permanent location for log files. */
     private static final String LOG_FILE_PATH = SHARED_STORAGE_PATH + File.separator + "log";
     /** serious errors are written to this file. */
-    private static final String ERROR_LOG_FILE = "error.log";
+    private static final String ERROR_LOG_FILE = "warnWithStackTrace.log";
     /**
      * Filenames *STARTING* with this prefix are considered purgeable.
      */
@@ -152,9 +152,10 @@ public final class StorageUtils {
             return R.string.error_storage_not_writable;
         }
 
-        // from here on, we have a log file..
+        // from here on, we have a log file and if we could create the log directory,
+        // this one should never fail... flw
         if (!createDir(COVER_FILE_PATH)) {
-            Logger.error("Failed to create covers directory");
+            Logger.warn(StorageUtils.class, "Failed to create covers directory");
         }
 
         // A .nomedia file will be created which will stop the thumbnails showing up
@@ -169,7 +170,7 @@ public final class StorageUtils {
 
             return 0;
         } catch (IOException e) {
-            Logger.error(e, "Failed to create .nomedia files");
+            Logger.error(StorageUtils.class, e, "Failed to create .nomedia files");
             return R.string.error_storage_not_writable;
         }
     }
@@ -280,7 +281,7 @@ public final class StorageUtils {
             totalSize += purgeDir(getTemp(), reallyDelete);
 
         } catch (SecurityException e) {
-            Logger.error(e);
+            Logger.error(StorageUtils.class, e);
         }
         return totalSize;
     }
@@ -292,9 +293,11 @@ public final class StorageUtils {
         for (String name : dir.list()) {
             size += purgeFile(name, reallyDelete);
         }
-        Logger.info(StorageUtils.class, "purgeDir",
-                    "dir=" + dir,
-                    "size=" + size);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
+            Logger.debug(StorageUtils.class,"purgeDir",
+                           "dir=" + dir,
+                           "size=" + size);
+        }
         return size;
     }
 
@@ -333,7 +336,7 @@ public final class StorageUtils {
                 }
             }
         } catch (SecurityException e) {
-            Logger.error(e);
+            Logger.error(StorageUtils.class, e);
         }
     }
 
@@ -347,8 +350,7 @@ public final class StorageUtils {
     public static List<File> findCsvFiles() {
         // Make a filter for files ending in .csv
         FilenameFilter csvFilter = (dir, name) -> {
-            final String fl = name.toLowerCase();
-            return fl.endsWith(".csv");
+            return name.toLowerCase(LocaleUtils.getSystemLocale()).endsWith(".csv");
             //ENHANCE: Allow for other files? Backups? || fl.endsWith(".csv.bak"));
         };
 
@@ -370,12 +372,12 @@ public final class StorageUtils {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                     debugInfo.append("   checking ").append(line).append('\n');
                 }
-                final Matcher m = MOUNT_POINT_PATH.matcher(line);
+                final Matcher matcher = MOUNT_POINT_PATH.matcher(line);
                 // Get the mount point
-                if (m.find()) {
+                if (matcher.find()) {
                     // See if it has a bookCatalogue directory
                     final File dir =
-                            new File(m.group(1) + File.separator + DIRECTORY_NAME);
+                            new File(matcher.group(1) + File.separator + DIRECTORY_NAME);
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
                         debugInfo.append("       matched ")
                                  .append(dir.getAbsolutePath())
@@ -389,7 +391,7 @@ public final class StorageUtils {
                 }
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
-            Logger.error(e, "Failed to open/scan/read /proc/mounts");
+            Logger.error(StorageUtils.class, e, "Failed to open/scan/read /proc/mounts");
         }
 
         // Sometimes (Android 6?) the /proc/mount search seems to fail,
@@ -427,7 +429,7 @@ public final class StorageUtils {
                 }
             }
         } catch (RuntimeException e) {
-            Logger.error(e, "Failed to get external storage from environment variables");
+            Logger.error(StorageUtils.class, e, "Failed to get external storage from environment variables");
         }
 
         final Set<String> paths = new HashSet<>();
@@ -479,12 +481,12 @@ public final class StorageUtils {
                     }
                 }
             } catch (IOException e) {
-                Logger.error(e, "Failed to read directory " + dir.getAbsolutePath());
+                Logger.error(StorageUtils.class, e, "Failed to read directory " + dir.getAbsolutePath());
             }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.info(StorageUtils.class, "findCsvFiles", debugInfo.toString());
+            Logger.debug(StorageUtils.class,"findCsvFiles", debugInfo);
         }
 
         // Sort descending based on modified date
@@ -520,7 +522,7 @@ public final class StorageUtils {
             renameFile(temp, out);
             return true;
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
-            Logger.error(e);
+            Logger.error(StorageUtils.class, e);
         } finally {
             deleteFile(temp);
         }
@@ -538,10 +540,12 @@ public final class StorageUtils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-                    Logger.info(StorageUtils.class, "deleteFile", "file=" + file.getAbsolutePath());
+                    Logger.debug(StorageUtils.class,
+                          "deleteFile",
+                                   "file=" + file.getAbsolutePath());
                 }
             } catch (RuntimeException e) {
-                Logger.error(e);
+                Logger.error(StorageUtils.class, e);
             }
         }
     }
@@ -556,16 +560,16 @@ public final class StorageUtils {
     public static boolean renameFile(@NonNull final File src,
                                      @NonNull final File dst) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STORAGE_UTILS) {
-            Logger.info(StorageUtils.class, "renameFile",
-                        "src=" + src.getAbsolutePath(),
-                        "dst=" + dst.getAbsolutePath());
+            Logger.debug(StorageUtils.class,"renameFile",
+                           "src=" + src.getAbsolutePath(),
+                           "dst=" + dst.getAbsolutePath());
         }
         if (src.exists()) {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 src.renameTo(dst);
             } catch (RuntimeException e) {
-                Logger.error(e);
+                Logger.error(StorageUtils.class, e);
             }
         }
         return dst.exists();
@@ -595,7 +599,7 @@ public final class StorageUtils {
             copyFile(new File(sourcePath), getFile(destinationPath));
 
         } catch (IOException e) {
-            Logger.error(e);
+            Logger.error(StorageUtils.class, e);
         }
     }
 
@@ -668,7 +672,7 @@ public final class StorageUtils {
             StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
             return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
         } catch (IllegalArgumentException e) {
-            Logger.error(e);
+            Logger.error(StorageUtils.class, e);
             return ERROR_CANNOT_STAT;
         }
     }

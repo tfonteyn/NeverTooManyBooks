@@ -5,6 +5,7 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Column info support. This is useful for auto-building queries from maps that have
@@ -92,7 +93,7 @@ public class ColumnInfo {
 
         static StorageClass newInstance(@NonNull final String columnType) {
             // hardcoded strings are for backwards compatibility
-            switch (columnType.toLowerCase()) {
+            switch (columnType.toLowerCase(LocaleUtils.getSystemLocale())) {
                 case TYPE_INTEGER:
                 case "int":
                     return StorageClass.Integer;

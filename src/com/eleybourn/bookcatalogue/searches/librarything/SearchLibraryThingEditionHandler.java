@@ -33,7 +33,7 @@ import java.util.List;
 class SearchLibraryThingEditionHandler
         extends DefaultHandler {
 
-    /** isbn tag in an editions xml response. */
+    /** isbn t in an editions xml response. */
     private static final String XML_ISBN = "isbn";
 
     private final StringBuilder mBuilder = new StringBuilder();

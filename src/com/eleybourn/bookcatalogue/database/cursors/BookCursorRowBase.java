@@ -134,6 +134,7 @@ public class BookCursorRowBase {
         return mMapper.getString(DOM_BOOK_UUID);
     }
 
+    @NonNull
     public final String getIsbn() {
         return mMapper.getString(DOM_BOOK_ISBN);
     }
@@ -156,6 +157,7 @@ public class BookCursorRowBase {
         return mMapper.getString(DOM_BOOK_PUBLISHER);
     }
 
+    @NonNull
     public final String getDatePublished() {
         return mMapper.getString(DOM_BOOK_DATE_PUBLISHED);
     }
@@ -180,18 +182,22 @@ public class BookCursorRowBase {
         return mMapper.getString(DOM_BOOK_LOCATION);
     }
 
+    @NonNull
     public final String getFirstPublication() {
         return mMapper.getString(DOM_FIRST_PUBLICATION);
     }
 
+    @NonNull
     public final String getDescription() {
         return mMapper.getString(DOM_BOOK_DESCRIPTION);
     }
 
+    @NonNull
     public final String getNotes() {
         return mMapper.getString(DOM_BOOK_NOTES);
     }
 
+    @NonNull
     public final String getPages() {
         return mMapper.getString(DOM_BOOK_PAGES);
     }
@@ -200,26 +206,32 @@ public class BookCursorRowBase {
         return mMapper.getDouble(DOM_BOOK_RATING);
     }
 
+    @NonNull
     public final String getReadStart() {
         return mMapper.getString(DOM_BOOK_READ_START);
     }
 
+    @NonNull
     public final String getReadEnd() {
         return mMapper.getString(DOM_BOOK_READ_END);
     }
 
+    @NonNull
     public final String getListPrice() {
         return mMapper.getString(DOM_BOOK_PRICE_LISTED);
     }
 
+    @NonNull
     public final String getListPriceCurrency() {
         return mMapper.getString(DOM_BOOK_PRICE_LISTED_CURRENCY);
     }
 
+    @NonNull
     public final String getPricePaid() {
         return mMapper.getString(DOM_BOOK_PRICE_PAID);
     }
 
+    @NonNull
     public final String getPricePaidCurrency() {
         return mMapper.getString(DOM_BOOK_PRICE_PAID_CURRENCY);
     }
@@ -236,14 +248,17 @@ public class BookCursorRowBase {
         return mMapper.getInt(DOM_BOOK_EDITION_BITMASK);
     }
 
+    @NonNull
     public final String getDateAcquired() {
         return mMapper.getString(DOM_BOOK_DATE_ACQUIRED);
     }
 
+    @NonNull
     public final String getDateAdded() {
         return mMapper.getString(DOM_BOOK_DATE_ADDED);
     }
 
+    @NonNull
     public final String getDateLastUpdated() {
         return mMapper.getString(DOM_LAST_UPDATE_DATE);
     }
@@ -252,6 +267,7 @@ public class BookCursorRowBase {
         return mMapper.getLong(DOM_BOOK_LIBRARY_THING_ID);
     }
 
+    @NonNull
     public final String getOpenLibraryBookId() {
         return mMapper.getString(DOM_BOOK_OPEN_LIBRARY_ID);
     }
@@ -264,6 +280,7 @@ public class BookCursorRowBase {
         return mMapper.getLong(DOM_BOOK_GOODREADS_BOOK_ID);
     }
 
+    @NonNull
     public final String getDateLastSyncedWithGoodreads() {
         return mMapper.getString(DOM_BOOK_GOODREADS_LAST_SYNC_DATE);
     }

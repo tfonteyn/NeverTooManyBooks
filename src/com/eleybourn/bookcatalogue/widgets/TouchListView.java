@@ -175,7 +175,7 @@ public class TouchListView
      *
      * @param context The Context the view is running in, through which it can
      *                access the current theme, resources, etc.
-     * @param attrs   The attributes of the XML tag that is inflating the view.
+     * @param attrs   The attributes of the XML t that is inflating the view.
      */
     public TouchListView(@NonNull final Context context,
                          @Nullable final AttributeSet attrs) {
@@ -187,7 +187,7 @@ public class TouchListView
      *
      * @param context      The Context the view is running in, through which it can
      *                     access the current theme, resources, etc.
-     * @param attrs        The attributes of the XML tag that is inflating the view.
+     * @param attrs        The attributes of the XML t that is inflating the view.
      * @param defStyleAttr An attribute in the current theme that contains a
      *                     reference to a style resource that supplies default values for
      *                     the view. Can be 0 to not look for defaults.
@@ -203,7 +203,7 @@ public class TouchListView
      *
      * @param context      The Context the view is running in, through which it can
      *                     access the current theme, resources, etc.
-     * @param attrs        The attributes of the XML tag that is inflating the view.
+     * @param attrs        The attributes of the XML t that is inflating the view.
      * @param defStyleAttr An attribute in the current theme that contains a
      *                     reference to a style resource that supplies default values for
      *                     the view. Can be 0 to not look for defaults.

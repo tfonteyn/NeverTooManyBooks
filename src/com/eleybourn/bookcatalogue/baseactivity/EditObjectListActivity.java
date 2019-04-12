@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import com.eleybourn.bookcatalogue.EditBookTocFragment;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.adapters.SimpleListAdapter;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -83,10 +84,9 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
  * @author Philip Warner
  */
 public abstract class EditObjectListActivity<T extends Parcelable>
-        extends BaseListActivity
-        implements TouchListView.OnDropListener {
+        extends BaseListActivity {
 
-    /** tag. */
+    /** t. */
     public static final String TAG = EditObjectListActivity.class.getSimpleName();
 
     /** if there was no key passed in, use this one for the savedInstance and return value */
@@ -162,8 +162,59 @@ public abstract class EditObjectListActivity<T extends Parcelable>
             onListChanged();
         });
 
-        // Add handler for 'onDrop' from the TouchListView
-        ((TouchListView) getListView()).setOnDropListener(this);
+        // Handle drop events; also preserves current position.
+        ((TouchListView) getListView()).setOnDropListener(this::onDrop);
+    }
+
+    /**
+     * TOMF: code nearly identical with {@link EditBookTocFragment#onDrop(int, int)}
+     *
+     * @param fromPosition  original position of the row
+     * @param toPosition    where the row was dropped
+     */
+    private void onDrop(final int fromPosition,
+                        final int toPosition) {
+        // Check if nothing to do; also avoids the nasty case where list size == 1
+        if (fromPosition == toPosition) {
+            return;
+        }
+
+        // update the list
+        T item = mListAdapter.getItem(fromPosition);
+        mListAdapter.remove(item);
+        mListAdapter.insert(item, toPosition);
+        onListChanged();
+
+        final ListView listView = getListView();
+        final int firstVisiblePosition = listView.getFirstVisiblePosition();
+        final int newFirst;
+        if (toPosition > fromPosition && fromPosition < firstVisiblePosition) {
+            newFirst = firstVisiblePosition - 1;
+        } else {
+            newFirst = firstVisiblePosition;
+        }
+
+        View firstView = listView.getChildAt(0);
+        final int offset = firstView.getTop();
+
+        // re-position the list
+        listView.post(() -> {
+            listView.requestFocusFromTouch();
+            listView.setSelectionFromTop(newFirst, offset);
+            listView.post(() -> {
+                for (int i = 0; ; i++) {
+                    View c = listView.getChildAt(i);
+                    if (c == null) {
+                        break;
+                    }
+                    if (listView.getPositionForView(c) == toPosition) {
+                        listView.setSelectionFromTop(toPosition, c.getTop());
+                        //c.requestFocusFromTouch();
+                        break;
+                    }
+                }
+            });
+        });
     }
 
     /**
@@ -224,56 +275,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      */
     protected void onAdd(@NonNull final View target) {
         throw new UnsupportedOperationException("Must be overridden");
-    }
-
-    /**
-     * Handle drop events; also preserves current position.
-     */
-    @Override
-    @CallSuper
-    public void onDrop(final int fromPosition,
-                       final int toPosition) {
-        // Check if nothing to do; also avoids the nasty case where list size == 1
-        if (fromPosition == toPosition) {
-            return;
-        }
-
-        // update the list
-        T item = mListAdapter.getItem(fromPosition);
-        mListAdapter.remove(item);
-        mListAdapter.insert(item, toPosition);
-        onListChanged();
-
-        final ListView listView = getListView();
-        final int firstVisiblePosition = listView.getFirstVisiblePosition();
-        final int newFirst;
-        if (toPosition > fromPosition && fromPosition < firstVisiblePosition) {
-            newFirst = firstVisiblePosition - 1;
-        } else {
-            newFirst = firstVisiblePosition;
-        }
-
-        View firstView = listView.getChildAt(0);
-        final int offset = firstView.getTop();
-
-        // re-position the list
-        listView.post(() -> {
-            listView.requestFocusFromTouch();
-            listView.setSelectionFromTop(newFirst, offset);
-            listView.post(() -> {
-                for (int i = 0; ; i++) {
-                    View c = listView.getChildAt(i);
-                    if (c == null) {
-                        break;
-                    }
-                    if (listView.getPositionForView(c) == toPosition) {
-                        listView.setSelectionFromTop(toPosition, c.getTop());
-                        //c.requestFocusFromTouch();
-                        break;
-                    }
-                }
-            });
-        });
     }
 
     /**

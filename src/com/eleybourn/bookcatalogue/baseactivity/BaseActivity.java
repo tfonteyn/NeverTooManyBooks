@@ -92,16 +92,14 @@ public abstract class BaseActivity
     protected void onResume() {
         super.onResume();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.info(this, Tracker.State.Enter,
-                        "BaseActivity.onResume", LocaleUtils.toDebugString(this));
+            Logger.debugEnter(this, "BaseActivity.onResume", LocaleUtils.toDebugString(this));
         }
 
         if (App.isInNeedOfRecreating()) {
             recreate();
             App.setIsRecreating();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.info(this, Tracker.State.Exit,
-                            "BaseActivity.onResume", "Recreate!");
+                Logger.debugExit(this, "BaseActivity.onResume", "Recreate!");
             }
 
         } else if (App.isRecreating()) {
@@ -109,16 +107,14 @@ public abstract class BaseActivity
             //TOMF: destroy fragments and recreate them to!! (or force them to reload resources at least)
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.info(this, Tracker.State.Exit,
-                            "BaseActivity.onResume", "isRecreating");
+                Logger.debugExit(this, "BaseActivity.onResume", "isRecreating");
             }
 
         } else {
             // this is just paranoia... the flag should already have been cleared.
             App.clearRecreateFlag();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.info(this, Tracker.State.Exit,
-                            "BaseActivity.onResume", "Resuming");
+                Logger.debugExit(this, "BaseActivity.onResume", "Resuming");
             }
         }
     }
@@ -251,7 +247,7 @@ public abstract class BaseActivity
 
             case UniqueId.REQ_NAV_PANEL_SETTINGS:
                 if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
-                    Logger.info(this, "onActivityResult",
+                    Logger.debug(this, "onActivityResult",
                                 "REQ_NAV_PANEL_SETTINGS");
                 }
                 switch (resultCode) {
@@ -264,7 +260,7 @@ public abstract class BaseActivity
             // logging only
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.info(this, "onActivityResult",
+                    Logger.debug(this, "onActivityResult",
                                 "REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
@@ -272,7 +268,7 @@ public abstract class BaseActivity
             // logging only
             case UniqueId.REQ_NAV_PANEL_EDIT_PREFERRED_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.info(this, "onActivityResult",
+                    Logger.debug(this, "onActivityResult",
                                 "REQ_NAV_PANEL_EDIT_PREFERRED_STYLES");
                 }
                 return;
@@ -280,7 +276,7 @@ public abstract class BaseActivity
             // logging only
             case UniqueId.REQ_NAV_PANEL_ADMIN:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Logger.info(this, "onActivityResult",
+                    Logger.debug(this, "onActivityResult",
                                 "REQ_NAV_PANEL_ADMIN");
                 }
                 return;
@@ -289,11 +285,9 @@ public abstract class BaseActivity
             // logging only
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    // lowest level of our Activities, see if we missed anything
-                    // that we should not miss.
-                    Logger.info(this, "onActivityResult",
+                    Logger.warn(this, "onActivityResult",
                                 "NOT HANDLED",
-                                "requestCode=" + requestCode + ',',
+                                "requestCode=" + requestCode,
                                 "resultCode=" + resultCode);
                 }
                 super.onActivityResult(requestCode, resultCode, data);
@@ -334,8 +328,8 @@ public abstract class BaseActivity
                                           @NonNull final String key) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.info(this, Tracker.State.Enter, "BaseActivity.onSharedPreferenceChanged",
-                        "key=" + key);
+            Logger.debugEnter(this, "BaseActivity.onSharedPreferenceChanged",
+                              "key=" + key);
         }
 
         // Trigger a recreate of this activity, if the setting has changed.

@@ -27,10 +27,9 @@ import com.eleybourn.bookcatalogue.widgets.TouchListView;
  * to a Fragment first.
  */
 public class AdminSearchOrderFragment
-        extends Fragment
-        implements TouchListView.OnDropListener {
+        extends Fragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = AdminSearchOrderFragment.class.getSimpleName();
 
     private ListView mListView;
@@ -57,32 +56,24 @@ public class AdminSearchOrderFragment
         mListView = requireView().findViewById(android.R.id.list);
         mListView.setAdapter(mListAdapter);
 
-        // Add handler for 'onDrop' from the TouchListView
-        ((TouchListView) mListView).setOnDropListener(this);
+        // Handle drop events; This is a simplified version of {@link EditObjectListActivity#onDrop}.
+        // Lists here are less than 10 items.
+        ((TouchListView) mListView).setOnDropListener((fromPosition, toPosition) -> {
+            // Check if nothing to do; also avoids the nasty case where list size == 1
+            if (fromPosition == toPosition) {
+                return;
+            }
+
+            // update the list
+            SearchSites.Site item = mListAdapter.getItem(fromPosition);
+            mListAdapter.remove(item);
+            mListAdapter.insert(item, toPosition);
+            mListAdapter.notifyDataSetChanged();
+
+            mIsDirty = true;
+        });
     }
 
-    /**
-     * Handle drop events; This is a simplified version of {@link EditObjectListActivity#onDrop}.
-     * <p>
-     * Lists here are only 5 items or less....
-     */
-    @Override
-    @CallSuper
-    public void onDrop(final int fromPosition,
-                       final int toPosition) {
-        // Check if nothing to do; also avoids the nasty case where list size == 1
-        if (fromPosition == toPosition) {
-            return;
-        }
-
-        // update the list
-        SearchSites.Site item = mListAdapter.getItem(fromPosition);
-        mListAdapter.remove(item);
-        mListAdapter.insert(item, toPosition);
-        mListAdapter.notifyDataSetChanged();
-
-        mIsDirty = true;
-    }
 
     @Nullable
     public ArrayList<SearchSites.Site> getList() {

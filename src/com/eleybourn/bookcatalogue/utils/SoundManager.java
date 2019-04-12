@@ -46,8 +46,8 @@ public final class SoundManager {
         } catch (Resources.NotFoundException e) {
             throw new IllegalStateException(e);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
-            // No sound is critical. Just log errors
-            Logger.error(e);
+            // No sound is critical.
+            Logger.error(SoundManager.class, e);
         }
     }
 }

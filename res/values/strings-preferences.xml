@@ -187,9 +187,6 @@
 
     <!-- ========== Book list style preferences ========== -->
 
-    <!-- Preference - Show this style in the 'preferred styles' list/menu -->
-    <string name="pt_bob_preferred_style">Preferred</string>
-
     <!-- Preference - Use scaled text and images (not boolean, as we might add more size-options -->
     <string name="pt_bob_item_size">Size of book list items</string>
     <string-array name="pe_bob_item_size">

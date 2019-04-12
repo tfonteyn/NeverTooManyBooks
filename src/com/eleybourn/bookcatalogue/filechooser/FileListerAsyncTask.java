@@ -16,6 +16,7 @@ import java.util.Comparator;
 
 import com.eleybourn.bookcatalogue.filechooser.FileChooserFragment.FileDetails;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Partially implements an AsyncTask to build a list of files in the background.
@@ -26,11 +27,11 @@ public abstract class FileListerAsyncTask
         extends AsyncTask<Void, Object, ArrayList<FileDetails>> {
 
     /**
-     * Perform case-insensitive sorting using default locale.
+     * Perform case-insensitive sorting using system locale (i.e. files are system objects).
      */
     private static final Comparator<FileDetails> FILE_DETAILS_COMPARATOR =
-            (o1, o2) -> o1.getFile().getName().toLowerCase()
-                     .compareTo(o2.getFile().getName().toLowerCase());
+            (o1, o2) -> o1.getFile().getName().toLowerCase(LocaleUtils.getSystemLocale())
+                     .compareTo(o2.getFile().getName().toLowerCase(LocaleUtils.getSystemLocale()));
 
     @NonNull
     protected final ProgressDialogFragment<ArrayList<FileDetails>> mFragment;

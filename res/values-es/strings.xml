@@ -17,7 +17,7 @@
     <string name="lbl_pages">Páginas</string>
     <string name="btn_confirm_add_book">Añadir libro</string>
     <string name="btn_confirm_update">Actualizar</string>
-    <string name="info_no_books_yet">No hay libros en esta biblioteca. Añada alguno utilizando el menú al pie de esta pantalla.</string>
+    <string name="X_info_no_books_yet">No hay libros en esta biblioteca. Añada alguno utilizando el menú al pie de esta pantalla.</string>
     <string name="menu_expand_all">Expandir todo</string>
     <string name="X_menu_sort_by">Ordenar por</string>
     <string name="menu_collapse_all">Comprimir todo</string>
@@ -28,7 +28,7 @@
     <string name="X_btn_confirm_add_bs">Añadir biblioteca</string>
     <string name="menu_bookshelves">Bibliotecas…</string>
     <string name="X_btn_confirm_save_bs">Guardar biblioteca</string>
-    <string name="menu_delete_bookshelf">Eliminar biblioteca</string>
+    <string name="X_menu_delete_bookshelf">Eliminar biblioteca</string>
     <string name="warning_cannot_delete_1st_bs">La biblioteca predefinida no se puede eliminar</string>
     <string name="lbl_bookshelf">Biblioteca</string>
     <string name="bookshelf_all_books">Todos los libros</string>
@@ -41,12 +41,12 @@
     <string name="warning_book_not_found">El libro escaneado no ha sido encontrado. El código de barras correcto se encuentra a veces en el interior de la portada. También puede introducir los datos de forma manual.</string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">#</string>
-    <string name="lbl_series_num_long">Serie #</string>
+    <string name="X_lbl_series_num_long">Serie #</string>
     <string name="title_import_book_data">Importar libros</string>
     <string name="warning_import_be_cautious">¡Atención! La importación de datos puede actualizar los datos de libros existentes con nueva información si el ID del fichero de importación existe ya en la base de datos. Esto puede ser aceptable si se modifica un campo de un fichero exportado. Si crea un registro para un nuevo libro, compruebe que el campo ID está en blanco.</string>
     <string name="X_import_error_failed_is_csv_file_location_correct">ERROR: La importación (desde la tarjeta SD) ha fallado. ¿Está el fichero en el lugar correcto?</string>
     <string name="X_search_title">Buscar resultados</string>
-    <string name="results_found">Resultados encontrados</string>
+    <string name="X_results_found">Resultados encontrados</string>
     <string name="menu_administration_long">Administración</string>
     <string name="menu_administration">Admin</string>
     <string name="info_install_scanner">Para poder escanear códigos de barras de ISBN debe instalar una aplicación de escaneo (Zxing o pic2shop). Seleccione una para instalarla, o Cancelar para salir.</string>
@@ -77,13 +77,13 @@
     <string name="no">No</string>
     <string name="error_search_failed">La búsqueda del libro ha fallado. Por favor, verifique la configuración de su conexión a internet.</string>
     <string name="error_search_exception">La búsqueda ha fallado %1$s: %2$s</string>
-    <string name="menu_delete">Eliminar portada</string>
+    <string name="menu_delete">Borrar</string>
     <string name="help">Ayuda</string>
-    <string name="info_manage_fields">Los campos marcados serán visibles en las pantallas de Añadir y Editar libros. Los no marcados no se mostrarán.</string>
+    <string name="X_info_manage_fields">Los campos marcados serán visibles en las pantallas de Añadir y Editar libros. Los no marcados no se mostrarán.</string>
     <string name="X_anthology_titles">Antologías</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
-    <string name="lbl_toc_same_author">Todos los libros de esta antología son del mismo autor</string>
-    <string name="menu_delete_toc_entry">Eliminar título de una antología</string>
+    <string name="lbl_toc_multiple_authors">Esta antología tiene múltiples autores.</string>
+    <string name="X_menu_delete_toc_entry">Eliminar título de una antología</string>
     <string name="lbl_is_anthology">¿Se trata de una antología?</string>
     <string name="menu_populate_toc">Actualización automática de títulos (EXPERIMENTAL)</string>
     <string name="error_auto_toc_population_failed">La actualización automática de títulos ha fallado</string>
@@ -91,10 +91,9 @@
     <string name="warning_toc_confirm">Por favor, confirme que los títulos de la antología son (en su mayoría) correctos</string>
     <string name="menu_cover_add_from_camera">Desde la cámara…</string>
     <string name="title_cover">Portada</string>
-    <string name="menu_cover_rotate">Girar imagen…</string>
+    <string name="menu_cover_rotate">Girar…</string>
     <string name="menu_cover_rotate_cw">Sentido horario</string>
     <string name="menu_cover_rotate_ccw">Sentido antihorario</string>
-    <string name="menu_cover_rotate_180">180 grados</string>
     <string name="lbl_is_signed">¿Está firmado este libro?</string>
     <string name="lbl_read_start">Fecha de inicio de lectura</string>
     <string name="lbl_read_end">Fecha de fin de lectura</string>
@@ -135,8 +134,8 @@
     <string name="info_no_authors_yet">El libro no tiene autor. Añada alguno utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
     <string name="info_no_series_yet">El libro no tiene serie. Puede especificar una utilizando el campo de texto y el botón de la parte superior de esta pantalla.</string>
 
-    <string name="warning_cover_field_not_set">No hay imagen de portada</string>
-    <string name="warning_cover_corrupt">La imagen de portada está dañada</string>
+    <string name="X_warning_cover_field_not_set">No hay imagen de portada</string>
+    <string name="X_warning_cover_corrupt">La imagen de portada está dañada</string>
     <string name="X_title_cover_detail">Portada</string>
     <string name="title_select_image">Seleccionar imagen</string>
     <string name="btn_set_authors">Definir autores…</string>
@@ -154,7 +153,7 @@
     <string name="lbl_given_names">Nombre</string>
     <string name="X_title_edit_author">Modificar autor</string>
     <string name="warning_immediate_global_changes">NOTA: Todos los cambios guardados se aplican de manera instantánea y global</string>
-    <string name="menu_cover_replace">Cambiar portada…</string>
+    <string name="menu_cover_replace">Cambiar…</string>
     <string name="menu_cover_search_alt_editions">De otras ediciones…</string>
     <string name="warning_required_author_long">Se debe especificar al menos un autor</string>
     <string name="warning_required_title">El título no puede estar en blanco</string>
@@ -164,10 +163,10 @@
     <string name="title_delete_series">Eliminar serie</string>
     <string name="confirm_really_delete_series">Confirme la eliminación de la serie \‘%1$s\’\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
     <string name="X_title_edit_series">Modificar serie</string>
-    <string name="title_select_cover">Seleccionar portada</string>
+    <string name="X_title_select_cover">Seleccionar portada</string>
     <string name="X_warning_no_isbn_no_editions">No se pueden obtener ediciones para un libro sin ISBN</string>
-    <string name="warning_unsaved_edits">No ha guardado los cambios. ¿Está seguro de que desea continuar?</string>
-    <string name="unsaved_edits_title">Cambios sin guardar</string>
+    <string name="warning_unsaved_edits2">No ha guardado los cambios. ¿Está seguro de que desea continuar?</string>
+    <string name="X_unsaved_edits_title">Cambios sin guardar</string>
     <string name="confirm_apply_author_changed">Ha cambiado el autor de :\n  \‘%1$s\’ a \n  \‘%2$s\’\n¿Cómo quiere aplicar este cambio?\nNota: La opción \‘%3$s\’ se aplicará de manera inmediata.</string>
     <string name="btn_this_book">Este libro</string>
     <string name="title_scope_of_change">Alcance del cambio</string>
@@ -176,7 +175,7 @@
     <string name="list_and">y</string>
     <string name="confirm_really_delete_book">Se dispone a eliminar el libro con el título \‘%1$s\’ de %2$s. ¿Está seguro de que desea continuar?</string>
     <string name="warning_editions_require_isbn">Para obtener otras ediciones es necesario el ISBN</string>
-    <string name="warning_no_editions">No hay más ediciones</string>
+    <string name="warning_no_editions">No hay información adicional de edición disponible</string>
     <string name="progress_msg_finding_editions">Buscando ediciones…</string>
     <string name="info_tap_on_thumb">Pinche sobre una portada para ver una imagen de mayor tamaño</string>
     <string name="progress_msg_loading">Cargando…</string>
@@ -209,13 +208,12 @@
     <string name="bytes">%.0fB</string>
     <string name="debug_subject">Recopilando información sobre fallos</string>
     <string name="debug_body">Por favor, explique brevemente el problema experimentado.</string>
-    <string name="menu_duplicate_book">Duplicar libro</string>
     <string name="lt_incorrect_key">Su clave de desarrollador de LibraryThing es incorrecta, o no se  ha podido contactar para verificarla.</string>
     <string name="lt_correct_key">Su clave de desarrollador de LibraryThing es válida.</string>
     <string name="error_no_internet_connection">No hay conexión a internet.</string>
     <string name="menu_share_this">Compartir</string>
     <string name="export_csv_email">¿Desea enviar por correo electrónico el fichero exportado?</string>
-    <string name="menu_cover_crop">Recortar miniatura</string>
+    <string name="menu_cover_crop">Recortar</string>
     <string name="gr_tq_title_task_errors">Errores en tareas</string>
     <string name="retry">Reintentar</string>
     <string name="gr_tq_menu_delete_event">Eliminar Evento</string>
@@ -353,13 +351,13 @@
     <string name="X_title_add_style">Nuevo estilo</string>
     <string name="X_pt_bob_filter_read">Seleccionar en función del estado \‘Leído\’</string>
     <string name="title_select_style">Seleccionar Estilo</string>
-    <string name="warning_required_field_x">%1$s no puede ser blanco</string>
+    <string name="X_warning_required_field_x">%1$s no puede ser blanco</string>
     <string name="edit">Editar</string>
     <string name="lbl_settings">Preferencias</string>
     <string name="error_unexpected_error">Se ha producido un error inesperado. Por favor, envíe los detalles a soporte utilizando la opción \‘Help\’ del menú principal</string>
-    <string name="menu_delete_style">Eliminar Estilo</string>
-    <string name="menu_edit_booklist_style">Editar Estilo</string>
-    <string name="menu_clone_style">Duplicar Estilo</string>
+    <string name="X_menu_delete_style">Eliminar Estilo</string>
+    <string name="X_menu_edit_booklist_style">Editar Estilo</string>
+    <string name="menu_duplicate">Duplicar</string>
     <string name="about_dash_or_dash">- O -</string>
     <string name="about_donate_paypal">Donación PayPal</string>
     <string name="style_builtin_compact">Compacto</string>
@@ -437,9 +435,9 @@
     <string name="lbl_added_month">Mes de inclusión</string>
     <string name="lbl_added_day">Día de inclusión</string>
     <string name="lbl_book">Libro</string>
-    <string name="in">en</string>
-    <string name="size">Tamaño</string>
-    <string name="updated">Actualizado</string>
+    <string name="X_in">en</string>
+    <string name="X_file_size">Tamaño</string>
+    <string name="X_updated">Actualizado</string>
     <string name="import_error_csv_file_not_found">No se han encontrado archivos exportados</string>
     <string name="import_warning_select_csv_file">Se ha encontrado más de un archivo exportado; por favor, seleccione el archivo que desea importar de la lista siguiente</string>
     <string name="X_error_starting_import_arg">Ha habido un problema con la importación: %1$s</string>
@@ -468,7 +466,7 @@
     <string name="lbl_read_day">Día de lectura</string>
     <string name="style_builtin_read_date">Fecha de lectura</string>
     <string name="lbl_details_have_changed">Detalles modificados</string>
-    <string name="confirm_unsaved_changes">Hay cambios que no se han guardado. Si sale ahora, se perderán.</string>
+    <string name="warning_unsaved_edits">Hay cambios que no se han guardado. Si sale ahora, se perderán.</string>
     <string name="btn_confirm_exit">Salir</string>
     <string name="btn_continue_editing">Continuar editando</string>
     <string name="X_warning_title_already_exists">El título ya existe</string>
@@ -486,7 +484,6 @@
     <string name="progress_msg_searching">Buscando…</string>
     <string name="progress_msg_adding_book">Añadiendo libro…</string>
     <string name="lbl_publication">Publicación</string>
-    <string name="lbl_by_author">por</string>
     <string name="lbl_loaned_to_name">Prestado a %1$s</string>
     <string name="lbl_x_pages">%1$d páginas</string>
 
@@ -507,7 +504,7 @@
     <!-- This is the heading of the 'Details' tab when editing a book. It needs to be short. "Book Details" is too long. -->
     <string name="tab_lbl_details">Detalles</string>
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
-    <string name="tab_lbl_loan">Préstamo</string>
+    <string name="X_tab_lbl_loan">Préstamo</string>
 
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
     <string name="gr_btn_forget_credentials">Olvidar credenciales</string>
@@ -563,7 +560,7 @@
     <string name="warning_select_a_non_directory">Por favor, seleccione un fichero, no un directorio</string>
 
     <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
-    <string name="menu_copy_database">Copiar Base de Datos (para soporte técnico)</string>
+    <string name="menu_copy_database">Exportar base de datos</string>
 
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">La importación falló.</string>
@@ -712,7 +709,7 @@
     <string name="tab_lbl_notes">Notas</string>
     <string name="lbl_cover">Portada</string>
     <string name="import_options_dialog_title">Seleccione lo que se importará.</string>
-    <string name="send_mail">Enviar correo electrónico…</string>
+    <string name="title_send_mail">Enviar correo electrónico…</string>
     <string name="menu_set_read">Marcar como leído</string>
     <string name="menu_set_unread">Marcar como no leído</string>
     <string name="menu_set_complete">Marcar como completo</string>
@@ -742,7 +739,6 @@
     <string name="progress_msg_saving_image">Guardando imagen…</string>
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Libros</string>
     <string name="menu_loan_return_book">El libro prestado esta de vuelta</string>
@@ -756,7 +752,6 @@
     <string name="book_format_trade_paperback">Rústica PUR</string>
     <string name="books_found">%1$d libros encontrados</string>
     <string name="book_format_ebook">Libro electronico</string>
-    <string name="book_format_digest">Digesto</string>
     <string name="confirm_merge_bookshelves">El estante al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
     <string name="error_database_upgrade_failed">No se puede actualizar desde una versión anterior a 4.0.0</string>
     <string name="error_not_available">no disponible</string>
@@ -780,4 +775,5 @@
     <string name="progress_msg_please_wait">Por favor espera…</string>
     <string name="warning_required_title_and_author">Falta el título y / o el autor.</string>
     <string name="X_events_found">%1$d eventos encontrados</string>
+    <string name="info_tap_on_image_to_select">Toque la imagen grande para seleccionar</string>
 </resources>

@@ -28,7 +28,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = BookSearchByTextFragment.class.getSimpleName();
 
     /** A list of author names we have already searched for in this session. */
@@ -138,8 +138,10 @@ public class BookSearchByTextFragment
      */
     public void onSearchFinished(final boolean wasCancelled,
                                  @NonNull final Bundle bookData) {
-        Logger.info(this, Tracker.State.Enter,
-                    "onSearchFinished", "SearchManagerId=" + mSearchManagerId);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+            Logger.debugEnter(this, "onSearchFinished",
+                              "SearchManagerId=" + mSearchManagerId);
+        }
         try {
             if (!wasCancelled) {
                 mActivity.getTaskManager().sendHeaderUpdate(R.string.progress_msg_adding_book);

@@ -22,6 +22,7 @@ import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.Task;
 import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -32,7 +33,7 @@ public final class GoodreadsUtils {
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
 
-    /** task progress fragment tag. */
+    /** task progress fragment t. */
     private static final String TAG_GOODREADS_IMPORT_ALL = "grImportAll";
     private static final String TAG_GOODREADS_SEND_BOOKS = "grSendBooks";
     private static final String TAG_GOODREADS_SEND_ALL_BOOKS = "grSendAllBooks";
@@ -52,7 +53,8 @@ public final class GoodreadsUtils {
     @SuppressWarnings("WeakerAccess")
     @AnyThread
     public static boolean hasCover(final String imageName) {
-        return imageName != null && !imageName.toLowerCase().contains(NO_COVER);
+        return imageName != null
+                && !imageName.toLowerCase(LocaleUtils.getSystemLocale()).contains(NO_COVER);
     }
 
     /**
@@ -62,7 +64,8 @@ public final class GoodreadsUtils {
      */
     @AnyThread
     public static boolean hasNoCover(final String imageName) {
-        return imageName != null && imageName.toLowerCase().contains(NO_COVER);
+        return imageName != null
+                && imageName.toLowerCase(LocaleUtils.getSystemLocale()).contains(NO_COVER);
     }
 
     /**
@@ -139,7 +142,7 @@ public final class GoodreadsUtils {
                 try {
                     return checkWeCanExport();
                 } catch (RuntimeException e) {
-                    Logger.error(e);
+                    Logger.error(this, e);
                     mException = e;
                     return R.string.error_unexpected_error;
                 }
@@ -259,7 +262,7 @@ public final class GoodreadsUtils {
                     }
                     return msg;
                 } catch (RuntimeException e) {
-                    Logger.error(e);
+                    Logger.error(this, e);
                     mException = e;
                     return R.string.error_unexpected_error;
                 }
@@ -330,7 +333,7 @@ public final class GoodreadsUtils {
                     }
                     return msg;
                 } catch (RuntimeException e) {
-                    Logger.error(e);
+                    Logger.error(this, e);
                     mException = e;
                     return R.string.error_unexpected_error;
                 }
@@ -400,7 +403,7 @@ public final class GoodreadsUtils {
                     }
                     return msg;
                 } catch (RuntimeException e) {
-                    Logger.error(e);
+                    Logger.error(this, e);
                     mException = e;
                     return R.string.error_unexpected_error;
                 }

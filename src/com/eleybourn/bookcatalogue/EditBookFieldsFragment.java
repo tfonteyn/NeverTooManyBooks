@@ -60,7 +60,7 @@ public class EditBookFieldsFragment
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Bookshelf>,
         TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = EditBookFieldsFragment.class.getSimpleName();
 
     private static final int REQ_EDIT_AUTHORS = 0;
@@ -184,7 +184,6 @@ public class EditBookFieldsFragment
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
-        Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         populateAuthorListField(book);
@@ -202,8 +201,6 @@ public class EditBookFieldsFragment
 
         // Restore default visibility
         showHideFields(false);
-
-        Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
 
     //</editor-fold>
@@ -294,16 +291,6 @@ public class EditBookFieldsFragment
         super.onPause();
     }
 
-    /**
-     * Overriding to get extra debug.
-     */
-    @Override
-    protected void onSaveFieldsToBook(@NonNull final Book book) {
-        Tracker.enterOnSaveFieldsToBook(this, book.getId());
-        super.onSaveFieldsToBook(book);
-        Tracker.exitOnSaveFieldsToBook(this, book.getId());
-    }
-
     //</editor-fold>
 
     /* ------------------------------------------------------------------------------------------ */
@@ -314,7 +301,7 @@ public class EditBookFieldsFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         if (mFields.getField(R.id.coverImage).isVisible()) {
-            menu.add(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, 0, R.string.menu_cover_replace)
+            menu.add(Menu.NONE, R.id.SUBMENU_THUMB_REPLACE, Menu.NONE, R.string.menu_cover_replace)
                 .setIcon(R.drawable.ic_add_a_photo)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }

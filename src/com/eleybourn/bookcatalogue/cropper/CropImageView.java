@@ -262,7 +262,7 @@ class CropImageView
                 mHighlightViews.get(i).draw(canvas);
             }
         } catch (RuntimeException e) {
-            Logger.error(e);
+            Logger.error(this, e);
         }
     }
 

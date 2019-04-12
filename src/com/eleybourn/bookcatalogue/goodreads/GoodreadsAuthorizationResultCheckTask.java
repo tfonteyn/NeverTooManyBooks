@@ -82,11 +82,11 @@ public class GoodreadsAuthorizationResultCheckTask
                 App.showNotification(context, R.string.info_not_authorized, msg);
             }
         } catch (AuthorizationException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             App.showNotification(context, R.string.info_not_authorized, e.getLocalizedMessage());
 
         } catch (IOException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             String msg = context.getString(R.string.gr_auth_error) + ' '
                     + context.getString(R.string.error_if_the_problem_persists);
             App.showNotification(context, R.string.info_not_authorized, msg);

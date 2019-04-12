@@ -61,7 +61,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class LendBookDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = LendBookDialogFragment.class.getSimpleName();
 
     private static final String[] PROJECTION = {
@@ -291,7 +291,7 @@ public class LendBookDialogFragment
                 break;
 
             default:
-                Logger.error("unknown requestCode=" + requestCode);
+                Logger.warnWithStackTrace(this, "unknown requestCode=" + requestCode);
                 break;
         }
     }

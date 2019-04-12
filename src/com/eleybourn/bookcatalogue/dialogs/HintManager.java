@@ -148,7 +148,8 @@ public final class HintManager {
         final Hint hint = mHints.get(stringId);
         if (hint == null) {
             // log but ignore.
-            Logger.error("displayHint|not found|stringId=" + stringId);
+            Logger.warnWithStackTrace(HintManager.class, "displayHint", "not found",
+                                      "stringId=" + stringId);
             return;
         }
         if (!hint.shouldBeShown()) {

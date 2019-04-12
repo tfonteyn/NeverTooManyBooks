@@ -14,6 +14,14 @@
     <!-- =========== -->
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
 
+        <!-- the default style attributes for a ListView using a native fast scroller. -->
+        <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
+        <item name="android:fastScrollTrackDrawable">@null</item>
+        <item name="android:fastScrollOverlayPosition">floating</item>
+        <!--<item name="android:fastScrollPreviewBackgroundRight">@drawable/menu_submenu_background</item>-->
+        <!--<item name="android:fastScrollPreviewBackgroundLeft">@drawable/menu_submenu_background</item>-->
+        <!--<item name="android:fastScrollTextColor">@color/primary_text_dark</item>-->
+
         <!-- rectangular border around an element -->
         <item name="color_border">@color/grey_800</item>
 
@@ -60,6 +68,15 @@
     <!-- =================== -->
     <style name="AppTheme.Light.Blue" parent="Theme.AppCompat.Light.NoActionBar">
 
+        <!-- the default style attributes for a ListView using a native fast scroller. -->
+        <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
+        <item name="android:fastScrollTrackDrawable">@null</item>
+        <item name="android:fastScrollOverlayPosition">floating</item>
+        <!--<item name="android:fastScrollPreviewBackgroundRight">@drawable/menu_submenu_background</item>-->
+        <!--<item name="android:fastScrollPreviewBackgroundLeft">@drawable/menu_submenu_background</item>-->
+        <!--<item name="android:fastScrollTextColor">@color/primary_text_dark</item>-->
+
+
         <!-- rectangular border around an element -->
         <item name="color_border">@color/grey_400</item>
 
@@ -104,6 +121,14 @@
     <!-- Light theme - Red. -->
     <!-- ================== -->
     <style name="AppTheme.Light.Red" parent="Theme.AppCompat.Light.NoActionBar">
+
+        <!-- the default style attributes for a ListView using a native fast scroller. -->
+        <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
+        <item name="android:fastScrollTrackDrawable">@null</item>
+        <item name="android:fastScrollOverlayPosition">floating</item>
+        <!--<item name="android:fastScrollPreviewBackgroundRight">@drawable/menu_submenu_background</item>-->
+        <!--<item name="android:fastScrollPreviewBackgroundLeft">@drawable/menu_submenu_background</item>-->
+        <!--<item name="android:fastScrollTextColor">@color/primary_text_dark</item>-->
 
         <!-- rectangular border around an element -->
         <item name="color_border">@color/grey_400</item>

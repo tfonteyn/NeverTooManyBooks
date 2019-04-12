@@ -389,6 +389,21 @@
         <item name="android:background">?android:attr/colorPrimary</item>
     </style>
 
+    <!-- 2019-04-10: LEAVING THIS HERE AS A REMINDER.
+        Tried using: android:fastScrollStyle="@style/fastScrollStyle" on the ListView.
+
+        It seems androidx is overruling this. Tracing the original Android sources,
+        the easy workaround is to set fastScroll* attributes on the application theme.
+    -->
+    <style name="fastScrollStyle">
+        <item name="android:fastScrollThumbDrawable">@drawable/scrollbar_handle_accelerated_anim2</item>
+        <item name="android:fastScrollTrackDrawable">@null</item>
+        <!--<item name="android:fastScrollPreviewBackgroundRight">@drawable/menu_submenu_background</item>-->
+        <!--<item name="android:fastScrollPreviewBackgroundLeft">@drawable/menu_submenu_background</item>-->
+        <item name="android:fastScrollOverlayPosition">floating</item>
+        <!--<item name="android:fastScrollTextColor">@color/primary_text_dark</item>-->
+    </style>
+
     <!-- the outer frame (e.g. 'root') for a Dialog -->
     <style name="dialogFrame">
         <item name="android:layout_width">match_parent</item>

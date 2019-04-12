@@ -45,11 +45,11 @@ public class EventsCursor
         implements BindableItemCursor {
 
     /** Column number of ID column. */
-    private static int mIdCol = -2;
+    private static int sIdCol = -2;
     /** Column number of date column. */
-    private static int mDateCol = -2;
+    private static int sDateCol = -2;
     /** Column number of Exception column. */
-    private static int mEventCol = -2;
+    private static int sEventCol = -2;
 
     @SuppressLint("UseSparseArrays")
     private final Map<Long, Boolean> mSelections =
@@ -70,10 +70,10 @@ public class EventsCursor
      * @return row id
      */
     public long getId() {
-        if (mIdCol < 0) {
-            mIdCol = getColumnIndex(TaskQueueDBHelper.DOM_ID);
+        if (sIdCol < 0) {
+            sIdCol = getColumnIndex(TaskQueueDBHelper.DOM_ID);
         }
-        return getLong(mIdCol);
+        return getLong(sIdCol);
     }
 
     /**
@@ -83,10 +83,10 @@ public class EventsCursor
      */
     @NonNull
     public Date getEventDate() {
-        if (mDateCol < 0) {
-            mDateCol = getColumnIndex(TaskQueueDBHelper.DOM_EVENT_DATE);
+        if (sDateCol < 0) {
+            sDateCol = getColumnIndex(TaskQueueDBHelper.DOM_EVENT_DATE);
         }
-        Date date = DateUtils.parseDate(getString(mDateCol));
+        Date date = DateUtils.parseDate(getString(sDateCol));
         if (date == null) {
             date = new Date();
         }
@@ -115,10 +115,10 @@ public class EventsCursor
     @Override
     @NonNull
     public BindableItemCursorAdapter.BindableItem getBindableItem() {
-        if (mEventCol < 0) {
-            mEventCol = getColumnIndex(TaskQueueDBHelper.DOM_EVENT);
+        if (sEventCol < 0) {
+            sEventCol = getColumnIndex(TaskQueueDBHelper.DOM_EVENT);
         }
-        byte[] blob = getBlob(mEventCol);
+        byte[] blob = getBlob(sEventCol);
         Event event;
         try {
             event = SerializationUtils.deserializeObject(blob);

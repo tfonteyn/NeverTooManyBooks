@@ -103,7 +103,7 @@ public class GoodreadsSearchResultsActivity
                 | AuthorizationException
                 | IOException
                 | RuntimeException e) {
-            Logger.error(e, "Failed when searching Goodreads");
+            Logger.error(this, e, "Failed when searching Goodreads");
             String msg = getString(R.string.gr_error_while_searching)
                     + ' ' + getString(R.string.error_if_the_problem_persists);
             UserMessage.showUserMessage(this, msg);
@@ -132,7 +132,7 @@ public class GoodreadsSearchResultsActivity
     private void doItemClick(@NonNull final Holder holder) {
         // TODO: Implement edition lookup - requires access to work.editions API from GR
         String msg = "Not implemented: see " + holder.titleView + " by " + holder.authorView;
-        Logger.debug(msg);
+        Logger.debugWithStackTrace(this,"doItemClick",msg);
         UserMessage.showUserMessage(this, msg);
         //Intent i = new Intent(this, GoodreadsW)
     }

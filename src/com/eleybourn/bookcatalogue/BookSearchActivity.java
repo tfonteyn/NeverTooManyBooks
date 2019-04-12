@@ -65,7 +65,7 @@ public class BookSearchActivity
     /**
      * @param tag for the required fragment
      *
-     * @return a new fragment instance from the tag.
+     * @return a new fragment instance from the t.
      */
     private Fragment createFragment(@NonNull final String tag) {
         if (BookSearchByIsbnFragment.TAG.equals(tag)) {
@@ -73,7 +73,7 @@ public class BookSearchActivity
         } else if (BookSearchByTextFragment.TAG.equals(tag)) {
             return new BookSearchByTextFragment();
         } else {
-            throw new IllegalArgumentException("tag=" + tag);
+            throw new IllegalArgumentException("t=" + tag);
         }
     }
 }

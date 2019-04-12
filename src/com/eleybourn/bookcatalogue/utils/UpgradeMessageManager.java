@@ -75,7 +75,7 @@ public final class UpgradeMessageManager {
 
     /** The message generated for this instance; will be set first time it is generated. */
     @Nullable
-    private static String mMessage;
+    private static String sMessage;
 
     private UpgradeMessageManager() {
     }
@@ -90,11 +90,10 @@ public final class UpgradeMessageManager {
     @NonNull
     public static String getUpgradeMessage(@NonNull final Context context) {
         // If cached version exists, return it
-        if (mMessage != null) {
-            return mMessage;
+        if (sMessage != null) {
+            return sMessage;
         }
 
-        // Builder for message
         final StringBuilder message = new StringBuilder();
 
         // See if we have a saved version id; if it's 0, it's an upgrade from a pre-98 install.
@@ -111,12 +110,12 @@ public final class UpgradeMessageManager {
             }
         }
 
-        mMessage = message.toString().replace("\n", "<br/>");
-        return mMessage;
+        sMessage = message.toString().replace("\n", "<br/>");
+        return sMessage;
     }
 
     /**
-     * Should be called after the user aknowledged the upgrade dialog message.
+     * Should be called after the user acknowledged the upgrade dialog message.
      */
     public static void setUpgradeAcknowledged() {
         App.getPrefs()

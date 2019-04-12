@@ -105,8 +105,9 @@ public class MessageSwitch<T, U> {
     public void addListener(@NonNull final Long senderId,
                             @NonNull final T listener,
                             final boolean deliverLast) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, "addListener", listener + "|senderId=" + senderId);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.debug(this, "addListener", listener,
+                         "senderId=" + senderId);
         }
         // Add the listener to the queue, creating the queue if necessary
         MessageListeners queue;
@@ -126,16 +127,16 @@ public class MessageSwitch<T, U> {
                 // Do it on the UI thread.
                 if (HANDLER.getLooper().getThread() == Thread.currentThread()) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                        Logger.info(this, "addListener",
-                                    "|UI thread|delivering to listener: "
-                                            + listener + "|msg=" + routingSlip.message.toString());
+                        Logger.debug(this, "addListener",
+                                     "UI thread", "delivering to listener: " + listener,
+                                     "msg=" + routingSlip.message.toString());
                     }
                     routingSlip.message.deliver(listener);
                 } else {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                        Logger.info(this, "addListener",
-                                    "|post runnable|delivering to listener: "
-                                            + listener + "|msg=" + routingSlip.message.toString());
+                        Logger.debug(this, "addListener",
+                                     "post runnable", "delivering to listener: " + listener,
+                                     "msg=" + routingSlip.message.toString());
                     }
                     HANDLER.post(() -> routingSlip.message.deliver(listener));
                 }
@@ -148,9 +149,9 @@ public class MessageSwitch<T, U> {
      */
     public void removeListener(@NonNull final Long senderId,
                                @NonNull final T listener) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, "removeListener",
-                        "senderId=" + senderId + '|' + listener);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.debug(this, "removeListener",
+                         "senderId=" + senderId, listener);
         }
         synchronized (mListeners) {
             MessageListeners queue = mListeners.get(senderId);
@@ -169,15 +170,15 @@ public class MessageSwitch<T, U> {
     public void send(@NonNull final Long senderId,
                      @NonNull final Message<T> message) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.info(this, "send",
-                        "senderId=" + senderId + "|message: " + message);
+            Logger.debug(this, "send",
+                         "senderId=" + senderId, "message=" + message);
         }
 
         // Create a routing slip
-        RoutingSlip m = new MessageRoutingSlip(senderId, message);
+        RoutingSlip routingSlip = new MessageRoutingSlip(senderId, message);
         // Add to queue
         synchronized (mMessageQueue) {
-            mMessageQueue.add(m);
+            mMessageQueue.add(routingSlip);
         }
         // Process queue
         startProcessingMessages();
@@ -226,21 +227,21 @@ public class MessageSwitch<T, U> {
      * Process the queued messages.
      */
     private void processMessages() {
-        RoutingSlip m;
+        RoutingSlip routingSlip;
         do {
             synchronized (mMessageQueue) {
-                m = mMessageQueue.poll();
+                routingSlip = mMessageQueue.poll();
             }
-            if (m == null) {
+            if (routingSlip == null) {
                 break;
             }
 
-            m.deliver();
+            routingSlip.deliver();
         } while (true);
     }
 
     /**
-     * Interface that must be implemented by any message that will be sent via send().
+     * Interface that must be implemented by any message will be sent via send().
      */
     public interface Message<T> {
 
@@ -300,8 +301,8 @@ public class MessageSwitch<T, U> {
             return mLastMessage;
         }
 
-        void setLastMessage(@Nullable final MessageRoutingSlip m) {
-            mLastMessage = m;
+        void setLastMessage(@Nullable final MessageRoutingSlip routingSlip) {
+            mLastMessage = routingSlip;
         }
 
         /** Add a listener to this queue. */
@@ -417,9 +418,10 @@ public class MessageSwitch<T, U> {
                     T listener = queueIterator.next();
                     try {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                            Logger.info(this, "deliver",
-                                        "queueIterator|listener="
-                                                + listener + "|msg=" + message.toString());
+                            Logger.debug(this, "deliver",
+                                         "queueIterator",
+                                         "|listener=" + listener,
+                                         "msg=" + message.toString());
                         }
                         if (message.deliver(listener)) {
                             handled = true;
@@ -427,7 +429,7 @@ public class MessageSwitch<T, U> {
                         }
 
                     } catch (RuntimeException e) {
-                        Logger.error(e, "Error delivering message to listener");
+                        Logger.error(this, e, "Error delivering message to listener");
                     }
                 }
                 if (handled) {

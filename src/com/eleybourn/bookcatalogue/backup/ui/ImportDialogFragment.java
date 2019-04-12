@@ -30,7 +30,7 @@ import com.eleybourn.bookcatalogue.debug.MustImplementException;
 public class ImportDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = ImportDialogFragment.class.getSimpleName();
 
     private ImportSettings mImportSettings;
@@ -144,7 +144,7 @@ public class ImportDialogFragment
             reader.close();
             mArchiveHasValidDates = info.getAppVersionCode() >= 152;
         } catch (IOException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             mArchiveHasValidDates = false;
         }
         return mArchiveHasValidDates;

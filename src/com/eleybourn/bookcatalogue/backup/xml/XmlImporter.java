@@ -75,7 +75,7 @@ public class XmlImporter
      * but it's clean and future proof
      */
     private final Deque<TagInfo> mTagStack = new ArrayDeque<>();
-    /** a simple Holder for the current tag name and attributes. */
+    /** a simple Holder for the current t name and attributes. */
     private TagInfo mTag;
 
     /**
@@ -137,7 +137,7 @@ public class XmlImporter
                 break;
 
             default:
-                throw new IllegalStateException();
+                throw new IllegalStateException("type=" + entity.getType());
         }
     }
 
@@ -206,31 +206,31 @@ public class XmlImporter
         // A new element under the root
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement)
                  .setStartAction(context -> {
-                     // use as top-tag
+                     // use as top-t
                      mTag = new TagInfo(context);
-                     // we only have a version on the top tag, not on every tag.
+                     // we only have a version on the top t, not on every t.
                      String version = context.getAttributes().getValue(XmlUtils.ATTR_VERSION);
 
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.info(this, "fromXml",
-                                     "NEW-ELEMENT",
-                                     "localName=`" + context.getLocalName() + '`', mTag);
+                         Logger.debug(this, "fromXml",
+                                      "NEW-ELEMENT",
+                                      "localName=`" + context.getLocalName() + '`', mTag);
                      }
                      accessor.startElement(version == null ? 0 : Integer.parseInt(version), mTag);
                  })
                  .setEndAction(context -> accessor.endElement());
 
-        // typed tag starts. for both attribute and body based elements.
+        // typed t starts. for both attribute and body based elements.
         XmlFilter.XmlHandler startTypedTag = context -> {
             mTagStack.push(mTag);
             mTag = new TagInfo(context);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.info(this, "fromXml",
-                            "startTypedTag",
-                            "localName=`" + context.getLocalName() + '`', mTag);
+                Logger.debug(this, "fromXml",
+                             "startTypedTag",
+                             "localName=`" + context.getLocalName() + '`', mTag);
             }
-            // if we have a value attribute, this tag is done. Handle here.
+            // if we have a value attribute, this t is done. Handle here.
             if (mTag.value != null) {
                 switch (mTag.type) {
                     case XmlUtils.XML_STRING:
@@ -262,12 +262,12 @@ public class XmlImporter
             }
         };
 
-        // the end of a typed tag with a body
+        // the end of a typed t with a body
         XmlFilter.XmlHandler endTypedTag = context -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.info(this, "fromXml",
-                            "endTypedTag",
-                            "localName=`" + context.getLocalName() + '`', mTag);
+                Logger.debug(this, "fromXml",
+                             "endTypedTag",
+                             "localName=`" + context.getLocalName() + '`', mTag);
             }
             try {
                 switch (mTag.type) {
@@ -289,20 +289,20 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.error("Unknown type: " + mTag.type);
+                        Logger.warnWithStackTrace(this, "Unknown type: " + mTag.type);
                         break;
                 }
 
                 mTag = mTagStack.pop();
 
             } catch (RuntimeException e) {
-                Logger.error(e);
+                Logger.error(this, e);
                 throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag.name
                                                    + '(' + mTag.type + ')', e);
             }
         };
 
-        // typed tags that only use a value attribute only need action on the start of a tag
+        // typed tags that only use a value attribute only need action on the start of a t
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_BOOLEAN)
                  .setStartAction(startTypedTag);
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.XML_INT)
@@ -338,12 +338,12 @@ public class XmlImporter
             mTag = new TagInfo(context);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.info(this, "fromXml",
-                            "startElementInCollection",
-                            "localName=`" + context.getLocalName() + '`', mTag);
+                Logger.debug(this, "fromXml",
+                             "startElementInCollection",
+                             "localName=`" + context.getLocalName() + '`', mTag);
             }
 
-            // if we have a value attribute, this tag is done. Handle here.
+            // if we have a value attribute, this t is done. Handle here.
             if (mTag.value != null) {
                 // yes, switch is silly here. But let's keep it generic and above all, clear!
                 switch (mTag.type) {
@@ -363,9 +363,9 @@ public class XmlImporter
         // set/list elements with bodies.
         XmlFilter.XmlHandler endElementInCollection = context -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.info(this, "fromXml",
-                            "endElementInCollection",
-                            "localName=`" + context.getLocalName() + '`', mTag);
+                Logger.debug(this, "fromXml",
+                             "endElementInCollection",
+                             "localName=`" + context.getLocalName() + '`', mTag);
             }
 
             // handle tags with bodies.
@@ -385,7 +385,7 @@ public class XmlImporter
                 mTag = mTagStack.pop();
 
             } catch (RuntimeException e) {
-                Logger.error(e);
+                Logger.error(this, e);
                 throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
             }
         };
@@ -419,7 +419,9 @@ public class XmlImporter
         try {
             parser = factory.newSAXParser();
         } catch (SAXException | ParserConfigurationException e) {
-            Logger.error(e);
+            if (BuildConfig.DEBUG /* always log */) {
+                Logger.debugWithStackTrace(this, e);
+            }
             throw new IOException("Unable to create XML parser", e);
         }
 
@@ -428,7 +430,7 @@ public class XmlImporter
         try {
             parser.parse(is, handler);
         } catch (SAXException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             throw new IOException("Malformed XML");
         }
     }
@@ -436,7 +438,7 @@ public class XmlImporter
     /**
      * Creates an XmlFilter that can read pre-v200 Info and Preferences XML format.
      * <p>
-     * This legacy format was flat, had a fixed tag name ('item') and used an attribute 'type'.
+     * This legacy format was flat, had a fixed t name ('item') and used an attribute 'type'.
      * indicating int,string,...
      */
     private void createPreV200Filter(@NonNull final XmlFilter rootFilter,
@@ -448,16 +450,16 @@ public class XmlImporter
                      mTag = new TagInfo(context);
 
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.info(this, "createPreV200Filter",
-                                     "StartAction",
-                                     "localName=`" + context.getLocalName() + '`', mTag);
+                         Logger.debug(this, "createPreV200Filter",
+                                      "StartAction",
+                                      "localName=`" + context.getLocalName() + '`', mTag);
                      }
                  })
                  .setEndAction(context -> {
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Logger.info(this, "createPreV200Filter",
-                                     "EndAction",
-                                     "localName=`" + context.getLocalName() + '`', mTag);
+                         Logger.debug(this, "createPreV200Filter",
+                                      "EndAction",
+                                      "localName=`" + context.getLocalName() + '`', mTag);
                      }
                      try {
                          String body = context.getBody();
@@ -492,9 +494,7 @@ public class XmlImporter
                          mTag = mTagStack.pop();
 
                      } catch (NumberFormatException e) {
-                         Logger.error(e);
-                         throw new RuntimeException(
-                                 UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
+                         throw new RuntimeException(UNABLE_TO_PROCESS_XML_ENTITY_ERROR + mTag, e);
                      }
                  });
     }
@@ -505,7 +505,7 @@ public class XmlImporter
             // now do some cleaning
             mDb.purge();
         } catch (RuntimeException e) {
-            Logger.error(e);
+            Logger.error(this, e);
         }
         mDb.close();
     }
@@ -518,13 +518,13 @@ public class XmlImporter
     interface EntityReader<K> {
 
         /**
-         * @return the tag name for the list
+         * @return the t name for the list
          */
         @NonNull
         String getListRoot();
 
         /**
-         * @return the tag name for an element in the list
+         * @return the t name for an element in the list
          */
         @NonNull
         String getElementRoot();
@@ -533,7 +533,7 @@ public class XmlImporter
          * Callback at the start of each element in the list.
          *
          * @param version of the XML schema for this element, or 0 if not present
-         * @param tag     the info about the top tag
+         * @param tag     the info about the top t
          */
         void startElement(int version,
                           @NonNull TagInfo tag);
@@ -578,36 +578,34 @@ public class XmlImporter
 
         /** attribute with the key into the collection. */
         @NonNull
-        String name;
-
-        /**
-         * - current use: the type of the element as set by the tag itself.
-         * - pre-v200 backward compatibility: the type attribute of a generic 'item' tag.
-         */
-        @NonNull
-        String type;
-
-        /** optional. 0 if none. */
-        int id;
+        final String name;
         /**
          * value attribute (e.g. int,boolean,...),
-         * not used when the tag body is used (String,..).
+         * not used when the t body is used (String,..).
          * <p>
          * optional.
          */
         @Nullable
-        String value;
+        final String value;
+        /**
+         * - current use: the type of the element as set by the t itself.
+         * - pre-v200 backward compatibility: the type attribute of a generic 'item' t.
+         */
+        @NonNull
+        String type;
+        /** optional. 0 if none. */
+        int id;
 
         /**
          * Constructor.
          *
-         * @param context of the XML tag
+         * @param context of the XML t
          */
         TagInfo(@NonNull final ElementContext context) {
             Attributes attrs = context.getAttributes();
 
             type = context.getLocalName();
-            // Legacy pre-v200 used a fixed tag, with the type as an attribute
+            // Legacy pre-v200 used a fixed t, with the type as an attribute
             if ("item".equals(type)) {
                 type = attrs.getValue("style");
             }
@@ -617,8 +615,10 @@ public class XmlImporter
                 try {
                     id = Integer.parseInt(idStr);
                 } catch (NumberFormatException e) {
-                    Logger.info(this, "TagInfo",
-                                "invalid id in xml tag: " + name);
+                    if (BuildConfig.DEBUG) {
+                        Logger.warn(this, "TagInfo",
+                                    "invalid id in xml t: " + name);
+                    }
                 }
             }
             value = attrs.getValue(XmlUtils.ATTR_VALUE);
@@ -816,9 +816,9 @@ public class XmlImporter
      * <p>
      * See {@link XmlExporter} :
      * * Filters and Groups are flattened.
-     * * - each filter has a tag
+     * * - each filter has a t
      * * - actual groups are written as a set of id's (kinds)
-     * * - each preference in a group has a tag.
+     * * - each preference in a group has a t.
      */
     static class StylesReader
             implements EntityReader<String> {

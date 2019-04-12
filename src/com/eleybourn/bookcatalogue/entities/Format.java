@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * System wide book format representation.
@@ -16,6 +17,9 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
  * ENHANCE: make a separate table for the format.
  * <p>
  * {@link DBDefinitions#DOM_BOOK_FORMAT}
+ *
+ * Good description:  http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Format
+ *
  */
 public final class Format {
 
@@ -24,6 +28,8 @@ public final class Format {
 
     // use all lowercase keys!
     static {
+        // mass market paperback
+        MAPPER.put("mmpb",R.string.book_format_paperback);
         MAPPER.put("pb", R.string.book_format_paperback);
         MAPPER.put("tp", R.string.book_format_trade_paperback);
         MAPPER.put("hc", R.string.book_format_hardcover);
@@ -47,7 +53,8 @@ public final class Format {
      */
     public static String map(@NonNull final Context context,
                              @NonNull final String source) {
-        Integer resId = MAPPER.get(source.toLowerCase());
+
+        Integer resId = MAPPER.get(source.toLowerCase(LocaleUtils.getSystemLocale()));
         return resId != null ? context.getString(resId)
                              : source;
     }

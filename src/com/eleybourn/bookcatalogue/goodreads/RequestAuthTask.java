@@ -20,7 +20,7 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 class RequestAuthTask
         extends AsyncTask<Void, Object, Integer> {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = RequestAuthTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_GR_REQUEST_AUTH;
@@ -77,7 +77,7 @@ class RequestAuthTask
                 //noinspection ConstantConditions
                 grMgr.requestAuthorization(context);
             } catch (IOException e) {
-                Logger.error(e);
+                Logger.error(this, e);
                 return R.string.gr_access_error;
             } catch (AuthorizationException e) {
                 return R.string.error_authorization_failed;

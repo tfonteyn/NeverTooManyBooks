@@ -20,7 +20,7 @@ import com.eleybourn.bookcatalogue.entities.Book;
  * {@link EditBookFieldsFragment}
  * {@link EditBookPublicationFragment}
  * {@link EditBookNotesFragment}
- * {@link EditBookTOCFragment}
+ * {@link EditBookTocFragment}
  */
 public abstract class EditBookBaseFragment
         extends BookBaseFragment
@@ -31,7 +31,6 @@ public abstract class EditBookBaseFragment
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
-        Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         // new book ? load data fields from Extras
@@ -39,8 +38,6 @@ public abstract class EditBookBaseFragment
             Bundle extras = requireActivity().getIntent().getExtras();
             populateNewBookFieldsFromBundle(book, extras);
         }
-
-        Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
 
     /**
@@ -98,8 +95,6 @@ public abstract class EditBookBaseFragment
      */
     @CallSuper
     protected void onSaveFieldsToBook(@NonNull final Book book) {
-        Tracker.enterOnSaveFieldsToBook(this, book.getId());
         mFields.putAllInto(book);
-        Tracker.exitOnSaveFieldsToBook(this, book.getId());
     }
 }

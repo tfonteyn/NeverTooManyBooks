@@ -20,6 +20,7 @@
 
 package com.eleybourn.bookcatalogue.goodreads.taskqueue;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -100,6 +101,16 @@ abstract class BindableItemListActivity
     protected void onDestroy() {
         closeCursor(mBindableItems);
         super.onDestroy();
+    }
+
+    /** close a cursor and ignore failures. */
+    protected void closeCursor(@Nullable final Cursor cursor) {
+        try {
+            if (cursor != null) {
+                cursor.close();
+            }
+        } catch (RuntimeException ignore) {
+        }
     }
 
     protected abstract void onListItemClick(@NonNull final AdapterView<?> parent,

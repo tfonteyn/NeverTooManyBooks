@@ -106,7 +106,7 @@ public class About
         view = findViewById(R.id.amazon_url);
         String text = String.format(
                 "<a href=\"https://www.amazon.com/gp/registry/wishlist/"
-                        + "2A2E48ONH64HM?tag=bookcatalogue-20\">%1s</a>",
+                        + "2A2E48ONH64HM?t=bookcatalogue-20\">%1s</a>",
                 getString(R.string.about_donate_amazon));
         view.setText(Utils.linkifyHtml(text));
         view.setMovementMethod(LinkMovementMethod.getInstance());
@@ -128,9 +128,9 @@ public class About
                     .setType("text/plain")
                     .putExtra(Intent.EXTRA_EMAIL, new String[]{getString(stringId)})
                     .putExtra(Intent.EXTRA_SUBJECT, subject);
-            startActivity(Intent.createChooser(intent, getString(R.string.send_mail)));
+            startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (ActivityNotFoundException e) {
-            Logger.error(e);
+            Logger.error(this, e);
         }
     }
 }

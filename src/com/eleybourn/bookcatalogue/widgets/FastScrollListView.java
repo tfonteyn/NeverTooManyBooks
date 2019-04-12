@@ -53,8 +53,13 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.R;
 
 /**
+ * 2019-04-10: still in use in BoB, mainly for the {@link FastScroller.SectionIndexerV2} use.
+ * Not sure if any of the other old reasons to use it are still valid.
+ * Review once better understood/tested.
+ * <p>
+ * <p>
  * Subclass of ListView that uses a local implementation of FastScroller to bypass
- * the deficiencies in the original Android version. See fastScroller.java for a discussion.
+ * the deficiencies in the original Android version. See {@link FastScroller} for a discussion.
  * <p>
  * We need to subclass ListView because we need access to events that are only provided
  * by the subclass.
@@ -85,41 +90,9 @@ public class FastScrollListView
     /** Active scroller, if any. */
     @Nullable
     private FastScroller mFastScroll;
-    /**
-     * The actual 'user' listener.
-     */
+    /** The actual 'user' listener, if any. */
     @Nullable
-    private OnScrollListener mOnScrollListener;
-
-    /**
-     * Set as the 'super' listener, forwarding events to the 'user' listener set
-     * via {@link #setOnScrollListener(OnScrollListener)}.
-     */
-    @SuppressWarnings("FieldCanBeLocal")
-    @Nullable
-    private final OnScrollListener mOnScrollDispatcher = new OnScrollListener() {
-        @Override
-        public void onScroll(@NonNull final AbsListView view,
-                             final int firstVisibleItem,
-                             final int visibleItemCount,
-                             final int totalItemCount) {
-            if (mFastScroll != null) {
-                mFastScroll.onScroll(firstVisibleItem, visibleItemCount, totalItemCount);
-            }
-            if (mOnScrollListener != null) {
-                mOnScrollListener.onScroll(view, firstVisibleItem, visibleItemCount,
-                                           totalItemCount);
-            }
-        }
-
-        @Override
-        public void onScrollStateChanged(@NonNull final AbsListView view,
-                                         final int scrollState) {
-            if (mOnScrollListener != null) {
-                mOnScrollListener.onScrollStateChanged(view, scrollState);
-            }
-        }
-    };
+    private OnScrollListener mUserOnScrollListener;
 
     /**
      * Constructor used when instantiating Views programmatically.
@@ -136,7 +109,7 @@ public class FastScrollListView
      *
      * @param context The Context the view is running in, through which it can
      *                access the current theme, resources, etc.
-     * @param attrs   The attributes of the XML tag that is inflating the view.
+     * @param attrs   The attributes of the XML t that is inflating the view.
      */
     public FastScrollListView(@NonNull final Context context,
                               @Nullable final AttributeSet attrs) {
@@ -148,7 +121,7 @@ public class FastScrollListView
      *
      * @param context      The Context the view is running in, through which it can
      *                     access the current theme, resources, etc.
-     * @param attrs        The attributes of the XML tag that is inflating the view.
+     * @param attrs        The attributes of the XML t that is inflating the view.
      * @param defStyleAttr An attribute in the current theme that contains a
      *                     reference to a style resource that supplies default values for
      *                     the view. Can be 0 to not look for defaults.
@@ -164,7 +137,7 @@ public class FastScrollListView
      *
      * @param context      The Context the view is running in, through which it can
      *                     access the current theme, resources, etc.
-     * @param attrs        The attributes of the XML tag that is inflating the view.
+     * @param attrs        The attributes of the XML t that is inflating the view.
      * @param defStyleAttr An attribute in the current theme that contains a
      *                     reference to a style resource that supplies default values for
      *                     the view. Can be 0 to not look for defaults.
@@ -179,7 +152,34 @@ public class FastScrollListView
                               final int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
-        super.setOnScrollListener(mOnScrollDispatcher);
+        /*
+         * Set as the 'super' listener, forwarding events to the 'user' listener set
+         * via {@link #setOnScrollListener(OnScrollListener)}.
+         */
+        super.setOnScrollListener( new OnScrollListener() {
+            @Override
+            public void onScroll(@NonNull final AbsListView view,
+                                 final int firstVisibleItem,
+                                 final int visibleItemCount,
+                                 final int totalItemCount) {
+                if (mFastScroll != null) {
+                    mFastScroll.onScroll(firstVisibleItem, visibleItemCount, totalItemCount);
+                }
+                if (mUserOnScrollListener != null) {
+                    mUserOnScrollListener.onScroll(view, firstVisibleItem, visibleItemCount,
+                                                   totalItemCount);
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(@NonNull final AbsListView view,
+                                             final int scrollState) {
+                if (mUserOnScrollListener != null) {
+                    mUserOnScrollListener.onScrollStateChanged(view, scrollState);
+                }
+            }
+        });
+
 
         TypedArray a = context.obtainStyledAttributes(
                 attrs, R.styleable.FastScrollListView, defStyleAttr, defStyleRes);
@@ -211,7 +211,7 @@ public class FastScrollListView
     /** {@inheritDoc}. */
     @Override
     public void setOnScrollListener(@NonNull final OnScrollListener l) {
-        mOnScrollListener = l;
+        mUserOnScrollListener = l;
     }
 
     /**
@@ -276,6 +276,51 @@ public class FastScrollListView
 
     /**
      * Helper class for AbsListView to draw and control the Fast Scroll thumb.
+     * <p>
+     * This is a substantially modified version of the Android 2.3 FastScroller.
+     * <p>
+     * The original did not work correctly with ExpandableListViews; the thumb would work
+     * for only a small portion of fully expanded views and exhibited odd behaviour with
+     * view with a small number of groups but large children.
+     * <p>
+     * The underlying approach to scrolling with a summary in the original version was
+     * also flawed: it translated a thumb position of 50% to mean that the middle summaryGroup
+     * should be visible. While this may seem sensible, it is contrary to reasonable expectations
+     * with scrollable lists: a thumb at 50% in any scrollable list should result in the list
+     * being at the mid-point. With an expandableListView, this needs to take into account the total
+     * number of items (groups and children), NOT just the summary groups. Doing what the original
+     * implementation did is not only counter-intuitive, but also makes the thumb unusable in the
+     * case of n groups, where one of those n has O(n) children, and is expanded.
+     * In this case, the entire set of children will move through the screen based on the same
+     * finger movement as moving between two unexpanded groups. In the more general case it can
+     * be characterised as uneven scrolling if sections have widely varying sizes.
+     * <p>
+     * Finally, the original would fail to correctly place the overlay if setFastScrollEnabled was
+     * called after the Activity had been fully drawn: this is because the only place that set the
+     * overlay position was in the onSizeChanged event.
+     * <p>
+     * Combine this with the desire to display more than a single letter in the overlay,
+     * and a rewrite was more or less essential.
+     * <p>
+     * The solution is:
+     * <p>
+     * - modify init() to fake an onSizeChanged event
+     * - modify onSizeChanged() to make the overlay 75% of total width;
+     * - modify draw() to handle arbitrary text (ellipsize if necessary)
+     * - modify scrollTo() to just deal with list contents and not try to do any fancy
+     * calculations about group position.
+     * <p>
+     * Because the original was in the android package, it had access to classes that we do not
+     * have access to, so in some cases we now check if mList is an ExpandableListView rather than
+     * checking if the adapter is an ExpandableListConnector.
+     * <p>
+     * *********************************************************
+     * <p>
+     * NOTE: any class implementing a SectionIndexer for this object MUST return flattened
+     * positions in calls to getPositionForSection(), and will be passed flattened positions in
+     * calls to getSectionForPosition().
+     * <p>
+     * *********************************************************
      */
     public static class FastScroller {
 
@@ -295,7 +340,7 @@ public class FastScrollListView
         /** This value is in SP taken from the Android sources. */
         private static final int LARGE_TEXT_SIZE_IN_SP = 22;
         /** Text size after scaling (or same as large, if scaling failed). */
-        private static int mLargeTextScaledSizeInSp = 22;
+        private static int sLargeTextScaledSizeInSp = 22;
 
         private final int mOverlaySize;
 
@@ -359,7 +404,6 @@ public class FastScrollListView
                 mThumbDrawable = context.getDrawable(thumbDrawableId);
             } catch (Resources.NotFoundException e) {
                 // compass.... yeah well... why not...
-                //noinspection ConstantConditions
                 mThumbDrawable = context.getDrawable(android.R.drawable.ic_menu_compass);
             }
 
@@ -368,7 +412,6 @@ public class FastScrollListView
             } catch (Resources.NotFoundException e) {
                 // bad default yes, the background is black.
                 // alternative: alert_light_frame
-                //noinspection ConstantConditions
                 mOverlayDrawable = context.getDrawable(android.R.drawable.alert_dark_frame);
             }
 
@@ -376,14 +419,14 @@ public class FastScrollListView
             // if we get an error, just use a hard-coded guess.
             try {
                 float scale = context.getResources().getDisplayMetrics().scaledDensity;
-                mLargeTextScaledSizeInSp = (int) (LARGE_TEXT_SIZE_IN_SP * scale);
+                sLargeTextScaledSizeInSp = (int) (LARGE_TEXT_SIZE_IN_SP * scale);
 
             } catch (RuntimeException e) {
                 // Not a critical value; just try to get it close.
-                mLargeTextScaledSizeInSp = LARGE_TEXT_SIZE_IN_SP;
+                sLargeTextScaledSizeInSp = LARGE_TEXT_SIZE_IN_SP;
             }
 
-            mOverlaySize = 3 * mLargeTextScaledSizeInSp;
+            mOverlaySize = 3 * sLargeTextScaledSizeInSp;
 
             // Can't use the view width yet, because it has probably not been set up so we just
             // use the native width. It will be set later when we come to actually draw it.
@@ -458,8 +501,8 @@ public class FastScrollListView
             // Bounds are always top right. Y coordinate get's translated during draw
             // For reference, the thumb itself is approximately 50% as wide as the underlying graphic
             // so 1/6th of the width means the thumb is approximately 1/12 the width.
-            mThumbW = (int) (mLargeTextScaledSizeInSp * 2.5); // viewWidth / 6 ; //mOverlaySize *3/4 ; //64; //mCurrentThumb.getIntrinsicWidth();
-            mThumbH = (int) (mLargeTextScaledSizeInSp * 2.5); //viewWidth / 6 ; //mOverlaySize *3/4; //52; //mCurrentThumb.getIntrinsicHeight();
+            mThumbW = (int) (sLargeTextScaledSizeInSp * 2.5); // viewWidth / 6 ; //mOverlaySize *3/4 ; //64; //mCurrentThumb.getIntrinsicWidth();
+            mThumbH = (int) (sLargeTextScaledSizeInSp * 2.5); //viewWidth / 6 ; //mOverlaySize *3/4; //52; //mCurrentThumb.getIntrinsicHeight();
 
             mThumbDrawable.setBounds(viewWidth - mThumbW, 0, viewWidth, mThumbH);
             mThumbDrawable.setAlpha(ScrollFade.ALPHA_MAX);

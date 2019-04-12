@@ -30,7 +30,6 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.MessageSwitch;
@@ -97,8 +96,8 @@ public abstract class BaseActivityWithTasks
         public void onTaskFinished(@NonNull final TaskManager taskManager,
                                    @NonNull final ManagedTask task) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                Logger.info(BaseActivityWithTasks.this, Tracker.State.Enter,
-                            "onTaskFinished", "task=`" + task.getName());
+                Logger.debugEnter(BaseActivityWithTasks.this, "onTaskFinished",
+                                  "task=`" + task.getName());
             }
             // Just pass this one on. This will allow sub classes to override the base method,
             // and as such get informed.
@@ -116,8 +115,8 @@ public abstract class BaseActivityWithTasks
                 @SuppressWarnings("UnusedAssignment")
                 String dbgMsg = "onProgress: " + count + '/' + max + ", '"
                         + message.replace("\n", "\\n") + '`';
-                Logger.info(this, Tracker.State.Enter,"onProgress",
-                            "msg=" + dbgMsg);
+                Logger.debugEnter(this, "onProgress",
+                                  "msg=" + dbgMsg);
             }
 
             // Save the details
@@ -154,7 +153,7 @@ public abstract class BaseActivityWithTasks
      */
     @Override
     public void onBackPressed() {
-        cancelAndUpdateProgress(true);
+        cancelTasksAndUpdateProgress(true);
         super.onBackPressed();
     }
 
@@ -184,7 +183,7 @@ public abstract class BaseActivityWithTasks
                 if (controller != null) {
                     mTaskManager = controller.getTaskManager();
                 } else {
-                    Logger.error("Have ID(" + mTaskManagerId + "),"
+                    Logger.warnWithStackTrace(this, "Have ID(" + mTaskManagerId + "),"
                                          + " but can not find controller getting TaskManager");
                 }
             }
@@ -244,7 +243,7 @@ public abstract class BaseActivityWithTasks
      */
     private void initProgressDialog() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.info(this, Tracker.State.Enter,"initProgressDialog");
+            Logger.debugEnter(this, "initProgressDialog");
         }
 
         boolean wantInDeterminate = (mProgressMax == 0);
@@ -259,27 +258,28 @@ public abstract class BaseActivityWithTasks
             }
         }
 
+        // If we are cancelling, override the message
+        if (mTaskManager != null && mTaskManager.isCancelling()) {
+            mProgressMessage = getString(R.string.progress_msg_cancelling);
+        }
+
         // Create dialog if necessary
         if (mProgressDialog == null) {
             mProgressDialog = (ProgressDialogFragment) getSupportFragmentManager()
                     .findFragmentByTag(ProgressDialogFragment.TAG);
             if (mProgressDialog == null) {
-                //TODO: no dialog title. Should we have one ?
-                mProgressDialog = ProgressDialogFragment.newInstance(0, wantInDeterminate, 0);
+                mProgressDialog = ProgressDialogFragment.newInstance(0, mProgressMessage,
+                                                                     wantInDeterminate,
+                                                                     mProgressCount, mProgressMax);
                 // specific tags for specific tasks? -> NO, as the dialog is shared.
                 mProgressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.TAG);
             }
-        }
-
-        if (mProgressMax > 0) {
-            mProgressDialog.setMax(mProgressMax);
-        }
-        mProgressDialog.onProgress(mProgressCount);
-
-        // Set message; if we are cancelling we override the message
-        if (mTaskManager != null && mTaskManager.isCancelling()) {
-            mProgressDialog.setMessage(getString(R.string.progress_msg_cancelling));
         } else {
+            // otherwise just update it.
+            if (mProgressMax > 0) {
+                mProgressDialog.onProgress(mProgressCount);
+                mProgressDialog.setMax(mProgressMax);
+            }
             mProgressDialog.setMessage(mProgressMessage);
         }
     }
@@ -289,7 +289,7 @@ public abstract class BaseActivityWithTasks
      */
     private void closeProgressDialog() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.info(this, Tracker.State.Enter,"closeProgressDialog");
+            Logger.debugEnter(this, "closeProgressDialog");
         }
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
@@ -304,7 +304,7 @@ public abstract class BaseActivityWithTasks
      */
     @Override
     public void onProgressCancelled(@Nullable final Integer taskId) {
-        cancelAndUpdateProgress(false);
+        cancelTasksAndUpdateProgress(false);
     }
 
     /**
@@ -313,9 +313,9 @@ public abstract class BaseActivityWithTasks
      *
      * @param showProgress if <tt>true</tt> we'll force the progress dialog to show.
      */
-    private void cancelAndUpdateProgress(final boolean showProgress) {
+    private void cancelTasksAndUpdateProgress(final boolean showProgress) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.info(this, Tracker.State.Enter,"cancelAndUpdateProgress");
+            Logger.debugEnter(this, "cancelTasksAndUpdateProgress");
         }
         if (mTaskManager != null) {
             mTaskManager.cancelAllTasks();

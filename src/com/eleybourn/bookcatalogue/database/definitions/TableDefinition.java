@@ -19,8 +19,8 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Csv;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -116,7 +116,7 @@ public class TableDefinition
     private static void drop(@NonNull final SynchronizedDb db,
                              @NonNull final String name) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
-            Logger.info(TableDefinition.class, "drop","TABLE:" + name);
+            Logger.debug(TableDefinition.class,"drop", "TABLE:" + name);
         }
         db.execSQL("DROP TABLE IF EXISTS " + name);
     }
@@ -374,7 +374,7 @@ public class TableDefinition
             return this;
         }
         // Make sure one with same name is not already in table
-        if (mDomainNameCheck.containsKey(domain.name.toLowerCase())) {
+        if (mDomainNameCheck.containsKey(domain.name.toLowerCase(LocaleUtils.getSystemLocale()))) {
             throw new IllegalArgumentException("A domain '" + domain + "' has already been added");
         }
         // Add it
@@ -817,8 +817,8 @@ public class TableDefinition
         sql.append(')');
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_CREATE_TABLE) {
-            Logger.info(this, Tracker.State.Exit, "getSqlCreateStatement",
-                        sql.toString());
+            Logger.debugExit(this, "getSqlCreateStatement",
+                             sql.toString());
         }
         return sql.toString();
     }

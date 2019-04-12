@@ -21,7 +21,6 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_STYLE_ID;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 
 /**
  * Represents a Bookshelf.
@@ -108,8 +107,9 @@ public class Bookshelf
      *
      * @param mapper a cursor mapper.
      */
-    public Bookshelf(@NonNull final ColumnMapper mapper) {
-        mId = mapper.getLong(DOM_PK_ID);
+    public Bookshelf(final long id,
+                     @NonNull final ColumnMapper mapper) {
+        mId = id;
         mName = mapper.getString(DOM_BOOKSHELF);
         mStyleId = mapper.getLong(DOM_FK_STYLE_ID);
     }

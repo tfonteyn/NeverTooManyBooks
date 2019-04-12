@@ -100,10 +100,9 @@ public class ISFDBManager
         Bundle bookData = new Bundle();
 
         if (ISBN.isValid(isbn)) {
-            List<String> editions = new Editions(isbn).fetch();
+            List<Editions.Edition> editions = new Editions().fetch(isbn);
             if (!editions.isEmpty()) {
-                ISFDBBook isfdbBook = new ISFDBBook(editions);
-                isfdbBook.fetch(bookData, fetchThumbnail);
+                new ISFDBBook().fetch(editions, bookData, fetchThumbnail);
             }
         } else {
             //replace spaces in author/title with %20

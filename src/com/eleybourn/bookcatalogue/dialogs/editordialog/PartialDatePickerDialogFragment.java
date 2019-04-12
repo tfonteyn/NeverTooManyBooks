@@ -28,6 +28,7 @@ import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -58,6 +59,8 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
+ * <p>
+ * ENHANCE: add a 'clear' button.
  *
  * @author pjw
  */
@@ -65,7 +68,7 @@ public class PartialDatePickerDialogFragment
         extends
         EditorDialogFragment<PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener> {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = PartialDatePickerDialogFragment.class.getSimpleName();
 
     /** a standard sql style date string, must be correct. */
@@ -102,7 +105,7 @@ public class PartialDatePickerDialogFragment
     /**
      * Constructor.
      *
-     * @param callerTag     tag of the calling fragment to send results back to.
+     * @param callerTag     t of the calling fragment to send results back to.
      * @param field         the field whose content we want to edit
      * @param dialogTitleId titel resource id for the dialog
      * @param todayIfNone   <tt>true</tt> if we should use 'today' if the field was empty.
@@ -121,8 +124,7 @@ public class PartialDatePickerDialogFragment
             date = value.toString();
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
-            Logger.info(PartialDatePickerDialogFragment.class,
-                        "newInstance", "date.toString(): " + date);
+            Logger.debug(PartialDatePickerDialogFragment.class,"newInstance", "date.toString(): " + date);
         }
 
         PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();

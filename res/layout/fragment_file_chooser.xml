@@ -49,22 +49,19 @@
         app:layout_constraintTop_toBottomOf="@id/btn_path_up"
         />
 
-    <com.eleybourn.bookcatalogue.widgets.FastScrollListView
+    <ListView
         android:id="@android:id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:fastScrollEnabled="true"
         app:layout_constraintBottom_toTopOf="@id/footer_divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_divider"
-        fslv:scrollHandle="@drawable/scrollbar_handle_accelerated_anim2"
-        fslv:overlay="@drawable/fast_scroller_overlay"
-        fslv:textColor="?android:attr/textColorPrimary"
         >
-
         <requestFocus />
-    </com.eleybourn.bookcatalogue.widgets.FastScrollListView>
+    </ListView>
 
     <View
         android:id="@+id/footer_divider"

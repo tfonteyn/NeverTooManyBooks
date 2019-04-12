@@ -20,7 +20,6 @@
 package com.eleybourn.bookcatalogue.utils;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -33,7 +32,6 @@ import androidx.annotation.NonNull;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.eleybourn.bookcatalogue.R;
@@ -85,15 +83,12 @@ public final class Utils {
             // Series special case: same name + different number.
             // This means different series positions will have the same id+name but will have
             // different numbers; so ItemWithIdFixup 'isUniqueById()' returns 'false'.
-            if (ids.contains(itemId) && !item.isUniqueById()
-                    && !names.contains(uniqueName)) {
-                // unique item in the list: id+name matched, but other fields might be diff.
+            if (ids.contains(itemId) && !item.isUniqueById() && !names.contains(uniqueName)) {
+                // unique item in the list: id+name matched, but other fields might be different.
                 ids.add(itemId);
                 names.add(uniqueName);
 
-            } else if (names.contains(uniqueName)
-                    || (itemId != 0 && ids.contains(itemId))) {
-
+            } else if (names.contains(uniqueName) || (itemId != 0 && ids.contains(itemId))) {
                 it.remove();
                 modified = true;
 

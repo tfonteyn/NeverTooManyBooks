@@ -28,8 +28,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eleybourn.bookcatalogue.database.cursors.BookCursorRowBase;
-
 /**
  * Interface for handling the View-related tasks in a multi-type ListView.
  *

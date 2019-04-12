@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.xml.XmlFilter.XmlHandler;
 
 /**
@@ -146,7 +147,7 @@ public class SimpleXmlFilter {
             return false;
         }
 
-        switch (s.trim().toLowerCase()) {
+        switch (s.trim().toLowerCase(LocaleUtils.getSystemLocale())) {
             case "true":
             case "t":
                 return true;
@@ -171,7 +172,7 @@ public class SimpleXmlFilter {
     }
 
     /**
-     * Start tag
+     * Start t
      *
      * @param tag that starts
      *
@@ -196,7 +197,7 @@ public class SimpleXmlFilter {
     }
 
     /**
-     * Closing tag. Call this when done.
+     * Closing t. Call this when done.
      */
     public void done() {
         mTags.clear();
@@ -236,7 +237,7 @@ public class SimpleXmlFilter {
         int last = mTags.size() - 1;
         while (!mTags.get(last).equalsIgnoreCase(tag)) {
             if (last == 0) {
-                throw new RuntimeException("Unable to find parent tag :" + tag);
+                throw new RuntimeException("Unable to find parent t :" + tag);
             }
             mContexts.remove(last);
             mTags.remove(last);

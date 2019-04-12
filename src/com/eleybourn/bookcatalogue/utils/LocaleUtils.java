@@ -18,7 +18,6 @@ import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
 public final class LocaleUtils {
 
@@ -31,8 +30,8 @@ public final class LocaleUtils {
      */
     private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
     /**
-     *  The locale used at startup; so that we can revert to system locale if we want to.
-     *  TODO: move this to App, where it's actually (re)set.
+     * The locale used at startup; so that we can revert to system locale if we want to.
+     * TODO: move this to App, where it's actually (re)set.
      */
     private static Locale sSystemInitialLocale;
 
@@ -41,9 +40,8 @@ public final class LocaleUtils {
 
     /**
      * Needs to be called from main thread at App startup.
-     *
+     * <p>
      * WARNING: it *is* allowed to be called more then once.
-     *
      */
     @UiThread
     public static void init(@NonNull final Locale systemLocale) {
@@ -102,7 +100,7 @@ public final class LocaleUtils {
     public static boolean isChanged(@NonNull final Context context) {
         boolean changed = !from(context).equals(getPreferredLocal());
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.info(LocaleUtils.class, "isChanged", "==false");
+            Logger.debug(LocaleUtils.class,"isChanged", "==false");
         }
         return changed;
     }
@@ -111,17 +109,14 @@ public final class LocaleUtils {
      * Load the Locale setting from the users SharedPreference if needed.
      *
      * @param context to apply the user-preferred locale to.
-     *
-     * @return <tt>true</tt> if the locale was really changed.
      */
-    public static boolean applyPreferred(@NonNull final Context context) {
+    public static void applyPreferred(@NonNull final Context context) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.info(context, Tracker.State.Enter, "applyPreferred",
-                        toDebugString(context));
+            Logger.debugEnter(context, "applyPreferred", toDebugString(context));
         }
 
         if (!isChanged(context)) {
-            return false;
+            return;
         }
 
         Locale userLocale = getPreferredLocal();
@@ -142,11 +137,9 @@ public final class LocaleUtils {
         createLanguageMappingCache(userLocale);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-            Logger.info(context, Tracker.State.Exit, "applyPreferred", "==true",
-                        toDebugString(context));
+            Logger.debugExit(context, "applyPreferred", "==true", toDebugString(context));
         }
 
-        return true;
     }
 
     /**
@@ -254,8 +247,6 @@ public final class LocaleUtils {
     /**
      * Convert the passed string with a (hopefully valid) currency unit, into the ISO3 code
      * for that currency.
-     * <p>
-     * This method is Locale INDEPENDENT.
      *
      * @param currency to convert
      *
@@ -263,7 +254,7 @@ public final class LocaleUtils {
      */
     @Nullable
     public static String currencyToISO(@NonNull final String currency) {
-        return CURRENCY_MAP.get(currency.trim().toLowerCase());
+        return CURRENCY_MAP.get(currency.trim().toLowerCase(LocaleUtils.getSystemLocale()));
     }
 
     /**
@@ -279,9 +270,9 @@ public final class LocaleUtils {
     public static String getDisplayName(@NonNull final Context context,
                                         @NonNull final String iso) {
         if (BuildConfig.DEBUG) {
-            Logger.info(LocaleUtils.class, "getDisplayName",
-                        "\niso=" + iso,
-                        toDebugString(context));
+            Logger.debug(LocaleUtils.class,
+                  "getDisplayName",
+                           "iso=" + iso, toDebugString(context));
         }
         return getDisplayName(from(context), iso);
     }
@@ -303,6 +294,24 @@ public final class LocaleUtils {
             return isoLocale.getDisplayLanguage(locale);
         }
         return iso;
+    }
+
+    /**
+     * Load a Resources set for the specified Locale.
+     *
+     * @param context caller context
+     * @param locale  the desired Locale
+     *
+     * @return the Resources
+     */
+    @NonNull
+    public static Resources getLocalizedResources(@NonNull final Context context,
+                                                  @NonNull final Locale locale) {
+        Configuration conf = new Configuration(context.getResources().getConfiguration());
+        conf.setLocale(locale);
+
+        Context localizedContext = context.createConfigurationContext(conf);
+        return localizedContext.getResources();
     }
 
     /**

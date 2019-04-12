@@ -308,7 +308,7 @@ public class AdminActivity
                 // See http://code.google.com/p/android/issues/detail?id=3953
                 dialog.show();
             } catch (RuntimeException e) {
-                Logger.error(e);
+                Logger.error(this, e);
             }
         }
     }
@@ -317,7 +317,6 @@ public class AdminActivity
      * Create and send an email with the CSV export file.
      */
     private void emailCSVFile() {
-        // setup the mail message
         String subject = '[' + getString(R.string.app_name) + "] "
                 + getString(R.string.lbl_export_to_csv);
 
@@ -334,9 +333,9 @@ public class AdminActivity
 
             uris.add(coverURI);
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            startActivity(Intent.createChooser(intent, getString(R.string.send_mail)));
+            startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
         } catch (NullPointerException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             UserMessage.showUserMessage(this, R.string.error_email_failed);
         }
     }

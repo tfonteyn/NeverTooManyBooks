@@ -195,11 +195,11 @@ public class SearchBooksApiHandler
     @Nullable
     private GoodreadsWork mCurrentWork;
     /**
-     * At the START of a "work" tag, we create a new work.
+     * At the START of a "work" t, we create a new work.
      */
     private final XmlHandler mHandleWorkStart = context -> mCurrentWork = new GoodreadsWork();
     /**
-     * At the END of a "work" tag, we add it to list and reset the pointer.
+     * At the END of a "work" t, we add it to list and reset the pointer.
      */
     private final XmlHandler mHandleWorkEnd = context -> {
         //mCurrentWork.requestImage();

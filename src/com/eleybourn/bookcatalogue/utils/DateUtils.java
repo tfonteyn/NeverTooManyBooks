@@ -140,7 +140,7 @@ public final class DateUtils {
         addParseDateFormat("EEE MMM dd HH:mm ZZZZ yyyy", addEnglish);
         addParseDateFormat("EEE MMM dd ZZZZ yyyy", addEnglish);
 
-        // TOMF,TEST: PARTIAL format... "March 2009" added due to OpenLibrary
+        // TEST: PARTIAL format... "March 2009" added due to OpenLibrary
         addParseDateFormat("MMM yyyy", addEnglish);
     }
 
@@ -247,7 +247,7 @@ public final class DateUtils {
                 }
                 // failed to parse
                 if (BuildConfig.DEBUG) {
-                    Logger.error("failed: " + dateString);
+                    Logger.warnWithStackTrace(DateUtils.class, "failed: " + dateString);
                 }
                 return dateString;
 
@@ -264,7 +264,7 @@ public final class DateUtils {
             default:
                 // failed to parse
                 if (BuildConfig.DEBUG) {
-                    Logger.error("failed: " + dateString);
+                    Logger.warnWithStackTrace(DateUtils.class, "failed: " + dateString);
                 }
                 return dateString;
         }

@@ -31,8 +31,6 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import com.eleybourn.bookcatalogue.debug.Logger;
-
 /**
  * Collection of methods to wrap common serialization routines.
  *
@@ -59,7 +57,6 @@ public final class SerializationUtils {
         try (ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(o);
         } catch (IOException e) {
-            Logger.error(e);
             throw new IllegalStateException(e);
         }
         return bos.toByteArray();

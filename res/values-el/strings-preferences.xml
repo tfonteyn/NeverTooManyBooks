@@ -6,7 +6,7 @@
     <!-- ####################################################################################### -->
 
     <!-- Preference VALUE -->
-    <string name="use_default_setting">Χρήση προεπιλεγμένης ρύθμισης</string>
+    <string name="X_use_default_setting">Χρήση προεπιλεγμένης ρύθμισης</string>
 
     <!-- Preference GROUP -->
     <string name="pg_general">Γενικά</string>

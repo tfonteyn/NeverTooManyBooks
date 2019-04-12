@@ -119,7 +119,7 @@ public abstract class BackupReaderAbstract
             // process each entry based on type, unless we are cancelled, as in Nikita
             while (entity != null && !mProgressListener.isCancelled()) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                    Logger.info(this, "restore", "entity=" + entity.getName());
+                    Logger.debug(this,"restore", "entity=" + entity.getName());
                 }
                 switch (entity.getType()) {
                     case Cover:
@@ -208,12 +208,12 @@ public abstract class BackupReaderAbstract
             mSettings.what = entitiesRead;
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                Logger.info(this, "restore", "imported covers#=" + coverCount);
+                Logger.debug(this,"restore", "imported covers#=" + coverCount);
             }
             try {
                 close();
             } catch (IOException e) {
-                Logger.error(e, "Failed to close reader");
+                Logger.error(this, e, "Failed to close reader");
             }
         }
     }
@@ -301,10 +301,10 @@ public abstract class BackupReaderAbstract
             // deserialization will take care of writing the v200+ SharedPreference file
             style = entity.getSerializable();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-                Logger.info(this, "restorePreV200Style", style.toString());
+                Logger.debug(this,"restorePreV200Style", style);
             }
         } catch (DeserializationException e) {
-            Logger.error(e, "Unable to restore style");
+            Logger.error(this, e, "Unable to restore style");
         }
 
         if (style != null) {

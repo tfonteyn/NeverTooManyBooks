@@ -313,8 +313,7 @@ public class CsvExporter
                 }
             }
         } finally {
-            Logger.info(this, "doBooks",
-                        "Books Exported: " + numberOfBooksExported);
+            Logger.info(this, "doBooks", "books=" + numberOfBooksExported);
             if (displayingStartupMessage) {
                 try {
                     listener.onProgress("", 0);

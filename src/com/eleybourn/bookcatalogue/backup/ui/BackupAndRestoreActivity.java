@@ -242,7 +242,7 @@ public class BackupAndRestoreActivity
                 break;
 
             default:
-                Logger.error("Unknown taskId=" + taskId);
+                Logger.warnWithStackTrace(this, "Unknown taskId=" + taskId);
                 break;
         }
     }
@@ -263,7 +263,7 @@ public class BackupAndRestoreActivity
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Logger.info(this, "handleReadFromArchiveResults",
+            Logger.debug(this, "handleReadFromArchiveResults",
                         "Imported: " + resultSettings);
         }
         // see if there are any pre-200 preferences that need migrating.

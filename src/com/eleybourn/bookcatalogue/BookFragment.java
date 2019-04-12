@@ -21,7 +21,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
-import com.eleybourn.bookcatalogue.adapters.TOCAdapter;
+import com.eleybourn.bookcatalogue.adapters.TocAdapter;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.booklist.FlattenedBooklist;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
@@ -51,7 +51,7 @@ public class BookFragment
         extends BookBaseFragment
         implements BookManager, BookChangedListener {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = BookFragment.class.getSimpleName();
 
     static final String REQUEST_BKEY_FLAT_BOOKLIST_POSITION = "FBLP";
@@ -185,6 +185,7 @@ public class BookFragment
                                int pages = Integer.parseInt(source);
                                return getString(R.string.lbl_x_pages, pages);
                            } catch (NumberFormatException ignore) {
+                               // don't log, both formats are valid.
                            }
                            // stored pages was alphanumeric.
                            return source;
@@ -264,7 +265,7 @@ public class BookFragment
         if (bookId != 0) {
             getBook().reload(mDb, bookId);
         }
-        // this will kick of the process that triggers onLoadFieldsFromBook.
+        // the super will kick of the process that triggers onLoadFieldsFromBook.
         super.onResume();
         Tracker.exitOnResume(this);
     }
@@ -280,7 +281,6 @@ public class BookFragment
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
-        Tracker.enterOnLoadFieldsFromBook(this, book.getId());
 
         // pass the CURRENT currency code to the price formatters
         //TODO: this defeats the ease of use of the formatter... populate manually or something...
@@ -309,7 +309,7 @@ public class BookFragment
         populateLoanedToField(mDb.getLoaneeByBookId(book.getId()));
 
         // handle non-text fields
-        populateTOC(book);
+        populateToc(book);
 
         // hide unwanted and empty fields
         showHideFields(true);
@@ -320,8 +320,6 @@ public class BookFragment
             requireView().findViewById(R.id.lbl_edition).setVisibility(View.GONE);
             requireView().findViewById(R.id.edition).setVisibility(View.GONE);
         }
-
-        Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
 
     //</editor-fold>
@@ -440,15 +438,15 @@ public class BookFragment
             field.getView()
                  .setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                      /**
-                      * (yes, icons are not supported and won't show.
-                      * Still leaving the setIcon calls in for now.)
+                      * yes, icons are not supported here, but:
+                      * TODO: convert to SimpleDialog context menu.... if I can be bothered.
                       */
                      @Override
                      @CallSuper
                      public void onCreateContextMenu(@NonNull final ContextMenu menu,
                                                      @NonNull final View v,
                                                      @NonNull final ContextMenu.ContextMenuInfo menuInfo) {
-                         menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, 0,
+                         menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_RETURNED, Menu.NONE,
                                   R.string.menu_loan_return_book)
                              .setIcon(R.drawable.ic_people);
                      }
@@ -459,7 +457,7 @@ public class BookFragment
     /**
      * Show or hide the Table Of Content section.
      */
-    private void populateTOC(@NonNull final Book book) {
+    private void populateToc(@NonNull final Book book) {
         //ENHANCE: add to mFields?
         ArrayList<TocEntry> tocList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
@@ -468,13 +466,14 @@ public class BookFragment
                 && book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, TocEntry.Type.MULTIPLE_WORKS)
                 && !tocList.isEmpty();
 
+        // tocLabel, tocButton and tocView are View.GONE in the layout xml.
         View tocLabel = requireView().findViewById(R.id.lbl_toc);
         View tocButton = requireView().findViewById(R.id.toc_button);
 
         if (visible) {
             ListView tocView = requireView().findViewById(R.id.toc);
-            tocView.setAdapter(
-                    new TOCAdapter(mActivity, R.layout.row_toc_entry_with_author, tocList));
+            tocView.setAdapter(new TocAdapter(mActivity,
+                                              R.layout.row_toc_entry_with_author, tocList));
 
             tocButton.setOnClickListener(v -> {
                 if (tocView.getVisibility() == View.VISIBLE) {
@@ -484,10 +483,15 @@ public class BookFragment
                     ViewUtils.adjustListViewHeightBasedOnChildren(tocView);
                 }
             });
-        }
 
-        tocLabel.setVisibility(visible ? View.VISIBLE : View.GONE);
-        tocButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+            ViewUtils.adjustListViewHeightBasedOnChildren(tocView);
+            tocLabel.setVisibility(View.VISIBLE);
+            tocButton.setVisibility(View.VISIBLE);
+
+        } else {
+            tocLabel.setVisibility(View.GONE);
+            tocButton.setVisibility(View.GONE);
+        }
     }
     //</editor-fold>
 
@@ -556,7 +560,7 @@ public class BookFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, 0, R.string.menu_edit_book)
+        menu.add(Menu.NONE, R.id.MENU_BOOK_EDIT, Menu.NONE, R.string.menu_edit_book)
             .setIcon(R.drawable.ic_edit)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
@@ -633,6 +637,7 @@ public class BookFragment
             case UniqueId.REQ_BOOK_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
                     getBook().reload(mDb);
+                    // onResume will display the changed book.
                 }
                 break;
 
@@ -653,7 +658,8 @@ public class BookFragment
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
                 populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
             } else {
-                Logger.error("bookId=" + bookId + ", fieldsChanged=" + fieldsChanged);
+                Logger.warnWithStackTrace(this, "bookId=" + bookId,
+                                          "fieldsChanged=" + fieldsChanged);
             }
         }
     }

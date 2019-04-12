@@ -262,7 +262,7 @@ public final class XmlUtils {
     /**
      * String values are automatically encoded.
      *
-     * @return tag with (optional) name and value attribute, empty body
+     * @return t with (optional) name and value attribute, empty body
      */
     static String tag(@NonNull final String tag,
                       @Nullable final String name,
@@ -281,7 +281,7 @@ public final class XmlUtils {
     /**
      * No encoding of the value is done here.
      *
-     * @return tag with (optional) name attribute and content body
+     * @return t with (optional) name attribute and content body
      */
     private static String tagWithBody(@NonNull final String tag,
                                       @Nullable final String name,
@@ -293,7 +293,7 @@ public final class XmlUtils {
     }
 
     /**
-     * @return tag with (optional) name attribute and CDATA content body
+     * @return t with (optional) name attribute and CDATA content body
      */
     static String tagWithCData(@NonNull final String tag,
                                @Nullable final String name,
@@ -320,13 +320,13 @@ public final class XmlUtils {
     }
 
     /**
-     * Encodes a single value with a tag equal to the value's type.
+     * Encodes a single value with a t equal to the value's type.
      * Strings are CDATA encoded; others use the 'value' attribute.
      *
-     * @param name  (optional) attribute for the tag
+     * @param name  (optional) attribute for the t
      * @param value to encode
      *
-     * @return xml tag
+     * @return xml t
      */
     static String typedTag(@Nullable final String name,
                            @NonNull final Object value)

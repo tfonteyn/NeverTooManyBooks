@@ -14,7 +14,6 @@ import java.net.UnknownHostException;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
@@ -44,8 +43,6 @@ public final class TerminatorConnection
     /** milliseconds to wait between retries. */
     private static final int RETRY_AFTER_MS = 500;
 
-    /** for synchronization. */
-    private static final Object INPUT_STREAM_LOCK = new Object();
     @Nullable
     public final BufferedInputStream inputStream;
     @NonNull
@@ -67,8 +64,7 @@ public final class TerminatorConnection
                                  final int killDelayInMillis)
             throws IOException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Logger.info(this, Tracker.State.Enter,
-                        "TerminatorConnection", "url=" + url);
+            Logger.debugEnter(this, "TerminatorConnection", "url=" + url);
         }
 
         con = (HttpURLConnection) url.openConnection();
@@ -147,8 +143,6 @@ public final class TerminatorConnection
             throw new IOException("site cannot be contacted: " + urlStr);
         }
 
-        // only allow one request at a time to get an InputStream.
-        //synchronized (INPUT_STREAM_LOCK) {
         int nrOfTries = NR_OF_TRIES;
         while (true) {
             try {
@@ -166,12 +160,11 @@ public final class TerminatorConnection
                 }
             }
         }
-        //}
     }
 
     /**
-     * Close the inputstream/connection.
-     *
+     * Close the inputStream/connection.
+     * <p>
      * Will send an interrupt to the 'terminator' thread.
      */
     public void close() {
@@ -218,7 +211,7 @@ public final class TerminatorConnection
                 Thread.sleep(mKillDelayInMillis);
                 if (mConnection.isOpen) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                        Logger.info(this, "run",
+                        Logger.debug(this, "run",
                                     "Closing TerminatorConnection: "
                                             + mConnection.con.getURL());
                     }

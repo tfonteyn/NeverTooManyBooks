@@ -297,11 +297,9 @@ public abstract class ShowBookApiHandler
     @Nullable
     private ArrayList<String> mShelves;
     /**
-     * Create a new shelves collection when the "shelves" tag is encountered.
+     * Create a new shelves collection when the "shelves" t is encountered.
      */
-    private final XmlHandler mHandleShelvesStart = context -> {
-        mShelves = new ArrayList<>();
-    };
+    private final XmlHandler mHandleShelvesStart = context -> mShelves = new ArrayList<>();
     /**
      * Add a shelf to the array.
      */
@@ -323,15 +321,11 @@ public abstract class ShowBookApiHandler
             mCurrAuthorName = null;
         }
     };
-    private final XmlHandler mHandleAuthorName = context -> {
-        mCurrAuthorName = context.getBody();
-    };
+    private final XmlHandler mHandleAuthorName = context -> mCurrAuthorName = context.getBody();
     /** Current series being processed. */
     @Nullable
     private String mCurrSeriesName;
-    private final XmlHandler mHandleSeriesName = context -> {
-        mCurrSeriesName = context.getBody();
-    };
+    private final XmlHandler mHandleSeriesName = context -> mCurrSeriesName = context.getBody();
     /** Current series being processed. */
     @Nullable
     private Integer mCurrSeriesPosition;

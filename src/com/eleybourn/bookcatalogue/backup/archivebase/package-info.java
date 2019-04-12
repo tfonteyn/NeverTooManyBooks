@@ -19,10 +19,10 @@
  * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_CREATION_DATE}
  * Creation Date of archive (in SQL format).
  * <p>
- * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_NUMBOOKS}
+ * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_NUMBER_OF_BOOKS}
  * # of books in archive (will/may be fewer pictures).
  * <p>
- * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_APPVERSIONCODE}
+ * {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo#INFO_APP_VERSION_CODE}
  * Application Version that created it.
  * <p>
  * For a full list, see {@link com.eleybourn.bookcatalogue.backup.archivebase.BackupInfo}

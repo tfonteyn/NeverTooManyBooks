@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.utils.Utils;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 
 /**
  * Class to hold author data.
@@ -101,8 +100,10 @@ public class Author
             .compile("[Jj]r\\.|[Jj]r|[Jj]unior|[Ss]r\\.|[Ss]r|[Ss]enior|II|III");
     private long mId;
     /** Family name(s). */
+    @NonNull
     private String mFamilyName;
     /** Given name(s). */
+    @NonNull
     private String mGivenNames;
     /** whether we have all we want from this Author. */
     private boolean mIsComplete;
@@ -144,6 +145,7 @@ public class Author
      * @param isComplete whether an Author is completed, i.e if the user has all they
      *                   want from this Author.
      */
+    @SuppressWarnings("unused")
     public Author(final long id,
                   @NonNull final String familyName,
                   @NonNull final String givenNames,
@@ -157,10 +159,12 @@ public class Author
     /**
      * Full constructor.
      *
+     * @param id     ID of the Author in the database.
      * @param mapper for the cursor.
      */
-    public Author(@NonNull final ColumnMapper mapper) {
-        mId = mapper.getLong(DOM_PK_ID);
+    public Author(final long id,
+                  @NonNull final ColumnMapper mapper) {
+        mId = id;
         mFamilyName = mapper.getString(DOM_AUTHOR_FAMILY_NAME);
         mGivenNames = mapper.getString(DOM_AUTHOR_GIVEN_NAMES);
         mIsComplete = mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE);
@@ -169,7 +173,9 @@ public class Author
     /** {@link Parcelable}. */
     protected Author(@NonNull final Parcel in) {
         mId = in.readLong();
+        //noinspection ConstantConditions
         mFamilyName = in.readString();
+        //noinspection ConstantConditions
         mGivenNames = in.readString();
         mIsComplete = in.readByte() != 0;
     }
@@ -201,15 +207,15 @@ public class Author
      * @param name a String containing the name
      */
     public static Author fromString(@NonNull String name) {
-        List<String> fngn = new StringList<String>().decode(FIELD_SEPARATOR, name, true);
-        if (fngn.size() > 1) {
-            Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(fngn.get(1));
+        List<String> tmp = new StringList<String>().decode(FIELD_SEPARATOR, name, true);
+        if (tmp.size() > 1) {
+            Matcher matchSuffix = FAMILY_NAME_SUFFIX.matcher(tmp.get(1));
             if (!matchSuffix.find()) {
                 // not a suffix, assume the names are already formatted.
-                return new Author(fngn.get(0), fngn.get(1));
+                return new Author(tmp.get(0), tmp.get(1));
             } else {
                 // concatenate without the comma. Further processing will take care of the suffix.
-                name = fngn.get(0) + ' ' + fngn.get(1);
+                name = tmp.get(0) + ' ' + tmp.get(1);
             }
         }
 
@@ -298,10 +304,12 @@ public class Author
         return 0;
     }
 
+    @NonNull
     public String getFamilyName() {
         return mFamilyName;
     }
 
+    @NonNull
     public String getGivenNames() {
         return mGivenNames;
     }
@@ -313,7 +321,7 @@ public class Author
      */
     @NonNull
     public String getDisplayName() {
-        if (mGivenNames != null && !mGivenNames.isEmpty()) {
+        if (!mGivenNames.isEmpty()) {
             return mGivenNames + ' ' + mFamilyName;
         } else {
             return mFamilyName;
@@ -327,7 +335,7 @@ public class Author
      */
     @NonNull
     public String getSortName() {
-        if (mGivenNames != null && !mGivenNames.isEmpty()) {
+        if (!mGivenNames.isEmpty()) {
             return mFamilyName + ", " + mGivenNames;
         } else {
             return mFamilyName;

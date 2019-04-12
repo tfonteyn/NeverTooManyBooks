@@ -31,7 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -182,7 +181,7 @@ public class GetImageTask
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
             mException = e;
-            Logger.error(e);
+            Logger.error(this, e);
         }
         return null;
     }
@@ -210,7 +209,7 @@ public class GetImageTask
         final boolean viewIsValid = imageView != null
                 && this.equals(imageView.getTag(R.id.TAG_GET_THUMBNAIL_TASK));
 
-        // Clear the view tag
+        // Clear the view t
         if (viewIsValid) {
             imageView.setTag(R.id.TAG_GET_THUMBNAIL_TASK, null);
         }

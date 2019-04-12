@@ -181,7 +181,7 @@ final class MenuHandler {
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES,
                                      hasAuthor && hasSeries);
                 menu.setGroupVisible(R.id.MENU_AMAZON_BOOKS_IN_SERIES, hasSeries);
-                // let the small call flow go on, it will display the submenu
+                // let the normal call flow go on, it will display the submenu
                 return false;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:

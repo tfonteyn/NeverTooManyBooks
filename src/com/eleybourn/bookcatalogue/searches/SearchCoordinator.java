@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.MessageSwitch;
@@ -151,12 +150,14 @@ public class SearchCoordinator {
                         size = mManagedTasks.size();
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                            Logger.info(SearchCoordinator.this, "onTaskFinished",
-                                        "Task `" + task.getName() + "` finished");
+                            Logger.debug(SearchCoordinator.this,
+                                  "onTaskFinished",
+                                           "Task `" + task.getName() + "` finished");
 
                             for (ManagedTask t : mManagedTasks) {
-                                Logger.info(SearchCoordinator.this, "onTaskFinished",
-                                            "Task `" + t.getName() + "` still running");
+                                Logger.debug(SearchCoordinator.this,
+                                      "onTaskFinished",
+                                               "Task `" + t.getName() + "` still running");
                             }
                         }
                     }
@@ -333,8 +334,9 @@ public class SearchCoordinator {
                 TaskManager.getMessageSwitch().removeListener(mTaskManager.getId(),
                                                               mTaskManagerListener);
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                    Logger.info(this, "search",
-                                "listener stopped id=" + mTaskManager.getId());
+                    Logger.debug(this,
+                                 "search",
+                                          "listener stopped id=" + mTaskManager.getId());
                 }
             }
         }
@@ -364,8 +366,9 @@ public class SearchCoordinator {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, "accumulateAllData",
-                        "Processing data from search engine: id=" + searchId);
+            Logger.debug(this,
+                         "accumulateAllData",
+                                  "Processing data from search engine: id=" + searchId);
         }
         for (String key : bookData.keySet()) {
             if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)
@@ -404,8 +407,9 @@ public class SearchCoordinator {
             // just use it
             mBookData.putString(key, dataToAdd.toString());
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                Logger.info(this, "accumulateStringData",
-                            "copied: key=" + key + ", value=`" + dataToAdd + '`');
+                Logger.debug(this,
+                             "accumulateStringData",
+                                      "copied: key=" + key + ", value=`" + dataToAdd + '`');
             }
 
 //        } else if (UniqueId.BKEY_THUMBNAIL_FILE_SPEC_STRING_LIST.equals(key)) {
@@ -426,8 +430,9 @@ public class SearchCoordinator {
 //            }
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                Logger.info(this, "accumulateStringData",
-                            "skipping: key=" + key);
+                Logger.debug(this,
+                             "accumulateStringData",
+                                      "skipping: key=" + key);
             }
         }
     }
@@ -458,8 +463,9 @@ public class SearchCoordinator {
                         mBookData.putString(key, DateUtils.utcSqlDate(newDate));
                         skipped = false;
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                            Logger.info(this, "accumulateDates",
-                                        "copied: key=" + key);
+                            Logger.debug(this,
+                                         "accumulateDates",
+                                                  "copied: key=" + key);
                         }
                     }
                 }
@@ -468,7 +474,7 @@ public class SearchCoordinator {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
             if (skipped) {
-                Logger.info(this, "accumulateDates", "skipped: key=" + key);
+                Logger.debug(this,"accumulateDates", "skipped: key=" + key);
             }
         }
     }
@@ -493,15 +499,17 @@ public class SearchCoordinator {
             // just copy
             dest = dataToAdd;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                Logger.info(this, "accumulateList",
-                            "copied: key=" + key + ", value=`" + dataToAdd + '`');
+                Logger.debug(this,
+                             "accumulateList",
+                                      "copied: key=" + key + ", value=`" + dataToAdd + '`');
             }
         } else {
             // append
             dest.addAll(dataToAdd);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                Logger.info(this, "accumulateList",
-                            "appended: key=" + key + ", value=`" + dataToAdd + '`');
+                Logger.debug(this,
+                             "accumulateList",
+                                      "appended: key=" + key + ", value=`" + dataToAdd + '`');
             }
         }
         mBookData.putParcelableArrayList(key, dest);
@@ -513,7 +521,7 @@ public class SearchCoordinator {
      */
     private void sendResults() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, "sendResults", "All searches done, preparing results");
+            Logger.debug(this,"sendResults", "All searches done, preparing results");
         }
         /* This list will be the actual order of the result we apply, based on the
          * actual results and the default order. */
@@ -576,7 +584,7 @@ public class SearchCoordinator {
         // check required data
         ArrayList<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
-        // If book not found or is missing required data, warn the user
+        // If book not found or is missing required data, info the user
         if (mBookData.isEmpty()) {
             mTaskManager.sendUserMessage(R.string.warning_book_not_found);
         } else if (authors == null || authors.isEmpty()
@@ -585,20 +593,20 @@ public class SearchCoordinator {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, "sendResults",
-                        "All searches done for MessageSenderId:" + mMessageSenderId);
+            Logger.debug(this,
+                         "sendResults",
+                                  "All searches done for MessageSenderId:" + mMessageSenderId);
         }
         // All done, Pass the data back
         MESSAGE_SWITCH
                 .send(mMessageSenderId,
                       listener -> {
                           if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                              Logger.info(SearchCoordinator.this,
-                                          "sendResults",
-                                          "Delivering to SearchListener=" + listener,
-                                          "title=`"
-                                                  + mBookData
-                                                  .getString(DBDefinitions.KEY_TITLE) + '`');
+                              String t = "title=`"
+                                      + mBookData.getString(DBDefinitions.KEY_TITLE) + '`';
+                              Logger.debug(SearchCoordinator.this,"sendResults",
+                                             "Delivering to SearchListener=" + listener,
+                                             t);
                           }
                           listener.onSearchFinished(mCancelledFlg, mBookData);
                           return true;
@@ -685,7 +693,7 @@ public class SearchCoordinator {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, "startOneSearch", "Starting search: " + task.getName());
+            Logger.debug(this,"startOneSearch", "Starting search: " + task.getName());
         }
 
         task.start();
@@ -700,8 +708,7 @@ public class SearchCoordinator {
      */
     private void handleSearchTaskFinished(@NonNull final SearchTask task) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, Tracker.State.Enter,
-                        "handleSearchTaskFinished", '`' + task.getName() + '`');
+            Logger.debugEnter(this, "handleSearchTaskFinished", '`' + task.getName() + '`');
         }
 
         mCancelledFlg = task.isCancelled();
@@ -731,8 +738,9 @@ public class SearchCoordinator {
                     }
                 }
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                    Logger.info(this, "handleSearchTaskFinished",
-                                "mSearchingAsin result mWaitingForIsbn=" + mWaitingForIsbn);
+                    Logger.debug(this,
+                                 "handleSearchTaskFinished",
+                                          "mSearchingAsin result mWaitingForIsbn=" + mWaitingForIsbn);
                 }
             }
 
@@ -743,8 +751,9 @@ public class SearchCoordinator {
                     mIsbn = bookData.getString(DBDefinitions.KEY_ISBN);
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-                        Logger.info(this, "handleSearchTaskFinished",
-                                    "mWaitingForIsbn result isbn=" + mIsbn);
+                        Logger.debug(this,
+                                     "handleSearchTaskFinished",
+                                              "mWaitingForIsbn result isbn=" + mIsbn);
                     }
 
                     // Start the others...even if they have run before.

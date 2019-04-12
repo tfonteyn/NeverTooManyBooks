@@ -23,7 +23,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public class ExportCSVTask
         extends AsyncTask<Void, Object, Void> {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = ExportCSVTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_CSV_EXPORT;
@@ -115,7 +115,7 @@ public class ExportCSVTask
             CsvExporter.renameFiles(tmpFile);
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             mException = e;
             cleanup();
         }

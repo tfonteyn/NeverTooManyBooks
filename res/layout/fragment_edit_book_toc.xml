@@ -13,52 +13,20 @@
         android:id="@+id/is_anthology"
         style="@style/editCheckbox"
         android:text="@string/lbl_is_anthology"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
         />
 
     <CheckBox
-        android:id="@+id/same_author"
+        android:id="@+id/multiple_authors"
         style="@style/editCheckbox"
-        android:text="@string/lbl_toc_same_author"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/lbl_toc_multiple_authors"
+        app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/is_anthology"
         tools:checked="true"
-        />
-
-    <AutoCompleteTextView
-        android:id="@+id/author"
-        style="@style/personalNameTextEntry"
-        android:hint="@string/lbl_author"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/same_author"
-        />
-
-    <EditText
-        android:id="@+id/title"
-        style="@style/titleTextEntry"
-        android:hint="@string/lbl_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/author"
-        tools:ignore="Autofill"
-        />
-
-    <EditText
-        android:id="@+id/first_publication"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="4"
-        android:hint="@string/lbl_first_publication"
-        android:inputType="number"
-        app:layout_constraintEnd_toStartOf="@id/btn_add"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        tools:ignore="Autofill"
         />
 
     <Button
@@ -66,9 +34,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_confirm_add"
-        app:layout_constraintBaseline_toBaselineOf="@id/first_publication"
+        app:layout_constraintBottom_toBottomOf="@id/multiple_authors"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/first_publication"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <View
+        android:id="@+id/div1"
+        style="@style/div_horizontal"
+        app:layout_constraintTop_toBottomOf="@id/multiple_authors"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         />
 
     <com.eleybourn.bookcatalogue.widgets.TouchListView
@@ -77,7 +53,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_add"
+        app:layout_constraintTop_toBottomOf="@id/div1"
         tlv:grabber="@id/TLV_ROW_GRABBER"
         />
 

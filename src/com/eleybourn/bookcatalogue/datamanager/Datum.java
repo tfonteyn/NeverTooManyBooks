@@ -27,6 +27,8 @@ import androidx.annotation.Nullable;
 
 import com.eleybourn.bookcatalogue.datamanager.accessors.DataAccessor;
 import com.eleybourn.bookcatalogue.datamanager.validators.DataValidator;
+import com.eleybourn.bookcatalogue.debug.Logger;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -202,7 +204,7 @@ public class Datum {
                 throw new NumberFormatException("Invalid boolean, s=`" + s + '`');
             }
         } else {
-            switch (s.trim().toLowerCase()) {
+            switch (s.trim().toLowerCase(LocaleUtils.getSystemLocale())) {
                 case "1":
                 case "y":
                 case "yes":
@@ -219,7 +221,8 @@ public class Datum {
                     try {
                         return Integer.parseInt(s) != 0;
                     } catch (NumberFormatException e) {
-                        throw new NumberFormatException("Invalid boolean, s=`" + s + '`');
+                        Logger.error(Datum.class, e, "Invalid boolean, s=`" + s + '`');
+                        throw e;
                     }
             }
         }

@@ -84,7 +84,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FIRST_PUBLI
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE_DATE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_SERIES;
@@ -94,7 +94,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_SERIES;
  *
  * There are two types of XML here.
  * <p>
- * Type based, where the tag name is the type. Used by:
+ * Type based, where the t name is the type. Used by:
  * {@link BackupInfo}
  * {@link android.content.SharedPreferences}
  * {@link BooklistStyle}
@@ -329,8 +329,8 @@ public class XmlExporter
             while (cursor.moveToNext()) {
                 out.append('<' + XmlUtils.XML_SERIES)
                    .append(XmlUtils.id(mapper.getLong(DOM_PK_ID)))
-                   .append(XmlUtils.attr(DOM_SERIES_NAME.name,
-                                         mapper.getString(DOM_SERIES_NAME)))
+                   .append(XmlUtils.attr(DOM_SERIES_TITLE.name,
+                                         mapper.getString(DOM_SERIES_TITLE)))
                    .append(XmlUtils.attr(DOM_SERIES_IS_COMPLETE.name,
                                          mapper.getInt(DOM_SERIES_IS_COMPLETE)))
                    .append("/>\n");
@@ -848,8 +848,8 @@ public class XmlExporter
      * - 'flat' preferences for the style.
      * --- This includes the actual groups of the style: a CSV String of id's (kinds)
      * - Filters and Groups are flattened.
-     * - each filter/group has a typed tag
-     * - each preference in a group has a typed tag.
+     * - each filter/group has a typed t
+     * - each preference in a group has a typed t.
      */
     static class StylesWriter
             implements EntityWriter<String> {
@@ -923,7 +923,7 @@ public class XmlExporter
         @Override
         public Object get(@NonNull final String key) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Logger.info(this, "get", "uuid=" + current.getUuid() + "|name=" + key);
+                Logger.debug(this, "get", "uuid=" + current.getUuid() + "|name=" + key);
             }
             //noinspection ConstantConditions
             return currentPPrefs.get(key).get();

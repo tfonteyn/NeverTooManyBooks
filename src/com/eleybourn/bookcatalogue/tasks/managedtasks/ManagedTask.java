@@ -146,11 +146,13 @@ public abstract class ManagedTask
         try {
             runTask();
         } catch (InterruptedException e) {
-            Logger.info(ManagedTask.this, "run",
-                        "ManagedTask=" + getName() + " was interrupted");
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+                Logger.debug(ManagedTask.this, "run",
+                            "ManagedTask=" + getName() + " was interrupted");
+            }
             mCancelFlg = true;
         } catch (Exception e) {
-            Logger.error(e);
+            Logger.error(this, e);
         }
 
         mFinished = true;
@@ -161,7 +163,7 @@ public abstract class ManagedTask
         MESSAGE_SWITCH.send(mMessageSenderId,
                             listener -> {
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-                                    Logger.info(ManagedTask.this, "run",
+                                    Logger.debug(ManagedTask.this, "run",
                                                 "ManagedTask=" + getName(),
                                                 "Delivering 'onTaskFinished' to: " + listener);
                                 }
@@ -175,8 +177,8 @@ public abstract class ManagedTask
      * Mark this thread as 'cancelled'.
      */
     protected void cancelTask() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, "cancelTask", "");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
+            Logger.debug(this, "cancelTask");
         }
         mCancelFlg = true;
         interrupt();

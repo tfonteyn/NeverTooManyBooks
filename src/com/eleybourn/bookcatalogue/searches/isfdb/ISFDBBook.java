@@ -39,7 +39,8 @@ public class ISFDBBook
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_ISFDB";
-
+    /** Param 1: ISFDB native book id. */
+    private static final String BOOK_URL = "/cgi-bin/pl.cgi?%1$s";
     /**
      * ISFDB extra fields in the results for potential future usage.
      * ENHANCE: pass and store these ISFBD id's
@@ -52,9 +53,7 @@ public class ISFDBBook
 
     private static final String ISFDB_BKEY_BOOK_TYPE = "__ISFDB_BOOK_TYPE";
     private static final String ISFDB_BKEY_ISBN_2 = "__ISFDB_ISBN2";
-
     private static final Map<String, Integer> TYPE_MAP = new HashMap<>();
-
     private static final Pattern YEAR_FROM_LI = Pattern.compile("&#x2022; \\(([1|2]\\d\\d\\d)\\)");
 
     /*
@@ -76,6 +75,8 @@ public class ISFDBBook
      *
      * Put all these together into the Anthology bucket.
      * After processing MULTIPLE_AUTHORS is added when needed.
+     *
+     * Reminder: a "Digest" is a format, not a type.
      */
     static {
         // multiple works, one author
@@ -104,102 +105,95 @@ public class ISFDBBook
 
     }
 
+    private String mPath;
     /** accumulate all authors for this book. */
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** accumulate all series for this book. */
     @NonNull
     private final ArrayList<Series> mSeries = new ArrayList<>();
-    /** ISFDB native book id. */
-    private final long mPublicationRecord;
+    /** List of all editions (ISFDB 'publicationRecord') of this book. */
+    private List<Editions.Edition> mEditions;
     /** set during book load, used during content table load. */
     @Nullable
     private String mTitle;
     /** with some luck we'll get these as well. */
     @Nullable
     private String mFirstPublication;
-    /** url list of all editions of this book. */
-    private List<String> mEditions;
 
     //ENHANCE: pass and store these ISFBD id's?
 //    private final ArrayList<Long> ISFDB_BKEY_AUTHOR_ID_LIST = new ArrayList<>();
 //    private final ArrayList<Long> ISFDB_BKEY_SERIES_ID_LIST = new ArrayList<>();
 
-    /**
-     * @param publicationRecord ISFDB native book id
-     */
-    ISFDBBook(final long publicationRecord) {
-        mPublicationRecord = publicationRecord;
-        mPath = String.format(ISFDBManager.getBaseURL() + "/cgi-bin/pl.cgi?%s", mPublicationRecord);
-    }
-
-    /**
-     * @param editionUrls List of url's; example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
-     */
-    ISFDBBook(@Size(min = 1) @NonNull final List<String> editionUrls) {
-        mEditions = editionUrls;
-        mPath = editionUrls.get(0);
-        mPublicationRecord = stripNumber(mPath);
-    }
-
-    /**
-     * @param path example: "http://www.isfdb.org/cgi-bin/pl.cgi?230949"
-     */
-    ISFDBBook(@NonNull final String path) {
-        mPath = path;
-        mPublicationRecord = stripNumber(mPath);
-    }
-
     @Nullable
-    public List<String> getEditions() {
+    public List<Editions.Edition> getEditions() {
         return mEditions;
     }
 
-    /* First "ContentBox" contains all basic details
-
-        <div class="ContentBox">
-        <table>
-        <tr class="scan">
-
-        <td>
-            <a href="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg">
-            <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg" alt="picture" class="scan"></a>
-        </td>
-
-        <td class="pubheader">
-        <ul>
-            <li><b>Publication:</b> The Days of Perky Pat <span class="recordID"><b>Publication Record # </b>230949</span>
-            <li><b>Author:</b> <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
-            <li><b>Date:</b> 1991-05-00
-            <li><b>ISBN:</b> 0-586-20768-6 [<small>978-0-586-20768-0</small>]
-            <li><b>Publisher:</b> <a href="http://www.isfdb.org/cgi-bin/publisher.cgi?62" dir="ltr">Grafton</a>
-            <li><b>Price:</b> £5.99
-            <li><b>Pages:</b> 494
-            <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup><span class="tooltiptext tooltipnarrow">Trade paperback. Any softcover book which is at least 7.25" (or 19 cm) tall, or at least 4.5" (11.5 cm) wide/deep.</span></div>
-            <li><b>Type:</b> COLLECTION
-            <li><b>Cover:</b><a href="http://www.isfdb.org/cgi-bin/title.cgi?737949" dir="ltr">The Days of Perky Pat</a>  by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?21338" dir="ltr">Chris Moore</a>
-            <li>
-                <div class="notes"><b>Notes:</b>
-                "Published by Grafton Books 1991" on copyright page
-                Artist credited on back cover
-                "Top Stand-By Job" listed in contents and title page of story as "Stand-By"
-                • Month from Locus1
-                • Notes from page 487 to 494
-                • OCLC <A href="http://www.worldcat.org/oclc/60047795">60047795</a>
-                </div>
-        </ul>
-        </td>
-        </table>
-        Cover art supplied by <a href="http://www.isfdb.org/wiki/index.php/Image:THDSFPRKPT1991.jpg" target="_blank">ISFDB</a>
-        </div>
+    /**
+     * First "ContentBox" contains all basic details
+     * <pre>
+     * {@code
+     * <div class="ContentBox">
+     *    <table>
+     *      <tr class="scan">
+     *
+     *        <td>
+     *          <a href="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg">
+     *            <img src="http://www.isfdb.org/wiki/images/e/e6/THDSFPRKPT1991.jpg" alt="picture" class="scan"></a>
+     *        </td>
+     *
+     *        <td class="pubheader">
+     *          <ul>
+     *            <li><b>Publication:</b> The Days of Perky Pat <span class="recordID"><b>Publication Record # </b>230949</span>
+     *            <li><b>Author:</b> <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23" dir="ltr">Philip K. Dick</a>
+     *            <li><b>Date:</b> 1991-05-00
+     *            <li><b>ISBN:</b> 0-586-20768-6 [<small>978-0-586-20768-0</small>]
+     *            <li><b>Publisher:</b> <a href="http://www.isfdb.org/cgi-bin/publisher.cgi?62" dir="ltr">Grafton</a>
+     *            <li><b>Price:</b> £5.99
+     *            <li><b>Pages:</b> 494
+     *            <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup><span class="tooltiptext tooltipnarrow">Trade paperback. Any softcover book which is at least 7.25" (or 19 cm) tall, or at least 4.5" (11.5 cm) wide/deep.</span></div>
+     *            <li><b>Type:</b> COLLECTION
+     *            <li><b>Cover:</b><a href="http://www.isfdb.org/cgi-bin/title.cgi?737949" dir="ltr">The Days of Perky Pat</a>  by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?21338" dir="ltr">Chris Moore</a>
+     *            <li>
+     *              <div class="notes"><b>Notes:</b>
+     *                "Published by Grafton Books 1991" on copyright page
+     *                Artist credited on back cover
+     *                "Top Stand-By Job" listed in contents and title page of story as "Stand-By"
+     *                • Month from Locus1
+     *                • Notes from page 487 to 494
+     *                • OCLC <A href="http://www.worldcat.org/oclc/60047795">60047795</a>
+     *              </div>
+     *            </ul>
+     *          </td>
+     *          [.. tr missing.. ]
+     *    </table>
+     *  Cover art supplied by <a href="http://www.isfdb.org/wiki/index.php/Image:THDSFPRKPT1991.jpg" target="_blank">ISFDB</a>
+     * </div>
+     * }
+     * </pre>
+     *
+     * @param editions List of ISFDB native book id
      */
-
     @Nullable
-    public Bundle fetch(@NonNull final Bundle /* out */ bookData,
+    public Bundle fetch(@Size(min = 1) @NonNull final List<Editions.Edition> editions,
+                        @NonNull final Bundle /* out */ bookData,
                         final boolean fetchThumbnail)
             throws SocketTimeoutException {
-        if (!loadPage()) {
-            return null;
+
+        mEditions = editions;
+
+        Editions.Edition edition = editions.get(0);
+        mPath = ISFDBManager.getBaseURL() + String.format(BOOK_URL, edition.isfdbId );
+
+        // check if we already got the book
+        if (edition.doc != null) {
+            mDoc = edition.doc;
+        } else {
+            // nop, go get it.
+            if (!loadPage(mPath, true)) {
+                return null;
+            }
         }
 
         Element contentBox = mDoc.select("div.contentbox").first();
@@ -208,7 +202,7 @@ public class ISFDBBook
 
         for (Element li : lis) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
-                Logger.info(this, "fetch", li.toString());
+                Logger.debug(this, "fetch", li.toString());
             }
             try {
                 Elements children = li.children();
@@ -225,7 +219,7 @@ public class ISFDBBook
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
-                    Logger.info(this, "fetch", "fieldName=`" + fieldName + '`');
+                    Logger.debug(this, "fetch", "fieldName=`" + fieldName + '`');
                 }
 
                 if ("Publication:".equalsIgnoreCase(fieldName)) {
@@ -375,7 +369,7 @@ public class ISFDBBook
             } catch (IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                Logger.error(e, "path: " + mPath + "\n\nLI: " + li.toString());
+                Logger.error(this, e, "path: " + mPath + "\n\nLI: " + li.toString());
             }
         }
 
@@ -424,7 +418,7 @@ public class ISFDBBook
 
         // optional fetch of the cover.
         if (fetchThumbnail) {
-            fetchCover(bookData);
+            fetchCover(bookData, mDoc.select("div.contentbox").first());
         }
 
         return bookData;
@@ -446,14 +440,6 @@ public class ISFDBBook
             }
         }
         return sb.toString();
-    }
-
-    public void fetchCover(@NonNull final Bundle /* out */ bookData)
-            throws SocketTimeoutException {
-        if (!loadPage()) {
-            return;
-        }
-        fetchCover(bookData, mDoc.select("div.contentbox").first());
     }
 
     /* First "ContentBox" contains all basic details.
@@ -517,7 +503,7 @@ public class ISFDBBook
 
         final ArrayList<TocEntry> results = new ArrayList<>();
 
-        if (!loadPage()) {
+        if (!loadPage(mPath, true)) {
             return results;
         }
         // <div class="ContentBox"> but there are two, so get last one
@@ -609,13 +595,13 @@ public class ISFDBBook
             // unlikely, but if so, then grab first book author
             if (author == null) {
                 author = mAuthors.get(0);
-                Logger.info(this, "getTableOfContentList",
+                Logger.warn(this, "getTableOfContentList",
                             "ISFDB search for content found no author for li=" + li);
             }
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.info(this, "getTableOfContentList",
+                Logger.warn(this, "getTableOfContentList",
                             "ISFDB search for content found no title for li=" + li);
             }
 

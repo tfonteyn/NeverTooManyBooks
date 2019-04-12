@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
+
 /**
  * A class to help parsing Sax Xml output. For goodreads XML output, 90% of the XML can be
  * thrown away but we do need to ensure we get the tags from the right context. The XmlFilter
@@ -41,23 +43,23 @@ import java.util.Map;
  */
 public class XmlFilter {
 
-    /** The tag for this specific filter. */
+    /** The t for this specific filter. */
     @NonNull
     private final String mTagName;
 
-    /** A HashMap to ensure that there are no more than one sub-filter per tag at a given level. */
+    /** A HashMap to ensure that there are no more than one sub-filter per t at a given level. */
     private final Map<String, XmlFilter> mSubFilterHash = new HashMap<>();
 
     /** List of sub-filters for this filter. */
     private final ArrayList<XmlFilter> mSubFilters = new ArrayList<>();
 
-    /** Action to perform, if any, when the associated tag is started. */
+    /** Action to perform, if any, when the associated t is started. */
     @Nullable
     private XmlHandler mStartAction;
     /** Optional parameter put in context before action is called. */
     private Object mStartArg;
 
-    /** Action to perform, if any, when the associated tag is finished. */
+    /** Action to perform, if any, when the associated t is finished. */
     @Nullable
     private XmlHandler mEndAction;
     /** Optional parameter put in context before action is called. */
@@ -66,7 +68,7 @@ public class XmlFilter {
     /**
      * Constructor.
      *
-     * @param pattern The tag that this filter handles
+     * @param pattern The t that this filter handles
      */
     public XmlFilter(@NonNull final String pattern) {
         mTagName = pattern;
@@ -78,7 +80,7 @@ public class XmlFilter {
      * @param root    Root XmlFilter object.
      * @param filters Names of tags to add to tree, if not present.
      *
-     * @return The filter matching the final tag name passed.
+     * @return The filter matching the final t name passed.
      */
     @NonNull
     public static XmlFilter buildFilter(@NonNull final XmlFilter root,
@@ -95,7 +97,7 @@ public class XmlFilter {
      * @param root    Root XmlFilter object.
      * @param filters Names of tags to add to tree, if not present.
      *
-     * @return The filter matching the final tag name passed.
+     * @return The filter matching the final t name passed.
      */
     @NonNull
     static XmlFilter buildFilter(@NonNull final XmlFilter root,
@@ -115,7 +117,7 @@ public class XmlFilter {
      * @param depth    Recursion depth
      * @param iterator Names of tags to add to tree, if not present.
      *
-     * @return The filter matching the final tag name passed.
+     * @return The filter matching the final t name passed.
      */
     @NonNull
     private static XmlFilter buildFilter(@NonNull final XmlFilter root,
@@ -141,7 +143,7 @@ public class XmlFilter {
     }
 
     /**
-     * Check if this filter matches the passed XML tag.
+     * Check if this filter matches the passed XML t.
      *
      * @param tag Tag name
      *
@@ -161,9 +163,9 @@ public class XmlFilter {
     }
 
     /**
-     * Find a sub-filter based on the passed tag name.
+     * Find a sub-filter based on the passed t name.
      *
-     * @param name XML tag name
+     * @param name XML t name
      *
      * @return Matching filter, or null if none present
      */
@@ -178,7 +180,7 @@ public class XmlFilter {
     }
 
     /**
-     * Called when associated tag is started.
+     * Called when associated t is started.
      */
     void processStart(@NonNull final ElementContext context) {
         if (mStartAction != null) {
@@ -188,7 +190,7 @@ public class XmlFilter {
     }
 
     /**
-     * Called when associated tag is finished.
+     * Called when associated t is finished.
      */
     void processEnd(@NonNull final ElementContext context) {
         if (mEndAction != null) {
@@ -198,7 +200,7 @@ public class XmlFilter {
     }
 
     /**
-     * @return the tag that this filter will match
+     * @return the t that this filter will match
      */
     @NonNull
     private String getTagName() {
@@ -206,7 +208,7 @@ public class XmlFilter {
     }
 
     /**
-     * Set the action to perform when the tag associated with this filter is started.
+     * Set the action to perform when the t associated with this filter is started.
      *
      * @param startAction XmlHandler to call
      *
@@ -229,7 +231,7 @@ public class XmlFilter {
     }
 
     /**
-     * Set the action to perform when the tag associated with this filter is finished.
+     * Set the action to perform when the t associated with this filter is finished.
      *
      * @param endAction XmlHandler to call
      *
@@ -259,7 +261,7 @@ public class XmlFilter {
      * @param filter filter to add
      */
     private void addFilter(@NonNull final XmlFilter filter) {
-        String lcPat = filter.getTagName().toLowerCase();
+        String lcPat = filter.getTagName().toLowerCase(LocaleUtils.getSystemLocale());
         if (mSubFilterHash.containsKey(lcPat)) {
             throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
         }

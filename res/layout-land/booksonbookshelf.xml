@@ -101,7 +101,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header_divider"
             fslv:scrollHandle="@drawable/scrollbar_handle_accelerated_anim2"
-            fslv:overlay="@drawable/fast_scroller_overlay"
+            fslv:overlay="@drawable/fast_scroll_overlay"
             fslv:textColor="?android:attr/textColorPrimary"
             >
             <requestFocus />

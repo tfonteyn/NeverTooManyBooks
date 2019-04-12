@@ -372,7 +372,7 @@ public class DataManager {
 
             } else {
                 // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
-                Logger.debug("key=`" + key + "`, value=" + value);
+                Logger.debugWithStackTrace(this, "putAll", "key=`" + key + "`, value=" + value);
                 if (value != null) {
                     putString(key, value.toString());
                 }
@@ -454,8 +454,9 @@ public class DataManager {
     public void putSerializable(@NonNull final String key,
                                 @NonNull final Serializable value) {
         if (BuildConfig.DEBUG /* always debug */) {
-            Logger.debug("putSerializable, key=" + key
-                                 + ", type=" + value.getClass().getCanonicalName());
+            Logger.debugWithStackTrace(this, "putSerializable",
+                                       "key=" + key,
+                                       "type=" + value.getClass().getCanonicalName());
         }
         mDatumMap.get(key).putSerializable(mRawData, value);
     }
@@ -465,7 +466,7 @@ public class DataManager {
      *
      * @param key Key of object
      *
-     * @return The Parcelable ArrayList
+     * @return The list, can be empty but never null
      */
     @NonNull
     public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {

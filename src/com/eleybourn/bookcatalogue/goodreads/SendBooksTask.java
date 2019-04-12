@@ -82,14 +82,14 @@ public abstract class SendBooksTask
             if (grManager.hasValidCredentials()) {
                 result = send(queueManager, context, grManager);
             } else {
-                Logger.error("no valid credentials");
+                Logger.warnWithStackTrace(this, "no valid credentials");
             }
         } else {
             // Only wait 5 minutes max on network errors.
             if (getRetryDelay() > FIVE_MINUTES) {
                 setRetryDelay(FIVE_MINUTES);
             }
-            Logger.error("network or site not available");
+            Logger.warn(this, "run","network or site not available");
         }
 
         return result;

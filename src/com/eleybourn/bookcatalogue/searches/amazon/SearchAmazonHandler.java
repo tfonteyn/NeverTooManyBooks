@@ -222,7 +222,7 @@ public class SearchAmazonHandler
     private static final String XML_AMOUNT = "Amount";
 
     /** flag if we should fetch a thumbnail. */
-    private static boolean mFetchThumbnail;
+    private static boolean sFetchThumbnail;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -284,7 +284,7 @@ public class SearchAmazonHandler
     SearchAmazonHandler(@NonNull final Bundle bookData,
                         final boolean fetchThumbnail) {
         mBookData = bookData;
-        mFetchThumbnail = fetchThumbnail;
+        sFetchThumbnail = fetchThumbnail;
     }
 
     /**
@@ -320,7 +320,7 @@ public class SearchAmazonHandler
             addIfNotPresent(mBookData, DBDefinitions.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
         } catch (NumberFormatException ignore) {
             if (BuildConfig.DEBUG) {
-                Logger.info(this, "handleListPrice",
+                Logger.debug(this, "handleListPrice",
                             "mCurrencyCode=" + mCurrencyCode,
                             "mCurrencyAmount=" + mCurrencyAmount);
             }
@@ -459,7 +459,7 @@ public class SearchAmazonHandler
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                     // see what we are missing.
-                    Logger.info(this, "endElement", "Skipping: "
+                    Logger.warn(this, "endElement", "Skipping: "
                             + localName + "->`" + mBuilder + '`');
                 }
             }
@@ -481,7 +481,7 @@ public class SearchAmazonHandler
     @Override
     @CallSuper
     public void endDocument() {
-        if (mFetchThumbnail && !mThumbnailUrl.isEmpty()) {
+        if (sFetchThumbnail && !mThumbnailUrl.isEmpty()) {
             String fileSpec = ImageUtils.saveImage(mThumbnailUrl, FILENAME_SUFFIX);
             if (fileSpec != null) {
                 ArrayList<String> imageList =

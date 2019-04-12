@@ -292,7 +292,7 @@ public class UpdateFieldsFromInternetActivity
             return;
         }
 
-        // If they have selected thumbnails, check if they want to download ALL
+        // If the user has selected thumbnails, check if they want to download ALL
         final Fields.FieldUsage coversWanted = mFieldUsages.get(UniqueId.BKEY_COVER_IMAGE);
         // but don't ask if its a single book only; just download it.
         //noinspection ConstantConditions
@@ -331,7 +331,7 @@ public class UpdateFieldsFromInternetActivity
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.lbl_search_sites)
+        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, Menu.NONE, R.string.lbl_search_sites)
             .setIcon(R.drawable.ic_search)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 

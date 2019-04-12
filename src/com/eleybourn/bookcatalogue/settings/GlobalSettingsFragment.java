@@ -1,6 +1,5 @@
 package com.eleybourn.bookcatalogue.settings;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -15,7 +14,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 public class GlobalSettingsFragment
         extends BaseSettingsFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = GlobalSettingsFragment.class.getSimpleName();
 
     @Override

@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.booklist.BooklistBuilder;
 import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
@@ -48,7 +49,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_I
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_BOOK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
 
 /**
  * CursorRow object for the BooklistCursor.
@@ -80,7 +81,7 @@ public class BooklistCursorRow
         mMapper.addDomains(DOM_FK_BOOK_ID,
 
                            DOM_FK_SERIES_ID,
-                           DOM_SERIES_NAME,
+                           DOM_SERIES_TITLE,
                            DOM_SERIES_IS_COMPLETE,
                            DOM_BOOK_SERIES_NUM,
 
@@ -123,7 +124,7 @@ public class BooklistCursorRow
 
     @Nullable
     public String getSeriesName() {
-        return mMapper.getString(DOM_SERIES_NAME);
+        return mMapper.getString(DOM_SERIES_TITLE);
     }
 
     public boolean isSeriesComplete() {
@@ -220,8 +221,11 @@ public class BooklistCursorRow
                     case "1":
                         return context.getString(R.string.lbl_read);
                     default:
-                        Logger.info(this, "formatRowGroup",
-                                    "Unknown read status=" + s);
+                        if (BuildConfig.DEBUG) {
+                            Logger.debug(this,
+                                  "formatRowGroup",
+                                           "Unknown read status=" + s);
+                        }
                         break;
                 }
                 return s;
@@ -241,7 +245,8 @@ public class BooklistCursorRow
                     if (i > 0 && i <= 12) {
                         return DateUtils.getMonthName(locale, i, false);
                     }
-                } catch (NumberFormatException ignored) {
+                } catch (NumberFormatException e) {
+                    Logger.error(this, e);
                 }
                 break;
 
@@ -252,7 +257,8 @@ public class BooklistCursorRow
                     if (i >= 0 && i <= Book.RATING_STARS) {
                         return context.getResources().getQuantityString(R.plurals.n_stars, i, i);
                     }
-                } catch (NumberFormatException ignored) {
+                } catch (NumberFormatException e) {
+                    Logger.error(this, e);
                 }
                 break;
 

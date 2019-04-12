@@ -30,7 +30,7 @@ public abstract class BookSearchBaseFragment
         extends Fragment
         implements SearchCoordinator.SearchCoordinatorListener {
 
-    /** tag. */
+    /** t. */
     public static final String TAG = BookSearchBaseFragment.class.getSimpleName();
 
     /** stores an active search id, or 0 when none active. */
@@ -86,7 +86,7 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, 0, R.string.lbl_search_sites)
+        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES, Menu.NONE, R.string.lbl_search_sites)
             .setIcon(R.drawable.ic_search)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
@@ -138,10 +138,10 @@ public abstract class BookSearchBaseFragment
                         @NonNull final String isbnSearchText) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, Tracker.State.Enter, "startSearch",
-                        "isbn=" + isbnSearchText,
-                        "author=" + authorSearchText,
-                        "title=" + titleSearchText);
+            Logger.debugEnter(this, "startSearch",
+                              "isbn=" + isbnSearchText,
+                              "author=" + authorSearchText,
+                              "title=" + titleSearchText);
         }
 
         try {
@@ -157,7 +157,7 @@ public abstract class BookSearchBaseFragment
             return true;
 
         } catch (RuntimeException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             //noinspection ConstantConditions
             UserMessage.showUserMessage(getView(), R.string.error_search_failed);
             mActivity.setResult(Activity.RESULT_CANCELED);
@@ -219,10 +219,12 @@ public abstract class BookSearchBaseFragment
                 break;
 
             default:
-                // lowest level of our Fragment, see if we missed anything
-                Logger.info(this, "BookSearchBaseFragment.onActivityResult",
-                            "NOT HANDLED:"
-                                    + " requestCode=" + requestCode + ", resultCode=" + resultCode);
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                    Logger.warn(this,"BookSearchBaseFragment.onActivityResult",
+                                   "NOT HANDLED:",
+                                   "requestCode=" + requestCode,
+                                   "resultCode=" + resultCode);
+                }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }

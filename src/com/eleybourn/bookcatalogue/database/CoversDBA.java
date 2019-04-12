@@ -136,9 +136,9 @@ public final class CoversDBA
      * This is ok, as this class/db is for caching only.
      * So before using it, every method in this class MUST test on != null
      */
-    private static SynchronizedDb mSyncedDb;
+    private static SynchronizedDb sSyncedDb;
     /** singleton. */
-    private static CoversDBA mInstance;
+    private static CoversDBA sInstance;
 
     /* table indexes. */
     static {
@@ -163,19 +163,19 @@ public final class CoversDBA
      * Reminder: we always use the *application* context for the database connection.
      */
     public static CoversDBA getInstance() {
-        if (mInstance == null) {
-            mInstance = new CoversDBA();
+        if (sInstance == null) {
+            sInstance = new CoversDBA();
         }
         // check each time, as it might have failed last time but might work now.
-        if (mSyncedDb == null) {
-            mInstance.open();
+        if (sSyncedDb == null) {
+            sInstance.open();
         }
 
         int noi = INSTANCE_COUNTER.incrementAndGet();
         if (BuildConfig.DEBUG /* always debug */) {
-            Logger.info(mInstance, "getInstance", "instances created: " + noi);
+            Logger.debug(sInstance,"getInstance", "instances created: " + noi);
         }
-        return mInstance;
+        return sInstance;
     }
 
     /**
@@ -200,21 +200,21 @@ public final class CoversDBA
         final SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(TRACKED_CURSOR_FACTORY);
         // Try to connect.
         try {
-            mSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
+            sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
         } catch (RuntimeException e) {
             // Assume exception means DB corrupt. Log, rename, and retry
-            Logger.error(e, "Failed to open covers db");
+            Logger.error(this, e, "Failed to open covers db");
             if (!StorageUtils.renameFile(StorageUtils.getFile(COVERS_DATABASE_NAME),
                                          StorageUtils.getFile(COVERS_DATABASE_NAME + ".dead"))) {
-                Logger.error("Failed to rename dead covers database: ");
+                Logger.warn(this, "Failed to rename dead covers database: ");
             }
 
             // retry...
             try {
-                mSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
+                sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
             } catch (RuntimeException e2) {
                 // If we fail after creating a new DB, just give up.
-                Logger.error(e2, "Covers database unavailable");
+                Logger.error(this, e2, "Covers database unavailable");
             }
         }
     }
@@ -233,12 +233,13 @@ public final class CoversDBA
         synchronized (INSTANCE_COUNTER) {
             int noi = INSTANCE_COUNTER.decrementAndGet();
             if (BuildConfig.DEBUG /* always debug */) {
-                Logger.info(this, "close",
-                            "instances left: " + INSTANCE_COUNTER);
+                Logger.debug(this,
+                      "close",
+                               "instances left: " + INSTANCE_COUNTER);
             }
 
             if (noi == 0) {
-                if (mSyncedDb != null) {
+                if (sSyncedDb != null) {
                     mStatements.close();
                 }
             }
@@ -259,7 +260,7 @@ public final class CoversDBA
     public Bitmap getImage(@NonNull final String uuid,
                            final int maxWidth,
                            final int maxHeight) {
-        if (mSyncedDb == null) {
+        if (sSyncedDb == null) {
             return null;
         }
 
@@ -267,7 +268,7 @@ public final class CoversDBA
         String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
         String dateStr = DateUtils.utcSqlDateTime(new Date(file.lastModified()));
 
-        try (Cursor cursor = mSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{cacheId, dateStr})) {
+        try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{cacheId, dateStr})) {
             if (cursor.moveToFirst()) {
                 byte[] bytes = cursor.getBlob(0);
                 if (bytes != null) {
@@ -277,7 +278,7 @@ public final class CoversDBA
         } catch (RuntimeException e) {
             // It's possible the SDCard got removed and DB is now inaccessible
             // or the 'bytes' might be an invalid bitmap.
-            Logger.error(e);
+            Logger.error(this, e);
         }
 
         return null;
@@ -290,7 +291,7 @@ public final class CoversDBA
     @WorkerThread
     public void saveFile(@NonNull final Bitmap bitmap,
                          @NonNull final String filename) {
-        if (mSyncedDb == null) {
+        if (sSyncedDb == null) {
             return;
         }
 
@@ -300,7 +301,7 @@ public final class CoversDBA
 
         SynchronizedStatement existsStmt = mStatements.get(STMT_EXISTS);
         if (existsStmt == null) {
-            existsStmt = mStatements.add(mSyncedDb, STMT_EXISTS, SQL_COUNT_ID);
+            existsStmt = mStatements.add(sSyncedDb, STMT_EXISTS, SQL_COUNT_ID);
         }
         existsStmt.bindString(1, filename);
 
@@ -311,9 +312,9 @@ public final class CoversDBA
         cv.put(DOM_HEIGHT.name, bitmap.getWidth());
 
         if (existsStmt.count() == 0) {
-            mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
+            sSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
         } else {
-            mSyncedDb.update(TBL_IMAGE.getName(), cv,
+            sSyncedDb.update(TBL_IMAGE.getName(), cv,
                              DOM_CACHE_ID.name + "=?",
                              new String[]{filename});
         }
@@ -329,10 +330,10 @@ public final class CoversDBA
      * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
      */
     public void delete(@NonNull final String uuid) {
-        if (mSyncedDb == null) {
+        if (sSyncedDb == null) {
             return;
         }
-        mSyncedDb.delete(TBL_IMAGE.getName(),
+        sSyncedDb.delete(TBL_IMAGE.getName(),
                          DOM_CACHE_ID + " LIKE ?",
                          // starts with the uuid, remove all sizes
                          new String[]{uuid + '%'});
@@ -342,20 +343,20 @@ public final class CoversDBA
      * delete all rows.
      */
     public void deleteAll() {
-        if (mSyncedDb == null) {
+        if (sSyncedDb == null) {
             return;
         }
-        mSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE);
+        sSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE);
     }
 
     /**
      * Analyze the database.
      */
     public void analyze() {
-        if (mSyncedDb == null) {
+        if (sSyncedDb == null) {
             return;
         }
-        mSyncedDb.analyze();
+        sSyncedDb.analyze();
     }
 
     /**
@@ -364,7 +365,7 @@ public final class CoversDBA
     public static final class CoversDbHelper
             extends SQLiteOpenHelper {
 
-        private static CoversDbHelper mInstance;
+        private static CoversDbHelper sInstance;
 
         /**
          * Singleton.
@@ -384,10 +385,10 @@ public final class CoversDBA
          */
         public static CoversDbHelper getInstance(@SuppressWarnings("SameParameterValue")
                                                  @NonNull final SQLiteDatabase.CursorFactory factory) {
-            if (mInstance == null) {
-                mInstance = new CoversDbHelper(factory);
+            if (sInstance == null) {
+                sInstance = new CoversDbHelper(factory);
             }
-            return mInstance;
+            return sInstance;
         }
 
         public static String getDatabasePath() {
@@ -402,7 +403,9 @@ public final class CoversDBA
         @Override
         @CallSuper
         public void onCreate(@NonNull final SQLiteDatabase db) {
-            Logger.info(this, "onCreate", "database: " + db.getPath());
+            if (BuildConfig.DEBUG) {
+                Logger.debug(this,"onCreate", "database: " + db.getPath());
+            }
             TableDefinition.createTables(new SynchronizedDb(db, SYNCHRONIZER), TBL_IMAGE);
         }
 
@@ -414,10 +417,11 @@ public final class CoversDBA
         public void onUpgrade(@NonNull final SQLiteDatabase db,
                               final int oldVersion,
                               final int newVersion) {
-            Logger.info(this, "onUpgrade",
-                        "Old database version: " + oldVersion);
-            Logger.info(this, "onUpgrade",
-                        "Upgrading database: " + db.getPath());
+            if (BuildConfig.DEBUG) {
+                Logger.debug(this,"onUpgrade",
+                               "Old database version: " + oldVersion,
+                               "Upgrading database: " + db.getPath());
+            }
             // This is a cache, so no data needs preserving. Drop & recreate.
             db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE);
             onCreate(db);

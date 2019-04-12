@@ -66,6 +66,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_LAST_UPDATE
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_LC;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_UUID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKLIST_STYLES;
@@ -112,16 +113,17 @@ public class DBHelper
                     + " (" + DOM_AUTHOR_FAMILY_NAME + DBA.COLLATION + ')',
 
             // for now, there is no API to add an index with a collation suffix.
+            // TOMF: is this needed after adding the _lc column?
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
                     + " (" + DOM_TITLE + DBA.COLLATION + ')',
             };
 
 
     /** Readers/Writer lock for this database. */
-    private static Synchronizer mSynchronizer;
+    private static Synchronizer sSynchronizer;
 
     /** Singleton. */
-    private static DBHelper mInstance;
+    private static DBHelper sInstance;
 
     /**
      * Constructor.
@@ -135,7 +137,7 @@ public class DBHelper
                      @NonNull final Synchronizer synchronizer) {
         // *always* use the app context!
         super(App.getAppContext(), DATABASE_NAME, factory, DATABASE_VERSION);
-        mSynchronizer = synchronizer;
+        sSynchronizer = synchronizer;
     }
 
     /**
@@ -148,10 +150,10 @@ public class DBHelper
                                        @NonNull final SQLiteDatabase.CursorFactory factory,
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final Synchronizer synchronizer) {
-        if (mInstance == null) {
-            mInstance = new DBHelper(factory, synchronizer);
+        if (sInstance == null) {
+            sInstance = new DBHelper(factory, synchronizer);
         }
-        return mInstance;
+        return sInstance;
     }
 
     /**
@@ -248,7 +250,7 @@ public class DBHelper
                 // oops... after inserting '-1' our debug logging will claim that insert failed.
                 if (BuildConfig.DEBUG) {
                     if (id == -1) {
-                        Logger.info(BooklistStyles.class, "prepareStylesTable",
+                        Logger.debug(BooklistStyles.class, "prepareStylesTable",
                                     "Ignore the debug message about inserting -1 here...");
                     }
                 }
@@ -269,9 +271,11 @@ public class DBHelper
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
         UpgradeMessageManager.setUpgradeAcknowledged();
 
-        Logger.info(this, "onCreate", "database: " + db.getPath());
+        if (BuildConfig.DEBUG) {
+            Logger.debug(this, "onCreate", "database: " + db.getPath());
+        }
 
-        SynchronizedDb syncedDb = new SynchronizedDb(db, mSynchronizer);
+        SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
         TableDefinition.createTables(syncedDb,
                                      // app tables
@@ -562,10 +566,10 @@ public class DBHelper
                 syncedDb.execSQL(create_index);
             } catch (SQLException e) {
                 // bad sql is a developer issue... die!
-                Logger.error(e);
+                Logger.error(this, e);
                 throw e;
             } catch (RuntimeException e) {
-                Logger.error(e, "Index creation failed: " + create_index);
+                Logger.error(this, e, "Index creation failed: " + create_index);
             }
         }
         syncedDb.analyze();
@@ -592,9 +596,11 @@ public class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
-        Logger.info(this, "onUpgrade", "Old database version: " + oldVersion);
-        Logger.info(this, "onUpgrade", "Upgrading database: " + db.getPath());
-
+        if (BuildConfig.DEBUG) {
+            Logger.debug(this, "onUpgrade",
+                         "Old database version: " + oldVersion,
+                         "Upgrading database: " + db.getPath());
+        }
         if (oldVersion < 71) {
             throw new UpgradeException(R.string.error_database_upgrade_failed);
         }
@@ -609,7 +615,7 @@ public class DBHelper
         }
 
         int curVersion = oldVersion;
-        SynchronizedDb syncedDb = new SynchronizedDb(db, mSynchronizer);
+        SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
         // older version upgrades archived/execute in UpgradeDatabase
         if (curVersion < 82) {
@@ -721,6 +727,20 @@ public class DBHelper
             // just for consistence, rename the table.
             db.execSQL("ALTER TABLE book_bookshelf_weak RENAME TO " + TBL_BOOK_BOOKSHELF);
 
+            // add the 'order by' lower-case columns
+            // Note this is a lazy approach as compared to the DBA code where we take the book's
+            // language/locale into account! The overhead here would be huge.
+            // If the user has any specific book issue, a simple update of the book will fix it.
+            db.execSQL(
+                    "ALTER TABLE " + TBL_BOOKS + " ADD " + DOM_TITLE_LC + " text not null default ''");
+            db.execSQL(
+                    "UPDATE " + TBL_BOOKS + " SET " + DOM_TITLE_LC + "=lower(" + DOM_TITLE + ')');
+            db.execSQL(
+                    "ALTER TABLE " + TBL_TOC_ENTRIES + " ADD " + DOM_TITLE_LC + " text not null default ''");
+            db.execSQL(
+                    "UPDATE " + TBL_TOC_ENTRIES + " SET " + DOM_TITLE_LC + "=lower(" + DOM_TITLE + ')');
+
+
             // add the UUID field for the move of styles to SharedPreferences
             db.execSQL("ALTER TABLE " + TBL_BOOKLIST_STYLES
                                + " ADD " + DOM_UUID + " text not null default ''");
@@ -745,7 +765,7 @@ public class DBHelper
                                            + " WHERE " + DOM_PK_ID + '=' + id);
 
                     } catch (SerializationUtils.DeserializationException e) {
-                        Logger.error(e, "BooklistStyle id=" + id);
+                        Logger.error(this, e, "BooklistStyle id=" + id);
                     }
                 }
             }

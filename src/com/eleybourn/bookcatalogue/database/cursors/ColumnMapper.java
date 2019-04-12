@@ -22,6 +22,11 @@ import com.eleybourn.bookcatalogue.debug.Logger;
  * <p>
  * If a given domain is not present in the Cursor, a {@link ColumnNotPresentException}
  * will be thrown at the time of fetching the value.
+ *
+ * Tip: when using a ColumnMapper as a parameter to a constructor, e.g.
+ * {@link com.eleybourn.bookcatalogue.entities.Bookshelf#Bookshelf(long, ColumnMapper)}
+ * always pass the id separately. This gives the calling code a change to use for example
+ * the foreign key id.
  */
 public class ColumnMapper {
 
@@ -36,19 +41,21 @@ public class ColumnMapper {
      * No errors or Exception thrown at construction time.
      *
      * @param cursor  to read from
-     * @param table   for which to map all registered columns
+     * @param table   for which to map all registered columns, can be null.
      * @param domains a list of domains (e.g. from other tables)
      *
      * @see TableDefinition#addDomain(DomainDefinition) we don't always register a full set.
      */
     public ColumnMapper(@NonNull final Cursor cursor,
-                        @NonNull final TableDefinition table,
+                        @Nullable final TableDefinition table,
                         @Nullable final DomainDefinition... domains)
             throws IllegalArgumentException {
         mCursor = cursor;
 
-        for (DomainDefinition domain : table.getDomains()) {
-            mColumnIndexes.put(domain.name, mCursor.getColumnIndex(domain.name));
+        if (table != null) {
+            for (DomainDefinition domain : table.getDomains()) {
+                mColumnIndexes.put(domain.name, mCursor.getColumnIndex(domain.name));
+            }
         }
         addDomains(domains);
     }
@@ -59,7 +66,8 @@ public class ColumnMapper {
      *
      * @param domains a list of domains
      */
-    void addDomains(@Nullable final DomainDefinition... domains)
+    @SuppressWarnings("WeakerAccess")
+    public void addDomains(@Nullable final DomainDefinition... domains)
             throws IllegalArgumentException {
         if (domains != null) {
             for (DomainDefinition domain : domains) {
@@ -69,12 +77,61 @@ public class ColumnMapper {
     }
 
     /**
-     * @param domain to get
+     * Add additional domains after construction time.
+     * Useful for child classes.
      *
-     * @return the string value of the column.
+     * @param names a list of domain names
+     */
+    public void addDomains(@Nullable final String... names)
+            throws IllegalArgumentException {
+        if (names != null) {
+            for (String name : names) {
+                mColumnIndexes.put(name, mCursor.getColumnIndex(name));
+            }
+        }
+    }
+
+    /**
+     *
+     * @param domain the name of the domain to get
+     *
+     * @return <tt>true</tt> if this mapper contains the specified domain.
+     */
+    public boolean contains(@NonNull final DomainDefinition domain) {
+        //noinspection ConstantConditions
+        return -1 == mColumnIndexes.get(domain.name);
+    }
+
+    /**
+     * @param domain the name of the domain to get
+     *
+     * @return the string value of the column. A null value will be returned as an empty String.
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
+    @NonNull
+    public String getString(@NonNull final String domain)
+            throws ColumnNotPresentException {
+
+        //noinspection ConstantConditions
+        int index = mColumnIndexes.get(domain);
+        if (index == -1) {
+            throw new ColumnNotPresentException(domain);
+        }
+        if (mCursor.isNull(index)) {
+            return "";
+        }
+        return mCursor.getString(index);
+    }
+
+    /**
+     * @param domain to get
+     *
+     * @return the string value of the column. A null value will be returned as an empty String.
+     *
+     * @throws ColumnNotPresentException if the column was not present.
+     */
+    @NonNull
     public String getString(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
@@ -83,13 +140,16 @@ public class ColumnMapper {
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);
         }
+        if (mCursor.isNull(index)) {
+            return "";
+        }
         return mCursor.getString(index);
     }
 
     /**
      * @param domain to get
      *
-     * @return the boolean value of the column.
+     * @return the boolean value of the column (null comes back as false).
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -101,13 +161,16 @@ public class ColumnMapper {
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);
         }
+//        if (mCursor.isNull(index)) {
+//            return null; // false
+//        }
         return mCursor.getInt(index) == 1;
     }
 
     /**
      * @param domain to get
      *
-     * @return the int value of the column.
+     * @return the int value of the column (null comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -119,13 +182,16 @@ public class ColumnMapper {
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);
         }
+//        if (mCursor.isNull(index)) {
+//            return null; // 0
+//        }
         return mCursor.getInt(index);
     }
 
     /**
      * @param domain to get
      *
-     * @return the long value of the column.
+     * @return the long value of the column (null comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -137,13 +203,16 @@ public class ColumnMapper {
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);
         }
+//        if (mCursor.isNull(index)) {
+//            return null; // 0
+//        }
         return mCursor.getLong(index);
     }
 
     /**
      * @param domain to get
      *
-     * @return the double value of the column.
+     * @return the double value of the column (null comes back as 0)
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -156,6 +225,9 @@ public class ColumnMapper {
         if (index == -1) {
             throw new ColumnNotPresentException(domain.name);
         }
+//        if (mCursor.isNull(index)) {
+//            return null; // 0
+//        }
         return mCursor.getDouble(index);
     }
 
@@ -167,6 +239,7 @@ public class ColumnMapper {
      * @throws ColumnNotPresentException if the column was not present.
      */
     @SuppressWarnings("unused")
+    @Nullable
     public byte[] getBlob(@NonNull final DomainDefinition domain)
             throws ColumnNotPresentException {
 
@@ -179,9 +252,10 @@ public class ColumnMapper {
     }
 
     /**
-     * @return a bundle with all the columns present (null values are excluded).
+     * @return a bundle with all the columns present (null values are dropped).
      */
     @SuppressWarnings("unused")
+    @NonNull
     public Bundle getAll() {
         Bundle bundle = new Bundle();
 
@@ -209,7 +283,7 @@ public class ColumnMapper {
                         break;
 
                     default:
-                        Logger.error("Unknown type for key: " + col.getKey());
+                        Logger.warnWithStackTrace(this, "Unknown type","key=" + col.getKey());
                         break;
                 }
             }

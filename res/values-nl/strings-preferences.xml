@@ -6,7 +6,7 @@
     <!-- ####################################################################################### -->
 
     <!-- Preference VALUE -->
-    <string name="use_default_setting">Gebruik de standaard waarden</string>
+    <string name="X_use_default_setting">Gebruik de standaard waarden</string>
 
     <!-- Preference GROUP -->
     <string name="pg_general">Algemeen</string>
@@ -118,7 +118,7 @@
     <!-- ========== Book list style preferences ========== -->
 
     <!-- Preference - Show this style in the 'preferred styles' list/menu -->
-    <string name="pt_bob_preferred_style">Voorkeursstijlen</string>
+    <string name="X_pt_bob_preferred_style">Voorkeursstijlen</string>
 
     <!-- Preference - Use scaled text and images -->
     <string name="pt_bob_item_size">Grootte van boekenlijst elementen</string>

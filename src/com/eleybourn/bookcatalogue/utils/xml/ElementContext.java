@@ -7,17 +7,17 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Defines the context of a specific element (xml tag).
+ * Defines the context of a specific element (xml t).
  * <p>
- * The 'mBody' element will only be set when the tag end is handled.
+ * The 'mBody' element will only be set when the t end is handled.
  *
  * @author Philip Warner
  */
 public class ElementContext {
 
-    /** the short name of the tag. */
+    /** the short name of the t. */
     private final String mLocalName;
-    /** Attributes on this tag. */
+    /** Attributes on this t. */
     @NonNull
     private final Attributes mAttributes;
 
@@ -31,14 +31,14 @@ public class ElementContext {
     @NonNull
     private final String mQName;
 
-    /** the inner-tag text. */
+    /** the inner-t text. */
     @NonNull
     private final String mText;
 
-    /** the mBody/text between start and end of the tag. */
+    /** the mBody/text between start and end of the t. */
     private String mBody;
 
-    /** filter on this tag. */
+    /** filter on this t. */
     @Nullable
     private XmlFilter mFilter;
 
@@ -49,7 +49,7 @@ public class ElementContext {
     private Object mUserArg;
 
     /**
-     * @param filter to use for this tag.
+     * @param filter to use for this t.
      */
     public ElementContext(@NonNull final XmlFilter filter) {
         mFilter = filter;
@@ -62,7 +62,7 @@ public class ElementContext {
     }
 
     /**
-     * Same arguments coming from the SAX Handler + the current inter-tag text.
+     * Same arguments coming from the SAX Handler + the current inter-t text.
      *
      * @param uri        The Namespace URI, or the empty string if the
      *                   element has no Namespace URI or if Namespace
@@ -75,7 +75,7 @@ public class ElementContext {
      * @param attributes The mAttributes attached to the element.  If
      *                   there are no mAttributes, it shall be an empty
      *                   Attributes object.
-     * @param text       current inter-tag text
+     * @param text       current inter-t text
      */
     public ElementContext(@NonNull final String uri,
                           @NonNull final String localName,
@@ -110,7 +110,7 @@ public class ElementContext {
     }
 
     /**
-     * @return the body of the tag, trimmed.
+     * @return the body of the t, trimmed.
      */
     @NonNull
     public String getBody() {
@@ -118,7 +118,7 @@ public class ElementContext {
     }
 
     /**
-     * @param body of the tag.
+     * @param body of the t.
      */
     public void setBody(final String body) {
         mBody = body.trim();
@@ -135,7 +135,7 @@ public class ElementContext {
     }
 
     /**
-     * @return the text element of a tag
+     * @return the text element of a t
      */
     @NonNull
     public String getText() {

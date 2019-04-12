@@ -19,6 +19,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@id/TLV_ROW_DETAILS"
         style="@style/tlv_details_row"
+        android:longClickable="true"
         app:layout_constraintEnd_toStartOf="@id/TLV_ROW_GRABBER"
         app:layout_constraintStart_toEndOf="@id/TLV_ROW_DELETE"
         app:layout_constraintTop_toTopOf="parent"

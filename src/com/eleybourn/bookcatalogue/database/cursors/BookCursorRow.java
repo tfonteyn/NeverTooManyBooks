@@ -55,18 +55,22 @@ public class BookCursorRow
                            DOM_BOOK_LOANEE);
     }
 
+    @NonNull
     public final String getPrimaryAuthorNameFormatted() {
         return mMapper.getString(DOM_AUTHOR_FORMATTED);
     }
 
+    @NonNull
     public final String getPrimaryAuthorNameFormattedGivenFirst() {
         return mMapper.getString(DOM_AUTHOR_FORMATTED_GIVEN_FIRST);
     }
 
+    @NonNull
     public final String getPrimarySeriesFormatted() {
         return mMapper.getString(DOM_SERIES_FORMATTED);
     }
 
+    @NonNull
     public final String getLoanedTo() {
         return mMapper.getString(DOM_BOOK_LOANEE);
     }

@@ -6,7 +6,7 @@
     <!-- ####################################################################################### -->
 
     <!-- Preference VALUE -->
-    <string name="use_default_setting">Použít defaultní nastavení</string>
+    <string name="X_use_default_setting">Použít defaultní nastavení</string>
 
     <!-- Preference GROUP -->
     <string name="pg_general">Obecné</string>

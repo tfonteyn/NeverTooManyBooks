@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.backup.ImportException;
@@ -44,13 +46,13 @@ import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.dbsync.Synchronizer.SyncLock;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -92,6 +94,7 @@ public class CsvImporter
     /**
      * Constructor.
      *
+     * @param context  caller context
      * @param settings {@link ImportSettings#file} is not used, as we must support
      *                 reading from a stream.
      *                 {@link ImportSettings##dateFrom} is not applicable
@@ -132,7 +135,8 @@ public class CsvImporter
         final String[] csvColumnNames = returnRow(importedList.get(0), true);
         // Store the names so we can check what is present
         for (int i = 0; i < csvColumnNames.length; i++) {
-            csvColumnNames[i] = csvColumnNames[i].toLowerCase();
+            csvColumnNames[i] = csvColumnNames[i].toLowerCase(LocaleUtils.getSystemLocale());
+            // add a place holder to the book.
             book.putString(csvColumnNames[i], "");
         }
 
@@ -245,17 +249,17 @@ public class CsvImporter
                         }
                     }
                 } catch (IOException e) {
-                    Logger.error(e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                    Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 } catch (SQLiteDoneException e) {
-                    Logger.error(e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                    Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 } catch (RuntimeException e) {
-                    Logger.error(e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                    Logger.error(this, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > 200 && !listener.isCancelled()) {
                     String msg = mContext.getString(R.string.progress_msg_n_created_m_updated,
-                                                  mCreated, mUpdated);
+                                                    mCreated, mUpdated);
                     listener.onProgress(title + "\n(" + msg + ')', row);
                     lastUpdate = now;
                 }
@@ -264,7 +268,6 @@ public class CsvImporter
             } // end while
 
         } catch (ImportException e) {
-            Logger.error(e);
             throw new RuntimeException(e);
         } finally {
             if (mDb.inTransaction()) {
@@ -274,10 +277,14 @@ public class CsvImporter
             }
         }
 
-        // minus 1 for the headers.
-        Logger.info(this, Tracker.State.Exit,"doBooks",
-                    "Csv Import successful: rows processed: " + (row - 1) +
-                            ", created:" + mCreated + ", updated: " + mUpdated);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
+            // minus 1 for the headers.
+            Logger.debugExit(this, "doBooks",
+                             "Csv Import successful: rows processed: " + (row - 1),
+                             "created:" + mCreated,
+                             "updated: " + mUpdated);
+        }
+
         return row;
     }
 
@@ -287,7 +294,7 @@ public class CsvImporter
             // do some cleaning
             mDb.purge();
         } catch (RuntimeException e) {
-            Logger.error(e);
+            Logger.error(this, e);
         }
         mDb.close();
     }
@@ -304,7 +311,7 @@ public class CsvImporter
         // Always import empty IDs...even if they are duplicates.
         // Would be nice to import a cover, but without ID/UUID that is not possible
         if (!hasUuid && !bids.hasNumericId) {
-            return mDb.insertBookWithId(0, book);
+            return mDb.insertBook(book);
         }
 
         // we have UUID or ID, so it's an update
@@ -335,7 +342,7 @@ public class CsvImporter
                 mUpdated++;
             }
         } else {
-            bids.bookId = mDb.insertBookWithId(bids.bookId, book);
+            bids.bookId = mDb.insertBook(bids.bookId, book);
             mCreated++;
         }
 
@@ -607,7 +614,7 @@ public class CsvImporter
 
         throw new ImportException(
                 mContext.getString(R.string.import_error_csv_file_must_contain_any_column,
-                                 TextUtils.join(",", names)));
+                                   TextUtils.join(",", names)));
     }
 
     private void requireNonBlankOrThrow(@NonNull final Book book,
@@ -633,7 +640,7 @@ public class CsvImporter
         }
 
         throw new ImportException(mContext.getString(R.string.error_columns_are_blank,
-                                                   TextUtils.join(",", names), row));
+                                                     TextUtils.join(",", names), row));
     }
 
     /**
@@ -661,6 +668,7 @@ public class CsvImporter
                 try {
                     bookId = Long.parseLong(idStr);
                 } catch (NumberFormatException e) {
+                    // don't log, it's fine.
                     hasNumericId = false;
                 }
             }

@@ -74,6 +74,22 @@ public class EditBookshelfListActivity
         mDb = new DBA(this);
 
         populateList();
+
+        // Using {@link SimpleDialog#showContextMenu} for context menus.
+        getListView().setOnItemLongClickListener((parent, view, position, id) -> {
+
+            // legal trick to get an instance of Menu.
+            Menu menu = new PopupMenu(view.getContext(), null).getMenu();
+            menu.add(Menu.NONE, R.id.MENU_EDIT, Menu.NONE, R.string.menu_edit)
+                .setIcon(R.drawable.ic_edit);
+            menu.add(Menu.NONE, R.id.MENU_DELETE, Menu.NONE, R.string.menu_delete)
+                .setIcon(R.drawable.ic_delete);
+            // display
+            String menuTitle = mList.get(position).getName();
+            SimpleDialog.onCreateListViewContextMenu(view, menu, menuTitle, position,
+                                                     this::onListViewContextItemSelected);
+            return true;
+        });
     }
 
     /**
@@ -89,32 +105,6 @@ public class EditBookshelfListActivity
     /**
      * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
-    @Override
-    public void initContextMenuOnListView() {
-        getListView().setOnItemLongClickListener((parent, view, position, id) -> {
-            String menuTitle = mList.get(position).getName();
-
-            // legal trick to get an instance of Menu.
-            mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
-            // custom menuInfo
-            SimpleDialog.ContextMenuInfo menuInfo =
-                    new SimpleDialog.ContextMenuInfo(menuTitle, position);
-            // populate the menu
-            mListViewContextMenu.add(Menu.NONE, R.id.MENU_EDIT, 0, R.string.menu_edit_bookshelf)
-                                .setIcon(R.drawable.ic_edit);
-            mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, 0,
-                                     R.string.menu_delete_bookshelf)
-                                .setIcon(R.drawable.ic_delete);
-            // display
-            onCreateListViewContextMenu(view, mListViewContextMenu, menuInfo);
-            return true;
-        });
-    }
-
-    /**
-     * Using {@link SimpleDialog#showContextMenu} for context menus.
-     */
-    @Override
     public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
                                                  final int position) {
 
@@ -143,7 +133,7 @@ public class EditBookshelfListActivity
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_INSERT, 0, R.string.menu_add_bookshelf)
+        menu.add(Menu.NONE, R.id.MENU_INSERT, Menu.NONE, R.string.menu_add_bookshelf)
             .setIcon(R.drawable.ic_add)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 

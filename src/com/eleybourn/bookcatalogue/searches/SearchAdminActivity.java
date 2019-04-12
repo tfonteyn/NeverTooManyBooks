@@ -108,9 +108,6 @@ public class SearchAdminActivity
         findViewById(R.id.cancel).setOnClickListener(v -> finish());
     }
 
-    /**
-     * The 'small' setup is for all tabs to show.
-     */
     private void initAllTabs() {
         setTitle(R.string.menu_search_internet);
 
@@ -212,7 +209,7 @@ public class SearchAdminActivity
                 ArrayList<SearchSites.Site> list;
                 if (tag.equals(AdminSearchOrderFragment.TAG + TAB_ORDER)) {
                     list = SearchSites.getSites();
-                } else /* if (tag.equals(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER)) */ {
+                } else /* if (t.equals(AdminSearchOrderFragment.TAG + TAB_COVER_ORDER)) */ {
                     list = SearchSites.getSitesForCoverSearches();
                 }
 

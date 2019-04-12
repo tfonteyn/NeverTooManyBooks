@@ -206,6 +206,19 @@ public class BooksOnBookshelf
 
         // use the custom fast scroller (the ListView in the XML is our custom version).
         getListView().setFastScrollEnabled(true);
+        // Using {@link SimpleDialog#showContextMenu} for context menus.
+        getListView().setOnItemLongClickListener((parent, view, position, id) -> {
+            mListCursor.moveToPosition(position);
+
+            // legal trick to get an instance of Menu.
+            Menu menu = new PopupMenu(view.getContext(), null).getMenu();
+            mListHandler.prepareListViewContextMenu(menu, mListCursor.getCursorRow());
+            // display TOMF: adjust title depending on row type, and then simplify the translations of the menu items
+            String menuTitle = mListCursor.getCursorRow().getTitle();
+            SimpleDialog.onCreateListViewContextMenu(view, menu, menuTitle, position,
+                                                     this::onListViewContextItemSelected);
+            return true;
+        });
 
 //            FloatingActionButton floatingAddButton = findViewById(R.id.floatingAddButton);
 //            floatingAddButton.setOnClickListener(new View.OnClickListener() {
@@ -232,6 +245,18 @@ public class BooksOnBookshelf
         Tracker.exitOnCreate(this);
     }
 
+    /**
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
+     */
+    public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
+                                                 final int position) {
+        mListCursor.moveToPosition(position);
+
+        return mListHandler.onContextItemSelected(menuItem,
+                                                  mDb, mListCursor.getCursorRow(),
+                                                  BooksOnBookshelf.this);
+    }
+
     @Override
     public boolean onSearchRequested() {
         Intent intent = new Intent(this, FTSSearchActivity.class);
@@ -256,9 +281,9 @@ public class BooksOnBookshelf
         super.onResume();
         if (App.isRecreating()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Logger.info(this, Tracker.State.Exit, "onResume",
-                            "isRecreating",
-                            LocaleUtils.toDebugString(this));
+                Logger.debugExit("onResume",
+                                 "isRecreating",
+                                 LocaleUtils.toDebugString(this));
             }
             return;
         }
@@ -271,9 +296,9 @@ public class BooksOnBookshelf
         // we also need to make sure we don't start the initBookList task in these cases.
         if (isFinishing() || isDestroyed()) {
             if (BuildConfig.DEBUG) {
-                Logger.info(this, Tracker.State.Exit, "onResume",
-                            "isFinishing=" + isFinishing(),
-                            "isDestroyed=" + isDestroyed());
+                Logger.debugExit(this, "onResume",
+                                 "isFinishing=" + isFinishing(),
+                                 "isDestroyed=" + isDestroyed());
             }
             return;
         }
@@ -337,7 +362,7 @@ public class BooksOnBookshelf
      * Book: open the details screen.
      * Other: expand/collapse as appropriate.
      * <p>
-     * * {@link BaseListActivity} enables 'this' as the listener for our ListView.
+     * {@link BaseListActivity} enables 'this' as the listener for our ListView.
      */
     @Override
     public void onItemClick(@NonNull final AdapterView<?> parent,
@@ -389,72 +414,34 @@ public class BooksOnBookshelf
         }
     }
 
-    /**
-     * Using {@link SimpleDialog#showContextMenu} for context menus.
-     * <p>
-     * Called by {@link BaseListActivity#onCreate}
-     */
-    @Override
-    public void initContextMenuOnListView() {
-        getListView().setOnItemLongClickListener((parent, view, position, id) -> {
-            mListCursor.moveToPosition(position);
-
-            String menuTitle = mListCursor.getCursorRow().getTitle();
-
-            // legal trick to get an instance of Menu.
-            mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
-            // custom menuInfo
-            SimpleDialog.ContextMenuInfo menuInfo =
-                    new SimpleDialog.ContextMenuInfo(menuTitle, position);
-            // populate the menu
-            mListHandler.prepareListViewContextMenu(mListViewContextMenu,
-                                                    mListCursor.getCursorRow());
-            // display
-            onCreateListViewContextMenu(view, mListViewContextMenu, menuInfo);
-            return true;
-        });
-    }
-
-    /**
-     * Using {@link SimpleDialog#showContextMenu} for context menus.
-     */
-    @Override
-    public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                                 final int position) {
-        mListCursor.moveToPosition(position);
-
-        return mListHandler.onContextItemSelected(menuItem,
-                                                  mDb, mListCursor.getCursorRow(),
-                                                  BooksOnBookshelf.this);
-    }
-
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
         MenuHandler.addCreateBookSubMenu(menu);
 
-        menu.add(Menu.NONE, R.id.MENU_SORT, 0, R.string.menu_sort_and_style_ellipsis)
+        menu.add(Menu.NONE, R.id.MENU_SORT, Menu.NONE, R.string.menu_sort_and_style_ellipsis)
             .setIcon(R.drawable.ic_sort_by_alpha)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, 0, R.string.menu_clear_filters)
+        menu.add(Menu.NONE, R.id.MENU_CLEAR_FILTERS, Menu.NONE, R.string.menu_clear_filters)
             .setIcon(R.drawable.ic_undo);
 
-        menu.add(Menu.NONE, R.id.MENU_EXPAND, 0, R.string.menu_expand_all)
+        menu.add(Menu.NONE, R.id.MENU_EXPAND, Menu.NONE, R.string.menu_expand_all)
             .setIcon(R.drawable.ic_unfold_more);
 
-        menu.add(Menu.NONE, R.id.MENU_COLLAPSE, 0, R.string.menu_collapse_all)
+        menu.add(Menu.NONE, R.id.MENU_COLLAPSE, Menu.NONE, R.string.menu_collapse_all)
             .setIcon(R.drawable.ic_unfold_less);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SHOW_DEBUG_MENU) {
             SubMenu subMenu = menu.addSubMenu(R.id.SUBMENU_DEBUG, R.id.SUBMENU_DEBUG,
-                                              0, R.string.debug);
+                                              Menu.NONE, R.string.debug);
 
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_PREFS, 0, R.string.lbl_settings);
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_STYLE, 0, R.string.lbl_style);
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, 0, R.string.debug_history);
-            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_EXPORT_DATABASE, 0, R.string.menu_copy_database);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_PREFS, Menu.NONE, R.string.lbl_settings);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_STYLE, Menu.NONE, R.string.lbl_style);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TRACKER, Menu.NONE, R.string.debug_history);
+            subMenu.add(Menu.NONE, R.id.MENU_DEBUG_EXPORT_DATABASE, Menu.NONE,
+                        R.string.menu_copy_database);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -505,12 +492,13 @@ public class BooksOnBookshelf
                             return true;
 
                         case R.id.MENU_DEBUG_DUMP_STYLE:
-                            Logger.info(this, "onOptionsItemSelected",
-                                        mCurrentBookshelf.getStyle(mDb).toString());
+                            Logger.debug(this,
+                                  "onOptionsItemSelected",
+                                           mCurrentBookshelf.getStyle(mDb));
                             return true;
 
                         case R.id.MENU_DEBUG_DUMP_TRACKER:
-                            Logger.info(this, "onOptionsItemSelected", Tracker.getEventsInfo());
+                            Logger.debug(this,"onOptionsItemSelected", Tracker.getEventsInfo());
                             return true;
 
                         case R.id.MENU_DEBUG_EXPORT_DATABASE:
@@ -584,7 +572,7 @@ public class BooksOnBookshelf
 
                     default:
                         if (resultCode != Activity.RESULT_CANCELED) {
-                            Logger.error("unknown resultCode=" + resultCode);
+                            Logger.warnWithStackTrace(this, "unknown resultCode=" + resultCode);
                         }
                         break;
                 }
@@ -689,7 +677,7 @@ public class BooksOnBookshelf
 
                     default:
                         if (resultCode != Activity.RESULT_CANCELED) {
-                            Logger.error("unknown resultCode=" + resultCode);
+                            Logger.warnWithStackTrace(this, "unknown resultCode=" + resultCode);
                         }
                         break;
                 }
@@ -722,7 +710,7 @@ public class BooksOnBookshelf
         long t0;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             //noinspection UnusedAssignment
-            t0 = System.currentTimeMillis();
+            t0 = System.nanoTime();
         }
 
         // Save the old list so we can close it later, and set the new list locally
@@ -808,8 +796,8 @@ public class BooksOnBookshelf
             oldList.close();
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.info(this, Tracker.State.Exit, "displayList",
-                        +(System.currentTimeMillis() - t0) + "ms");
+            Logger.debugExit("displayList",
+                             (System.nanoTime() - t0) + "nano");
         }
     }
 
@@ -852,8 +840,8 @@ public class BooksOnBookshelf
             int last = listView.getLastVisiblePosition();
             int centre = (last + first) / 2;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                Logger.info(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                            " New List: (" + first + ", " + last + ")<-" + centre);
+                Logger.debug(BooksOnBookshelf.class,"fixPositionWhenDrawn",
+                               " New List: (" + first + ", " + last + ")<-" + centre);
             }
             // Get the first 'target' and make it 'best candidate'
             BookRowInfo best = targetRows.get(0);
@@ -869,14 +857,14 @@ public class BooksOnBookshelf
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                Logger.info(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                            " Best listPosition @" + best.listPosition);
+                Logger.debug(BooksOnBookshelf.class,"fixPositionWhenDrawn",
+                               " Best listPosition @" + best.listPosition);
             }
             // Try to put at top if not already visible, or only partially visible
             if (first >= best.listPosition || last <= best.listPosition) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                    Logger.info(BooksOnBookshelf.class, "fixPositionWhenDrawn",
-                                " Adjusting position");
+                    Logger.debug(BooksOnBookshelf.class,"fixPositionWhenDrawn",
+                                   " Adjusting position");
                 }
                 // setSelectionFromTop does not seem to always do what is expected.
                 // But adding smoothScrollToPosition seems to get the job done reasonably well.
@@ -995,15 +983,16 @@ public class BooksOnBookshelf
                                        final long id) {
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                    Logger.info(this, Tracker.State.Enter, "mBookshelfSpinner onItemSelected",
-                                "pos=" + position);
+                    Logger.debugEnter(this, "mBookshelfSpinner onItemSelected",
+                                      "pos=" + position);
                 }
 
                 String bsName = (String) parent.getItemAtPosition(position);
                 if (bsName != null && !bsName.equalsIgnoreCase(mCurrentBookshelf.getName())) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                        Logger.info(this, "mBookshelfSpinner onItemSelected",
-                                    "spinning to shelf: " + bsName);
+                        Logger.debug(this,
+                              "mBookshelfSpinner onItemSelected",
+                                       "spinning to shelf: " + bsName);
                     }
 
                     // make the new shelf the current
@@ -1047,8 +1036,8 @@ public class BooksOnBookshelf
         // the state has been restored.
         mBookshelfSpinner.setSelection(currentPos);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-            Logger.info(this, Tracker.State.Exit, "populateBookShelfSpinner",
-                        "mBookshelfSpinner.setSelection pos=" + currentPos);
+            Logger.debugExit("populateBookShelfSpinner",
+                             "mBookshelfSpinner.setSelection pos=" + currentPos);
         }
     }
 
@@ -1131,8 +1120,9 @@ public class BooksOnBookshelf
     @NonNull
     private BooklistBuilder createBooklistBuilder() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Logger.info(this, "createBooklistBuilder",
-                        mCurrentBookshelf.getStyle(mDb).toString());
+            Logger.debug(this,
+                  "createBooklistBuilder",
+                           mCurrentBookshelf.getStyle(mDb));
         }
 
         // get a new builder and add the required extra domains
@@ -1219,7 +1209,7 @@ public class BooksOnBookshelf
     public static class SortMenuFragment
             extends DialogFragment {
 
-        /** Fragment manager tag. */
+        /** Fragment manager t. */
         public static final String TAG = SortMenuFragment.class.getSimpleName();
 
         private static final String BKEY_SHOW_ALL = TAG + ":showAll";
@@ -1337,7 +1327,7 @@ public class BooksOnBookshelf
     private static class GetBookListTask
             extends AsyncTask<Void, Object, BuilderHolder> {
 
-        /** Fragment manager tag. */
+        /** Fragment manager t. */
         private static final String TAG = GetBookListTask.class.getSimpleName();
         /** Generic identifier. */
         private static final int M_TASK_ID = R.id.TASK_ID_GET_BOOKLIST;
@@ -1382,7 +1372,7 @@ public class BooksOnBookshelf
                                 @NonNull final BooklistBuilder bookListBuilder) {
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKS_ON_BOOKSHELF) {
-                Logger.info(this, "constructor", "mIsFullRebuild=" + isFullRebuild);
+                Logger.debug(this,"constructor", "mIsFullRebuild=" + isFullRebuild);
             }
 
             mFragment = fragment;
@@ -1497,7 +1487,7 @@ public class BooksOnBookshelf
                 long t0;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
-                    t0 = System.currentTimeMillis();
+                    t0 = System.nanoTime();
                 }
                 // Build the underlying data
                 if (mHolder.listCursor != null && !mIsFullRebuild) {
@@ -1515,7 +1505,7 @@ public class BooksOnBookshelf
                 long t1;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
-                    t1 = System.currentTimeMillis();
+                    t1 = System.nanoTime();
                 }
 
                 syncPreviouslySelectedBookId();
@@ -1527,7 +1517,7 @@ public class BooksOnBookshelf
                 long t2;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
-                    t2 = System.currentTimeMillis();
+                    t2 = System.nanoTime();
                 }
 
                 // Now we have the expanded groups as needed, get the list cursor
@@ -1538,7 +1528,7 @@ public class BooksOnBookshelf
                 long t3;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
-                    t3 = System.currentTimeMillis();
+                    t3 = System.nanoTime();
                 }
                 // get a count() from the cursor in background task because the setAdapter() call
                 // will do a count() and potentially block the UI thread while it pages through the
@@ -1549,7 +1539,7 @@ public class BooksOnBookshelf
                 long t4;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
-                    t4 = System.currentTimeMillis();
+                    t4 = System.nanoTime();
                 }
                 mHolder.resultUniqueBooks = tempList.getUniqueBookCount();
 
@@ -1560,30 +1550,25 @@ public class BooksOnBookshelf
                 long t5;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
-                    t5 = System.currentTimeMillis();
+                    t5 = System.nanoTime();
                 }
                 mHolder.resultTotalBooks = tempList.getBookCount();
 
                 long t6;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     //noinspection UnusedAssignment
-                    t6 = System.currentTimeMillis();
+                    t6 = System.nanoTime();
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    Logger.info(this, "doInBackground",
-                                " Build: " + (t1 - t0));
-                    Logger.info(this, "doInBackground",
-                                " Position: " + (t2 - t1));
-                    Logger.info(this, "doInBackground",
-                                " Select: " + (t3 - t2));
-                    Logger.info(this, "doInBackground",
-                                " Count(" + count + "): " + (t4 - t3)
-                                        + '/' + (t5 - t4) + '/' + (t6 - t5));
-                    Logger.info(this, "doInBackground",
-                                " ====== ");
-                    Logger.info(this, "doInBackground",
-                                " Total: " + (t6 - t0));
+                    Logger.debug("doInBackground",
+                                   "\n Build: " + (t1 - t0),
+                                   "\n Position: " + (t2 - t1),
+                                   "\n Select: " + (t3 - t2),
+                                   "\n Count(" + count + "): " + (t4 - t3)
+                                           + '/' + (t5 - t4) + '/' + (t6 - t5),
+                                   "\n ====== ",
+                                   "\n Total time: " + (t6 - t0) + "nano");
                 }
 
                 if (isCancelled()) {
@@ -1595,7 +1580,7 @@ public class BooksOnBookshelf
                 mHolder.resultTargetRows = targetRows;
 
             } catch (RuntimeException e) {
-                Logger.error(e);
+                Logger.error(this, e);
                 mException = e;
                 cleanup();
             }
@@ -1606,7 +1591,7 @@ public class BooksOnBookshelf
         @AnyThread
         private void cleanup() {
             if (BuildConfig.DEBUG) {
-                Logger.debug("cleanup called");
+                Logger.debugWithStackTrace(this,"cleanup");
             }
             if (tempList != null && tempList != mHolder.listCursor) {
                 if (mHolder.listCursor == null
@@ -1620,12 +1605,6 @@ public class BooksOnBookshelf
             mFragment.dismiss();
         }
 
-        /**
-         * If the task was cancelled (by the user cancelling the progress dialog) then
-         * onPostExecute will NOT be called. See {@link #cancel(boolean)} java docs.
-         *
-         * @param result of the task
-         */
         @Override
         @UiThread
         protected void onPostExecute(@NonNull final BuilderHolder result) {

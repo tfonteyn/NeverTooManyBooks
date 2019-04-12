@@ -38,7 +38,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Publisher;
-import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -49,7 +48,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class EditPublisherDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = EditPublisherDialogFragment.class.getSimpleName();
     private DBA mDb;
     private String mName;

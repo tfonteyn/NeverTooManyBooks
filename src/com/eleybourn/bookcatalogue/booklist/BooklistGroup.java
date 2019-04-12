@@ -35,7 +35,6 @@ import androidx.preference.SwitchPreference;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -79,7 +78,7 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_DATE_UPDATE
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_AUTHOR_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_FK_SERIES_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_READ_STATUS;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_LETTER;
 
 /**
@@ -624,7 +623,7 @@ public class BooklistGroup
 
             rowKind = new RowKind(SERIES, R.string.lbl_series, "s",
                                   DOM_FK_SERIES_ID);
-            rowKind.setDisplayDomain(DOM_SERIES_NAME);
+            rowKind.setDisplayDomain(DOM_SERIES_TITLE);
             ALL_KINDS.put(rowKind.mKind, rowKind);
 
             //all others will use the underlying domain as the displayDomain

@@ -49,7 +49,7 @@ public class SettingsActivity
     }
 
     /**
-     * create a new fragment instance from the tag.
+     * create a new fragment instance from the t.
      *
      * @param tag name of fragment to instantiate
      *
@@ -61,7 +61,7 @@ public class SettingsActivity
         } else if (BooklistStyleSettingsFragment.TAG.equals(tag)) {
             return new BooklistStyleSettingsFragment();
         } else {
-            throw new IllegalArgumentException("tag=" + tag);
+            throw new IllegalArgumentException("t=" + tag);
         }
     }
 

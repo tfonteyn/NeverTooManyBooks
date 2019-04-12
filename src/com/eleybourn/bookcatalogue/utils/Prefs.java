@@ -101,7 +101,8 @@ public final class Prefs {
                 sb.append('\n').append(key).append('=').append(value);
             }
             sb.append("\n\n");
-            Logger.info(App.class, "dumpPreferences", sb.toString());
+
+            Logger.debug(App.class, "dumpPreferences", sb);
         }
     }
 
@@ -366,17 +367,16 @@ public final class Prefs {
                             }
 
                         } else if (!key.startsWith("state_current_group")) {
-
-                            Logger.info(Prefs.class, "migratePreV200preferences",
-                                        "unknown key=" + key,
-                                        "value=" + oldValue.toString());
+                            Logger.warn(Prefs.class,"migratePreV200preferences",
+                                           "unknown key=" + key,
+                                           "value=" + oldValue);
                         }
                         break;
                 }
 
             } catch (RuntimeException e) {
                 // to bad... skip that key, not fatal, use default.
-                Logger.error(e, "key=" + key);
+                Logger.warnWithStackTrace(Prefs.class, e, "key=" + key);
             }
         }
         ed.apply();

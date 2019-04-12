@@ -44,7 +44,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
  */
 public final class SearchSites {
 
-    /** tag. */
+    /** t. */
     public static final String TAG = SearchSites.class.getSimpleName();
 
     /** */
@@ -61,9 +61,9 @@ public final class SearchSites {
     private static final List<Site> PREFERRED_RELIABILITY_ORDER;
 
     /** the users preferred search site order. */
-    private static ArrayList<Site> mPreferredSearchOrder;
+    private static ArrayList<Site> sPreferredSearchOrder;
     /** the users preferred search site order specific for covers. */
-    private static ArrayList<Site> mPreferredCoverSearchOrder;
+    private static ArrayList<Site> sPreferredCoverSearchOrder;
 
     /*
      * default search order.
@@ -82,9 +82,9 @@ public final class SearchSites {
         SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_ISFDB, 4, 4));
 
         // bottom of the list, and disabled by default
-        Site openlibrary_site = new Site(Site.SEARCH_OPEN_LIBRARY, 5, 5);
-        openlibrary_site.setEnabled(false);
-        SEARCH_ORDER_DEFAULTS.add(openlibrary_site);
+        Site openLibrary = new Site(Site.SEARCH_OPEN_LIBRARY, 5, 5);
+        openLibrary.setEnabled(false);
+        SEARCH_ORDER_DEFAULTS.add(openLibrary);
 
         /* ************************************************************************************** */
         /*
@@ -97,9 +97,9 @@ public final class SearchSites {
         COVER_SEARCH_ORDER_DEFAULTS.add(new Site(Site.SEARCH_AMAZON, "cover", 4));
 
         // bottom of the list, and disabled by default
-        openlibrary_site = new Site(Site.SEARCH_OPEN_LIBRARY, "cover", 5);
-        openlibrary_site.setEnabled(false);
-        COVER_SEARCH_ORDER_DEFAULTS.add(openlibrary_site);
+        openLibrary = new Site(Site.SEARCH_OPEN_LIBRARY, "cover", 5);
+        openLibrary.setEnabled(false);
+        COVER_SEARCH_ORDER_DEFAULTS.add(openLibrary);
 
         /* ************************************************************************************** */
 
@@ -108,17 +108,17 @@ public final class SearchSites {
          * Create the user configurable lists.
          */
         // we're going to use set(index,...), so make them big enough
-        mPreferredSearchOrder = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
-        mPreferredCoverSearchOrder = new ArrayList<>(COVER_SEARCH_ORDER_DEFAULTS);
-        // yes, this shows that mPreferredSearchOrder should be Map's but for now
+        sPreferredSearchOrder = new ArrayList<>(SEARCH_ORDER_DEFAULTS);
+        sPreferredCoverSearchOrder = new ArrayList<>(COVER_SEARCH_ORDER_DEFAULTS);
+        // yes, this shows that sPreferredSearchOrder should be Map's but for now
         // the code was done with List so this was the easiest to make them configurable.
         // To be redone.
         for (Site searchSite : SEARCH_ORDER_DEFAULTS) {
-            mPreferredSearchOrder.set(searchSite.getPriority(), searchSite);
+            sPreferredSearchOrder.set(searchSite.getPriority(), searchSite);
             PREFERRED_RELIABILITY_ORDER.set(searchSite.getReliability(), searchSite);
         }
         for (Site searchSite : COVER_SEARCH_ORDER_DEFAULTS) {
-            mPreferredCoverSearchOrder.set(searchSite.getPriority(), searchSite);
+            sPreferredCoverSearchOrder.set(searchSite.getPriority(), searchSite);
         }
     }
 
@@ -132,7 +132,7 @@ public final class SearchSites {
 
     @NonNull
     static ArrayList<Site> getSites() {
-        return mPreferredSearchOrder;
+        return sPreferredSearchOrder;
     }
 
     /**
@@ -141,7 +141,7 @@ public final class SearchSites {
      * @param newList to use
      */
     static void setSearchOrder(@NonNull final ArrayList<Site> newList) {
-        mPreferredSearchOrder = newList;
+        sPreferredSearchOrder = newList;
         SharedPreferences.Editor ed = App.getPrefs().edit();
         for (Site site : newList) {
             site.saveToPrefs(ed);
@@ -151,7 +151,7 @@ public final class SearchSites {
 
     @NonNull
     public static ArrayList<Site> getSitesForCoverSearches() {
-        return mPreferredCoverSearchOrder;
+        return sPreferredCoverSearchOrder;
     }
 
     /**
@@ -160,7 +160,7 @@ public final class SearchSites {
      * @param newList to use
      */
     static void setCoverSearchOrder(@NonNull final ArrayList<Site> newList) {
-        mPreferredCoverSearchOrder = newList;
+        sPreferredCoverSearchOrder = newList;
         SharedPreferences.Editor ed = App.getPrefs().edit();
         for (Site site : newList) {
             site.saveToPrefs(ed);
@@ -204,7 +204,7 @@ public final class SearchSites {
                 return coverFile;
             }
         } catch (IOException | AuthorizationException e) {
-            Logger.error(e);
+            Logger.error(SearchSites.class, e);
         }
 
         return null;

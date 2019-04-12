@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -74,11 +75,11 @@ public class BackupInfo
 
 
     private static final String INFO_CREATION_DATE = "CreateDate";
-    private static final String INFO_NUMBOOKS = "NumBooks";
-    private static final String INFO_NUMCOVERS = "NumCovers";
-    private static final String INFO_APPPACKAGE = "AppPackage";
-    private static final String INFO_APPVERSIONNAME = "AppVersionName";
-    private static final String INFO_APPVERSIONCODE = "AppVersionCode";
+    private static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
+    private static final String INFO_NUMBER_OF_COVERS = "NumCovers";
+    private static final String INFO_APP_PACKAGE = "AppPackage";
+    private static final String INFO_APP_VERSION_NAME = "AppVersionName";
+    private static final String INFO_APP_VERSION_CODE = "AppVersionCode";
     private static final String INFO_SDK = "SDK";
 
     private static final String INFO_HAS_BOOKS = "HasBooks";
@@ -122,10 +123,10 @@ public class BackupInfo
                                   @NonNull final InfoUserValues values) {
         Bundle infoBundle = new Bundle();
         if (values.bookCount > 0) {
-            infoBundle.putInt(INFO_NUMBOOKS, values.bookCount);
+            infoBundle.putInt(INFO_NUMBER_OF_BOOKS, values.bookCount);
         }
         if (values.coverCount > 0) {
-            infoBundle.putInt(INFO_NUMCOVERS, values.coverCount);
+            infoBundle.putInt(INFO_NUMBER_OF_COVERS, values.coverCount);
         }
         infoBundle.putBoolean(INFO_HAS_PREFERENCES, values.hasPrefs);
         infoBundle.putBoolean(INFO_HAS_BOOKLIST_STYLES, values.hasStyles);
@@ -139,10 +140,10 @@ public class BackupInfo
 
         PackageInfo packageInfo = App.getPackageInfo(0);
         if (packageInfo != null) {
-            infoBundle.putString(INFO_APPPACKAGE, packageInfo.packageName);
-            infoBundle.putString(INFO_APPVERSIONNAME, packageInfo.versionName);
+            infoBundle.putString(INFO_APP_PACKAGE, packageInfo.packageName);
+            infoBundle.putString(INFO_APP_VERSION_NAME, packageInfo.versionName);
             // versionCode deprecated and new method in API: 28, till then ignore...
-            infoBundle.putInt(INFO_APPVERSIONCODE, packageInfo.versionCode);
+            infoBundle.putInt(INFO_APP_VERSION_CODE, packageInfo.versionCode);
         }
         return new BackupInfo(infoBundle);
     }
@@ -186,17 +187,17 @@ public class BackupInfo
     @SuppressWarnings("unused")
     @Nullable
     public String getAppPackage() {
-        return mBundle.getString(INFO_APPPACKAGE);
+        return mBundle.getString(INFO_APP_PACKAGE);
     }
 
     @SuppressWarnings("unused")
     @Nullable
     public String getAppVersionName() {
-        return mBundle.getString(INFO_APPVERSIONNAME);
+        return mBundle.getString(INFO_APP_VERSION_NAME);
     }
 
     public int getAppVersionCode() {
-        return mBundle.getInt(INFO_APPVERSIONCODE);
+        return mBundle.getInt(INFO_APP_VERSION_CODE);
     }
 
     /**
@@ -265,11 +266,11 @@ public class BackupInfo
      * @return <tt>true</tt> if the number of books are known
      */
     public boolean hasBookCount() {
-        return mBundle.containsKey(INFO_NUMBOOKS) && mBundle.getInt(INFO_NUMBOOKS) > 0;
+        return mBundle.containsKey(INFO_NUMBER_OF_BOOKS) && mBundle.getInt(INFO_NUMBER_OF_BOOKS) > 0;
     }
 
     public int getBookCount() {
-        return mBundle.getInt(INFO_NUMBOOKS);
+        return mBundle.getInt(INFO_NUMBER_OF_BOOKS);
     }
 
     /**
@@ -289,11 +290,11 @@ public class BackupInfo
      * @return <tt>true</tt> if the number of books are known
      */
     public boolean hasCoverCount() {
-        return mBundle.containsKey(INFO_NUMCOVERS) && mBundle.getInt(INFO_NUMCOVERS) > 0;
+        return mBundle.containsKey(INFO_NUMBER_OF_COVERS) && mBundle.getInt(INFO_NUMBER_OF_COVERS) > 0;
     }
 
     public int getCoverCount() {
-        return mBundle.getInt(INFO_NUMCOVERS);
+        return mBundle.getInt(INFO_NUMBER_OF_COVERS);
     }
 
     /**
@@ -304,7 +305,7 @@ public class BackupInfo
      */
     public boolean isValid() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Logger.info(this, "isValid", mBundle.toString());
+            Logger.debug(this,"isValid", mBundle.toString());
         }
         // extremely simple check: we assume that if one field is present, the rest will be there.
         return mBundle.containsKey(INFO_ARCHIVER_VERSION);

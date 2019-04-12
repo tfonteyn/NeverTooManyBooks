@@ -67,7 +67,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class BookSearchByIsbnFragment
         extends BookSearchBaseFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = BookSearchByIsbnFragment.class.getSimpleName();
     /** option to start in scan mode (versus manual entry). */
     public static final String BKEY_IS_SCAN_MODE = TAG + ":isScanMode";
@@ -243,7 +243,7 @@ public class BookSearchByIsbnFragment
             //noinspection ConstantConditions
             mIsbnView.setKeyListener(ISBN_LISTENER);
             // remove invalid digits
-            String txt = mIsbnView.getText().toString();
+            String txt = mIsbnView.getText().toString().trim();
             mIsbnView.setText(txt.replaceAll(ISBN_REGEX, ""));
         }
 
@@ -397,8 +397,9 @@ public class BookSearchByIsbnFragment
      */
     public void onSearchFinished(final boolean wasCancelled,
                                  @NonNull final Bundle bookData) {
-        Logger.info(this, Tracker.State.Enter,
-                    "onSearchFinished", "SearchManagerId=" + mSearchManagerId);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
+            Logger.debugEnter(this, "onSearchFinished", "SearchManagerId=" + mSearchManagerId);
+        }
         try {
             if (!wasCancelled) {
                 mActivity.getTaskManager()

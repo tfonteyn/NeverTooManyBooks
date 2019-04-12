@@ -25,6 +25,12 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.UniqueId;
@@ -32,12 +38,7 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import java.util.ArrayList;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 
 /**
  * An XML handler for the Google Books entry return.
@@ -152,7 +153,7 @@ class SearchGoogleBooksEntryHandler
     private static final String XML_DESCRIPTION = "description";
     private static final String XML_LANGUAGE = "language";
     /** flag if we should fetch a thumbnail. */
-    private static boolean mFetchThumbnail;
+    private static boolean sFetchThumbnail;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -171,7 +172,7 @@ class SearchGoogleBooksEntryHandler
     SearchGoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
                                   final boolean fetchThumbnail) {
         mBookData = bookData;
-        mFetchThumbnail = fetchThumbnail;
+        sFetchThumbnail = fetchThumbnail;
     }
 
     private void addIfNotPresent(@NonNull final String key,
@@ -206,7 +207,7 @@ class SearchGoogleBooksEntryHandler
         super.startElement(uri, localName, qName, attributes);
 
         // the url is an attribute of the xml element; not the content
-        if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
+        if (sFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
             if ("http://schemas.google.com/books/2008/thumbnail"
                     .equals(attributes.getValue("", "rel"))) {
 
@@ -237,7 +238,7 @@ class SearchGoogleBooksEntryHandler
             throws SAXException {
         super.endElement(uri, localName, qName);
 
-        switch (localName.toLowerCase()) {
+        switch (localName.toLowerCase(LocaleUtils.getSystemLocale())) {
             case XML_TITLE:
                 // there can be multiple listed, but only one 'primary'
                 addIfNotPresent(DBDefinitions.KEY_TITLE, mBuilder.toString());
@@ -301,7 +302,7 @@ class SearchGoogleBooksEntryHandler
             default:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
                     // see what we are missing.
-                    Logger.info(this, "endElement",
+                    Logger.warn(this, "endElement",
                                 "Skipping: " + localName + "->`" + mBuilder + '`');
                 }
 

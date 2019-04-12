@@ -17,7 +17,7 @@
     <string name="lbl_pages">Sayfa</string>
     <string name="btn_confirm_add_book">Kitap ekle</string>
     <string name="btn_confirm_update">Güncelle</string>
-    <string name="info_no_books_yet">Bu kitaplıkta hiç kitap yok. Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
+    <string name="X_info_no_books_yet">Bu kitaplıkta hiç kitap yok. Lütfen ekranın alt kısmındaki bölümü kullanarak kitap ekleyin.</string>
     <string name="menu_expand_all">Hepsini göster</string>
     <string name="X_menu_sort_by">Sırala</string>
     <string name="menu_collapse_all">Hepsini gizle</string>
@@ -28,7 +28,7 @@
     <string name="X_btn_confirm_add_bs">Kitaplık ekle</string>
     <string name="menu_bookshelves">Kitaplıkları…</string>
     <string name="X_btn_confirm_save_bs">Kitaplığı kaydet</string>
-    <string name="menu_delete_bookshelf">Kitaplığı sil</string>
+    <string name="X_menu_delete_bookshelf">Kitaplığı sil</string>
     <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor</string>
     <string name="lbl_bookshelf">Kitaplık</string>
     <string name="bookshelf_all_books">Tüm kitaplar</string>
@@ -40,12 +40,12 @@
     <string name="warning_book_not_found">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
     <string name="lbl_series">Dizi</string>
     <string name="lbl_series_num">#</string>
-    <string name="lbl_series_num_long">Dizi #</string>
+    <string name="X_lbl_series_num_long">Dizi #</string>
     <string name="title_import_book_data">Kitapları içe aktar</string>
     <string name="warning_import_be_cautious">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="X_import_error_failed_is_csv_file_location_correct">Hata: SD karttan içe aktarma başarısız oldu. Dosyalar yerli yerinde mi acaba?</string>
     <string name="X_search_title">Kitap kataloğu: Arama sonuçları</string>
-    <string name="results_found">Sonuç bulundu</string>
+    <string name="X_results_found">Sonuç bulundu</string>
     <string name="menu_administration_long">Yönetim işlevleri</string>
     <string name="menu_administration">Ayarlar</string>
     <string name="info_install_scanner">ISBN barkodu ile kitap taramak için Zxing barkod tarayıcısı uygulamasını yüklemelisiniz. Yüklemek için Tamam\'a, atlamak için Vazgeç\'e basın.</string>
@@ -76,13 +76,13 @@
     <string name="no">Hayır</string>
     <string name="error_search_failed">Kitap araması başarısız oldu. Ağ ayarlarınızı denetleyiniz.</string>
     <string name="error_search_exception">%1$s sırasında arama başarısız oldu: %2$s</string>
-    <string name="menu_delete">Küçük resmi sil</string>
+    <string name="menu_delete">Silmek</string>
     <string name="help">Yardım</string>
-    <string name="info_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
+    <string name="X_info_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="X_anthology_titles">Seçmeler</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
-    <string name="lbl_toc_same_author">Bu seçkideki tüm anlatılar aynı yazar tarafından yazılmıştır</string>
-    <string name="menu_delete_toc_entry">Seçkiden eser sil</string>
+    <string name="lbl_toc_multiple_authors">Bu antolojinin çok sayıda yazarı vardır.</string>
+    <string name="X_menu_delete_toc_entry">Seçkiden eser sil</string>
     <string name="lbl_is_anthology">Bu kitap bir seçkide var mı?</string>
     <string name="menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
     <string name="error_auto_toc_population_failed">Kitap adlarının kendiliğinden doldurulması başarısız oldu</string>
@@ -90,10 +90,9 @@
     <string name="warning_toc_confirm">Lütfen bu seçki adlarının doğru olduğunu onaylayın</string>
     <string name="menu_cover_add_from_camera">Kameradan…</string>
     <string name="title_cover">Kapak resmi</string>
-    <string name="menu_cover_rotate">Resmi döndür…</string>
-    <string name="menu_cover_rotate_cw">Saat yönünde döndür</string>
-    <string name="menu_cover_rotate_ccw">Saat yönünün tersine döndür</string>
-    <string name="menu_cover_rotate_180">180 derece döndür</string>
+    <string name="menu_cover_rotate">Döndür…</string>
+    <string name="menu_cover_rotate_cw">Saat yönünde</string>
+    <string name="menu_cover_rotate_ccw">Saat yönünün tersine</string>
     <string name="lbl_is_signed">Bu kitap imzalı mı?</string>
     <string name="lbl_read_start">Okumaya başlanan tarih</string>
     <string name="lbl_read_end">Okumanın bittiği tarih</string>
@@ -131,8 +130,8 @@
     <string name="btn_confirm_add">Ekle</string>
     <string name="info_no_authors_yet">Bu kitap için hiçbir yazar eklenmemiş. Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak yazar ekleyin.</string>
     <string name="info_no_series_yet">Bu kitap için hiçbir seri eklenmemiş.  Ekranın üst kısmındaki metin alanı ve düğmeyi kullanarak seri ekleyin.</string>
-    <string name="warning_cover_field_not_set">Kapak yok</string>
-    <string name="warning_cover_corrupt">Kapak hasarlı</string>
+    <string name="X_warning_cover_field_not_set">Kapak yok</string>
+    <string name="X_warning_cover_corrupt">Kapak hasarlı</string>
     <string name="X_title_cover_detail">Kapak ayrıntısı</string>
     <string name="title_select_image">Resim seç</string>
     <string name="btn_set_authors">Yazar ekle…</string>
@@ -150,7 +149,7 @@
     <string name="lbl_given_names">Adı</string>
     <string name="X_title_edit_author">Yazar ayrıntılarını düzenle</string>
     <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır</string>
-    <string name="menu_cover_replace">Küçük resmi değiştir…</string>
+    <string name="menu_cover_replace">Değiştir…</string>
     <string name="menu_cover_search_alt_editions">Diğer sürümlerden…</string>
     <string name="warning_required_author_long">En azından bir yazar belirtilmeli</string>
     <string name="warning_required_title">Boş olmayan bir kitap adı kesinlikle belirtilmeli</string>
@@ -160,10 +159,10 @@
     <string name="title_delete_series">Serileri sil</string>
     <string name="confirm_really_delete_series">\‘%1$s\’ serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="X_title_edit_series">Seri ayrıntılarını düzenle</string>
-    <string name="title_select_cover">Kapak seç</string>
+    <string name="X_title_select_cover">Kapak seç</string>
     <string name="X_warning_no_isbn_no_editions">ISBN\'si olmayan bir kitabın diğer sürümlerine ulaşılamaz</string>
-    <string name="warning_unsaved_edits">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
-    <string name="unsaved_edits_title">Kaydedilmemiş değişiklikler</string>
+    <string name="warning_unsaved_edits2">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
+    <string name="X_unsaved_edits_title">Kaydedilmemiş değişiklikler</string>
     <string name="confirm_apply_author_changed">Yazarı şundan:\n  \‘%1$s\’ şuna:\n  \‘%2$s\’ değiştirdiniz.\nDeğişiklikleri nasıl uygulamak istersiniz?\nNot: \‘%3$s\’ seçimi anında uygulanacaktır.</string>
     <string name="btn_this_book">Bu kitap</string>
     <string name="title_scope_of_change">Değişiklik kapsamı</string>
@@ -172,7 +171,7 @@
     <string name="list_and">and</string>
     <string name="confirm_really_delete_book">Bu işlem bu kitabı tümüyle silecektir: \‘%1$s\’ - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="warning_editions_require_isbn">Diğer sürümlere ulaşmak bir ISBN gerektirir</string>
-    <string name="warning_no_editions">Başka sürüm bulunamadı</string>
+    <string name="warning_no_editions">Ek yayın bilgisi yok</string>
     <string name="progress_msg_finding_editions">Sürümler bulunuyor…</string>
     <string name="info_tap_on_thumb">Daha büyük görüntülemek için küçük resme dokunun</string>
     <string name="progress_msg_loading">Yükleniyor…</string>
@@ -204,7 +203,6 @@
     <string name="bytes">%.0fB</string>
     <string name="debug_subject">Hata ayıklama bilgisi alındı</string>
     <string name="debug_body">Lütfen yaşamakta olduğunuz sorunu kısaca anlatınız.</string>
-    <string name="menu_duplicate_book">Kitabı kopyala</string>
     <string name="lt_incorrect_key">Ya LibraryThing geliştirici anahtarınız yanlış ya da biz doğrulama için ağa bağlanamadık.</string>
     <string name="lt_correct_key">LibraryThing geliştirici anahtarınız geçerli.</string>
     <string name="error_no_internet_connection">Ağ bağlantısı yok.</string>
@@ -282,7 +280,7 @@
     <string name="style_builtin_author_series">Önce yazar sonra seri</string>
     <string name="style_builtin_series">Seriler</string>
     <string name="style_builtin_title_first_letter">İlk harf başlık</string>
-    <string name="style_builtin_genre">Tür adı</string>
+    <string name="style_builtin_genre">Tür</string>
     <string name="style_builtin_loaned">Ödünç verilmiş</string>
     <string name="style_builtin_read_and_unread">Okunmuş ve okunmamış</string>
     <string name="style_builtin_publication_date">Yayın tarihi</string>
@@ -346,13 +344,13 @@
     <string name="X_title_add_style">Yeni biçem</string>
     <string name="X_pt_bob_filter_read">\‘Okunma\’ durumuna göre seç</string>
     <string name="title_select_style">Biçem seç</string>
-    <string name="warning_required_field_x">%1$s boş olamaz</string>
+    <string name="X_warning_required_field_x">%1$s boş olamaz</string>
     <string name="edit">Düzenle</string>
     <string name="lbl_settings">Yeğlenenler</string>
     <string name="error_unexpected_error">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki \‘Yardım\’ seçeneğinden bize gönderin</string>
-    <string name="menu_delete_style">Biçemi sil</string>
-    <string name="menu_edit_booklist_style">Biçemi düzenle</string>
-    <string name="menu_clone_style">Biçemi çoğalt</string>
+    <string name="X_menu_delete_style">Biçemi sil</string>
+    <string name="X_menu_edit_booklist_style">Biçemi düzenle</string>
+    <string name="menu_duplicate">Çift</string>
     <string name="about_dash_or_dash">- Veya -</string>
     <string name="about_donate_paypal">PayPal bağışı</string>
     <string name="style_builtin_compact">Küçük</string>
@@ -419,9 +417,9 @@
     <string name="lbl_added_month">Eklenen ay</string>
     <string name="lbl_added_day">Eklenen gün</string>
     <string name="lbl_book">Kitap</string>
-    <string name="in">İçinde</string>
-    <string name="size">Boyut</string>
-    <string name="updated">Güncellenmiş</string>
+    <string name="X_in">İçinde</string>
+    <string name="X_file_size">Boyut</string>
+    <string name="X_updated">Güncellenmiş</string>
     <string name="import_error_csv_file_not_found">Herhangi bir dışa aktarma dosyası bulunamadı</string>
     <string name="import_warning_select_csv_file">Birden fazla dışa aktarma dosyası bulundu; lütfen içe aktarmak üzere aşağıdaki dışa aktarma dosyalarından birini seçin</string>
     <string name="X_error_starting_import_arg">İçe aktarmaya başlarken bir hata oluştu: %1$s</string>
@@ -450,14 +448,14 @@
     <string name="lbl_read_day">Okuma günü</string>
     <string name="style_builtin_read_date">Okunan günay</string>
     <string name="lbl_details_have_changed">Ayrıntılar değiştirildi</string>
-    <string name="confirm_unsaved_changes">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
+    <string name="warning_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
     <string name="btn_confirm_exit">Çıkış</string>
     <string name="btn_continue_editing">Düzenlemeyi sürdür</string>
     <string name="X_warning_title_already_exists">Bu kitap adı zaten var</string>
     <string name="lbl_year">Yıl</string>
     <string name="lbl_month">Ay</string>
     <string name="lbl_day">Gün</string>
-    <string name="menu_edit">düzenle…</string>
+    <string name="menu_edit">Düzenle…</string>
     <string name="progress_msg_getting_books">Kitaplar alınıyor…</string>
     <string name="gr_tq_last_error_e">Son hata: %1$s</string>
     <string name="X_warning_invalid_isbn_x_specified_in_search">Aramara belirtilen ISBN \‘%1$s\’ geçersiz</string>
@@ -469,7 +467,6 @@
     <string name="progress_msg_searching">Aranıyor…</string>
     <string name="progress_msg_adding_book">Kitap ekle…</string>
     <string name="lbl_publication">Yayınlama</string>
-    <string name="lbl_by_author">ile</string>
     <string name="lbl_loaned_to_name">%1$s kişisine ödünç verilmiş</string>
     <string name="lbl_x_pages">%1$d bet</string>
 
@@ -496,7 +493,7 @@
     <!-- This is the heading of the 'Details' tab when editing a book. It needs to be short. "Book Details" is too long. -->
     <string name="tab_lbl_details">Ayrıntılar</string>
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
-    <string name="tab_lbl_loan">Ödünç ver</string>
+    <string name="X_tab_lbl_loan">Ödünç ver</string>
 
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting_to_web_site">Ağ sayfasına bağlanılıyor…</string>
@@ -539,7 +536,7 @@
     <string name="warning_select_a_non_directory">Bir dizin değil de bir dosya seçmeniz gerek</string>
 
     <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
-    <string name="menu_copy_database">Veritabanını eşlemle (teknik destek için)</string>
+    <string name="menu_copy_database">Veritabanını Ver</string>
 
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">İçe aktarma başarısız.</string>
@@ -669,7 +666,6 @@
     <string name="lbl_location_long">Kitabın yeri</string>
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Kitaplar</string>
     <string name="menu_loan_return_book">Ödünç alınan kitap geri döndü</string>
@@ -685,5 +681,17 @@
     <string name="lbl_style">Stil</string>
     <string name="progress_msg_process_booklist_style">Kitap Listesi Stilleri…</string>
     <string name="lbl_search_site_order">Sekans</string>
+    <string name="book_format_paperback">"Ciltsiz "</string>
+    <string name="tab_lbl_notes">Notlar</string>
+    <string name="book_format_hardcover">"Ciltli "</string>
+    <string name="lbl_edition_first_impression">1. basım</string>
+    <string name="lbl_lending">Ödünç verilmiş</string>
+    <string name="lbl_edition_first_edition">1. baskı</string>
+    <string name="lbl_covers">Kapaklar</string>
+    <string name="progress_msg_process_cover">Kapaklar…</string>
+    <string name="lbl_cover">Kapak</string>
+    <string name="lbl_edition">Baskı</string>
+    <string name="info_tap_on_image_to_select">Seçmek için büyük resmin üzerine dokunun</string>
+    <string name="menu_clear_filters">Filtreleri Temizle</string>
 
 </resources>

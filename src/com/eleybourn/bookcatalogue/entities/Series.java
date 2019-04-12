@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -36,19 +37,19 @@ import java.util.regex.Pattern;
 
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.cursors.ColumnMapper;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_BOOK_SERIES_NUM;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
 
 /**
  * Class to hold book-related series data.
  * <p>
  * Note:
- * A Series as defined in the database is just id+name (ans isComplete)
+ * A Series as defined in the database is just id+name (and isComplete)
  * <p>
  * The number is of course related to the book itself.
  * So this class does not represent a Series, but a "BookInSeries"
@@ -72,11 +73,18 @@ public class Series
                 }
             };
 
-    /** Regular expression - TODO: make this user controlled ? Add more languages ? */
+    /**
+     * Regular expression - TODO: make this user controlled ? Add more languages here?
+     * <p>
+     * or use //Resources res = LocaleUtils.getLocalizedResources(mContext, bookLocale);
+     */
     private static final String NUMBER_PREFIXES =
             "(#|number|num|num.|no|no.|nr|nr.|book|bk|bk.|volume|vol|vol.|tome|part|pt.|)";
 
-    /** Trim extraneous punctuation and whitespace from the name. */
+    /**
+     * Trim extraneous punctuation and whitespace from the name.
+     * Combine the alpha part with the numeric part. The latter supports roman numerals as well.
+     */
     private static final String SERIES_REGEX_SUFFIX =
             NUMBER_PREFIXES + "\\s*([0-9.\\-]+|[ivxlcm.\\-]+)\\s*$";
 
@@ -102,6 +110,7 @@ public class Series
     /** whether we have all we want from this Series / if the series is finished. */
     private boolean mIsComplete;
     /** number (alphanumeric) of a book in this series. */
+    @NonNull
     private String mNumber;
 
     /**
@@ -136,6 +145,7 @@ public class Series
      * @param isComplete whether a Series is completed, i.e if the user has all
      *                   they want from this Series.
      */
+    @SuppressWarnings("unused")
     public Series(final long id,
                   @NonNull final String name,
                   final boolean isComplete) {
@@ -146,15 +156,22 @@ public class Series
     }
 
     /**
-     * Full constructor with book number.
+     * Full constructor with optional book number.
      *
+     * @param id     ID of the Series in the database.
      * @param mapper for the cursor.
      */
-    public Series(@NonNull final ColumnMapper mapper) {
-        mId = mapper.getLong(DOM_PK_ID);
-        mName = mapper.getString(DOM_SERIES_NAME);
+    public Series(final long id,
+                  @NonNull final ColumnMapper mapper) {
+        mId = id;
+        mName = mapper.getString(DOM_SERIES_TITLE);
         mIsComplete = mapper.getBoolean(DOM_SERIES_IS_COMPLETE);
-        mNumber = mapper.getString(DOM_BOOK_SERIES_NUM);
+        // optional domain, not always used.
+        if (mapper.contains(DOM_BOOK_SERIES_NUM)) {
+            mNumber = mapper.getString(DOM_BOOK_SERIES_NUM);
+        } else {
+            mNumber = "";
+        }
     }
 
     /** {@link Parcelable}. */
@@ -163,6 +180,7 @@ public class Series
         //noinspection ConstantConditions
         mName = in.readString();
         mIsComplete = in.readByte() != 0;
+        //noinspection ConstantConditions
         mNumber = in.readString();
     }
 
@@ -174,10 +192,10 @@ public class Series
      * @return the series
      */
     public static Series fromString(@NonNull final String fromString) {
-        Matcher m = FROM_STRING_PATTERN.matcher(fromString);
-        if (m.find()) {
-            Series newSeries = new Series(m.group(1).trim());
-            newSeries.setNumber(cleanupSeriesPosition(m.group(2)));
+        Matcher matcher = FROM_STRING_PATTERN.matcher(fromString);
+        if (matcher.find()) {
+            Series newSeries = new Series(matcher.group(1).trim());
+            newSeries.setNumber(cleanupSeriesPosition(matcher.group(2)));
             return newSeries;
         } else {
             return new Series(fromString.trim());
@@ -196,6 +214,7 @@ public class Series
         if (title == null || title.isEmpty()) {
             return null;
         }
+
         SeriesDetails details = null;
         int openBracket = title.lastIndexOf('(');
         // We want a title that does not START with a bracket!
@@ -259,6 +278,10 @@ public class Series
     @SuppressWarnings("UnusedReturnValue")
     public static boolean pruneSeriesList(@NonNull final List<Series> list) {
 
+        //TOMF: book locale or user-preferred?
+        Locale locale = LocaleUtils.getPreferredLocal();
+
+        // keep track of what we have
         Map<String, Series> map = new HashMap<>();
 
         // will be set to true if we deleted items.
@@ -268,30 +291,33 @@ public class Series
         while (it.hasNext()) {
             Series series = it.next();
 
-            final String name = series.mName.trim().toLowerCase();
+            final String name = series.getName().trim().toLowerCase(locale);
             if (!map.containsKey(name)) {
-                // Just add and continue
+                // Not there, so just add and continue
                 map.put(name, series);
+
             } else {
-                // See if we can purge either
-                if (series.mNumber == null || series.mNumber.trim().isEmpty()) {
+                // See if we can purge either one.
+                if (series.getNumber().trim().isEmpty()) {
                     // Always delete series with empty numbers if an equally or more
                     // specific one exists
                     it.remove();
                     modified = true;
+
                 } else {
                     // See if the one in 'index' also has a num
                     Series orig = map.get(name);
-                    Objects.requireNonNull(orig);
-                    if (orig.mNumber == null || orig.mNumber.trim().isEmpty()) {
+                    //noinspection ConstantConditions
+                    if (orig.getNumber() == null || orig.getNumber().trim().isEmpty()) {
                         // Replace with this one, and delete the original
                         map.put(name, series);
                         it.remove();
                         modified = true;
+
                     } else {
                         // Both have numbers. See if they are the same.
-                        if (series.mNumber.trim().toLowerCase()
-                                          .equals(orig.mNumber.trim().toLowerCase())) {
+                        if (series.getNumber().trim().toLowerCase(locale)
+                                  .equals(orig.getNumber().trim().toLowerCase(locale))) {
                             // Same exact series, delete this one
                             it.remove();
                             modified = true;
@@ -369,7 +395,7 @@ public class Series
      */
     @NonNull
     public String getDisplayName() {
-        if (mNumber != null && !mNumber.isEmpty()) {
+        if (!mNumber.isEmpty()) {
             return mName + " (" + mNumber + ')';
         } else {
             return mName;
@@ -399,6 +425,7 @@ public class Series
     /**
      * @return the unformatted number
      */
+    @NonNull
     public String getNumber() {
         return mNumber;
     }
@@ -436,7 +463,7 @@ public class Series
     @NonNull
     public String stringEncoded() {
         String numberStr;
-        if (mNumber != null && !mNumber.isEmpty()) {
+        if (!mNumber.isEmpty()) {
             // for display reasons, start the number part with a space !
             numberStr = " (" + mNumber + ')';
         } else {

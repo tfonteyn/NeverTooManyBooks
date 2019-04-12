@@ -27,7 +27,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.TocEntry;
 import com.eleybourn.bookcatalogue.searches.SearchSites;
@@ -41,7 +40,7 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * https://openlibrary.org/developers/api
  * <p>
  * <p>
- * Initial testing... TLDR: works, but data not complete or not stable (maybe I'm to harsh though)
+ * Initial testing... TLDR: works, but data not complete or not stable (maybe I am to harsh though)
  * <p>
  * https://openlibrary.org/dev/docs/api/books
  * - allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
@@ -375,9 +374,7 @@ public class OpenLibraryManager
                                   final boolean fetchThumbnail)
             throws JSONException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY_SEARCH) {
-            // dump it
-            Logger.info(this, Tracker.State.Enter,
-                        "handleResponse", jsonObject.toString(2));
+            Logger.debugEnter(this, "handleResponse", jsonObject.toString(2));
         }
         Iterator<String> it = jsonObject.keys();
         // we only handle the first result for now.
@@ -537,7 +534,7 @@ public class OpenLibraryManager
         bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY_SEARCH) {
-            Logger.info(this, Tracker.State.Exit, "handleBook", bookData.toString());
+            Logger.debugExit(this, "handleBook", bookData.toString());
         }
         return bookData;
     }

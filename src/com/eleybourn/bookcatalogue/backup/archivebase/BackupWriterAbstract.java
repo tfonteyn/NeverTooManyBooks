@@ -157,12 +157,12 @@ public abstract class BackupWriterAbstract
         } finally {
             mSettings.what = entitiesWritten;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                Logger.info(this, "backup", "exported covers#=" + infoValues.coverCount);
+                Logger.debug(this, "backup", "exported covers#=" + infoValues.coverCount);
             }
             try {
                 close();
             } catch (IOException e) {
-                Logger.error(e, "Failed to close writer");
+                Logger.error(this, e, "Failed to close writer");
             }
         }
     }
@@ -279,8 +279,8 @@ public abstract class BackupWriterAbstract
             }
         }
         if (!dryRun) {
-            Logger.info(this, "doCovers", " Wrote " + ok + " Images, " + missing + " missing,"
-                    + " and " + skipped + " skipped");
+            Logger.info(this, "doCovers", " written=" + ok,
+                        "missing=" + missing, "skipped=" + skipped);
         }
 
         return ok;

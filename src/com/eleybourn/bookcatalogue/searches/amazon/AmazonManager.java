@@ -24,22 +24,36 @@ import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
+import com.eleybourn.bookcatalogue.utils.Throttler;
 
 /**
- * Early 2019, I got this error:
- * <br />
- * <b>Warning</b>:  file_get_contents(http://webservices.amazon.com/onca/xml?
- * AssociateTag=theagidir-20
- * &amp;Keywords=0586216871
- * &amp;Operation=ItemSearch
- * &amp;ResponseGroup=Medium,Images
- * &amp;SearchIndex=Books
- * &amp;Service=AWSECommerceService
- * &amp;SubscriptionId=AKIAIHF2BM6OTOA23JEQ
- * &amp;Timestamp=2019-02-17T21:53:11.000Z
- * &amp;Signature=dEqLlFLyj4x%2BNJaticEpqKGSQm%2F75tmnnZ7dkegK8K0%3D)
- * : failed to open stream: HTTP request failed! HTTP/1.1 503 Service Unavailable
- * in <b>/app/getRest_v3.php</b> on line <b>70</b><br />
+ * March/April 2019, I got this error:
+ * //
+ * //Warning: file_get_contents(http://webservices.amazon.com/onca/xml?AssociateTag=theagidir-20
+ * // &Keywords=9780385269179
+ * // &Operation=ItemSearch&ResponseGroup=Medium,Images
+ * // &SearchIndex=Books&Service=AWSECommerceService
+ * // &SubscriptionId=AKIAIHF2BM6OTOA23JEQ
+ * // &Timestamp=2019-04-08T11:10:15.000Z
+ * // &Signature=XJKVvg%2BDqzB7w50fXxvqN5hbDt2ZFzuNL5W%2BsDmcGXA%3D):
+ * // failed to open stream: HTTP request failed!
+ * // HTTP/1.1 503 Service Unavailable in /app/getRest_v3.php on line 70
+ * //
+ * // When executing the actual url:
+ * //
+ * // <ItemSearchErrorResponse xmlns="http://ecs.amazonaws.com/doc/2005-10-05/">
+ * //<Error>
+ * //<Code>RequestThrottled</Code>
+ * //<Message>
+ * //AWS Access Key ID: AKIAIHF2BM6OTOA23JEQ. You are submitting requests too quickly.
+ * // Please retry your requests at a slower rate.
+ * //</Message>
+ * //</Error>
+ * //<RequestID>ecf67cf8-e363-4b08-a140-48fcdbebd956</RequestID>
+ * //</ItemSearchErrorResponse>
+ * <p>
+ * So... adding throttling. But obviously if the issue is on the actual 'theagiledirector'
+ * site, this will not help. But with throttling I will at least not cause extra trouble.
  */
 public final class AmazonManager
         implements SearchSites.SearchSiteManager {
@@ -48,6 +62,10 @@ public final class AmazonManager
     private static final String PREF_PREFIX = "Amazon.";
 
     private static final String PREFS_HOST_URL = PREF_PREFIX + "hostUrl";
+
+    /** Can only send requests at a throttled speed. */
+    @NonNull
+    private static final Throttler THROTTLER = new Throttler();
 
     /**
      * Constructor.
@@ -126,6 +144,9 @@ public final class AmazonManager
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SearchAmazonHandler handler = new SearchAmazonHandler(bookData, fetchThumbnail);
 
+        // See class docs: adding throttling
+        THROTTLER.waitUntilRequestAllowed();
+
         // Get it
         try (TerminatorConnection con = TerminatorConnection.getConnection(url)) {
             SAXParser parser = factory.newSAXParser();
@@ -133,7 +154,7 @@ public final class AmazonManager
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always log */) {
-                Logger.debug(e);
+                Logger.debugWithStackTrace(this, e);
             }
         }
 

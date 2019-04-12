@@ -20,7 +20,7 @@
         app:constraint_referenced_ids="name"
         />
 
-    <!-- Small text, but with padding so user can still select it -->
+    <!-- Smaller text, but with padding so user can still select it -->
     <TextView
         android:id="@+id/name"
         android:layout_width="0dp"

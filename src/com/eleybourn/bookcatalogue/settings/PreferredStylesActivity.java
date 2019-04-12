@@ -62,8 +62,7 @@ import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
  */
 public class PreferredStylesActivity
         extends EditObjectListActivity<BooklistStyle>
-        implements SimpleDialog.ListViewContextMenu,
-                   AdapterView.OnItemLongClickListener {
+        implements AdapterView.OnItemLongClickListener {
 
     private static final int REQ_EDIT_STYLE = 0;
 
@@ -118,36 +117,29 @@ public class PreferredStylesActivity
                                    final int position,
                                    final long id) {
         BooklistStyle style = mListAdapter.getItem(position);
-        //noinspection ConstantConditions
-        String menuTitle = style.getDisplayName(this);
 
         // legal trick to get an instance of Menu.
-        mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
-        // custom menuInfo
-        SimpleDialog.ContextMenuInfo menuInfo =
-                new SimpleDialog.ContextMenuInfo(menuTitle, position);
-        // populate the menu
+        Menu menu = new PopupMenu(view.getContext(), null).getMenu();
+        menu.add(Menu.NONE, R.id.MENU_CLONE, Menu.NONE, R.string.menu_duplicate)
+            .setIcon(R.drawable.ic_content_copy);
+        //noinspection ConstantConditions
         if (style.isUserDefined()) {
-            mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_DELETE, 0,
-                                     R.string.menu_delete_style)
-                                .setIcon(R.drawable.ic_delete);
-            mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_EDIT, 0,
-                                     R.string.menu_edit_booklist_style)
-                                .setIcon(R.drawable.ic_edit);
+            menu.add(Menu.NONE, R.id.MENU_EDIT, Menu.NONE, R.string.menu_edit)
+                .setIcon(R.drawable.ic_edit);
+            menu.add(Menu.NONE, R.id.MENU_DELETE, Menu.NONE, R.string.menu_delete)
+                .setIcon(R.drawable.ic_delete);
         }
-        mListViewContextMenu.add(Menu.NONE, R.id.MENU_STYLE_CLONE, 0,
-                                 R.string.menu_clone_style)
-                            .setIcon(R.drawable.ic_content_copy);
 
         // display the menu
-        onCreateListViewContextMenu(view, mListViewContextMenu, menuInfo);
+        String menuTitle = style.getDisplayName(this);
+        SimpleDialog.onCreateListViewContextMenu(view, menu, menuTitle, position,
+                                                 this::onListViewContextItemSelected);
         return true;
     }
 
     /**
      * Using {@link SimpleDialog#showContextMenu} for context menus.
      */
-    @Override
     public boolean onListViewContextItemSelected(@NonNull final MenuItem menuItem,
                                                  final int position) {
 
@@ -156,21 +148,21 @@ public class PreferredStylesActivity
 
         BooklistStyle style = mList.get(position);
         switch (menuItem.getItemId()) {
-            case R.id.MENU_STYLE_DELETE:
-                style.delete(mDb);
-                handleStyleChange(null);
-                setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
+            case R.id.MENU_CLONE:
+                editStyle(style.getClone(this, mDb));
                 return true;
 
-            case R.id.MENU_STYLE_EDIT:
+            case R.id.MENU_EDIT:
                 if (!style.isUserDefined()) {
                     style = style.getClone(this, mDb);
                 }
                 editStyle(style);
                 return true;
 
-            case R.id.MENU_STYLE_CLONE:
-                editStyle(style.getClone(this, mDb));
+            case R.id.MENU_DELETE:
+                style.delete(mDb);
+                handleStyleChange(null);
+                setResult(UniqueId.ACTIVITY_RESULT_DELETED_SOMETHING);
                 return true;
 
             default:
@@ -186,7 +178,7 @@ public class PreferredStylesActivity
      */
     private void editStyle(@NonNull final BooklistStyle style) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
-            Logger.info(this, Tracker.State.Enter, "editStyle", style.toString());
+            Logger.debugEnter(this, "editStyle", style.toString());
         }
         Intent intent = new Intent(this, SettingsActivity.class)
                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BooklistStyleSettingsFragment.TAG)
@@ -283,7 +275,7 @@ public class PreferredStylesActivity
             onListChanged();
 
         } catch (RuntimeException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             // Do our best to recover
             setList(getList());
         }

@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -34,7 +35,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 public class ProgressDialogFragment<Results>
         extends DialogFragment {
 
-    /** Fragment manager tag used if no custom tag is needed. */
+    /** Fragment manager t used if no custom t is needed. */
     public static final String TAG = ProgressDialogFragment.class.getSimpleName();
 
     private static final String BKEY_DIALOG_IS_INDETERMINATE = TAG + ":isIndeterminate";
@@ -82,9 +83,29 @@ public class ProgressDialogFragment<Results>
         ProgressDialogFragment<Results> frag = new ProgressDialogFragment<>();
         Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, titelId);
-        //args.putString(BKEY_CURRENT_MESSAGE, message);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
         args.putInt(BKEY_MAX, max);
+        frag.setArguments(args);
+        return frag;
+    }
+
+    @NonNull
+    @UiThread
+    public static <Results>
+    ProgressDialogFragment<Results> newInstance(@StringRes final int titelId,
+                                                @Nullable final String message,
+                                                final boolean isIndeterminate,
+                                                final int currentValue,
+                                                final int maxValue) {
+        ProgressDialogFragment<Results> frag = new ProgressDialogFragment<>();
+        Bundle args = new Bundle();
+        args.putInt(UniqueId.BKEY_DIALOG_TITLE, titelId);
+        args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
+        if (message != null) {
+            args.putString(BKEY_CURRENT_MESSAGE, message);
+        }
+        args.putInt(BKEY_CURRENT_VALUE, currentValue);
+        args.putInt(BKEY_MAX, maxValue);
         frag.setArguments(args);
         return frag;
     }
@@ -197,10 +218,12 @@ public class ProgressDialogFragment<Results>
     @Override
     public Context getContext() {
         Context context = super.getContext();
-        if (context == null) {
-            Logger.error("getContext() was NULL");
-        } else {
-            Logger.info(this, "getContext()", context.toString());
+        if (BuildConfig.DEBUG) {
+            if (context == null) {
+                Logger.warnWithStackTrace(this, "getContext() was NULL");
+            } else {
+                Logger.debug(this, "getContext()", context.toString());
+            }
         }
         return context;
     }
@@ -259,7 +282,7 @@ public class ProgressDialogFragment<Results>
                     //noinspection ConstantConditions
                     mMessageView.setText(mMessage);
                 } else {
-                    Logger.error("Dialog was NULL");
+                    Logger.warnWithStackTrace(this, "Dialog was NULL");
                 }
             }
         }

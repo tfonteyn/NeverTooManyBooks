@@ -15,7 +15,7 @@
     <item name="TAG_GET_THUMBNAIL_TASK" type="id" />
     <!-- used for tagging items in a list of items used in a selection dialog -->
     <item name="TAG_DIALOG_ITEM" type="id" />
-    <!-- store the uuid of a cover into a tag on the view. -->
+    <!-- store the uuid of a cover into a t on the view. -->
     <item name="TAG_UUID" type="id" />
 
     <!-- BEGIN predefined task ids -->
@@ -38,6 +38,13 @@
     <!-- END predefined task ids -->
 
     <!-- BEGIN predefined menu items -->
+
+    <item name="MENU_SEARCH" type="id"/>
+    <item name="MENU_INSERT" type="id"/>
+    <item name="MENU_EDIT" type="id"/>
+    <item name="MENU_DELETE" type="id"/>
+    <item name="MENU_CLONE" type="id"/>
+
 
     <item name="SUBMENU_BOOK_ADD" type="id"/>
     <item name="MENU_BOOK_ADD_BY_SCAN" type="id"/>
@@ -74,17 +81,7 @@
     <item name="MENU_LOCATION_EDIT" type="id"/>
     <item name="MENU_PUBLISHER_EDIT" type="id"/>
 
-    <item name="MENU_DELETE_TOC_ENTRY" type="id"/>
     <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id"/>
-
-    <item name="MENU_STYLE_DELETE" type="id"/>
-    <item name="MENU_STYLE_EDIT" type="id"/>
-    <item name="MENU_STYLE_CLONE" type="id"/>
-
-    <item name="MENU_SEARCH" type="id"/>
-    <item name="MENU_INSERT" type="id"/>
-    <item name="MENU_EDIT" type="id"/>
-    <item name="MENU_DELETE" type="id"/>
 
     <!-- standard Booklist options menu -->
     <item name="MENU_SORT" type="id"/>
@@ -107,10 +104,12 @@
 
     <!-- Thumbnail context menu -->
     <item name="MENU_THUMB_DELETE" type="id"/>
+
     <item name="SUBMENU_THUMB_REPLACE" type="id"/>
     <item name="MENU_THUMB_ADD_FROM_CAMERA" type="id"/>
     <item name="MENU_THUMB_ADD_FROM_GALLERY" type="id"/>
     <item name="MENU_THUMB_ADD_ALT_EDITIONS" type="id"/>
+
     <item name="SUBMENU_THUMB_ROTATE" type="id"/>
     <item name="MENU_THUMB_ROTATE_CW" type="id"/>
     <item name="MENU_THUMB_ROTATE_CCW" type="id"/>
@@ -139,7 +138,7 @@
     <item name="TLV_ROW_DELETE" type="id"/>
     <!-- the optional checkable button -->
     <item name="TLV_ROW_CHECKABLE" type="id"/>
-    <!-- used by {@link SimpleListAdapter} for storing its private tag; stored on the 'root'
+    <!-- used by {@link SimpleListAdapter} for storing its private t; stored on the 'root'
      of the row -->
     <item name="TLV_ROW_TAG" type="id"/>
     <!-- the grabber handle -->

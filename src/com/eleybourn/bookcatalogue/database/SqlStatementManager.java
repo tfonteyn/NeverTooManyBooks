@@ -20,6 +20,8 @@
 
 package com.eleybourn.bookcatalogue.database;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedStatement;
 import com.eleybourn.bookcatalogue.debug.Logger;
@@ -138,7 +141,9 @@ public class SqlStatementManager
     protected void finalize()
             throws Throwable {
         if (!mStatements.isEmpty()) {
-            Logger.info(this, "finalize", "closing statements.");
+            if (BuildConfig.DEBUG) {
+                Logger.debug(this,"finalize", "closing statements.");
+            }
             close();
         }
         super.finalize();

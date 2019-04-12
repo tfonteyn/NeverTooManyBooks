@@ -22,6 +22,7 @@ package com.eleybourn.bookcatalogue.database;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteDoneException;
@@ -131,8 +132,9 @@ import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_DOCID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_PK_ID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_FORMATTED;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
-import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_NAME;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE;
+import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_TITLE_LC;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.DOM_UUID;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_AUTHORS;
 import static com.eleybourn.bookcatalogue.database.DBDefinitions.TBL_BOOKLIST_STYLES;
@@ -261,7 +263,6 @@ public class DBA
     private static final String STMT_DELETE_BOOK_SERIES = "DeleteBookSeries";
 
     private static final String STMT_UPDATE_GOODREADS_BOOK_ID = "UpdateGoodreadsBookId";
-    private static final String STMT_UPDATE_TOC_ENTRY = "UpdateTocEntry";
     private static final String STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES = "UpdateAuthorOnTocEntry";
     private static final String STMT_UPDATE_GOODREADS_SYNC_DATE = "UpdateGoodreadsSyncDate";
     private static final String STMT_UPDATE_FTS = "UpdateFts";
@@ -272,9 +273,9 @@ public class DBA
 
 
     /** the actual SQLiteOpenHelper. */
-    private static DBHelper mDbHelper;
+    private static DBHelper sDbHelper;
     /** the synchronized wrapper around the real database. */
-    private static SynchronizedDb mSyncedDb;
+    private static SynchronizedDb sSyncedDb;
     /** needed for Resources & for getting the covers db. */
     @NonNull
     private final Context mContext;
@@ -296,35 +297,36 @@ public class DBA
     public DBA(@NonNull final Context context) {
         mContext = context;
         // initialise static if not done yet
-        if (mDbHelper == null) {
+        if (sDbHelper == null) {
             // don't pass local context, the helper uses the app context to avoid leaks.
-            mDbHelper = DBHelper.getInstance(CURSOR_FACTORY, SYNCHRONIZER);
+            sDbHelper = DBHelper.getInstance(CURSOR_FACTORY, SYNCHRONIZER);
         }
 
         // initialise static if not done yet
-        if (mSyncedDb == null) {
+        if (sSyncedDb == null) {
             // Get the DB wrapper
-            mSyncedDb = new SynchronizedDb(mDbHelper, SYNCHRONIZER);
+            sSyncedDb = new SynchronizedDb(sDbHelper, SYNCHRONIZER);
 
             // Turn ON foreign key support so that CASCADE works.
-            mSyncedDb.execSQL("PRAGMA foreign_keys = ON");
+            sSyncedDb.execSQL("PRAGMA foreign_keys = ON");
 
             // Turn OFF recursive triggers;
-            mSyncedDb.execSQL("PRAGMA recursive_triggers = OFF");
+            sSyncedDb.execSQL("PRAGMA recursive_triggers = OFF");
 
-            mSyncedDb.getUnderlyingDatabase()
+            sSyncedDb.getUnderlyingDatabase()
                      .setMaxSqlCacheSize(PREPARED_CACHE_SIZE);
         }
 
         // for debug
-        //mSyncedDb.execSQL("PRAGMA temp_store = FILE");
+        //sSyncedDb.execSQL("PRAGMA temp_store = FILE");
 
         // statements are instance based/managed
-        mStatements = new SqlStatementManager(mSyncedDb);
+        mStatements = new SqlStatementManager(sSyncedDb);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
-            Logger.info(this, "DBA",
-                        "instances created: " + DEBUG_INSTANCE_COUNT.incrementAndGet());
+            Logger.debug(this,
+                         "DBA",
+                         "instances created: " + DEBUG_INSTANCE_COUNT.incrementAndGet());
             //debugAddInstance(this);
         }
     }
@@ -428,32 +430,18 @@ public class DBA
     @SuppressWarnings("unused")
     private static void debugRemoveInstance(@NonNull final DBA db) {
         Iterator<InstanceRefDebug> it = INSTANCES.iterator();
-
         while (it.hasNext()) {
             InstanceRefDebug ref = it.next();
             DBA refDb = ref.get();
             if (refDb == null) {
-                Logger.info(DBA.class, "debugRemoveInstance",
-                            "<-- **** Missing ref (not closed?) **** vvvvvvv");
-                Logger.error(ref.getCreationException());
-                Logger.info(DBA.class, "debugRemoveInstance",
-                            "--> **** Missing ref (not closed?) **** ^^^^^^^");
+                Logger.debug(DBA.class, "debugRemoveInstance",
+                             "**** Missing ref (not closed?) ****",
+                             ref.getCreationException());
             } else {
                 if (refDb == db) {
                     it.remove();
                 }
             }
-        }
-    }
-
-    /**
-     * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
-     * there are still non-fatal anomalies.
-     */
-    @SuppressWarnings("unused")
-    public static void debugPrintReferenceCount(@Nullable final String msg) {
-        if (mSyncedDb != null) {
-            SynchronizedDb.printRefCount(msg, mSyncedDb.getUnderlyingDatabase());
         }
     }
 
@@ -464,19 +452,29 @@ public class DBA
     public static void debugDumpInstances() {
         for (InstanceRefDebug ref : INSTANCES) {
             if (ref.get() == null) {
-                Logger.info(DBA.class, "debugDumpInstances",
-                            "<-- **** Missing ref (not closed?) **** vvvvvvv");
-                Logger.error(ref.getCreationException());
-                Logger.info(DBA.class, "debugDumpInstances",
-                            "--> **** Missing ref (not closed?) **** ^^^^^^^");
+                Logger.debug(DBA.class, "debugDumpInstances",
+                             "**** Missing ref (not closed?) ****",
+                             ref.getCreationException());
             } else {
-                Logger.error(ref.getCreationException());
+                Logger.debug(DBA.class, "debugDumpInstances",
+                             ref.getCreationException());
             }
         }
     }
 
+    /**
+     * DEBUG ONLY; used when tracking a bug in android 2.1, but kept because
+     * there are still non-fatal anomalies.
+     */
+    @SuppressWarnings("unused")
+    public static void debugPrintReferenceCount(@Nullable final String msg) {
+        if (sSyncedDb != null) {
+            SynchronizedDb.printRefCount(msg, sSyncedDb.getUnderlyingDatabase());
+        }
+    }
+
     public void recreateTriggers() {
-        mDbHelper.createTriggers(mSyncedDb);
+        sDbHelper.createTriggers(sSyncedDb);
     }
 
     @NonNull
@@ -485,7 +483,7 @@ public class DBA
     }
 
     public void analyze() {
-        mSyncedDb.analyze();
+        sSyncedDb.analyze();
     }
 
     /**
@@ -496,7 +494,7 @@ public class DBA
      */
     @NonNull
     public SynchronizedDb getUnderlyingDatabase() {
-        return mSyncedDb;
+        return sSyncedDb;
     }
 
     /**
@@ -535,8 +533,9 @@ public class DBA
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_ADAPTER) {
-            Logger.info(this, "close",
-                        "instances left: " + DEBUG_INSTANCE_COUNT.decrementAndGet());
+            Logger.debug(this,
+                         "close",
+                         "instances left: " + DEBUG_INSTANCE_COUNT.decrementAndGet());
             //debugRemoveInstance(this);
         }
         mCloseCalled = true;
@@ -547,8 +546,7 @@ public class DBA
     protected void finalize()
             throws Throwable {
         if (!mCloseCalled) {
-            Logger.info(this, "finalize",
-                        "Leaking instances: " + DEBUG_INSTANCE_COUNT.get());
+            Logger.warn(this, "finalize", "Leaking instances: " + DEBUG_INSTANCE_COUNT.get());
             close();
         }
         super.finalize();
@@ -559,14 +557,14 @@ public class DBA
      */
     @NonNull
     public SyncLock startTransaction(final boolean isUpdate) {
-        return mSyncedDb.beginTransaction(isUpdate);
+        return sSyncedDb.beginTransaction(isUpdate);
     }
 
     /**
      * Used by {@link CsvImporter}.
      */
     public void endTransaction(@NonNull final SyncLock txLock) {
-        mSyncedDb.endTransaction(txLock);
+        sSyncedDb.endTransaction(txLock);
     }
 
     /**
@@ -574,19 +572,19 @@ public class DBA
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean inTransaction() {
-        return mSyncedDb.inTransaction();
+        return sSyncedDb.inTransaction();
     }
 
     /**
      * Used by {@link CsvImporter}.
      */
     public void setTransactionSuccessful() {
-        mSyncedDb.setTransactionSuccessful();
+        sSyncedDb.setTransactionSuccessful();
     }
 
     /**
      * Delete the link between TocEntry's and the given Book.
-     * Note that the actual TocEntry's are not deleted.
+     * Note that the actual TocEntry's are NOT deleted.
      *
      * @param bookId id of the book
      *
@@ -612,21 +610,22 @@ public class DBA
      * The title will be checked for (equal 'OR' as {@link #preprocessTitle})
      *
      * @param authorId id of author
-     * @param title    title
+     * @param title_lc title in LOWER CASE (allows the caller to use the correct locale)
      *
      * @return the id of the {@link TocEntry} entry, or 0 if not found
      */
-    public long getTOCEntryId(final long authorId,
-                              @NonNull final String title) {
+    public long getTocEntryId(final long authorId,
+                              @NonNull final String title_lc) {
         SynchronizedStatement stmt = mStatements.get(STMT_GET_TOC_ENTRY_ID);
         if (stmt == null) {
             stmt = mStatements.add(STMT_GET_TOC_ENTRY_ID, SqlGet.TOC_ENTRY_ID);
         }
         // Be cautious; other threads may use the cached stmt, and set parameters.
+        // the check of preprocessTitle is unconditional as it's an OR.
         synchronized (stmt) {
             stmt.bindLong(1, authorId);
-            stmt.bindString(2, title);
-            stmt.bindString(3, preprocessTitle(title));
+            stmt.bindString(2, title_lc);
+            stmt.bindString(3, preprocessTitle(title_lc, null));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -634,24 +633,46 @@ public class DBA
     /**
      * Return all the {@link TocEntry} for the given {@link Author}.
      *
-     * @param author to retrieve
+     * @param author    to retrieve
+     * @param withBooks add books without TOC as well; i.e. the toc of a book without a toc,
+     *                  is the book title itself. (makes sense?)
      *
      * @return List of {@link TocEntry} for this {@link Author}
      */
     @NonNull
-    public ArrayList<TocEntry> getTocEntryByAuthor(@NonNull final Author author) {
+    public ArrayList<TocEntry> getTocEntryByAuthor(@NonNull final Author author,
+                                                   final boolean withBooks) {
+
+        String sql;
+        String authorIdStr = String.valueOf(author.getId());
+        String[] params;
+        if (withBooks) {
+            sql = SqlSelectList.GET_WORKS_BY_AUTHOR_ID;
+            params = new String[]{authorIdStr, authorIdStr};
+        } else {
+            sql = SqlSelectList.GET_TOC_ENTRIES_BY_AUTHOR_ID;
+            params = new String[]{authorIdStr};
+        }
+
         ArrayList<TocEntry> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectList.GET_TOC_ENTRIES_BY_AUTHOR_ID,
-                                                new String[]{String.valueOf(author.getId())})) {
+        try (Cursor cursor = sSyncedDb.rawQuery(sql, params)) {
             if (cursor.getCount() == 0) {
                 return list;
             }
-            ColumnMapper mapper = new ColumnMapper(cursor, TBL_TOC_ENTRIES);
+
+            ColumnMapper mapper = new ColumnMapper(cursor, null,
+                                                   DOM_PK_ID, DOM_TITLE, DOM_FIRST_PUBLICATION);
+            // type: 'B' or 'T'; see:
+            // SqlSelectList.GET_BOOK_TITLES_BY_AUTHOR_ID
+            // SqlSelectList.GET_TOC_ENTRIES_BY_AUTHOR_ID
+            mapper.addDomains("type");
+
             while (cursor.moveToNext()) {
                 TocEntry title = new TocEntry(mapper.getLong(DOM_PK_ID),
                                               author,
                                               mapper.getString(DOM_TITLE),
                                               mapper.getString(DOM_FIRST_PUBLICATION));
+                title.setType(mapper.getString("type").charAt(0));
                 list.add(title);
             }
         }
@@ -696,7 +717,7 @@ public class DBA
         cv.put(DOM_AUTHOR_GIVEN_NAMES.name, author.getGivenNames());
         cv.put(DOM_AUTHOR_IS_COMPLETE.name, author.isComplete());
 
-        return mSyncedDb.update(TBL_AUTHORS.getName(), cv,
+        return sSyncedDb.update(TBL_AUTHORS.getName(), cv,
                                 DOM_PK_ID + "=?",
                                 new String[]{String.valueOf(author.getId())});
     }
@@ -729,7 +750,7 @@ public class DBA
      */
     @NonNull
     public Cursor fetchAuthors() {
-        return mSyncedDb.rawQuery(SqlSelectFullTable.AUTHORS, null);
+        return sSyncedDb.rawQuery(SqlSelectFullTable.AUTHORS, null);
     }
 
     /**
@@ -739,14 +760,11 @@ public class DBA
      */
     @Nullable
     public Author getAuthor(final long id) {
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelect.AUTHOR_BY_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.AUTHOR_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_AUTHORS);
             if (cursor.moveToFirst()) {
-                return new Author(id,
-                                  mapper.getString(DOM_AUTHOR_FAMILY_NAME),
-                                  mapper.getString(DOM_AUTHOR_GIVEN_NAMES),
-                                  mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE));
+                return new Author(id, mapper);
             } else {
                 return null;
             }
@@ -804,13 +822,13 @@ public class DBA
 
         // process the destination Author
         if (!updateOrInsertAuthor(to)) {
-            Logger.error("Could not update Author");
+            Logger.warnWithStackTrace(this, "Could not update", "author=" + to);
             return false;
         }
 
         // Do some basic sanity checks.
         if (from.getId() == 0 && from.fixupId(this) == 0) {
-            Logger.error("Old Author is not defined");
+            Logger.warnWithStackTrace(this, "Old Author is not defined");
             return false;
         }
 
@@ -819,11 +837,12 @@ public class DBA
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
-            Logger.info(this, "globalReplaceAuthor",
-                        "from=" + from.getId() + ", to=" + to.getId());
+            Logger.debug(this,
+                         "globalReplaceAuthor",
+                         "from=" + from.getId() + ", to=" + to.getId());
         }
 
-        SyncLock txLock = mSyncedDb.beginTransaction(true);
+        SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
             // replace the old id with the new id on the TOC entries
             updateAuthorOnTocEntry(from.getId(), to.getId());
@@ -836,12 +855,12 @@ public class DBA
                                             DOM_BOOK_AUTHOR_POSITION,
                                             from.getId(), to.getId());
 
-            mSyncedDb.setTransactionSuccessful();
+            sSyncedDb.setTransactionSuccessful();
         } catch (RuntimeException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             return false;
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            sSyncedDb.endTransaction(txLock);
         }
         return true;
     }
@@ -926,7 +945,7 @@ public class DBA
      * Delete all Authors without related books / TocEntry's.
      */
     private void purgeAuthors() {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlDelete.PURGE_AUTHORS)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlDelete.PURGE_AUTHORS)) {
             stmt.executeUpdateDelete();
         }
     }
@@ -935,7 +954,7 @@ public class DBA
      * Delete all Series without related books.
      */
     private void purgeSeries() {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlDelete.PURGE_SERIES)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlDelete.PURGE_SERIES)) {
             stmt.executeUpdateDelete();
         }
     }
@@ -950,7 +969,7 @@ public class DBA
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 SqlSelect.COUNT_BOOKS_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
             return stmt.count();
@@ -967,7 +986,7 @@ public class DBA
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 SqlSelect.COUNT_TOC_ENTRIES_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
             return stmt.count();
@@ -983,16 +1002,27 @@ public class DBA
     private void preprocessBook(final boolean isNew,
                                 @NonNull final Book book) {
 
+        // Handle Language field first, we might need it for 'order by LC' fields.
+        // 'true': try to update the language field of the book to the iso3 code.
+        Locale bookLocale = book.getLocale(true);
+
         // Handle AUTHOR. When is this needed? Legacy archive import ?
         if (book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)
                 || book.containsKey(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
             preprocessLegacyAuthor(book);
         }
 
-        // Handle TITLE; but only for new books
-        if (isNew && book.containsKey(DBDefinitions.KEY_TITLE)) {
-            String cleanTitle = preprocessTitle(book.getString(DBDefinitions.KEY_TITLE));
-            book.putString(DBDefinitions.KEY_TITLE, cleanTitle);
+        // Handle TITLE
+        if (book.containsKey(DBDefinitions.KEY_TITLE)) {
+            // new books only: clean the title
+            if (isNew) {
+                Resources res = LocaleUtils.getLocalizedResources(mContext, bookLocale);
+                String title = preprocessTitle(book.getString(DBDefinitions.KEY_TITLE), res);
+                book.putString(DBDefinitions.KEY_TITLE, title);
+            }
+            // both new and updates: set the 'order by' field
+            book.putString(DOM_TITLE_LC.name,
+                           book.getString(DBDefinitions.KEY_TITLE).toLowerCase(bookLocale));
         }
 
         // Handle ANTHOLOGY_BITMASK only, no handling of actual titles here
@@ -1019,14 +1049,6 @@ public class DBA
                            book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY).toUpperCase());
         }
 
-        // Handle Language field. Try to only store ISO3 code.
-        if (book.containsKey(DBDefinitions.KEY_LANGUAGE)) {
-            String lang = book.getString(DBDefinitions.KEY_LANGUAGE);
-            if (lang.length() > 3) {
-                // translate to iso3 code, or if that fails, stores the original
-                book.putString(DBDefinitions.KEY_LANGUAGE, LocaleUtils.getISO3Language(lang));
-            }
-        }
 
         // Remove NULL fields that have default values defined in the database
         // or should never be NULL.
@@ -1105,9 +1127,9 @@ public class DBA
             Author author = Author.fromString(book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
             if (author.fixupId(this) == 0) {
                 if (BuildConfig.DEBUG) {
-                    Logger.info(this, "preprocessBook",
-                                "KEY_AUTHOR_FORMATTED|inserting author: "
-                                        + author.stringEncoded());
+                    Logger.debug(this, "preprocessBook",
+                                 "KEY_AUTHOR_FORMATTED|inserting author: "
+                                         + author.stringEncoded());
                 }
                 insertAuthor(author);
             }
@@ -1125,9 +1147,9 @@ public class DBA
             Author author = new Author(family, given);
             if (author.fixupId(this) == 0) {
                 if (BuildConfig.DEBUG) {
-                    Logger.info(this, "preprocessBook",
-                                "KEY_AUTHOR_FAMILY_NAME|inserting author: "
-                                        + author.stringEncoded());
+                    Logger.debug(this, "preprocessBook",
+                                 "KEY_AUTHOR_FAMILY_NAME|inserting author: "
+                                         + author.stringEncoded());
                 }
                 insertAuthor(author);
             }
@@ -1138,18 +1160,25 @@ public class DBA
     /**
      * Move "The, A, An" etc... to the end of the string.
      *
-     * @param title to format
+     * @param title     to format
+     * @param resources to use for the prefix, can be null to use the default.
      *
      * @return formatted title
      */
-    private String preprocessTitle(@NonNull final String title) {
+    private String preprocessTitle(@NonNull final String title,
+                                   @Nullable Resources resources) {
 
         StringBuilder newTitle = new StringBuilder();
         String[] titleWords = title.split(" ");
         try {
-            // ENHANCE: if a user runs in language X, but enters books in language Y then
-            // this code *should* load the lang Y resource.
-            if (titleWords[0].matches(mContext.getString(R.string.title_reorder))) {
+            String pattern;
+            if (resources == null) {
+                pattern = mContext.getString(R.string.title_reorder);
+            } else {
+                pattern = resources.getString(R.string.title_reorder);
+            }
+
+            if (titleWords[0].matches(pattern)) {
                 for (int i = 1; i < titleWords.length; i++) {
                     if (i != 1) {
                         newTitle.append(' ');
@@ -1159,7 +1188,7 @@ public class DBA
                 newTitle.append(", ").append(titleWords[0]);
                 return newTitle.toString();
             }
-        } catch (RuntimeException ignore) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") RuntimeException ignore) {
             //do nothing. Title stays the same
         }
         return title;
@@ -1283,11 +1312,11 @@ public class DBA
             // need the UUID to delete the thumbnail.
             uuid = getBookUuid(bookId);
         } catch (SQLiteDoneException e) {
-            Logger.error(e, "Failed to get book UUID");
+            Logger.error(this, e, "Failed to get book UUID");
         }
 
         int rowsAffected = 0;
-        SyncLock txLock = mSyncedDb.beginTransaction(true);
+        SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
             SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOK);
             if (stmt == null) {
@@ -1301,11 +1330,11 @@ public class DBA
             if (rowsAffected > 0) {
                 deleteThumbnail(uuid);
             }
-            mSyncedDb.setTransactionSuccessful();
+            sSyncedDb.setTransactionSuccessful();
         } catch (RuntimeException e) {
-            Logger.error(e, "Failed to delete book");
+            Logger.error(this, e, "Failed to delete book");
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            sSyncedDb.endTransaction(txLock);
         }
 
         return rowsAffected;
@@ -1337,7 +1366,7 @@ public class DBA
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
     public long insertBook(@NonNull final Book book) {
-        return insertBookWithId(0, book);
+        return insertBook(0, book);
     }
 
     /**
@@ -1347,24 +1376,23 @@ public class DBA
      *
      * @param bookId of the book
      *               zero: a new book
-     *               non-zero: will overwrite the small autoIncrement, normally only
-     *               an Import should use this
+     *               non-zero: will override the autoIncrement, only an Import should use this
      * @param book   A collection with the columns to be set. May contain extra data.
      *               The id will be updated.
      *
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    public long insertBookWithId(final long bookId,
-                                 @NonNull final Book /* in/out */ book) {
+    public long insertBook(final long bookId,
+                           @NonNull final Book /* in/out */ book) {
 
         SyncLock txLock = null;
-        if (!mSyncedDb.inTransaction()) {
-            txLock = mSyncedDb.beginTransaction(true);
+        if (!sSyncedDb.inTransaction()) {
+            txLock = sSyncedDb.beginTransaction(true);
         }
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_INSERT) {
-                Logger.info(this, "insertBookWithId", book.getRawData().toString());
+                Logger.debug(this, "insertBook", book.getRawData());
             }
             // Cleanup fields (author, series, title and remove blank fields for which
             // we have defaults)
@@ -1383,7 +1411,7 @@ public class DBA
             // Make sure we have an author
             List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
             if (authors.isEmpty()) {
-                Logger.error("No authors in book from\n" + book);
+                Logger.warnWithStackTrace(this, "No authors\n", book);
                 return -1L;
             }
 
@@ -1399,13 +1427,13 @@ public class DBA
                 cv.put(DOM_LAST_UPDATE_DATE.name, DateUtils.utcSqlDateTimeForToday());
             }
 
-            long newBookId = mSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
+            long newBookId = sSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
             if (newBookId > 0) {
                 insertBookDependents(newBookId, book);
                 insertFts(newBookId);
                 // it's an insert, success only if we really inserted.
                 if (txLock != null) {
-                    mSyncedDb.setTransactionSuccessful();
+                    sSyncedDb.setTransactionSuccessful();
                 }
             }
 
@@ -1415,14 +1443,14 @@ public class DBA
             return newBookId;
 
         } catch (NumberFormatException e) {
-            Logger.error(e, "NumberFormatException creating book from\n" + book);
+            Logger.error(this, e, "Failed creating book from\n" + book);
             return -1L;
         } catch (RuntimeException e) {
-            Logger.error(e, "Exception Error creating book from\n" + book);
+            Logger.error(this, e, "Failed creating book from\n" + book);
             return -1L;
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                sSyncedDb.endTransaction(txLock);
             }
         }
     }
@@ -1441,13 +1469,13 @@ public class DBA
                           final int flags) {
 
         SyncLock txLock = null;
-        if (!mSyncedDb.inTransaction()) {
-            txLock = mSyncedDb.beginTransaction(true);
+        if (!sSyncedDb.inTransaction()) {
+            txLock = sSyncedDb.beginTransaction(true);
         }
 
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_BOOK_BUNDLE_AT_UPDATE) {
-                Logger.info(this, "updateBook", book.getRawData().toString());
+                Logger.debug(this, "updateBook", book.getRawData().toString());
             }
 
             // Cleanup fields (author, series, title, 'sameAuthor' if anthology,
@@ -1471,25 +1499,25 @@ public class DBA
             // go !
             // A prepared statement would be faster for importing books....
             // but we don't know what columns are provided in the bundle....
-            int rowsAffected = mSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
+            int rowsAffected = sSyncedDb.update(TBL_BOOKS.getName(), cv, DOM_PK_ID + "=?",
                                                 new String[]{String.valueOf(bookId)});
             insertBookDependents(bookId, book);
             updateFts(bookId);
 
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                sSyncedDb.setTransactionSuccessful();
             }
             // make sure the Book has the correct id.
             book.putLong(DBDefinitions.KEY_ID, bookId);
 
             return rowsAffected;
         } catch (RuntimeException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             throw new RuntimeException(
                     "Error updating book from " + book + ": " + e.getLocalizedMessage(), e);
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                sSyncedDb.endTransaction(txLock);
             }
         }
     }
@@ -1501,29 +1529,26 @@ public class DBA
      *
      * @param bookId of the book
      * @param book   A collection with the columns to be set. May contain extra data.
+     *               The id should be disregarded in favour of the parameter 'bookId'.
      */
     private void insertBookDependents(final long bookId,
                                       @NonNull final Book book) {
 
         if (book.containsKey(UniqueId.BKEY_BOOKSHELF_ARRAY)) {
-            ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-            insertBookBookshelf(bookId, list);
+            insertBookBookshelf(bookId, book);
         }
 
         if (book.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)) {
-            ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-            insertBookAuthors(bookId, list);
+            insertBookAuthors(bookId, book);
         }
 
         if (book.containsKey(UniqueId.BKEY_SERIES_ARRAY)) {
-            ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-            insertBookSeries(bookId, list);
+            insertBookSeries(bookId, book);
         }
 
         if (book.containsKey(UniqueId.BKEY_TOC_ENTRY_ARRAY)) {
-            ArrayList<TocEntry> list = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
             // update: toc entries are two steps away; they can exist in other books
-            updateOrInsertTOC(bookId, list);
+            updateOrInsertTOC(bookId, book);
         }
 
         if (book.containsKey(DBDefinitions.KEY_LOANEE)
@@ -1540,7 +1565,7 @@ public class DBA
      */
     @NonNull
     public Cursor fetchBookUuidList() {
-        return mSyncedDb.rawQuery(SqlSelectFullTable.BOOK_UUIDS, null);
+        return sSyncedDb.rawQuery(SqlSelectFullTable.BOOK_ALL_UUID, null);
     }
 
     /**
@@ -1602,14 +1627,17 @@ public class DBA
      * Note that {@link DBDefinitions#DOM_BOOK_SERIES_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
-     * @param bookId the book which
-     * @param list   belongs to this *ordered* list of {@link Series}
+     * @param bookId of the book
+     * @param book   A collection with the columns to be set. May contain extra data.
+     *               The id should be disregarded in favour of the parameter 'bookId'.
      */
     private void insertBookSeries(final long bookId,
-                                  @NonNull final List<Series> list) {
-        if (!mSyncedDb.inTransaction()) {
+                                  @NonNull final Book book) {
+        if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ERROR_NEEDS_TRANSACTION);
         }
+
+        ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
         // Need to delete the current records because they may have been reordered and a simple
         // set of updates could result in unique key or index violations.
@@ -1633,8 +1661,9 @@ public class DBA
             for (Series series : list) {
                 if (series.fixupId(this) == 0) {
                     if (BuildConfig.DEBUG) {
-                        Logger.info(this, "insertBookSeries",
-                                    "inserting series: " + series.stringEncoded());
+                        Logger.debug(this,
+                                     "insertBookSeries",
+                                     "inserting series: " + series.stringEncoded());
                     }
                     insertSeries(series);
                 }
@@ -1678,13 +1707,19 @@ public class DBA
      * Insert a List of TocEntry's for the given book.
      *
      * @param bookId of the book
-     * @param list   the list
+     * @param book   A collection with the columns to be set. May contain extra data.
+     *               The id should be disregarded in favour of the parameter 'bookId'.
      */
     private void updateOrInsertTOC(final long bookId,
-                                   @NonNull final List<TocEntry> list) {
-        if (!mSyncedDb.inTransaction()) {
+                                   @NonNull final Book book) {
+        if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ERROR_NEEDS_TRANSACTION);
         }
+
+        ArrayList<TocEntry> list = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+
+        Locale bookLocale = book.getLocale(false);
+        Resources res = LocaleUtils.getLocalizedResources(mContext, bookLocale);
 
         // Need to delete the current records because they may have been reordered and a simple
         // set of updates could result in unique key or index violations.
@@ -1702,11 +1737,6 @@ public class DBA
             insertTocStmt = mStatements.add(STMT_INSERT_TOC_ENTRY, SqlInsert.TOC_ENTRY);
         }
 
-        SynchronizedStatement updateTOCStmt = mStatements.get(STMT_UPDATE_TOC_ENTRY);
-        if (updateTOCStmt == null) {
-            updateTOCStmt = mStatements.add(STMT_UPDATE_TOC_ENTRY, SqlUpdate.TOC_ENTRY);
-        }
-
         SynchronizedStatement insertBookTocStmt = mStatements.get(STMT_INSERT_BOOK_TOC_ENTRY);
         if (insertBookTocStmt == null) {
             insertBookTocStmt = mStatements.add(STMT_INSERT_BOOK_TOC_ENTRY,
@@ -1715,16 +1745,18 @@ public class DBA
 
         for (TocEntry tocEntry : list) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TMP_ANTHOLOGY) {
-                Logger.info(this, "updateOrInsertTOC",
-                            "Adding TocEntryByBookId: " + tocEntry);
+                Logger.debug(this,
+                             "updateOrInsertTOC",
+                             "Adding TocEntryByBookId: " + tocEntry);
             }
 
             // handle the author.
             Author author = tocEntry.getAuthor();
             if (author.fixupId(this) == 0) {
                 if (BuildConfig.DEBUG) {
-                    Logger.info(this, "updateOrInsertTOC",
-                                "inserting author: " + author.stringEncoded());
+                    Logger.debug(this,
+                                 "updateOrInsertTOC",
+                                 "inserting author: " + author.stringEncoded());
                 }
                 insertAuthor(author);
             }
@@ -1732,28 +1764,37 @@ public class DBA
             // As an entry can exist in multiple books, try to find the entry.
             if (tocEntry.fixupId(this) == 0) {
                 if (BuildConfig.DEBUG) {
-                    Logger.info(this, "updateOrInsertTOC",
-                                "inserting tocEntry: " + tocEntry.stringEncoded());
+                    Logger.debug(this,
+                                 "updateOrInsertTOC",
+                                 "inserting tocEntry: " + tocEntry.stringEncoded());
                 }
                 // Be cautious; other threads may use the cached stmt, and set parameters.
                 synchronized (insertTocStmt) {
-                    insertTocStmt.bindLong(1, tocEntry.getAuthor().getId());
                     // standardize the title for new entries
-                    insertTocStmt.bindString(2, preprocessTitle(tocEntry.getTitle()));
-                    insertTocStmt.bindString(3, tocEntry.getFirstPublication());
+                    String title = preprocessTitle(tocEntry.getTitle(), res);
+
+                    insertTocStmt.bindLong(1, tocEntry.getAuthor().getId());
+                    insertTocStmt.bindString(2, title);
+                    insertTocStmt.bindString(3, title.toLowerCase(bookLocale));
+                    insertTocStmt.bindString(4, tocEntry.getFirstPublication());
                     long iId = insertTocStmt.executeInsert();
                     if (iId > 0) {
                         tocEntry.setId(iId);
                     }
                 }
             } else {
-                // Be cautious; other threads may use the cached stmt, and set parameters.
-                synchronized (updateTOCStmt) {
-                    // if found, FIXME: (do not) unconditionally update the publication year.
-                    updateTOCStmt.bindString(1, tocEntry.getFirstPublication());
-                    updateTOCStmt.bindLong(2, tocEntry.getId());
-                    updateTOCStmt.executeUpdateDelete();
-                }
+                // We cannot update the author (we never even get here if the author was changed)
+                // We *do* update the title to allow corrections of case,
+                // as the find was done on the TITLE_LC field.
+                String title = tocEntry.getTitle();
+                ContentValues cv = new ContentValues();
+                cv.put(DOM_TITLE.name, title);
+                cv.put(DOM_TITLE_LC.name, title.toLowerCase(bookLocale));
+                cv.put(DOM_FIRST_PUBLICATION.name, tocEntry.getFirstPublication());
+
+                sSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv,
+                                 DOM_PK_ID + "=?",
+                                 new String[]{String.valueOf(tocEntry.getId())});
             }
 
             // create the book<->TocEntry link
@@ -1767,10 +1808,10 @@ public class DBA
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TMP_ANTHOLOGY) {
-                Logger.info(this, "updateOrInsertTOC", "     bookId   : " + bookId);
-                Logger.info(this, "updateOrInsertTOC", "     authorId : " + author.getId());
-                Logger.info(this, "updateOrInsertTOC", "     tocId    : " + tocEntry.getId());
-                Logger.info(this, "updateOrInsertTOC", "     position : " + position);
+                Logger.debug(this, "updateOrInsertTOC",
+                             "\n     bookId   : " + bookId,
+                             "\n     authorId : " + author.getId(),
+                             "\n     position : " + position);
             }
         }
 
@@ -1784,15 +1825,18 @@ public class DBA
      * Note that {@link DBDefinitions#DOM_BOOK_AUTHOR_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
-     * @param bookId the book which
-     * @param list   belongs to this *ordered* list of {@link Author}
+     * @param bookId of the book
+     * @param book   A collection with the columns to be set. May contain extra data.
+     *               The id should be disregarded in favour of the parameter 'bookId'.
      */
     private void insertBookAuthors(final long bookId,
-                                   @NonNull final List<Author> list) {
+                                   @NonNull final Book book) {
 
-        if (!mSyncedDb.inTransaction()) {
+        if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ERROR_NEEDS_TRANSACTION);
         }
+
+        ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
 
         // Need to delete the current records because they may have been reordered and a simple
         // set of updates could result in unique key or index violations.
@@ -1817,8 +1861,8 @@ public class DBA
                 // find/insert the author
                 if (author.fixupId(this) == 0) {
                     if (BuildConfig.DEBUG) {
-                        Logger.info(this, "insertBookAuthors",
-                                    "inserting author: " + author.stringEncoded());
+                        Logger.debug(this, "insertBookAuthors",
+                                     "inserting author: " + author.stringEncoded());
                     }
                     insertAuthor(author);
                 }
@@ -1869,14 +1913,17 @@ public class DBA
      * Note that {@link DBDefinitions#DOM_BOOK_SERIES_POSITION} is a simple incrementing
      * counter matching the order of the passed list.
      *
-     * @param bookId the book which
-     * @param list   belongs to this *ordered* list of {@link Bookshelf}
+     * @param bookId of the book
+     * @param book   A collection with the columns to be set. May contain extra data.
+     *               The id should be disregarded in favour of the parameter 'bookId'.
      */
     private void insertBookBookshelf(final long bookId,
-                                     @NonNull final List<Bookshelf> list) {
-        if (!mSyncedDb.inTransaction()) {
+                                     @NonNull final Book book) {
+        if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ERROR_NEEDS_TRANSACTION);
         }
+
+        ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
 
         // Need to delete the current records because they may have been reordered and a simple
         // set of updates could result in unique key or index violations.
@@ -1899,8 +1946,9 @@ public class DBA
 
             if (bookshelf.fixupId(this) == 0) {
                 if (BuildConfig.DEBUG) {
-                    Logger.info(this, "insertBookBookshelf",
-                                "inserting bookshelf: " + bookshelf.stringEncoded());
+                    Logger.debug(this,
+                                 "insertBookBookshelf",
+                                 "inserting bookshelf: " + bookshelf.stringEncoded());
                 }
                 insertBookshelf(bookshelf);
             }
@@ -1956,7 +2004,7 @@ public class DBA
         + "                 ba." + KEY_BOOK + " = " + tableName + "." + KEY_BOOK
         + "                 and ba." + objectIdField + " = " + newId + ")";
          */
-        SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 "UPDATE " + table + " SET " + domain + "=? WHERE " + domain + "=?"
                         + " AND NOT EXISTS"
 
@@ -1991,7 +2039,7 @@ public class DBA
                                                  final long fromId,
                                                  final long toId) {
 
-        if (!mSyncedDb.inTransaction()) {
+        if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ERROR_NEEDS_TRANSACTION);
         }
 
@@ -2017,12 +2065,13 @@ public class DBA
                 // left: the aliased table
                 + " AND " + table.dot(domain) + "=?)";
 
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(fromId),
+        try (Cursor cursor = sSyncedDb.rawQuery(sql, new String[]{String.valueOf(fromId),
                                                                   String.valueOf(toId)})) {
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
-                Logger.info(this, "globalReplacePositionedBookItem",
-                            "Re-position, total count=" + cursor.getCount());
+                Logger.debug(this,
+                             "globalReplacePositionedBookItem",
+                             "Re-position, total count=" + cursor.getCount());
             }
 
             // Get the column indexes we need
@@ -2030,22 +2079,22 @@ public class DBA
             final int posCol = cursor.getColumnIndexOrThrow(positionField.name);
 
             // Delete a specific object record
-            delStmt = mSyncedDb.compileStatement(
+            delStmt = sSyncedDb.compileStatement(
                     "DELETE FROM " + table
                             + " WHERE " + domain + "=? AND " + DOM_FK_BOOK_ID + "=?");
 
             // Get the position of the already-existing 'new/replacement' object
-            replacementIdPosStmt = mSyncedDb.compileStatement(
+            replacementIdPosStmt = sSyncedDb.compileStatement(
                     "SELECT " + positionField + " FROM " + table
                             + " WHERE " + DOM_FK_BOOK_ID + "=? AND " + domain + "=?");
 
             // Move a single entry to a new position
-            moveStmt = mSyncedDb.compileStatement(
+            moveStmt = sSyncedDb.compileStatement(
                     "UPDATE " + table + " SET " + positionField + "=?"
                             + " WHERE " + DOM_FK_BOOK_ID + "=? AND " + positionField + "=?");
 
             // Sanity check to deal with legacy bad data
-            checkMinStmt = mSyncedDb.compileStatement(
+            checkMinStmt = sSyncedDb.compileStatement(
                     "SELECT min(" + positionField + ") FROM " + table
                             + " WHERE " + DOM_FK_BOOK_ID + "=?");
 
@@ -2060,8 +2109,9 @@ public class DBA
                 replacementIdPosStmt.bindLong(2, toId);
                 long replacementIdPos = replacementIdPosStmt.simpleQueryForLong();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
-                    Logger.info(this, "globalReplacePositionedBookItem",
-                                "id=" + bookId + ", to=" + toId + "=> replacementIdPos=" + replacementIdPos);
+                    Logger.debug(this,
+                                 "globalReplacePositionedBookItem",
+                                 "id=" + bookId + ", to=" + toId + "=> replacementIdPos=" + replacementIdPos);
                 }
                 // Delete the old record
                 delStmt.bindLong(1, fromId);
@@ -2072,9 +2122,9 @@ public class DBA
                 // move the new one up
                 if (replacementIdPos > pos) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
-                        Logger.info(this, "globalReplacePositionedBookItem",
-                                    "id=" + bookId + ", pos=" + pos
-                                            + ", replacementIdPos=" + replacementIdPos);
+                        Logger.debug(this, "globalReplacePositionedBookItem",
+                                     "id=" + bookId, "pos=" + pos,
+                                     "replacementIdPos=" + replacementIdPos);
                     }
                     moveStmt.bindLong(1, pos);
                     moveStmt.bindLong(2, bookId);
@@ -2092,8 +2142,9 @@ public class DBA
                 // If it's > 1, move it to 1
                 if (minPos > 1) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
-                        Logger.info(this, "globalReplacePositionedBookItem",
-                                    "id=" + bookId + ", pos to 1, minPos=" + minPos);
+                        Logger.debug(this,
+                                     "globalReplacePositionedBookItem",
+                                     "id=" + bookId, "pos to 1, minPos=" + minPos);
                     }
                     moveStmt.bindLong(1, 1);
                     moveStmt.bindLong(2, bookId);
@@ -2125,7 +2176,7 @@ public class DBA
     @NonNull
     public ArrayList<TocEntry> getTocEntryByBook(final long bookId) {
         ArrayList<TocEntry> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectList.TOC_ENTRIES_BY_BOOK_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.TOC_ENTRIES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
             if (cursor.getCount() == 0) {
                 return list;
@@ -2136,10 +2187,7 @@ public class DBA
                                                    DOM_AUTHOR_IS_COMPLETE);
 
             while (cursor.moveToNext()) {
-                Author author = new Author(mapper.getLong(DOM_FK_AUTHOR_ID),
-                                           mapper.getString(DOM_AUTHOR_FAMILY_NAME),
-                                           mapper.getString(DOM_AUTHOR_GIVEN_NAMES),
-                                           mapper.getBoolean(DOM_AUTHOR_IS_COMPLETE));
+                Author author = new Author(mapper.getLong(DOM_FK_AUTHOR_ID), mapper);
 
                 list.add(new TocEntry(mapper.getLong(DOM_PK_ID),
                                       author,
@@ -2162,7 +2210,7 @@ public class DBA
      */
     public ArrayList<Integer> getBookIdsByTocEntry(final long tocId) {
         ArrayList<Integer> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlGet.BOOK_ID_BY_TOC_ENTRY_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlGet.BOOK_ID_BY_TOC_ENTRY_ID,
                                                 new String[]{String.valueOf(tocId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getInt(0));
@@ -2181,11 +2229,11 @@ public class DBA
     @NonNull
     public ArrayList<Author> getAuthorsByBookId(final long bookId) {
         ArrayList<Author> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectList.AUTHORS_BY_BOOK_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.AUTHORS_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_AUTHORS);
             while (cursor.moveToNext()) {
-                list.add(new Author(mapper));
+                list.add(new Author(mapper.getLong(DOM_PK_ID), mapper));
             }
         }
         return list;
@@ -2201,14 +2249,14 @@ public class DBA
     @NonNull
     public ArrayList<Series> getSeriesByBookId(final long bookId) {
         ArrayList<Series> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectList.SERIES_BY_BOOK_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.SERIES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
             if (cursor.getCount() == 0) {
                 return list;
             }
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_SERIES, DOM_BOOK_SERIES_NUM);
             while (cursor.moveToNext()) {
-                list.add(new Series(mapper));
+                list.add(new Series(mapper.getLong(DOM_PK_ID), mapper));
             }
         }
         return list;
@@ -2277,18 +2325,19 @@ public class DBA
 
                 // use a dummy series for books not in a series (i.e. don't use null's)
                 + ',' + "Coalesce(s." + DOM_FK_SERIES_ID + ", 0) AS " + DOM_FK_SERIES_ID
-                + ',' + "Coalesce(s." + DOM_SERIES_NAME + ", '') AS " + DOM_SERIES_NAME
+                + ',' + "Coalesce(s." + DOM_SERIES_TITLE + ", '') AS " + DOM_SERIES_TITLE
                 + ',' + "Coalesce(s." + DOM_BOOK_SERIES_NUM + ", '') AS " + DOM_BOOK_SERIES_NUM
 
                 + ',' + SqlColumns.SERIES_LIST
 
                 + " FROM"
 
-                // all books (with WHERE clause if passed in).
+                // all books (with WHERE clause passed in).
                 + " ("
                 + "SELECT DISTINCT " + SqlColumns.BOOK + " FROM " + TBL_BOOKS.ref()
                 + (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
-                + " ORDER BY lower(" + TBL_BOOKS.dot(DOM_TITLE) + ") " + COLLATION + " ASC"
+//                + " ORDER BY lower(" + TBL_BOOKS.dot(DOM_TITLE) + ") " + COLLATION + " ASC"
+                + " ORDER BY " + TBL_BOOKS.dot(DOM_TITLE_LC) + ' ' + COLLATION + " ASC"
                 + ") b"
 
                 // with their primary author
@@ -2309,7 +2358,7 @@ public class DBA
                 + " LEFT OUTER JOIN ("
                 + "SELECT "
                 + DOM_FK_SERIES_ID
-                + ',' + TBL_SERIES.dotAs(DOM_SERIES_NAME)
+                + ',' + TBL_SERIES.dotAs(DOM_SERIES_TITLE)
                 + ',' + TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE)
                 + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_NUM)
                 + ',' + TBL_BOOK_SERIES.dotAs(DOM_FK_BOOK_ID)
@@ -2333,7 +2382,7 @@ public class DBA
     @NonNull
     public BookCursor fetchBookById(final long bookId) {
         return (BookCursor)
-                mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+                sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                               getAllBooksSql(TBL_BOOKS.dot(DOM_PK_ID) + "=?"),
                                               new String[]{String.valueOf(bookId)},
                                               "");
@@ -2352,7 +2401,7 @@ public class DBA
         String sql = getAllBooksSql(whereClause)
                 + " ORDER BY " + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID);
 
-        return (BookCursor) mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                           sql, null, "");
     }
 
@@ -2379,7 +2428,7 @@ public class DBA
                  .append(Csv.join(",", isbnList, element -> '\'' + encodeString(element) + '\''))
                  .append(')');
         }
-        return (BookCursor) mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                           where.toString(),
                                                           null, "");
     }
@@ -2411,7 +2460,7 @@ public class DBA
                 + '=' + TBL_BOOKS.dot(DOM_PK_ID) + ')'
                 + whereClause
                 + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
-        return (BookCursor) mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                           sql, null, "");
     }
 
@@ -2424,7 +2473,7 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     private long insertBookshelf(@NonNull final Bookshelf /* in/out */ bookshelf) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlInsert.BOOKSHELF)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlInsert.BOOKSHELF)) {
             stmt.bindString(1, bookshelf.getName());
             stmt.bindLong(2, bookshelf.getStyle(this).getId());
             long iId = stmt.executeInsert();
@@ -2451,18 +2500,18 @@ public class DBA
         ContentValues cv = new ContentValues();
         cv.put(DOM_FK_BOOKSHELF_ID.name, destId);
 
-        SyncLock txLock = mSyncedDb.beginTransaction(true);
+        SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
-            rowsAffected = mSyncedDb.update(TBL_BOOK_BOOKSHELF.getName(), cv,
+            rowsAffected = sSyncedDb.update(TBL_BOOK_BOOKSHELF.getName(), cv,
                                             DOM_FK_BOOKSHELF_ID + "=?",
                                             new String[]{String.valueOf(sourceId)});
 
             // delete the now empty shelf.
             deleteBookshelf(sourceId);
 
-            mSyncedDb.setTransactionSuccessful();
+            sSyncedDb.setTransactionSuccessful();
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            sSyncedDb.endTransaction(txLock);
         }
 
         return rowsAffected;
@@ -2477,7 +2526,7 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteBookshelf(final long id) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlDelete.BOOKSHELF_BY_ID)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlDelete.BOOKSHELF_BY_ID)) {
             stmt.bindLong(1, id);
             return stmt.executeUpdateDelete();
         }
@@ -2510,11 +2559,11 @@ public class DBA
     @Nullable
     public Bookshelf getBookshelfByName(@NonNull final String name) {
 
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_NAME,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_NAME,
                                                 new String[]{name})) {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_BOOKSHELF);
             if (cursor.moveToFirst()) {
-                return new Bookshelf(mapper);
+                return new Bookshelf(mapper.getLong(DOM_PK_ID), mapper);
             }
             return null;
         }
@@ -2527,11 +2576,11 @@ public class DBA
      */
     @Nullable
     public Bookshelf getBookshelf(final long id) {
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_BOOKSHELF);
             if (cursor.moveToFirst()) {
-                return new Bookshelf(mapper);
+                return new Bookshelf(mapper.getLong(DOM_PK_ID), mapper);
             }
             return null;
         }
@@ -2551,7 +2600,7 @@ public class DBA
         cv.put(DOM_BOOKSHELF.name, bookshelf.getName());
         cv.put(DOM_FK_STYLE_ID.name, bookshelf.getStyle(this).getId());
 
-        return mSyncedDb.update(TBL_BOOKSHELF.getName(), cv,
+        return sSyncedDb.update(TBL_BOOKSHELF.getName(), cv,
                                 DOM_PK_ID + "=?",
                                 new String[]{String.valueOf(bookshelf.getId())});
     }
@@ -2586,10 +2635,10 @@ public class DBA
     public ArrayList<Bookshelf> getBookshelves() {
         ArrayList<Bookshelf> list = new ArrayList<>();
 
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectFullTable.BOOKSHELVES, null)) {
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOKSHELVES, null)) {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_BOOKSHELF);
             while (cursor.moveToNext()) {
-                list.add(new Bookshelf(mapper));
+                list.add(new Bookshelf(mapper.getLong(DOM_PK_ID), mapper));
             }
         }
         return list;
@@ -2604,11 +2653,11 @@ public class DBA
      */
     public ArrayList<Bookshelf> getBookshelvesByBookId(final long bookId) {
         ArrayList<Bookshelf> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectList.BOOKSHELVES_BY_BOOK_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOKSHELVES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_BOOKSHELF);
             while (cursor.moveToNext()) {
-                list.add(new Bookshelf(mapper));
+                list.add(new Bookshelf(mapper.getLong(DOM_PK_ID), mapper));
             }
             return list;
         }
@@ -2622,7 +2671,7 @@ public class DBA
     @NonNull
     public Map<Long, BooklistStyle> getBooklistStyles() {
         Map<Long, BooklistStyle> list = new LinkedHashMap<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectFullTable.BOOKLIST_STYLES, null)) {
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOKLIST_STYLES, null)) {
             if (cursor.getCount() == 0) {
                 return list;
             }
@@ -2662,7 +2711,7 @@ public class DBA
      * @return the row ID of the last row inserted, if this insert is successful. -1 otherwise.
      */
     public long insertBooklistStyle(@NonNull final BooklistStyle /* in/out */ style) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlInsert.BOOKLIST_STYLE)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlInsert.BOOKLIST_STYLE)) {
             stmt.bindString(1, style.getUuid());
             long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -2682,7 +2731,7 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteBooklistStyle(final long id) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlDelete.STYLE_BY_ID)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlDelete.STYLE_BY_ID)) {
             stmt.bindLong(1, id);
             return stmt.executeUpdateDelete();
         }
@@ -2698,7 +2747,7 @@ public class DBA
     @NonNull
     public Cursor fetchSearchSuggestions(@NonNull final String query) {
         String q = '%' + query + '%';
-        return mSyncedDb.rawQuery(SqlSelect.SEARCH_SUGGESTIONS, new String[]{q, q, q, q});
+        return sSyncedDb.rawQuery(SqlSelect.SEARCH_SUGGESTIONS, new String[]{q, q, q, q});
     }
 
     /**
@@ -2719,7 +2768,7 @@ public class DBA
         String sql = "SELECT DISTINCT " + column + " FROM " + TBL_BOOKS
                 + " ORDER BY lower(" + column + ") " + COLLATION;
 
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
             ArrayList<String> list = getFirstColumnAsList(cursor);
             if (list.isEmpty()) {
                 // sure, this is very crude and discriminating.
@@ -2739,7 +2788,7 @@ public class DBA
      */
     @NonNull
     public ArrayList<String> getFormats() {
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectFullTable.FORMATS, null)) {
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.FORMATS, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2749,7 +2798,7 @@ public class DBA
         if (Objects.equals(from, to)) {
             return;
         }
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlUpdate.FORMAT)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlUpdate.FORMAT)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();
@@ -2763,7 +2812,7 @@ public class DBA
      */
     @NonNull
     public ArrayList<String> getGenres() {
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectFullTable.GENRES, null)) {
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.GENRES, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2774,7 +2823,7 @@ public class DBA
         if (Objects.equals(from, to)) {
             return;
         }
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlUpdate.GENRE)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlUpdate.GENRE)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();
@@ -2788,7 +2837,7 @@ public class DBA
      */
     @NonNull
     public ArrayList<String> getLanguageCodes() {
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectFullTable.LANGUAGES, null)) {
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.LANGUAGES, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2814,7 +2863,7 @@ public class DBA
         if (Objects.equals(from, to)) {
             return;
         }
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlUpdate.LANGUAGE)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlUpdate.LANGUAGE)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();
@@ -2857,7 +2906,7 @@ public class DBA
         } else {
             ContentValues cv = new ContentValues();
             cv.put(DOM_BOOK_LOANEE.name, loanee);
-            int rowsAffected = mSyncedDb.update(TBL_BOOK_LOANEE.getName(), cv,
+            int rowsAffected = sSyncedDb.update(TBL_BOOK_LOANEE.getName(), cv,
                                                 DOM_FK_BOOK_ID + "=?",
                                                 new String[]{String.valueOf(bookId)});
             return rowsAffected > 0;
@@ -2875,7 +2924,7 @@ public class DBA
     @SuppressWarnings("UnusedReturnValue")
     private long insertLoan(final long bookId,
                             @NonNull final String loanee) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlInsert.BOOK_LOANEE)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlInsert.BOOK_LOANEE)) {
             stmt.bindLong(1, bookId);
             stmt.bindString(2, loanee);
             return stmt.executeInsert();
@@ -2891,7 +2940,7 @@ public class DBA
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteLoan(final long bookId) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 SqlDelete.BOOK_LOANEE_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             return stmt.executeUpdateDelete();
@@ -2903,7 +2952,7 @@ public class DBA
      */
     @NonNull
     public ArrayList<String> getLocations() {
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectFullTable.LOCATIONS, null)) {
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.LOCATIONS, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2917,7 +2966,7 @@ public class DBA
         if (Objects.equals(from, to)) {
             return;
         }
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlUpdate.LOCATION)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlUpdate.LOCATION)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();
@@ -2931,7 +2980,7 @@ public class DBA
      */
     @NonNull
     public ArrayList<String> getPublisherNames() {
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelectFullTable.PUBLISHERS, null)) {
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.PUBLISHERS, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2945,7 +2994,7 @@ public class DBA
         if (Objects.equals(from, to)) {
             return;
         }
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SqlUpdate.PUBLISHER)) {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlUpdate.PUBLISHER)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();
@@ -2965,9 +3014,13 @@ public class DBA
         if (stmt == null) {
             stmt = mStatements.add(STMT_INSERT_SERIES, SqlInsert.SERIES);
         }
+
+        //Resources res = LocaleUtils.getLocalizedResources(mContext, bookLocale);
+        String title = preprocessTitle(series.getName(), null);
+
         // Be cautious; other threads may use the cached stmt, and set parameters.
         synchronized (stmt) {
-            stmt.bindString(1, series.getName());
+            stmt.bindString(1, title);
             stmt.bindLong(2, series.isComplete() ? 1 : 0);
             long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -2985,10 +3038,10 @@ public class DBA
     public int updateSeries(@NonNull final Series series) {
 
         ContentValues cv = new ContentValues();
-        cv.put(DOM_SERIES_NAME.name, series.getName());
+        cv.put(DOM_SERIES_TITLE.name, series.getName());
         cv.put(DOM_SERIES_IS_COMPLETE.name, series.isComplete());
 
-        return mSyncedDb.update(TBL_SERIES.getName(), cv,
+        return sSyncedDb.update(TBL_SERIES.getName(), cv,
                                 DOM_PK_ID + "=?",
                                 new String[]{String.valueOf(series.getId())});
     }
@@ -3041,7 +3094,7 @@ public class DBA
      */
     @NonNull
     public Cursor fetchSeries() {
-        return mSyncedDb.rawQuery(SqlSelectFullTable.SERIES, null);
+        return sSyncedDb.rawQuery(SqlSelectFullTable.SERIES, null);
     }
 
     /**
@@ -3051,12 +3104,11 @@ public class DBA
      */
     @Nullable
     public Series getSeries(final long id) {
-        try (Cursor cursor = mSyncedDb.rawQuery(SqlSelect.SERIES_BY_ID,
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.SERIES_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
             ColumnMapper mapper = new ColumnMapper(cursor, TBL_SERIES);
             if (cursor.moveToFirst()) {
-                return new Series(id, mapper.getString(DOM_SERIES_NAME),
-                                  mapper.getBoolean(DOM_SERIES_IS_COMPLETE));
+                return new Series(id, mapper);
             }
             return null;
         }
@@ -3114,13 +3166,13 @@ public class DBA
 
         // process the destination Series.
         if (!updateOrInsertSeries(to)) {
-            Logger.error("Could not update Series");
+            Logger.warnWithStackTrace(this, "Could not update", "series=" + to);
             return false;
         }
 
         // Do some basic sanity checks
         if (from.getId() == 0 && from.fixupId(this) == 0) {
-            Logger.error("Old Series is not defined");
+            Logger.warnWithStackTrace(this, "Old Series is not defined");
             return false;
         }
 
@@ -3129,11 +3181,12 @@ public class DBA
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DBA_GLOBAL_REPLACE) {
-            Logger.info(this, "globalReplaceSeries",
-                        "from=" + from.getId() + ", to=" + to.getId());
+            Logger.debug(this,
+                         "globalReplaceSeries",
+                         "from=" + from.getId() + ", to=" + to.getId());
         }
 
-        SyncLock txLock = mSyncedDb.beginTransaction(true);
+        SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
             // update books for which the new ID is not already present
             globalReplaceId(TBL_BOOK_SERIES, DOM_FK_SERIES_ID, from.getId(), to.getId());
@@ -3143,12 +3196,12 @@ public class DBA
                                             DOM_BOOK_SERIES_POSITION,
                                             from.getId(), to.getId());
 
-            mSyncedDb.setTransactionSuccessful();
+            sSyncedDb.setTransactionSuccessful();
         } catch (RuntimeException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             return false;
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            sSyncedDb.endTransaction(txLock);
         }
         return true;
     }
@@ -3163,7 +3216,7 @@ public class DBA
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 SqlSelect.COUNT_BOOKS_IN_SERIES)) {
             stmt.bindLong(1, series.getId());
             return stmt.count();
@@ -3178,7 +3231,7 @@ public class DBA
      */
     @NonNull
     public ArrayList<String> getAllSeriesNames() {
-        return getColumnAsList(SqlSelectFullTable.SERIES_NAME, DOM_SERIES_NAME.name);
+        return getColumnAsList(SqlSelectFullTable.SERIES_NAME, DOM_SERIES_TITLE.name);
     }
 
     /**
@@ -3211,7 +3264,7 @@ public class DBA
     public BookCursor fetchBooksByGoodreadsBookId(final long grBookId) {
         String sql = getAllBooksSql(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_BOOK_ID) + "=?");
         return (BookCursor)
-                mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+                sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                               sql,
                                               new String[]{String.valueOf(grBookId)},
                                               "");
@@ -3241,7 +3294,7 @@ public class DBA
         sql += " ORDER BY " + DOM_PK_ID;
 
         return (BookCursor)
-                mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+                sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                               sql,
                                               new String[]{String.valueOf(startId)},
                                               "");
@@ -3257,7 +3310,7 @@ public class DBA
     @NonNull
     public BookCursor fetchBookForExportToGoodreads(final long bookId) {
         return (BookCursor)
-                mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+                sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                               SqlSelect.GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID,
                                               new String[]{String.valueOf(bookId)},
                                               "");
@@ -3277,7 +3330,7 @@ public class DBA
     private ArrayList<String> getColumnAsList(@NonNull final String sql,
                                               @NonNull final String columnName) {
         ArrayList<String> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
             int column = cursor.getColumnIndexOrThrow(columnName);
             while (cursor.moveToNext()) {
                 list.add(cursor.getString(column));
@@ -3324,7 +3377,7 @@ public class DBA
     private ContentValues filterValues(@NonNull final String tableName,
                                        @NonNull final Book book) {
 
-        TableInfo table = new TableInfo(mSyncedDb, tableName);
+        TableInfo table = new TableInfo(sSyncedDb, tableName);
 
         ContentValues cv = new ContentValues();
         // Create the arguments
@@ -3345,7 +3398,12 @@ public class DBA
                                 } else if (entry instanceof Double) {
                                     cv.put(columnInfo.name, (Double) entry);
                                 } else if (entry != null) {
-                                    cv.put(columnInfo.name, Float.parseFloat(entry.toString()));
+                                    String s = entry.toString();
+                                    if (!s.isEmpty()) {
+                                        cv.put(columnInfo.name, Float.parseFloat(s));
+                                    } else {
+                                        cv.put(columnInfo.name, s);
+                                    }
                                 }
                                 break;
 
@@ -3361,7 +3419,12 @@ public class DBA
                                 } else if (entry instanceof Long) {
                                     cv.put(columnInfo.name, (Long) entry);
                                 } else if (entry != null) {
-                                    cv.put(columnInfo.name, Integer.parseInt(entry.toString()));
+                                    String s = entry.toString();
+                                    if (!s.isEmpty()) {
+                                        cv.put(columnInfo.name, Integer.parseInt(entry.toString()));
+                                    } else {
+                                        cv.put(columnInfo.name, s);
+                                    }
                                 }
                                 break;
 
@@ -3386,10 +3449,13 @@ public class DBA
 
                             //noinspection UnnecessaryDefault
                             default:
-                                Logger.error("unknown storage class for " + columnInfo.toString());
+                                Logger.warnWithStackTrace(this,
+                                                          "unknown storage class for " + columnInfo.toString());
                                 break;
                         }
                     } catch (NumberFormatException e) {
+                        Logger.error(this, e);
+                        // not really ok, but let's store it anyhow.
                         cv.put(columnInfo.name, entry.toString());
                     }
                 }
@@ -3410,7 +3476,7 @@ public class DBA
     private void ftsSendBooks(@NonNull final BookCursor bookCursor,
                               @NonNull final SynchronizedStatement stmt) {
 
-        if (!mSyncedDb.inTransaction()) {
+        if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ERROR_NEEDS_TRANSACTION);
         }
 
@@ -3435,7 +3501,7 @@ public class DBA
             seriesText.setLength(0);
             titleText.setLength(0);
             // Get list of authors
-            try (Cursor authors = mSyncedDb.rawQuery(SqlFTS.GET_AUTHORS_BY_BOOK_ID,
+            try (Cursor authors = sSyncedDb.rawQuery(SqlFTS.GET_AUTHORS_BY_BOOK_ID,
                                                      new String[]{String.valueOf(row.getId())})) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
@@ -3454,7 +3520,7 @@ public class DBA
             }
 
             // Get list of series
-            try (Cursor series = mSyncedDb.rawQuery(SqlFTS.GET_SERIES_BY_BOOK_ID,
+            try (Cursor series = sSyncedDb.rawQuery(SqlFTS.GET_SERIES_BY_BOOK_ID,
                                                     new String[]{String.valueOf(row.getId())})) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
@@ -3469,7 +3535,7 @@ public class DBA
 
 
             // Get list of anthology data (author and title)
-            try (Cursor tocs = mSyncedDb.rawQuery(SqlFTS.GET_TOC_ENTRIES_BY_BOOK_ID,
+            try (Cursor tocs = sSyncedDb.rawQuery(SqlFTS.GET_TOC_ENTRIES_BY_BOOK_ID,
                                                   new String[]{String.valueOf(row.getId())})) {
                 // Get column indexes, if not already got
                 if (colTOCEntryAuthorInfo < 0) {
@@ -3523,9 +3589,9 @@ public class DBA
         } else {
             //
             // Because FTS does not understand locales in all android up to 4.2,
-            // we do case folding here using the default locale. TODO: check if still so.
+            // we do case folding here using the user preferred locale. TODO: check if still so.
             //
-            stmt.bindString(position, s.toLowerCase(Locale.getDefault()));
+            stmt.bindString(position, s.toLowerCase(LocaleUtils.getPreferredLocal()));
         }
     }
 
@@ -3536,7 +3602,7 @@ public class DBA
      */
     private void insertFts(final long bookId) {
 
-        if (!mSyncedDb.inTransaction()) {
+        if (!sSyncedDb.inTransaction()) {
             throw new TransactionException(ERROR_NEEDS_TRANSACTION);
         }
 
@@ -3547,7 +3613,7 @@ public class DBA
             }
 
             try (BookCursor books = (BookCursor)
-                    mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+                    sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                   SqlSelect.BOOK_BY_ID,
                                                   new String[]{String.valueOf(bookId)},
                                                   "")) {
@@ -3555,7 +3621,7 @@ public class DBA
             }
         } catch (RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(e, ERROR_FAILED_TO_UPDATE_FTS);
+            Logger.error(this, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -3566,7 +3632,7 @@ public class DBA
      */
     private void updateFts(final long bookId) {
 
-        if (!mSyncedDb.inTransaction()) {
+        if (!sSyncedDb.inTransaction()) {
             throw new TransactionException();
         }
 
@@ -3576,7 +3642,7 @@ public class DBA
                 stmt = mStatements.add(STMT_UPDATE_FTS, SqlFTS.UPDATE);
             }
             try (BookCursor books = (BookCursor)
-                    mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+                    sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                   SqlSelect.BOOK_BY_ID,
                                                   new String[]{String.valueOf(bookId)},
                                                   "")) {
@@ -3584,7 +3650,7 @@ public class DBA
             }
         } catch (RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(e, ERROR_FAILED_TO_UPDATE_FTS);
+            Logger.error(this, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -3594,14 +3660,14 @@ public class DBA
      */
     public void rebuildFts() {
 
-        if (mSyncedDb.inTransaction()) {
+        if (sSyncedDb.inTransaction()) {
             throw new TransactionException();
         }
 
         long t0;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             //noinspection UnusedAssignment
-            t0 = System.currentTimeMillis();
+            t0 = System.nanoTime();
         }
         boolean gotError = false;
 
@@ -3610,30 +3676,30 @@ public class DBA
         // Give it a new name
         ftsTemp.setName(ftsTemp.getName() + "_temp");
 
-        SyncLock txLock = mSyncedDb.beginTransaction(true);
+        SyncLock txLock = sSyncedDb.beginTransaction(true);
 
         try {
             // Drop and recreate our temp copy
-            ftsTemp.drop(mSyncedDb);
-            ftsTemp.create(mSyncedDb, false);
+            ftsTemp.drop(sSyncedDb);
+            ftsTemp.create(sSyncedDb, false);
 
-            try (SynchronizedStatement insert = mSyncedDb.compileStatement(
+            try (SynchronizedStatement insert = sSyncedDb.compileStatement(
                     "INSERT INTO " + ftsTemp.getName() + SqlFTS.INSERT_BODY);
                  BookCursor books = (BookCursor)
-                         mSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
+                         sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY,
                                                        SqlSelectFullTable.BOOKS,
                                                        null,
                                                        "")) {
                 ftsSendBooks(books, insert);
             }
 
-            mSyncedDb.setTransactionSuccessful();
+            sSyncedDb.setTransactionSuccessful();
         } catch (RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(e);
+            Logger.error(this, e);
             gotError = true;
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            sSyncedDb.endTransaction(txLock);
             /*
             http://sqlite.1065341.n5.nabble.com/Bug-in-FTS3-when-trying-to-rename-table-within-a-transaction-td11430.html
             FTS tables should only be renamed outside of transactions.
@@ -3641,14 +3707,15 @@ public class DBA
             //  Delete old table and rename the new table
             if (!gotError) {
                 // Drop old table, ready for rename
-                TBL_BOOKS_FTS.drop(mSyncedDb);
-                mSyncedDb.execSQL("ALTER TABLE " + ftsTemp + " RENAME TO " + TBL_BOOKS_FTS);
+                TBL_BOOKS_FTS.drop(sSyncedDb);
+                sSyncedDb.execSQL("ALTER TABLE " + ftsTemp + " RENAME TO " + TBL_BOOKS_FTS);
             }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.info(this, "rebuildFts",
-                        (System.currentTimeMillis() - t0) + "ms");
+            Logger.debug(this,
+                         "rebuildFts",
+                         (System.nanoTime() - t0) + "nano");
         }
     }
 
@@ -3692,7 +3759,7 @@ public class DBA
         }
         sql.append('\'');
 
-        return mSyncedDb.rawQuery(sql.toString(), null);
+        return sSyncedDb.rawQuery(sql.toString(), null);
     }
 
     /**
@@ -3731,6 +3798,7 @@ public class DBA
                 TBL_BOOKS.dotAs(DOM_PK_ID)
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_UUID)
                         + ',' + TBL_BOOKS.dotAs(DOM_TITLE)
+                        + ',' + TBL_BOOKS.dotAs(DOM_TITLE_LC)
                         // publication data
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN)
                         + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER)
@@ -3856,8 +3924,8 @@ public class DBA
          */
         private static final String SERIES_WITH_NUMBER =
                 " CASE WHEN " + DOM_BOOK_SERIES_NUM + "=''"
-                        + " THEN " + DOM_SERIES_NAME
-                        + " ELSE " + DOM_SERIES_NAME + "||' #'||" + DOM_BOOK_SERIES_NUM
+                        + " THEN " + DOM_SERIES_TITLE
+                        + " ELSE " + DOM_SERIES_TITLE + "||' #'||" + DOM_BOOK_SERIES_NUM
                         + " END"
                         + " AS " + DOM_SERIES_FORMATTED;
 
@@ -3868,7 +3936,7 @@ public class DBA
          * otherwise -> "SeriesName (number)"
          */
         private static final String SERIES_WITH_NUMBER_IN_BRACKETS =
-                DOM_SERIES_NAME + "||' ('||" + DOM_BOOK_SERIES_NUM + "||')'"
+                DOM_SERIES_TITLE + "||' ('||" + DOM_BOOK_SERIES_NUM + "||')'"
                         + " AS " + DOM_SERIES_FORMATTED;
 
         /**
@@ -3929,7 +3997,7 @@ public class DBA
                 "SELECT * FROM " + TBL_BOOKLIST_STYLES + " WHERE " + DOM_PK_ID + ">0";
 
         /** Book UUID only, for accessing all cover image files. */
-        private static final String BOOK_UUIDS =
+        private static final String BOOK_ALL_UUID =
                 "SELECT " + DOM_BOOK_UUID + " FROM " + TBL_BOOKS;
 
 
@@ -3952,9 +4020,9 @@ public class DBA
 
         /** name only, for {@link android.widget.AutoCompleteTextView}. */
         private static final String SERIES_NAME =
-                "SELECT " + DOM_SERIES_NAME
+                "SELECT " + DOM_SERIES_TITLE
                         + " FROM " + TBL_SERIES
-                        + " ORDER BY lower(" + DOM_SERIES_NAME + ')' + COLLATION;
+                        + " ORDER BY lower(" + DOM_SERIES_TITLE + ')' + COLLATION;
 
         /** name only, for {@link android.widget.AutoCompleteTextView}. */
         private static final String FORMATS =
@@ -4027,7 +4095,7 @@ public class DBA
          */
         private static final String SERIES_BY_BOOK_ID =
                 "SELECT DISTINCT " + TBL_SERIES.dotAs(DOM_PK_ID)
-                        + ',' + TBL_SERIES.dotAs(DOM_SERIES_NAME)
+                        + ',' + TBL_SERIES.dotAs(DOM_SERIES_TITLE)
                         + ',' + TBL_SERIES.dotAs(DOM_SERIES_IS_COMPLETE)
                         + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_NUM)
                         + ',' + TBL_BOOK_SERIES.dotAs(DOM_BOOK_SERIES_POSITION)
@@ -4035,7 +4103,7 @@ public class DBA
                         + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
                         + " WHERE " + TBL_BOOK_SERIES.dot(DOM_FK_BOOK_ID) + "=?"
                         + " ORDER BY " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION)
-                        + ",lower(" + TBL_SERIES.dot(DOM_SERIES_NAME) + ')' + COLLATION + "ASC";
+                        + ",lower(" + TBL_SERIES.dot(DOM_SERIES_TITLE) + ')' + COLLATION + "ASC";
 
         /**
          * All TocEntry's for a Book; ordered by position in the book.
@@ -4060,13 +4128,36 @@ public class DBA
          * All TocEntry's for an Author; ordered by title.
          */
         private static final String GET_TOC_ENTRIES_BY_AUTHOR_ID =
-                "SELECT " + TBL_TOC_ENTRIES.dotAs(DOM_PK_ID)
+                "SELECT " + "'T' AS type"
+                        + ',' + TBL_TOC_ENTRIES.dotAs(DOM_PK_ID)
                         + ',' + TBL_TOC_ENTRIES.dotAs(DOM_TITLE)
+                        + ',' + TBL_TOC_ENTRIES.dotAs(DOM_TITLE_LC)
                         + ',' + TBL_TOC_ENTRIES.dotAs(DOM_FIRST_PUBLICATION)
                         + " FROM " + TBL_TOC_ENTRIES.ref()
                         + " WHERE " + TBL_TOC_ENTRIES.dot(DOM_FK_AUTHOR_ID) + "=?"
-                        + " ORDER BY lower(" + TBL_TOC_ENTRIES.dot(DOM_TITLE) + ')' + COLLATION;
+                        // no table prefix to we can use it with GET_WORKS_BY_AUTHOR_ID
+//                        + " ORDER BY lower(" + DOM_TITLE + ')' + COLLATION;
+                        + " ORDER BY " + DOM_TITLE_LC;
 
+        /**
+         * All Book titles and their first pub. date, for an Author; ordered by title.
+         */
+        private static final String GET_BOOK_TITLES_BY_AUTHOR_ID =
+                "SELECT " + "'B' AS type"
+                        + ',' + TBL_BOOKS.dotAs(DOM_PK_ID)
+                        + ',' + TBL_BOOKS.dotAs(DOM_TITLE)
+                        + ',' + TBL_BOOKS.dotAs(DOM_TITLE_LC)
+                        + ',' + TBL_BOOKS.dotAs(DOM_FIRST_PUBLICATION)
+                        + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
+                        + " WHERE " + TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR_ID) + "=?";
+        /**
+         * All TocEntry's + book titles for an Author; ordered by title.
+         * <p>
+         * Note the SQL is a tiny bit precarious... the first part does not have an orderBy
+         * and the second part does. Combined, they form a valid union.
+         */
+        private static final String GET_WORKS_BY_AUTHOR_ID =
+                GET_BOOK_TITLES_BY_AUTHOR_ID + " UNION " + GET_TOC_ENTRIES_BY_AUTHOR_ID;
     }
 
     /**
@@ -4102,12 +4193,12 @@ public class DBA
 
         static final String SERIES_ID_BY_NAME =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_SERIES
-                        + " WHERE lower(" + DOM_SERIES_NAME + ") = lower(?)" + COLLATION;
+                        + " WHERE lower(" + DOM_SERIES_TITLE + ") = lower(?)" + COLLATION;
 
         static final String TOC_ENTRY_ID =
                 "SELECT " + DOM_PK_ID + " FROM " + TBL_TOC_ENTRIES
                         + " WHERE " + DOM_FK_AUTHOR_ID + "=?"
-                        + " AND (" + DOM_TITLE + "=? OR " + DOM_TITLE + "=?)" + COLLATION;
+                        + " AND (" + DOM_TITLE_LC + "=? OR " + DOM_TITLE_LC + "=?)" + COLLATION;
 
         static final String BOOK_ID_BY_TOC_ENTRY_ID =
                 "SELECT " + DOM_FK_BOOK_ID + " FROM " + TBL_BOOK_TOC_ENTRIES
@@ -4184,7 +4275,7 @@ public class DBA
          * Get a {@link Series} by it's id.
          */
         static final String SERIES_BY_ID =
-                "SELECT " + DOM_SERIES_NAME + ',' + DOM_SERIES_IS_COMPLETE
+                "SELECT " + DOM_SERIES_TITLE + ',' + DOM_SERIES_IS_COMPLETE
                         + " FROM " + TBL_SERIES + " WHERE " + DOM_PK_ID + "=?";
 
         /**
@@ -4273,7 +4364,8 @@ public class DBA
     }
 
     /**
-     * Sql INSERT.
+     * Sql INSERT. TODO: maybe switch (again?) to ContentValues insert method ?
+     * Not for the link tables !! those often run in a loop.
      */
     private static final class SqlInsert {
 
@@ -4292,7 +4384,7 @@ public class DBA
 
         static final String SERIES =
                 "INSERT INTO " + TBL_SERIES
-                        + '(' + DOM_SERIES_NAME
+                        + '(' + DOM_SERIES_TITLE
                         + ',' + DOM_SERIES_IS_COMPLETE
                         + ") VALUES (?,?)";
 
@@ -4307,8 +4399,9 @@ public class DBA
                 "INSERT INTO " + TBL_TOC_ENTRIES
                         + '(' + DOM_FK_AUTHOR_ID
                         + ',' + DOM_TITLE
+                        + ',' + DOM_TITLE_LC
                         + ',' + DOM_FIRST_PUBLICATION
-                        + ") VALUES (?,?,?)";
+                        + ") VALUES (?,?,?,?)";
 
         static final String BOOK_BOOKSHELF =
                 "INSERT INTO " + TBL_BOOK_BOOKSHELF
@@ -4339,11 +4432,11 @@ public class DBA
 
         static final String BOOKLIST_STYLE =
                 "INSERT INTO " + TBL_BOOKLIST_STYLES + " (" + DOM_UUID + ") VALUES (?)";
-
     }
 
     /**
-     * Sql UPDATE.
+     * Sql UPDATE. Intention is to only have single-column updates here and do multi-column
+     * with the ContentValues based update method.
      */
     private static final class SqlUpdate {
 
@@ -4362,16 +4455,9 @@ public class DBA
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_BOOK_GOODREADS_BOOK_ID + "=?"
                         + " WHERE " + DOM_PK_ID + "=?";
 
-
-        static final String TOC_ENTRY =
-                "UPDATE " + TBL_TOC_ENTRIES + " SET "
-                        + DOM_FIRST_PUBLICATION + "=?"
-                        + " WHERE " + DOM_PK_ID + "=?";
-
         static final String AUTHOR_ON_TOC_ENTRIES =
                 "UPDATE " + TBL_TOC_ENTRIES + " SET " + DOM_FK_AUTHOR_ID + "=?"
                         + " WHERE " + DOM_FK_AUTHOR_ID + "=?";
-
 
         static final String FORMAT =
                 "UPDATE " + TBL_BOOKS + " SET " + DOM_LAST_UPDATE_DATE + "=current_timestamp"
@@ -4506,7 +4592,7 @@ public class DBA
 
         static final String DOM_SERIES_INFO = "seriesInfo";
         static final String GET_SERIES_BY_BOOK_ID =
-                "SELECT " + TBL_SERIES.dot(DOM_SERIES_NAME)
+                "SELECT " + TBL_SERIES.dot(DOM_SERIES_TITLE)
                         + " || ' ' ||"
                         + " Coalesce(" + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_NUM) + ",'')"
                         + " AS " + DOM_SERIES_INFO

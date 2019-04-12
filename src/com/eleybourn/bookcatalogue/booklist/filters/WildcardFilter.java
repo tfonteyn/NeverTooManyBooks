@@ -30,7 +30,6 @@ public class WildcardFilter
     @Override
     @NonNull
     public String getExpression() {
-        return '(' + mTable.dot(mDomain)
-                + " LIKE '%" + DBA.encodeString(mCriteria) + "%'" + ')';
+        return '(' + mTable.dot(mDomain) + " LIKE '%" + DBA.encodeString(mCriteria) + "%'" + ')';
     }
 }

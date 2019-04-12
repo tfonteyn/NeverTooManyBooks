@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.database;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -123,8 +125,9 @@ public class DBCleaner {
         for (String name : names) {
             if (name != null && name.length() > 3) {
                 String iso = LocaleUtils.getISO3Language(name);
-                Logger.info(this, "updateLanguages",
-                            "Global language update of `" + name + "` to `" + iso + '`');
+                Logger.debug(this,
+                      "updateLanguages",
+                               "Global language update of `" + name + "` to `" + iso + '`');
                 if (!iso.equals(name)) {
                     mDb.updateLanguage(name, iso);
                 }
@@ -232,6 +235,7 @@ public class DBCleaner {
     }
 
     /**
+     * WIP... debug
      * Execute the query and log the results.
      *
      * @param state Enter/Exit
@@ -244,7 +248,7 @@ public class DBCleaner {
                 String field = cursor.getColumnName(0);
                 String value = cursor.getString(0);
 
-                Logger.info(this, state.toString(), field + '=' + value);
+                Logger.debug(this, state.toString(), field + '=' + value);
             }
         }
     }

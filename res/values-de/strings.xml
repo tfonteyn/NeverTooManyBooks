@@ -17,7 +17,7 @@
     <string name="lbl_pages">Seiten</string>
     <string name="btn_confirm_add_book">Buch hinzufügen</string>
     <string name="btn_confirm_update">Aktualisieren</string>
-    <string name="info_no_books_yet">Es befinden sich keine Bücher im Bücherregal.
+    <string name="X_info_no_books_yet">Es befinden sich keine Bücher im Bücherregal.
         Bitte fügen Sie Bücher über das Menü am unteren Bildschirmrand hinzu.
     </string>
     <string name="menu_expand_all">Alles ausklappen</string>
@@ -32,7 +32,7 @@
     <string name="X_btn_confirm_add_bs">Bücherregal hinzufügen</string>
     <string name="menu_bookshelves">Bücherregale…</string>
     <string name="X_btn_confirm_save_bs">Bücherregal speichern</string>
-    <string name="menu_delete_bookshelf">Bücherregal löschen</string>
+    <string name="X_menu_delete_bookshelf">Bücherregal löschen</string>
     <string name="warning_cannot_delete_1st_bs">
         Das erste Bücherregal kann nicht gelöscht werden
     </string>
@@ -50,7 +50,7 @@
     </string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">#</string>
-    <string name="lbl_series_num_long">Serie #</string>
+    <string name="X_lbl_series_num_long">Serie #</string>
     <string name="title_import_book_data">Bücher importieren</string>
     <string name="warning_import_be_cautious">
         Warnung. Der Import von Daten kann Informationen von bestehenden Büchern überschreiben,
@@ -63,7 +63,7 @@
         Ist die Datei bereits vorhanden?
     </string>
     <string name="X_search_title">Suchergebnisse</string>
-    <string name="results_found">Bücher gefunden</string>
+    <string name="X_results_found">Bücher gefunden</string>
     <string name="menu_administration_long">Verwaltungsfunktionen</string>
     <string name="menu_administration">Verwaltung</string>
     <string name="title_install_scan">Installiere Barcode Scanner</string>
@@ -107,18 +107,16 @@
         Die Suche nach dem Buch ist fehlgeschlagen. Bitte überprüfen Sie die Netzwerkeinstellungen.
     </string>
     <string name="error_search_exception">Die Suche ist fehlgeschlagen während %1$s: %2$s</string>
-    <string name="menu_delete">Cover-Bild löschen</string>
+    <string name="menu_delete">Löschen</string>
     <string name="help">Hilfe</string>
-    <string name="info_manage_fields">
+    <string name="X_info_manage_fields">
         Die ausgewählten Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt.
         Nicht ausgewählte Felder werden nicht angezeigt.
     </string>
     <string name="X_anthology_titles">Anthologie-Titel</string>
     <string name="about_donate_amazon">Amazon-Wunschliste</string>
-    <string name="lbl_toc_same_author">
-        Alle Geschichten in dieser Anthologie wurden vom gleichen Autor geschrieben.
-    </string>
-    <string name="menu_delete_toc_entry">Titel von Anthologie löschen</string>
+    <string name="lbl_toc_multiple_authors">Diese Anthologie hat mehrere Autoren.</string>
+    <string name="X_menu_delete_toc_entry">Titel von Anthologie löschen</string>
     <string name="lbl_is_anthology">Ist dieses Buch eine Anthologie?</string>
     <string name="menu_populate_toc">
         Automatisches Ausfüllen der Anthologie-Titel (nur ISFDB)
@@ -132,14 +130,13 @@
     </string>
     <string name="menu_cover_add_from_camera">Von Kamera…</string>
     <string name="title_cover">Cover-Bild</string>
-    <string name="menu_cover_rotate">Cover-Bild drehen…</string>
-    <string name="menu_cover_rotate_cw">Drehen im Uhrzeigersinn</string>
-    <string name="menu_cover_rotate_ccw">Drehen gegen den Uhrzeigersinn</string>
-    <string name="menu_cover_rotate_180">Um 180° drehen</string>
+    <string name="menu_cover_rotate">Drehen…</string>
+    <string name="menu_cover_rotate_cw">Im Uhrzeigersinn</string>
+    <string name="menu_cover_rotate_ccw">Gegen den Uhrzeigersinn</string>
     <string name="lbl_is_signed">Wurde dieses Buch signiert</string>
     <string name="lbl_read_start">Datum mit Lesen begonnen</string>
     <string name="lbl_read_end">Datum Lesen beendet</string>
-    <string name="title_duplicate_book">Doppeltes Buch</string>
+    <string name="title_duplicate_book">Buch vervielfältigen</string>
     <string name="confirm_duplicate_book_message">
         Das hinzuzufügende Buch besteht bereits in der Datenbank.
         Sind Sie sicher, dass Sie noch eine Kopie hinzufügen möchten?
@@ -195,8 +192,8 @@
         Es besteht keine Serie für dieses Buch. Sie können eine Serie über das Textfeld und den
         Knopf oben auf dieser Seite hinzufügen.
     </string>
-    <string name="warning_cover_field_not_set">Das Cover wurde nicht gesetzt</string>
-    <string name="warning_cover_corrupt">Das Cover ist unbrauchbar</string>
+    <string name="X_warning_cover_field_not_set">Das Cover wurde nicht gesetzt</string>
+    <string name="X_warning_cover_corrupt">Das Cover ist unbrauchbar</string>
     <string name="X_title_cover_detail">Coverdetails</string>
     <string name="title_select_image">Bild auswählen</string>
     <string name="btn_set_authors">Autor angeben…</string>
@@ -220,7 +217,7 @@
     <string name="warning_immediate_global_changes">
         HINWEIS: Alle gespeicherten Änderungen werden sofort übernommen
     </string>
-    <string name="menu_cover_replace">Cover-Bild ersetzen…</string>
+    <string name="menu_cover_replace">Ersetzen…</string>
     <string name="menu_cover_search_alt_editions">Von anderen Ausgaben…</string>
     <string name="warning_required_author_long">
         Es muss mindestens ein Autor angegeben werden
@@ -236,13 +233,13 @@
         um die Daten der Serie zu behalten.
     </string>
     <string name="X_title_edit_series">Einzelheiten der Serie bearbeiten</string>
-    <string name="title_select_cover">Cover auswählen</string>
+    <string name="X_title_select_cover">Cover auswählen</string>
     <string name="X_warning_no_isbn_no_editions">
         Für ein Buch ohne ISBN können keine Ausgaben ermittelt werden</string>
-    <string name="warning_unsaved_edits">
+    <string name="warning_unsaved_edits2">
         Es bestehen nicht gespeicherte Änderungen. Sind Sie sicher, dass sie fortfahren wollen?
     </string>
-    <string name="unsaved_edits_title">Ungespeicherte Änderungen</string>
+    <string name="X_unsaved_edits_title">Ungespeicherte Änderungen</string>
     <string name="confirm_apply_author_changed">
         Der Autor wurde geändert von\n  ‘%1$s’ in \n  ‘%2$s’\nWie wollen Sie diese Änderung
         übernehmen?\nHinweis: Die Auswahl ‘%3$s’ wird sofort übernommen.
@@ -263,7 +260,7 @@
     <string name="warning_editions_require_isbn">
         Um andere Ausgaben abzurufen, ist eine ISBN notwendig
     </string>
-    <string name="warning_no_editions">Keine Ausgaben vorhanden</string>
+    <string name="warning_no_editions">Keine zusätzlichen Ausgabeninformationen verfügbar</string>
     <string name="progress_msg_finding_editions">Suche Ausgaben…</string>
     <string name="info_tap_on_thumb">
         Klicke auf ein Cover-Bild, um ein größeres Bild angezeigt zu bekommen
@@ -330,7 +327,6 @@
     <string name="debug_body">
         Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.
     </string>
-    <string name="menu_duplicate_book">Dublette</string>
     <string name="lt_incorrect_key">
         Der eingegebene LibraryThing-Entwicklerschlüssel war falsch,
         oder es konnte keine Netzwerkverbindung zur Verifizierung hergestellt werden.
@@ -339,7 +335,7 @@
     <string name="error_no_internet_connection">Internet Verbindung nicht verfügbar.</string>
     <string name="menu_share_this">Teilen</string>
     <string name="export_csv_email">Möchten Sie diesen Export als E-Mail versenden?</string>
-    <string name="menu_cover_crop">Cover-Bild zuschneiden</string>
+    <string name="menu_cover_crop">Zuschneiden</string>
     <string name="gr_tq_title_task_errors">Aufgabenfehler</string>
     <string name="retry">Wiederholen</string>
     <string name="gr_tq_menu_delete_event">Ereignis löschen</string>
@@ -508,16 +504,16 @@
     <string name="X_pt_bob_filter_read">Auswahl auf Basis des Status \‘Gelesen\’</string>
 
     <string name="title_select_style">Stil wählen</string>
-    <string name="warning_required_field_x">%1$s darf nicht leer sein</string>
+    <string name="X_warning_required_field_x">%1$s darf nicht leer sein</string>
     <string name="edit">Bearbeiten</string>
     <string name="lbl_settings">Einstellungen</string>
     <string name="error_unexpected_error">
         Ein unerwarteter Fehler ist aufgetreten. Bitte senden Sie die Details an den Support
         über den  Eintrag ‘Hilfe’ in Hauptmenü
     </string>
-    <string name="menu_delete_style">Stil löschen</string>
-    <string name="menu_edit_booklist_style">Stil bearbeiten</string>
-    <string name="menu_clone_style">Stil klonen</string>
+    <string name="X_menu_delete_style">Stil löschen</string>
+    <string name="X_menu_edit_booklist_style">Stil bearbeiten</string>
+    <string name="menu_duplicate">Vervielfältigen</string>
     <string name="about_dash_or_dash">- Oder -</string>
     <string name="about_donate_paypal">Spende über PayPal</string>
     <string name="style_builtin_compact">Kompakt</string>
@@ -610,9 +606,9 @@
     <string name="lbl_added_month">Monat der Erfassung</string>
     <string name="lbl_added_day">Tag der Erfassung</string>
     <string name="lbl_book">Buch</string>
-    <string name="in">in</string>
-    <string name="size">Größe</string>
-    <string name="updated">Geändert</string>
+    <string name="X_in">in</string>
+    <string name="X_file_size">Größe</string>
+    <string name="X_updated">Geändert</string>
     <string name="import_error_csv_file_not_found">Keine Exportdatei gefunden</string>
     <string name="import_warning_select_csv_file">
         Mehr als eine Exportdatei gefunden. Bitte wählen Sie eine aus der nachstehenden Liste
@@ -649,7 +645,7 @@
     <string name="lbl_read_day">Tag</string>
     <string name="style_builtin_read_date">Gelesen am</string>
     <string name="lbl_details_have_changed">Details wurden geändert</string>
-    <string name="confirm_unsaved_changes">
+    <string name="warning_unsaved_edits">
         Einige Änderungen wurden noch nicht gespeichert. Beim Beenden gehen diese Änderungen
         verloren.
     </string>
@@ -659,7 +655,7 @@
     <string name="lbl_year">Jahr</string>
     <string name="lbl_month">Monat</string>
     <string name="lbl_day">Tag</string>
-    <string name="menu_edit">bearbeiten…</string>
+    <string name="menu_edit">Bearbeiten…</string>
     <string name="progress_msg_getting_books">Hole Bücher…</string>
     <string name="gr_tq_last_error_e">Letzter Fehler: %1$s</string>
     <string name="X_warning_invalid_isbn_x_specified_in_search">Ungültige ISBN ‘%1$s’ gesucht</string>
@@ -698,7 +694,7 @@
     <string name="tab_lbl_details">Details</string>
     <!-- This is the heading of the ‘Loan’ tab when editing a book. It needs to be short.
     "Loan Book" is too long. -->
-    <string name="tab_lbl_loan">Leihen</string>
+    <string name="X_tab_lbl_loan">Leihen</string>
 
     <string name="gr_btn_forget_credentials">Zugangsdaten löschen</string>
     <string name="gr_auth_blurb_part4">
@@ -738,7 +734,7 @@
     <string name="warning_select_a_non_directory">
         Bitte wählen Sie eine Datei, kein Verzeichnis
     </string>
-    <string name="menu_copy_database">Datenbank kopieren (für technischen Support)</string>
+    <string name="menu_copy_database">Datenbank exportieren</string>
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">Import gescheitert.</string>
     <!-- Displayed when any write operation to the sd card fails -->
@@ -902,7 +898,6 @@
     <string name="warning_thing_already_exists">%1$s existiert bereits</string>
     <string name="info_tap_to_edit">Tippen Sie hier, um den Namen zu bearbeiten</string>
     <string name="lbl_publication">Veröffentlichung</string>
-    <string name="lbl_by_author">Durch</string>
     <string name="error_email_failed">Das Senden der E-Mail ist fehlgeschlagen.</string>
     <string name="error_network_timeout">Keine Antwort, bitte versuchen Sie es erneut</string>
     <string name="X_error_no_style_found">Konnte den passenden Stil nicht finden</string>
@@ -910,7 +905,7 @@
     <string name="lbl_edition">Auflage</string>
     <string name="lbl_currency">Devisen</string>
     <string name="btn_use">Benutzen</string>
-    <string name="lbl_edition_first_edition">Erste Ausgabe</string>
+    <string name="lbl_edition_first_edition">Erstausgabe</string>
     <string name="lbl_edition_limited">Limitierte Auflage</string>
     <string name="lbl_x_pages">%1$d seiten</string>
     <string name="lbl_location_long">Ort des Buches</string>
@@ -920,7 +915,7 @@
     <string name="lbl_lending">Ausleihen</string>
     <string name="lbl_cover">Buchumschlag</string>
     <string name="import_options_dialog_title">Wählen Sie aus, was importiert werden soll.</string>
-    <string name="send_mail">E-Mail senden…</string>
+    <string name="title_send_mail">E-Mail senden…</string>
     <string name="menu_set_read">Als gelesen markieren</string>
     <string name="menu_set_unread">Als ungelesen markieren</string>
     <string name="menu_set_complete">Als abgeschlossen markieren</string>
@@ -952,7 +947,6 @@
     <string name="usage_skip">Überspringen</string>
     <string name="progress_msg_saving_image">Bild speichern…</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Bücher</string>
     <string name="menu_loan_return_book">Geliehenes Buch ist zurück</string>
@@ -961,7 +955,7 @@
     <string name="lbl_styles">Stile</string>
     <string name="book_format_paperback">Taschenbuch</string>
     <string name="book_format_trade_paperback">Paperback</string>
-    <string name="book_format_hardcover">gebundene Ausgabe</string>
+    <string name="book_format_hardcover">Gebundene Ausgabe</string>
     <string name="confirm_merge_bookshelves">
         Das Regal, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?
     </string>
@@ -991,7 +985,8 @@
     <string name="gr_tq_generic_task_info">Aufgaben-ID %1$d, Warteschlange um %2$s</string>
     <string name="menu_author_details">Alle Werke dieses Autors</string>
     <string name="book_format_ebook">eBook</string>
-    <string name="book_format_digest">Resümee</string>
-    <string name="lbl_edition_first_impression">Erster Druck</string>
+    <string name="book_format_digest">Heft</string>
+    <string name="lbl_edition_first_impression">Erstauflage</string>
+    <string name="info_tap_on_image_to_select">Tippen Sie auf das große Bild, um es auszuwählen</string>
 
 </resources>

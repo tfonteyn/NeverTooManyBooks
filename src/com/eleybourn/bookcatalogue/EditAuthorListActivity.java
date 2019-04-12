@@ -266,7 +266,7 @@ public class EditAuthorListActivity
     public static class EditBookAuthorDialogFragment
             extends EditAuthorBaseDialogFragment {
 
-        /** Fragment manager tag. */
+        /** Fragment manager t. */
         public static final String TAG = EditBookAuthorDialogFragment.class.getSimpleName();
 
         /**

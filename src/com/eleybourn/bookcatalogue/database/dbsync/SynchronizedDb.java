@@ -19,7 +19,6 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.definitions.TableDefinition;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
  * Database wrapper class that performs thread synchronization on all operations.
@@ -29,7 +28,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
 public class SynchronizedDb {
 
     private static final String ERROR_UPDATE_INSIDE_SHARED_TX = "Update inside shared TX";
-    private static Boolean mIsCollationCaseSensitive;
+    private static Boolean sIsCollationCaseSensitive;
     /** Underlying database. */
     @NonNull
     private final SQLiteDatabase mSqlDb;
@@ -94,6 +93,8 @@ public class SynchronizedDb {
     }
 
     /**
+     * DEBUG.
+     * <p>
      * Utility routine, purely for debugging ref count issues (mainly Android 2.1).
      *
      * @param msg Message to display (relating to context)
@@ -109,22 +110,27 @@ public class SynchronizedDb {
                 f.setAccessible(true);
                 int refs = (Integer) f.get(db);
                 if (msg != null) {
-                    Logger.info(SynchronizedDb.class, "printRefCount",
-                                "DBRefs (" + msg + "): " + refs);
-                    //if (refs < 100) {
-                    //  Logger.info(SynchronizedDb.class, "printRefCount",
-                    //              "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
-                    //} else if (refs < 1001) {
-                    //  Logger.info(SynchronizedDb.class, "printRefCount",
-                    //             "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
-                    //} else {
-                    //  Logger.info(SynchronizedDb.class, "printRefCount",
-                    //             "DBRefs (" + msg + "): " + refs);
-                    //}
+                    Logger.debug(SynchronizedDb.class,
+                          "printRefCount",
+                                   "DBRefs (" + msg + "): " + refs);
+//                    if (refs < 100) {
+//                        Logger.debug(SynchronizedDb.class,
+//                              "printRefCount",
+//                                             "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 100)!");
+//                    } else if (refs < 1001) {
+//                        Logger.debug(SynchronizedDb.class,
+//                              "printRefCount",
+//                                             "DBRefs (" + msg + "): " + refs + " <-- TOO LOW (< 1000)!");
+//                    } else {
+//                        Logger.debug(SynchronizedDb.class,
+//                              "printRefCount",
+//                                             "DBRefs (" + msg + "): " + refs);
+//                    }
 
                 }
             } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
-                Logger.error(e);
+                // already in debug block
+                Logger.error(SynchronizedDb.class, e);
             }
         }
     }
@@ -160,8 +166,12 @@ public class SynchronizedDb {
             Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
             try {
                 SQLiteDatabase db = opener.getWritableDatabase();
-                Logger.info(this, "openWithRetries", db.getPath() + "|retriesLeft=" + retriesLeft);
-                //getInfo(db);
+                if (BuildConfig.DEBUG) {
+                    Logger.debug(this,
+                          "openWithRetries",
+                                   db.getPath() + "|retriesLeft=" + retriesLeft);
+                    debugDumpInfo(db);
+                }
                 return db;
             } catch (RuntimeException e) {
                 exclusiveLock.unlock();
@@ -186,9 +196,8 @@ public class SynchronizedDb {
         } while (true);
     }
 
-    /** Debug usage. */
-    @SuppressWarnings("unused")
-    public void getInfo(@NonNull final SQLiteDatabase db) {
+    /** DEBUG usage. */
+    private void debugDumpInfo(@NonNull final SQLiteDatabase db) {
         String[] sql = {"select sqlite_version() AS sqlite_version",
                         "PRAGMA encoding",
                         "PRAGMA collation_list",
@@ -196,7 +205,9 @@ public class SynchronizedDb {
         for (String s : sql) {
             try (Cursor cursor = db.rawQuery(s, null)) {
                 if (cursor.moveToNext()) {
-                    Logger.info(this, "getInfo", s + " => " + cursor.getString(0));
+                    Logger.debug(this,
+                          "debugDumpInfo",
+                                   s + " => " + cursor.getString(0));
                 }
             }
         }
@@ -250,12 +261,12 @@ public class SynchronizedDb {
         try {
             long id = mSqlDb.insert(table, nullColumnHack, cv);
             if (id == -1) {
-                Logger.error("Insert failed");
+                Logger.warnWithStackTrace(this, "Insert failed");
             }
             return id;
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(e);
+            Logger.error(this, e);
             throw e;
         } finally {
             if (txLock != null) {
@@ -291,7 +302,7 @@ public class SynchronizedDb {
             return mSqlDb.update(table, cv, whereClause, whereArgs);
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(e);
+            Logger.error(this, e);
             throw e;
         } finally {
             if (txLock != null) {
@@ -310,6 +321,7 @@ public class SynchronizedDb {
      * otherwise. To remove all rows and get a count pass "1" as the
      * whereClause.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public int delete(@NonNull final String table,
                       @Nullable final String whereClause,
                       @Nullable final String[] whereArgs) {
@@ -328,7 +340,7 @@ public class SynchronizedDb {
             return mSqlDb.delete(table, whereClause, whereArgs);
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(e);
+            Logger.error(this, e);
             throw e;
         } finally {
             if (txLock != null) {
@@ -404,7 +416,7 @@ public class SynchronizedDb {
      */
     public void execSQL(@NonNull final String sql) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXEC_SQL) {
-            Logger.info(this, Tracker.State.Enter, "execSQL", sql);
+            Logger.debugEnter(this, "execSQL", sql);
         }
 
         try {
@@ -423,7 +435,7 @@ public class SynchronizedDb {
             }
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(e, sql);
+            Logger.error(this, e, sql);
             throw e;
         }
     }
@@ -470,7 +482,7 @@ public class SynchronizedDb {
         try {
             execSQL("analyze");
         } catch (RuntimeException e) {
-            Logger.error(e, "Analyze failed");
+            Logger.error(this, e, "Analyze failed");
         }
     }
 
@@ -520,7 +532,7 @@ public class SynchronizedDb {
             if (mTxLock == null) {
                 mSqlDb.beginTransaction();
             } else {
-                Logger.error("Starting a transaction when one is already started");
+                Logger.warnWithStackTrace(this, "Starting a transaction when one is already started");
             }
         } catch (RuntimeException e) {
             txLock.unlock();
@@ -572,13 +584,15 @@ public class SynchronizedDb {
      * @return <tt>true</tt> if case-sensitive (i.e. up to "you" to add lower/upper calls)
      */
     public boolean isCollationCaseSensitive() {
-        if (mIsCollationCaseSensitive == null) {
-            mIsCollationCaseSensitive = collationIsCaseSensitive();
+        if (sIsCollationCaseSensitive == null) {
+            sIsCollationCaseSensitive = collationIsCaseSensitive();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
-                Logger.info(this, "isCollationCaseSensitive", "" + mIsCollationCaseSensitive);
+                Logger.debug(this,
+                      "isCollationCaseSensitive",
+                               sIsCollationCaseSensitive);
             }
         }
-        return mIsCollationCaseSensitive;
+        return sIsCollationCaseSensitive;
     }
 
     /**
@@ -622,13 +636,13 @@ public class SynchronizedDb {
             return !"a".equals(s);
         } catch (SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(e);
+            Logger.error(this, e);
             throw e;
         } finally {
             try {
                 mSqlDb.execSQL(dropTable);
             } catch (SQLException e) {
-                Logger.error(e);
+                Logger.error(this, e);
             }
         }
     }

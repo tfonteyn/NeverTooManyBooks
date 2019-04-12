@@ -245,7 +245,7 @@ public class EditSeriesListActivity
     public static class EditBookSeriesDialogFragment
             extends DialogFragment {
 
-        /** Fragment manager tag. */
+        /** Fragment manager t. */
         private static final String TAG = EditBookSeriesDialogFragment.class.getSimpleName();
 
         private EditSeriesListActivity mActivity;

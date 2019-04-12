@@ -504,7 +504,7 @@ public class CropImageActivity
                 setResult(Activity.RESULT_OK, intent);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
-                Logger.error(e);
+                Logger.error(this, e);
                 setResult(Activity.RESULT_CANCELED);
             }
         }

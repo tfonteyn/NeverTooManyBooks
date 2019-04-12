@@ -12,7 +12,6 @@ import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.dbsync.SynchronizedDb;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.utils.Csv;
 
 /**
@@ -70,10 +69,10 @@ public class IndexDefinition {
                     db.execSQL("DROP INDEX " + indexName);
                 } catch (SQLException e) {
                     // bad sql is a developer issue... die!
-                    Logger.error(e);
+                    Logger.error(IndexDefinition.class, e);
                     throw e;
                 } catch (RuntimeException e) {
-                    Logger.error(e, "Index deletion failed: " + indexName);
+                    Logger.error(IndexDefinition.class, e, "Index deletion failed: " + indexName);
                 }
             }
         }
@@ -131,8 +130,8 @@ public class IndexDefinition {
            .append('(').append(Csv.join(",", mDomains)).append(')');
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SQL_CREATE_INDEX) {
-            Logger.info(this, Tracker.State.Exit, "getSqlCreateStatement",
-                        sql.toString());
+            Logger.debugExit(this, "getSqlCreateStatement",
+                             sql.toString());
         }
         return sql.toString();
     }

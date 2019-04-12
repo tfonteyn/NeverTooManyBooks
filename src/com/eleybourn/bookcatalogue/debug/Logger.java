@@ -20,182 +20,182 @@
 
 package com.eleybourn.bookcatalogue.debug;
 
+import android.app.Activity;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.eleybourn.bookcatalogue.BuildConfig;
+import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
- * All message start with either:
- * DEBUG:
- * INFO:
- * ERROR:
- * <p>
- * Info messages are console only.
- * <p>
- * ALWAYS call the 'info' methods like this:
+ * ALWAYS call methods like this:
  * * if (BuildConfig.DEBUG) {
- * *     Logger.info(...);
+ * *     Logger.blah(...);
  * * }
  * <p>
- * Error and debug go to the log and the console.
- * Error and debug will always print a stacktrace (even if you do not pass in an exception).
- * Debug should not be used except when a known issue needs tracing.
+ * The second check on DEBUG build in this class is only to catch the lack-of in other places.
  */
 public final class Logger {
 
-    /** prefix for console logging. */
-    private static final String LOG_TAG = "BC_Logger";
+    /** Prefix for logfile entries. Not used on the console. */
+    private static final String ERROR = "ERROR";
+    private static final String WARN = "WARN";
+    private static final String INFO = "INFO";
 
     private static final DateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", LocaleUtils.getSystemLocale());
 
+
     private Logger() {
     }
 
-    /**
-     * For static callers
-     */
-    public static void info(@NonNull final Class clazz,
-                            @NonNull final String methodName,
-                            @NonNull final Object... params) {
-        Log.w(LOG_TAG, buildInfoMessage(clazz, Tracker.State.Running, methodName, concat(params)));
+    public static void error(@NonNull final Object tag,
+                             @NonNull final Throwable e,
+                             @Nullable final Object... params) {
+        String msg = (params != null ? '|' + concat(params) : "");
+        writeToLog(ERROR, msg, e);
+        if (/* always log */ BuildConfig.DEBUG) {
+            Log.e(tag(tag), Tracker.State.Running.toString() + '|' + msg, e);
+        }
     }
 
     /**
-     * For instance callers
+     * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
+     * <p>
+     * Use sparingly, writing to the log is expensive.
+     * <p>
+     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
+     * No stacktrace!
+     */
+    public static void warn(@NonNull final Object object,
+                            @NonNull final String methodName,
+                            @NonNull final Object... params) {
+        String msg = methodName + '|' + concat(params);
+        writeToLog(WARN, msg, null);
+        if (BuildConfig.DEBUG /* always log */) {
+            Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg);
+        }
+    }
+
+    /**
+     * WARN message with a generated StackTrace.
+     * Send to the logfile (always) and the console (when in DEBUG mode).
+     * <p>
+     * Use sparingly, writing to the log is expensive.
+     * <p>
+     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
+     */
+    public static void warnWithStackTrace(@NonNull final Object object,
+                                          @NonNull final Object... params) {
+        Throwable e = new RuntimeException();
+        String msg = concat(params);
+        writeToLog(WARN, msg, e);
+        if (BuildConfig.DEBUG /* always log */) {
+            Log.w(tag(object), Tracker.State.Running.toString() + '|' + msg, e);
+        }
+    }
+
+    /**
+     * INFO message. Send to the logfile (always) and the console (when in DEBUG mode).
+     * <p>
+     * Use very sparingly, writing to the log is expensive.
      */
     public static void info(@NonNull final Object object,
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
-        Log.w(LOG_TAG, buildInfoMessage(object.getClass(), Tracker.State.Running, methodName,
-                                        concat(params)));
+        String msg = methodName + '|' + concat(params);
+        writeToLog(INFO, msg, null);
+        if (BuildConfig.DEBUG /* always log */) {
+            Log.i(tag(object), Tracker.State.Running.toString() + '|' + msg);
+        }
+    }
+
+    /* ****************************************************************************************** */
+
+    public static void debugEnter(@NonNull final Object object,
+                                  @NonNull final String methodName,
+                                  @NonNull final Object... params) {
+        if (BuildConfig.DEBUG /* always log */) {
+            Log.d(tag(object),
+                  Tracker.State.Enter.toString() + '|' + methodName + '|' + concat(params));
+        }
+    }
+
+    public static void debugExit(@NonNull final Object object,
+                                 @NonNull final String methodName,
+                                 @NonNull final Object... params) {
+        if (BuildConfig.DEBUG /* always log */) {
+            Log.d(tag(object),
+                  Tracker.State.Exit.toString() + '|' + methodName + '|' + concat(params));
+        }
+    }
+
+    public static void debug(@NonNull final Object object,
+                             @NonNull final String methodName,
+                             @NonNull final Object... params) {
+        if (BuildConfig.DEBUG /* always log */) {
+            Log.d(tag(object),
+                  Tracker.State.Running.toString() + '|' + methodName + '|' + concat(params));
+        }
+    }
+
+    public static void debugWithStackTrace(@NonNull final Object object,
+                                           @NonNull final String methodName,
+                                           @NonNull final Object... params) {
+        if (BuildConfig.DEBUG /* always log */) {
+            Log.d(tag(object),
+                  Tracker.State.Running.toString() + '|' + methodName + '|' + concat(params),
+                  new RuntimeException());
+        }
     }
 
     /**
-     * For tracking enter/exit of methods.
+     * Tracking debug.
      */
-    public static void info(@NonNull final Object object,
-                            @NonNull final Tracker.State state,
-                            @NonNull final String methodName,
-                            @NonNull final Object... params) {
-        Log.w(LOG_TAG, buildInfoMessage(object.getClass(), state, methodName, concat(params)));
+    public static void debugWithStackTrace(@NonNull final Object object,
+                                           @NonNull final Throwable e,
+                                           @NonNull final Object... params) {
+        if (BuildConfig.DEBUG /* always log */) {
+            Log.d(tag(object),
+                  Tracker.State.Running.toString() + '|' + concat(params), e);
+        }
     }
 
+    private static String tag(@NonNull final Object object) {
+        return (object.getClass().isAnonymousClass() ? "AnonymousClass"
+                                                     : object.getClass().getCanonicalName());
+    }
 
     private static String concat(@NonNull final Object[] params) {
         StringBuilder message = new StringBuilder();
         for (Object parameter : params) {
-            message.append(parameter).append('|');
+            message.append(parameter.toString()).append('|');
         }
         message.append('.');
         return message.toString();
     }
 
-    private static String buildInfoMessage(@NonNull final Class clazz,
-                                           @NonNull final Tracker.State state,
-                                           @NonNull final String methodName,
-                                           @Nullable final String message) {
-        return "INFO"
-                + '|' + (clazz.isAnonymousClass() ? "AnonymousClass" : clazz.getCanonicalName())
-                + '|' + state
-                + '|' + methodName
-                + '|' + message;
-    }
-
-    /* ****************************************************************************************** */
-
-    public static void debug(@NonNull final String message) {
-        if (BuildConfig.DEBUG /* always log */) {
-            Log.e(LOG_TAG, buildErrorMessage(new DebugStackTrace(), message)
-                    .replaceFirst("ERROR", "DEBUG"));
-        }
-    }
-
-    public static void debug(@NonNull final Exception e) {
-        if (BuildConfig.DEBUG /* always log */) {
-            Log.e(LOG_TAG, buildErrorMessage(e, "")
-                    .replaceFirst("ERROR", "DEBUG"));
-        }
-    }
-    /* ****************************************************************************************** */
-
-    public static void error(@NonNull final String message) {
-        error(new DebugStackTrace(), message);
-    }
-
-    public static void error(@NonNull final Exception e) {
-        error(e, "");
-    }
-
-    /**
-     * For really bad things... 2019-02: right now only an out of memory error.
-     * <p>
-     * Generates stacktrace
-     */
-    public static void error(@NonNull final Error e) {
-        error(new DebugStackTrace(e), "");
-    }
-
-    /**
-     * Write the exception stacktrace to the error log file.
-     * Will use e.getLocalizedMessage()
-     * <p>
-     * When in debug mode, also to the console.
-     *
-     * @param e       The exception to log
-     * @param message extra message
-     */
-    public static void error(@Nullable final Exception e,
-                             @NonNull final String message) {
-        String result = buildErrorMessage(e, message);
-        // only place where we should unconditionally write to the logfile.
-        writeToLog(result);
-        // for convenience also send to console during development
-        if (/* always log */ BuildConfig.DEBUG) {
-            Log.e(LOG_TAG, result);
-        }
-    }
-
-    private static String buildErrorMessage(@Nullable final Exception e,
-                                            @NonNull final String message) {
-
-        StringBuilder msg = new StringBuilder("ERROR|");
-        String exMsg;
-        StringWriter stacktrace = new StringWriter();
-        try (PrintWriter pw = new PrintWriter(stacktrace)) {
-            if (e != null) {
-                e.printStackTrace(pw);
-                exMsg = e.getLocalizedMessage() + '\n';
-            } else {
-                exMsg = "";
-            }
-        }
-
-        if (!(e instanceof DebugStackTrace)) {
-            String now = DATE_FORMAT.format(new Date());
-            msg.append("An Exception/Error Occurred @ ").append(now).append('\n')
-               .append(exMsg)
-               .append("In Phone ").append(Build.MODEL)
-               .append(" (").append(Build.VERSION.SDK_INT).append(")\n");
-        }
-
-        msg.append(message).append('\n').append(stacktrace);
-        return msg.toString();
+    private static String buildHeaderMessage(@NonNull final Throwable e,
+                                             @Nullable final String message) {
+        return "An Exception/Error Occurred "
+                + (message != null ? message + '\n' : "")
+                + e.getLocalizedMessage() + '\n'
+                + "In Phone " + Build.MODEL + " (" + Build.VERSION.SDK_INT + ")\n"
+                + Log.getStackTraceString(e);
     }
 
     /* ****************************************************************************************** */
@@ -204,20 +204,26 @@ public final class Logger {
     /**
      * This is an expensive call... file open+close... booooo
      *
+     * @param type    prefix tag
      * @param message to write
+     * @param e       optional Throwable
      */
-    private static void writeToLog(@NonNull final String message) {
+    private static void writeToLog(@NonNull final String type,
+                                   @NonNull final String message,
+                                   @Nullable final Throwable e) {
         try (FileWriter fw = new FileWriter(StorageUtils.getErrorLog(), true);
              BufferedWriter out = new BufferedWriter(fw)) {
-            out.write(message);
+            String exMsg = e != null ?
+                           '|' + e.getLocalizedMessage() + '\n' + Log.getStackTraceString(e) : "";
+
+            out.write(DATE_FORMAT.format(new Date()) + '|' + type + '|' + message + exMsg);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignored) {
-            // do nothing - we can't log an error in the error logger.
-            // (and we don't want to CF the app)
+            // do nothing - we can't log an error in the logger (and we don't want to CF the app).
         }
     }
 
     /**
-     * Clear the error log each time the app is started; preserve previous if non-empty.
+     * Clear the log each time the app is started; preserve previous if non-empty.
      */
     public static void clearLog() {
         try {
@@ -231,17 +237,24 @@ public final class Logger {
         }
     }
 
-
-    private static class DebugStackTrace
-            extends RuntimeException {
-
-        private static final long serialVersionUID = 5549905921391722588L;
-
-        DebugStackTrace() {
-        }
-
-        DebugStackTrace(@NonNull final Throwable cause) {
-            super(cause);
+    static void debugExtras(@NonNull final Object a,
+                            @NonNull final String methodName) {
+        if (a instanceof Activity) {
+            Bundle extras = ((Activity) a).getIntent().getExtras();
+            if (extras != null) {
+                debug(a, methodName, "extras=" + extras);
+                if (extras.containsKey(UniqueId.BKEY_BOOK_DATA)) {
+                    debug(a, methodName, "extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
+                }
+            }
+        } else if (a instanceof Fragment) {
+            Bundle args = ((Fragment) a).getArguments();
+            if (args != null) {
+                Logger.debug(a, methodName, "args=" + args);
+                if (args.containsKey(UniqueId.BKEY_BOOK_DATA)) {
+                    Logger.debug(a, methodName, "args=" + args.getBundle(UniqueId.BKEY_BOOK_DATA));
+                }
+            }
         }
     }
 }

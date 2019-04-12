@@ -39,7 +39,6 @@ import com.eleybourn.bookcatalogue.EditSeriesListActivity;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
-import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
@@ -51,7 +50,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class EditSeriesDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
 
     private DBA mDb;

@@ -5,15 +5,14 @@ https://github.com/eleybourn/Book-Catalogue/wiki/Developer-Notes-Suggestions-Gui
 Small notes in addition (with a pinch of salt... as I change my own mind from time to time)
 
 * trimming
-  Wherever a View is READ as a String, a trim should be done
+    The database (checked with v82) will/can contain untrimmed strings.
+    Wherever a View is READ as a String, a trim should be done
        view.getText().toString().trim();
 
-  The database (checked with v82) will/can contain untrimmed strings.
-  Best to add .trim() to al locations where a getString is done.
-  Eventually the database will then be trim-proof.
-  TODO: perhaps run a batch correction on all fields as an update ? bit brutal...
+    Eventually the database will then be trim-proof.
+    TODO: perhaps run a batch correction on all fields as an update ? bit brutal...
 
-  No doubt some places do a trim which is not really needed, something for a rainy day.
+    No doubt some places do a trim which is not really needed, something for a rainy day.
 
 * Layout in code:
     * Use a ViewGroup instead of e.g. LinearLayout where possible.
@@ -26,17 +25,15 @@ Small notes in addition (with a pinch of salt... as I change my own mind from ti
     Use 'CompoundButton' and/or 'Checkable' where possible.
     This leaves the layout flexible to choose a different type without code changes
 
-* NullPointersException:
-  If an object *must* be non-null, use Objects.requireNonNull(something);
-  Main reason is a reminder to the developer that if it was null it's *their* fault.
-
-  If an Object comes from the system and it *can* be null (but should't), use a lint 'suppress'
-
-  findViewById: just use lint suppress, will all show on first test run anyhow
-
 * pedantic but I hope polite request:
   Single character variables names are best left to BASIC style from the 1980's
   (Android itself uses a lot of 'v' ... so who am I to talk...)
+
+* handy regular expressions:
+
+    Find all places where we forgot to add the trim when getting text from a View:
+        getText\(\).toString\(\)(?!\.trim)
+
 
 * TODO tags used; always followed with a colon
   - TODO:

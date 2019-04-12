@@ -2,7 +2,6 @@ package com.eleybourn.bookcatalogue.dialogs;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,8 +23,6 @@ import java.util.List;
 import java.util.Locale;
 
 import com.eleybourn.bookcatalogue.R;
-import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
-import com.eleybourn.bookcatalogue.baseactivity.BaseListActivity;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.LocaleUtils;
@@ -181,6 +178,52 @@ public final class SimpleDialog {
     }
 
     /**
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
+     */
+    public static void onCreateListViewContextMenu(@NonNull final View view,
+                                                   @NonNull final Menu menu,
+                                                   @NonNull final String title,
+                                                   final int position,
+                                                   @NonNull final ListViewContextMenu handler) {
+        if (menu.size() > 0) {
+            showContextMenu(LayoutInflater.from(view.getContext()), title, menu, item -> {
+                MenuItem menuItem = item.getItem();
+                if (menuItem.hasSubMenu()) {
+                    // recursive call for sub-menu
+                    onCreateListViewContextMenu(view,
+                                                menuItem.getSubMenu(),
+                                                menuItem.getTitle().toString(), position, handler);
+                } else {
+                    handler.onContextItemSelected(menuItem, position);
+                }
+            });
+        }
+    }
+
+    /**
+     * Using {@link SimpleDialog#showContextMenu} for context menus.
+     */
+    public static void onCreateViewContextMenu(@NonNull final View view,
+                                               @NonNull final Menu menu,
+                                               @NonNull final String title,
+                                               @NonNull final ViewContextMenu handler) {
+
+        if (menu.size() > 0) {
+            showContextMenu(LayoutInflater.from(view.getContext()), title, menu, item -> {
+                MenuItem menuItem = item.getItem();
+                if (menuItem.hasSubMenu()) {
+                    // recursive call for sub-menu
+                    onCreateViewContextMenu(view,
+                                            menuItem.getSubMenu(),
+                                            menuItem.getTitle().toString(), handler);
+                } else {
+                    handler.onContextItemSelected(menuItem, view);
+                }
+            });
+        }
+    }
+
+    /**
      * Interface for item that displays in a custom dialog list.
      */
     public interface SimpleDialogItem<T> {
@@ -206,26 +249,41 @@ public final class SimpleDialog {
     }
 
     /**
-     * Marker interface to indicate the {@link BaseListActivity} has a {@link ListView}
-     * using this type of context menu.
+     * Adding a context menu to a {@link ListView} items. Only a single ListView is supported.
      * <p>
-     * Only a single ListView is supported.
+     * Example code for setting up the menu:
+     * <pre>
+     * {@code
+     * <p>
+     *    getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+     *      @Override public boolean onItemLongClick(@NonNull final AdapterView<?> parent,
+     *                                               @NonNull final View view,
+     *                                               final int position, final long id) {
+     *
+     *          // legal trick to get an instance of Menu.
+     *          mListViewContextMenu = new PopupMenu(view.getContext(), null).getMenu();
+     *
+     *          // POPULATE THE MENU
+     *          mListViewContextMenu.add(Menu.NONE, R.id.MENU_DELETE, Menu.NONE,
+     *                                   R.string.menu_delete_something)
+     *                              .setIcon(R.drawable.ic_delete);
+     *
+     *          // display
+     *          String menuTitle = mList.get(position).getTitle();
+     *          SimpleDialog.onCreateListViewContextMenu(mListViewContextMenu, view, menuTitle, position,
+     *                      new ListViewContextMenu() {
+     *                          public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+     *                                                                final int position) {
+     *                          ...
+     *                          }
+     *                      });
+     *          return true;
+     *      }
+     *   });
+     * }
+     * </pre>
      */
     public interface ListViewContextMenu {
-
-        /**
-         * Prepare to view to bring up a context menu upon long-click.
-         */
-        void initContextMenuOnListView();
-
-        /**
-         * @param view     (row in the list) on which the context menu is set
-         * @param menu     to display
-         * @param menuInfo information about the menu, e.g. the 'title', 'position'
-         */
-        void onCreateListViewContextMenu(@NonNull View view,
-                                         @NonNull Menu menu,
-                                         @NonNull ContextMenuInfo menuInfo);
 
         /**
          * @param menuItem that was selected
@@ -234,74 +292,28 @@ public final class SimpleDialog {
          * @return <tt>true</tt> if the selection was handled.
          */
         @SuppressWarnings("UnusedReturnValue")
-        boolean onListViewContextItemSelected(@NonNull MenuItem menuItem,
-                                              int position);
+        boolean onContextItemSelected(@NonNull MenuItem menuItem,
+                                      int position);
     }
 
     /**
-     * Marker interface to indicate the {@link BaseActivity} has a {@link View}
-     * using this type of context menu.
+     * Adding a context menu to a {@link ListView} items.
+     * Multiple views are supported; the view must be passed to every method.
      * <p>
-     * Multiple views are supported; i.e. the view must be passed to every method.
+     * Usage: see {@link ListViewContextMenu}.
      */
     public interface ViewContextMenu {
 
         /**
-         * Prepare to view to bring up a context menu upon long-click.
-         *
-         * @param view on which the context menu is set
-         */
-        void initContextMenuOnView(@NonNull View view);
-
-        /**
-         * @param view     on which the context menu is set
-         * @param menu     to display
-         * @param menuInfo information about the menu, e.g. the 'title'
-         */
-        void onCreateViewContextMenu(@NonNull View view,
-                                     @NonNull Menu menu,
-                                     @NonNull ContextMenuInfo menuInfo);
-
-        /**
-         * @param view     on which the context menu is set. Passed here because we *could*
-         *                 have multiple views with different context menus.
          * @param menuItem that was selected
+         * @param view     on which the context menu is triggered. Passed here so we can
+         *                 have multiple views with different context menus.
          *
          * @return <tt>true</tt> if the selection was handled.
          */
         @SuppressWarnings("UnusedReturnValue")
-        boolean onViewContextItemSelected(@NonNull View view,
-                                          @NonNull MenuItem menuItem);
-    }
-
-    /**
-     * Using {@link SimpleDialog#showContextMenu} for context menus.
-     */
-    public static class ContextMenuInfo
-            implements ContextMenu.ContextMenuInfo {
-
-        /**
-         * The position of the item in the list/cursor for which the
-         * context menu is being displayed.
-         */
-        public final int position;
-
-        /**
-         * The title that can be used as the menu header.
-         */
-        public String title;
-
-        /**
-         * Constructor.
-         *
-         * @param title    for the menu heading.
-         * @param position in a list/cursor, set to 0 if no list is involved.
-         */
-        public ContextMenuInfo(@NonNull final String title,
-                               final int position) {
-            this.title = title;
-            this.position = position;
-        }
+        boolean onContextItemSelected(@NonNull MenuItem menuItem,
+                                      @NonNull View view);
     }
 
     /**
@@ -336,10 +348,10 @@ public final class SimpleDialog {
             // add a little arrow to indicate sub-menus.
             Drawable subMenuPointer = null;
             if (mMenuItem.hasSubMenu()) {
-                subMenuPointer = inflater.getContext()
-                                         .getDrawable(R.drawable.submenu_arrow_nofocus);
+                subMenuPointer = inflater.getContext().getDrawable(R.drawable.ic_arrow_right);
             }
-            name.setCompoundDrawablesWithIntrinsicBounds( mMenuItem.getIcon(), null, subMenuPointer, null);
+            name.setCompoundDrawablesWithIntrinsicBounds(mMenuItem.getIcon(), null, subMenuPointer,
+                                                         null);
             return root;
         }
 

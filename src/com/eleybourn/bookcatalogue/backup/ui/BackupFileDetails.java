@@ -85,7 +85,7 @@ public class BackupFileDetails
      * @return <tt>true</tt> if it's an archive
      */
     public static boolean isArchive(@NonNull final File file) {
-        return file.getName().toLowerCase().endsWith(ARCHIVE_EXTENSION);
+        return file.getName().toLowerCase(LocaleUtils.getSystemLocale()).endsWith(ARCHIVE_EXTENSION);
     }
 
     public void setInfo(@NonNull final BackupInfo info) {

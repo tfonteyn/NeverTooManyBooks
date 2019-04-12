@@ -1,21 +1,3 @@
-BUG:
-switching Locale is STILL not done...
-- BoB -> settings -> switch locale -> back to BoB
---> nav panel ok
---> option menu ok
---> spinner ok
---> booklist: 'month' in a date is WRONG
-
-Bottomline.. relying on Locale.getDefault / setDefault is NOT a good idea!
-https://stackoverflow.com/questions/10657747/why-does-android-have-its-own-way-to-get-the-current-locale
-https://developer.android.com/guide/topics/resources/localization.html
-
-current locale is used when:
-- locale (e.g. getDisplayX)
-- currencies
-- dates
-- formatters in Fields
-
 TODO: New anthology stuff:
  * to think about:
  * - when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding to new books / wish list?
@@ -29,6 +11,8 @@ TODO: Review database stuff
  * - catch NotFoundException (or not?)
  * - bind variables versus string concat
  * could global replace of author/series be optimized ? For now it's cumbersome and long-winded.
+
+TODO: AuthorWorksActivity and similar are just place holders until there is a general hosting activity.
 
 ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
  * Performance? Better 'Collation' setting?'. LIKE operator ?

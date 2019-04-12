@@ -23,6 +23,7 @@ package com.eleybourn.bookcatalogue.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,7 +130,6 @@ public class MultiTypeListCursorAdapter
     @Override
     @Nullable
     public String[] getSectionTextForPosition(final int position) {
-        //Tracker.info(this, Tracker.State.Enter, "getSectionTextForPosition", position);
         final Cursor listCursor = getCursor();
         if (position < 0 || position >= listCursor.getCount()) {
             return null;
@@ -142,10 +142,9 @@ public class MultiTypeListCursorAdapter
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
             for (String s : section) {
-                Logger.info(this, "getSectionTextForPosition", "Section: " + s);
+                Logger.debug(this,"getSectionTextForPosition", "Section: " + s);
             }
         }
-        //Tracker.info(this, Tracker.State.Exit, "getSectionTextForPosition");
         return section;
     }
 }

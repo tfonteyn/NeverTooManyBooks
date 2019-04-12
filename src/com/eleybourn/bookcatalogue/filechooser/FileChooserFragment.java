@@ -56,7 +56,7 @@ public class FileChooserFragment
         extends Fragment
         implements FileListerAsyncTask.FileListerListener {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = FileChooserFragment.class.getSimpleName();
 
     private static final String BKEY_ROOT_PATH = TAG + ":rootPath";

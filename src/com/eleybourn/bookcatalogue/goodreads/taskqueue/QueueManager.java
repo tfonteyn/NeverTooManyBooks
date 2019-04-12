@@ -58,7 +58,7 @@ public final class QueueManager {
     /**
      * Static reference to the active QueueManager - singleton.
      */
-    private static QueueManager mInstance;
+    private static QueueManager sInstance;
 
     /** Database access layer. */
     @NonNull
@@ -83,12 +83,12 @@ public final class QueueManager {
      * That would cause memory leaks according to Android docs.
      */
     private QueueManager() {
-        if (mInstance != null) {
+        if (sInstance != null) {
             /* This is an essential requirement because (a) synchronization will not work with
              more than one and (b) we want to store a static reference in the class. */
             throw new IllegalStateException("Only one QueueManager can be present");
         }
-        mInstance = this;
+        sInstance = this;
 
         // Save the thread ... it is the UI thread
         mUIThread = new WeakReference<>(Thread.currentThread());
@@ -111,16 +111,16 @@ public final class QueueManager {
     }
 
     public static void init() {
-        if (mInstance == null) {
-            mInstance = new QueueManager();
+        if (sInstance == null) {
+            sInstance = new QueueManager();
         }
     }
 
     public static QueueManager getQueueManager() {
-        if (mInstance == null) {
+        if (sInstance == null) {
             throw new IllegalStateException("init was not called?");
         }
-        return mInstance;
+        return sInstance;
     }
 
     void registerEventListener(@NonNull final OnChangeListener listener) {

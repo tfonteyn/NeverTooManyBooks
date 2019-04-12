@@ -37,15 +37,17 @@ import com.eleybourn.bookcatalogue.utils.AuthorizationException;
  *
  * @author Philip Warner
  */
-public class IsbnToId
+public class IsbnToIdHandler
         extends ApiHandler {
 
+    /** Param 1: isbn; param 2: dev key. */
+    private static final String URL =  GoodreadsManager.BASE_URL + "/book/isbn_to_id/%1$s?key=%2$s";
     /**
      * Constructor.
      *
      * @param manager the Goodreads Manager
      */
-    public IsbnToId(@NonNull final GoodreadsManager manager) {
+    public IsbnToIdHandler(@NonNull final GoodreadsManager manager) {
         super(manager);
     }
 
@@ -56,14 +58,15 @@ public class IsbnToId
      * Parameters:
      * isbn: The ISBN of the book to lookup.
      * key: Developer key (required).
+     *
+     * @param isbn with some luck, the ISBN for the requested book
      */
     public long isbnToId(@NonNull final String isbn)
             throws IOException,
                    AuthorizationException,
                    BookNotFoundException {
 
-        HttpGet get = new HttpGet(GoodreadsManager.BASE_URL + "/book/isbn_to_id/" + isbn
-                                          + "?key=" + mManager.getDevKey());
+        HttpGet get = new HttpGet(String.format(URL, isbn, mManager.getDevKey()));
         String s = mManager.executeRaw(get);
         return Long.parseLong(s);
     }

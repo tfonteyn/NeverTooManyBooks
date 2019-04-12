@@ -24,7 +24,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +37,6 @@ import com.eleybourn.bookcatalogue.database.CoversDBA;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 import com.eleybourn.bookcatalogue.dialogs.SimpleDialog;
 import com.eleybourn.bookcatalogue.entities.BookManager;
@@ -67,11 +65,10 @@ import com.eleybourn.bookcatalogue.utils.ZoomedImageDialogFragment;
  * <p>
  * 2018-11-30: making this a configuration option.
  */
-public class CoverHandler
-        implements SimpleDialog.ViewContextMenu {
+public class CoverHandler {
 
     /** Counter used to prevent images being reused accidentally. */
-    private static int mTempImageCounter;
+    private static int sTempImageCounter;
 
     @NonNull
     private final FragmentActivity mActivity;
@@ -121,7 +118,11 @@ public class CoverHandler
 
         if (mCoverField.isVisible()) {
             // add context menu to the cover image
-            initContextMenuOnView(mCoverField.getView());
+            mCoverField.getView().setOnLongClickListener(v -> {
+                prepareCoverImageViewContextMenu();
+                return true;
+            });
+
             //Allow zooming by clicking on the image
             mCoverField.getView().setOnClickListener(
                     v -> ZoomedImageDialogFragment.show(mActivity.getSupportFragmentManager(),
@@ -151,44 +152,12 @@ public class CoverHandler
     }
 
     /**
-     * Using {@link SimpleDialog#showContextMenu} for context menus.
-     */
-    @Override
-    public void onCreateViewContextMenu(@NonNull final View view,
-                                        @NonNull final Menu menu,
-                                        @NonNull final SimpleDialog.ContextMenuInfo menuInfo) {
-
-        if (menu.size() > 0) {
-            SimpleDialog.showContextMenu(
-                    mActivity.getLayoutInflater(), menuInfo.title, menu,
-                    item -> {
-                        MenuItem menuItem = item.getItem();
-                        if (menuItem.hasSubMenu()) {
-                            menuInfo.title = menuItem.getTitle().toString();
-                            // recursive call for sub-menu
-                            onCreateViewContextMenu(view, menuItem.getSubMenu(), menuInfo);
-                        } else {
-                            onViewContextItemSelected(view, menuItem);
-                        }
-                    });
-        }
-    }
-
-    /**
-     * external from {@link #initContextMenuOnView} as we also need this
-     * from {@link Fragment#onOptionsItemSelected}.
+     * Dual usage: context menu for the image and from {@link Fragment#onOptionsItemSelected}.
      */
     public void prepareCoverImageViewContextMenu() {
 
-        String menuTitle = mActivity.getString(R.string.title_cover);
-
         // legal trick to get an instance of Menu.
         Menu menu = new PopupMenu(mActivity, null).getMenu();
-        // custom menuInfo
-        SimpleDialog.ContextMenuInfo menuInfo =
-                new SimpleDialog.ContextMenuInfo(menuTitle, 0);
-
-        // populate the menu
         menu.add(Menu.NONE, R.id.MENU_THUMB_DELETE, Menu.NONE, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
@@ -224,23 +193,21 @@ public class CoverHandler
             .setIcon(R.drawable.ic_crop);
 
         // display
-        onCreateViewContextMenu(mCoverField.getView(), menu, menuInfo);
-    }
-
-    @Override
-    public void initContextMenuOnView(@NonNull final View view) {
-        view.setOnLongClickListener(v -> {
-            prepareCoverImageViewContextMenu();
-            return true;
-        });
+        String menuTitle = mActivity.getString(R.string.title_cover);
+        SimpleDialog.onCreateViewContextMenu(mCoverField.getView(), menu, menuTitle,
+                                             this::onViewContextItemSelected);
     }
 
     /**
      * Using {@link SimpleDialog#showContextMenu} for context menus.
+     *
+     * @param menuItem that the user selected
+     * @param view     the view the menu belongs to
+     *
+     * @return <tt>true</tt> if handled here.
      */
-    @Override
-    public boolean onViewContextItemSelected(@NonNull final View view,
-                                             @NonNull final MenuItem menuItem) {
+    private boolean onViewContextItemSelected(@NonNull final MenuItem menuItem,
+                                              @NonNull final View view) {
 
         // should not happen for now, but nice to remind ourselves we *could* have multiple views.
         if (view.getId() != R.id.coverImage) {
@@ -317,7 +284,7 @@ public class CoverHandler
     }
 
     /**
-     * We *should* have the uuid on a tag on the over field view,
+     * We *should* have the uuid on a t on the over field view,
      * but if not, we'll get it from the database.
      *
      * @return the uuid, or null when the book has no uuid.
@@ -327,7 +294,7 @@ public class CoverHandler
         String uuid = (String) mCoverField.getView().getTag(R.id.TAG_UUID);
         // if we forgot to set it in some bad code... log the fact, and make a trip to the db.
         if (uuid == null) {
-            Logger.debug("UUID was not available on the view tag");
+            Logger.debugWithStackTrace(this,"getUuid","UUID was not available on the view t");
             uuid = mDb.getBookUuid(mBookManager.getBook().getId());
         }
         return uuid;
@@ -368,10 +335,11 @@ public class CoverHandler
      */
     private void getCoverFromCamera() {
         // Increment the temp counter and cleanup the temp directory
-        mTempImageCounter++;
+        sTempImageCounter++;
         StorageUtils.purgeTempStorage();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    /*
+
+        /*
         We don't do the next bit of code here because we have no reliable way to rotate a
         large image without producing memory exhaustion.
         Android does not include a file-based image rotation.
@@ -379,7 +347,7 @@ public class CoverHandler
         File f = getCameraTempCoverFile();
         StorageUtils.deleteFile(f);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-    */
+        */
         mFragment.startActivityForResult(intent, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
     }
 
@@ -391,31 +359,31 @@ public class CoverHandler
                                     @NonNull final Bundle bundle) {
         Bitmap bitmap = (Bitmap) bundle.get(CropImageActivity.BKEY_DATA);
         if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
-            Matrix m = new Matrix();
-            m.postRotate(App.getListPreference(Prefs.pk_thumbnails_rotate_auto, 0));
+            Matrix matrix = new Matrix();
+            matrix.postRotate(App.getListPreference(Prefs.pk_thumbnails_rotate_auto, 0));
             bitmap = Bitmap.createBitmap(bitmap, 0, 0,
                                          bitmap.getWidth(), bitmap.getHeight(),
-                                         m, true);
+                                         matrix, true);
 
-            File cameraFile = StorageUtils.getTempCoverFile(
-                    "camera" + CoverHandler.mTempImageCounter);
-            OutputStream out;
+            File cameraFile = StorageUtils.getTempCoverFile("camera" + sTempImageCounter);
             // Create a file to copy the image into
-            try {
-                out = new FileOutputStream(cameraFile.getAbsoluteFile());
-            } catch (FileNotFoundException e) {
-                Logger.error(e);
+            try (OutputStream out = new FileOutputStream(cameraFile.getAbsoluteFile())) {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
+                Logger.error(this, e);
                 return;
             }
 
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-
             cropCoverImage(cameraFile);
             mGotCameraImage = true;
+
         } else {
-            Logger.info(this, Tracker.State.Running, "addCoverFromCamera",
-                        "onActivityResult(" + requestCode + ','
-                                + resultCode + ") - camera image empty");
+            if (BuildConfig.DEBUG) {
+                Logger.warn(this,"addCoverFromCamera",
+                               "camera image empty", "onActivityResult",
+                               "requestCode=" + requestCode,
+                               "resultCode=" + resultCode);
+            }
         }
     }
 
@@ -439,11 +407,12 @@ public class CoverHandler
         if (selectedImageUri != null) {
             boolean imageOk = false;
             // If no 'content' scheme, then use the content resolver.
-            try {
-                InputStream in = mActivity.getContentResolver().openInputStream(selectedImageUri);
+            try (InputStream in = mActivity.getContentResolver().openInputStream(
+                    selectedImageUri)) {
                 imageOk = StorageUtils.saveInputStreamToFile(in, getCoverFile());
-            } catch (FileNotFoundException e) {
-                Logger.error(e, "Unable to copy content to file");
+
+            } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
+                Logger.error(this, e, "Unable to copy content to file");
             }
 
             if (imageOk) {
@@ -503,7 +472,7 @@ public class CoverHandler
                     rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
 
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
-                    Logger.error(e);
+                    Logger.error(this, e);
                     return;
                 } finally {
                     rotatedBitmap.recycle();
@@ -561,7 +530,7 @@ public class CoverHandler
 
     /**
      * Crop the image using the standard crop action intent (the device may not support it).
-     * FIXME: Mr. Internet says that "com.android.camera.action.CROP" is from Android 1.x/2.x and should not be used today.
+     * FIXME: Google search says that "com.android.camera.action.CROP" is from Android 1.x/2.x and should not be used today.
      * <p>
      * Code using hardcoded string on purpose as they are part of the Intent api.
      *
@@ -620,7 +589,7 @@ public class CoverHandler
      */
     @NonNull
     private File getCroppedTempCoverFile() {
-        return StorageUtils.getTempCoverFile("cropped" + mTempImageCounter);
+        return StorageUtils.getTempCoverFile("cropped" + sTempImageCounter);
     }
 
     /**
@@ -631,7 +600,7 @@ public class CoverHandler
             File file = getCoverFile();
             StorageUtils.deleteFile(file);
         } catch (RuntimeException e) {
-            Logger.error(e);
+            Logger.error(this, e);
         }
         invalidateCachedImages();
         // replace the old image with a placeholder.
@@ -646,9 +615,9 @@ public class CoverHandler
             try (CoversDBA db = CoversDBA.getInstance()) {
                 db.delete(getUuid());
             } catch (SQLiteDoneException e) {
-                Logger.error(e, "SQLiteDoneException cleaning up cached cover images");
+                Logger.error(this, e, "SQLiteDoneException cleaning up cached cover images");
             } catch (RuntimeException e) {
-                Logger.error(e, "RuntimeException cleaning up cached cover images");
+                Logger.error(this, e, "RuntimeException cleaning up cached cover images");
             }
         }
     }
@@ -718,14 +687,19 @@ public class CoverHandler
                         // Update the ImageView with the new image
                         updateCoverView();
                     } else {
-                        Logger.info(this, Tracker.State.Running,
-                                    "onActivityResult",
-                                    requestCode, resultCode, "RESULT_OK, but no image file?");
+                        if (BuildConfig.DEBUG) {
+                            Logger.warn(this,"onActivityResult",
+                                           "RESULT_OK, but no image file?",
+                                           "requestCode=" + requestCode,
+                                           "resultCode=" + resultCode);
+                        }
                     }
                 } else {
-                    Logger.info(this, Tracker.State.Running,
-                                "onActivityResult",
-                                requestCode, resultCode, "FAILED");
+                    if (BuildConfig.DEBUG) {
+                        Logger.warn(this,"onActivityResult", "FAILED",
+                                       "requestCode=" + requestCode,
+                                       "resultCode=" + resultCode);
+                    }
                     StorageUtils.deleteFile(getCroppedTempCoverFile());
                 }
                 return true;

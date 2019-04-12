@@ -24,7 +24,7 @@ import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 public class BackupListerTask
         extends FileListerAsyncTask {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = BackupListerTask.class.getSimpleName();
 
     /**
@@ -78,7 +78,7 @@ public class BackupListerTask
                         fd.setInfo(reader.getInfo());
                     }
                 } catch (IOException e) {
-                    Logger.error(e);
+                    Logger.error(this, e);
                 }
             }
         }

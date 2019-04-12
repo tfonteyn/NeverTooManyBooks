@@ -142,7 +142,7 @@ public class TarBackupContainer
             // the info block will/can do more checks.
             return backupInfo.isValid();
         } catch (IOException e) {
-            Logger.error(e);
+            Logger.error(this, e);
         }
         return false;
     }

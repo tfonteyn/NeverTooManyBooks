@@ -19,7 +19,7 @@ import com.eleybourn.bookcatalogue.tasks.ProgressDialogFragment;
 public class RestoreTask
         extends AsyncTask<Void, Object, ImportSettings> {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = RestoreTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_READ_FROM_ARCHIVE;
@@ -100,7 +100,7 @@ public class RestoreTask
                 }
             });
         } catch (IOException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             mException = e;
         }
         return mSettings;

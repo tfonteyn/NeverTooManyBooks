@@ -30,23 +30,46 @@ import androidx.annotation.Nullable;
 import com.eleybourn.bookcatalogue.StartupActivity;
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.goodreads.taskqueue.QueueManager;
-import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 
 /**
  * Trivial Activity to handle the callback URI; while using a broadcast receiver would be nicer,
  * it does not seem to be possible to get them to work from web browser callbacks. So, we just
  * do the necessary processing here and exit.
- * <p>
- * {@link GoodreadsManager#AUTHORIZATION_CALLBACK}
- * <p>
- * the filters in the manifest will bring us here
- * "com.eleybourn.bookcatalogue://goodreadsauth"
- * Intent.ACTION_VIEW
  *
  * @author Philip Warner
  */
 public class GoodreadsAuthorizationActivity
         extends BaseActivity {
+
+    /**
+     * AUTHORIZATION_CALLBACK is the call back Intent URL.
+     * Must match the intent filter(s) setup in the manifest with Intent.ACTION_VIEW
+     * for this activity.
+     * The scheme is hardcoded to avoid confusion between java and android package names.
+     * <p>
+     * scheme: com.eleybourn.bookcatalogue
+     * host: goodreadsauth
+     *
+     * <pre>
+     *     {@code
+     *      <activity
+     *          android:name=".goodreads.GoodreadsAuthorizationActivity"
+     *          android:launchMode="singleInstance">
+     *          <intent-filter>
+     *              <action android:name="android.intent.action.VIEW" />
+     *
+     *              <category android:name="android.intent.category.DEFAULT" />
+     *              <category android:name="android.intent.category.BROWSABLE" />
+     *              <data
+     *                  android:host="goodreadsauth"
+     *                  android:scheme="com.eleybourn.bookcatalogue" />
+     *          </intent-filter>
+     *      </activity>
+     *      }
+     * </pre>
+     */
+    public static final String AUTHORIZATION_CALLBACK =
+            "com.eleybourn.bookcatalogue://goodreadsauth";
 
     @Override
     @CallSuper

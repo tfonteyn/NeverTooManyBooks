@@ -30,7 +30,6 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
-import com.eleybourn.bookcatalogue.App;
 import com.eleybourn.bookcatalogue.R;
 
 /**
@@ -83,7 +82,7 @@ class CropHighlightView {
         mImageView = imageView;
     }
 
-    public void setup(@NonNull final Matrix m,
+    public void setup(@NonNull final Matrix matrix,
                       @NonNull final Rect imageRect,
                       @NonNull final RectF cropRect,
                       final boolean circle,
@@ -91,7 +90,7 @@ class CropHighlightView {
         if (circle) {
             maintainAspectRatio = true;
         }
-        mMatrix = new Matrix(m);
+        mMatrix = new Matrix(matrix);
 
         mCropRect = cropRect;
         mImageRect = new RectF(imageRect);

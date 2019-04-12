@@ -1,6 +1,7 @@
 package com.eleybourn.bookcatalogue.searches.isfdb;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -12,76 +13,66 @@ import org.jsoup.select.Elements;
 import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
+/**
+ * Given an ISBN, search for other editions on the site.
+ */
 public class Editions
         extends AbstractBase {
 
+    /** Search URL template. */
     private static final String EDITIONS_URL = "/cgi-bin/se.cgi?arg=%s&type=ISBN";
-    private ArrayList<String> mEditions;
+
+    /** List of ISFDB native book id for all found editions. */
+    private final ArrayList<Edition> mEditions = new ArrayList<>();
 
     /**
      * Constructor.
-     * <p>
-     * We assume the isbn is already checked & valid.
      */
-    public Editions(@NonNull final String isbn) {
-        mPath = ISFDBManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
+    public Editions() {
     }
 
     /**
+     * Fails silently, returning an empty list.
+     *
+     * @param isbn to get editions for. MUST be valid.
+     *
      * @return a list with native ISFDB book id's pointing to individual editions
      * (with the same isbn)
      *
      * @throws SocketTimeoutException on timeout
      */
-    @NonNull
-    long[] getBookIds()
+    public ArrayList<Edition> fetch(@NonNull final String isbn)
             throws SocketTimeoutException {
-        if (mEditions == null) {
-            fetch();
-        }
-        long[] ids = new long[mEditions.size()];
 
-        for (int i = 0; i < mEditions.size(); i++) {
-            ids[i] = stripNumber(mEditions.get(i));
-        }
-        return ids;
-    }
+        String url = ISFDBManager.getBaseURL() + String.format(EDITIONS_URL, isbn);
 
-    /**
-     * Example return:  "http://www.isfdb.org/cgi-bin/pl.cgi?230949".
-     * <p>
-     * Fails silently, returning an empty list.
-     *
-     * @return a list with URLs pointing to individual editions (with the same isbn)
-     *
-     * @throws SocketTimeoutException on timeout
-     */
-    public ArrayList<String> fetch()
-            throws SocketTimeoutException {
-        if (mEditions == null) {
-            mEditions = new ArrayList<>();
-        }
-        if (!loadPage()) {
+        // do not auto-redirect, handled manually. See the comments inside the loadPage method.
+        if (!loadPage(url, false)) {
             return mEditions;
         }
 
-        findEntries(mDoc, "tr.table0", "tr.table1");
-        // if no editions found, we might have been redirected to the book itself
-        if (mEditions.isEmpty()) {
-            // check if the url looks like "http://www.isfdb.org/cgi-bin/pl.cgi?597467"
-            if (mDoc.location().contains("pl.cgi")) {
-                mEditions.add(mDoc.location());
-            }
+        if (mDoc.location().contains("pl.cgi")) {
+            // We got redirected to a book. Populate with the doc (web page) we got back.
+            mEditions.add(new Edition(stripNumber(mDoc.location()), mDoc));
+
+        } else if (mDoc.location().contains("title.cgi")) {
+            // we have multiple editions.
+            findEntries(mDoc, "tr.table0", "tr.table1");
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB_SEARCH) {
-            Logger.info(this, Tracker.State.Exit,"fetch", mEditions.toString());
+            Logger.debugExit(this, "fetch", mEditions);
         }
         return mEditions;
     }
 
+    /**
+     * Search/scrape for the selectors to build the edition list.
+     *
+     * @param doc       to parse
+     * @param selectors to search for
+     */
     private void findEntries(@NonNull final Document doc,
                              @NonNull final String... selectors) {
         for (String selector : selectors) {
@@ -92,10 +83,47 @@ public class Editions
                 if (edLink != null) {
                     String url = edLink.attr("href");
                     if (url != null) {
-                        mEditions.add(url);
+                        mEditions.add(new Edition(stripNumber(url)));
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * A data class for holding the ISFDB native book id and it's doc (web page).
+     */
+    public static class Edition {
+
+        /** The ISFDB native book id. */
+        public final long isfdbId;
+        /**
+         * If a fetch of editions resulted in a single book returned (via redirects),
+         * then the doc is kept here for immediate processing.
+         */
+        @Nullable
+        public final Document doc;
+
+        /**
+         * Constructor: we found a link to a book.
+         *
+         * @param isfdbId of the book link we found
+         */
+        public Edition(final long isfdbId) {
+            this.isfdbId = isfdbId;
+            doc = null;
+        }
+
+        /**
+         * Constructor: we found a single edition, the doc contains the book for further processing.
+         *
+         * @param isfdbId of the book we found
+         * @param doc     of the book we found
+         */
+        public Edition(final long isfdbId,
+                       @Nullable final Document doc) {
+            this.isfdbId = isfdbId;
+            this.doc = doc;
         }
     }
 }

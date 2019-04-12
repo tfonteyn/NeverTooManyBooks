@@ -47,7 +47,6 @@ import androidx.fragment.app.FragmentManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBA;
@@ -234,11 +233,9 @@ public abstract class BookBaseFragment
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
-        Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         if (!setAllFrom) {
             mFields.setAllFrom(book);
         }
-        Tracker.exitOnLoadFieldsFromBook(this, book.getId());
     }
 
     //</editor-fold>
@@ -278,9 +275,9 @@ public abstract class BookBaseFragment
         /*
          * MENU_GROUP_BOOK is shown only when the book is persisted in the database.
          */
-        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete_book)
+        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DELETE, 0, R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
-        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate_book)
+        menu.add(R.id.MENU_GROUP_BOOK, R.id.MENU_BOOK_DUPLICATE, 0, R.string.menu_duplicate)
             .setIcon(R.drawable.ic_content_copy);
         menu.add(R.id.MENU_GROUP_BOOK,
                  R.id.MENU_BOOK_UPDATE_FROM_INTERNET, 0, R.string.menu_internet_update_fields)
@@ -497,7 +494,7 @@ public abstract class BookBaseFragment
         switch (requestCode) {
             case UniqueId.REQ_UPDATE_BOOK_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    //noinspection ConstantConditions
                     long bookId = data.getLongExtra(DBDefinitions.KEY_ID, 0);
                     if (bookId > 0) {
                         // replace current book with the updated one,
@@ -506,18 +503,22 @@ public abstract class BookBaseFragment
                         getBookManager().setBook(book);
                         populateFieldsFromBook();
                     } else {
-                        boolean wasCancelled =
-                                data.getBooleanExtra(UniqueId.BKEY_CANCELED, false);
-                        Logger.info(this, "onActivityResult", "wasCancelled= " + wasCancelled);
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                            Logger.debug("onActivityResult",
+                                           "wasCancelled= " + data.getBooleanExtra(
+                                                 UniqueId.BKEY_CANCELED, false));
+                        }
                     }
                 }
                 break;
 
             default:
-                // lowest level of our Fragment, see if we missed anything
-                Logger.info(this, "BookBaseFragment.onActivityResult",
-                            "NOT HANDLED:"
-                                    + " requestCode=" + requestCode + ", resultCode=" + resultCode);
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                    Logger.warn("BookBaseFragment.onActivityResult",
+                                   "NOT HANDLED:",
+                                   "requestCode=" + requestCode,
+                                   "resultCode=" + resultCode);
+                }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
 
@@ -627,14 +628,14 @@ public abstract class BookBaseFragment
             int visibility = view.getVisibility();
             if (hideIfEmpty) {
                 if (visibility != View.GONE) {
-                    // Determine if we should hide it
+                    // hide any unchecked Checkable.
                     if (view instanceof Checkable) {
                         visibility = ((Checkable) view).isChecked() ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
-                    } else if (view instanceof ImageView) {
-                        // skip.
-                    } else {
-                        // all other fields.
+
+                    } else if (!(view instanceof ImageView)) {
+                        // don't act on ImageView, but all other fields can be string tested.
+                        // Use the fields getValue, so we don't need to know the View class.
                         final String value = mFields.getField(fieldId).getValue().toString().trim();
                         visibility = !value.isEmpty() ? View.VISIBLE : View.GONE;
                         view.setVisibility(visibility);
@@ -795,7 +796,7 @@ public abstract class BookBaseFragment
             } catch (RuntimeException e) {
                 // Log, but ignore. This is a non-critical feature that prevents crashes
                 // when the 'next' key is pressed and some views have been hidden.
-                Logger.error(e);
+                Logger.error(ViewUtils.class, e);
             }
         }
 
@@ -887,7 +888,7 @@ public abstract class BookBaseFragment
                 s = s.substring(0, Math.min(s.length(), 20));
                 sb.append(s);
             } else {
-                Logger.info(BookBaseFragment.class, "debugDumpViewTree", sb.toString());
+                Logger.debug(BookBaseFragment.class,"debugDumpViewTree", sb);
             }
             if (view instanceof ViewGroup) {
                 ViewGroup g = (ViewGroup) view;

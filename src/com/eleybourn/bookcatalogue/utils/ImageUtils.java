@@ -80,13 +80,13 @@ public final class ImageUtils {
                                     final int maxWidth,
                                     final int maxHeight,
                                     final boolean upscale) {
-        if (BuildConfig.DEBUG) {
-            Logger.info(ImageUtils.class, "setImageView",
-                        "maxWidth=" + maxWidth,
-                        "maxHeight=" + maxHeight,
-                        "upscale=" + upscale,
-                        bm != null ? "bm.width=" + bm.getWidth() : "no bm",
-                        bm != null ? "bm.height=" + bm.getHeight() : "no bm");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
+            Logger.debug(ImageUtils.class,"setImageView",
+                           "maxWidth=" + maxWidth,
+                           "maxHeight=" + maxHeight,
+                           "upscale=" + upscale,
+                                 bm != null ? "bm.width=" + bm.getWidth() : "no bm",
+                                 bm != null ? "bm.height=" + bm.getHeight() : "no bm");
         }
 
         destView.setMaxWidth(maxWidth);
@@ -195,7 +195,7 @@ public final class ImageUtils {
     public static Bitmap createScaledBitmap(@NonNull final Bitmap src,
                                             final int dstWidth,
                                             final int dstHeight) {
-        Matrix m = new Matrix();
+        Matrix matrix = new Matrix();
 
         final int width = src.getWidth();
         final int height = src.getHeight();
@@ -203,12 +203,12 @@ public final class ImageUtils {
             final float sx = (float) dstWidth / width;
             final float sy = (float) dstHeight / height;
             // Next line from original method: using this still causes distortion,
-            // m.setScale(sx, sy);
+            // matrix.setScale(sx, sy);
             // instead work out the ratio so that it fits exactly
             float ratio = (sx < sy) ? sx : sy;
-            m.setScale(ratio, ratio);
+            matrix.setScale(ratio, ratio);
         }
-        return Bitmap.createBitmap(src, 0, 0, width, height, m, true);
+        return Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
     }
 
     /**
@@ -262,18 +262,18 @@ public final class ImageUtils {
                 (int) Math.pow(2, Math.ceil(Math.log(idealSampleSize) / Math.log(2)));
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.info(ImageUtils.class, "createScaledBitmap",
-                        "filename = " + fileSpec,
-                        "exact=" + exact,
-                        "maxWidth=" + maxWidth,
-                        "opt.outWidth=" + opt.outWidth,
-                        "widthRatio=" + widthRatio,
-                        "maxHeight=" + maxHeight,
-                        "opt.outHeight=" + opt.outHeight,
-                        "heightRatio=" + heightRatio,
-                        "ratio=" + ratio,
-                        "idealSampleSize =" + idealSampleSize,
-                        "samplePow2=" + samplePow2);
+            Logger.debug(ImageUtils.class,"createScaledBitmap",
+                           "filename = " + fileSpec,
+                           "exact=" + exact,
+                           "maxWidth=" + maxWidth,
+                           "opt.outWidth=" + opt.outWidth,
+                           "widthRatio=" + widthRatio,
+                           "maxHeight=" + maxHeight,
+                           "opt.outHeight=" + opt.outHeight,
+                           "heightRatio=" + heightRatio,
+                           "ratio=" + ratio,
+                           "idealSampleSize =" + idealSampleSize,
+                           "samplePow2=" + samplePow2);
         }
 
         final Bitmap bm;
@@ -291,11 +291,12 @@ public final class ImageUtils {
                     // We ran out of memory, most likely
                     // TODO: Need a way to try loading images after GC().
                     // Otherwise, covers in cover browser will stay blank.
-                    Logger.error("Unexpectedly failed to decode bitmap; memory exhausted?");
+                    Logger.warn(ImageUtils.class, "createScaledBitmap",
+                                              "Unexpectedly failed to decode bitmap; memory exhausted?");
                     return null;
                 }
 
-                final android.graphics.Matrix matrix = new android.graphics.Matrix();
+                final Matrix matrix = new Matrix();
                 // Fixup ratio based on new sample size and SCALE it.
                 ratio = ratio / (1.0f / opt.inSampleSize);
                 matrix.postScale(ratio, ratio);
@@ -312,14 +313,14 @@ public final class ImageUtils {
                 bm = BitmapFactory.decodeFile(fileSpec, opt);
             }
         } catch (OutOfMemoryError e) {
-            Logger.error(e);
+            Logger.error(ImageUtils.class, e);
             return null;
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.info(ImageUtils.class, "createScaledBitmap",
-                        "bm.width=" + bm.getWidth(),
-                        "bm.height=" + bm.getHeight());
+            Logger.debug(ImageUtils.class,"createScaledBitmap",
+                           "bm.width=" + bm.getWidth(),
+                           "bm.height=" + bm.getHeight());
         }
 
         return bm;
@@ -343,7 +344,7 @@ public final class ImageUtils {
             success = StorageUtils.saveInputStreamToFile(con.inputStream, file);
         } catch (IOException e) {
             if (BuildConfig.DEBUG /* always log */) {
-                Logger.debug(e);
+                Logger.debugWithStackTrace(ImageUtils.class, e);
             }
         }
 
@@ -372,7 +373,7 @@ public final class ImageUtils {
                 return out.toByteArray();
             }
         } catch (IOException e) {
-            Logger.error(e);
+            Logger.error(ImageUtils.class, e);
         }
         return null;
     }
@@ -395,9 +396,9 @@ public final class ImageUtils {
                                                       new BitmapFactory.Options());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Logger.info(ImageUtils.class, "getBitmap",
-                        "Array " + bytes.length + " bytes",
-                        "bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
+            Logger.debug(ImageUtils.class,"getBitmap",
+                           "Array " + bytes.length + " bytes",
+                           "bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
         }
         return bitmap;
     }
@@ -509,8 +510,8 @@ public final class ImageUtils {
             standard = Math.min(MAX_SIZE_STANDARD, maxMetrics * 2 / 3);
             large = Math.min(MAX_SIZE_LARGE, maxMetrics);
 
-            if (BuildConfig.DEBUG) {
-                Logger.info(this,"ImageSize",
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
+                Logger.debug(this, "ImageSize",
                             "metrics.widthPixels=" + metrics.widthPixels,
                             "metrics.heightPixels=" + metrics.heightPixels,
                             "small=" + small,

@@ -43,8 +43,7 @@ public final class NetworkUtils {
                 NetworkInfo info = connectivity.getNetworkInfo(network);
                 if (info != null && info.isConnected()) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                        Logger.info(NetworkUtils.class, "isNetworkAvailable",
-                                    info.toString());
+                        Logger.debug(NetworkUtils.class, "isNetworkAvailable", info);
                     }
                     return true;
                 }
@@ -79,7 +78,7 @@ public final class NetworkUtils {
      * url format: "http://some.site.com" or "https://secure.site.com"
      * Any path after the hostname will be ignored.
      * If a port is specified.. it's ignored. Only ports 80/443 are used.
-     *
+     * <p>
      * FIXME: this fails if there is a DNS redirect ? using a dumb check on google DNS only for now.
      *
      * @param site url to check,
@@ -89,9 +88,9 @@ public final class NetworkUtils {
     @WorkerThread
     public static boolean isAlive(@NonNull final String site) {
 
-//        String url = site.toLowerCase();
+//        String url = site.toLowerCase(LocaleUtils.getPreferredLocal());
 //        int port = url.startsWith("https://") ? 443 : 80;
-//        String host = url.toLowerCase().split("//")[1].split("/")[0];
+//        String host = url.split("//")[1].split("/")[0];
 //        return isAlive(host, port);
 
         // test internet access instead
@@ -113,21 +112,25 @@ public final class NetworkUtils {
         try {
             long t;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                t = System.currentTimeMillis();
+                //noinspection UnusedAssignment
+                t = System.nanoTime();
             }
             Socket sock = new Socket();
             sock.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_MS);
             sock.close();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.info(NetworkUtils.class, "isAlive",
-                            "Site: " + host + ':' + port
-                                    + ", took " + (System.currentTimeMillis() - t) + " ms");
+                Logger.debug(NetworkUtils.class, "isAlive",
+                             "Site: " + host + ':' + port
+                                     + ", took " + (System.nanoTime() - t) + " nano");
             }
             return true;
+
         } catch (IOException e) {
-            Logger.info(NetworkUtils.class, "isAlive",
-                        "Site unreachable: " + host + ':' + port + '\n'
-                                + e.getLocalizedMessage());
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+                Logger.warn(NetworkUtils.class, "isAlive",
+                            "Site unreachable: " + host + ':' + port + '\n'
+                                    + e.getLocalizedMessage());
+            }
             return false;
         }
     }

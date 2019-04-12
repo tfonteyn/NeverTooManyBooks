@@ -21,6 +21,7 @@
 package com.eleybourn.bookcatalogue.goodreads.api;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -304,7 +305,7 @@ public class ListReviewsApiHandler
                    IOException {
 
         @SuppressWarnings("UnusedAssignment")
-        long t0 = System.currentTimeMillis();
+        long t0 = System.nanoTime();
 
         // Sort by update_date (descending) so sync is faster.
         // Specify 'shelf=all' because it seems goodreads returns the shelf that is selected
@@ -332,9 +333,9 @@ public class ListReviewsApiHandler
         Bundle results = mFilters.getData();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Logger.info(this, "run", "Found "
-                    + results.getLong(ReviewFields.TOTAL)
-                    + " books in " + (System.currentTimeMillis() - t0) + "ms");
+            Logger.debug(this,"run", "Found "
+                          + results.getLong(ReviewFields.TOTAL)
+                          + " books in " + (System.nanoTime() - t0) + "nano");
         }
 
         return results;

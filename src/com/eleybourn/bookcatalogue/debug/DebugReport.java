@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eleybourn.bookcatalogue.App;
+import com.eleybourn.bookcatalogue.BuildConfig;
 import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBHelper;
 import com.eleybourn.bookcatalogue.scanner.Pic2ShopScanner;
@@ -36,7 +37,7 @@ public final class DebugReport {
 
     /** files with these prefixes will be bundled in the report. */
     private static final String[] FILE_PREFIXES = new String[]{
-            "DbUpgrade", "DbExport", "error.log", "export.csv"};
+            "DbUpgrade", "DbExport", "warnWithStackTrace.log", "export.csv"};
 
     private DebugReport() {
     }
@@ -109,7 +110,7 @@ public final class DebugReport {
         // setup the mail message
         String subject = '[' + activity.getString(R.string.app_name) + "] "
                 + activity.getString(R.string.debug_subject);
-        final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE)
+        final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
                 .setType("plain/text")
                 .putExtra(Intent.EXTRA_SUBJECT, subject)
                 .putExtra(Intent.EXTRA_EMAIL, activity.getString(R.string.email_debug)
@@ -194,12 +195,14 @@ public final class DebugReport {
         message.append("Details:\n\n")
                .append(activity.getString(R.string.debug_body)).append("\n\n");
 
-        Logger.info(DebugReport.class, "sendDebugInfo", message.toString());
+        if (BuildConfig.DEBUG) {
+            Logger.debug(DebugReport.class, "sendDebugInfo", message);
+        }
 
         ArrayList<String> extraText = new ArrayList<>();
         extraText.add(message.toString());
 
-        emailIntent.putExtra(Intent.EXTRA_TEXT, extraText);
+        intent.putExtra(Intent.EXTRA_TEXT, extraText);
 
         try {
             // Find all files of interest to send, root and log dirs
@@ -217,12 +220,12 @@ public final class DebugReport {
                 }
             }
 
-            emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachmentUris);
+            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachmentUris);
             activity.startActivity(
-                    Intent.createChooser(emailIntent, activity.getString(R.string.send_mail)));
+                    Intent.createChooser(intent, activity.getString(R.string.title_send_mail)));
 
         } catch (NullPointerException e) {
-            Logger.error(e);
+            Logger.error(DebugReport.class, e);
             UserMessage.showUserMessage(activity, R.string.error_email_failed);
         }
     }

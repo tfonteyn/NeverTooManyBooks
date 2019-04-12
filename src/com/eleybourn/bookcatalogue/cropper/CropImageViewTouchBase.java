@@ -247,12 +247,12 @@ public abstract class CropImageViewTouchBase
             return;
         }
 
-        Matrix m = getImageViewMatrix();
+        Matrix matrix = getImageViewMatrix();
 
         RectF rect = new RectF(0, 0, mBitmapDisplayed.getBitmap().getWidth(),
                                mBitmapDisplayed.getBitmap().getHeight());
 
-        m.mapRect(rect);
+        matrix.mapRect(rect);
 
         float height = rect.height();
         float width = rect.width();

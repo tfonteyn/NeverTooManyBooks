@@ -6,7 +6,7 @@
     <!-- ####################################################################################### -->
 
     <!-- Preference VALUE -->
-    <string name="use_default_setting">Standardeinstellung verwenden</string>
+    <string name="X_use_default_setting">Standardeinstellung verwenden</string>
 
     <!-- Preference GROUP -->
     <string name="pg_general">Allgemein</string>
@@ -15,7 +15,7 @@
     <string name="pt_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
 
     <!-- Preference GROUP -->
-    <string name="pg_thumbnails">Cover-Bilder</string>
+    <string name="pg_thumbnails">Umschlagbilder</string>
     <!-- Preference GROUP -->
     <string name="pg_scanning">Scanne</string>
     <!-- Preference GROUP -->
@@ -118,7 +118,7 @@
     <!-- ========== Book list style preferences ========== -->
 
     <!-- Preference - Show this style in the 'preferred styles' list/menu -->
-    <string name="pt_bob_preferred_style">Bevorzugt</string>
+    <string name="X_pt_bob_preferred_style">Bevorzugt</string>
 
     <!-- Preference - Use scaled text and images -->
     <string name="pt_bob_item_size">Größe der Einträge in der Bücherliste</string>

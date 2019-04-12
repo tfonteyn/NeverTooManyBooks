@@ -25,7 +25,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class ExportDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = ExportDialogFragment.class.getSimpleName();
 
     private ExportSettings mExportSettings;

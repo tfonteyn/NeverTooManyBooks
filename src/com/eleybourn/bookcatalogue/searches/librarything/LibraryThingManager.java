@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,6 +53,7 @@ import com.eleybourn.bookcatalogue.searches.SearchSites;
 import com.eleybourn.bookcatalogue.tasks.TerminatorConnection;
 import com.eleybourn.bookcatalogue.utils.ISBN;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.NetworkUtils;
 
 /**
@@ -65,7 +67,10 @@ import com.eleybourn.bookcatalogue.utils.NetworkUtils;
  * <p>
  * REST api: http://www.librarything.com/services/rest/documentation/1.1/
  * <p>
- * Details via ISBN: http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork&apikey=<DEVKEY>&isbn=<ISBN>
+ * Details via ISBN:
+ * http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork
+ * &apikey=<DEVKEY>&isbn=<ISBN>
+ *
  * <p>
  * xml see {@link #search} header
  * <p>
@@ -109,7 +114,7 @@ public class LibraryThingManager
     private static final String BASE_URL_COVERS
             = "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
 
-    /** to control access to mLastRequestTime, we synchronize on this final Object. */
+    /** to control access to sLastRequestTime, we synchronize on this final Object. */
     @NonNull
     private static final Object LAST_REQUEST_TIME_LOCK = new Object();
     /**
@@ -117,7 +122,7 @@ public class LibraryThingManager
      * Only modify this value from inside a synchronized (LAST_REQUEST_TIME_LOCK)
      */
     @NonNull
-    private static Long mLastRequestTime = 0L;
+    private static Long sLastRequestTime = 0L;
 
     /**
      * Constructor.
@@ -131,33 +136,34 @@ public class LibraryThingManager
     }
 
     /**
-     * Use mLastRequestTime to determine how long until the next request is allowed; and
-     * update mLastRequestTime this needs to be synchronized across threads.
+     * Use sLastRequestTime to determine how long until the next request is allowed;
+     * and update sLastRequestTime this needs to be synchronized across threads.
      * <p>
-     * Note that as a result of this approach mLastRequestTime may in fact be
+     * Note that as a result of this approach sLastRequestTime may in fact be
      * in the future; callers to this routine effectively allocate time slots.
      * <p>
-     * This method will sleep() until it can make a request; if ten threads call this
-     * simultaneously, one will return immediately, one will return 1 second later, another
-     * two seconds etc.
+     * This method will sleep() until it can make a request; if 10 threads call this
+     * simultaneously, one will return immediately, one will return 1 second later,
+     * another two seconds etc.
      */
     private static void waitUntilRequestAllowed() {
         long now = System.currentTimeMillis();
         long wait;
         synchronized (LAST_REQUEST_TIME_LOCK) {
-            wait = 1000 - (now - mLastRequestTime);
+            wait = 1_000 - (now - sLastRequestTime);
             //
-            // mLastRequestTime must be updated while synchronized. As soon as this
+            // sLastRequestTime must be updated while synchronized. As soon as this
             // block is left, another block may perform another update.
             //
             if (wait < 0) {
                 wait = 0;
             }
-            mLastRequestTime = now + wait;
+            sLastRequestTime = now + wait;
         }
 
         if (wait > 0) {
             try {
+                Log.d("sleep", "" + wait);
                 Thread.sleep(wait);
             } catch (InterruptedException ignored) {
             }
@@ -250,7 +256,7 @@ public class LibraryThingManager
      *
      * @param isbn to lookup. Must be a valid ISBN
      *
-     * @return a list of isbn's of alternative editions of our original isbn
+     * @return a list of isbn's of alternative editions of our original isbn, can be empty.
      */
     @NonNull
     public static ArrayList<String> searchEditions(@NonNull final String isbn) {
@@ -263,11 +269,12 @@ public class LibraryThingManager
             return editions;
         }
 
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
+            Logger.debug(LibraryThingManager.class,"searchEditions", "isbn=" + isbn);
+        }
+
         // add the original isbn, as there might be more images at the time this search is done.
         editions.add(isbn);
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
-            Logger.info(LibraryThingManager.class, "searchEditions", "isbn=" + isbn);
-        }
 
         // Base path for an Editions search
         String url = String.format(EDITIONS_URL, isbn);
@@ -286,12 +293,12 @@ public class LibraryThingManager
             // Don't bother catching general exceptions, they will be caught by the caller.
         } catch (ParserConfigurationException | SAXException | IOException e) {
             if (BuildConfig.DEBUG /* always log */) {
-                Logger.debug(e);
+                Logger.debugWithStackTrace(LibraryThingManager.class, e);
             }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING_MANAGER) {
-            Logger.info(LibraryThingManager.class, "searchEditions", "editions=" + editions);
+            Logger.debug(LibraryThingManager.class,"searchEditions", "editions=" + editions);
         }
         return editions;
     }
@@ -304,8 +311,7 @@ public class LibraryThingManager
     public static boolean noKey() {
         boolean noKey = getDevKey().isEmpty();
         if (noKey) {
-            Logger.info(LibraryThingManager.class, "noKey",
-                        "LibraryThing dev key not available");
+            Logger.warn(LibraryThingManager.class, "noKey", "LibraryThing key not available");
         }
         return noKey;
     }
@@ -326,8 +332,8 @@ public class LibraryThingManager
         SharedPreferences prefs = App.getPrefs();
         SharedPreferences.Editor ed = prefs.edit();
         for (String key : prefs.getAll().keySet()) {
-            if (key.toLowerCase()
-                   .startsWith(PREFS_HIDE_ALERT.toLowerCase())) {
+            if (key.toLowerCase(LocaleUtils.getSystemLocale())
+                   .startsWith(PREFS_HIDE_ALERT.toLowerCase(LocaleUtils.getSystemLocale()))) {
                 ed.remove(key);
             }
         }
@@ -431,7 +437,7 @@ public class LibraryThingManager
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always log */) {
-                Logger.debug(e);
+                Logger.debugWithStackTrace(this, e);
             }
         }
 

@@ -130,7 +130,7 @@ class Queue
                 }
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception e) {
-            Logger.error(e);
+            Logger.error(this, e);
         } finally {
             try {
                 if (mTQdba != null) {
@@ -162,7 +162,7 @@ class Queue
             if (task.getException() == null) {
                 task.setException(e);
             }
-            Logger.error(e, "Error running task " + task.getId());
+            Logger.error(this, e, "Error running task " + task.getId());
         }
         handleTaskResult(task, result, requeue);
     }

@@ -57,7 +57,7 @@ public class TextFieldEditorDialogFragment
         extends
         EditorDialogFragment<TextFieldEditorDialogFragment.OnTextFieldEditorResultsListener> {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = TextFieldEditorDialogFragment.class.getSimpleName();
 
     /** Argument: Dialog text/message. */
@@ -72,7 +72,7 @@ public class TextFieldEditorDialogFragment
     /**
      * Constructor.
      *
-     * @param callerTag     tag of the calling fragment to send results back to.
+     * @param callerTag     t of the calling fragment to send results back to.
      * @param field         the field whose content we want to edit
      * @param dialogTitleId titel resource id for the dialog
      * @param multiLine     <tt>true</tt> if the text box should allow multi-line

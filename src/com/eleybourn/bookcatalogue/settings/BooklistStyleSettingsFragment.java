@@ -21,7 +21,6 @@ import com.eleybourn.bookcatalogue.booklist.BooklistGroup;
 import com.eleybourn.bookcatalogue.booklist.BooklistStyle;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.dialogs.HintManager;
 
 /**
@@ -33,7 +32,7 @@ import com.eleybourn.bookcatalogue.dialogs.HintManager;
 public class BooklistStyleSettingsFragment
         extends BaseSettingsFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = BooklistStyleSettingsFragment.class.getSimpleName();
 
     /** Parameter used to pass data to this activity. */
@@ -51,8 +50,7 @@ public class BooklistStyleSettingsFragment
         mStyle = requireArguments().getParcelable(REQUEST_BKEY_STYLE);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             //noinspection ConstantConditions
-            Logger.info(this, Tracker.State.Enter,
-                        "onCreatePreferences", mStyle.toString());
+            Logger.debugEnter(this, "onCreatePreferences", mStyle.toString());
         }
 
         // We use the style UUID as the filename for the prefs.
@@ -80,10 +78,12 @@ public class BooklistStyleSettingsFragment
         // Set the title (not the screen title)
         if (mStyle.getId() == 0) {
             activity.setTitle(
-                    getString(R.string.title_clone_style_colon_name, mStyle.getDisplayName(activity)));
+                    getString(R.string.title_clone_style_colon_name,
+                              mStyle.getDisplayName(activity)));
         } else {
             activity.setTitle(
-                    getString(R.string.title_edit_style_colon_name, mStyle.getDisplayName(activity)));
+                    getString(R.string.title_edit_style_colon_name,
+                              mStyle.getDisplayName(activity)));
         }
         // Display hint if required
         if (savedInstanceState == null) {

@@ -37,7 +37,7 @@ public final class DEBUG_SWITCHES {
 
 
 
-    public static final boolean TMP_ANTHOLOGY = false;
+    public static final boolean TMP_ANTHOLOGY = true;
 
     public static final boolean BOOKLIST_BUILDER = false;
 
@@ -58,6 +58,9 @@ public final class DEBUG_SWITCHES {
     /** {@link com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask}. */
     public static final boolean MANAGED_TASKS = false;
 
+    /** {@link CoverBrowser}. */
+    public static final boolean COVER_BROWSER = false;
+
     /** reading/writing a backup file. */
     public static final boolean BACKUP = false;
 
@@ -71,7 +74,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean FIELD_BOOK_TRANSFERS = false;
 
     /** all things XML related. */
-    public static final boolean XML = true;
+    public static final boolean XML = false;
 
 
 
@@ -95,7 +98,7 @@ public final class DEBUG_SWITCHES {
     /* ****************************************************************************************** */
 
     /** {@link com.eleybourn.bookcatalogue.searches.SearchCoordinator} and related. */
-    public static final boolean SEARCH_INTERNET = false;
+    public static final boolean SEARCH_INTERNET = true;
 
     /**
      * GoodReads search, but also the sync API.
@@ -107,7 +110,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean LIBRARY_THING_MANAGER = false;
 
     /** {@link com.eleybourn.bookcatalogue.searches.isfdb.ISFDBBook}. */
-    public static final boolean ISFDB_SEARCH = false;
+    public static final boolean ISFDB_SEARCH = true;
 
     /** {@link com.eleybourn.bookcatalogue.searches.openlibrary.OpenLibraryManager}. */
     public static final boolean OPEN_LIBRARY_SEARCH = false;

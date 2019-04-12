@@ -27,7 +27,7 @@ import com.eleybourn.bookcatalogue.utils.StorageUtils;
 public class BackupTask
         extends AsyncTask<Void, Object, ExportSettings> {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = BackupTask.class.getSimpleName();
     /** Generic identifier. */
     private static final int M_TASK_ID = R.id.TASK_ID_SAVE_TO_ARCHIVE;
@@ -153,7 +153,7 @@ public class BackupTask
             ed.apply();
 
         } catch (IOException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             mException = e;
             cleanup();
         }

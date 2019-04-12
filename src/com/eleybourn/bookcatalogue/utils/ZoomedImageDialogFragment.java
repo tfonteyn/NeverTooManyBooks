@@ -24,7 +24,7 @@ import com.eleybourn.bookcatalogue.UniqueId;
 public class ZoomedImageDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = ZoomedImageDialogFragment.class.getSimpleName();
 
     /**

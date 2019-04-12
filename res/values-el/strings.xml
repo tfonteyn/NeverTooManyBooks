@@ -17,7 +17,7 @@
     <string name="lbl_pages">Σελίδες</string>
     <string name="btn_confirm_add_book">Προσθήκη Βιβλίου</string>
     <string name="btn_confirm_update">Ενημέρωση</string>
-    <string name="info_no_books_yet">Δεν υπάρχουν βιβλία σε αυτό το ράφι. Παρακαλούμε προσθέστε μερικά με το μενού στο κάτω μέρος της οθόνης.</string>
+    <string name="X_info_no_books_yet">Δεν υπάρχουν βιβλία σε αυτό το ράφι. Παρακαλούμε προσθέστε μερικά με το μενού στο κάτω μέρος της οθόνης.</string>
     <string name="menu_expand_all">Επέκταση Όλων</string>
     <string name="X_menu_sort_by">Ταξινόμηση κατα</string>
     <string name="menu_collapse_all">Απόκρυψη Όλων</string>
@@ -28,7 +28,7 @@
     <string name="X_btn_confirm_add_bs">Προσθήκη Ραφιού</string>
     <string name="menu_bookshelves">βιβλία Ράφια…</string>
     <string name="X_btn_confirm_save_bs">Αποθήκευση Ραφιού</string>
-    <string name="menu_delete_bookshelf">Διαγραφή Ραφιού</string>
+    <string name="X_menu_delete_bookshelf">Διαγραφή Ραφιού</string>
     <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
     <string name="lbl_bookshelf">Ράφι</string>
     <string name="bookshelf_all_books">Όλα τα βιβλία.</string>
@@ -41,12 +41,12 @@
     <string name="warning_book_not_found">Το βιβλίο που σαρώθηκε δεν βρέθηκε. Κάποιες φορές το σωστό barcode βρίσκεται στο εσωτερικό του εξωφύλλου. Αλλιώς εισάγετε τις λεπτομέρειες χειροκίνητα.</string>
     <string name="lbl_series">Σειρές</string>
     <string name="lbl_series_num">#</string>
-    <string name="lbl_series_num_long">Σειρές #</string>
+    <string name="X_lbl_series_num_long">Σειρές #</string>
     <string name="title_import_book_data">Εισαγωγή Βιβλιων</string>
     <string name="warning_import_be_cautious">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
     <string name="X_import_error_failed_is_csv_file_location_correct">ΣΦΑΛΜΑ: Εισαγωγή δεδομένων (από SDCard) απέτυχε. Βρίσκεται το αρχείο στη σωστή τοποθεσία;</string>
     <string name="X_search_title">Αποτελέσματα αναζήτησης</string>
-    <string name="results_found">Αποτελέσματα βρέθηκαν</string>
+    <string name="X_results_found">Αποτελέσματα βρέθηκαν</string>
     <string name="menu_administration_long">Λειτουργίες διαχείρισης</string>
     <string name="menu_administration">Διαχειριστής</string>
     <string name="info_install_scanner">Για να σκανάρετε τα βιβλία σας μέσω ISBN barcode, θα πρέπει να εγκαταστήσετε κάποια απο τίς εφαρμογές Zxing, pic2shop or Google Googles για σάρωση barcode.</string>
@@ -75,34 +75,45 @@
     <string name="confirm_overwrite_thumbnail">Τα επιλεγμένα πεδία θα ενημερωθούν όπως φαίνεται, αλλά οι Μικρογραφίες μπορούν να κατέβουν προαιρετικά για ΌΛΑ τα βιβλία.\n\nΘέλετε να αντικαταστήσετε όλες τις υπάρχουσες μικρογραφίες; Προσοχή, θα χρειαστεί πολύς χρόνος. </string>
     <string name="yes">Ναι</string>
     <string name="no">Όχι</string>
-    <string name="error_search_failed">Η αναζήτηση του βιβλίου απέτυχε. Παρακαλούμε ελέγξτε τις ρυθμίσεις δικτύου.</string>
+    <string name="error_search_failed">
+        Η αναζήτηση του βιβλίου απέτυχε. Παρακαλούμε ελέγξτε τις ρυθμίσεις δικτύου.
+    </string>
     <string name="error_search_exception">Αναζήτηση απέτυχε όταν %1$s: %2$s</string>
-    <string name="menu_delete">Διαγραφή μικρογραφίας</string>
+    <string name="menu_delete">Διαγράφω</string>
     <string name="help">Βοήθεια</string>
-    <string name="info_manage_fields">Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου. Τα μη επιλεγμένα πεδία είναι κρυφά.</string>
+    <string name="X_info_manage_fields">
+        Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου.
+        Τα μη επιλεγμένα πεδία είναι κρυφά.
+    </string>
     <string name="X_anthology_titles">Τίτλοι Ανθολογιών</string>
     <string name="about_donate_amazon">Amazon Wishlist</string>
-    <string name="lbl_toc_same_author">Όλες οι ιστορίες σε αυτήν την ανθολογία είναι γραμμένες από τον ίδιο συγγραφέα.</string>
-    <string name="menu_delete_toc_entry">Διαγραφή τίτλου από Ανθολογία</string>
+    <string name="lbl_toc_multiple_authors">Αυτή η ανθολογία έχει πολλούς συγγραφείς.</string>
+    <string name="X_menu_delete_toc_entry">Διαγραφή τίτλου από Ανθολογία</string>
     <string name="lbl_is_anthology">Είναι αυτό το βιβλίο ανθολογία;</string>
     <string name="menu_populate_toc">Αυτόματη συμπλήρωση τίτλων (ΠΕΙΡΑΜΑΤΙΚΟ)</string>
     <string name="error_auto_toc_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε</string>
     <string name="lbl_anthology">Ανθολογία</string>
-    <string name="warning_toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί</string>
+    <string name="warning_toc_confirm">
+        Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί
+    </string>
     <string name="menu_cover_add_from_camera">Από κάμερα…</string>
     <string name="title_cover">Μικρογραφία Εξωφύλλου</string>
-    <string name="menu_cover_rotate">Περιστροφή Μικρογραφίας…</string>
-    <string name="menu_cover_rotate_cw">Περιστροφή δεξιόστροφα</string>
-    <string name="menu_cover_rotate_ccw">Περιστροφή αριστερόστροφα</string>
-    <string name="menu_cover_rotate_180">Περιστροφή 180 μοίρες</string>
+    <string name="menu_cover_rotate">Περιστροφή…</string>
+    <string name="menu_cover_rotate_cw">Δεξιόστροφος</string>
+    <string name="menu_cover_rotate_ccw">Αριστερόστροφος</string>
     <string name="lbl_is_signed">Έιναι αυτό το βιβλίο υπογεγραμένο</string>
     <string name="lbl_read_start">Ημερομηνία Εναρξης Ανάγνωσης</string>
     <string name="lbl_read_end">Ημερομηνία Λήξης Ανάγνωσης</string>
     <string name="lbl_location_long">Τοποθεσία του βιβλίου</string>
     <string name="title_duplicate_book">Διπλοεγγραφή Βιβλίου</string>
-    <string name="confirm_duplicate_book_message">Το βιβλίο που προσπαθείτε να προσθέσετε υπάρχει ήδη στη βάση δεδομένων, είστε σίγουροι ότι θέλετε να προσθέσετε και άλλο αντίγραφο;</string>
+    <string name="confirm_duplicate_book_message">
+        Το βιβλίο που προσπαθείτε να προσθέσετε υπάρχει ήδη στη βάση δεδομένων,
+        είστε σίγουροι ότι θέλετε να προσθέσετε και άλλο αντίγραφο;
+    </string>
     <string name="menu_cover_add_from_gallery">Από φωτογραφίες…</string>
-    <string name="warning_backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
+    <string name="warning_backup_request">
+        Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;
+    </string>
     <string name="lbl_backup_dialog">Δημιουργία αντιγράφου;</string>
     <string name="searching_amazon">Αναζήτηση στο Amazon</string>
     <string name="searching_google_books">Αναζήτηση στο Google Books</string>
@@ -134,8 +145,8 @@
     <string name="btn_confirm_add">Προσθήκη</string>
     <string name="info_no_authors_yet">Δεν υπάρχουν συγγραφείς για αυτό το Βιβλίο. Μπορείτε να προσθέσετε εσείς χρησιμοποιώντας το πεδίο κειμένο και το κουμπί στη ανω πλευρά της οθόνης.Please add some using the text area and button at the top of this screen.</string>
     <string name="info_no_series_yet">>Δεν υπάρχουν σειρές για αυτό το Βιβλίο. Μπορείτε να προσθέσετε εσείς χρησιμοποιώντας το πεδίο κειμένο και το κουμπί στη ανω πλευρά της οθόνης.</string>
-    <string name="warning_cover_field_not_set">Το εξώφυλλο δεν έχει οριστεί</string>
-    <string name="warning_cover_corrupt">Το εξώφυλλο είναι κατεστραμμένο</string>
+    <string name="X_warning_cover_field_not_set">Το εξώφυλλο δεν έχει οριστεί</string>
+    <string name="X_warning_cover_corrupt">Το εξώφυλλο είναι κατεστραμμένο</string>
     <string name="X_title_cover_detail">Λεπτομέρειες εξωφύλλου</string>
     <string name="title_select_image">Επιλογή εικόνας</string>
     <string name="btn_set_authors">Ορισμός συγγραφέων…</string>
@@ -153,7 +164,7 @@
     <string name="lbl_given_names">Ονόματα</string>
     <string name="X_title_edit_author">Επεξεργασία λεπτομερειών συγγραφέα</string>
     <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού</string>
-    <string name="menu_cover_replace">Αντικατάσταση Μικρογραφίας…</string>
+    <string name="menu_cover_replace">Αντικατάσταση…</string>
     <string name="menu_cover_search_alt_editions">Από άλλες εκδόσεις…</string>
     <string name="warning_required_author_long">Τουλάχιστον ένας συγγραφέας πρέπει να έχει καθοριστεί</string>
     <string name="warning_required_title">Ένας μη κενός τίτλος πρέπει να έχει καθοριστεί</string>
@@ -163,10 +174,10 @@
     <string name="title_delete_series">Διαγραφή Σειράς</string>
     <string name="confirm_really_delete_series">Θέλετε να διαγραφεί η σειρά \‘%1$s\’;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
     <string name="X_title_edit_series">Επεξεργασία λεπτομερειών Σειράς</string>
-    <string name="title_select_cover">Επιλογή εξωφύλλου</string>
+    <string name="X_title_select_cover">Επιλογή εξωφύλλου</string>
     <string name="X_warning_no_isbn_no_editions">Δεν μπορούν να ληφθούν εκδόσεις για βιβλίο χωρίς ISBN</string>
-    <string name="warning_unsaved_edits">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
-    <string name="unsaved_edits_title">Μη αποθηκευμένες αλλαγές</string>
+    <string name="warning_unsaved_edits2">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
+    <string name="X_unsaved_edits_title">Μη αποθηκευμένες αλλαγές</string>
     <string name="confirm_apply_author_changed">Αλλάξατε τον συγγραφέα από:\n  \‘%1$s\’ σε \n  \‘%2$s\’\nΠως επιθυμείτε να εφαρμοστεί αυτή η αλλαγή;\nΣημείωση: Η επιλογή \‘%3$s\’ θα εφαρμοστεί στιγμιαία.</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="title_scope_of_change">Πεδίο εφαρμογής της αλλαγής</string>
@@ -207,13 +218,12 @@
     <string name="bytes">%.0fB</string>
     <string name="debug_subject">Συλλέχθησαν πληροφορίες debugging</string>
     <string name="debug_body">Παρακαλούμε περιγράψτε συνοπτικά το πρόβλημα που αντιμετωπίζετε.</string>
-    <string name="menu_duplicate_book">Αντιγραφή Βιβλίου(Διπλότυπο)</string>
     <string name="lt_incorrect_key">Το κλειδί developer από το LibraryThing είναι λάθος, ή δεν ήταν εφικτή η σύνδεση στο δίκτυο για επαλήθευση.</string>
     <string name="lt_correct_key">Το κλειδί developer από το LibraryThing είναι έγκυρο.</string>
     <string name="error_no_internet_connection">Δεν υπάρχει διαθέσιμη σύνδεση internet.</string>
     <string name="menu_share_this">Δημοσίευση</string>
     <string name="export_csv_email">Θα θέλατε να αποστείλετε σαν email αυτην την εξαγωγή;</string>
-    <string name="menu_cover_crop">Περικοπή Μικρογραφίας</string>
+    <string name="menu_cover_crop">Περικοπή</string>
     <string name="gr_tq_title_task_errors">Σφάλματα εργασιών</string>
     <string name="retry">Επανάληψη</string>
     <string name="gr_tq_menu_delete_event">Διαγραφή Event</string>
@@ -349,13 +359,13 @@
     <string name="X_title_add_style">Νέο στυλ</string>
     <string name="X_pt_bob_filter_read">Επιλογή με βάση την κατάσταση του πεδίου \‘Αναγνωσμένο\’</string>
     <string name="title_select_style">Επιλογή Στυλ</string>
-    <string name="warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
+    <string name="X_warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="edit">Επεξεργασία</string>
     <string name="lbl_settings">Επιλογές</string>
     <string name="error_unexpected_error">Ένα απροσδόκητο σφάλμα συνέβη, παρακαλούμε στείλτε τις λεπτομέρειες στην υποστήριξη με χρήση της επιλογής \‘Βοήθεια\’ από το κεντρικό μενού.</string>
-    <string name="menu_delete_style">Διαγραφή στυλ</string>
-    <string name="menu_edit_booklist_style">Επεξεργασία στυλ</string>
-    <string name="menu_clone_style">Αντιγραφή στυλ</string>
+    <string name="X_menu_delete_style">Διαγραφή στυλ</string>
+    <string name="X_menu_edit_booklist_style">Επεξεργασία στυλ</string>
+    <string name="menu_duplicate">Aντιγράφω</string>
     <string name="about_dash_or_dash">- Ή -</string>
     <string name="about_donate_paypal">Δωρεά μέσω PayPal</string>
     <string name="style_builtin_compact">Συμπαγής</string>
@@ -423,9 +433,9 @@
     <string name="lbl_added_month">Μήνας Πρόσθεσης</string>
     <string name="lbl_added_day">Ημέρα Πρόσθεσης</string>
     <string name="lbl_book">Βιβλίο</string>
-    <string name="in">Μέσα</string>
-    <string name="size">Μέγεθος</string>
-    <string name="updated">Ενημερωμένο</string>
+    <string name="X_in">Μέσα</string>
+    <string name="X_file_size">Μέγεθος</string>
+    <string name="X_updated">Ενημερωμένο</string>
     <string name="import_error_csv_file_not_found">Δε βρέθηκαν αρχεία για εξαγωγή</string>
     <string name="import_warning_select_csv_file">Βρέθηκε πάνω από ένα αρχείο για εξαγωγή - παρακαλούμε επιλέξτε να εισάγετε ένα αρχείο για εξαγωγή από τη λίστα παρακάτω</string>
     <string name="X_error_starting_import_arg">Υπήρξε ένα πρόβλημα στην έναρξη της εισαγωγής: %1$s</string>
@@ -453,7 +463,7 @@
     <string name="lbl_read_day">Ημέρα Ανάγνωσης</string>
     <string name="style_builtin_read_date">Ημερομηνία Ανάγνωσης</string>
     <string name="lbl_details_have_changed">Κάποιες λεπτομέρειες έχουν αλλάξει</string>
-    <string name="confirm_unsaved_changes">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
+    <string name="warning_unsaved_edits">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
     <string name="btn_confirm_exit">Έξοδος</string>
     <string name="btn_continue_editing">Συνέχεια Επεξεργασίας</string>
     <string name="X_warning_title_already_exists">Αυτός ο τίτλος υπάρχει ήδη</string>
@@ -472,7 +482,6 @@
     <string name="progress_msg_searching">Γίνεται αναζήτηση…</string>
     <string name="progress_msg_adding_book">Γίνεται πρόσθεση βιβλίου…</string>
     <string name="lbl_publication">Δημοσίευση</string>
-    <string name="lbl_by_author">από</string>
     <string name="lbl_x_pages">%1$d σελίδες</string>
     <string name="lbl_loaned_to_name">Δανεισμένο σε %1$s</string>
 
@@ -489,7 +498,7 @@
     <!-- This is the heading of the 'Details' tab when editing a book. It needs to be short. "Book Details" is too long. -->
     <string name="tab_lbl_details">Λεπτομ.</string>
     <!-- This is the heading of the 'Loan' tab when editing a book. It needs to be short. "Loan Book" is too long. -->
-    <string name="tab_lbl_loan">Δανεισ.</string>
+    <string name="X_tab_lbl_loan">Δανεισ.</string>
 
     <!-- Button text on the Goodreads activity; only displayed after user has registered -->
     <string name="gr_btn_forget_credentials">Να ξεχαστούν τα διαπιστευτήρια</string>
@@ -542,7 +551,7 @@
     <string name="warning_select_a_non_directory">Παρακαλούμε επιλέξτε ένα αρχείο που δεν είναι κατάλογος</string>
 
     <!-- Displayed in Admin menu advanced options (to make a copy of the internal database on the sdcard -->
-    <string name="menu_copy_database">Αντιγραφή Βάσης Δεδομένων (για τεχνική υποστήριξη)</string>
+    <string name="menu_copy_database">Εξαγωγή βάσης δεδομένων</string>
 
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
@@ -655,7 +664,6 @@
     <string name="tab_lbl_content">περιεχόμενο</string>
     <string name="X_lbl_loaned_to_short">→</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Βιβλία</string>
     <string name="menu_loan_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
@@ -671,5 +679,8 @@
     <string name="lbl_styles">στυλ</string>
     <string name="progress_msg_process_booklist_style">Στυλ βιβλίου…</string>
     <string name="lbl_search_site_order">Αλληλουχία</string>
+    <string name="info_tap_on_image_to_select">Πατήστε τη μεγάλη εικόνα για να επιλέξετε</string>
+    <string name="menu_clear_filters">Διαγραφή φίλτρων</string>
+    <string name="menu_internet_update_fields">Ενημέρωση πεδίων</string>
 
 </resources>

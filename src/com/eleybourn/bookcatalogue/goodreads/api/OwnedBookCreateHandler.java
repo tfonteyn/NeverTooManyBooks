@@ -101,11 +101,11 @@ public class OwnedBookCreateHandler
             throws IOException,
                    AuthorizationException,
                    BookNotFoundException {
-        IsbnToId isbnToId = new IsbnToId(mManager);
+        IsbnToIdHandler isbnToIdHandler = new IsbnToIdHandler(mManager);
         long id;
 
         try {
-            id = isbnToId.isbnToId(isbn);
+            id = isbnToIdHandler.isbnToId(isbn);
         } catch (BookNotFoundException e) {
             throw new ISBN.IsbnInvalidException(e);
         }

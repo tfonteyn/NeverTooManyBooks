@@ -131,7 +131,7 @@ public class Pic2ShopScanner
 //                                       Uri.parse("market://details?id=" + packageName));
 //            context.startActivity(intent);
 //        } catch (ActivityNotFoundException e) {
-//            Logger.error(e, "Google Play not installed.");
+//            Logger.warnWithStackTrace(e, "Google Play not installed.");
 //        }
 //    }
 }

@@ -480,7 +480,7 @@ public class Fields {
     @SuppressWarnings("unused")
     public String getValidationExceptionMessage(@NonNull final Resources res) {
         if (mValidationExceptions.isEmpty()) {
-            return "No error";
+            return "No warnWithStackTrace";
         } else {
             StringBuilder message = new StringBuilder();
             Iterator<ValidatorException> iterator = mValidationExceptions.iterator();
@@ -853,14 +853,14 @@ public class Fields {
         public void putFieldValueInto(@NonNull final Field field,
                                       @NonNull final Bundle values) {
             EditText view = field.getView();
-            values.putString(field.mColumn, field.extract(view.getText().toString()).trim());
+            values.putString(field.mColumn, field.extract(view.getText().toString().trim()));
         }
 
         @Override
         public void putFieldValueInto(@NonNull final Field field,
                                       @NonNull final DataManager values) {
             EditText view = field.getView();
-            values.putString(field.mColumn, field.extract(view.getText().toString()).trim());
+            values.putString(field.mColumn, field.extract(view.getText().toString().trim()));
         }
 
         @NonNull
@@ -930,7 +930,7 @@ public class Fields {
 
     /**
      * ImageView accessor. Uses the UUID to load the image into the view.
-     * Sets a tag {@link R.id#TAG_UUID} on the view with the UUID.
+     * Sets a t {@link R.id#TAG_UUID} on the view with the UUID.
      * <p>
      * ENHANCE: currently limited to handling the cover image ONLY. Make this generic handling filenames instead of uuid's
      */
@@ -971,7 +971,7 @@ public class Fields {
         }
 
         /**
-         * Populates the view and sets the UUID (incoming value) as a tag on the view.
+         * Populates the view and sets the UUID (incoming value) as a t on the view.
          *
          * @param field which defines the View details
          * @param value to set: the book uuid !
@@ -985,7 +985,7 @@ public class Fields {
                 if (value.isEmpty()) {
                     imageFile = StorageUtils.getTempCoverFile();
                 } else {
-                    // We store the uuid as a tag on the view.
+                    // We store the uuid as a t on the view.
                     imageView.setTag(R.id.TAG_UUID, value);
                     imageFile = StorageUtils.getCoverFile(value);
                 }
@@ -1263,7 +1263,7 @@ public class Fields {
                 return currencyInstance.format(price);
 
             } catch (@SuppressWarnings("OverlyBroadCatchBlock") IllegalArgumentException e) {
-                Logger.error(e, "currencyCode=`" + mCurrencyCode + "`," +
+                Logger.error(this, e, "currencyCode=`" + mCurrencyCode + "`," +
                         " source=`" + source + '`');
                 return mCurrencyCode + ' ' + source;
             }
@@ -1420,7 +1420,7 @@ public class Fields {
         public View findViewById(@IdRes final int id) {
             if (mActivity.get() == null) {
                 if (BuildConfig.DEBUG /* always debug */) {
-                    Logger.debug("Activity is NULL");
+                    Logger.debugWithStackTrace(this,"findViewById","Activity is NULL");
                 }
                 return null;
             }
@@ -1457,14 +1457,14 @@ public class Fields {
         public View findViewById(@IdRes final int id) {
             if (mFragment.get() == null) {
                 if (BuildConfig.DEBUG /* always debug */) {
-                    Logger.debug("Fragment is NULL");
+                    Logger.debugWithStackTrace(this,"findViewById","Fragment is NULL");
                 }
                 return null;
             }
             final View view = mFragment.get().getView();
             if (view == null) {
                 if (BuildConfig.DEBUG /* always debug */) {
-                    Logger.debug("View is NULL");
+                    Logger.debugWithStackTrace(this,"findViewById","View is NULL");
                 }
                 return null;
             }
@@ -1598,7 +1598,7 @@ public class Fields {
 
                 } else if (view instanceof ImageView) {
                     //ENHANCE: ImageViewAccessor needs more work
-                    Logger.info(this, "Field", "ImageViewAccessor needs more work, disabled.");
+                    Logger.debug(this, "Field", "ImageViewAccessor needs more work, disabled.");
 //                    mFieldDataAccessor = new ImageViewAccessor(fields.getFieldContext().getContext());
                     // temp dummy, does not actually work for images of course
                     mFieldDataAccessor = new StringDataAccessor();

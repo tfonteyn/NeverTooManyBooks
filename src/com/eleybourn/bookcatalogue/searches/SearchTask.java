@@ -37,7 +37,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.UniqueId;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Series;
 import com.eleybourn.bookcatalogue.entities.Series.SeriesDetails;
 import com.eleybourn.bookcatalogue.tasks.managedtasks.ManagedTask;
@@ -149,8 +148,8 @@ public class SearchTask
     protected void runTask() {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.MANAGED_TASKS) {
-            Logger.info(this, Tracker.State.Enter, "runTask",
-                        getContext().getString(mProgressTitleResId));
+            Logger.debugEnter(this, "runTask",
+                              getContext().getString(mProgressTitleResId));
         }
         // keys? site up? etc...
         if (!mSearchSiteManager.isAvailable()) {
@@ -169,22 +168,28 @@ public class SearchTask
             }
 
         } catch (AuthorizationException e) {
-            Logger.info(this, "runTask", e.getLocalizedMessage());
+            Logger.warn(this, "runTask", e.getLocalizedMessage());
             // authorization exception has a user suitable message
             setFinalError(mProgressTitleResId, e.getLocalizedMessage());
 
         } catch (java.net.SocketTimeoutException e) {
-            Logger.info(this, "runTask", e.getLocalizedMessage());
+            Logger.warn(this, "runTask", e.getLocalizedMessage());
             setFinalError(mProgressTitleResId, R.string.error_network_timeout);
-        } catch (MalformedURLException | UnknownHostException e) {
-            Logger.info(this, "runTask", e.getLocalizedMessage());
+
+        } catch (MalformedURLException e) {
+            Logger.error(this, e);
             setFinalError(mProgressTitleResId, R.string.error_search_configuration);
+
+        } catch (UnknownHostException e) {
+            Logger.warn(this, "runTask", e.getLocalizedMessage());
+            setFinalError(mProgressTitleResId, R.string.error_search_configuration);
+
         } catch (IOException e) {
-            Logger.info(this, "runTask", e.getLocalizedMessage());
+            Logger.warn(this, "runTask", e.getLocalizedMessage());
             setFinalError(mProgressTitleResId, R.string.error_search_failed);
+
         } catch (RuntimeException e) {
-            // unknown e
-            Logger.error(e);
+            Logger.error(this, e);
             setFinalError(mProgressTitleResId, e);
         }
     }

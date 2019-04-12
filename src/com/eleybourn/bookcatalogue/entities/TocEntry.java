@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.utils.IllegalTypeException;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StringList;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -83,6 +84,17 @@ public class TocEntry
     @NonNull
     private String mFirstPublicationDate;
 
+    /** in-memory use only. Indicates this is a 'B' == "book title", or 'T' == "toc" */
+    private char mType;
+
+    public char getType() {
+        return mType;
+    }
+
+    public void setType(final char type) {
+        mType = type;
+    }
+
     /**
      * Constructor.
      *
@@ -127,21 +139,21 @@ public class TocEntry
 
     /**
      * Helper to check if all titles in a list have the same author.
+     *
+     * @return <tt>true</tt> if there is more then 1 author in the TOC
      */
     public static boolean hasMultipleAuthors(@NonNull final List<TocEntry> list) {
-        // check if its all the same author or not
-        boolean singleAuthor = true;
         if (list.size() > 1) {
-            Author author = list.get(0).getAuthor();
-            // yes, we check 0 twice.. oh well.
-            for (TocEntry tocEntry : list) {
-                singleAuthor = author.equals(tocEntry.getAuthor());
-                if (!singleAuthor) {
-                    break;
+            // use the first one as the comparator.
+            Author firstAuthor = list.get(0).getAuthor();
+            for (int i = 1, listSize = list.size(); i < listSize; i++) {
+                if (!firstAuthor.equals(list.get(i).getAuthor())) {
+                    return true;
                 }
             }
         }
-        return !singleAuthor;
+
+        return false;
     }
 
     /**
@@ -255,7 +267,9 @@ public class TocEntry
     @Override
     public long fixupId(@NonNull final DBA db) {
         mAuthor.fixupId(db);
-        mId = db.getTOCEntryId(mAuthor.getId(), mTitle);
+        //TOMF: book locale, but if TOC is present in multiple books... which book locale ?
+        //TOMF: finding an existing TOC relies on exact match of the title. To easy to end up with duplicates due to a typo in a title.
+        mId = db.getTocEntryId(mAuthor.getId(), mTitle.toLowerCase(LocaleUtils.getPreferredLocal()));
         return mId;
     }
 
@@ -300,48 +314,53 @@ public class TocEntry
     }
 
 
-    //ENHANCE: use enum for ANTHOLOGY_BITMASK
+    /**
+     * The original code was IMHO a bit vague on the exact meaning of the 'anthology mask'.
+     * So this information was mainly written for myself.
+     * <p>
+     * Original, it looked like this was the meaning:
+     * 0%00 == book by single author
+     * 0%01 == anthology by one author
+     * 0%11 == anthology by multiple authors.
+     * which would mean it missed books with a single story, but multiple authors; i.e. the 0%10
+     * <p>
+     * A more complete definition below.
+     * <p>
+     * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
+     * <p>
+     * 0%00 = contains one 'work' and is written by a single author.
+     * 0%01 = multiple 'work' and is written by a single author (anthology from ONE author)
+     * 0%10 = multiple authors cooperating on a single 'work'
+     * 0%11 = multiple authors and multiple 'work's (it's an anthology from multiple author)
+     * <p>
+     * or in other words:
+     * * bit 0 indicates if a book has one (bit unset) or multiple (bit set) works
+     * * bit 1 indicates if a book has one (bit unset) or multiple (bit set) authors.
+     * <p>
+     * Having said all that, the 0%10 should not actually occur, as this is a simple case of
+     * collaborating authors which is covered without the use of
+     * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
+     * <p>
+     * Which of course brings it back full-circle to the original and correct (!) meaning.
+     * <p>
+     * Leaving all this here, as it will remind myself (and maybe others) of the 'missing' bit.
+     * <p>
+     * ENHANCE: Think about actually updating the column to 0%10 as a cache for a book
+     * having multiple authors without the need to 'count' them in the book_author table ?
+     *
+     * ENHANCE: currently we use the bit definitions directly. Should use the enum as an enum.
+     */
     public enum Type {
         no, singleAuthor, multipleAuthors;
 
-        /**
-         * The original code was a bit vague on the exact meaning of the 'anthology mask'.
-         * So this information was mainly written for myself.
-         * <p>
-         * Original, it looked like this was the meaning:
-         * 0%00 == book by single author
-         * 0%01 == anthology by one author
-         * 0%11 == anthology by multiple authors.
-         * which would mean it missed books with a single story, but multiple authors; e.g. the 0%10
-         * <p>
-         * A more complete definition below.
-         * <p>
-         * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
-         * <p>
-         * 0%00 = contains one 'work' and is written by a single author.
-         * 0%01 = multiple 'work' and is written by a single author (anthology from ONE author)
-         * 0%10 = multiple authors cooperating on a single 'work'
-         * 0%11 = multiple authors and multiple 'work's (it's an anthology from multiple author)
-         * <p>
-         * or in other words:
-         * * bit 0 indicates if a book has one (bit unset) or multiple (bit set) works
-         * * bit 1 indicates if a book has one (bit unset) or multiple (bit set) authors.
-         * <p>
-         * Having said all that, the 0%10 should not actually occur, as this is a simple case of
-         * collaborating authors which is covered without the use of
-         * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
-         * <p>
-         * Which of course brings it back full-circle to the original and correct meaning.
-         * <p>
-         * Leaving all this here, as it will remind myself (and maybe others) of the 'missing' bit.
-         * <p>
-         * ENHANCE: Think about actually updating the column to 0%10 as a cache for a book
-         * having multiple authors without the need to 'count' them in the book_author table ?
-         */
+        /** Bit definitions. */
         public static final int SINGLE_AUTHOR_SINGLE_WORK = 0;
         public static final int MULTIPLE_WORKS = 1;
         public static final int MULTIPLE_AUTHORS = 1 << 1;
 
+        /**
+         * @return the int representation as stored in the database.
+         */
         public int getBitmask() {
             switch (this) {
                 case no:
@@ -359,6 +378,11 @@ public class TocEntry
             }
         }
 
+        /**
+         * @param bitmask the int representation as stored in the database.
+         *
+         * @return the enum representation
+         */
         public Type get(final int bitmask) {
             switch (bitmask) {
                 case SINGLE_AUTHOR_SINGLE_WORK:

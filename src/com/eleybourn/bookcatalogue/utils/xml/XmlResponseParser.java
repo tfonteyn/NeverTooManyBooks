@@ -46,7 +46,7 @@ import com.eleybourn.bookcatalogue.debug.Logger;
 public class XmlResponseParser
         extends DefaultHandler {
 
-    /** Temporary storage for inter-tag text. */
+    /** Temporary storage for inter-t text. */
     private final StringBuilder mBuilder = new StringBuilder();
     /** Stack of parsed tags giving context to the XML parser. */
     private final ArrayList<ElementContext> mParents = new ArrayList<>();
@@ -63,7 +63,7 @@ public class XmlResponseParser
     }
 
     /**
-     * Gather inter-tag text.
+     * Gather inter-t text.
      */
     @Override
     @CallSuper
@@ -76,7 +76,7 @@ public class XmlResponseParser
     }
 
     /**
-     * Handle a new tag.
+     * Handle a new t.
      */
     @Override
     @CallSuper
@@ -88,34 +88,34 @@ public class XmlResponseParser
         super.startElement(uri, localName, qName, attributes);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-            Logger.info(this, "startElement", "localName=`" + localName + '`');
+            Logger.debug(this, "startElement", "localName=`" + localName + '`');
         }
-        // Create a new context for this new tag saving the current inter-tag text for later
+        // Create a new context for this new t saving the current inter-t text for later
         ElementContext tag = new ElementContext(uri, localName, qName, attributes,
                                                 mBuilder.toString());
 
         // Get the current element
         ElementContext enclosingTag = mParents.get(mParents.size() - 1);
 
-        // If there is an active filter, then see if the new tag is of any interest
+        // If there is an active filter, then see if the new t is of any interest
         if (enclosingTag.getFilter() != null) {
-            // Check for interest in new tag
+            // Check for interest in new t
             XmlFilter filter = enclosingTag.getFilter().getSubFilter(tag);
-            // If new tag has a filter, store it in the new context object
+            // If new t has a filter, store it in the new context object
             tag.setFilter(filter);
-            // If we got a filter, tell it a tag is now starting.
+            // If we got a filter, tell it a t is now starting.
             if (filter != null) {
                 filter.processStart(tag);
             }
         }
-        // Add the new tag to the context hierarchy and reset
+        // Add the new t to the context hierarchy and reset
         mParents.add(tag);
-        // Reset the inter-tag text storage.
+        // Reset the inter-t text storage.
         mBuilder.setLength(0);
     }
 
     /**
-     * Handle the end of the current tag.
+     * Handle the end of the current t.
      */
     @Override
     @CallSuper
@@ -135,15 +135,15 @@ public class XmlResponseParser
                             + " `" + tag.getLocalName() + '`');
         }
 
-        // Save the text that appeared inside this tag (but not inside inner tags)
+        // Save the text that appeared inside this t (but not inside inner tags)
         tag.setBody(mBuilder.toString());
 
-        // If there is an active filter in this context, then tell it the tag is finished.
+        // If there is an active filter in this context, then tell it the t is finished.
         if (tag.getFilter() != null) {
             tag.getFilter().processEnd(tag);
         }
 
-        // Reset the inter-tag text and append the previously saved 'pre-text'.
+        // Reset the inter-t text and append the previously saved 'pre-text'.
         mBuilder.setLength(0);
         mBuilder.append(tag.getText());
     }

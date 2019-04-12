@@ -61,8 +61,9 @@ public abstract class BaseSettingsFragment
             for (String s : msp.getValues()) {
                 int index = msp.findIndexOfValue(s);
                 if (index == -1) {
-                    // Leaving for now as this re-surfaces sometimes after a careless dev. change.
-                    Logger.debug("MultiSelectListPreference:"
+                    // This re-surfaces sometimes after a careless dev. change.
+                    Logger.debugWithStackTrace(this,"getSummary",
+                                 "MultiSelectListPreference:"
                                          + "\n s=" + s
                                          + "\n key=" + msp.getKey()
                                          + "\n entries="
@@ -140,7 +141,7 @@ public abstract class BaseSettingsFragment
                 ed.putStringSet(entry.getKey(), (Set<String>) entry.getValue());
             } else {
                 //noinspection ConstantConditions
-                Logger.error(entry.getValue().getClass().getCanonicalName());
+                Logger.warnWithStackTrace(this, entry.getValue().getClass().getCanonicalName());
             }
         }
         ed.apply();

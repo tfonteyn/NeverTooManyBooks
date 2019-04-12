@@ -38,7 +38,6 @@ import com.eleybourn.bookcatalogue.R;
 import com.eleybourn.bookcatalogue.database.DBA;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.entities.Bookshelf;
-import com.eleybourn.bookcatalogue.entities.Publisher;
 import com.eleybourn.bookcatalogue.utils.UserMessage;
 
 /**
@@ -52,7 +51,7 @@ import com.eleybourn.bookcatalogue.utils.UserMessage;
 public class EditBookshelfDialogFragment
         extends DialogFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     private static final String TAG = EditBookshelfDialogFragment.class.getSimpleName();
 
     private static final String BKEY_BOOKSHELF = TAG + ":bs";

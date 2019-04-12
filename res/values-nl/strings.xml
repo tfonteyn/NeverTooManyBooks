@@ -17,7 +17,7 @@
     <string name="lbl_pages">Pagina\'s</string>
     <string name="btn_confirm_add_book">Boek toevoegen</string>
     <string name="btn_confirm_update">Bijwerken</string>
-    <string name="info_no_books_yet">
+    <string name="X_info_no_books_yet">
         Er staan geen boeken op deze boekenplank.
         Voeg er een paar toe via het menu onderaan dit scherm.
     </string>
@@ -33,7 +33,7 @@
     <string name="X_btn_confirm_add_bs">Toevoegen Boekenplank</string>
     <string name="menu_bookshelves">Boekenplanken…</string>
     <string name="X_btn_confirm_save_bs">Boekenplank opslaan</string>
-    <string name="menu_delete_bookshelf">Boekenplank verwijderen</string>
+    <string name="X_menu_delete_bookshelf">Boekenplank verwijderen</string>
     <string name="warning_cannot_delete_1st_bs">
         De eerste boekenplank kan niet verwijderd worden
     </string>
@@ -51,7 +51,7 @@
     </string>
     <string name="lbl_series">Serie</string>
     <string name="lbl_series_num">nr.</string>
-    <string name="lbl_series_num_long">Serie nr.</string>
+    <string name="X_lbl_series_num_long">Serie nr.</string>
     <string name="title_import_book_data">Boeken Importeren</string>
     <string name="warning_import_be_cautious">
         Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken
@@ -65,7 +65,7 @@
         FOUT: Import van gegevens (van SD kaart) mislukt. Staat het bestand op de juiste plaats?
     </string>
     <string name="X_search_title">Zoekresultaten</string>
-    <string name="results_found">Gevonden resultaten</string>
+    <string name="X_results_found">Gevonden resultaten</string>
     <string name="menu_administration_long">Administratieve Functies</string>
     <string name="menu_administration">Beheer</string>
     <string name="info_install_scanner">
@@ -87,7 +87,7 @@
     <string name="X_lbl_loaned_to_long">Dit boek is uitgeleend aan:</string>
     <string name="X_nobody">Niemand</string>
     <string name="lbl_lend_to">Leen boek aan:</string>
-    <string name="btn_loan_returned">Teruggebracht</string>
+    <string name="btn_loan_returned">Terug</string>
     <string name="name">Naam</string>
     <string name="about_lbl_website">Webpagina:</string>
     <string name="about_lbl_sourcecode">Broncode:</string>
@@ -113,18 +113,16 @@
         Controleer uw netwerk instellingen.
     </string>
     <string name="error_search_exception">Zoeken mislukt terwijl %1$s: %2$s</string>
-    <string name="menu_delete">Verwijder miniatuur</string>
+    <string name="menu_delete">Verwijder</string>
     <string name="help">Help</string>
-    <string name="info_manage_fields">
+    <string name="X_info_manage_fields">
         Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen.
         Ongeselecteerde velden zijn verborgen.
     </string>
     <string name="X_anthology_titles">Bloemlezing titels</string>
     <string name="about_donate_amazon">Amazon Verlanglijst</string>
-    <string name="lbl_toc_same_author">
-        Alle verhalen in deze bloemlezing zijn van dezelfde auteur
-    </string>
-    <string name="menu_delete_toc_entry">Verwijder titels uit bloemlezing</string>
+    <string name="lbl_toc_multiple_authors">Deze bloemlezing heeft meerdere auteurs</string>
+    <string name="X_menu_delete_toc_entry">Verwijder titels uit bloemlezing</string>
     <string name="lbl_is_anthology">Is dit boek een bloemlezing?</string>
     <string name="menu_populate_toc">Automatisch titels invullen (alleen ISFDB)</string>
     <string name="error_auto_toc_population_failed">Automatisch titels invullen mislukt</string>
@@ -132,10 +130,9 @@
     <string name="warning_toc_confirm">Bevestig dat deze titels (merendeels) correct zijn</string>
     <string name="menu_cover_add_from_camera">Van Camera…</string>
     <string name="title_cover">Omslag miniatuur</string>
-    <string name="menu_cover_rotate">Omdraaien miniatuur…</string>
+    <string name="menu_cover_rotate">Omdraaien…</string>
     <string name="menu_cover_rotate_cw">Rechts draaien</string>
     <string name="menu_cover_rotate_ccw">Links draaien</string>
-    <string name="menu_cover_rotate_180">180 graden draaien</string>
     <string name="lbl_is_signed">Is dit boek gesigneerd?</string>
     <string name="lbl_read_start">Begindatum lezen</string>
     <string name="lbl_read_end">Einddatum lezen</string>
@@ -201,8 +198,8 @@
         Er zijn geen series voor dit boek.
         U kunt er een toevoegen met het tekstveld en de knop bovenin dit scherm.
     </string>
-    <string name="warning_cover_field_not_set">Omslagafbeelding niet ingesteld</string>
-    <string name="warning_cover_corrupt">Omslagafbeelding is niet geldig</string>
+    <string name="X_warning_cover_field_not_set">Omslagafbeelding niet ingesteld</string>
+    <string name="X_warning_cover_corrupt">Omslagafbeelding is niet geldig</string>
     <string name="X_title_cover_detail">Omslagafbeelding detail</string>
     <string name="title_select_image">Selecteer afbeelding</string>
     <string name="btn_set_authors">Invullen auteurs…</string>
@@ -222,7 +219,7 @@
     <string name="warning_immediate_global_changes">
         NB: Alle opgeslagen veranderingen worden direct en overal toegepast
     </string>
-    <string name="menu_cover_replace">Vervangen miniatuur…</string>
+    <string name="menu_cover_replace">Vervangen…</string>
     <string name="menu_cover_search_alt_editions">Van andere uitgaven…</string>
     <string name="warning_required_title_and_author">De titel en/of de auteur ontbreekt.</string>
     <string name="warning_required_author_long">Er moet tenminste één auteur worden vermeld</string>
@@ -236,13 +233,13 @@
         \nOverweeg de serie te bewerken en de serienaam te veranderen om deze gegevens te behouden
     </string>
     <string name="X_title_edit_series">Serie details bewerken</string>
-    <string name="title_select_cover">Selecteer omslagafbeelding</string>
+    <string name="X_title_select_cover">Selecteer omslagafbeelding</string>
     <string name="X_warning_no_isbn_no_editions">
         Kan geen uitgavegegevens verkrijgen van een boek zonder ISBN</string>
-    <string name="warning_unsaved_edits">
+    <string name="warning_unsaved_edits2">
         De door u gemaakte veranderingen zijn niet opgeslagen. Wilt u toch doorgaan?
     </string>
-    <string name="unsaved_edits_title">Niet opgeslagen veranderingen</string>
+    <string name="X_unsaved_edits_title">Niet opgeslagen veranderingen</string>
     <string name="confirm_apply_author_changed">
         U heeft de auteursnaam veranderd van:\n ‘%1$s’ naar \n  ‘%2$s’\n
         Hoe wilt u deze verandering toepassen?\nNB: De keuze ‘%3$s’ wordt onmiddelijk toegepast.
@@ -260,7 +257,7 @@
         Weet u zeker dat u door wilt gaan?
     </string>
     <string name="warning_editions_require_isbn">Andere uitgaven ophalen vereist een ISBN</string>
-    <string name="warning_no_editions">Geen uitgavegegevens beschikbaar</string>
+    <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
     <string name="progress_msg_finding_editions">Zoeken naar uitgaven…</string>
     <string name="info_tap_on_thumb">Tik op een miniatuur voor vergroting</string>
     <string name="progress_msg_loading">Bezig met laden…</string>
@@ -322,7 +319,6 @@
     <string name="bytes">%.0fB</string>
     <string name="debug_subject">Verzamelde foutopsporingsgegevens</string>
     <string name="debug_body">Beschrijf in het kort de problemen die u heeft ondervonden.</string>
-    <string name="menu_duplicate_book">Dupliceer boek</string>
     <string name="lt_incorrect_key">
         Uw LibraryThing ontwikkelaarssleutel was niet juist, of er kon geen verbinding
         worden gemaakt met het netwerk ter verificatie.
@@ -331,7 +327,7 @@
     <string name="error_no_internet_connection">Geen Internet verbinding beschikbaar.</string>
     <string name="menu_share_this">Delen</string>
     <string name="export_csv_email">Wilt u dit exportbestand als e-mail ergens heen sturen?</string>
-    <string name="menu_cover_crop">Miniatuur bijsnijden</string>
+    <string name="menu_cover_crop">Bijsnijden</string>
     <string name="gr_tq_title_task_errors">Taakfouten</string>
     <string name="retry">Opnieuw\\nproberen</string>
     <string name="gr_tq_menu_delete_event">Verwijder gebeurtenis</string>
@@ -502,16 +498,16 @@
     <string name="pg_filters">Boekfilters</string>
     <string name="X_title_add_style">Nieuwe stijl</string>
     <string name="title_select_style">Selecteer stijl</string>
-    <string name="warning_required_field_x">%1$s mag niet leeg zijn</string>
+    <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="edit">Bewerken</string>
     <string name="lbl_settings">Instellingen</string>
     <string name="error_unexpected_error">
         Er is een onverwachte fout opgetreden.
-        Zend ons aub de details via de ‘Help’ optie in het hoofdmenu
+        Zend ons aub de details via de ‘Help’ optie in het hoofdmenu.
     </string>
-    <string name="menu_delete_style">Stijl verwijderen</string>
-    <string name="menu_edit_booklist_style">Stijl bewerken</string>
-    <string name="menu_clone_style">Stijl klonen</string>
+    <string name="X_menu_delete_style">Stijl verwijderen</string>
+    <string name="X_menu_edit_booklist_style">Stijl bewerken</string>
+    <string name="menu_duplicate">Dupliceer</string>
     <string name="about_dash_or_dash">- Of -</string>
     <string name="about_donate_paypal">PayPal Donatie</string>
     <string name="style_builtin_compact">Compact</string>
@@ -520,15 +516,15 @@
     <string name="style_builtin_unread">Ongelezen (Auteur/Serie)</string>
     <string name="gr_import_all_from_goodreads">Importeer alles uit Goodreads</string>
     <string name="gr_tq_requested_task_is_already_queued">
-        aangevraagde taak staat al in de wachtrij
+        Aangevraagde taak staat al in de wachtrij
     </string>
     <string name="gr_tq_export_task_is_already_queued">
         Een exporttaak staat al in de wachtrij en moet eerst beëindigd worden
-        voordat deze taak uitgevoerd kan worden
+        voordat deze taak uitgevoerd kan worden.
     </string>
     <string name="gr_tq_import_task_is_already_queued">
         Een importtaak staat al in de wachtrij en moet eerst beëindigd worden
-        voordat deze taak uitgevoerd kan worden
+        voordat deze taak uitgevoerd kan worden.
     </string>
     <string name="gr_action_cannot_be_completed">
         Deze actie kan niet worden voltooid voordat deze applicatie door Goodreads is
@@ -607,9 +603,9 @@
     <string name="lbl_added_month">Maand</string>
     <string name="lbl_added_day">Dag</string>
     <string name="lbl_book">Boek</string>
-    <string name="in">In</string>
-    <string name="size">Grootte</string>
-    <string name="updated">Bijgewerkt</string>
+    <string name="X_in">In</string>
+    <string name="X_file_size">Grootte</string>
+    <string name="X_updated">Bijgewerkt</string>
     <string name="import_error_csv_file_not_found">Geen exportbestanden gevonden</string>
     <string name="import_warning_select_csv_file">
         Meer dan een exportbestand gevonden.
@@ -645,7 +641,7 @@
     <string name="lbl_read_day">Dag</string>
     <string name="style_builtin_read_date">Datum gelezen</string>
     <string name="lbl_details_have_changed">De details zijn veranderd</string>
-    <string name="confirm_unsaved_changes">
+    <string name="warning_unsaved_edits">
         U heeft niet opgeslagen veranderingen. Als u nu afsluit gaan die verloren.
     </string>
     <string name="btn_confirm_exit">Afsluiten</string>
@@ -654,7 +650,7 @@
     <string name="lbl_year">Jaar</string>
     <string name="lbl_month">Maand</string>
     <string name="lbl_day">Dag</string>
-    <string name="menu_edit">bewerken…</string>
+    <string name="menu_edit">Bewerken…</string>
     <string name="progress_msg_getting_books">Verkrijgen van boeken…</string>
     <string name="gr_tq_last_error_e">Laatste fout: %1$s</string>
     <string name="X_warning_invalid_isbn_x_specified_in_search">
@@ -674,7 +670,6 @@
     <string name="progress_msg_searching">Aan \'t zoeken…</string>
     <string name="progress_msg_adding_book">Boeken aan \'t toevoegen…</string>
     <string name="lbl_publication">Publicatie</string>
-    <string name="lbl_by_author">door</string>
     <string name="lbl_loaned_to_name">Uitgeleend aan %1$s</string>
     <string name="lbl_x_pages">%1$d pagina\'s</string>
     <string name="warning_bad_scanner">
@@ -693,7 +688,7 @@
         te maken van de menuknop of overvloeiend menu-pictogram.
     </string>
     <string name="tab_lbl_details">Details</string>
-    <string name="tab_lbl_loan">Uitlenen</string>
+    <string name="X_tab_lbl_loan">Uitlenen</string>
     <string name="gr_btn_forget_credentials">Vergeet inloggegevens</string>
     <string name="gr_auth_blurb_part4">
         Het lijkt er op dat u deze app al heeft geautoriseerd. als u de inloggegevens op dit
@@ -734,7 +729,7 @@
 
     <!-- Displayed in Admin menu advanced options
     (to make a copy of the internal database on the sdcard -->
-    <string name="menu_copy_database">Kopieer Database (voor technische ondersteuning)</string>
+    <string name="menu_copy_database">Exporteer Database</string>
 
     <!-- Displayed when an archive operation fails -->
     <string name="error_import_failed">Import mislukt.</string>
@@ -887,15 +882,14 @@
     <string name="menu_set_unread">Markeer als ongelezen</string>
     <string name="tab_lbl_content">Inhoud</string>
     <string name="done">Klaar</string>
-    <string name="lbl_first_publication">Vroegste publicatie</string>
+    <string name="lbl_first_publication">Eerste pub.</string>
     <string name="menu_internet_update_fields">Bijwerken velden</string>
-    <string name="error_no_external_crop_app">Externe crop applicatie niet gevonden</string>
     <string name="X_error_no_style_found">Juiste stijl niet gevonden</string>
     <string name="lbl_search_sites">Zoek-webpaginas</string>
     <string name="lbl_search_site_order">Volgorde</string>
     <string name="search_with_text">Zoeken: %1$s</string>
     <string name="searching_isfdb">Zoeken bij ISFDB</string>
-    <string name="send_mail">Bericht versturen…</string>
+    <string name="title_send_mail">Bericht versturen…</string>
     <string name="error_storage_no_access">Opslag niet beschikbaar</string>
     <string name="error_storage_no_space_left">Niet genoeg opslag</string>
     <string name="error_storage_not_available">Klaarmaken opslag</string>
@@ -949,7 +943,6 @@
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
     <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
-    <string name="a_comma_b">%1$s, %2$s</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <string name="lbl_books">Boeken</string>
     <string name="lbl_covers">Omslagen</string>
@@ -958,7 +951,6 @@
     <string name="menu_loan_return_book">Uitgeleend boek is terug</string>
     <string name="book_format_hardcover">Hardcover</string>
     <string name="book_format_paperback">Pocket</string>
-    <string name="book_format_digest">Samenvatting</string>
     <string name="book_format_trade_paperback">Paperback</string>
     <string name="error_google_play_missing">Google Play / Market is niet geïnstalleerd</string>
     <string name="books_found">%1$d boeken gevonden</string>
@@ -973,4 +965,5 @@
     <string name="X_events_found">%1$d gebeurtenissen gevonden</string>
     <string name="gr_tq_events_recorded">(%1$d gebeurtenissen opgenomen)</string>
     <string name="gr_tq_generic_task_info">Taak ID %1$d, In wachtrij geplaatst op %2$s</string>
+    <string name="info_tap_on_image_to_select">Tik op de grote afbeelding om deze te selecteren</string>
 </resources>

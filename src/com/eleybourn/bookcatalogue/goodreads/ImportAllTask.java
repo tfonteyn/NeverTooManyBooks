@@ -59,6 +59,7 @@ import com.eleybourn.bookcatalogue.searches.goodreads.GoodreadsManager;
 import com.eleybourn.bookcatalogue.utils.AuthorizationException;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.ImageUtils;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 import com.eleybourn.bookcatalogue.utils.Utils;
 
@@ -147,7 +148,7 @@ public class ImportAllTask
             }
             return ok;
         } catch (AuthorizationException e) {
-            Logger.error(e);
+            Logger.error(this, e);
             throw new RuntimeException(e.getLocalizedMessage());
         }
     }
@@ -238,7 +239,7 @@ public class ImportAllTask
             db.analyze();
         } catch (RuntimeException e) {
             // Do nothing. Not a critical step.
-            Logger.error(e);
+            Logger.error(this, e);
         }
         return true;
     }
@@ -314,9 +315,9 @@ public class ImportAllTask
             }
         }
 
-        return mBookshelfLookup.containsKey(grShelfName.toLowerCase())
-               ? mBookshelfLookup.get(grShelfName.toLowerCase())
-               : grShelfName;
+        String lcGrShelfName = grShelfName.toLowerCase(LocaleUtils.getPreferredLocal());
+        return mBookshelfLookup.containsKey(lcGrShelfName) ? mBookshelfLookup.get(lcGrShelfName)
+                                                           : grShelfName;
     }
 
     /**
@@ -340,7 +341,7 @@ public class ImportAllTask
         // Get last date book was sent to GR (may be null)
         String lastGrSync = bookCursorRow.getDateLastSyncedWithGoodreads();
         // If the review has an 'updated' date, then see if we can compare to book
-        if (lastGrSync != null && review.containsKey(ListReviewsApiHandler.ReviewFields.UPDATED)) {
+        if (review.containsKey(ReviewFields.UPDATED)) {
             String lastUpdate = review.getString(ListReviewsApiHandler.ReviewFields.UPDATED);
             // If last update in GR was before last GR sync of book, then don't bother
             // updating book. This typically happens if the last update in GR was from us.
@@ -455,7 +456,7 @@ public class ImportAllTask
          */
         ArrayList<Bundle> grAuthors = review.getParcelableArrayList(ReviewFields.AUTHORS);
         if (grAuthors == null) {
-            Logger.error("grAuthors was null");
+            Logger.warnWithStackTrace(this, "grAuthors was null");
             return bookData;
         }
         ArrayList<Author> authors;
@@ -506,7 +507,7 @@ public class ImportAllTask
         if (review.containsKey(ReviewFields.SHELVES)) {
             ArrayList<Bundle> grShelves = review.getParcelableArrayList(ReviewFields.SHELVES);
             if (grShelves == null) {
-                Logger.error("shelves was null");
+                Logger.warnWithStackTrace(this, "grShelves was null");
                 return bookData;
             }
 

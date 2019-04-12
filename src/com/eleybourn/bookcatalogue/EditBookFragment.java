@@ -46,7 +46,6 @@ import com.eleybourn.bookcatalogue.baseactivity.BaseActivity;
 import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.datamanager.DataEditor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
-import com.eleybourn.bookcatalogue.debug.Logger;
 import com.eleybourn.bookcatalogue.dialogs.AlertDialogListener;
 import com.eleybourn.bookcatalogue.dialogs.StandardDialogs;
 import com.eleybourn.bookcatalogue.entities.Book;
@@ -65,7 +64,7 @@ public class EditBookFragment
         extends EditBookBaseFragment
         implements BookManager, DataEditor {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = EditBookFragment.class.getSimpleName();
 
     /**
@@ -183,7 +182,7 @@ public class EditBookFragment
         mPagerAdapter.add(new FragmentHolder(fm, EditBookNotesFragment.TAG,
                                              getString(R.string.tab_lbl_notes)));
         if (Fields.isVisible(DBDefinitions.KEY_TOC_BITMASK)) {
-            mPagerAdapter.add(new FragmentHolder(fm, EditBookTOCFragment.TAG,
+            mPagerAdapter.add(new FragmentHolder(fm, EditBookTocFragment.TAG,
                                                  getString(R.string.tab_lbl_content)));
         }
 
@@ -325,9 +324,6 @@ public class EditBookFragment
      */
     private void saveBook() {
         Book book = getBook();
-
-        Logger.info(this, "saveBook", book.getRawData());
-
         if (book.getId() == 0) {
             long id = mDb.insertBook(book);
             if (id > 0) {
@@ -345,7 +341,6 @@ public class EditBookFragment
             mDb.updateBook(book.getId(), book, 0);
         }
     }
-
 
     private static class ViewPagerAdapter
             extends FragmentPagerAdapter {
@@ -412,8 +407,8 @@ public class EditBookFragment
                 } else if (EditBookNotesFragment.TAG.equals(tag)) {
                     fragment = new EditBookNotesFragment();
 
-                } else if (EditBookTOCFragment.TAG.equals(tag)) {
-                    fragment = new EditBookTOCFragment();
+                } else if (EditBookTocFragment.TAG.equals(tag)) {
+                    fragment = new EditBookTocFragment();
 
                 }
             }

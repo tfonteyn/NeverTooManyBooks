@@ -48,8 +48,10 @@ public abstract class PPrefBase<T>
         mUuid = uuid;
         mDefaultValue = defaultValue;
 
+        // Should never happen, but paranoia...
+        //noinspection ConstantConditions
         if (uuid == null) {
-            Logger.debug("uuid was NULL for key=" + key);
+            Logger.debugWithStackTrace(this,"constructor","uuid was NULL for key=" + key);
         }
     }
 

@@ -183,7 +183,7 @@ public class FTSSearchActivity
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.rebuild_fts)
+        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, Menu.NONE, R.string.rebuild_fts)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         return super.onCreateOptionsMenu(menu);
@@ -215,7 +215,8 @@ public class FTSSearchActivity
         // Save time to log how long query takes.
         long t0;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            t0 = System.currentTimeMillis();
+            //noinspection UnusedAssignment
+            t0 = System.nanoTime();
         }
 
         // Get the cursor
@@ -228,7 +229,8 @@ public class FTSSearchActivity
                 tmpMsg = getString(R.string.books_found, cursor.getCount());
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    tmpMsg += "\n in " + (System.currentTimeMillis() - t0) + "ms)";
+                    //noinspection UnusedAssignment
+                    tmpMsg += "\n in " + (System.nanoTime() - t0) + "nano)";
                 }
                 mBookIdsFound = new ArrayList<>();
                 while (cursor.moveToNext()) {
@@ -237,7 +239,7 @@ public class FTSSearchActivity
 
             }
         } catch (RuntimeException e) {
-            Logger.error(e);
+            Logger.error(this, e);
         }
 
         final String message = (tmpMsg != null) ? tmpMsg : "";
@@ -256,7 +258,7 @@ public class FTSSearchActivity
             // Mark search dirty if necessary
             mSearchIsDirty = mSearchIsDirty || dirty;
             // Reset the idle timer since the user did something
-            mIdleStart = System.currentTimeMillis();
+            mIdleStart = System.nanoTime();
             // If the search is dirty, make sure idle timer is running and update UI
             if (mSearchIsDirty) {
                 startIdleTimer();
@@ -318,7 +320,7 @@ public class FTSSearchActivity
                 return;
             }
             mTimer = new Timer();
-            mIdleStart = System.currentTimeMillis();
+            mIdleStart = System.nanoTime();
         }
 
         mTimer.schedule(new SearchUpdateTimer(), 0, TIMER_TICK);
@@ -354,8 +356,7 @@ public class FTSSearchActivity
             boolean doSearch = false;
             // Synchronize since this is relevant to more than 1 thread.
             synchronized (FTSSearchActivity.this) {
-                long timeNow = System.currentTimeMillis();
-                boolean idle = (timeNow - mIdleStart) > 1000;
+                boolean idle = (System.nanoTime() - mIdleStart) > 1_000_000;
                 if (idle) {
                     // Stop the timer, it will be restarted if the user changes something
                     stopIdleTimer();

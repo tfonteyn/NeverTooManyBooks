@@ -38,6 +38,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.eleybourn.bookcatalogue.R;
@@ -55,6 +56,7 @@ import com.eleybourn.bookcatalogue.dialogs.editordialog.CheckListItemBase;
 import com.eleybourn.bookcatalogue.utils.Csv;
 import com.eleybourn.bookcatalogue.utils.DateUtils;
 import com.eleybourn.bookcatalogue.utils.GenericFileProvider;
+import com.eleybourn.bookcatalogue.utils.LocaleUtils;
 import com.eleybourn.bookcatalogue.utils.StorageUtils;
 
 /**
@@ -521,6 +523,35 @@ public class Book
             }
             return newText;
         }
+    }
+
+    /**
+     * Use the book's language setting to determine the Locale.
+     *
+     * @param updateLanguage <tt>true</tt> to update the language field with the iso3 code
+     *                      if needed. <tt>false</tt> to leave it unchanged.
+     *
+     * @return the locale, or the users preferred locale if no language was set.
+     */
+    @NonNull
+    public Locale getLocale(final boolean updateLanguage) {
+        Locale bookLocale = null;
+        if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
+            String lang = getString(DBDefinitions.KEY_LANGUAGE);
+            int len = lang.length();
+            // try to convert to is3 if needed.
+            if (len != 2 && len !=3) {
+                lang = LocaleUtils.getISO3Language(lang);
+            }
+            // we now have an iso3 code, or an invalid language.
+            bookLocale = new Locale(lang);
+            if (!LocaleUtils.isValid(bookLocale)) {
+                bookLocale = LocaleUtils.getPreferredLocal();
+            } else if (updateLanguage) {
+                putString(DBDefinitions.KEY_LANGUAGE, lang);
+            }
+        }
+        return bookLocale == null ? LocaleUtils.getPreferredLocal() : bookLocale;
     }
 
     /**

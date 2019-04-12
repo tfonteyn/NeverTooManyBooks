@@ -74,21 +74,21 @@ public final class TasksCursor
             + " ORDER BY " + DOM_ID + " DESC";
 
     /** Column number of ID column. */
-    private static int mIdCol = -1;
+    private static int sIdCol = -1;
     /** Column number of date column. */
-    private static int mQueuedDateCol = -2;
+    private static int sQueuedDateCol = -2;
     /** Column number of retry date column. */
-    private static int mRetryDateCol = -2;
+    private static int sRetryDateCol = -2;
     /** Column number of retry count column. */
-    private static int mStatusCodeCol = -2;
+    private static int sStatusCodeCol = -2;
     /** Column number of Exception column. */
-    private static int mTaskCol = -2;
+    private static int sTaskCol = -2;
     /** Column number of NoteCount column. */
-    private static int mNoteCountCol = -2;
+    private static int sNoteCountCol = -2;
     /** Column number of reason column. */
-    private static int mReasonCol = -2;
+    private static int sReasonCol = -2;
     /** Column number of Exception column. */
-    private static int mExceptionCol = -2;
+    private static int sExceptionCol = -2;
 
     /**
      * Constructor, based on SQLiteCursor constructor.
@@ -123,19 +123,19 @@ public final class TasksCursor
 
     @Override
     public long getId() {
-        if (mIdCol < 0) {
-            mIdCol = getColumnIndex(DOM_ID);
+        if (sIdCol < 0) {
+            sIdCol = getColumnIndex(DOM_ID);
         }
-        return getLong(mIdCol);
+        return getLong(sIdCol);
     }
 
     @NonNull
     Date getQueuedDate() {
-        if (mQueuedDateCol < 0) {
-            mQueuedDateCol = getColumnIndex(DOM_QUEUED_DATE);
+        if (sQueuedDateCol < 0) {
+            sQueuedDateCol = getColumnIndex(DOM_QUEUED_DATE);
         }
 
-        Date date = DateUtils.parseDate(getString(mQueuedDateCol));
+        Date date = DateUtils.parseDate(getString(sQueuedDateCol));
         if (date == null) {
             date = new Date();
         }
@@ -144,11 +144,11 @@ public final class TasksCursor
 
     @NonNull
     Date getRetryDate() {
-        if (mRetryDateCol < 0) {
-            mRetryDateCol = getColumnIndex(DOM_RETRY_DATE);
+        if (sRetryDateCol < 0) {
+            sRetryDateCol = getColumnIndex(DOM_RETRY_DATE);
         }
 
-        Date date = DateUtils.parseDate(getString(mRetryDateCol));
+        Date date = DateUtils.parseDate(getString(sRetryDateCol));
         if (date == null) {
             date = new Date();
         }
@@ -156,10 +156,10 @@ public final class TasksCursor
     }
 
     String getStatusCode() {
-        if (mStatusCodeCol < 0) {
-            mStatusCodeCol = getColumnIndex(DOM_STATUS_CODE);
+        if (sStatusCodeCol < 0) {
+            sStatusCodeCol = getColumnIndex(DOM_STATUS_CODE);
         }
-        return getString(mStatusCodeCol);
+        return getString(sStatusCodeCol);
     }
 
     /**
@@ -168,10 +168,10 @@ public final class TasksCursor
      * @return reason
      */
     public String getReason() {
-        if (mReasonCol == -1) {
-            mReasonCol = getColumnIndex(DOM_FAILURE_REASON);
+        if (sReasonCol == -1) {
+            sReasonCol = getColumnIndex(DOM_FAILURE_REASON);
         }
-        return getString(mReasonCol);
+        return getString(sReasonCol);
     }
 
     /**
@@ -183,27 +183,27 @@ public final class TasksCursor
      */
     public Exception getException()
             throws SerializationUtils.DeserializationException {
-        if (mExceptionCol == -1) {
-            mExceptionCol = getColumnIndex(DOM_EXCEPTION);
+        if (sExceptionCol == -1) {
+            sExceptionCol = getColumnIndex(DOM_EXCEPTION);
         }
-        return (Exception) SerializationUtils.deserializeObject(getBlob(mExceptionCol));
+        return (Exception) SerializationUtils.deserializeObject(getBlob(sExceptionCol));
     }
 
     int getNoteCount() {
-        if (mNoteCountCol < 0) {
-            mNoteCountCol = getColumnIndex(DOM_EVENT_COUNT);
+        if (sNoteCountCol < 0) {
+            sNoteCountCol = getColumnIndex(DOM_EVENT_COUNT);
         }
-        return getInt(mNoteCountCol);
+        return getInt(sNoteCountCol);
     }
 
     @NonNull
     @Override
     public BindableItemCursorAdapter.BindableItem getBindableItem() {
-        if (mTaskCol < 0) {
-            mTaskCol = getColumnIndex(DOM_TASK);
+        if (sTaskCol < 0) {
+            sTaskCol = getColumnIndex(DOM_TASK);
         }
         Task task;
-        byte[] blob = getBlob(mTaskCol);
+        byte[] blob = getBlob(sTaskCol);
         try {
             task = SerializationUtils.deserializeObject(blob);
         } catch (SerializationUtils.DeserializationException de) {

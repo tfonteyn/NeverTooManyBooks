@@ -44,16 +44,16 @@ public class StringList<E> {
     private static final char MULTI_STRING_SEPARATOR = '|';
     /** pre-configured  coder/decoder for Bookshelf elements. */
     @Nullable
-    private static StringList<Bookshelf> mBookshelfUtils;
+    private static StringList<Bookshelf> sBookshelfUtils;
     /** pre-configured  coder/decoder for Author elements. */
     @Nullable
-    private static StringList<Author> mAuthorUtils;
+    private static StringList<Author> sAuthorUtils;
     /** pre-configured  coder/decoder for Series elements. */
     @Nullable
-    private static StringList<Series> mSeriesUtils;
+    private static StringList<Series> sSeriesUtils;
     /** pre-configured  coder/decoder for TocEntry elements. */
     @Nullable
-    private static StringList<TocEntry> mTOCUtils;
+    private static StringList<TocEntry> sTocUtils;
 
     @NonNull
     private final Factory<E> mFactory;
@@ -95,8 +95,8 @@ public class StringList<E> {
      */
     @NonNull
     public static StringList<Bookshelf> getBookshelfCoder() {
-        if (mBookshelfUtils == null) {
-            mBookshelfUtils = new StringList<>(new Factory<Bookshelf>() {
+        if (sBookshelfUtils == null) {
+            sBookshelfUtils = new StringList<>(new Factory<Bookshelf>() {
                 @Override
                 @NonNull
                 public Bookshelf decode(@NonNull final String element) {
@@ -110,7 +110,7 @@ public class StringList<E> {
                 }
             });
         }
-        return mBookshelfUtils;
+        return sBookshelfUtils;
     }
 
     /**
@@ -118,8 +118,8 @@ public class StringList<E> {
      */
     @NonNull
     public static StringList<Author> getAuthorCoder() {
-        if (mAuthorUtils == null) {
-            mAuthorUtils = new StringList<>(new Factory<Author>() {
+        if (sAuthorUtils == null) {
+            sAuthorUtils = new StringList<>(new Factory<Author>() {
                 @Override
                 @NonNull
                 public Author decode(@NonNull final String element) {
@@ -133,7 +133,7 @@ public class StringList<E> {
                 }
             });
         }
-        return mAuthorUtils;
+        return sAuthorUtils;
     }
 
     /**
@@ -141,8 +141,8 @@ public class StringList<E> {
      */
     @NonNull
     public static StringList<Series> getSeriesCoder() {
-        if (mSeriesUtils == null) {
-            mSeriesUtils = new StringList<>(new Factory<Series>() {
+        if (sSeriesUtils == null) {
+            sSeriesUtils = new StringList<>(new Factory<Series>() {
                 @Override
                 @NonNull
                 public Series decode(@NonNull final String element) {
@@ -156,7 +156,7 @@ public class StringList<E> {
                 }
             });
         }
-        return mSeriesUtils;
+        return sSeriesUtils;
     }
 
     /**
@@ -164,8 +164,8 @@ public class StringList<E> {
      */
     @NonNull
     public static StringList<TocEntry> getTocCoder() {
-        if (mTOCUtils == null) {
-            mTOCUtils = new StringList<>(new Factory<TocEntry>() {
+        if (sTocUtils == null) {
+            sTocUtils = new StringList<>(new Factory<TocEntry>() {
                 @Override
                 @NonNull
                 public TocEntry decode(@NonNull final String element) {
@@ -179,7 +179,7 @@ public class StringList<E> {
                 }
             });
         }
-        return mTOCUtils;
+        return sTocUtils;
     }
 
     /* ------------------------------------------------------------------------------------------ */

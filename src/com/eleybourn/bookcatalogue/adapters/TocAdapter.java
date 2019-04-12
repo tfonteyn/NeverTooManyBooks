@@ -19,7 +19,7 @@ import com.eleybourn.bookcatalogue.entities.TocEntry;
 /**
  * A read-only adapter for viewing TocEntry's.
  */
-public class TOCAdapter
+public class TocAdapter
         extends ArrayAdapter<TocEntry> {
 
     @LayoutRes
@@ -33,7 +33,7 @@ public class TOCAdapter
      *                    instantiating views.
      * @param objects     The objects to represent in the ListView.
      */
-    public TOCAdapter(@NonNull final Context context,
+    public TocAdapter(@NonNull final Context context,
                       @LayoutRes final int rowLayoutId,
                       @NonNull final List<TocEntry> objects) {
         super(context, rowLayoutId, objects);
@@ -45,8 +45,6 @@ public class TOCAdapter
     public View getView(final int position,
                         @Nullable View convertView,
                         @NonNull final ViewGroup parent) {
-        final TocEntry item = getItem(position);
-
         Holder holder;
         if (convertView != null) {
             // Recycling: just get the holder
@@ -59,22 +57,7 @@ public class TOCAdapter
         }
 
         //noinspection ConstantConditions
-        holder.titleView.setText(item.getTitle());
-        // optional
-        if (holder.authorView != null) {
-            holder.authorView.setText(item.getAuthor().getDisplayName());
-        }
-        // optional
-        if (holder.firstPublicationView != null) {
-            String year = item.getFirstPublication();
-            if (year.isEmpty()) {
-                holder.firstPublicationView.setVisibility(View.GONE);
-            } else {
-                holder.firstPublicationView.setVisibility(View.VISIBLE);
-                holder.firstPublicationView.setText(
-                        getContext().getString(R.string.brackets, item.getFirstPublication()));
-            }
-        }
+        holder.bind(getItem(position));
 
         return convertView;
     }
@@ -85,11 +68,11 @@ public class TOCAdapter
     private static class Holder {
 
         @NonNull
-        final TextView titleView;
+        private final TextView titleView;
         @Nullable
-        final TextView authorView;
+        private final TextView authorView;
         @Nullable
-        final TextView firstPublicationView;
+        private final TextView firstPublicationView;
 
         public Holder(@NonNull final View rowView) {
             titleView = rowView.findViewById(R.id.title);
@@ -98,7 +81,27 @@ public class TOCAdapter
             // optional
             firstPublicationView = rowView.findViewById(R.id.year);
 
+            // hook us up.
             rowView.setTag(this);
+        }
+
+        void bind(@NonNull final TocEntry item) {
+            titleView.setText(item.getTitle());
+            // optional
+            if (authorView != null) {
+                authorView.setText(item.getAuthor().getDisplayName());
+            }
+            // optional
+            if (firstPublicationView != null) {
+                String year = item.getFirstPublication();
+                if (year.isEmpty()) {
+                    firstPublicationView.setVisibility(View.GONE);
+                } else {
+                    firstPublicationView.setVisibility(View.VISIBLE);
+                    firstPublicationView.setText(
+                            firstPublicationView.getContext().getString(R.string.brackets, year));
+                }
+            }
         }
     }
 

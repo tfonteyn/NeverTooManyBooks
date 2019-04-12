@@ -38,7 +38,7 @@ import com.eleybourn.bookcatalogue.entities.Author;
 public class EditAuthorDialogFragment
         extends EditAuthorBaseDialogFragment {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = EditAuthorDialogFragment.class.getSimpleName();
 
     /**

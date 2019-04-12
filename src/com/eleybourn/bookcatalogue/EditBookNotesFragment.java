@@ -54,7 +54,7 @@ public class EditBookNotesFragment
         CheckListEditorDialogFragment.OnCheckListEditorResultsListener<Integer>,
         PartialDatePickerDialogFragment.OnPartialDatePickerResultsListener {
 
-    /** Fragment manager tag. */
+    /** Fragment manager t. */
     public static final String TAG = EditBookNotesFragment.class.getSimpleName();
 
     /**
@@ -185,29 +185,10 @@ public class EditBookNotesFragment
     @CallSuper
     protected void onLoadFieldsFromBook(@NonNull final Book book,
                                         final boolean setAllFrom) {
-        Tracker.enterOnLoadFieldsFromBook(this, book.getId());
         super.onLoadFieldsFromBook(book, setAllFrom);
 
         // Restore default visibility
         showHideFields(false);
-
-        Tracker.exitOnLoadFieldsFromBook(this, book.getId());
-    }
-
-    //</editor-fold>
-
-    /* ------------------------------------------------------------------------------------------ */
-
-    //<editor-fold desc="Fragment shutdown">
-
-    /**
-     * Overriding to get extra debug.
-     */
-    @Override
-    protected void onSaveFieldsToBook(@NonNull final Book book) {
-        Tracker.enterOnSaveFieldsToBook(this, book.getId());
-        super.onSaveFieldsToBook(book);
-        Tracker.exitOnSaveFieldsToBook(this, book.getId());
     }
 
     //</editor-fold>

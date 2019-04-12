@@ -394,7 +394,7 @@ class SearchLibraryThingHandler
     private final ArrayList<Series> mSeries = new ArrayList<>();
     /** XML content. */
     private final StringBuilder mBuilder = new StringBuilder();
-    /** Current Field we're in. We need this because the actual data is always in a 'fact' tag. */
+    /** Current Field we're in. We need this because the actual data is always in a 'fact' t. */
     @NonNull
     private FieldTypes mFieldType = FieldTypes.Other;
 

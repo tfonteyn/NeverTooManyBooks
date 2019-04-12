@@ -44,7 +44,6 @@ import com.eleybourn.bookcatalogue.database.DBDefinitions;
 import com.eleybourn.bookcatalogue.database.cursors.BookCursor;
 import com.eleybourn.bookcatalogue.datamanager.Fields;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 import com.eleybourn.bookcatalogue.entities.Author;
 import com.eleybourn.bookcatalogue.entities.Book;
 import com.eleybourn.bookcatalogue.entities.Series;
@@ -393,10 +392,9 @@ public class UpdateFieldsFromInternetTask
     public void onSearchFinished(final boolean wasCancelled,
                                  @NonNull final Bundle bookData) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, Tracker.State.Enter,"onSearchFinished",
-                        "bookId=" + mCurrentBookId);
+            Logger.debugEnter(this, "onSearchFinished",
+                              "bookId=" + mCurrentBookId);
         }
-
 
         if (wasCancelled) {
             // if the search was cancelled, propagate by cancelling ourselves.
@@ -437,7 +435,7 @@ public class UpdateFieldsFromInternetTask
                                       @NonNull final Bundle newBookData,
                                       @NonNull final Bundle originalBookData) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_INTERNET) {
-            Logger.info(this, "processSearchResults", "bookId=" + bookId);
+            Logger.debug(this, "processSearchResults", "bookId=" + bookId);
         }
         // First, filter the data to remove keys we don't care about
         List<String> toRemove = new ArrayList<>();

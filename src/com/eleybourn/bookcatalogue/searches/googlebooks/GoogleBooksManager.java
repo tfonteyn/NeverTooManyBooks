@@ -152,7 +152,7 @@ public final class GoogleBooksManager
             // only catch exceptions related to the parsing, others will be caught by the caller.
         } catch (ParserConfigurationException | ParseException | SAXException e) {
             if (BuildConfig.DEBUG /* always log */) {
-                Logger.debug(e);
+                Logger.debugWithStackTrace(this, e);
             }
         }
 

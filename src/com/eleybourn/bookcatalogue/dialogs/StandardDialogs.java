@@ -51,7 +51,7 @@ public final class StandardDialogs {
                                                      @Nullable final Runnable onConfirm) {
         final AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle(R.string.lbl_details_have_changed)
-                .setMessage(R.string.confirm_unsaved_changes)
+                .setMessage(R.string.warning_unsaved_edits)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setCancelable(false) //TEST: might be better to allow canceling
                 .create();

@@ -1,5 +1,7 @@
 package com.eleybourn.bookcatalogue.database.dbsync;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -132,7 +134,7 @@ public class Synchronizer {
     SyncLock getExclusiveLock() {
         final Thread ourThread = Thread.currentThread();
         @SuppressWarnings("UnusedAssignment")
-        long t0 = System.currentTimeMillis();
+        long t0 = System.nanoTime();
 
         // Synchronize with other code
         mLock.lock();
@@ -168,15 +170,15 @@ public class Synchronizer {
         } finally {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS && DEBUG_SWITCHES.DB_SYNC) {
                 if (mLock.isHeldByCurrentThread()) {
-                    Logger.info(this, "getExclusiveLock",
-                                ourThread.getName() + " waited "
-                                        + (System.currentTimeMillis() - t0)
-                                        + "ms for EXCLUSIVE access");
+                    Logger.debug(this,"getExclusiveLock",
+                                   ourThread.getName() + " waited "
+                                        + (System.nanoTime() - t0)
+                                        + "nano for EXCLUSIVE access");
                 } else {
-                    Logger.info(this, "getExclusiveLock",
-                                ourThread.getName() + " waited "
-                                        + (System.currentTimeMillis() - t0)
-                                        + "ms AND FAILED TO GET EXCLUSIVE access");
+                    Logger.debug(this,"getExclusiveLock",
+                                   ourThread.getName() + " waited "
+                                        + (System.nanoTime() - t0)
+                                        + "nano AND FAILED TO GET EXCLUSIVE access");
                 }
             }
         }

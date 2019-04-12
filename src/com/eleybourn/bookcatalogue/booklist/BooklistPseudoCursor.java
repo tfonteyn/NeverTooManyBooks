@@ -35,7 +35,6 @@ import com.eleybourn.bookcatalogue.DEBUG_SWITCHES;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursor;
 import com.eleybourn.bookcatalogue.database.cursors.BooklistCursorRow;
 import com.eleybourn.bookcatalogue.debug.Logger;
-import com.eleybourn.bookcatalogue.debug.Tracker;
 
 /**
  * Yet Another Rabbit Burrow ("YARB" -- did I invent a new acronym?). What led to this?
@@ -49,7 +48,7 @@ import com.eleybourn.bookcatalogue.debug.Tracker;
  * saved at the end of a long list. For some reason this caused lots of 'skip_rows' messages
  * from 'Cursor', and a *very* jittery backwards scroll.
  * <p>
- * 3. FUD: SQLite cursors seem to use memory based on the number of rows in the cursor. They doo
+ * 3. FUD: SQLite cursors seem to use memory based on the number of rows in the cursor. They do
  * not *seem* to refer back to the database and cache a window. If true, with lots of a books and
  * a small phone memory, this would lead to problems.
  * <p>
@@ -117,7 +116,9 @@ public class BooklistPseudoCursor
             mMruList[i] = -1;
         }
 
-        Logger.info(this, Tracker.State.Exit, "BooklistPseudoCursor " + this);
+        if (BuildConfig.DEBUG) {
+            Logger.debugExit(this, "BooklistPseudoCursor " + this);
+        }
     }
 
     /**
@@ -252,7 +253,7 @@ public class BooklistPseudoCursor
         // Purge them
         for (Integer i : toPurge) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOKLIST_BUILDER) {
-                Logger.info(this, "purgeOldCursors", "Removing cursor at " + i);
+                Logger.debug(this,"purgeOldCursors", "Removing cursor at " + i);
             }
             BooklistCursor c = mCursors.remove(i);
             if (c != null) {
@@ -379,11 +380,15 @@ public class BooklistPseudoCursor
     @Override
     @CallSuper
     public void close() {
-        Logger.info(this, Tracker.State.Enter, "Close ", this);
+        if (BuildConfig.DEBUG) {
+            Logger.debugEnter(this, "Close ", this);
+        }
         super.close();
 
         clearCursors();
-        Logger.info(this, Tracker.State.Exit, "Close ", this);
+        if (BuildConfig.DEBUG) {
+            Logger.debugExit(this, "Close ", this);
+        }
     }
 
     @Override
